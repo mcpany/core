@@ -6,9 +6,9 @@ from fastmcp import start_mcp_server
 
 def get_local_time_json(args):
     """A simple tool that returns the current time as JSON."""
-    now = datetime.now()
+    now = datetime.now().astimezone()
     time_str = now.strftime("%Y-%m-%d %H:%M:%S")
-    timezone_str = now.astimezone().tzname()
+    timezone_str = now.tzname()
     return {
         "current_time": time_str,
         "timezone": timezone_str

@@ -30,7 +30,6 @@ import (
 )
 
 func TestPublicTimeMCPAPI(t *testing.T) {
-	t.Skip("Skipping flaky test TestPublicTimeMCPAPI to unblock CI")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
