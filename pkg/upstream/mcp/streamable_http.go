@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -255,13 +256,26 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 }
 
 func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
+	command := stdio.GetCommand()
+	args := stdio.GetArgs()
+
+	// If the command is 'docker', handle it directly, including sudo if needed.
+	if command == "docker" {
+		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
+		if useSudo {
+			fullArgs := append([]string{command}, args...)
+			return exec.Command("sudo", fullArgs...)
+		}
+		return exec.Command(command, args...)
+	}
+
 	// Combine all commands into a single script.
 	var scriptCommands []string
 	scriptCommands = append(scriptCommands, stdio.GetSetupCommands()...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
-	mainCommandParts := []string{"exec", stdio.GetCommand()}
-	mainCommandParts = append(mainCommandParts, stdio.GetArgs()...)
+	mainCommandParts := []string{"exec", command}
+	mainCommandParts = append(mainCommandParts, args...)
 	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
 
 	script := strings.Join(scriptCommands, " && ")
@@ -270,7 +284,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	image := stdio.GetContainerImage()
 	if image == "" {
 		// Try to guess based on the main command if no image is provided.
-		image = GetContainerImageForCommand(stdio.GetCommand())
+		image = GetContainerImageForCommand(command)
 	}
 
 	// If an image is determined, try to run it in a container.
@@ -283,7 +297,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 			dockerArgs = append(dockerArgs, image, "/bin/sh", "-c", script)
 			return exec.Command("docker", dockerArgs...)
 		}
-		logging.GetLogger().Warn("Docker socket not accessible, falling back to running command on host. This may fail if the command is not in the system's PATH.", "command", stdio.GetCommand())
+		logging.GetLogger().Warn("Docker socket not accessible, falling back to running command on host. This may fail if the command is not in the system's PATH.", "command", command)
 	}
 
 	// Otherwise, run the script directly on the host.
