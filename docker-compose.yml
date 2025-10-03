@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  mcpx-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "50050:50050"
+      - "50051:50051"
+    environment:
+      # Add any other necessary MCPX_ environment variables for the server
+      # For example, if stdio mode should be explicitly off:
+      # - MCPX_STDIO=false
+    networks:
+      - mcpx-net
+
+networks:
+  mcpx-net:
+    driver: bridge

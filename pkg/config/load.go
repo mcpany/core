@@ -1,0 +1,50 @@
+/*
+ * Copyright 2025 Author(s) of MCPX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package config
+
+import (
+	"fmt"
+
+	"github.com/mcpxy/mcpx/pkg/logging"
+	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+)
+
+// LoadServices loads, validates, and processes the MCP-X server configuration
+// from a given store. It orchestrates the reading of the configuration and
+// ensures its integrity before returning it.
+//
+// store is the configuration store from which to load the configuration.
+// It returns a validated McpxServerConfig or an error if loading or validation
+// fails.
+func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
+	log := logging.GetLogger().With("component", "configLoader")
+
+	fileConfig, err := store.Load()
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config from store: %w", err)
+	}
+
+	validatedConfig, err := Validate(fileConfig)
+	if err != nil {
+		return nil, fmt.Errorf("config validation failed: %w", err)
+	}
+
+	if len(validatedConfig.GetUpstreamServices()) > 0 {
+		log.Info("Successfully processed config file", "valid_services", len(validatedConfig.GetUpstreamServices()))
+	}
+	return validatedConfig, nil
+}

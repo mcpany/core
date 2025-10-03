@@ -1,0 +1,36 @@
+edition = "2023";
+
+package examples.calculator.v1;
+
+option go_package = "github.com/mcpxy/mcpx/proto/examples/calculator/v1";
+
+import "proto/mcp_options/v1/mcp_options.proto";
+
+service CalculatorService {
+  rpc Add(AddRequest) returns (AddResponse) {
+    option (mcpx.mcp_options.v1.tool_name) = "CalculatorAdd";
+    option (mcpx.mcp_options.v1.tool_description) = "Adds two integers.";
+  }
+  rpc Subtract(SubtractRequest) returns (SubtractResponse) {
+    option (mcpx.mcp_options.v1.tool_name) = "CalculatorSubtract";
+    option (mcpx.mcp_options.v1.tool_description) = "Subtracts the second integer from the first.";
+  }
+}
+
+message AddRequest {
+   int32 a = 1;
+   int32 b = 2;
+}
+
+message AddResponse {
+   int32 result = 1;
+}
+
+message SubtractRequest {
+   int32 a = 1;
+   int32 b = 2;
+}
+
+message SubtractResponse {
+   int32 result = 1;
+}

@@ -1,0 +1,11 @@
+# Generated protobuf files
+# **/*.pb.go
+coverage.out
+
+# Build artifacts
+/build/
+
+/vendor/
+
+# E2E test dependencies
+tests/integration/upstream/node_modules/

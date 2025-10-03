@@ -1,0 +1,26 @@
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore build artifacts
+build/
+*.out
+*.so
+*.a
+
+# Ignore documentation
+docs/
+
+# Ignore vendor directories
+vendor/
+
+# Ignore local development files
+.vscode/
+*.code-workspace
+
+# Ignore test data
+testdata/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

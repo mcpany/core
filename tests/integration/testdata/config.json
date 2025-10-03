@@ -1,0 +1,17 @@
+{
+  "upstream_services": [
+    {
+      "name": "http-echo-from-json",
+      "http_service": {
+        "address": "http://localhost:8080",
+        "calls": [
+          {
+            "endpoint_path": "/echo",
+            "operation_id": "echo",
+            "method": "HTTP_METHOD_POST"
+          }
+        ]
+      }
+    }
+  ]
+}

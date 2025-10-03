@@ -1,0 +1,65 @@
+edition = "2023";
+
+package mcpx.api.v1;
+
+import "proto/config/v1/config.proto";
+
+option go_package = "github.com/mcpxy/mcpx/proto/api/v1";
+
+message RegisterServiceRequest {
+    mcpx.config.v1.UpstreamServiceConfig config = 1;
+}
+
+message RegisterServiceResponse {
+    string message = 1;             // e.g., "Service registered successfully"
+    repeated mcpx.config.v1.ToolDefinition discovered_tools = 2;
+}
+
+service RegistrationService {
+    rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse);
+    rpc UnregisterService(UnregisterServiceRequest) returns (UnregisterServiceResponse);
+    rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse);
+    rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse);
+    rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse);
+}
+
+message InitiateOAuth2FlowRequest {
+  string service_id = 1;
+  string namespace = 2;
+}
+
+message InitiateOAuth2FlowResponse {
+  string authorization_url = 1;
+  string state = 2;
+}
+
+message UnregisterServiceRequest {
+  string service_name = 1;          // User-defined unique ID for the service to deregister
+  string namespace = 2;               // Optional namespace for the service
+}
+
+message UnregisterServiceResponse {
+  string message = 1;             // e.g., "Service unregistered successfully"
+}
+
+message RegisterToolsRequest {
+    string service_name = 1;
+    string namespace = 2;
+    repeated mcpx.config.v1.ToolDefinition tools = 3;
+}
+
+message RegisterToolsResponse {
+    string message = 1;
+    int32 tools_registered = 2;
+}
+
+
+message GetServiceStatusRequest {
+    string service_name = 1;
+    string namespace = 2;
+}
+
+message GetServiceStatusResponse {
+    repeated mcpx.config.v1.ToolDefinition tools = 1;
+    map<string, int64> metrics = 2;
+}
