@@ -1,0 +1,64 @@
+run:
+  timeout: 5m
+
+issues:
+  exclude-rules:
+    - path: "_test.go"
+      linters:
+        - "errcheck"
+  skip-files:
+    - ".*\\.pb\\.go$"
+
+linters:
+  enable:
+    - stylecheck
+    - typecheck
+    - gofumpt
+    - goimports
+    - revive
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - unconvert
+    - prealloc
+    - gocritic
+
+linters-settings:
+  stylecheck:
+    # Following Google's style guide for Go.
+    # Ref: https://google.github.io/styleguide/go/guide.html
+    # We are enabling all checks and then disabling a few that might be
+    # too opinionated or project-specific.
+    checks: ["all", "-ST1000", "-ST1003", "-ST1020", "-ST1021", "-ST1022"]
+
+  revive:
+    # This is a highly configurable linter. We're setting rules that align
+    # with the Google Go style guide.
+    # Ref: https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md
+    rules:
+      # Enforces package comments, which are required by Google's style guide.
+      - name: package-comments
+        disabled: false
+
+      # Ensures that error strings are not capitalized and don't end with punctuation.
+      - name: error-strings
+        disabled: false
+
+      # Discourages dot imports, which are generally discouraged.
+      - name: dot-imports
+        disabled: false
+
+      # Checks for consistent receiver names.
+      - name: receiver-naming
+        disabled: false
+
+      # Checks for proper context handling.
+      - name: context-as-argument
+        disabled: false
+      - name: context-keys-type
+        disabled: false
+
+      # Checks for common issues with variable declarations.
+      - name: var-declaration
+        disabled: false

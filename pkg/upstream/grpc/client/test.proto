@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package grpcclient; // This package name is for the .proto namespace, not Go.
+
+option go_package = "github.com/mcpxy/mcpx/pkg/upstream/grpc/client"; // Align with directory for 'client' package
+
+message TestRequest {
+  string name = 1;
+}
+
+message TestResponse {
+  string message = 1;
+}
+
+service TestService {
+  rpc TestCall(TestRequest) returns (TestResponse);
+}

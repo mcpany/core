@@ -1,0 +1,8 @@
+{
+  "name": "mcpx-e2e-tests",
+  "version": "1.0.0",
+  "description": "E2E test dependencies for MCP-X",
+  "dependencies": {
+    "@modelcontextprotocol/server-everything": "latest"
+  }
+}
