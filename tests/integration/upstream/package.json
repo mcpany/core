@@ -1,8 +1,8 @@
 {
-  "name": "mcpxy-e2e-tests",
+  "name": "mcp-xy-integration-tests",
   "version": "1.0.0",
-  "description": "E2E test dependencies for MCP-XY",
+  "description": "Integration tests for mcp-xy",
   "dependencies": {
-    "@modelcontextprotocol/server-everything": "latest"
+    "@modelcontextprotocol/server-everything": "2025.9.25"
   }
 }
