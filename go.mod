@@ -1,4 +1,4 @@
-module github.com/mcpxy/mcpx
+module github.com/mcpxy/core
 
 go 1.24.3
 

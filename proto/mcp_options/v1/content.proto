@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mcpx.mcp_options.v1;
 
-option go_package = "github.com/mcpxy/mcpx/proto/mcp_options/v1";
+option go_package = "github.com/mcpxy/core/proto/mcp_options/v1";
 
 message Content {
   optional string content = 1;

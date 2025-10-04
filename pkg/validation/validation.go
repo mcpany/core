@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"net/url"
 	"strings"
 
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
 
 // IsValidURL checks if a given string is a valid URL. This function performs

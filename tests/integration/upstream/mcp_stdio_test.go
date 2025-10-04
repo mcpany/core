@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -35,19 +35,19 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for 'everything' server (Stdio)...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EEverythingServerTest_Stdio")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EEverythingServerTest_Stdio")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register 'everything' server with MCPX ---
+	// --- 2. Register 'everything' server with MCPXY ---
 	const everythingServiceIDStdio = "e2e_everything_server_stdio"
 	serviceStdioEndpoint := "npx @modelcontextprotocol/server-everything stdio"
-	t.Logf("INFO: Registering '%s' with MCPX...", everythingServiceIDStdio)
+	t.Logf("INFO: Registering '%s' with MCPXY...", everythingServiceIDStdio)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterStdioMCPService(t, registrationGRPCClient, everythingServiceIDStdio, serviceStdioEndpoint, true)
 	t.Logf("INFO: '%s' registered with command: %s", everythingServiceIDStdio, serviceStdioEndpoint)
 
-	// Create MCP client to MCPX server
+	// Create MCP client to MCPXY server
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	if err != nil {
@@ -59,7 +59,7 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to list tools from MCP service: %v", err)
 	}
-	t.Logf("Tools available from MCPX server: %v", listToolsResult.Tools)
+	t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
 
 	testCases := []struct {
 		name       string
@@ -101,7 +101,7 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 				require.NoError(t, err, "Error calling tool '%s': %v", tc.tool, err)
 				require.NotNil(t, res, "Nil response from tool '%s'", tc.tool)
 				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", tc.tool)
-				t.Logf("SUCCESS: Call to tool '%s' via MCPX completed. Result: %s", tc.tool, res.Content[0])
+				t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", tc.tool, res.Content[0])
 			}
 		})
 	}

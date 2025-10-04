@@ -174,7 +174,7 @@ const file_proto_mcp_options_v1_mcp_options_proto_rawDesc = "" +
 	"\x16mcp_tool_readonly_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf1\x90ď\x01 \x01(\bR\x13mcpToolReadonlyHint:]\n" +
 	"\x19mcp_tool_destructive_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf2\x90ď\x01 \x01(\bR\x16mcpToolDestructiveHint:[\n" +
 	"\x18mcp_tool_idempotent_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf3\x90ď\x01 \x01(\bR\x15mcpToolIdempotentHint:Y\n" +
-	"\x17mcp_tool_openworld_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf4\x90ď\x01 \x01(\bR\x14mcpToolOpenworldHintB,Z*github.com/mcpxy/mcpx/proto/mcp_options/v1b\beditionsp\xe8\a"
+	"\x17mcp_tool_openworld_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf4\x90ď\x01 \x01(\bR\x14mcpToolOpenworldHintB,Z*github.com/mcpxy/core/proto/mcp_options/v1b\beditionsp\xe8\a"
 
 var file_proto_mcp_options_v1_mcp_options_proto_goTypes = []any{
 	(*descriptorpb.MethodOptions)(nil),  // 0: google.protobuf.MethodOptions

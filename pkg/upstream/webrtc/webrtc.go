@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mcpxy/mcpx/pkg/auth"
-	"github.com/mcpxy/mcpx/pkg/logging"
-	"github.com/mcpxy/mcpx/pkg/pool"
-	"github.com/mcpxy/mcpx/pkg/prompt"
-	"github.com/mcpxy/mcpx/pkg/resource"
-	"github.com/mcpxy/mcpx/pkg/tool"
-	"github.com/mcpxy/mcpx/pkg/upstream"
-	"github.com/mcpxy/mcpx/pkg/util"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
-	pb "github.com/mcpxy/mcpx/proto/mcp_router/v1"
+	"github.com/mcpxy/core/pkg/auth"
+	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/pool"
+	"github.com/mcpxy/core/pkg/prompt"
+	"github.com/mcpxy/core/pkg/resource"
+	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpxy/core/pkg/upstream"
+	"github.com/mcpxy/core/pkg/util"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )

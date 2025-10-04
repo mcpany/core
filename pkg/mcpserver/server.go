@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mcpxy/mcpx/pkg/appconsts"
-	"github.com/mcpxy/mcpx/pkg/auth"
-	"github.com/mcpxy/mcpx/pkg/bus"
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/pkg/logging"
-	"github.com/mcpxy/mcpx/pkg/prompt"
-	"github.com/mcpxy/mcpx/pkg/resource"
-	"github.com/mcpxy/mcpx/pkg/serviceregistry"
-	"github.com/mcpxy/mcpx/pkg/tool"
-	"github.com/mcpxy/mcpx/pkg/util"
+	"github.com/mcpxy/core/pkg/appconsts"
+	"github.com/mcpxy/core/pkg/auth"
+	"github.com/mcpxy/core/pkg/bus"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/prompt"
+	"github.com/mcpxy/core/pkg/resource"
+	"github.com/mcpxy/core/pkg/serviceregistry"
+	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

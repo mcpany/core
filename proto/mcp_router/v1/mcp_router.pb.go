@@ -1827,7 +1827,7 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\tListTools\x12$.mcpx.mcp_router.v1.ListToolsRequest\x1a%.mcpx.mcp_router.v1.ListToolsResponse\x12^\n" +
 	"\vExecuteTool\x12&.mcpx.mcp_router.v1.ExecuteToolRequest\x1a'.mcpx.mcp_router.v1.ExecuteToolResponse\x12^\n" +
 	"\vListPrompts\x12&.mcpx.mcp_router.v1.ListPromptsRequest\x1a'.mcpx.mcp_router.v1.ListPromptsResponse\x12d\n" +
-	"\rListResources\x12(.mcpx.mcp_router.v1.ListResourcesRequest\x1a).mcpx.mcp_router.v1.ListResourcesResponseB+Z)github.com/mcpxy/mcpx/proto/mcp_router/v1b\beditionsp\xe8\a"
+	"\rListResources\x12(.mcpx.mcp_router.v1.ListResourcesRequest\x1a).mcpx.mcp_router.v1.ListResourcesResponseB+Z)github.com/mcpxy/core/proto/mcp_router/v1b\beditionsp\xe8\a"
 
 var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_mcp_router_v1_mcp_router_proto_goTypes = []any{

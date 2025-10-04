@@ -349,7 +349,7 @@ func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// McpxServerConfig is the root configuration for the entire MCPX server.
+// McpxServerConfig is the root configuration for the entire MCPXY server.
 type McpxServerConfig struct {
 	state                       protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_GlobalSettings   *GlobalSettings           `protobuf:"bytes,1,opt,name=global_settings,json=globalSettings"`
@@ -8120,7 +8120,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +
 	"\n" +
-	"\x06RANDOM\x10\x02B'Z%github.com/mcpxy/mcpx/proto/config/v1b\beditionsp\xe8\a"
+	"\x06RANDOM\x10\x02B'Z%github.com/mcpxy/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 46)

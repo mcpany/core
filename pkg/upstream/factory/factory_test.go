@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package factory
 import (
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/pool"
-	"github.com/mcpxy/mcpx/pkg/upstream/command"
-	"github.com/mcpxy/mcpx/pkg/upstream/grpc"
-	"github.com/mcpxy/mcpx/pkg/upstream/http"
-	"github.com/mcpxy/mcpx/pkg/upstream/mcp"
-	"github.com/mcpxy/mcpx/pkg/upstream/openapi"
-	"github.com/mcpxy/mcpx/pkg/upstream/webrtc"
-	"github.com/mcpxy/mcpx/pkg/upstream/websocket"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+	"github.com/mcpxy/core/pkg/pool"
+	"github.com/mcpxy/core/pkg/upstream/command"
+	"github.com/mcpxy/core/pkg/upstream/grpc"
+	"github.com/mcpxy/core/pkg/upstream/http"
+	"github.com/mcpxy/core/pkg/upstream/mcp"
+	"github.com/mcpxy/core/pkg/upstream/openapi"
+	"github.com/mcpxy/core/pkg/upstream/webrtc"
+	"github.com/mcpxy/core/pkg/upstream/websocket"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

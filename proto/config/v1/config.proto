@@ -5,13 +5,13 @@ package mcpx.config.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/mcpxy/mcpx/proto/config/v1";
+option go_package = "github.com/mcpxy/core/proto/config/v1";
 
 // ===================================================================
 // Root Server Configuration
 // ===================================================================
 
-// McpxServerConfig is the root configuration for the entire MCPX server.
+// McpxServerConfig is the root configuration for the entire MCPXY server.
 message McpxServerConfig {
   // Server-wide operational parameters.
   GlobalSettings global_settings = 1;

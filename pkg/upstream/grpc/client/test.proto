@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package grpcclient; // This package name is for the .proto namespace, not Go.
 
-option go_package = "github.com/mcpxy/mcpx/pkg/upstream/grpc/client"; // Align with directory for 'client' package
+option go_package = "github.com/mcpxy/core/pkg/upstream/grpc/client"; // Align with directory for 'client' package
 
 message TestRequest {
   string name = 1;

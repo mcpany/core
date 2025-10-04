@@ -142,7 +142,7 @@ const file_proto_mcp_options_v1_content_proto_rawDesc = "" +
 	"\x04role\x18\x02 \x01(\tH\x01R\x04role\x88\x01\x01B\n" +
 	"\n" +
 	"\b_contentB\a\n" +
-	"\x05_roleB,Z*github.com/mcpxy/mcpx/proto/mcp_options/v1b\x06proto3"
+	"\x05_roleB,Z*github.com/mcpxy/core/proto/mcp_options/v1b\x06proto3"
 
 var file_proto_mcp_options_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_mcp_options_v1_content_proto_goTypes = []any{

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package worker
 import (
 	"context"
 
-	"github.com/mcpxy/mcpx/pkg/bus"
-	"github.com/mcpxy/mcpx/pkg/logging"
-	"github.com/mcpxy/mcpx/pkg/serviceregistry"
+	"github.com/mcpxy/core/pkg/bus"
+	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/serviceregistry"
 )
 
 // ServiceRegistrationWorker is a background worker responsible for handling

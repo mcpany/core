@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/tests/integration"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -39,17 +39,17 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 
 	t.Log("INFO: Starting E2E Test Scenario for 'cowsay' server (Stdio via Docker with setup)...")
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2ECowsayServerTest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2ECowsayServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register 'cowsay' server with MCPX ---
+	// --- 2. Register 'cowsay' server with MCPXY ---
 	const cowsayServiceID = "e2e-cowsay-server"
 	command := "python"
 	args := []string{"-u", "main.py", "--mcp-stdio"}
 	setupCommands := []string{"pip install cowsay"}
 
-	t.Logf("INFO: Registering '%s' with MCPX...", cowsayServiceID)
+	t.Logf("INFO: Registering '%s' with MCPXY...", cowsayServiceID)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterStdioServiceWithSetup(
 		t,
@@ -67,7 +67,7 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 	// --- 3. Use MCP SDK to connect and call the tool ---
 	testMCPClient := sdk.NewClient(&sdk.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &sdk.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s/-/say", cowsayServiceID)
@@ -104,6 +104,6 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 	require.True(t, strings.Contains(textContent.Text, "hello from docker"), "Output should contain the message")
 	require.True(t, strings.Contains(textContent.Text, "< hello from docker >"), "Output should be from cowsay")
 
-	t.Logf("SUCCESS: Call to tool '%s' via MCPX completed.", toolName)
+	t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed.", toolName)
 	t.Log("INFO: E2E Test Scenario for 'cowsay' server (Stdio via Docker with setup) Completed Successfully!")
 }
