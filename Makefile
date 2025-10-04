@@ -203,7 +203,7 @@ gen-local: prepare
 			--go_opt=module=github.com/mcpxy/core,default_api_level=API_OPAQUE \
 			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpxy/core \
-			{} + \
+			{} +
 	@echo "Protobuf generation complete."
 
 build-local: gen-local
