@@ -20,4 +20,4 @@ COPY timeserver_patch/main.py /app/main.py
 
 RUN pip install "fastmcp>=2.0.0"
 
-CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "/app/main.py"]
