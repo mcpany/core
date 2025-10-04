@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  mcpx-server:
+  mcpxy-server:
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -9,12 +9,12 @@ services:
       - "50050:50050"
       - "50051:50051"
     environment:
-      # Add any other necessary MCPX_ environment variables for the server
+      # Add any other necessary MCPXY_ environment variables for the server
       # For example, if stdio mode should be explicitly off:
-      # - MCPX_STDIO=false
+      # - MCPXY_STDIO=false
     networks:
-      - mcpx-net
+      - mcpxy-net
 
 networks:
-  mcpx-net:
+  mcpxy-net:
     driver: bridge

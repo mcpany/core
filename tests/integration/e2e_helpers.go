@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import (
 	"testing"
 	"time"
 
-	apiv1 "github.com/mcpxy/mcpx/proto/api/v1"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+	apiv1 "github.com/mcpxy/core/proto/api/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -41,14 +41,23 @@ import (
 )
 
 const (
-	McpxServerStartupTimeout = 30 * time.Second
-	ServiceStartupTimeout    = 15 * time.Second
-	TestWaitTimeShort        = 60 * time.Second
-	TestWaitTimeMedium       = 60 * time.Second
-	TestWaitTimeLong         = 3 * time.Minute
-	RetryInterval            = 250 * time.Millisecond
-	localHeaderMcpSessionID  = "Mcp-Session-Id"
+	McpxyServerStartupTimeout = 30 * time.Second
+	ServiceStartupTimeout     = 15 * time.Second
+	TestWaitTimeShort         = 60 * time.Second
+	TestWaitTimeMedium        = 60 * time.Second
+	TestWaitTimeLong          = 3 * time.Minute
+	RetryInterval             = 250 * time.Millisecond
+	localHeaderMcpSessionID   = "Mcp-Session-Id"
 )
+
+// getDockerCommand returns the command and base arguments for running Docker,
+// respecting the USE_SUDO_FOR_DOCKER environment variable.
+func getDockerCommand() (string, []string) {
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+		return "sudo", []string{"docker"}
+	}
+	return "docker", []string{}
+}
 
 // --- Binary Paths ---
 
@@ -236,7 +245,8 @@ func IsTCPPortAvailable(port int) bool {
 func IsDockerSocketAccessible() bool {
 	// This is a simplified check for integration tests.
 	// We assume if the docker command exists and we can get its version, the socket is accessible.
-	cmd := exec.Command("docker", "version")
+	dockerExe, dockerArgs := getDockerCommand()
+	cmd := exec.Command(dockerExe, append(dockerArgs, "version")...)
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -247,18 +257,30 @@ func IsDockerSocketAccessible() bool {
 
 func StartDockerContainer(t *testing.T, imageName, containerName string, args ...string) (cleanupFunc func()) {
 	t.Helper()
+	dockerExe, dockerBaseArgs := getDockerCommand()
+
+	// buildArgs safely creates a new slice for command arguments.
+	buildArgs := func(cmdArgs ...string) []string {
+		// Create a new slice with enough capacity
+		finalArgs := make([]string, 0, len(dockerBaseArgs)+len(cmdArgs))
+		// Append the base arguments first
+		finalArgs = append(finalArgs, dockerBaseArgs...)
+		// Append the command-specific arguments
+		finalArgs = append(finalArgs, cmdArgs...)
+		return finalArgs
+	}
 
 	// Ensure the container is not already running from a previous failed run
-	stopCmd := exec.Command("docker", "stop", containerName)
+	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
 	_ = stopCmd.Run() // Ignore error, it might not be running
-	rmCmd := exec.Command("docker", "rm", containerName)
+	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
 	_ = rmCmd.Run() // Ignore error, it might not exist
 
-	fullArgs := []string{"run", "--name", containerName, "--rm"}
-	fullArgs = append(fullArgs, args...)
-	fullArgs = append(fullArgs, imageName)
+	runArgs := []string{"run", "--name", containerName, "--rm"}
+	runArgs = append(runArgs, args...)
+	runArgs = append(runArgs, imageName)
 
-	startCmd := exec.Command("docker", fullArgs...)
+	startCmd := exec.Command(dockerExe, buildArgs(runArgs...)...)
 	startCmd.Stdout = os.Stdout
 	startCmd.Stderr = os.Stderr
 
@@ -267,8 +289,8 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, args ..
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
-		stopCmd := exec.Command("docker", "stop", containerName)
-		err := stopCmd.Run()
+		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+		err := stopCleanupCmd.Run()
 		if err != nil {
 			t.Logf("Failed to stop docker container %s: %v", containerName, err)
 		}
@@ -280,8 +302,8 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, args ..
 	return cleanupFunc
 }
 
-// --- MCPX Server Helper (External Process) ---
-type MCPXTestServerInfo struct {
+// --- MCPXY Server Helper (External Process) ---
+type MCPXYTestServerInfo struct {
 	Process                  *ManagedProcess
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
@@ -294,14 +316,14 @@ type MCPXTestServerInfo struct {
 	T                        *testing.T
 }
 
-func StartMCPXServer(t *testing.T, testName string, extraArgs ...string) *MCPXTestServerInfo {
+func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
 	t.Helper()
 
 	root, err := getProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpxBinary := filepath.Join(root, "build/bin/server")
+	mcpxyBinary := filepath.Join(root, "build/bin/server")
 
-	t.Logf("Using MCPX binary from: %s", mcpxBinary)
+	t.Logf("Using MCPXY binary from: %s", mcpxyBinary)
 
 	jsonrpcPort := FindFreePort(t)
 	grpcRegPort := FindFreePort(t)
@@ -314,16 +336,19 @@ func StartMCPXServer(t *testing.T, testName string, extraArgs ...string) *MCPXTe
 		"--grpc-port", fmt.Sprintf("%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPX_LOG_LEVEL=debug"}
+	env := []string{"MCPXY_LOG_LEVEL=debug"}
+	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
+		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
+	}
 
-	absMcpxBinaryPath, err := filepath.Abs(mcpxBinary)
-	require.NoError(t, err, "Failed to get absolute path for MCPX binary: %s", mcpxBinary)
-	_, err = os.Stat(absMcpxBinaryPath)
-	require.NoError(t, err, "MCPX binary not found at %s. Run 'make build'.", absMcpxBinaryPath)
+	absMcpxyBinaryPath, err := filepath.Abs(mcpxyBinary)
+	require.NoError(t, err, "Failed to get absolute path for MCPXY binary: %s", mcpxyBinary)
+	_, err = os.Stat(absMcpxyBinaryPath)
+	require.NoError(t, err, "MCPXY binary not found at %s. Run 'make build'.", absMcpxyBinaryPath)
 
-	mcpProcess := NewManagedProcess(t, "MCPXServer-"+testName, absMcpxBinaryPath, args, env)
+	mcpProcess := NewManagedProcess(t, "MCPXYServer-"+testName, absMcpxyBinaryPath, args, env)
 	err = mcpProcess.Start()
-	require.NoError(t, err, "Failed to start MCPX server. Stderr: %s", mcpProcess.StderrString())
+	require.NoError(t, err, "Failed to start MCPXY server. Stderr: %s", mcpProcess.StderrString())
 
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
@@ -331,7 +356,7 @@ func StartMCPXServer(t *testing.T, testName string, extraArgs ...string) *MCPXTe
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
 	httpClient := &http.Client{Timeout: 2 * time.Second}
 
-	t.Logf("MCPX server health check target URL: %s", mcpRequestURL)
+	t.Logf("MCPXY server health check target URL: %s", mcpRequestURL)
 
 	var grpcRegConn *grpc.ClientConn
 	require.Eventually(t, func() bool {
@@ -340,28 +365,28 @@ func StartMCPXServer(t *testing.T, testName string, extraArgs ...string) *MCPXTe
 		var errDial error
 		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if errDial != nil {
-			t.Logf("MCPX gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
+			t.Logf("MCPXY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
 			return false
 		}
 		state := grpcRegConn.GetState()
 		if state == connectivity.Ready || state == connectivity.Idle {
-			t.Logf("Successfully connected to MCPX gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
+			t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
 			return true
 		}
 		if !grpcRegConn.WaitForStateChange(ctx, state) {
-			t.Logf("MCPX gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
+			t.Logf("MCPXY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
 			grpcRegConn.Close()
 			return false
 		}
-		t.Logf("Successfully connected to MCPX gRPC registration endpoint at %s", grpcRegEndpoint)
+		t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s", grpcRegEndpoint)
 		return true
-	}, McpxServerStartupTimeout, RetryInterval, "MCPX gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
+	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
 
 	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
-	t.Logf("MCPX Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
+	t.Logf("MCPXY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
 	time.Sleep(5 * time.Second)
 
-	return &MCPXTestServerInfo{
+	return &MCPXYTestServerInfo{
 		Process:                  mcpProcess,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
@@ -370,7 +395,7 @@ func StartMCPXServer(t *testing.T, testName string, extraArgs ...string) *MCPXTe
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		CleanupFunc: func() {
-			t.Logf("Cleaning up MCPXTestServerInfo for %s...", testName)
+			t.Logf("Cleaning up MCPXYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
 				grpcRegConn.Close()
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/mcpxy/mcpx/pkg/logging"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+	"github.com/mcpxy/core/pkg/logging"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
 
 // LoadServices loads, validates, and processes the MCP-X server configuration

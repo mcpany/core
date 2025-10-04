@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_PublicHttpPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public HTTP POST API...")
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EPublicHttpPostTest")
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicHttpPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
 	const serviceID = "public_http_post"
@@ -40,7 +40,7 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 	const endpointPath = "/post"
 	const httpMethod = "POST"
 
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s%s...", serviceID, baseURL, endpointPath)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, baseURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterHTTPService(t, registrationGRPCClient, serviceID, baseURL, operationID, endpointPath, httpMethod, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
@@ -50,7 +50,7 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s/-/%s", serviceID, operationID)
@@ -92,14 +92,14 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 
 func TestUpstreamService_PublicWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public Websocket API...")
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EPublicWebsocketTest")
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
 	const serviceID = "public_websocket_echo"
 	const baseURL = "wss://ws.postman-echo.com/raw"
 	const operationID = "echo"
 
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", serviceID, baseURL)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, baseURL)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, baseURL, operationID, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
@@ -109,7 +109,7 @@ func TestUpstreamService_PublicWebsocket(t *testing.T) {
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s/-/%s", serviceID, operationID)
@@ -127,7 +127,7 @@ func TestUpstreamService_PublicWebsocket(t *testing.T) {
 
 func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for JSONPlaceholder POST API...")
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EJsonPlaceholderPostTest")
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EJsonPlaceholderPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
 	const serviceID = "jsonplaceholder"
@@ -136,7 +136,7 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 	const endpointPath = "/posts"
 	const httpMethod = "POST"
 
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s%s...", serviceID, baseURL, endpointPath)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, baseURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterHTTPService(t, registrationGRPCClient, serviceID, baseURL, operationID, endpointPath, httpMethod, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
@@ -146,7 +146,7 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s/-/%s", serviceID, operationID)
@@ -173,14 +173,14 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 
 func TestUpstreamService_LanyardWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Lanyard Websocket API...")
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2ELanyardWebsocketTest")
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2ELanyardWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
 	const serviceID = "lanyard_websocket"
 	const baseURL = "wss://api.lanyard.rest/socket"
 	const operationID = "subscribe"
 
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", serviceID, baseURL)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, baseURL)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, baseURL, operationID, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
@@ -190,7 +190,7 @@ func TestUpstreamService_LanyardWebsocket(t *testing.T) {
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s/-/%s", serviceID, operationID)

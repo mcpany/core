@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mcpxy/mcpx/pkg/auth"
-	"github.com/mcpxy/mcpx/pkg/prompt"
-	"github.com/mcpxy/mcpx/pkg/resource"
-	"github.com/mcpxy/mcpx/pkg/tool"
-	"github.com/mcpxy/mcpx/pkg/upstream/factory"
-	config "github.com/mcpxy/mcpx/proto/config/v1"
+	"github.com/mcpxy/core/pkg/auth"
+	"github.com/mcpxy/core/pkg/prompt"
+	"github.com/mcpxy/core/pkg/resource"
+	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpxy/core/pkg/upstream/factory"
+	config "github.com/mcpxy/core/proto/config/v1"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -45,19 +45,19 @@ func TestUpstreamService_GRPC(t *testing.T) {
 		return integration.IsTCPPortAvailable(grpcServerPort)
 	}, integration.ServiceStartupTimeout, integration.RetryInterval, "gRPC Calculator server did not become ready in time")
 
-	// --- 2. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EGrpcCalculatorServerTest")
+	// --- 2. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EGrpcCalculatorServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 3. Register gRPC Calculator Server with MCPX ---
+	// --- 3. Register gRPC Calculator Server with MCPXY ---
 	const calcServiceID = "e2e_grpc_calculator"
 	grpcServiceEndpoint := fmt.Sprintf("localhost:%d", grpcServerPort)
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", calcServiceID, grpcServiceEndpoint)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", calcServiceID, grpcServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterGRPCService(t, registrationGRPCClient, calcServiceID, grpcServiceEndpoint, nil)
 	t.Logf("INFO: '%s' registered.", calcServiceID)
 
-	// --- 4. Call Tool via MCPX ---
+	// --- 4. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -66,7 +66,7 @@ func TestUpstreamService_GRPC(t *testing.T) {
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
 	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPX: %s", tool.Name)
+		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
 	toolName := fmt.Sprintf("%s%sCalculatorAdd", calcServiceID, consts.ToolNameServiceSeparator)

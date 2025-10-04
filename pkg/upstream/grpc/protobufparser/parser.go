@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	mcpopt "github.com/mcpxy/mcpx/proto/mcp_options/v1"
+	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/mcpxy/mcpx/pkg/auth"
-	"github.com/mcpxy/mcpx/pkg/client"
-	"github.com/mcpxy/mcpx/pkg/pool"
-	"github.com/mcpxy/mcpx/pkg/transformer"
-	"github.com/mcpxy/mcpx/pkg/util"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
-	v1 "github.com/mcpxy/mcpx/proto/mcp_router/v1"
+	"github.com/mcpxy/core/pkg/auth"
+	"github.com/mcpxy/core/pkg/client"
+	"github.com/mcpxy/core/pkg/pool"
+	"github.com/mcpxy/core/pkg/transformer"
+	"github.com/mcpxy/core/pkg/util"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"

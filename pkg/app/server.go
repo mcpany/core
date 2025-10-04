@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,31 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpxy/mcpx/pkg/auth"
-	"github.com/mcpxy/mcpx/pkg/bus"
-	"github.com/mcpxy/mcpx/pkg/config"
-	"github.com/mcpxy/mcpx/pkg/logging"
-	"github.com/mcpxy/mcpx/pkg/mcpserver"
-	"github.com/mcpxy/mcpx/pkg/middleware"
-	"github.com/mcpxy/mcpx/pkg/pool"
-	"github.com/mcpxy/mcpx/pkg/prompt"
-	"github.com/mcpxy/mcpx/pkg/resource"
-	"github.com/mcpxy/mcpx/pkg/serviceregistry"
-	"github.com/mcpxy/mcpx/pkg/tool"
-	"github.com/mcpxy/mcpx/pkg/upstream/factory"
-	"github.com/mcpxy/mcpx/pkg/worker"
+	"github.com/mcpxy/core/pkg/auth"
+	"github.com/mcpxy/core/pkg/bus"
+	"github.com/mcpxy/core/pkg/config"
+	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/mcpserver"
+	"github.com/mcpxy/core/pkg/middleware"
+	"github.com/mcpxy/core/pkg/pool"
+	"github.com/mcpxy/core/pkg/prompt"
+	"github.com/mcpxy/core/pkg/resource"
+	"github.com/mcpxy/core/pkg/serviceregistry"
+	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpxy/core/pkg/upstream/factory"
+	"github.com/mcpxy/core/pkg/worker"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	v1 "github.com/mcpxy/mcpx/proto/api/v1"
+	v1 "github.com/mcpxy/core/proto/api/v1"
 )
 
 // ShutdownTimeout is the duration the server will wait for graceful shutdown.
 var ShutdownTimeout = 5 * time.Second
 
-// Run starts the MCP-X server and all its components. It initializes the core
+// Run starts the MCP-XY server and all its components. It initializes the core
 // services, loads configurations, starts background workers, and launches the
 // gRPC and JSON-RPC servers.
 //
@@ -62,7 +62,7 @@ func Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort str
 	log := logging.GetLogger()
 	fs = setup(fs)
 
-	log.Info("Starting MCP-X Service...")
+	log.Info("Starting MCP-XY Service...")
 
 	// Core components
 	poolManager := pool.NewManager()
@@ -148,7 +148,7 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 	httpHandler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 		return mcpSrv.Server()
 	}, nil)
-	startHTTPServer(ctx, &wg, errChan, "MCP-X HTTP", ":"+jsonrpcPort, httpHandler)
+	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, httpHandler)
 
 	if grpcPort != "" {
 		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {

@@ -1,6 +1,6 @@
-# MCP-X: Model Context Protocol eXtensions
+# MCP-XY: Model Context Protocol eXtensions
 
-MCP-X is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
+MCP-XY is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
 ## Key Features
 
@@ -10,7 +10,7 @@ MCP-X is a powerful and flexible server that acts as a universal adapter for bac
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-  - **MCP-X Proxy**: Proxy and re-expose tools from another MCP-X instance.
+  - **MCP-XY Proxy**: Proxy and re-expose tools from another MCP-XY instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
   - **Bearer Tokens**
@@ -20,7 +20,7 @@ MCP-X is a powerful and flexible server that acts as a universal adapter for bac
 
 ## Getting Started
 
-Follow these instructions to get MCP-X set up and running on your local machine.
+Follow these instructions to get MCP-XY set up and running on your local machine.
 
 ### Prerequisites
 
@@ -33,8 +33,8 @@ Before you begin, ensure you have the following installed:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/mcpxy/mcpx.git
-    cd mcpx
+    git clone https://github.com/mcpxy/core.git
+    cd core
     ```
 
 2.  **Install dependencies and generate code:**
@@ -45,7 +45,7 @@ Before you begin, ensure you have the following installed:
 
 ### Running the Server
 
-You can run the MCP-X server using a `make` command, which handles building and running the application.
+You can run the MCP-XY server using a `make` command, which handles building and running the application.
 
 ```bash
 make server
@@ -55,7 +55,7 @@ By default, the server will start and listen for JSON-RPC requests on port `5005
 
 ## Configuration
 
-MCP-X can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag.
+MCP-XY can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag.
 
 ### Example Configuration
 
@@ -84,7 +84,7 @@ To run the server with this configuration, use the following command:
 make server ARGS="--config-paths ./config.yaml"
 ```
 
-The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPX_JSONRPC_PORT=6000`.
+The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPXY_JSONRPC_PORT=6000`.
 
 ## Usage
 

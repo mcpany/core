@@ -2,7 +2,7 @@ edition = "2023";
 
 package examples.calculator.v1;
 
-option go_package = "github.com/mcpxy/mcpx/proto/examples/calculator/v1";
+option go_package = "github.com/mcpxy/core/proto/examples/calculator/v1";
 
 import "proto/mcp_options/v1/mcp_options.proto";
 

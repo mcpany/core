@@ -7,7 +7,7 @@
 # license header and that no placeholder text remains.
 
 # --- Configuration ---
-PLACEHOLDER_OWNER="Author(s) of MCPX"
+PLACEHOLDER_OWNER="Author(s) of MCPXY"
 PLACEHOLDER_YEAR="2025"
 ERROR_COUNT=0
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/mcpxy/mcpx/pkg/client"
-	"github.com/mcpxy/mcpx/pkg/pool"
+	"github.com/mcpxy/core/pkg/client"
+	"github.com/mcpxy/core/pkg/pool"
 )
 
 // NewHttpPool creates a new connection pool for HTTP clients. It configures the

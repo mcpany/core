@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -48,14 +48,14 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 		return integration.IsTCPPortAvailable(echoServerPort)
 	}, integration.ServiceStartupTimeout, integration.RetryInterval, "Authenticated HTTP Echo server did not become ready in time")
 
-	// --- 2. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EHttpAuthedEchoServerTest")
+	// --- 2. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EHttpAuthedEchoServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Authenticated HTTP Echo Server with MCPX ---
+	// --- 3. Register Authenticated HTTP Echo Server with MCPXY ---
 	const echoServiceID = "e2e_http_authed_echo"
 	echoServiceEndpoint := fmt.Sprintf("http://localhost:%d", echoServerPort)
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", echoServiceID, echoServiceEndpoint)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", echoServiceID, echoServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	authConfig := configv1.UpstreamAuthentication_builder{
@@ -68,7 +68,7 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 	integration.RegisterHTTPService(t, registrationGRPCClient, echoServiceID, echoServiceEndpoint, "echo", "/echo", http.MethodPost, authConfig)
 	t.Logf("INFO: '%s' registered.", echoServiceID)
 
-	// --- 4. Call Tool via MCPX ---
+	// --- 4. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)

@@ -21,7 +21,7 @@ DOCKER_HEADER=$(sed -e 's/^[[:space:]]*//' -e 's/^/'"$COMMENT_START"'/' "$HEADER
 # Apply the header to all files matching the pattern
 find . -type f -name "$FILE_PATTERN" | while read -r file; do
     # Check if the file already contains the copyright line to prevent duplication
-    if grep -q "Copyright 2025 Author(s) of MCPX" "$file"; then
+    if grep -q "Copyright 2025 Author(s) of MCPXY" "$file"; then
         echo "Skipping $file: Header already present."
     else
         echo "Updating $file"

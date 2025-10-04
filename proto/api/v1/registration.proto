@@ -4,7 +4,7 @@ package mcpx.api.v1;
 
 import "proto/config/v1/config.proto";
 
-option go_package = "github.com/mcpxy/mcpx/proto/api/v1";
+option go_package = "github.com/mcpxy/core/proto/api/v1";
 
 message RegisterServiceRequest {
     mcpx.config.v1.UpstreamServiceConfig config = 1;

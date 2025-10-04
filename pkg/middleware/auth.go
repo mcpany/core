@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package middleware
 import (
 	"context"
 
-	"github.com/mcpxy/mcpx/pkg/auth"
+	"github.com/mcpxy/core/pkg/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package config
 
 import (
-	"github.com/mcpxy/mcpx/pkg/logging"
-	"github.com/mcpxy/mcpx/pkg/validation"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
+	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/validation"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
 
 // Validate inspects the given McpxServerConfig for correctness and consistency.
