@@ -6,7 +6,7 @@ package examples.userservice.v1;
 // When protoc is run for this file, an include path to the main project's 'proto' dir will be needed.
 import "proto/mcp_options/v1/mcp_options.proto";
 
-option go_package = "github.com/mcpxy/mcpx/proto/examples/userservice/v1";
+option go_package = "github.com/mcpxy/core/proto/examples/userservice/v1";
 
 // --- Messages ---
 message EchoRequest {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ func TestConfigLoading(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("MCPX_BINARY_PATH", "../../build/bin/server")
-			mcpx := StartMCPXServer(t, "config-loading-"+tc.name, "--config-paths", tc.configFile)
+			t.Setenv("MCPXY_BINARY_PATH", "../../build/bin/server")
+			mcpx := StartMCPXYServer(t, "config-loading-"+tc.name, "--config-paths", tc.configFile)
 			defer mcpx.CleanupFunc()
 
 			// Use a client with no timeout for the streaming SSE connection

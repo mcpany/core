@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	apiv1 "github.com/mcpxy/mcpx/proto/api/v1"
-	configv1 "github.com/mcpxy/mcpx/proto/config/v1"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	apiv1 "github.com/mcpxy/core/proto/api/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -39,15 +39,15 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for World Time API...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EWorldTimeAPITest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EWorldTimeAPITest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register World Time API Service with MCPX ---
+	// --- 2. Register World Time API Service with MCPXY ---
 	const serviceID = "worldtimeapi"
 	serviceURL := "http://worldtimeapi.org"
 	operationID := "getTimeForTimezone"
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", serviceID, serviceURL)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, serviceURL)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
@@ -85,7 +85,7 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPX ---
+	// --- 3. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)

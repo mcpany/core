@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,39 +20,47 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPublicTimeMCPAPI(t *testing.T) {
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping test")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for 'time' server (Stdio via Docker)...")
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2ETimeServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	// --- 1. Start MCPXY Server ---
+	mcpxyTestServerInfo := integration.StartMCPXYServer(t, "E2ETimeServerTest")
+	defer mcpxyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register 'time' server with MCPX ---
+	// --- 2. Register 'time' server with MCPXY ---
 	const timeServiceID = "e2e-time-server"
-	command := "docker"
-	args := []string{"run", "--rm", "-i", "mcpx-e2e-time-server"}
+	dockerExe, dockerBaseArgs := getDockerCommand()
+	command := dockerExe
+	// Create a new slice for the arguments to avoid modifying the base slice
+	args := make([]string, 0, len(dockerBaseArgs)+4)
+	args = append(args, dockerBaseArgs...)
+	args = append(args, "run", "--rm", "-i", "mcpxy-e2e-time-server")
 
-	t.Logf("INFO: Registering '%s' with MCPX...", timeServiceID)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	t.Logf("INFO: Registering '%s' with MCPXY...", timeServiceID)
+	registrationGRPCClient := mcpxyTestServerInfo.RegistrationClient
 	integration.RegisterStdioService(t, registrationGRPCClient, timeServiceID, command, true, args...)
 	t.Logf("INFO: '%s' registered with command: %s %v", timeServiceID, command, args)
 
 	// --- 3. Use MCP SDK to connect and call the tool ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err, "Failed to connect to MCPX server")
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyTestServerInfo.HTTPEndpoint}, nil)
+	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
 	toolName := fmt.Sprintf("%s%sget_local_time", timeServiceID, consts.ToolNameServiceSeparator)
@@ -99,6 +107,13 @@ func TestPublicTimeMCPAPI(t *testing.T) {
 	require.True(t, ok, "Response should contain a 'timezone' string")
 	require.NotEmpty(t, tzStr, "Timezone should not be empty")
 
-	t.Logf("SUCCESS: Call to tool '%s' via MCPX completed. Received time: %s, timezone: %s", toolName, timeStr, tzStr)
+	t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Received time: %s, timezone: %s", toolName, timeStr, tzStr)
 	t.Log("INFO: E2E Test Scenario for 'time' server (Stdio via Docker) Completed Successfully!")
+}
+
+func getDockerCommand() (string, []string) {
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+		return "sudo", []string{"docker"}
+	}
+	return "docker", []string{}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -60,18 +60,18 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 		return true
 	}, integration.ServiceStartupTimeout, integration.RetryInterval, "everything server did not become ready in time")
 
-	// --- 2. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EEverythingServerTest_Streamable")
+	// --- 2. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EEverythingServerTest_Streamable")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 4. Register 'everything' server with MCPX ---
+	// --- 4. Register 'everything' server with MCPXY ---
 	const everythingServiceIDStream = "e2e_everything_server_streamable"
-	t.Logf("INFO: Registering '%s' with MCPX...", everythingServiceIDStream)
+	t.Logf("INFO: Registering '%s' with MCPXY...", everythingServiceIDStream)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterStreamableMCPService(t, registrationGRPCClient, everythingServiceIDStream, serviceMcpEndpoint, true, nil)
 	t.Logf("INFO: '%s' registered with URL: %s", everythingServiceIDStream, serviceMcpEndpoint)
 
-	// Create MCP client to MCPX server
+	// Create MCP client to MCPXY server
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	if err != nil {
@@ -83,7 +83,7 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to list tools from MCP service: %v", err)
 	}
-	t.Logf("Tools available from MCPX server: %v", listToolsResult.Tools)
+	t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
 
 	testCases := []struct {
 		name       string
@@ -125,7 +125,7 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 				require.NoError(t, err, "Error calling tool '%s': %v", tc.tool, err)
 				require.NotNil(t, res, "Nil response from tool '%s'", tc.tool)
 				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", tc.tool)
-				t.Logf("SUCCESS: Call to tool '%s' via MCPX completed. Result: %s", tc.tool, res.Content[0])
+				t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", tc.tool, res.Content[0])
 			}
 		})
 	}

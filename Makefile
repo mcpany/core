@@ -4,8 +4,8 @@
 GO = go
 GO_ENV := GOCACHE=/tmp/.gocache GOMODCACHE=/tmp/.modcache
 GO_CMD := $(GO_ENV) $(GO)
-PROTO_IMAGE_TAG := mcpxy/mcpx-proto-builder
-SERVER_IMAGE_TAG ?= mcpxy/mcpx:latest
+PROTO_IMAGE_TAG := mcpxy/core-proto-builder
+SERVER_IMAGE_TAG ?= mcpxy/core:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -175,9 +175,9 @@ gen-local: prepare
 			--descriptor_set_out=build/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpxy/mcpx,default_api_level=API_OPAQUE \
+			--go_opt=module=github.com/mcpxy/core,default_api_level=API_OPAQUE \
 			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpxy/mcpx \
+			--go-grpc_opt=module=github.com/mcpxy/core \
 			{} +
 	@echo "Protobuf generation complete."
 
@@ -187,11 +187,11 @@ build-local: gen-local
 
 test-local: gen-local build-local build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
-	@MCPX_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
+	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 
 test-fast: gen-local build-local build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@MCPX_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s ./...
+	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s ./...
 
 # ==============================================================================
 # Example Binaries Build
@@ -229,7 +229,7 @@ clean:
 	@rm -rf build
 
 run: build
-	@echo "Starting MCP-X server locally..."
+	@echo "Starting MCP-XY server locally..."
 	@./build/bin/server
 
 # ==============================================================================
@@ -261,8 +261,8 @@ $(E2E_BIN_DIR):
 .PHONY: build-e2e-timeserver-docker
 build-e2e-timeserver-docker: tests/integration/public_api/Dockerfile.timeserver tests/integration/public_api/timeserver_patch/main.py
 ifdef HAS_DOCKER
-	@echo "Building E2E time server Docker image (mcpx-e2e-time-server)..."
-	@$(DOCKER_CMD) build -t mcpx-e2e-time-server -f tests/integration/public_api/Dockerfile.timeserver tests/integration/public_api
+	@echo "Building E2E time server Docker image (mcpxy-e2e-time-server)..."
+	@$(DOCKER_CMD) build -t mcpxy-e2e-time-server -f tests/integration/public_api/Dockerfile.timeserver tests/integration/public_api
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
@@ -317,7 +317,7 @@ else
 	@exit 1
 endif
 
-EVERYTHING_IMAGE_TAG ?= mcpx/everything:latest
+EVERYTHING_IMAGE_TAG ?= mcpxy/everything:latest
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."

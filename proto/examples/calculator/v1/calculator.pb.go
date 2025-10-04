@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	_ "github.com/mcpxy/mcpx/proto/mcp_options/v1"
+	_ "github.com/mcpxy/core/proto/mcp_options/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -400,7 +400,7 @@ const file_proto_examples_calculator_v1_calculator_proto_rawDesc = "" +
 	"\x06result\x18\x01 \x01(\x05R\x06result2\xbc\x02\n" +
 	"\x11CalculatorService\x12{\n" +
 	"\x03Add\x12\".examples.calculator.v1.AddRequest\x1a#.examples.calculator.v1.AddResponse\"+ʆ\xa1\xfc\b\rCalculatorAdd҆\xa1\xfc\b\x12Adds two integers.\x12\xa9\x01\n" +
-	"\bSubtract\x12'.examples.calculator.v1.SubtractRequest\x1a(.examples.calculator.v1.SubtractResponse\"Jʆ\xa1\xfc\b\x12CalculatorSubtract҆\xa1\xfc\b,Subtracts the second integer from the first.B4Z2github.com/mcpxy/mcpx/proto/examples/calculator/v1b\beditionsp\xe8\a"
+	"\bSubtract\x12'.examples.calculator.v1.SubtractRequest\x1a(.examples.calculator.v1.SubtractResponse\"Jʆ\xa1\xfc\b\x12CalculatorSubtract҆\xa1\xfc\b,Subtracts the second integer from the first.B4Z2github.com/mcpxy/core/proto/examples/calculator/v1b\beditionsp\xe8\a"
 
 var file_proto_examples_calculator_v1_calculator_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_examples_calculator_v1_calculator_proto_goTypes = []any{

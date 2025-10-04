@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -38,21 +38,21 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public HTTP POST API...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EPublicHttpPostTest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicHttpPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Public HTTP POST Service with MCPX ---
+	// --- 2. Register Public HTTP POST Service with MCPXY ---
 	const serviceID = "public_http_post"
 	serviceURL := "https://httpbin.org"
 	endpointPath := "/post"
 	operationID := "postAnything"
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s%s...", serviceID, serviceURL, endpointPath)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterHTTPService(t, registrationGRPCClient, serviceID, serviceURL, operationID, endpointPath, "POST", nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPX ---
+	// --- 3. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -108,20 +108,20 @@ func TestUpstreamService_PublicWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public Websocket API...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EPublicWebsocketTest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Public Websocket Service with MCPX ---
+	// --- 2. Register Public Websocket Service with MCPXY ---
 	const serviceID = "public_websocket_echo"
 	// Using a known public echo server
 	serviceEndpoint := "wss://ws.postman-echo.com/raw"
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", serviceID, serviceEndpoint)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, serviceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, serviceEndpoint, "echo", nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPX ---
+	// --- 3. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -148,21 +148,21 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for JSONPlaceholder POST API...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EJsonPlaceholderPostTest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EJsonPlaceholderPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register JSONPlaceholder Service with MCPX ---
+	// --- 2. Register JSONPlaceholder Service with MCPXY ---
 	const serviceID = "jsonplaceholder"
 	serviceURL := "https://jsonplaceholder.typicode.com"
 	endpointPath := "/posts"
 	operationID := "createPost"
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s%s...", serviceID, serviceURL, endpointPath)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterHTTPService(t, registrationGRPCClient, serviceID, serviceURL, operationID, endpointPath, "POST", nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPX ---
+	// --- 3. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -202,20 +202,20 @@ func TestUpstreamService_LanyardWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Lanyard Websocket API...")
 	t.Parallel()
 
-	// --- 1. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2ELanyardWebsocketTest")
+	// --- 1. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2ELanyardWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Lanyard Websocket Service with MCPX ---
+	// --- 2. Register Lanyard Websocket Service with MCPXY ---
 	const serviceID = "lanyard_websocket"
 	serviceEndpoint := "wss://api.lanyard.rest/socket"
 	operationID := "subscribe"
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", serviceID, serviceEndpoint)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, serviceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, serviceEndpoint, operationID, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPX ---
+	// --- 3. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)

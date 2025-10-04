@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpxy/mcpx/pkg/consts"
-	"github.com/mcpxy/mcpx/tests/integration"
+	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -46,19 +46,19 @@ func TestUpstreamService_HTTP(t *testing.T) {
 		return integration.IsTCPPortAvailable(echoServerPort)
 	}, integration.ServiceStartupTimeout, integration.RetryInterval, "HTTP Echo server did not become ready in time")
 
-	// --- 2. Start MCPX Server ---
-	mcpxTestServerInfo := integration.StartMCPXServer(t, "E2EHttpEchoServerTest")
+	// --- 2. Start MCPXY Server ---
+	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EHttpEchoServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 3. Register HTTP Echo Server with MCPX ---
+	// --- 3. Register HTTP Echo Server with MCPXY ---
 	const echoServiceID = "e2e_http_echo"
 	echoServiceEndpoint := fmt.Sprintf("http://localhost:%d", echoServerPort)
-	t.Logf("INFO: Registering '%s' with MCPX at endpoint %s...", echoServiceID, echoServiceEndpoint)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", echoServiceID, echoServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 	integration.RegisterHTTPService(t, registrationGRPCClient, echoServiceID, echoServiceEndpoint, "echo", "/echo", http.MethodPost, nil)
 	t.Logf("INFO: '%s' registered.", echoServiceID)
 
-	// --- 4. Call Tool via MCPX ---
+	// --- 4. Call Tool via MCPXY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -67,7 +67,7 @@ func TestUpstreamService_HTTP(t *testing.T) {
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
 	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPX: %s", tool.Name)
+		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
 	toolName := fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCPX
+ * Copyright 2025 Author(s) of MCPXY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mcpxy/mcpx/pkg/app"
-	"github.com/mcpxy/mcpx/pkg/appconsts"
-	"github.com/mcpxy/mcpx/pkg/logging"
+	"github.com/mcpxy/core/pkg/app"
+	"github.com/mcpxy/core/pkg/appconsts"
+	"github.com/mcpxy/core/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,7 +37,7 @@ var appRun = app.Run
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
-		Short: "MCP-X is a versatile proxy for backend services.",
+		Short: "MCP-XY is a versatile proxy for backend services.",
 		Run: func(cmd *cobra.Command, args []string) {
 			jsonrpcPort := viper.GetString("jsonrpc-port")
 			registrationPort := viper.GetString("grpc-port")
@@ -49,7 +49,7 @@ func newRootCmd() *cobra.Command {
 				logLevel = slog.LevelDebug
 			}
 			logging.Init(logLevel, os.Stdout)
-			log := logging.GetLogger().With("service", "mcp-x")
+			log := logging.GetLogger().With("service", "mcpxy")
 
 			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-paths", configPaths)
 			if len(configPaths) > 0 {
@@ -70,7 +70,7 @@ func newRootCmd() *cobra.Command {
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
-		Short: "Print the version number of mcpx",
+		Short: "Print the version number of mcpxy",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("%s version %s\n", appconsts.Name, appconsts.Version)
 		},
@@ -79,14 +79,14 @@ func newRootCmd() *cobra.Command {
 
 	cobra.OnInitialize(func() {
 		viper.AutomaticEnv()
-		viper.SetEnvPrefix("mcpx")
+		viper.SetEnvPrefix("MCPXY")
 	})
 
-	rootCmd.Flags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPX_JSONRPC_PORT")
-	rootCmd.Flags().String("grpc-port", "50051", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPX_GRPC_PORT")
-	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPX_STDIO")
-	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPX_CONFIG_PATHS")
-	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPX_DEBUG")
+	rootCmd.Flags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPXY_JSONRPC_PORT")
+	rootCmd.Flags().String("grpc-port", "50051", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPXY_GRPC_PORT")
+	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPXY_STDIO")
+	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
+	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPXY_DEBUG")
 
 	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
@@ -95,7 +95,7 @@ func newRootCmd() *cobra.Command {
 	return rootCmd
 }
 
-// main is the entry point for the MCP-X server application. It initializes and
+// main is the entry point for the MCP-XY server application. It initializes and
 // executes the root command, which handles command-line argument parsing,
 // configuration, and the startup of the server.
 func main() {

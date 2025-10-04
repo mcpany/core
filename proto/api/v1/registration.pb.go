@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	v1 "github.com/mcpxy/mcpx/proto/config/v1"
+	v1 "github.com/mcpxy/core/proto/config/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -1057,7 +1057,7 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\x11UnregisterService\x12%.mcpx.api.v1.UnregisterServiceRequest\x1a&.mcpx.api.v1.UnregisterServiceResponse\x12e\n" +
 	"\x12InitiateOAuth2Flow\x12&.mcpx.api.v1.InitiateOAuth2FlowRequest\x1a'.mcpx.api.v1.InitiateOAuth2FlowResponse\x12V\n" +
 	"\rRegisterTools\x12!.mcpx.api.v1.RegisterToolsRequest\x1a\".mcpx.api.v1.RegisterToolsResponse\x12_\n" +
-	"\x10GetServiceStatus\x12$.mcpx.api.v1.GetServiceStatusRequest\x1a%.mcpx.api.v1.GetServiceStatusResponseB$Z\"github.com/mcpxy/mcpx/proto/api/v1b\beditionsp\xe8\a"
+	"\x10GetServiceStatus\x12$.mcpx.api.v1.GetServiceStatusRequest\x1a%.mcpx.api.v1.GetServiceStatusResponseB$Z\"github.com/mcpxy/core/proto/api/v1b\beditionsp\xe8\a"
 
 var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_proto_api_v1_registration_proto_goTypes = []any{
