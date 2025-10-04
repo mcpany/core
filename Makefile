@@ -34,6 +34,8 @@ PROTOC_BIN := $(PROTOC_INSTALL_DIR)/protoc
 GOLANGCI_LINT_BIN := $(PROTOC_INSTALL_DIR)/golangci-lint
 GOFUMPT_BIN := $(PROTOC_INSTALL_DIR)/gofumpt
 GOIMPORTS_BIN := $(PROTOC_INSTALL_DIR)/goimports
+PRE_COMMIT_VERSION := 4.3.0
+PRE_COMMIT_BIN := $(PROTOC_INSTALL_DIR)/pre-commit
 # ==============================================================================
 # Release Targets
 # ==============================================================================
@@ -109,7 +111,7 @@ prepare:
 			if [ -f "$(PROTOC_BIN)" ]; then \
 				export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
 				echo "protoc installed successfully to $(PROTOC_INSTALL_DIR). This directory has been added to PATH for this session."; \
-				echo "You may want to add it to your system PATH permanently: export PATH=$(PROTOC_INSTALL_DIR):\$$PATH"; \
+				echo "You may want to add it to your system PATH permanently: export PATH=$(PROTOC_INSTALL_DIR):$$PATH"; \
 				$(PROTOC_BIN) --version; \
 			else \
 				echo "Error: protoc binary not found in $(PROTOC_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
@@ -160,7 +162,31 @@ prepare:
 		echo "Installing goimports..."; \
 		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install golang.org/x/tools/cmd/goimports@latest; \
 	fi
+	@# Install pre-commit hooks
+	@echo "Checking for Python to install pre-commit hooks..."
+	@if command -v python >/dev/null 2>&1; then \
+		PYTHON_CMD=python; \
+	elif command -v python3 >/dev/null 2>&1; then \
+		PYTHON_CMD=python3; \
+	else \
+		PYTHON_CMD=""; \
+	fi; \
+	if [ -n "$$PYTHON_CMD" ]; then \
+		echo "Python found, installing pre-commit hooks..."; \
+		export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
+		if [ -f "$(PRE_COMMIT_BIN)" ]; then \
+			echo "pre-commit is already installed."; \
+		else \
+			echo "Installing pre-commit..."; \
+			curl -sSL "https://github.com/pre-commit/pre-commit/releases/download/v$(PRE_COMMIT_VERSION)/pre-commit-$(PRE_COMMIT_VERSION).pyz" -o "$(PRE_COMMIT_BIN)"; \
+			chmod +x "$(PRE_COMMIT_BIN)"; \
+		fi; \
+		"$(PRE_COMMIT_BIN)" install; \
+	else \
+		echo "Python not found, skipping pre-commit hook installation."; \
+	fi
 	@echo "Preparation complete."
+
 
 gen-local: prepare
 	@echo "Removing old protobuf files..."
@@ -177,7 +203,7 @@ gen-local: prepare
 			--go_opt=module=github.com/mcpxy/core,default_api_level=API_OPAQUE \
 			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpxy/core \
-			{} +
+			{} + \
 	@echo "Protobuf generation complete."
 
 build-local: gen-local
@@ -245,9 +271,9 @@ E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_se
 build-e2e-mocks: $(E2E_BIN_DIR) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
 
 # Rule to build a single E2E mock service
-# $< is the first prerequisite (the main.go file)
-# $* is the stem of the pattern match (the service name)
-# $@ is the target name (the output binary path)
+# < is the first prerequisite (the main.go file)
+# * is the stem of the pattern match (the service name)
+# @ is the target name (the output binary path)
 $(E2E_BIN_DIR)/%: $(E2E_MOCK_DIR)/%/main.go
 	@echo "Building E2E mock service: $* from $< into $(E2E_BIN_DIR)"
 	@$(GO_CMD) build -buildvcs=false -o $@ $<

@@ -5,27 +5,18 @@ repos:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/golangci/golangci-lint-pre-commit
-    rev: v3.2.0 # Consider updating to a newer version if available
+-   repo: https://github.com/golangci/golangci-lint
+    rev: v1.55.2
     hooks:
-    # We will use `make lint` which internally calls `golangci-lint run`
-    # This ensures that the Makefile is the source of truth for linting commands
-    # -   id: golangci-lint
-    #     args: [--fix] # Example if you wanted to run it directly
+    -   id: golangci-lint
+        args: [--fix]
 -   repo: local
     hooks:
-    -   id: go-lint
-        name: Go Lint
-        entry: make lint
-        language: system
-        types: [go]
-        pass_filenames: false
-        verbose: true # Show output from make lint
     -   id: proto-lint
         name: Protobuf Lint
         entry: make lint-proto
         language: system
-        types: [protobuf]
+        files: \.proto$
         pass_filenames: false
         verbose: true # Show output from make lint-proto
     -   id: go-unit-tests
