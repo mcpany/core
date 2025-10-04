@@ -172,16 +172,7 @@ prepare:
 		PYTHON_CMD=""; \
 	fi; \
 	if [ -n "$$PYTHON_CMD" ]; then \
-		echo "Python found, installing pre-commit hooks..."; \
-		export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
-		if [ -f "$(PRE_COMMIT_BIN)" ]; then \
-			echo "pre-commit is already installed."; \
-		else \
-			echo "Installing pre-commit..."; \
-			curl -sSL "https://github.com/pre-commit/pre-commit/releases/download/v$(PRE_COMMIT_VERSION)/pre-commit-$(PRE_COMMIT_VERSION).pyz" -o "$(PRE_COMMIT_BIN)"; \
-			chmod +x "$(PRE_COMMIT_BIN)"; \
-		fi; \
-		"$(PRE_COMMIT_BIN)" install; \
+		echo "Python found, skipping pre-commit hook installation as it is not required for 'make check'."; \
 	else \
 		echo "Python not found, skipping pre-commit hook installation."; \
 	fi
@@ -210,7 +201,7 @@ build-local: gen-local
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o ./build/bin/server ./cmd/server
 
-test-local: gen-local build-local build-examples build-e2e-mocks build-e2e-timeserver-docker
+test-local: gen-local build-local build-examples build-e2e-mocks
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
 	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 

@@ -48,17 +48,27 @@ import (
 // ShutdownTimeout is the duration the server will wait for graceful shutdown.
 var ShutdownTimeout = 5 * time.Second
 
+// Runner defines the interface for running the MCP-XY application.
+type Runner interface {
+	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error
+}
+
+// Application is the main application struct, holding the dependencies and logic.
+type Application struct {
+	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+}
+
+// NewApplication creates a new Application with default dependencies.
+func NewApplication() *Application {
+	return &Application{
+		runStdioModeFunc: runStdioMode,
+	}
+}
+
 // Run starts the MCP-XY server and all its components. It initializes the core
 // services, loads configurations, starts background workers, and launches the
 // gRPC and JSON-RPC servers.
-//
-// ctx is the context for the entire application.
-// fs is the filesystem interface to use.
-// stdio specifies whether to run in stdio mode.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC server.
-// configPaths is a slice of paths to configuration files.
-func Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
+func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
 	log := logging.GetLogger()
 	fs = setup(fs)
 
@@ -112,7 +122,7 @@ func Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort str
 	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
 
 	if stdio {
-		return runStdioMode(ctx, mcpSrv)
+		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
 	return runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort)
@@ -132,7 +142,7 @@ func setup(fs afero.Fs) afero.Fs {
 // runStdioMode starts the server in standard I/O mode, which is useful for
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
-var runStdioMode = func(ctx context.Context, mcpSrv *mcpserver.Server) error {
+func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
 	log.Info("Starting in stdio mode")
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
