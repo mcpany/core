@@ -27,26 +27,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRootCmd(t *testing.T) {
-	var (
-		called              bool
-		capturedStdio       bool
-		capturedJsonrpcPort string
-		capturedGrpcPort    string
-		capturedConfigPaths []string
-	)
+// mockRunner is a mock implementation of the app.Runner interface for testing.
+type mockRunner struct {
+	called              bool
+	capturedStdio       bool
+	capturedJsonrpcPort string
+	capturedGrpcPort    string
+	capturedConfigPaths []string
+}
 
-	// Mock app.Run
-	originalAppRun := appRun
-	appRun = func(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
-		called = true
-		capturedStdio = stdio
-		capturedJsonrpcPort = jsonrpcPort
-		capturedGrpcPort = grpcPort
-		capturedConfigPaths = configPaths
-		return nil
-	}
-	defer func() { appRun = originalAppRun }()
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
+	m.called = true
+	m.capturedStdio = stdio
+	m.capturedJsonrpcPort = jsonrpcPort
+	m.capturedGrpcPort = grpcPort
+	m.capturedConfigPaths = configPaths
+	return nil
+}
+
+func TestRootCmd(t *testing.T) {
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
@@ -57,11 +60,11 @@ func TestRootCmd(t *testing.T) {
 	})
 	rootCmd.Execute()
 
-	assert.True(t, called, "app.Run should have been called")
-	assert.True(t, capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "8081", capturedJsonrpcPort, "jsonrpc-port should be captured")
-	assert.Equal(t, "8082", capturedGrpcPort, "grpc-port should be captured")
-	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, capturedConfigPaths, "config-paths should be captured")
+	assert.True(t, mock.called, "app.Run should have been called")
+	assert.True(t, mock.capturedStdio, "stdio flag should be true")
+	assert.Equal(t, "8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
+	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
+	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-paths should be captured")
 }
 
 func TestVersionCmd(t *testing.T) {
