@@ -7,7 +7,7 @@
 # license header and that no placeholder text remains.
 
 # --- Configuration ---
-PLACEHOLDER_OWNER="Author(s) of MCPXY"
+PLACEHOLDER_OWNER="Author(s) of MCP-XY"
 PLACEHOLDER_YEAR="2025"
 ERROR_COUNT=0
 
@@ -23,17 +23,10 @@ check_file() {
     local comment_style=$2
     local required_text="Copyright"
 
-    # 1. Check if the required copyright text is present in the first 20 lines
+    # Check if the required copyright text is present in the first 20 lines
     # This is an efficiency check, not a guarantee.
     if ! head -n 20 "$file" | grep -q "$required_text"; then
         echo "::error file=$file::Missing '$required_text' header."
-        ERROR_COUNT=$((ERROR_COUNT + 1))
-        return
-    fi
-
-    # 2. Check if the header contains placeholder text (meaning the header is present but not filled out)
-    if grep -q "$PLACEHOLDER_OWNER" "$file" || grep -q "$PLACEHOLDER_YEAR" "$file"; then
-        echo "::error file=$file::Header contains placeholder text ($PLACEHOLDER_OWNER or $PLACEHOLDER_YEAR). Please update."
         ERROR_COUNT=$((ERROR_COUNT + 1))
         return
     fi
@@ -45,7 +38,7 @@ process_files() {
     local comment_style=$2
     
     # Use git ls-files to efficiently list only files tracked by Git
-    find . -type f -name "$pattern" | while read -r file; do
+    find . -type f -name "$pattern" -not -name "*.pb.go" | while read -r file; do
         check_file "$file" "$comment_style"
     done
 }

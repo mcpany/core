@@ -31,7 +31,7 @@ GO_HEADER=$(
 # EXCLUSION ADDED: Use -not -name "*.pb.go" to skip protocol buffer generated files.
 find . -type f -name "$FILE_PATTERN" -not -name "*.pb.go" | while read -r file; do
     # Check if the file already contains the copyright line to prevent duplication
-    if grep -q "Copyright 2025 Author(s) of MCPXY" "$file"; then
+    if grep -q "Copyright 2025 Author(s) of MCP-XY" "$file"; then
         echo "Skipping $file: Header already present."
     else
         echo "Updating $file"
