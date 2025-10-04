@@ -347,7 +347,6 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
-	defer cs.Close()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
@@ -487,7 +486,6 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
-	defer cs.Close()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
