@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        
+
       - name: Set Script Permissions
         run: chmod +x .github/scripts/check_copyrights.sh
-        
+
       - name: Run Header Validation Script
         # Execute the script and fail the job if it returns a non-zero exit code
         run: ./.github/scripts/check_copyrights.sh
@@ -30,8 +30,13 @@ jobs:
       with:
         go-version: '1.24'
 
-    - name: Check everything
-      run: make check
+    - name: Check linting
+      run: |
+        make lint
+        git diff --exit-code
+
+    - name: test everything
+      run: make test
 
   release:
     runs-on: ubuntu-latest

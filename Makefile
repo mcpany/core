@@ -47,7 +47,7 @@ PLATFORMS ?= linux/amd64 linux/386 linux/arm64 linux/arm
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find proto -name "*.proto")
 
-.PHONY: all gen build test e2e clean run build-docker run-docker gen-local build-local test-local e2e-local check-local release release-local release-docker
+.PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
 
 all: build
 
@@ -55,25 +55,12 @@ all: build
 # Main Targets (Default to local, use USE_DOCKER=1 to switch to Docker)
 # ==============================================================================
 
-gen: gen-local
-
-build:
-ifeq ($(USE_DOCKER), 1)
-	@$(MAKE) build-docker
-else
-	@$(MAKE) build-local
-endif
-
-test: test-local
-
 release:
 ifeq ($(USE_DOCKER), 1)
 	@$(MAKE) release-docker
 else
 	@$(MAKE) release-local
 endif
-
-check: clean prepare gen-local build-local lint-local test-local
 
 # ==============================================================================
 # Local Commands
@@ -146,22 +133,6 @@ prepare:
 		exit 1; \
 	fi
 	@echo "Go protobuf plugins installation check complete."
-	@# Install gofumpt
-	@echo "Checking for gofumpt..."
-	@if [ -f "$(GOFUMPT_BIN)" ]; then \
-		echo "gofumpt is already installed."; \
-	else \
-		echo "Installing gofumpt..."; \
-		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install mvdan.cc/gofumpt@latest; \
-	fi
-	@# Install goimports
-	@echo "Checking for goimports..."
-	@if [ -f "$(GOIMPORTS_BIN)" ]; then \
-		echo "goimports is already installed."; \
-	else \
-		echo "Installing goimports..."; \
-		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install golang.org/x/tools/cmd/goimports@latest; \
-	fi
 	@# Install pre-commit hooks
 	@echo "Checking for Python to install pre-commit hooks..."
 	@if command -v python >/dev/null 2>&1; then \
@@ -179,7 +150,7 @@ prepare:
 	@echo "Preparation complete."
 
 
-gen-local: prepare
+gen: prepare
 	@echo "Removing old protobuf files..."
 	@-find . -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
@@ -197,15 +168,15 @@ gen-local: prepare
 			{} +
 	@echo "Protobuf generation complete."
 
-build-local: gen-local
+build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o ./build/bin/server ./cmd/server
 
-test-local: gen-local build-local build-examples build-e2e-mocks
+test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
 	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 
-test-fast: gen-local build-local build-examples build-e2e-mocks build-e2e-timeserver-docker
+test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
 	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s ./...
 
@@ -227,16 +198,10 @@ build-calculator-stdio:
 # Other Commands
 # ==============================================================================
 
-lint: lint-local
-
-lint-local: gen-local
+lint: gen
 	@echo "Cleaning golangci-lint cache..."
 	@$(GOLANGCI_LINT_BIN) cache clean
-	@echo "Formatting Go files with gofumpt..."
-	@$(GOFUMPT_BIN) -w .
-	@echo "Formatting Go files with goimports..."
-	@$(GOIMPORTS_BIN) -w .
-	@echo "Running golangci-lint..."
+	@echo "Running golangci-lint with fix..."
 	@$(GOLANGCI_LINT_BIN) run --fix ./...
 
 clean:
