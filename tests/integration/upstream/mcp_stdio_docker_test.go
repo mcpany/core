@@ -45,9 +45,9 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 
 	// --- 2. Register 'cowsay' server with MCPXY ---
 	const cowsayServiceID = "e2e-cowsay-server"
-	command := "python"
+	command := "python3"
 	args := []string{"-u", "main.py", "--mcp-stdio"}
-	setupCommands := []string{"pip install 'fastmcp>=2.0.0'", "pip install cowsay"}
+	setupCommands := []string{"pip install cowsay"}
 
 	t.Logf("INFO: Registering '%s' with MCPXY...", cowsayServiceID)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient

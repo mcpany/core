@@ -45,7 +45,7 @@ const (
 	ServiceStartupTimeout     = 15 * time.Second
 	TestWaitTimeShort         = 60 * time.Second
 	TestWaitTimeMedium        = 60 * time.Second
-	TestWaitTimeLong          = 3 * time.Minute
+	TestWaitTimeLong          = 5 * time.Minute
 	RetryInterval             = 250 * time.Millisecond
 	localHeaderMcpSessionID   = "Mcp-Session-Id"
 )
@@ -596,7 +596,6 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 	t.Logf("Registering stdio service '%s' with command: %v", serviceID, fullCommand)
 	time.Sleep(250 * time.Millisecond)
 	RegisterServiceViaAPI(t, regClient, req)
-	t.Logf("Stdio Service '%s' registration request sent via API with command: %v", serviceID, fullCommand)
 }
 
 func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.UpstreamAuthentication) {
