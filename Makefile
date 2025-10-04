@@ -4,8 +4,7 @@
 GO = go
 GO_ENV := GOCACHE=/tmp/.gocache GOMODCACHE=/tmp/.modcache
 GO_CMD := $(GO_ENV) $(GO)
-PROTO_IMAGE_TAG := mcpxy/core-proto-builder
-SERVER_IMAGE_TAG ?= mcpxy/core:latest
+SERVER_IMAGE_TAG ?= mcpxy/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
