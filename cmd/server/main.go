@@ -32,7 +32,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var appRun = app.Run
+var appRunner app.Runner = app.NewApplication()
 
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
@@ -61,7 +61,7 @@ func newRootCmd() *cobra.Command {
 
 			osFs := afero.NewOsFs()
 
-			if err := appRun(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths); err != nil {
 				log.Error("Application failed", "error", err)
 			}
 			log.Info("Shutdown complete.")
