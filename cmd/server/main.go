@@ -38,7 +38,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
 		Short: "MCP-XY is a versatile proxy for backend services.",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			jsonrpcPort := viper.GetString("jsonrpc-port")
 			registrationPort := viper.GetString("grpc-port")
 			stdio := viper.GetBool("stdio")
@@ -63,8 +63,10 @@ func newRootCmd() *cobra.Command {
 
 			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths); err != nil {
 				log.Error("Application failed", "error", err)
+				return err
 			}
 			log.Info("Shutdown complete.")
+			return nil
 		},
 	}
 
@@ -100,6 +102,8 @@ func newRootCmd() *cobra.Command {
 // configuration, and the startup of the server.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
-		fmt.Println(err)
+		// The error is already logged by the RunE function.
+		// We just need to ensure the process exits with a non-zero status code.
+		os.Exit(1)
 	}
 }

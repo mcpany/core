@@ -18,8 +18,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/appconsts"
@@ -34,6 +36,7 @@ type mockRunner struct {
 	capturedJsonrpcPort string
 	capturedGrpcPort    string
 	capturedConfigPaths []string
+	returnErr           error
 }
 
 func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
@@ -42,7 +45,7 @@ func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPo
 	m.capturedJsonrpcPort = jsonrpcPort
 	m.capturedGrpcPort = grpcPort
 	m.capturedConfigPaths = configPaths
-	return nil
+	return m.returnErr
 }
 
 func TestRootCmd(t *testing.T) {
@@ -102,4 +105,32 @@ func TestMainExecution(t *testing.T) {
 		err := cmd.Execute()
 		assert.NoError(t, err)
 	})
+}
+
+func TestMainExitCodeOnFailure(t *testing.T) {
+	// This sub-process pattern is a standard way to test `main` functions in Go.
+	// The test is re-run with an environment variable set to trigger the `main` function.
+	if os.Getenv("GO_TEST_SUBPROCESS") == "1" {
+		appRunner = &mockRunner{returnErr: fmt.Errorf("simulated run error")}
+		main()
+		return
+	}
+
+	// The main test process executes the test binary as a subprocess.
+	cmd := exec.Command(os.Args[0], "-test.run=^TestMainExitCodeOnFailure$")
+	cmd.Env = append(os.Environ(), "GO_TEST_SUBPROCESS=1")
+
+	// We expect the buggy version to exit with code 0, so `cmd.Run()` will return nil.
+	// After the fix, it should exit with a non-zero code, and `cmd.Run()` will return an error.
+	err := cmd.Run()
+
+	// This assertion should fail before the fix and pass after.
+	assert.Error(t, err, "Expected process to exit with a non-zero status code, but it exited with 0.")
+
+	// For more specific checking (optional but good practice):
+	if err != nil {
+		exitErr, ok := err.(*exec.ExitError)
+		assert.True(t, ok, "Expected an ExitError, but got a different type of error")
+		assert.NotEqual(t, 0, exitErr.ExitCode(), "Process should have exited with a non-zero status code")
+	}
 }
