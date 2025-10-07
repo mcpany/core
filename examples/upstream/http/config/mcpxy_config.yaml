@@ -1,0 +1,4 @@
+upstream_services:
+- name: time-service
+  http_service:
+    address: "http://localhost:8080"

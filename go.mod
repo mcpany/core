@@ -2,6 +2,8 @@ module github.com/mcpxy/core
 
 go 1.24.3
 
+replace github.com/mcpxy/core => ./
+
 require (
 	github.com/antchfx/xmlquery v1.4.4
 	github.com/antchfx/xpath v1.3.5
