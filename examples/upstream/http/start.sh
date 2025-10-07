@@ -1,2 +1,2 @@
 #!/bin/bash
-../../build/bin/mcpxy --config-path ./config
+../../../build/bin/server --config-paths ./config/

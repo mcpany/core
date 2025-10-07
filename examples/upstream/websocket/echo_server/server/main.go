@@ -33,6 +33,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/echo", echo)
-	log.Println("Starting echo server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Starting echo server on :8082")
+	log.Fatal(http.ListenAndServe(":8082", nil))
 }

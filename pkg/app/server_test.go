@@ -72,21 +72,10 @@ upstream_services:
 		errChan <- app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"})
 	}()
 
-	select {
-	case err := <-errChan:
-		// We expect a context cancellation error, which is normal for a graceful shutdown in this test setup.
-		// The key is that the function returned, which it wouldn't if it were stuck.
-		assert.Error(t, err)
-	case <-ctx.Done():
-		// This is the expected path: the context times out, causing the server to shut down.
-		// We'll briefly wait to see if an error comes through on the channel.
-		select {
-		case err := <-errChan:
-			assert.Error(t, err)
-		default:
-			// Success - the server ran until the context was canceled.
-		}
-	}
+	// We expect the server to run until the context is canceled, at which point it should
+	// shut down gracefully and return nil.
+	err = <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
 func TestRun_ConfigLoadError(t *testing.T) {
