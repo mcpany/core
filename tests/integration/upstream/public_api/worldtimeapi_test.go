@@ -20,7 +20,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
@@ -32,7 +34,6 @@ import (
 )
 
 func TestUpstreamService_WorldTimeAPI(t *testing.T) {
-	t.Skip("Skipping test due to network issues in the test environment.")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -93,7 +94,31 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 
 	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
 	args := `{"area": "Europe", "location": "London"}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(args)})
+
+	const maxRetries = 3
+	var res *mcp.CallToolResult
+
+	for i := 0; i < maxRetries; i++ {
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(args)})
+		if err == nil {
+			break // Success
+		}
+
+		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+			t.Logf("Attempt %d/%d: Call to worldtimeapi.org failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			time.Sleep(2 * time.Second) // Wait before retrying
+			continue
+		}
+
+		// For any other error, fail the test immediately.
+		require.NoError(t, err, "unrecoverable error calling worldtimeapi tool")
+	}
+
+	if err != nil {
+		t.Skipf("Skipping test: all %d retries to worldtimeapi.org failed with transient errors. Last error: %v", maxRetries, err)
+	}
+
 	require.NoError(t, err, "Error calling worldtimeapi tool")
 	require.NotNil(t, res, "Nil response from worldtimeapi tool")
 

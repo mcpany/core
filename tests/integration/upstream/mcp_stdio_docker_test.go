@@ -30,7 +30,6 @@ import (
 )
 
 func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
-	t.Skip("Skip due to flakiness, needs investigation")
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping test")
 	}
