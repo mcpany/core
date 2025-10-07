@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package public_api
+package examples
 
 import (
 	"context"
@@ -36,7 +36,7 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for IP Info Server...")
-	t.Parallel()
+
 
 	// --- 1. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EIPInfoServerTest")

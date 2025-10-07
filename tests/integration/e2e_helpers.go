@@ -66,7 +66,7 @@ var (
 	findRootOnce sync.Once
 )
 
-func getProjectRoot() (string, error) {
+func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
 		// Find the project root by looking for the go.mod file
@@ -333,7 +333,7 @@ type MCPXYTestServerInfo struct {
 func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
 	t.Helper()
 
-	root, err := getProjectRoot()
+	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
 	mcpxyBinary := filepath.Join(root, "build/bin/server")
 

@@ -1,0 +1,4 @@
+upstream_services:
+- name: echo-service
+  websocket_service:
+    address: "ws://localhost:8080/echo"

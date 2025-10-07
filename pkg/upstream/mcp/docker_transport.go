@@ -31,8 +31,8 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpxy/core/pkg/logging"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // DockerTransport implements the mcp.Transport interface to connect to a service

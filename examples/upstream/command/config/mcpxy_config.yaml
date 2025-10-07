@@ -1,0 +1,5 @@
+upstream_services:
+- name: hello-service
+  command_service:
+    command: ./server/hello.sh
+    dir: /home/kevin/core/examples/upstream/command

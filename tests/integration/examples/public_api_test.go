@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package public_api
+package examples
 
 import (
 	"context"
@@ -29,7 +29,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_PublicHttpPost(t *testing.T) {
+func TestPublicHttpPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public HTTP POST API...")
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicHttpPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
@@ -90,7 +90,7 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for Public HTTP POST API Completed Successfully!")
 }
 
-func TestUpstreamService_PublicWebsocket(t *testing.T) {
+func TestPublicWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public Websocket API...")
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
@@ -125,7 +125,7 @@ func TestUpstreamService_PublicWebsocket(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for Public Websocket API Completed Successfully!")
 }
 
-func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
+func TestJsonPlaceholderPost(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for JSONPlaceholder POST API...")
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EJsonPlaceholderPostTest")
 	defer mcpxTestServerInfo.CleanupFunc()
@@ -171,7 +171,7 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 	t.Log("INFO: E2E Test Scenario for JSONPlaceholder POST API Completed Successfully!")
 }
 
-func TestUpstreamService_LanyardWebsocket(t *testing.T) {
+func TestLanyardWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Lanyard Websocket API...")
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2ELanyardWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
