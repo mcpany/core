@@ -7,12 +7,11 @@
 package v1
 
 import (
-	reflect "reflect"
-	unsafe "unsafe"
-
 	v1 "github.com/mcpxy/core/proto/config/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	unsafe "unsafe"
 )
 
 const (
