@@ -3,7 +3,9 @@ package examples
 import (
 	"context"
 	"encoding/json"
+	"bytes"
 	"fmt"
+	"net"
 	"os/exec"
 	"testing"
 	"time"
@@ -34,9 +36,28 @@ func TestWebsocketExample(t *testing.T) {
 	// 3. Run the MCPXY Server
 	mcpxyServerCmd := exec.Command("./start.sh")
 	mcpxyServerCmd.Dir = root + "/examples/upstream/websocket"
+	var stdout, stderr bytes.Buffer
+	mcpxyServerCmd.Stdout = &stdout
+	mcpxyServerCmd.Stderr = &stderr
 	err = mcpxyServerCmd.Start()
 	require.NoError(t, err, "Failed to start MCPXY server")
-	defer mcpxyServerCmd.Process.Kill()
+	defer func() {
+		if t.Failed() {
+			t.Logf("MCPXY Server stdout:\n%s", stdout.String())
+			t.Logf("MCPXY Server stderr:\n%s", stderr.String())
+		}
+		mcpxyServerCmd.Process.Kill()
+	}()
+
+	// Wait for the MCPXY server to be ready
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", "localhost:8080", 1*time.Second)
+		if err != nil {
+			return false
+		}
+		defer conn.Close()
+		return true
+	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port 8080")
 
 	// 4. Interact with the Tool using MCP SDK
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
@@ -44,6 +65,10 @@ func TestWebsocketExample(t *testing.T) {
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8080"}, nil)
+	if err != nil {
+		t.Logf("MCPXY Server stdout on connect error:\n%s", stdout.String())
+		t.Logf("MCPXY Server stderr on connect error:\n%s", stderr.String())
+	}
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
