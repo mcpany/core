@@ -217,9 +217,20 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	var transport mcp.Transport
 	switch {
 	case c.stdioConfig != nil:
-		cmd := buildCommandFromStdioConfig(c.stdioConfig)
-		transport = &mcp.CommandTransport{
-			Command: cmd,
+		image := c.stdioConfig.GetContainerImage()
+		if image != "" {
+			if util.IsDockerSocketAccessible() {
+				transport = &DockerTransport{
+					StdioConfig: c.stdioConfig,
+				}
+			} else {
+				return fmt.Errorf("docker socket not accessible, but container_image is specified")
+			}
+		} else {
+			cmd := buildCommandFromStdioConfig(c.stdioConfig)
+			transport = &mcp.CommandTransport{
+				Command: cmd,
+			}
 		}
 	case c.httpAddress != "":
 		transport = &mcp.StreamableClientTransport{
@@ -280,27 +291,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 
 	script := strings.Join(scriptCommands, " && ")
 
-	// Determine the container image.
-	image := stdio.GetContainerImage()
-	if image == "" {
-		// Try to guess based on the main command if no image is provided.
-		image = GetContainerImageForCommand(command)
-	}
-
-	// If an image is determined, try to run it in a container.
-	if image != "" {
-		if util.IsDockerSocketAccessible() {
-			dockerArgs := []string{"run", "--rm", "-i"}
-			if wd := stdio.GetWorkingDirectory(); wd != "" {
-				dockerArgs = append(dockerArgs, "-w", wd)
-			}
-			dockerArgs = append(dockerArgs, image, "/bin/sh", "-c", script)
-			return exec.Command("docker", dockerArgs...)
-		}
-		logging.GetLogger().Warn("Docker socket not accessible, falling back to running command on host. This may fail if the command is not in the system's PATH.", "command", command)
-	}
-
-	// Otherwise, run the script directly on the host.
+	// run the script directly on the host.
 	cmd := exec.Command("/bin/sh", "-c", script)
 	cmd.Dir = stdio.GetWorkingDirectory()
 	return cmd
@@ -320,9 +311,21 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		return nil, fmt.Errorf("stdio connection config is nil")
 	}
 
-	cmd := buildCommandFromStdioConfig(stdio)
-	transport := &mcp.CommandTransport{
-		Command: cmd,
+	var transport mcp.Transport
+	image := stdio.GetContainerImage()
+	if image != "" {
+		if util.IsDockerSocketAccessible() {
+			transport = &DockerTransport{
+				StdioConfig: stdio,
+			}
+		} else {
+			return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
+		}
+	} else {
+		cmd := buildCommandFromStdioConfig(stdio)
+		transport = &mcp.CommandTransport{
+			Command: cmd,
+		}
 	}
 	var mcpSdkClient *mcp.Client
 	if newClientForTesting != nil {

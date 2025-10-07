@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"sync"
 	"testing"
 
@@ -253,10 +252,6 @@ func TestMCPUpstream_Register(t *testing.T) {
 	})
 
 	t.Run("successful registration with stdio and setup commands", func(t *testing.T) {
-		originalIsDockerSocketAccessibleFunc := util.IsDockerSocketAccessibleFunc
-		util.IsDockerSocketAccessibleFunc = func() bool { return true }
-		defer func() { util.IsDockerSocketAccessibleFunc = originalIsDockerSocketAccessibleFunc }()
-
 		toolManager := tool.NewToolManager()
 		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
@@ -265,15 +260,11 @@ func TestMCPUpstream_Register(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		var capturedArgs []string
-		var capturedCmd string
+		var capturedTransport mcp.Transport
 		originalConnect := connectForTesting
 		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
-			cmdTransport, ok := transport.(*mcp.CommandTransport)
-			require.True(t, ok)
-			capturedCmd = cmdTransport.Command.Path
-			capturedArgs = cmdTransport.Command.Args
+			capturedTransport = transport
 
 			// Return a mock session that returns an empty list of tools to prevent further processing
 			return &mockClientSession{
@@ -304,10 +295,10 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		assert.True(t, strings.HasSuffix(capturedCmd, "docker"), "command path should end with docker")
-		expectedArgs := []string{"run", "--rm", "-i", "alpine:latest", "/bin/sh", "-c", "setup1 && setup2 && exec main_command"}
-		require.Greater(t, len(capturedArgs), 1, "capturedArgs should have command and arguments")
-		assert.Equal(t, expectedArgs, capturedArgs[1:])
+		cmdTransport, ok := capturedTransport.(*mcp.CommandTransport)
+		require.True(t, ok, "transport should be CommandTransport")
+		assert.Equal(t, "/bin/sh", cmdTransport.Command.Path)
+		assert.Equal(t, []string{"/bin/sh", "-c", "setup1 && setup2 && exec main_command"}, cmdTransport.Command.Args)
 	})
 
 	t.Run("successful registration with user-specified container image", func(t *testing.T) {
@@ -323,15 +314,11 @@ func TestMCPUpstream_Register(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		var capturedArgs []string
-		var capturedCmd string
+		var capturedTransport mcp.Transport
 		originalConnect := connectForTesting
 		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
-			cmdTransport, ok := transport.(*mcp.CommandTransport)
-			require.True(t, ok)
-			capturedCmd = cmdTransport.Command.Path
-			capturedArgs = cmdTransport.Command.Args
+			capturedTransport = transport
 
 			// Return a mock session that returns an empty list of tools to prevent further processing
 			return &mockClientSession{
@@ -362,10 +349,9 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		assert.True(t, strings.HasSuffix(capturedCmd, "docker"), "command path should end with docker")
-		expectedArgs := []string{"run", "--rm", "-i", "my-custom-image:latest", "/bin/sh", "-c", "exec my-command"}
-		require.Greater(t, len(capturedArgs), 1, "capturedArgs should have command and arguments")
-		assert.Equal(t, expectedArgs, capturedArgs[1:])
+		dockerTransport, ok := capturedTransport.(*DockerTransport)
+		require.True(t, ok, "transport should be DockerTransport")
+		assert.Equal(t, "my-custom-image:latest", dockerTransport.StdioConfig.GetContainerImage())
 	})
 
 	t.Run("successful registration with docker socket inaccessible", func(t *testing.T) {
