@@ -133,8 +133,8 @@ prepare:
 		exit 1; \
 	fi
 	@echo "Go protobuf plugins installation check complete."
-	@# Install pre-commit hooks
-	@echo "Checking for Python to install pre-commit hooks..."
+	@# Install Python dependencies and pre-commit hooks
+	@echo "Checking for Python to install dependencies and pre-commit hooks..."
 	@if command -v python >/dev/null 2>&1; then \
 		PYTHON_CMD=python; \
 	elif command -v python3 >/dev/null 2>&1; then \
@@ -143,9 +143,15 @@ prepare:
 		PYTHON_CMD=""; \
 	fi; \
 	if [ -n "$$PYTHON_CMD" ]; then \
-		echo "Python found, skipping pre-commit hook installation as it is not required for 'make check'."; \
+		echo "Python found. Installing/updating pre-commit and fastmcp..."; \
+		VENV_DIR=$(CURDIR)/build/venv; \
+		$$PYTHON_CMD -m venv $$VENV_DIR; \
+		$$VENV_DIR/bin/pip install --upgrade pip; \
+		$$VENV_DIR/bin/pip install "pre-commit==$(PRE_COMMIT_VERSION)"; \
+		$$VENV_DIR/bin/pip install "fastmcp>=2.0.0"; \
+		$$VENV_DIR/bin/pre-commit install || true; \
 	else \
-		echo "Python not found, skipping pre-commit hook installation."; \
+		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 	fi
 	@echo "Preparation complete."
 
