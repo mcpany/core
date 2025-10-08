@@ -1,6 +1,6 @@
-global_settings:
-  bind_address: "0.0.0.0:8080"
-upstream_services:
-- name: echo-service
-  websocket_service:
-    address: "ws://localhost:8082/echo"
+services:
+  - name: "echo-service"
+    websocket_service:
+      address: "ws://localhost:8081"
+      calls:
+        - operation_id: "echo"

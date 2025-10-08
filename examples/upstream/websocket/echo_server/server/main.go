@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -32,7 +34,11 @@ func echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := flag.String("port", "8082", "The port to listen on")
+	flag.Parse()
+
 	http.HandleFunc("/echo", echo)
-	log.Println("Starting echo server on :8082")
-	log.Fatal(http.ListenAndServe(":8082", nil))
+	addr := fmt.Sprintf(":%s", *port)
+	log.Printf("Starting echo server on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }

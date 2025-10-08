@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,9 @@ import (
 )
 
 func main() {
+	port := flag.String("port", "8081", "The port to listen on")
+	flag.Parse()
+
 	http.HandleFunc("/time", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		resp := make(map[string]string)
@@ -22,8 +26,9 @@ func main() {
 		w.Write(jsonResp)
 	})
 
-	fmt.Println("Starting time server on :8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	addr := ":" + *port
+	fmt.Printf("Starting time server on %s\n", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err)
 	}
 }

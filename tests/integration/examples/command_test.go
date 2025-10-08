@@ -1,12 +1,15 @@
 package examples
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"bytes"
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -28,13 +31,33 @@ func TestCommandExample(t *testing.T) {
 
 	// 2. Make the script executable
 	chmodCmd := exec.Command("chmod", "+x", "hello.sh")
-	chmodCmd.Dir = root + "/examples/upstream/command/server"
+	chmodCmd.Dir = filepath.Join(root, "examples", "upstream", "command", "server")
 	err = chmodCmd.Run()
 	require.NoError(t, err, "Failed to make hello.sh executable")
 
-	// 3. Run the MCPXY Server
-	mcpxyServerCmd := exec.Command("./start.sh")
-	mcpxyServerCmd.Dir = root + "/examples/upstream/command"
+	// 3. Get free ports
+	mcpxyHttpPort := getFreePort(t)
+	mcpxyGrpcPort := getFreePort(t)
+
+	// 4. Create a temporary MCPXY config
+	mcpxyConfig := `
+upstream_services:
+- name: hello-service
+  command_line_service:
+    command: ./server/hello.sh
+`
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "mcpxy_config.yaml")
+	err = os.WriteFile(configPath, []byte(mcpxyConfig), 0644)
+	require.NoError(t, err)
+
+	// 5. Run the MCPXY Server
+	mcpxyServerCmd := exec.Command(filepath.Join(root, "build", "bin", "server"),
+		"--config-paths", configPath,
+		"--grpc-port", strconv.Itoa(mcpxyGrpcPort),
+		"--jsonrpc-port", strconv.Itoa(mcpxyHttpPort),
+	)
+	mcpxyServerCmd.Dir = filepath.Join(root, "examples", "upstream", "command")
 	var stdout, stderr bytes.Buffer
 	mcpxyServerCmd.Stdout = &stdout
 	mcpxyServerCmd.Stderr = &stderr
@@ -49,21 +72,22 @@ func TestCommandExample(t *testing.T) {
 	}()
 
 	// Wait for the MCPXY server to be ready
+	mcpxyAddr := fmt.Sprintf("localhost:%d", mcpxyHttpPort)
 	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", "localhost:8080", 1*time.Second)
+		conn, err := net.DialTimeout("tcp", mcpxyAddr, 1*time.Second)
 		if err != nil {
 			return false
 		}
 		defer conn.Close()
 		return true
-	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port 8080")
+	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port %d", mcpxyHttpPort)
 
-	// 4. Interact with the Tool using MCP SDK
+	// 6. Interact with the Tool using MCP SDK
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8080"}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://" + mcpxyAddr}, nil)
 	if err != nil {
 		t.Logf("MCPXY Server stdout on connect error:\n%s", stdout.String())
 		t.Logf("MCPXY Server stderr on connect error:\n%s", stderr.String())

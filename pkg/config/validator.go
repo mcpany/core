@@ -40,7 +40,7 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 		serviceLog := log.With("serviceName", service.GetName())
 		isValidService := true
 
-		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil {
+		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
 			serviceLog.Warn("Service has no service_config. Skipping service.")
 			continue
 		}
@@ -62,6 +62,14 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 			if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 				serviceLog.Warn("Invalid TargetAddress for OpenAPI service. This default target will be ignored if spec contains servers.", "address", openapiService.GetAddress())
 			}
+		} else if websocketService := service.GetWebsocketService(); websocketService != nil {
+			if websocketService.GetAddress() == "" {
+				serviceLog.Warn("Websocket service has empty target_address. Skipping service.")
+				isValidService = false
+			} else if !validation.IsValidURL(websocketService.GetAddress()) {
+				serviceLog.Warn("Invalid Websocket target_address. Skipping service.", "address", websocketService.GetAddress())
+				isValidService = false
+			}
 		} else if mcpService := service.GetMcpService(); mcpService != nil {
 			switch mcpService.WhichConnectionType() {
 			case configv1.McpUpstreamService_HttpConnection_case:
@@ -81,6 +89,11 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 				}
 			default:
 				serviceLog.Warn("MCP service has no connection_type. Skipping service.")
+				isValidService = false
+			}
+		} else if cmdLineService := service.GetCommandLineService(); cmdLineService != nil {
+			if cmdLineService.GetCommand() == "" {
+				serviceLog.Warn("Command-line service has empty command. Skipping service.")
 				isValidService = false
 			}
 		} else {

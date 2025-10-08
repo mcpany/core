@@ -19,6 +19,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/prompt"
@@ -76,7 +77,28 @@ func (u *CommandUpstream) Register(
 
 func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, serviceKey string, commandLineService *configv1.CommandLineUpstreamService, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls())+1)
+
+	// DEPRECATED: command will be removed in a future version.
+	if commandLineService.GetCommand() != "" {
+		command := commandLineService.GetCommand()
+		toolName := filepath.Base(command)
+		newToolProto := pb.Tool_builder{
+			Name:                proto.String(toolName),
+			DisplayName:         proto.String(toolName),
+			Description:         proto.String(toolName),
+			ServiceId:           proto.String(serviceKey),
+			UnderlyingMethodFqn: proto.String(command),
+		}.Build()
+		newTool := tool.NewCommandTool(newToolProto, command)
+		if err := toolManager.AddTool(newTool); err != nil {
+			log.Error("Failed to add tool", "error", err)
+		} else {
+			discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
+				Name: proto.String(toolName),
+			}.Build())
+		}
+	}
 
 	for _, toolDef := range commandLineService.GetCalls() {
 		command := toolDef.GetMethod()
