@@ -142,6 +142,10 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 	return mp
 }
 
+func (mp *ManagedProcess) Cmd() *exec.Cmd {
+	return mp.cmd
+}
+
 func (mp *ManagedProcess) Start() error {
 	mp.t.Logf("[%s] Starting process: %s %v", mp.label, mp.cmd.Path, mp.cmd.Args)
 	if err := mp.cmd.Start(); err != nil {
@@ -241,6 +245,35 @@ func IsTCPPortAvailable(port int) bool {
 	// If the connection succeeds, it means something is listening on the port, so it's not available.
 	conn.Close()
 	return false
+}
+
+// WaitForTCPPort waits for a TCP port to become open and accepting connections.
+func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), 100*time.Millisecond)
+		if err != nil {
+			return false // Port is not open yet
+		}
+		conn.Close()
+		return true // Port is open
+	}, timeout, 250*time.Millisecond, "Port %d did not become available in time", port)
+}
+
+// WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
+func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
+	t.Helper()
+	client := http.Client{
+		Timeout: 2 * time.Second,
+	}
+	require.Eventually(t, func() bool {
+		resp, err := client.Get(url)
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
+		return resp.StatusCode == http.StatusOK
+	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible and can pull images.

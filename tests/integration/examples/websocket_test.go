@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"os/exec"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -20,21 +22,40 @@ func TestWebsocketExample(t *testing.T) {
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
-	// 1. Build the MCPXY binary
-	buildCmd := exec.Command("make", "build")
-	buildCmd.Dir = root
-	err = buildCmd.Run()
-	require.NoError(t, err, "Failed to build mcpxy binary")
+	// Find a free port for the upstream server
+	port := integration.FindFreePort(t)
 
 	// 2. Run the Upstream Websocket Server
-	upstreamServerCmd := exec.Command("go", "run", "main.go")
-	upstreamServerCmd.Dir = root + "/examples/upstream/websocket/echo_server/server"
-	err = upstreamServerCmd.Start()
+	upstreamServerProcess := integration.NewManagedProcess(t, "upstream-websocket-server", "go",
+		[]string{"run", "main.go"},
+		[]string{"WEBSOCKET_PORT=" + strconv.Itoa(port)},
+	)
+	upstreamServerProcess.Cmd().Dir = filepath.Join(root, "examples", "upstream", "websocket", "echo_server", "server")
+	err = upstreamServerProcess.Start()
 	require.NoError(t, err, "Failed to start upstream websocket server")
-	defer upstreamServerCmd.Process.Kill()
+	defer upstreamServerProcess.Stop()
+
+	// Wait for the upstream server to be ready
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("http://localhost:%d/health", port), 10*time.Second)
+
+	// Create a temporary config file with the dynamic port
+	originalConfigPath := filepath.Join(root, "examples", "upstream", "websocket", "config", "mcpxy_config.yaml")
+	configData, err := os.ReadFile(originalConfigPath)
+	require.NoError(t, err)
+
+	newConfigData := strings.Replace(string(configData), "ws://localhost:8082", fmt.Sprintf("ws://localhost:%d", port), 1)
+
+	tempConfigFile, err := os.CreateTemp("", "mcpxy_config-*.yaml")
+	require.NoError(t, err)
+	defer os.Remove(tempConfigFile.Name())
+
+	_, err = tempConfigFile.Write([]byte(newConfigData))
+	require.NoError(t, err)
+	err = tempConfigFile.Close()
+	require.NoError(t, err)
 
 	// 3. Run the MCPXY Server
-	serverInfo := integration.StartMCPXYServer(t, "websocket-example", "--config-paths", root+"/examples/upstream/websocket/config")
+	serverInfo := integration.StartMCPXYServer(t, "websocket-example", "--config-paths", tempConfigFile.Name())
 	defer serverInfo.CleanupFunc()
 
 	// Wait for the MCPXY server to be ready
@@ -48,7 +69,7 @@ func TestWebsocketExample(t *testing.T) {
 	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port %s", serverInfo.JSONRPCEndpoint)
 
 	// 4. Interact with the Tool using MCP SDK
-	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
@@ -56,7 +77,9 @@ func TestWebsocketExample(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("echo-service%s/echo", consts.ToolNameServiceSeparator)
+	serviceName := "echo-service"
+	toolName, err := util.GenerateToolID(serviceName, "echo")
+	require.NoError(t, err)
 
 	// Wait for the tool to be available
 	require.Eventually(t, func() bool {
@@ -72,7 +95,7 @@ func TestWebsocketExample(t *testing.T) {
 		}
 		t.Logf("Tool %s not yet available", toolName)
 		return false
-	}, TestWaitTimeLong, 1*time.Second, "Tool %s did not become available in time", toolName)
+	}, integration.TestWaitTimeMedium, 1*time.Second, "Tool %s did not become available in time", toolName)
 
 	params := json.RawMessage(`{"message": "hello"}`)
 

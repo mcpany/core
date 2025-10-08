@@ -4,3 +4,6 @@ upstream_services:
 - name: echo-service
   websocket_service:
     address: "ws://localhost:8082/echo"
+    calls:
+    - operation_id: "echo"
+      description: "Echoes a message back."

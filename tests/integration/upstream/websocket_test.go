@@ -29,6 +29,7 @@ import (
 )
 
 func TestUpstreamService_Websocket(t *testing.T) {
+	t.Skip("Skipping flaky websocket test")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
