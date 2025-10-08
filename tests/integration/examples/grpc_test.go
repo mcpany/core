@@ -43,6 +43,16 @@ func TestGRPCExample(t *testing.T) {
 	require.NoError(t, err, "Failed to start upstream gRPC server")
 	defer upstreamServerCmd.Process.Kill()
 
+	// Wait for the upstream gRPC server to be ready
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", "localhost:50051", 1*time.Second)
+		if err != nil {
+			return false
+		}
+		defer conn.Close()
+		return true
+	}, 10*time.Second, 100*time.Millisecond, "Upstream gRPC server did not become available on port 50051")
+
 	// 4. Run the MCPXY Server
 	serverInfo := integration.StartMCPXYServer(t, "grpc-example", "--config-paths", root+"/examples/upstream/grpc/config")
 	defer serverInfo.CleanupFunc()
