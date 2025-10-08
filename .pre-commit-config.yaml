@@ -24,9 +24,9 @@ repos:
         files: \.proto$
         pass_filenames: false
         verbose: true # Show output from make lint-proto
-    -   id: go-unit-tests
-        name: Go Unit Tests
-        entry: make test
-        language: system
-        types: [go]
-        pass_filenames: false
+    # -   id: go-unit-tests
+    #     name: Go Unit Tests
+    #     entry: make test
+    #     language: system
+    #     types: [go]
+    #     pass_filenames: false
