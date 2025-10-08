@@ -1,6 +1,4 @@
-global_settings:
-  bind_address: "0.0.0.0:8080"
 upstream_services:
 - name: hello-service
-  command_service:
+  command_line_service:
     command: ./server/hello.sh

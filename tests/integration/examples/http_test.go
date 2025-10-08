@@ -3,10 +3,7 @@ package examples
 import (
 	"context"
 	"encoding/json"
-	"bytes"
 	"fmt"
-	"net"
-	"os/exec"
 	"testing"
 	"time"
 
@@ -17,58 +14,32 @@ import (
 )
 
 func TestHTTPExample(t *testing.T) {
+	// 1. Start the upstream time server on a dynamic port
+	upstreamPort := integration.FindFreePort(t)
+	upstreamAddr := fmt.Sprintf("http://localhost:%d", upstreamPort)
+	upstreamEnv := []string{fmt.Sprintf("TIME_SERVER_PORT=%d", upstreamPort)}
+
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
-	// 1. Build the MCPXY binary
-	buildCmd := exec.Command("make", "build")
-	buildCmd.Dir = root
-	err = buildCmd.Run()
-	require.NoError(t, err, "Failed to build mcpxy binary")
-
-	// 2. Run the Upstream HTTP Server
-	upstreamServerCmd := exec.Command("go", "run", "time_server.go")
-	upstreamServerCmd.Dir = root + "/examples/upstream/http/server"
-	err = upstreamServerCmd.Start()
+	upstreamServer := integration.NewManagedProcess(t, "time-server", "go", []string{"run", "time_server.go"}, upstreamEnv, root+"/examples/upstream/http/server")
+	err = upstreamServer.Start()
 	require.NoError(t, err, "Failed to start upstream HTTP server")
-	defer upstreamServerCmd.Process.Kill()
+	defer upstreamServer.Stop()
 
-	// 3. Run the MCPXY Server
-	mcpxyServerCmd := exec.Command("./start.sh")
-	mcpxyServerCmd.Dir = root + "/examples/upstream/http"
-	var stdout, stderr bytes.Buffer
-	mcpxyServerCmd.Stdout = &stdout
-	mcpxyServerCmd.Stderr = &stderr
-	err = mcpxyServerCmd.Start()
-	require.NoError(t, err, "Failed to start MCPXY server")
-	defer func() {
-		if t.Failed() {
-			t.Logf("MCPXY Server stdout:\n%s", stdout.String())
-			t.Logf("MCPXY Server stderr:\n%s", stderr.String())
-		}
-		mcpxyServerCmd.Process.Kill()
-	}()
+	// 2. Start the MCP-XY Server on a dynamic port
+	mcpxyServer := integration.StartMCPXYServer(t, "HTTPExample")
+	defer mcpxyServer.CleanupFunc()
 
-	// Wait for the MCPXY server to be ready
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", "localhost:8080", 1*time.Second)
-		if err != nil {
-			return false
-		}
-		defer conn.Close()
-		return true
-	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port 8080")
+	// 3. Register the upstream service with MCP-XY
+	integration.RegisterHTTPService(t, mcpxyServer.RegistrationClient, "time-service", upstreamAddr, "GET/time", "/time", "GET", nil)
 
 	// 4. Interact with the Tool using MCP SDK
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8080"}, nil)
-	if err != nil {
-		t.Logf("MCPXY Server stdout on connect error:\n%s", stdout.String())
-		t.Logf("MCPXY Server stderr on connect error:\n%s", stderr.String())
-	}
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyServer.JSONRPCEndpoint}, nil)
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
@@ -86,9 +57,8 @@ func TestHTTPExample(t *testing.T) {
 				return true
 			}
 		}
-		t.Logf("Tool %s not yet available", toolName)
 		return false
-	}, TestWaitTimeLong, 1*time.Second, "Tool %s did not become available in time", toolName)
+	}, 10*time.Second, 1*time.Second, "Tool %s did not become available in time", toolName)
 
 	params := json.RawMessage(`{}`)
 

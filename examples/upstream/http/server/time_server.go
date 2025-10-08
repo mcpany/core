@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -22,8 +23,14 @@ func main() {
 		w.Write(jsonResp)
 	})
 
-	fmt.Println("Starting time server on :8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	port := os.Getenv("TIME_SERVER_PORT")
+	if port == "" {
+		port = "8081"
+	}
+
+	addr := fmt.Sprintf(":%s", port)
+	fmt.Printf("Starting time server on %s\n", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err)
 	}
 }

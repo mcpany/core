@@ -121,12 +121,15 @@ type ManagedProcess struct {
 	IgnoreExitStatusOne bool
 }
 
-func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
+func NewManagedProcess(t *testing.T, label, command string, args []string, env []string, dir ...string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.Command(command, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if env != nil {
 		cmd.Env = append(os.Environ(), env...)
+	}
+	if len(dir) > 0 && dir[0] != "" {
+		cmd.Dir = dir[0]
 	}
 	if command == "sudo" && len(args) > 0 && args[0] == "docker" {
 		cmd.Stdin = os.Stdin

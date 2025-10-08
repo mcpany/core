@@ -83,6 +83,11 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 				serviceLog.Warn("MCP service has no connection_type. Skipping service.")
 				isValidService = false
 			}
+		} else if cmdService := service.GetCommandLineService(); cmdService != nil {
+			if cmdService.GetCommand() == "" {
+				serviceLog.Warn("Command line service has empty command. Skipping service.")
+				isValidService = false
+			}
 		} else {
 			serviceLog.Warn("Unknown service type. Skipping service.")
 			isValidService = false

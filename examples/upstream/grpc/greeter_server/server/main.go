@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 	pb "github.com/mcpxy/core/examples/upstream/grpc/greeter_server/proto"
-)
-
-const (
-	port = ":50051"
 )
 
 // server is used to implement greeter.GreeterServer.
@@ -25,7 +23,13 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	port := os.Getenv("GREETER_SERVER_PORT")
+	if port == "" {
+		port = "50051"
+	}
+	addr := fmt.Sprintf(":%s", port)
+
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

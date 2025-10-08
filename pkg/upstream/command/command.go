@@ -19,6 +19,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/prompt"
@@ -78,24 +79,50 @@ func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, ser
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
 
-	for _, toolDef := range commandLineService.GetCalls() {
-		command := toolDef.GetMethod()
+	if len(commandLineService.GetCalls()) == 0 {
+		// If no calls are defined, create a single tool from the command itself.
+		command := commandLineService.GetCommand()
+		if command == "" {
+			return discoveredTools
+		}
+		// Use the base name of the command as the tool name.
+		toolName := filepath.Base(command)
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(command),
-			DisplayName:         proto.String(command),
-			Description:         proto.String(command),
+			Name:                proto.String(toolName),
+			DisplayName:         proto.String(toolName),
+			Description:         proto.String(fmt.Sprintf("Executes the command: %s", command)),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(command),
 		}.Build()
 
 		newTool := tool.NewCommandTool(newToolProto, command)
 		if err := toolManager.AddTool(newTool); err != nil {
-			log.Error("Failed to add tool", "error", err)
-			continue
+			log.Error("Failed to add default tool for command service", "error", err)
+		} else {
+			discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
+				Name: proto.String(toolName),
+			}.Build())
 		}
-		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name: proto.String(command),
-		}.Build())
+	} else {
+		for _, toolDef := range commandLineService.GetCalls() {
+			command := toolDef.GetMethod()
+			newToolProto := pb.Tool_builder{
+				Name:                proto.String(command),
+				DisplayName:         proto.String(command),
+				Description:         proto.String(command),
+				ServiceId:           proto.String(serviceKey),
+				UnderlyingMethodFqn: proto.String(command),
+			}.Build()
+
+			newTool := tool.NewCommandTool(newToolProto, command)
+			if err := toolManager.AddTool(newTool); err != nil {
+				log.Error("Failed to add tool", "error", err)
+				continue
+			}
+			discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
+				Name: proto.String(command),
+			}.Build())
+		}
 	}
 
 	return discoveredTools

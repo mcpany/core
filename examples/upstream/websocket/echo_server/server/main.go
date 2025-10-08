@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 )
@@ -33,6 +35,13 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/echo", echo)
-	log.Println("Starting echo server on :8082")
-	log.Fatal(http.ListenAndServe(":8082", nil))
+
+	port := os.Getenv("WEBSOCKET_ECHO_SERVER_PORT")
+	if port == "" {
+		port = "8082"
+	}
+	addr := fmt.Sprintf(":%s", port)
+
+	log.Printf("Starting echo server on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
