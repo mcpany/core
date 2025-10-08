@@ -148,7 +148,7 @@ prepare:
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
 		$$VENV_DIR/bin/pip install --upgrade pip; \
 		$$VENV_DIR/bin/pip install "pre-commit==$(PRE_COMMIT_VERSION)"; \
-		$$VENV_DIR/bin/pip install "fastmcp>=2.0.0"; \
+		$$VENV_DIR/bin/pip install "fastmcp>=2.0.0" --upgrade; \
 		$$VENV_DIR/bin/pre-commit install || true; \
 	else \
 		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
