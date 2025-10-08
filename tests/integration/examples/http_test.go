@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -26,33 +28,48 @@ func TestHTTPExample(t *testing.T) {
 	err = buildCmd.Run()
 	require.NoError(t, err, "Failed to build mcpxy binary")
 
+	// Find a free port for the upstream server
+	port := integration.FindFreePort(t)
+
 	// 2. Run the Upstream HTTP Server
-	upstreamServerCmd := exec.Command("go", "run", "time_server.go")
-	upstreamServerCmd.Dir = root + "/examples/upstream/http/server"
-	err = upstreamServerCmd.Start()
+	upstreamServerProcess := integration.NewManagedProcess(t, "upstream-http-server", "go",
+		[]string{"run", "time_server.go"},
+		[]string{"HTTP_PORT=" + strconv.Itoa(port)},
+	)
+	upstreamServerProcess.Cmd().Dir = filepath.Join(root, "examples", "upstream", "http", "server")
+	err = upstreamServerProcess.Start()
 	require.NoError(t, err, "Failed to start upstream HTTP server")
-	defer upstreamServerCmd.Process.Kill()
+	defer upstreamServerProcess.Stop()
+
+	// Wait for the upstream HTTP server to be ready
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("http://localhost:%d/health", port), 10*time.Second)
+
+	// Create a temporary config file with the dynamic port
+	originalConfigPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpxy_config.yaml")
+	configData, err := os.ReadFile(originalConfigPath)
+	require.NoError(t, err)
+
+	newConfigData := strings.Replace(string(configData), "http://localhost:8081", fmt.Sprintf("http://localhost:%d", port), 1)
+
+	tempConfigFile, err := os.CreateTemp("", "mcpxy_config-*.yaml")
+	require.NoError(t, err)
+	defer os.Remove(tempConfigFile.Name())
+
+	_, err = tempConfigFile.Write([]byte(newConfigData))
+	require.NoError(t, err)
+	err = tempConfigFile.Close()
+	require.NoError(t, err)
 
 	// 3. Run the MCPXY Server
-	serverInfo := integration.StartMCPXYServer(t, "http-example", "--config-paths", root+"/examples/upstream/http/config")
+	serverInfo := integration.StartMCPXYServer(t, "http-example", "--config-paths", tempConfigFile.Name())
 	defer serverInfo.CleanupFunc()
 
-	// Wait for the MCPXY server to be ready
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", strings.TrimPrefix(serverInfo.JSONRPCEndpoint, "http://"), 1*time.Second)
-		if err != nil {
-			return false
-		}
-		defer conn.Close()
-		return true
-	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port %s", serverInfo.JSONRPCEndpoint)
-
 	// 4. Interact with the Tool using MCP SDK
-	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.JSONRPCEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
@@ -72,7 +89,7 @@ func TestHTTPExample(t *testing.T) {
 		}
 		t.Logf("Tool %s not yet available", toolName)
 		return false
-	}, TestWaitTimeLong, 1*time.Second, "Tool %s did not become available in time", toolName)
+	}, integration.TestWaitTimeLong, 1*time.Second, "Tool %s did not become available in time", toolName)
 
 	params := json.RawMessage(`{}`)
 

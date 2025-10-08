@@ -40,7 +40,7 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 		serviceLog := log.With("serviceName", service.GetName())
 		isValidService := true
 
-		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil {
+		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
 			serviceLog.Warn("Service has no service_config. Skipping service.")
 			continue
 		}
@@ -51,6 +51,14 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 				isValidService = false
 			} else if !validation.IsValidURL(httpService.GetAddress()) {
 				serviceLog.Warn("Invalid HTTP target_address. Skipping service.", "address", httpService.GetAddress())
+				isValidService = false
+			}
+		} else if websocketService := service.GetWebsocketService(); websocketService != nil {
+			if websocketService.GetAddress() == "" {
+				serviceLog.Warn("Websocket service has empty target_address. Skipping service.")
+				isValidService = false
+			} else if !validation.IsValidURL(websocketService.GetAddress()) {
+				serviceLog.Warn("Invalid Websocket target_address. Skipping service.", "address", websocketService.GetAddress())
 				isValidService = false
 			}
 		} else if grpcService := service.GetGrpcService(); grpcService != nil {
