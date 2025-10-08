@@ -4,4 +4,8 @@ upstream_services:
 - name: hello-service
   mcp_service:
     stdio_connection:
-      command: "python -u examples/upstream/command/server/main.py"
+      command: "python"
+      args:
+        - "-u"
+        - "examples/upstream/command/server/main.py"
+        - "--mcp-stdio"

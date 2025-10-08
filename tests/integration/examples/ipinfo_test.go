@@ -32,8 +32,6 @@ import (
 )
 
 func TestUpstreamService_IPInfo(t *testing.T) {
-	t.Skip("Skipping this test because it depends on the external service ip-api.com, which can be flaky.")
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

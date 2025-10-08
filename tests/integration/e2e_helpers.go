@@ -235,10 +235,12 @@ func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 func IsTCPPortAvailable(port int) bool {
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), 1*time.Second)
 	if err != nil {
-		return false
+		// If we get an error, especially a "connection refused" error, the port is likely available.
+		return true
 	}
+	// If the connection succeeds, it means something is listening on the port, so it's not available.
 	conn.Close()
-	return true
+	return false
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible and can pull images.
@@ -361,7 +363,6 @@ func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXY
 	require.NoError(t, err, "MCPXY binary not found at %s. Run 'make build'.", absMcpxyBinaryPath)
 
 	mcpProcess := NewManagedProcess(t, "MCPXYServer-"+testName, absMcpxyBinaryPath, args, env)
-	mcpProcess.cmd.Dir = root
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPXY server. Stderr: %s", mcpProcess.StderrString())
 
@@ -398,8 +399,29 @@ func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXY
 	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
 
 	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
+
+	// Wait for the HTTP/JSON-RPC endpoint to be ready
+	require.Eventually(t, func() bool {
+		// Use a short timeout for the health check itself
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
+		if err != nil {
+			t.Logf("Failed to create request for health check: %v", err)
+			return false
+		}
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			t.Logf("MCPXY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
+			return false
+		}
+		defer resp.Body.Close()
+		// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
+		t.Logf("MCPXY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
+		return true
+	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+
 	t.Logf("MCPXY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
-	time.Sleep(5 * time.Second)
 
 	return &MCPXYTestServerInfo{
 		Process:                  mcpProcess,
