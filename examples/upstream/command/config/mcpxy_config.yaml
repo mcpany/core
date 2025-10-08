@@ -2,5 +2,6 @@ global_settings:
   bind_address: "0.0.0.0:8080"
 upstream_services:
 - name: hello-service
-  command_service:
-    command: ./server/hello.sh
+  mcp_service:
+    stdio_connection:
+      command: "python -u examples/upstream/command/server/main.py"

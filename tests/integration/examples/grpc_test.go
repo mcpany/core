@@ -3,10 +3,10 @@ package examples
 import (
 	"context"
 	"encoding/json"
-	"bytes"
 	"fmt"
 	"net"
 	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -44,41 +44,25 @@ func TestGRPCExample(t *testing.T) {
 	defer upstreamServerCmd.Process.Kill()
 
 	// 4. Run the MCPXY Server
-	mcpxyServerCmd := exec.Command("./start.sh")
-	mcpxyServerCmd.Dir = root + "/examples/upstream/grpc"
-	var stdout, stderr bytes.Buffer
-	mcpxyServerCmd.Stdout = &stdout
-	mcpxyServerCmd.Stderr = &stderr
-	err = mcpxyServerCmd.Start()
-	require.NoError(t, err, "Failed to start MCPXY server")
-	defer func() {
-		if t.Failed() {
-			t.Logf("MCPXY Server stdout:\n%s", stdout.String())
-			t.Logf("MCPXY Server stderr:\n%s", stderr.String())
-		}
-		mcpxyServerCmd.Process.Kill()
-	}()
+	serverInfo := integration.StartMCPXYServer(t, "grpc-example", "--config-paths", root+"/examples/upstream/grpc/config")
+	defer serverInfo.CleanupFunc()
 
 	// Wait for the MCPXY server to be ready
 	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", "localhost:8080", 1*time.Second)
+		conn, err := net.DialTimeout("tcp", strings.TrimPrefix(serverInfo.JSONRPCEndpoint, "http://"), 1*time.Second)
 		if err != nil {
 			return false
 		}
 		defer conn.Close()
 		return true
-	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port 8080")
+	}, 10*time.Second, 100*time.Millisecond, "MCPXY server did not become available on port %s", serverInfo.JSONRPCEndpoint)
 
 	// 5. Interact with the Tool using MCP SDK
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8080"}, nil)
-	if err != nil {
-		t.Logf("MCPXY Server stdout on connect error:\n%s", stdout.String())
-		t.Logf("MCPXY Server stderr on connect error:\n%s", stderr.String())
-	}
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.JSONRPCEndpoint}, nil)
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
