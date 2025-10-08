@@ -361,6 +361,7 @@ func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXY
 	require.NoError(t, err, "MCPXY binary not found at %s. Run 'make build'.", absMcpxyBinaryPath)
 
 	mcpProcess := NewManagedProcess(t, "MCPXYServer-"+testName, absMcpxyBinaryPath, args, env)
+	mcpProcess.cmd.Dir = root
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPXY server. Stderr: %s", mcpProcess.StderrString())
 
