@@ -21,7 +21,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -52,14 +51,10 @@ func TestConfigLoading(t *testing.T) {
 		},
 	}
 
-	root, err := GetProjectRoot()
-	require.NoError(t, err)
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("MCPXY_BINARY_PATH", "../../build/bin/server")
-			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
-			mcpx := StartMCPXYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
+			mcpx := StartMCPXYServer(t, "config-loading-"+tc.name, "--config-paths", tc.configFile)
 			defer mcpx.CleanupFunc()
 
 			// Use a client with no timeout for the streaming SSE connection
