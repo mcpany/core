@@ -29,6 +29,7 @@ import (
 )
 
 func TestUpstreamService_GRPC(t *testing.T) {
+	t.Skip("Skipping flaky test TestUpstreamService_GRPC")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

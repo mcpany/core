@@ -4,3 +4,4 @@ upstream_services:
 - name: greeter-service
   grpc_service:
     address: "localhost:50051"
+    use_reflection: true

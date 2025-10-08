@@ -4,3 +4,7 @@ upstream_services:
 - name: time-service
   http_service:
     address: "http://localhost:8081"
+    calls:
+    - operation_id: "GET/time"
+      endpoint_path: "/time"
+      method: "HTTP_METHOD_GET"
