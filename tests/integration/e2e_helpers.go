@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -121,6 +122,21 @@ type ManagedProcess struct {
 	IgnoreExitStatusOne bool
 }
 
+// testLoggerWriter is a writer that logs to the testing framework's log.
+type testLoggerWriter struct {
+	t     *testing.T
+	label string
+}
+
+func (w *testLoggerWriter) Write(p []byte) (n int, err error) {
+	// Trim trailing newline because t.Logf adds one
+	trimmed := bytes.TrimRight(p, "\n")
+	if len(trimmed) > 0 {
+		w.t.Logf("[%s] %s", w.label, string(trimmed))
+	}
+	return len(p), nil
+}
+
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.Command(command, args...)
@@ -137,8 +153,12 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 		t:     t,
 		label: label,
 	}
-	cmd.Stdout = &mp.stdout
-	cmd.Stderr = &mp.stderr
+
+	stdoutLogger := &testLoggerWriter{t: t, label: label}
+	stderrLogger := &testLoggerWriter{t: t, label: label + "-stderr"}
+
+	cmd.Stdout = io.MultiWriter(&mp.stdout, stdoutLogger)
+	cmd.Stderr = io.MultiWriter(&mp.stderr, stderrLogger)
 	return mp
 }
 

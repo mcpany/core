@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 
@@ -227,7 +226,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 				return fmt.Errorf("docker socket not accessible, but container_image is specified")
 			}
 		} else {
-			cmd := buildCommandFromStdioConfig(c.stdioConfig)
+			cmd := prepareLocalProcess(c.stdioConfig)
 			transport = &mcp.CommandTransport{
 				Command: cmd,
 			}
@@ -266,34 +265,24 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 	return result, err
 }
 
-func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
-	command := stdio.GetCommand()
-	args := stdio.GetArgs()
-
-	// If the command is 'docker', handle it directly, including sudo if needed.
-	if command == "docker" {
-		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
-		if useSudo {
-			fullArgs := append([]string{command}, args...)
-			return exec.Command("sudo", fullArgs...)
-		}
-		return exec.Command(command, args...)
+func prepareLocalProcess(stdio *configv1.McpStdioConnection) *exec.Cmd {
+	mainCommand := stdio.GetCommand()
+	if len(stdio.GetArgs()) > 0 {
+		mainCommand = fmt.Sprintf("%s %s", mainCommand, strings.Join(stdio.GetArgs(), " "))
 	}
 
-	// Combine all commands into a single script.
-	var scriptCommands []string
-	scriptCommands = append(scriptCommands, stdio.GetSetupCommands()...)
+	fullCommand := mainCommand
+	if len(stdio.GetSetupCommands()) > 0 {
+		setupPart := strings.Join(stdio.GetSetupCommands(), " && ")
+		fullCommand = fmt.Sprintf("%s && exec %s", setupPart, mainCommand)
+	} else {
+		fullCommand = fmt.Sprintf("exec %s", mainCommand)
+	}
 
-	// Add the main command. `exec` is used to replace the shell process with the main command.
-	mainCommandParts := []string{"exec", command}
-	mainCommandParts = append(mainCommandParts, args...)
-	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
-
-	script := strings.Join(scriptCommands, " && ")
-
-	// run the script directly on the host.
-	cmd := exec.Command("/bin/sh", "-c", script)
-	cmd.Dir = stdio.GetWorkingDirectory()
+	cmd := exec.Command("/bin/sh", "-c", fullCommand)
+	if wd := stdio.GetWorkingDirectory(); wd != "" {
+		cmd.Dir = wd
+	}
 	return cmd
 }
 
@@ -319,12 +308,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 				StdioConfig: stdio,
 			}
 		} else {
-			return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
+			// If a container image is specified but Docker is not available,
+			// attempt to run the command as a local process.
+			transport = &mcp.CommandTransport{
+				Command: prepareLocalProcess(stdio),
+			}
 		}
 	} else {
-		cmd := buildCommandFromStdioConfig(stdio)
 		transport = &mcp.CommandTransport{
-			Command: cmd,
+			Command: prepareLocalProcess(stdio),
 		}
 	}
 	var mcpSdkClient *mcp.Client

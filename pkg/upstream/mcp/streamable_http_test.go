@@ -290,8 +290,12 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
+		// This test is designed to check that setup commands are correctly concatenated.
+		// The actual execution of the command will fail because "setup1" is not a real command.
+		// The Register function is expected to log this failure but not return an error,
+		// allowing the registration process to continue.
 		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
-		require.NoError(t, err)
+		require.NoError(t, err, "Register should not return an error for a failed setup command, it should only log it.")
 
 		wg.Wait()
 

@@ -173,6 +173,8 @@ build: gen
 	@$(GO_CMD) build -buildvcs=false -o ./build/bin/server ./cmd/server
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
+	@echo "Installing Python dependencies for command example..."
+	@python3 -m pip install -r examples/upstream/command/server/requirements.txt
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
 	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 
