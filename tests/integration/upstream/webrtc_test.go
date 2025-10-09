@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
 	"github.com/mcpxy/core/tests/integration"
@@ -41,9 +42,7 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start WebRTC Echo server")
 	t.Cleanup(echoServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(echoServerPort)
-	}, integration.ServiceStartupTimeout, integration.RetryInterval, "WebRTC Echo server did not become ready in time")
+	time.Sleep(2 * time.Second)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EWebrtcEchoServerTest")

@@ -41,7 +41,8 @@ func TestUpstreamService_GRPC(t *testing.T) {
 	err := grpcServerProc.Start()
 	require.NoError(t, err, "Failed to start gRPC Calculator server")
 	t.Cleanup(grpcServerProc.Stop)
-	integration.WaitForGRPCHealth(t, fmt.Sprintf("localhost:%d", grpcServerPort), integration.ServiceStartupTimeout)
+
+	integration.WaitForTCPPort(t, grpcServerPort, integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EGrpcCalculatorServerTest")

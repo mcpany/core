@@ -34,12 +34,11 @@ import (
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
+	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
-
-	"github.com/gorilla/websocket"
 )
 
 const (
@@ -238,17 +237,6 @@ func (mp *ManagedProcess) Stop() {
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
-func IsTCPPortAvailable(port int) bool {
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), 1*time.Second)
-	if err != nil {
-		// If we get an error, especially a "connection refused" error, the port is likely available.
-		return true
-	}
-	// If the connection succeeds, it means something is listening on the port, so it's not available.
-	conn.Close()
-	return false
-}
-
 // WaitForTCPPort waits for a TCP port to become open and accepting connections.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
@@ -260,6 +248,53 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 		conn.Close()
 		return true // Port is open
 	}, timeout, 250*time.Millisecond, "Port %d did not become available in time", port)
+}
+
+// WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
+func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		// This context is for a single connection attempt.
+		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+		defer cancel()
+
+		// grpc.NewClient is non-blocking.
+		conn, err := grpc.NewClient(grpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			t.Logf("gRPC server at %s not ready, error creating client: %v", grpcAddress, err)
+			return false
+		}
+		defer conn.Close()
+
+		// Wait for the connection to be ready.
+		for {
+			s := conn.GetState()
+			if s == connectivity.Ready {
+				return true
+			}
+			if !conn.WaitForStateChange(ctx, s) {
+				// Context expired, so this attempt failed.
+				return false
+			}
+		}
+	}, timeout, RetryInterval, "gRPC server at %s did not become ready in time", grpcAddress)
+}
+
+// WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
+func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		dialer := websocket.Dialer{
+			HandshakeTimeout: 2 * time.Second,
+		}
+		conn, _, err := dialer.Dial(url, nil)
+		if err != nil {
+			t.Logf("Websocket server at %s not ready: %v", url, err)
+			return false
+		}
+		conn.Close()
+		return true
+	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
 }
 
 // WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
@@ -276,39 +311,6 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 		defer resp.Body.Close()
 		return resp.StatusCode == http.StatusOK
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
-}
-
-// WaitForGRPCHealth waits for a gRPC endpoint to become ready by attempting to connect.
-func WaitForGRPCHealth(t *testing.T, addr string, timeout time.Duration) {
-	t.Helper()
-	require.Eventually(t, func() bool {
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		// Use grpc.WithBlock() to ensure the connection is actually established.
-		//nolint:staticcheck // SA1019: grpc.DialContext is deprecated: use NewClient instead.
-		conn, err := grpc.DialContext(ctx, addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
-		if err != nil {
-			return false // Connection failed, not ready yet
-		}
-		conn.Close()
-		return true // Connection succeeded
-	}, timeout, RetryInterval, "gRPC server at %s did not become ready in time", addr)
-}
-
-// WaitForWebsocketHealth waits for a websocket endpoint to become ready by attempting a handshake.
-func WaitForWebsocketHealth(t *testing.T, url string, timeout time.Duration) {
-	t.Helper()
-	require.Eventually(t, func() bool {
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		dialer := websocket.Dialer{}
-		conn, _, err := dialer.DialContext(ctx, url, nil)
-		if err != nil {
-			return false // Handshake failed, not ready yet
-		}
-		conn.Close()
-		return true // Handshake succeeded
-	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible and can pull images.
