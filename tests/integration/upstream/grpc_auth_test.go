@@ -43,9 +43,7 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 	err := grpcServerProc.Start()
 	require.NoError(t, err, "Failed to start authenticated gRPC Calculator server")
 	t.Cleanup(grpcServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(grpcServerPort)
-	}, integration.ServiceStartupTimeout, integration.RetryInterval, "Authenticated gRPC Calculator server did not become ready in time")
+	integration.WaitForTCPPort(t, grpcServerPort, integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EGrpcAuthedCalculatorServerTest")
