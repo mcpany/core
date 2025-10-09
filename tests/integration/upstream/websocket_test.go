@@ -29,7 +29,6 @@ import (
 )
 
 func TestUpstreamService_Websocket(t *testing.T) {
-	t.Skip("Skipping flaky websocket test")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -42,9 +41,7 @@ func TestUpstreamService_Websocket(t *testing.T) {
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start Websocket Echo server")
 	t.Cleanup(echoServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(echoServerPort)
-	}, integration.ServiceStartupTimeout, integration.RetryInterval, "Websocket Echo server did not become ready in time")
+	integration.WaitForWebsocketHealth(t, fmt.Sprintf("ws://localhost:%d/echo", echoServerPort), integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EWebsocketEchoServerTest")

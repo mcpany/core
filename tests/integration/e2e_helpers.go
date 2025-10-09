@@ -38,6 +38,8 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -274,6 +276,39 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 		defer resp.Body.Close()
 		return resp.StatusCode == http.StatusOK
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
+}
+
+// WaitForGRPCHealth waits for a gRPC endpoint to become ready by attempting to connect.
+func WaitForGRPCHealth(t *testing.T, addr string, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		// Use grpc.WithBlock() to ensure the connection is actually established.
+		//nolint:staticcheck // SA1019: grpc.DialContext is deprecated: use NewClient instead.
+		conn, err := grpc.DialContext(ctx, addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+		if err != nil {
+			return false // Connection failed, not ready yet
+		}
+		conn.Close()
+		return true // Connection succeeded
+	}, timeout, RetryInterval, "gRPC server at %s did not become ready in time", addr)
+}
+
+// WaitForWebsocketHealth waits for a websocket endpoint to become ready by attempting a handshake.
+func WaitForWebsocketHealth(t *testing.T, url string, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		dialer := websocket.Dialer{}
+		conn, _, err := dialer.DialContext(ctx, url, nil)
+		if err != nil {
+			return false // Handshake failed, not ready yet
+		}
+		conn.Close()
+		return true // Handshake succeeded
+	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible and can pull images.
