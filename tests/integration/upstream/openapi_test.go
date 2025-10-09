@@ -44,9 +44,7 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 	err := openapiServerProc.Start()
 	require.NoError(t, err, "Failed to start OpenAPI Calculator server")
 	t.Cleanup(openapiServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(openapiServerPort)
-	}, integration.ServiceStartupTimeout*2, integration.RetryInterval, "OpenAPI Calculator server did not become ready in time")
+	integration.WaitForTCPPort(t, openapiServerPort, integration.ServiceStartupTimeout*2)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EOpenAPICalculatorServerTest")

@@ -41,7 +41,8 @@ func TestUpstreamService_Websocket(t *testing.T) {
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start Websocket Echo server")
 	t.Cleanup(echoServerProc.Stop)
-	integration.WaitForWebsocketHealth(t, fmt.Sprintf("ws://localhost:%d/echo", echoServerPort), integration.ServiceStartupTimeout)
+
+	integration.WaitForTCPPort(t, echoServerPort, integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EWebsocketEchoServerTest")

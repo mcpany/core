@@ -44,9 +44,7 @@ func TestUpstreamService_OpenAPI_WithAPIKeyAuth(t *testing.T) {
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start authenticated HTTP Echo server for OpenAPI test")
 	t.Cleanup(echoServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(echoServerPort)
-	}, integration.ServiceStartupTimeout, integration.RetryInterval, "Authenticated HTTP Echo server for OpenAPI test did not become ready in time")
+	integration.WaitForTCPPort(t, echoServerPort, integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EOpenAPIAuthedEchoServerTest")

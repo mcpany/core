@@ -56,14 +56,15 @@ func TestGRPCExample(t *testing.T) {
 	defer upstreamServerProcess.Stop()
 
 	// Wait for the upstream gRPC server to be ready
-	integration.WaitForTCPPort(t, port, 15*time.Second)
+	grpcServiceEndpoint := fmt.Sprintf("localhost:%d", port)
+	integration.WaitForGRPCReady(t, grpcServiceEndpoint, 15*time.Second)
 
 	// Create a temporary config file with the dynamic port
 	originalConfigPath := filepath.Join(root, "examples", "upstream", "grpc", "config", "mcpxy_config.yaml")
 	configData, err := os.ReadFile(originalConfigPath)
 	require.NoError(t, err)
 
-	newConfigData := strings.Replace(string(configData), "localhost:50051", fmt.Sprintf("localhost:%d", port), 1)
+	newConfigData := strings.Replace(string(configData), "localhost:50051", grpcServiceEndpoint, 1)
 
 	tempConfigFile, err := os.CreateTemp("", "mcpxy_config-*.yaml")
 	require.NoError(t, err)
