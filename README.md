@@ -88,7 +88,7 @@ The server also supports configuration via environment variables. For example, y
 
 ## Usage
 
-Once the server is running, you can interact with it using its JSON-RPC API.
+Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpxy` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
 ### Listing Tools
 
