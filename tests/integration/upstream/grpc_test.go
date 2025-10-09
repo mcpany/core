@@ -29,7 +29,6 @@ import (
 )
 
 func TestUpstreamService_GRPC(t *testing.T) {
-	t.Skip("Skipping flaky test TestUpstreamService_GRPC")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -42,9 +41,7 @@ func TestUpstreamService_GRPC(t *testing.T) {
 	err := grpcServerProc.Start()
 	require.NoError(t, err, "Failed to start gRPC Calculator server")
 	t.Cleanup(grpcServerProc.Stop)
-	require.Eventually(t, func() bool {
-		return integration.IsTCPPortAvailable(grpcServerPort)
-	}, integration.ServiceStartupTimeout, integration.RetryInterval, "gRPC Calculator server did not become ready in time")
+	integration.WaitForGRPCHealth(t, fmt.Sprintf("localhost:%d", grpcServerPort), integration.ServiceStartupTimeout)
 
 	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EGrpcCalculatorServerTest")
