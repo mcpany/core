@@ -1,0 +1,18 @@
+upstreamServices:
+  - name: "docker-http-echo"
+    httpService:
+      # The address uses the service name defined in docker-compose.yml,
+      # which Docker's internal DNS will resolve to the correct container.
+      address: "http://http-echo-server:8080"
+      calls:
+        - operationId: "echo"
+          description: "Echoes back the request body."
+          method: "HTTP_METHOD_POST"
+          endpointPath: "/echo"
+      healthCheck:
+        httpHealthCheck:
+          endpointPath: "/health"
+          checkInterval: 10s
+          checkTimeout: 2s
+          failureThreshold: 3
+          initialDelay: 5s

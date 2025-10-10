@@ -1,0 +1,31 @@
+# Stage 1: Build the Go application
+# Use the same Go version as the main server for consistency.
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+
+# Copy Go modules and download dependencies first to leverage Docker layer caching.
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the entire source code.
+# While not strictly necessary to copy everything, it simplifies the build process for this example.
+COPY . .
+
+# Build the http-echo-server binary statically.
+# CGO_ENABLED=0 ensures the binary is statically linked, which is ideal for minimal base images like scratch.
+RUN CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
+
+# Stage 2: Create the final, minimal production image
+FROM scratch
+
+# Copy the built binary from the builder stage.
+COPY --from=builder /http-echo-server /http-echo-server
+
+# Expose the port the server will listen on.
+# This is for documentation and can be used by automated systems.
+EXPOSE 8080
+
+# Set the entrypoint for the container.
+# We pass the --port flag to ensure the server listens on a consistent port.
+ENTRYPOINT ["/http-echo-server", "--port=8080"]
