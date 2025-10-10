@@ -1,17 +1,47 @@
 version: '3.9'
 
+# This Docker Compose file provides an example setup for running the MCP-XY server
+# along with a sample upstream service (http-echo-server) to demonstrate how they
+# can be connected within a Docker environment.
+
 services:
+  # The MCP-XY server itself.
   mcpxy-server:
     build:
       context: .
-      dockerfile: Dockerfile.server
+      dockerfile: docker/Dockerfile.server
     ports:
+      # Exposes the JSON-RPC port (for tool calls) to the host.
       - "50050:50050"
+      # Exposes the gRPC registration port to the host.
       - "50051:50051"
-    environment:
-      # Add any other necessary MCPXY_ environment variables for the server
-      # For example, if stdio mode should be explicitly off:
-      # - MCPXY_STDIO=false
+    volumes:
+      # Mounts the Docker-specific config file into the container.
+      # This allows mcpxy-server to discover and connect to the http-echo-server.
+      - ./docker/config.docker.yaml:/etc/mcpxy/config.yaml
+    command:
+      # Tells the server to load the configuration from the mounted path.
+      - "--config-paths"
+      - "/etc/mcpxy/config.yaml"
+    depends_on:
+      # Ensures that the http-echo-server is started before mcpxy-server.
+      http-echo-server:
+        condition: service_healthy
+    networks:
+      - mcpxy-net
+
+  # A sample upstream HTTP service that mcpxy-server will connect to.
+  http-echo-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.http-echo-server
+    # No ports are exposed to the host, as this service is only intended to be
+    # accessible by mcpxy-server within the Docker network.
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
     networks:
       - mcpxy-net
 

@@ -1,0 +1,11 @@
+{{- if .Values.config }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mcpxy.fullname" . }}-config
+  labels:
+    {{- include "mcpxy.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{- .Values.config | nindent 4 }}
+{{- end }}
