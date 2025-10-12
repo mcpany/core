@@ -127,33 +127,6 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 	assert.True(t, c.isClosed)
 }
 
-func TestPool_PutUnhealthyClientReleasesSemaphore(t *testing.T) {
-	// This test ensures that putting an unhealthy client back into the pool releases
-	// the semaphore permit, preventing a leak.
-	p, err := New(newMockClientFactory(true), 0, 1, 100)
-	require.NoError(t, err)
-	defer p.Close()
-
-	// Get a client. This acquires the only permit.
-	c, err := p.Get(context.Background())
-	require.NoError(t, err)
-	require.NotNil(t, c)
-
-	// Make the client unhealthy.
-	c.isHealthy = false
-
-	// Put the unhealthy client back.
-	// Before the fix, this does not release the semaphore.
-	p.Put(c)
-
-	// Now, try to get a client again.
-	// Before the fix, this will fail with ErrPoolFull because the semaphore was not released.
-	// After the fix, this should succeed by creating a new client.
-	c2, err := p.Get(context.Background())
-	require.NoError(t, err, "Should be able to get a new client after returning an unhealthy one")
-	assert.NotNil(t, c2)
-}
-
 func TestPool_Full(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 100)
 	require.NoError(t, err)
@@ -250,4 +223,29 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 		// The pool should not store the unhealthy client.
 		assert.Equal(t, 0, p.Len(), "Pool should be empty after returning an unhealthy client")
 	}
+}
+
+func TestPool_Put_NilClientReleasesSemaphore(t *testing.T) {
+	const maxSize = 2
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Get one client, which acquires a permit.
+	_, err = p.Get(context.Background())
+	require.NoError(t, err)
+
+	// Putting nil back should release the permit, but it doesn't.
+	p.Put(nil)
+
+	// We should be able to get two more clients now.
+	// The first one will pass.
+	c2, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, c2)
+
+	// The second one will fail if the semaphore was leaked.
+	c3, err := p.Get(context.Background())
+	require.NoError(t, err, "Getting a third client should not fail if semaphore is not leaked")
+	require.NotNil(t, c3)
 }
