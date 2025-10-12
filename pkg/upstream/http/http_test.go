@@ -93,7 +93,7 @@ func TestHttpMethodToString(t *testing.T) {
 func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		httpService := &configv1.HttpUpstreamService{}
@@ -119,7 +119,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("nil http service config", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -133,7 +133,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("invalid service name", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -145,7 +145,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		callDef1 := &configv1.HttpCallDefinition{}
@@ -187,7 +187,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		callDef := &configv1.HttpCallDefinition{}
@@ -306,7 +306,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 
 func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	// Initial registration

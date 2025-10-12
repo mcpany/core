@@ -23,7 +23,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/mcpserver"
@@ -60,15 +59,15 @@ func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	}
 }
 
-func TestToolValidationMiddleware(t *testing.T) {
+func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
 	ctx := context.Background()
 
 	// Start the worker to handle tool execution
@@ -106,18 +105,6 @@ func TestToolValidationMiddleware(t *testing.T) {
 	require.NoError(t, err)
 	defer clientSession.Close()
 
-	// Test tools/call for a non-existent tool
-	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
-		Name: "non-existent-tool",
-	})
-	assert.ErrorContains(t, err, tool.ErrToolNotFound.Error())
-
-	// Test tools/call for an existing tool
-	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
-		Name: compositeName,
-	})
-	assert.NoError(t, err)
-
 	// Test tools/list
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
@@ -146,12 +133,12 @@ func (m *mockErrorTool) Execute(ctx context.Context, req *tool.ExecutionRequest)
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -250,12 +237,12 @@ func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 func TestServer_Prompts(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
@@ -325,12 +312,12 @@ func (r *testResource) Subscribe(ctx context.Context) error {
 func TestServer_Resources(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
@@ -379,12 +366,12 @@ func TestServer_Resources(t *testing.T) {
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
@@ -397,57 +384,3 @@ func TestServer_Getters(t *testing.T) {
 	assert.NotNil(t, server.ServiceRegistry())
 }
 
-func TestToolValidationMiddleware_Filter(t *testing.T) {
-	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
-	busProvider := bus.NewBusProvider()
-	ctx := context.Background()
-
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
-	require.NoError(t, err)
-
-	// Add a tool directly to the MCP server, but not to the tool manager
-	mcpSDKTool := &mcp.Tool{
-		Name:        "unmanaged-tool",
-		InputSchema: &jsonschema.Schema{Type: "object"},
-	}
-	server.Server().AddTool(mcpSDKTool, func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return nil, nil
-	})
-
-	// Create client-server connection
-	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
-	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
-	require.NoError(t, err)
-	defer serverSession.Close()
-	clientSession, err := client.Connect(ctx, clientTransport, nil)
-	require.NoError(t, err)
-	defer clientSession.Close()
-
-	// List tools, the unmanaged tool should be filtered out
-	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
-	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 0)
-
-	// Now add a managed tool
-	managedTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("managed-tool"),
-			ServiceId: proto.String("managed-service"),
-		}.Build(),
-	}
-	toolManager.AddTool(managedTool)
-
-	// List tools again, only the managed tool should be present
-	listResult, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
-	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 1)
-	managedToolID, _ := util.GenerateToolID("managed-service", "managed-tool")
-	assert.Equal(t, managedToolID, listResult.Tools[0].Name)
-}

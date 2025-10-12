@@ -22,7 +22,11 @@ import (
 	"fmt"
 	"sync"
 
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/google/jsonschema-go/jsonschema"
+	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -42,12 +46,15 @@ type ToolManager struct {
 	tools       sync.Map
 	serviceInfo sync.Map
 	mcpServer   MCPServerProvider
+	bus         *bus.BusProvider
 	mu          sync.RWMutex
 }
 
 // NewToolManager creates and returns a new, empty ToolManager.
-func NewToolManager() *ToolManager {
-	return &ToolManager{}
+func NewToolManager(bus *bus.BusProvider) *ToolManager {
+	return &ToolManager{
+		bus: bus,
+	}
 }
 
 // SetMCPServer provides the ToolManager with a reference to the MCP server.
@@ -123,32 +130,49 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			},
 		}
 		handler := func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-			if _, ok := tm.GetTool(req.Params.Name); !ok {
-				return nil, ErrToolNotFound
-			}
+			logging.GetLogger().Info("Queueing tool execution", "toolName", req.Params.Name)
 
-			execReq := &ExecutionRequest{
+			correlationID := uuid.New().String()
+			resultChan := make(chan *bus.ToolExecutionResult, 1)
+
+			resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
+				resultChan <- result
+			})
+			defer unsubscribe()
+
+			requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+			execReq := &bus.ToolExecutionRequest{
+				Context:    ctx,
 				ToolName:   req.Params.Name,
 				ToolInputs: req.Params.Arguments,
 			}
+			execReq.SetCorrelationID(correlationID)
+			requestBus.Publish("request", execReq)
 
-			result, err := tm.ExecuteTool(ctx, execReq)
-			if err != nil {
-				return nil, fmt.Errorf("error executing tool %s: %w", req.Params.Name, err)
-			}
+			select {
+			case result := <-resultChan:
+				if result.Error != nil {
+					return nil, fmt.Errorf("error executing tool %s: %w", req.Params.Name, result.Error)
+				}
 
-			jsonResult, err := json.Marshal(result)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal tool result: %w", err)
-			}
+				jsonResult, err := json.Marshal(result.Result)
+				if err != nil {
+					return nil, fmt.Errorf("failed to marshal tool result: %w", err)
+				}
 
-			return &mcp.CallToolResult{
-				Content: []mcp.Content{
-					&mcp.TextContent{
-						Text: string(jsonResult),
+				return &mcp.CallToolResult{
+					Content: []mcp.Content{
+						&mcp.TextContent{
+							Text: string(jsonResult),
+						},
 					},
-				},
-			}, nil
+				}, nil
+			case <-ctx.Done():
+				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
+			case <-time.After(60 * time.Second): // Safety timeout
+				return nil, fmt.Errorf("timed out waiting for tool execution result for tool %s", req.Params.Name)
+			}
 		}
 		tm.mcpServer.Server().AddTool(mcpTool, handler)
 	}

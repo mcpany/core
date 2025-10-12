@@ -69,7 +69,7 @@ func (m *mockMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	s, n := "test-service", "test-tool"
 	mockTool := &MockTool{
 		tool: v1.Tool_builder{
@@ -90,7 +90,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 }
 
 func TestToolManager_ListTools(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	s1, n1 := "service1", "tool1"
 	s2, n2 := "service1", "tool2"
 	s3, n3 := "service2", "tool1"
@@ -125,7 +125,7 @@ func TestToolManager_ListTools(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	s1, n1 := "service1", "tool1"
 	s2, n2 := "service1", "tool2"
 	s3, n3 := "service2", "tool1"
@@ -146,7 +146,7 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 }
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	serviceInfo := &tool.ServiceInfo{
 		Name:   "test-service",
 		Config: &configv1.UpstreamServiceConfig{},
@@ -163,7 +163,7 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool_Success(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	expectedResult := "execution successful"
 	s, n := "exec-service", "exec-tool"
 	mockTool := &MockTool{
@@ -187,20 +187,20 @@ func TestToolManager_ExecuteTool_Success(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	req := &tool.ExecutionRequest{ToolName: "non-existent-tool"}
 	_, err := tm.ExecuteTool(context.Background(), req)
 	assert.ErrorIs(t, err, tool.ErrToolNotFound)
 }
 
 func TestToolManager_SetMCPServer(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	mcpServer := newMockMCPServerProvider()
 	tm.SetMCPServer(mcpServer)
 }
 
 func TestToolManager_AddTool_GenerateIDError(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	// An empty tool name should cause an error in GenerateToolID
 	s, n := "service1", ""
 	mockTool := &MockTool{
@@ -212,7 +212,7 @@ func TestToolManager_AddTool_GenerateIDError(t *testing.T) {
 }
 
 func TestToolManager_Concurrency(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	mcpServer := newMockMCPServerProvider()
 	tm.SetMCPServer(mcpServer)
 
@@ -252,12 +252,12 @@ func TestToolManager_Concurrency(t *testing.T) {
 }
 
 func TestNewToolManager(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	assert.NotNil(t, tm, "NewToolManager should not return nil")
 }
 
 func TestToolManager_AddTool_NilMCPServer(t *testing.T) {
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	// Explicitly ensure mcpServer is nil
 	tm.SetMCPServer(nil)
 

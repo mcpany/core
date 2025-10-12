@@ -76,16 +76,16 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	log.Info("Starting MCP-XY Service...")
 
 	// Core components
+	busProvider := bus.NewBusProvider()
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
 
 	// New message bus and workers
-	busProvider := bus.NewBusProvider()
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 
