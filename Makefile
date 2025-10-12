@@ -158,6 +158,17 @@ prepare:
 	else \
 		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 	fi
+	@echo "Installing Node.js dependencies for integration tests..."
+	@if command -v npm >/dev/null 2>&1; then \
+		if [ -f "tests/integration/upstream/package.json" ]; then \
+			echo "Found package.json, running npm install..."; \
+			(cd tests/integration/upstream && npm install); \
+		else \
+			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
+		fi; \
+	else \
+		echo "npm not found, skipping Node.js dependency installation."; \
+	fi
 	@echo "Preparation complete."
 
 
