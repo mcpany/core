@@ -223,3 +223,31 @@ func TestManager_RegisterOverwriteClosesOldPool(t *testing.T) {
 	assert.True(t, pool1.closed, "Expected old pool to be closed upon re-registration")
 	assert.False(t, pool2.closed, "Expected new pool to not be closed")
 }
+
+func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
+	const maxSize = 2
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Cycle through clients, marking them as unhealthy before returning them.
+	// This should not exhaust the pool's semaphore.
+	for i := 0; i < maxSize+1; i++ {
+		// Get a client. This acquires a semaphore permit.
+		c, err := p.Get(context.Background())
+		require.NoError(t, err, "Pool should not be exhausted on iteration %d", i)
+		require.NotNil(t, c)
+
+		// Mark it as unhealthy.
+		c.isHealthy = false
+
+		// Put it back. This should release the semaphore permit.
+		// The bug is that it doesn't, leading to a leak.
+		p.Put(c)
+
+		// The unhealthy client should have been closed.
+		assert.True(t, c.isClosed, "Client should be closed after being put back as unhealthy")
+		// The pool should not store the unhealthy client.
+		assert.Equal(t, 0, p.Len(), "Pool should be empty after returning an unhealthy client")
+	}
+}

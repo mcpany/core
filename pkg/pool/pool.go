@@ -167,8 +167,7 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 	p.mu.Unlock()
 
-	// Release the semaphore permit first, then check health. This prevents a leak
-	// where an unhealthy client is discarded without releasing the permit it held.
+	// A client is being returned, so release the semaphore permit first.
 	p.sem.Release(1)
 
 	if !client.IsHealthy() {
@@ -178,7 +177,7 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- client:
-		// Returned to idle queue.
+	// Returned to idle queue.
 	default:
 		// Idle queue is full, discard client.
 		lo.Try(client.Close)
