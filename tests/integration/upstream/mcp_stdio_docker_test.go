@@ -46,8 +46,11 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 	// --- 2. Register 'cowsay' server with MCPXY ---
 	const cowsayServiceID = "e2e-cowsay-server"
 	command := "python3"
-	args := []string{"-u", "main.py", "--mcp-stdio"}
-	setupCommands := []string{"pip install cowsay"}
+	args := []string{"-u", "main.py"}
+	imageName := "mcpxy-e2e-cowsay-server"
+
+	// Build the Docker image for the cowsay server
+	integration.BuildDockerImage(t, imageName, "tests/integration/cmd/mocks/python_cowsay_server")
 
 	t.Logf("INFO: Registering '%s' with MCPXY...", cowsayServiceID)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
@@ -57,12 +60,12 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 		cowsayServiceID,
 		command,
 		true,
-		"tests/integration/cmd/mocks/python_cowsay_server", // working directory
-		"", // No explicit container image
-		setupCommands,
+		"/app", // working directory inside the container
+		imageName,
+		nil, // No setup commands needed as they are in the Dockerfile
 		args...,
 	)
-	t.Logf("INFO: '%s' registered with command: %s %v", cowsayServiceID, command, args)
+	t.Logf("INFO: '%s' registered with image: %s, command: %s %v", cowsayServiceID, imageName, command, args)
 
 	// --- 3. Use MCP SDK to connect and call the tool ---
 	testMCPClient := sdk.NewClient(&sdk.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)

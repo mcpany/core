@@ -330,6 +330,17 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+func BuildDockerImage(t *testing.T, imageName, contextPath string) {
+	t.Helper()
+	dockerExe, dockerBaseArgs := getDockerCommand()
+	buildArgs := append(dockerBaseArgs, "build", "-t", imageName, contextPath)
+	cmd := exec.Command(dockerExe, buildArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	require.NoError(t, err, "docker build for %s failed", imageName)
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 func StartDockerContainer(t *testing.T, imageName, containerName string, args ...string) (cleanupFunc func()) {
