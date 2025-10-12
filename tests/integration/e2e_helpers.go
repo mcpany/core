@@ -330,6 +330,24 @@ func IsDockerSocketAccessible() bool {
 	return true
 }
 
+func CommandExists(cmd string) bool {
+	_, err := exec.LookPath(cmd)
+	return err == nil
+}
+
+func RunCommand(t *testing.T, dir, name string, args ...string) error {
+	t.Helper()
+	cmd := exec.Command(name, args...)
+	if dir != "" {
+		cmd.Dir = dir
+	}
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("command '%s %s' failed in dir '%s': %w\nOutput:\n%s", name, strings.Join(args, " "), dir, err, string(output))
+	}
+	return nil
+}
+
 // --- Mock Service Start Helpers (External Processes) ---
 
 func StartDockerContainer(t *testing.T, imageName, containerName string, args ...string) (cleanupFunc func()) {
@@ -673,12 +691,19 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, commandArgs ...string) {
 	t.Helper()
+
+	// Silence the setup commands to prevent them from interfering with the test output
+	silencedSetupCommands := make([]string, len(setupCommands))
+	for i, cmd := range setupCommands {
+		silencedSetupCommands[i] = fmt.Sprintf("%s > /dev/null 2>&1", cmd)
+	}
+
 	stdioConnection := configv1.McpStdioConnection_builder{
 		Command:          &commandName,
 		Args:             commandArgs,
 		WorkingDirectory: &workingDir,
 		ContainerImage:   &containerImage,
-		SetupCommands:    setupCommands,
+		SetupCommands:    silencedSetupCommands,
 	}.Build()
 	mcpService := configv1.McpUpstreamService_builder{
 		ToolAutoDiscovery: &toolAutoDiscovery,

@@ -58,6 +58,8 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	if err != nil {
 		log.Warn("Failed to pull docker image, will try to use local image if available", "image", img, "error", err)
 	} else {
+		// It's crucial to discard the output of the pull command to prevent it
+		// from interfering with the stdio communication channel.
 		_, _ = io.Copy(io.Discard, reader)
 		log.Info("Successfully pulled docker image", "image", img)
 	}
