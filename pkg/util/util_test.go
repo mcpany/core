@@ -34,11 +34,12 @@ func TestGenerateToolID(t *testing.T) {
 	}{
 		{"valid tool name", "", "toola", "toola", false},
 		{"valid tool name with service key", "service1", "toola", "service1/-/toola", false},
-		{"tool name already has service key", "service1", "service1/-/toola", "service1/-/toola", false},
-		{"tool name already has service key with different separator", "service1", "service1/toola", "service1/toola", false},
+		{"tool name with different separator is not considered fully qualified", "service1", "service1/tool1", "service1/-/service1/tool1", false},
+		{"tool name with different separator is not considered fully qualified 2", "service1", "service1/toola", "service1/-/service1/toola", false},
 		{"valid tool name with hyphen", "service1", "tool-a", "service1/-/tool-a", false},
 		{"empty tool name", "service1", "", "", true},
 		{"invalid tool name", "service1", "tool a", "", true},
+		{"tool name shares prefix with service key but is not fully qualified", "my-service", "my-service-tool", "my-service/-/my-service-tool", false},
 	}
 
 	for _, tt := range tests {

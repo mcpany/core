@@ -48,9 +48,9 @@ func GenerateToolID(serviceKey, toolName string) (string, error) {
 	}
 
 	if serviceKey != "" {
-		// If the tool name already starts with the service key, return it as is.
-		// This handles cases where the tool name is already prefixed, e.g., "service/tool"
-		if strings.HasPrefix(toolName, serviceKey) {
+		// If the tool name already starts with the service key and the separator,
+		// it is considered fully qualified and returned as is.
+		if strings.HasPrefix(toolName, serviceKey+consts.ToolNameServiceSeparator) {
 			return toolName, nil
 		}
 		// Otherwise, prepend the service key and separator.
