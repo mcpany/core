@@ -263,4 +263,3 @@ func (s *Server) ResourceManager() resource.ResourceManagerInterface {
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
-

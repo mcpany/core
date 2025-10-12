@@ -37,7 +37,6 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	t.Log("INFO: Starting E2E Test Scenario for IP Info Server...")
 
-
 	// --- 1. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EIPInfoServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
