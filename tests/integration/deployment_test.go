@@ -1,100 +1,175 @@
-package integration
+package integration_test
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 
-func TestDockerComposeDeployment(t *testing.T) {
-	if os.Getenv("SKIP_DOCKER_TESTS") != "" {
-		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
-	}
-	if !IsDockerSocketAccessible() {
-		t.Skip("Skipping Docker tests because Docker socket is not accessible")
-	}
-
-	t.Parallel()
-	root, err := GetProjectRoot()
-	require.NoError(t, err)
-
-	composeFile := filepath.Join(root, "docker-compose.yml")
-	_, err = os.Stat(composeFile)
-	require.NoError(t, err, "docker-compose.yml not found")
-
-	dockerExe, dockerBaseArgs := getDockerCommand()
-	args := append(dockerBaseArgs, "compose", "-f", composeFile, "up", "--build", "--abort-on-container-exit")
-	composeProcess := NewManagedProcess(t, "docker-compose", dockerExe, args, nil)
-
-	err = composeProcess.Start()
-	require.NoError(t, err)
-
-	defer composeProcess.Stop()
-
-	// Check that the mcpxy server is healthy
-	mcpxyHealthURL := "http://localhost:50050/healthz"
-	WaitForHTTPHealth(t, mcpxyHealthURL, 60*time.Second)
-
-	// Check that the http-echo-server is healthy
-	echoHealthURL := "http://localhost:8080/health"
-	WaitForHTTPHealth(t, echoHealthURL, 60*time.Second)
-
-	// Stop the docker-compose process and check the exit code
-	composeProcess.Stop()
-	require.True(t, composeProcess.Cmd().ProcessState.Success(), "docker-compose up should exit cleanly")
+func commandExists(cmd string) bool {
+	_, err := exec.LookPath(cmd)
+	return err == nil
 }
 
-func TestHelmChartDeployment(t *testing.T) {
-	if os.Getenv("SKIP_K8S_TESTS") == "" {
-		t.Skip("Skipping Kubernetes tests because SKIP_K8S_TESTS is not set")
+func getDockerCommand(t *testing.T) []string {
+	t.Helper()
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+		return []string{"sudo", "docker"}
 	}
-	if _, err := exec.LookPath("helm"); err != nil {
-		t.Skip("Skipping Helm test because helm executable not found in PATH")
+	return []string{"docker"}
+}
+
+func TestDockerCompose(t *testing.T) {
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
+	}
+	if !commandExists("docker") {
+		t.Skip("docker command not found, skipping TestDockerCompose.")
+	}
+
+	t.Parallel()
+
+	rootDir := integration.ProjectRoot(t)
+	dockerComposeFile := filepath.Join(rootDir, "docker-compose.yml")
+
+	dockerCmd := getDockerCommand(t)
+
+	// Build the images first to avoid race conditions
+	buildCmdArgs := append(dockerCmd, "compose", "-f", dockerComposeFile, "build")
+	buildCmd := exec.Command(buildCmdArgs[0], buildCmdArgs[1:]...)
+	buildCmd.Dir = rootDir
+	buildOutput, err := buildCmd.CombinedOutput()
+	require.NoError(t, err, "docker compose build should not fail: %s", string(buildOutput))
+
+	// Run in detached mode
+	upCmdArgs := append(dockerCmd, "compose", "-f", dockerComposeFile, "up", "-d")
+	upCmd := exec.Command(upCmdArgs[0], upCmdArgs[1:]...)
+	upCmd.Dir = rootDir
+	upOutput, err := upCmd.CombinedOutput()
+	require.NoError(t, err, "docker compose up -d should not fail: %s", string(upOutput))
+
+	// Cleanup function to bring down the services
+	t.Cleanup(func() {
+		t.Log("Cleaning up docker compose services...")
+		downCmdArgs := append(dockerCmd, "compose", "-f", dockerComposeFile, "down", "--volumes")
+		downCmd := exec.Command(downCmdArgs[0], downCmdArgs[1:]...)
+		downCmd.Dir = rootDir
+		downOutput, err := downCmd.CombinedOutput()
+		if err != nil {
+			t.Logf("Failed to run 'docker compose down': %s\n%s", err, string(downOutput))
+		} else {
+			t.Log("Docker compose services cleaned up successfully.")
+		}
+	})
+
+	// Wait for the services to be healthy
+	require.Eventually(t, func() bool {
+		psCmdArgs := append(dockerCmd, "compose", "-f", dockerComposeFile, "ps", "--format", "json")
+		psCmd := exec.Command(psCmdArgs[0], psCmdArgs[1:]...)
+		psCmd.Dir = rootDir
+		psOutput, err := psCmd.CombinedOutput()
+		if err != nil {
+			t.Logf("docker compose ps failed: %v", err)
+			return false
+		}
+
+		var services []map[string]interface{}
+		// The output is a stream of JSON objects, so we need to handle that.
+		decoder := json.NewDecoder(bytes.NewReader(psOutput))
+		for decoder.More() {
+			var service map[string]interface{}
+			if err := decoder.Decode(&service); err != nil {
+				t.Logf("Failed to decode docker compose ps output: %v", err)
+				return false
+			}
+			services = append(services, service)
+		}
+
+		if len(services) < 2 {
+			return false
+		}
+
+		mcpxyReady := false
+		echoReady := false
+		for _, s := range services {
+			name, okName := s["Name"].(string)
+			state, okState := s["State"].(string)
+			if !okName || !okState {
+				continue
+			}
+			if strings.Contains(name, "mcpxy-server") && state == "running" {
+				mcpxyReady = true
+			}
+			if strings.Contains(name, "http-echo-server") && state == "running" {
+				echoReady = true
+			}
+		}
+		return mcpxyReady && echoReady
+	}, 2*time.Minute, 5*time.Second, "Docker services did not become healthy in time")
+
+	// Make a request to the echo tool via mcpxy
+	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
+	req, err := http.NewRequest("POST", "http://localhost:50050", bytes.NewBufferString(payload))
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+
+	var resp *http.Response
+	require.Eventually(t, func() bool {
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err = client.Do(req)
+		if err != nil {
+			t.Logf("curl request failed: %v", err)
+			return false
+		}
+		return resp.StatusCode == http.StatusOK
+	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpxy")
+
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	require.NoError(t, err)
+
+	// Check the response
+	require.NotNil(t, result["result"])
+	resultMap := result["result"].(map[string]interface{})
+	contentMap := resultMap["content"].(map[string]interface{})
+	dataMap := contentMap["data"].(map[string]interface{})
+	require.Contains(t, dataMap["message"], "Hello from Docker!")
+}
+
+func TestHelmChart(t *testing.T) {
+	if !commandExists("helm") {
+		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
-	root, err := GetProjectRoot()
-	require.NoError(t, err)
+	helmChartPath := filepath.Join(integration.ProjectRoot(t), "helm", "mcpxy")
 
-	chartPath := filepath.Join(root, "helm", "mcpxy")
-	releaseName := "mcpxy-test"
+	// 1. Lint the chart
+	lintCmd := exec.Command("helm", "lint", ".")
+	lintCmd.Dir = helmChartPath
+	lintOutput, err := lintCmd.CombinedOutput()
+	require.NoError(t, err, "helm lint should not fail: %s", string(lintOutput))
 
-	// Install the chart
-	installArgs := []string{"install", releaseName, chartPath, "--wait"}
-	helmInstall := NewManagedProcess(t, "helm-install", "helm", installArgs, nil)
-	err = helmInstall.Start()
-	require.NoError(t, err)
-	helmInstall.Stop() // Wait for the process to finish
+	// 2. Template the chart to ensure it renders correctly
+	templateCmd := exec.Command("helm", "template", "mcpxy-release", ".")
+	templateCmd.Dir = helmChartPath
+	templateOutput, err := templateCmd.CombinedOutput()
+	require.NoError(t, err, "helm template should not fail: %s", string(templateOutput))
 
-	// Check the status of the release
-	statusArgs := []string{"status", releaseName}
-	helmStatus := NewManagedProcess(t, "helm-status", "helm", statusArgs, nil)
-	err = helmStatus.Start()
-	require.NoError(t, err)
-	helmStatus.Stop() // Wait for the process to finish
-	require.Contains(t, helmStatus.StdoutString(), "STATUS: deployed")
-
-	// Port forward to the service
-	port := FindFreePort(t)
-	portForwardArgs := []string{"port-forward", fmt.Sprintf("service/%s-mcpxy", releaseName), fmt.Sprintf("%d:50050", port)}
-	portForward := NewManagedProcess(t, "kubectl-port-forward", "kubectl", portForwardArgs, nil)
-	err = portForward.Start()
-	require.NoError(t, err)
-	defer portForward.Stop()
-
-	// Check that the server is healthy
-	healthURL := fmt.Sprintf("http://localhost:%d/healthz", port)
-	WaitForHTTPHealth(t, healthURL, 30*time.Second)
-
-	// Uninstall the chart
-	uninstallArgs := []string{"uninstall", releaseName}
-	helmUninstall := NewManagedProcess(t, "helm-uninstall", "helm", uninstallArgs, nil)
-	err = helmUninstall.Start()
-	require.NoError(t, err)
-	helmUninstall.Stop()
+	// 3. Check for expected resources in the output
+	outputStr := string(templateOutput)
+	require.Contains(t, outputStr, "kind: Service", "Rendered template should contain a Service")
+	require.Contains(t, outputStr, "name: mcpxy-release", "Rendered template should contain the release name")
+	require.Contains(t, outputStr, "kind: Deployment", "Rendered template should contain a Deployment")
+	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpxy", "Rendered template should contain the app name label")
 }

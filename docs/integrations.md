@@ -24,11 +24,11 @@ Before you begin, you need to have the `mcpxy` server binary built and available
     ```
 
 2.  **Build the application:**
-    This command compiles the server and places the executable binary in the `./bin` directory.
+    This command compiles the server and places the executable binary in the `build/bin` directory.
     ```bash
     make build
     ```
-    The server binary will be located at `./bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
+    The server binary will be located at `build/bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
 
 ### AI Client Setup
 
@@ -42,7 +42,7 @@ This generic JSON configuration can be adapted for most clients that support it 
 {
   "mcpServers": {
     "mcpxy": {
-      "command": "/path/to/your/mcpxy-core/bin/server",
+      "command": "/path/to/your/mcpxy-core/build/bin/server",
       "args": [
         "--config-paths",
         "/path/to/your/mcpxy-config.yaml"
@@ -51,7 +51,7 @@ This generic JSON configuration can be adapted for most clients that support it 
   }
 }
 ```
-*   **Note**: Replace `/path/to/your/mcpxy-core/bin/server` with the actual absolute path.
+*   **Note**: Replace `/path/to/your/mcpxy-core/build/bin/server` with the actual absolute path.
 
 #### Gemini CLI
 
@@ -59,17 +59,17 @@ To register `mcpxy` as an extension to the Gemini CLI:
 
 ```bash
 # Add for the current project
-gemini mcp add mcpxy "/path/to/your/mcpxy-core/bin/server"
+gemini mcp add mcpxy "/path/to/your/mcpxy-core/build/bin/server"
 
 # Add with command-line arguments (like a config file)
 # Note the use of '--' to separate the command from its arguments.
-gemini mcp add mcpxy -- "/path/to/your/mcpxy-core/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
+gemini mcp add mcpxy -- "/path/to/your/mcpxy-core/build/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
 ```
 
 #### Claude CLI
 
 ```bash
-claude mcp add mcpxy "/path/to/your/mcpxy-core/bin/server"
+claude mcp add mcpxy "/path/to/your/mcpxy-core/build/bin/server"
 ```
 
 #### Copilot CLI
@@ -92,7 +92,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpxy` and a sa
 
 1.  **Start the services:**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
     The `mcpxy` server will be available on `localhost:50050`.
 
@@ -116,7 +116,7 @@ For production or staging environments, you can deploy `mcpxy` to a Kubernetes c
 ### Prerequisites
 
 - A running Kubernetes cluster.
-- [kubectl](httpss://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
 - [Helm](https://helm.sh/docs/intro/install/) installed.
 
 ### Deployment

@@ -41,6 +41,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func ProjectRoot(t *testing.T) string {
+	t.Helper()
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+	return root
+}
+
 const (
 	McpxyServerStartupTimeout = 30 * time.Second
 	ServiceStartupTimeout     = 15 * time.Second

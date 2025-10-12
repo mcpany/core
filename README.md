@@ -54,7 +54,7 @@ You can run the MCP-XY server directly or by using a `make` command.
     ```
 -   **Via Make:**
     ```bash
-    make server
+    make run
     ```
 
 By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
@@ -87,7 +87,7 @@ upstreamServices:
 To run the server with this configuration, use the following command:
 
 ```bash
-make server ARGS="--config-paths ./config.yaml"
+make run ARGS="--config-paths ./config.yaml"
 ```
 
 The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPXY_JSONRPC_PORT=6000`.
@@ -122,7 +122,7 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
 1.  **Start the services:**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
     This command will build the Docker images for both the `mcpxy` server and the echo server, and then start them. The `mcpxy` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
 
@@ -137,7 +137,7 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
 3.  **Shut down the services:**
     ```bash
-    docker-compose down
+    docker compose down
     ```
 
 ## Running with Helm
@@ -149,7 +149,7 @@ For deployments to Kubernetes, a Helm chart is available in the `helm/mcpxy` dir
 The following commands are available for development:
 
 - `make help`: Show this help message.
-- `make server`: Run the main server application.
+- `make run`: Run the main server application.
 - `make build`: Build the main server application.
 - `make test`: Run all tests.
 - `make check`: Run all checks (lint, vet, etc.).
