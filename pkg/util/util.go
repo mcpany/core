@@ -20,6 +20,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -113,4 +114,13 @@ func SanitizeOperationID(input string) string {
 		h.Write([]byte(s))
 		return fmt.Sprintf("_%s_", hex.EncodeToString(h.Sum(nil))[:6])
 	})
+}
+
+// GetDockerCommand returns the command and base arguments for running Docker,
+// respecting the USE_SUDO_FOR_DOCKER environment variable.
+func GetDockerCommand() (string, []string) {
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+		return "sudo", []string{"docker"}
+	}
+	return "docker", []string{}
 }
