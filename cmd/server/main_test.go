@@ -45,6 +45,10 @@ func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPo
 	return nil
 }
 
+func (m *mockRunner) RunHealthServer(jsonrpcPort string) error {
+	return nil
+}
+
 func TestRootCmd(t *testing.T) {
 	mock := &mockRunner{}
 	originalRunner := appRunner

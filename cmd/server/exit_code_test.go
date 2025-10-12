@@ -25,6 +25,10 @@ func (m *mockFailingRunner) Run(
 	return errors.New("mock run failure")
 }
 
+func (m *mockFailingRunner) RunHealthServer(jsonrpcPort string) error {
+	return nil
+}
+
 var _ app.Runner = &mockFailingRunner{}
 
 func TestMain_FailingExitCode(t *testing.T) {

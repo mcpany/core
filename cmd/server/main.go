@@ -79,6 +79,15 @@ func newRootCmd() *cobra.Command {
 	}
 	rootCmd.AddCommand(versionCmd)
 
+	healthCmd := &cobra.Command{
+		Use:   "health",
+		Short: "Run a health check server",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return appRunner.RunHealthServer(viper.GetString("jsonrpc-port"))
+		},
+	}
+	rootCmd.AddCommand(healthCmd)
+
 	cobra.OnInitialize(func() {
 		viper.AutomaticEnv()
 		viper.SetEnvPrefix("MCPXY")
