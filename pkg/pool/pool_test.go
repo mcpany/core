@@ -172,3 +172,27 @@ func TestManager(t *testing.T) {
 	m.CloseAll()
 	// After closing, the pool should be empty, assuming Close() works
 }
+
+type simpleMockPool struct {
+	closed bool
+}
+
+func (p *simpleMockPool) Close() {
+	p.closed = true
+}
+
+func (p *simpleMockPool) Len() int {
+	return 0
+}
+
+func TestManager_RegisterOverwriteClosesOldPool(t *testing.T) {
+	m := NewManager()
+	pool1 := &simpleMockPool{}
+	pool2 := &simpleMockPool{}
+
+	m.Register("test_pool", pool1)
+	m.Register("test_pool", pool2) // This should close pool1
+
+	assert.True(t, pool1.closed, "Expected old pool to be closed upon re-registration")
+	assert.False(t, pool2.closed, "Expected new pool to not be closed")
+}

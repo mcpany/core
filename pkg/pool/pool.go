@@ -225,7 +225,7 @@ func NewManager() *Manager {
 }
 
 // Register adds a new pool to the manager with a given name. If a pool with the
-// same name already exists, it is overwritten.
+// same name already exists, it is closed before being replaced.
 //
 // name is the name to associate with the pool.
 // pool is the pool to be registered. It must be of a type that can be asserted
@@ -233,6 +233,14 @@ func NewManager() *Manager {
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	// If a pool with the same name already exists, close it before replacing.
+	if oldPool, ok := m.pools[name]; ok {
+		if p, isPool := oldPool.(UntypedPool); isPool {
+			p.Close()
+		}
+	}
+
 	m.pools[name] = pool
 }
 
