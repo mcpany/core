@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.11-slim
+FROM public.ecr.aws/docker/library/python:3.11-slim
 
 WORKDIR /app
 
-COPY timeserver_patch/main.py /app/main.py
+COPY timeserver_patch/requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN pip install "fastmcp>=2.0.0"
+COPY timeserver_patch/main.py /app/main.py
 
 CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
