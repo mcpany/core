@@ -31,10 +31,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gorilla/websocket"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
-	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
