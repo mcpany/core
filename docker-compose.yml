@@ -1,5 +1,3 @@
-version: '3.9'
-
 # This Docker Compose file provides an example setup for running the MCP-XY server
 # along with a sample upstream service (http-echo-server) to demonstrate how they
 # can be connected within a Docker environment.
