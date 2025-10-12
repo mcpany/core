@@ -37,19 +37,25 @@ Before you begin, ensure you have the following installed:
     cd core
     ```
 
-2.  **Install dependencies and generate code:**
-    This command will download the necessary Go modules and generate the required protobuf files.
+2.  **Build the application:**
+    This command will install dependencies, generate code, and build the `mcpxy` binary.
     ```bash
-    make prepare
+    make build
     ```
+    The binary will be located at `build/bin/server`.
 
 ### Running the Server
 
-You can run the MCP-XY server using a `make` command, which handles building and running the application.
+You can run the MCP-XY server directly or by using a `make` command.
 
-```bash
-make server
-```
+-   **Directly:**
+    ```bash
+    ./build/bin/server
+    ```
+-   **Via Make:**
+    ```bash
+    make server
+    ```
 
 By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
 
@@ -133,6 +139,10 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
     ```bash
     docker-compose down
     ```
+
+## Running with Helm
+
+For deployments to Kubernetes, a Helm chart is available in the `helm/mcpxy` directory. See the [Helm chart README](helm/mcpxy/README.md) for detailed instructions.
 
 ## Development
 
