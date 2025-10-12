@@ -7,9 +7,9 @@ import (
 	"net"
 	"os"
 
+	pb "github.com/mcpxy/core/examples/upstream/grpc/greeter_server/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	pb "github.com/mcpxy/core/examples/upstream/grpc/greeter_server/proto"
 )
 
 // server is used to implement greeter.GreeterServer.
