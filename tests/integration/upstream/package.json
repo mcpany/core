@@ -1,7 +1,7 @@
 {
   "name": "mcpxy-integration-tests-upstream",
   "version": "1.0.0",
-  "description": "Dependencies for MCP-XY integration tests.",
+  "description": "Dependencies for upstream integration tests.",
   "dependencies": {
     "@modelcontextprotocol/server-everything": "2025.9.25"
   }

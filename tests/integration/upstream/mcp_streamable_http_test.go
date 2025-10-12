@@ -31,23 +31,23 @@ import (
 )
 
 func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
-	if !integration.CommandExists("npm") {
-		t.Skip("npm command not found, skipping TestUpstreamService_MCP_StreamableHTTP.")
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for 'everything' server (Streamable HTTP)...")
 	t.Parallel()
 
-	// --- 1. Install dependencies and start 'everything' server ---
-	err := integration.RunCommand(t, ".", "npm", "install")
-	require.NoError(t, err, "Failed to install npm dependencies")
-
+	// --- 1. Start 'everything' server directly and get the random port ---
 	hostPort := integration.FindFreePort(t)
 	serviceHttpEndpoint := fmt.Sprintf("http://localhost:%d/mcp", hostPort)
 	serviceMcpEndpoint := serviceHttpEndpoint
+
+	// Install npm dependencies before starting the server
+	npmInstallProc := integration.NewManagedProcess(t, "npm-install-everything", "npm", []string{"install"}, nil)
+	npmInstallProc.Cmd().Dir = "." // Run in the current directory
+	err := npmInstallProc.Start()
+	require.NoError(t, err, "Failed to start 'npm install'")
+	npmInstallProc.Stop() // This will wait for the command to complete
 
 	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
 	env := []string{fmt.Sprintf("PORT=%d", hostPort)}
@@ -59,8 +59,8 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 
 	// Wait for the 'everything' server to be ready
 	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", net.JoinHostPort("localhost", fmt.Sprintf("%d", hostPort)), 1*time.Second)
-		if err != nil {
+		conn, err_conn := net.DialTimeout("tcp", net.JoinHostPort("localhost", fmt.Sprintf("%d", hostPort)), 1*time.Second)
+		if err_conn != nil {
 			return false
 		}
 		conn.Close()

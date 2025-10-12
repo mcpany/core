@@ -58,8 +58,6 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	if err != nil {
 		log.Warn("Failed to pull docker image, will try to use local image if available", "image", img, "error", err)
 	} else {
-		// It's crucial to discard the output of the pull command to prevent it
-		// from interfering with the stdio communication channel.
 		_, _ = io.Copy(io.Discard, reader)
 		log.Info("Successfully pulled docker image", "image", img)
 	}
@@ -112,33 +110,36 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		}
 	}()
 
+	rwc := &dockerReadWriteCloser{
+		Reader:      stdoutReader,
+		WriteCloser: hijackedResp.Conn,
+		containerID: resp.ID,
+		cli:         cli,
+	}
 	return &dockerConn{
-		rwc: &dockerReadWriteCloser{
-			Reader:      stdoutReader,
-			WriteCloser: hijackedResp.Conn,
-			containerID: resp.ID,
-			cli:         cli,
-		},
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
 	}, nil
 }
 
 // dockerConn is a simple implementation of mcp.Connection.
 type dockerConn struct {
-	rwc io.ReadWriteCloser
+	rwc     io.ReadWriteCloser
+	decoder *json.Decoder
+	encoder *json.Encoder
 }
 
 func (c *dockerConn) Read(ctx context.Context) (jsonrpc.Message, error) {
-	d := json.NewDecoder(c.rwc)
 	var msg jsonrpc.Message
-	if err := d.Decode(&msg); err != nil {
+	if err := c.decoder.Decode(&msg); err != nil {
 		return nil, err
 	}
 	return msg, nil
 }
 
 func (c *dockerConn) Write(ctx context.Context, msg jsonrpc.Message) error {
-	e := json.NewEncoder(c.rwc)
-	return e.Encode(msg)
+	return c.encoder.Encode(msg)
 }
 
 func (c *dockerConn) Close() error {
