@@ -1,0 +1,12 @@
+global_settings:
+  bind_address: "0.0.0.0:8080"
+upstream_services:
+- name: hello-service
+  mcp_service:
+    stdio_connection:
+      command: "./venv/bin/python"
+      args:
+        - "-u"
+        - "examples/upstream/fastmcp/server/main.py"
+        - "--mcp-stdio"
+      working_directory: "."

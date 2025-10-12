@@ -144,7 +144,7 @@ The following commands are available for development:
 - `make test`: Run all tests.
 - `make check`: Run all checks (lint, vet, etc.).
 - `make proto-gen`: Generate protobuf files.
-- `make docker-build`: Build the docker image for the server.
+- `make docker-build`: Build the Docker image for the server.
 - `make clean`: Clean up build artifacts.
 
 ## Contributing

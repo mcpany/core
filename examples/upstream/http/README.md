@@ -10,7 +10,7 @@ From the root of the `core` project, run:
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+This will create the `mcpxy` binary in the `bin` directory.
 
 ## 2. Run the Upstream HTTP Server
 
@@ -20,7 +20,7 @@ In a separate terminal, start the upstream HTTP time server. From the `server` d
 go run time_server.go
 ```
 
-The server will start on port 8080.
+The server will start on port 8081.
 
 ## 3. Run the MCPXY Server
 
@@ -30,7 +30,7 @@ In another terminal, start the MCPXY server which is configured to expose the HT
 ./start.sh
 ```
 
-The MCPXY server will start on port 8080. Note that the upstream server and the MCPXY server are running on the same port in this example. This is generally not recommended for production, but it is fine for this example.
+The MCPXY server will start on port 8080.
 
 ## 4. Interact with the Tool using Gemini CLI
 
@@ -38,13 +38,9 @@ Now you can use an AI tool like Gemini CLI to interact with the HTTP service thr
 
 ### Configuration
 
-First, configure Gemini CLI to use the local MCPXY server as a tool extension. You can do this by modifying the Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) to add the following extension:
-
-```yaml
-extensions:
-  mcpxy-http-time:
-    http:
-      address: http://localhost:8080
+First, configure Gemini CLI to use the local MCPXY server as a tool extension.
+```bash
+gemini mcp add mcpxy-http-time http://localhost:8080
 ```
 
 ### List Available Tools

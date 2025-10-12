@@ -1,6 +1,6 @@
-# Command Upstream Example
+# FastMcp Upstream Example
 
-This example shows how to expose a simple shell command as a tool through MCPXY.
+This example shows how to expose a python command as a tool through MCPXY using fastmcp.
 
 ## 1. Build the MCPXY binary
 
@@ -22,7 +22,7 @@ chmod +x hello.sh
 
 ## 3. Run the MCPXY Server
 
-In a terminal, start the MCPXY server which is configured to expose the command. From the root of the `command` example directory, run:
+In a terminal, start the MCPXY server which is configured to expose the command. From the root of the `fastmcp` example directory, run:
 
 ```bash
 ./start.sh
@@ -38,7 +38,7 @@ Now you can use an AI tool like Gemini CLI to interact with the command through 
 
 First, configure Gemini CLI to use the local MCPXY server as a tool extension.
 ```bash
-gemini mcp add mcpxy-command-hello http://localhost:8080
+gemini mcp add mcpxy-fastmcp-hello http://localhost:8080
 ```
 
 ### List Available Tools
@@ -49,18 +49,18 @@ Now, you can ask Gemini CLI to list the available tools:
 $ gemini list tools
 ```
 
-You should see the `hello-service.hello-sh` tool in the list.
+You should see the `hello-service.hello` tool in the list.
 
 ### Test the Service
 
 Finally, you can test the service by asking Gemini CLI to call the tool:
 
 ```
-$ gemini call tool hello-service.hello-sh
+$ gemini call tool hello-service.hello -- name friend
 ```
 
 You should see a response similar to this:
 
 ```
-Hello, World!
+Hello, friend!
 ```

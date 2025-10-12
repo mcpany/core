@@ -4,9 +4,6 @@ upstream_services:
 - name: hello-service
   mcp_service:
     stdio_connection:
-      command: "./build/venv/bin/python"
+      command: "examples/upstream/command/server/hello.sh"
       args:
-        - "-u"
-        - "examples/upstream/command/server/main.py"
-        - "--mcp-stdio"
-      working_directory: "."
+        - "World"
