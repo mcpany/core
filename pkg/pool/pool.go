@@ -167,7 +167,8 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 	p.mu.Unlock()
 
-	// A client is being returned, so release the semaphore permit first.
+	// Release the semaphore permit first, then check health. This prevents a leak
+	// where an unhealthy client is discarded without releasing the permit it held.
 	p.sem.Release(1)
 
 	if !client.IsHealthy() {
