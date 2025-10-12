@@ -20,14 +20,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/mcpxy/core/pkg/appconsts"
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/consts"
-	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/prompt"
 	"github.com/mcpxy/core/pkg/resource"
 	"github.com/mcpxy/core/pkg/serviceregistry"
@@ -150,20 +147,12 @@ func NewServer(
 		}
 	}
 
-	toolValidationMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
+	toolListFilteringMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(
 			ctx context.Context,
 			method string,
 			req mcp.Request,
 		) (mcp.Result, error) {
-			if method == consts.MethodToolsCall {
-				if ctr, ok := req.(*mcp.CallToolRequest); ok {
-					if _, ok := s.toolManager.GetTool(ctr.Params.Name); !ok {
-						return nil, tool.ErrToolNotFound
-					}
-				}
-			}
-
 			result, err := next(ctx, method, req)
 
 			if method == consts.MethodToolsList {
@@ -192,7 +181,7 @@ func NewServer(
 	}
 
 	s.server.AddReceivingMiddleware(routerMiddleware)
-	s.server.AddReceivingMiddleware(toolValidationMiddleware)
+	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
 
 	return s, nil
 }
@@ -275,56 +264,3 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
-// CallTool handles the "tools/call" MCP request by dispatching it to the
-// appropriate worker via the event bus. It publishes a ToolExecutionRequest and
-// waits for a corresponding ToolExecutionResult. This asynchronous process
-// allows for non-blocking tool execution.
-//
-// ctx is the context for the tool call.
-// req contains the parameters for the tool call, such as the tool name and
-// arguments.
-func (s *Server) CallTool(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	logging.GetLogger().Info("Queueing tool execution", "toolName", req.Params.Name)
-
-	correlationID := uuid.New().String()
-	resultChan := make(chan *bus.ToolExecutionResult, 1)
-
-	resultBus := bus.GetBus[*bus.ToolExecutionResult](s.bus, "tool_execution_results")
-	unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
-		resultChan <- result
-	})
-	defer unsubscribe()
-
-	requestBus := bus.GetBus[*bus.ToolExecutionRequest](s.bus, "tool_execution_requests")
-	execReq := &bus.ToolExecutionRequest{
-		Context:    ctx,
-		ToolName:   req.Params.Name,
-		ToolInputs: req.Params.Arguments,
-	}
-	execReq.SetCorrelationID(correlationID)
-	requestBus.Publish("request", execReq)
-
-	select {
-	case result := <-resultChan:
-		if result.Error != nil {
-			return nil, fmt.Errorf("error executing tool %s: %w", req.Params.Name, result.Error)
-		}
-
-		jsonResult, err := json.Marshal(result.Result)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal tool result: %w", err)
-		}
-
-		return &mcp.CallToolResult{
-			Content: []mcp.Content{
-				&mcp.TextContent{
-					Text: string(jsonResult),
-				},
-			},
-		}, nil
-	case <-ctx.Done():
-		return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-	case <-time.After(60 * time.Second): // Safety timeout
-		return nil, fmt.Errorf("timed out waiting for tool execution result for tool %s", req.Params.Name)
-	}
-}

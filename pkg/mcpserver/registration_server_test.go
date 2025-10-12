@@ -41,17 +41,17 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// Setup bus and worker
+	busProvider := bus.NewBusProvider()
+
 	// Setup components
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager()
+	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
-
-	// Setup bus and worker
-	busProvider := bus.NewBusProvider()
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 
