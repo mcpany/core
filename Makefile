@@ -212,8 +212,8 @@ build-calculator-stdio:
 lint: gen
 	@echo "Cleaning golangci-lint cache..."
 	@$(GOLANGCI_LINT_BIN) cache clean
-	@echo "Running golangci-lint with fix..."
-	@$(GOLANGCI_LINT_BIN) run --fix ./...
+	@echo "Running golangci-lint..."
+	@$(GOLANGCI_LINT_BIN) run ./...
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
