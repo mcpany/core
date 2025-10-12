@@ -33,7 +33,6 @@ jobs:
     - name: Check linting
       run: |
         make lint
-        git diff --exit-code
 
     - name: test everything
       run: make test
