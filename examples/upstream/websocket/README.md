@@ -1,74 +1,69 @@
-# Websocket Echo Server Example
+# Example: Exposing a WebSocket Service
 
-This example shows how to create a simple websocket server and expose it as a tool through MCPXY.
+This example demonstrates how to expose a WebSocket service as a tool through `mcpxy`.
 
-## 1. Build the MCPXY binary
+## Overview
 
-From the root of the `core` project, run:
+This example consists of three main components:
+1.  **Upstream WebSocket Server**: A simple Go-based WebSocket server (`echo_server/`) that echoes back any message it receives.
+2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the WebSocket server.
+3.  **`mcpxy` Server**: The `mcpxy` instance that acts as a proxy between the AI assistant and the WebSocket server.
 
+## Running the Example
+
+### 1. Build the `mcpxy` Binary
+
+Ensure the `mcpxy` binary is built. From the root of the repository, run:
 ```bash
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+### 2. Run the Upstream WebSocket Server
 
-## 2. Run the Upstream Websocket Server
-
-In a separate terminal, start the upstream websocket echo server. From the `echo_server/server` directory, run:
-
+In a separate terminal, start the upstream WebSocket server. From this directory (`examples/upstream/websocket`), run:
 ```bash
-go run main.go
+go run ./echo_server/main.go
 ```
+The server will start and listen on port `8082`.
 
-The server will start on port 8080.
+### 3. Run the `mcpxy` Server
 
-## 3. Run the MCPXY Server
-
-In another terminal, start the MCPXY server which is configured to expose the websocket server. From the root of the `websocket` example directory, run:
-
+In another terminal, start the `mcpxy` server using the provided script.
 ```bash
 ./start.sh
 ```
+The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
-The MCPXY server will start on port 8080. Note that the upstream server and the MCPXY server are running on the same port in this example. This is generally not recommended for production, but it is fine for this example.
+## Interacting with the Tool
 
-## 4. Interact with the Tool using Gemini CLI
+Once both servers are running, you can connect your AI assistant to `mcpxy`.
 
-Now you can use an AI tool like Gemini CLI to interact with the websocket service through MCPXY.
+### Using Gemini CLI
 
-### Configuration
+1.  **Add `mcpxy` as an MCP Server:**
+    Register the running `mcpxy` process with the Gemini CLI.
+    ```bash
+    gemini mcp add mcpxy-websocket-echo --address http://localhost:50050 --command "sleep" "infinity"
+    ```
 
-First, configure Gemini CLI to use the local MCPXY server as a tool extension. You can do this by modifying the Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) to add the following extension:
+2.  **List Available Tools:**
+    Ask Gemini to list the tools.
+    ```bash
+    gemini list tools
+    ```
+    You should see the `websocket-echo-server/-/echo` tool in the list.
 
-```yaml
-extensions:
-  mcpxy-websocket-echo:
-    http:
-      address: http://localhost:8080
-```
+3.  **Call the Tool:**
+    Call the `echo` tool with a message.
+    ```bash
+    gemini call tool websocket-echo-server/-/echo '{"message": "Hello, WebSocket!"}'
+    ```
 
-### List Available Tools
+    You should receive a JSON response echoing your message:
+    ```json
+    {
+      "response": "Hello, WebSocket!"
+    }
+    ```
 
-Now, you can ask Gemini CLI to list the available tools:
-
-```
-$ gemini list tools
-```
-
-You should see the `echo-service./echo` tool in the list.
-
-### Test the Service
-
-Finally, you can test the service by asking Gemini CLI to call the tool:
-
-```
-$ gemini call tool echo-service./echo '{"message": "hello"}'
-```
-
-You should see a response similar to this:
-
-```json
-{
-  "message": "hello"
-}
-```
+This example demonstrates how `mcpxy` can expose real-time, stateful services like WebSockets to AI assistants.

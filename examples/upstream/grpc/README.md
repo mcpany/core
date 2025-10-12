@@ -1,82 +1,69 @@
-# gRPC Greeter Server Example
+# Example: Exposing a gRPC Service
 
-This example shows how to create a simple gRPC server and expose it as a tool through MCPXY.
+This example demonstrates how to expose a gRPC service as a set of tools through `mcpxy`.
 
-## 1. Build the MCPXY binary
+## Overview
 
-From the root of the `core` project, run:
+This example consists of three main components:
+1.  **Upstream gRPC Server**: A simple Go-based gRPC server (`greeter_server/`) that provides a `SayHello` RPC.
+2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the gRPC server and discover its services using gRPC reflection.
+3.  **`mcpxy` Server**: The `mcpxy` instance that bridges the AI assistant and the gRPC server.
 
+## Running the Example
+
+### 1. Build the `mcpxy` Binary
+
+Ensure the `mcpxy` binary is built. From the root of the repository, run:
 ```bash
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+### 2. Run the Upstream gRPC Server
 
-## 2. Generate Protobuf Files
-
-Before running the server, you need to generate the Go code from the `.proto` file. From the `greeter_server` directory, run:
-
+In a separate terminal, start the upstream gRPC server. From this directory (`examples/upstream/grpc`), run:
 ```bash
-./generate.sh
+go run ./greeter_server/main.go
 ```
+The server will start and listen on port `50051`.
 
-## 3. Run the Upstream gRPC Server
+### 3. Run the `mcpxy` Server
 
-In a separate terminal, start the upstream gRPC greeter server. From the `greeter_server/server` directory, run:
-
-```bash
-go run main.go
-```
-
-The server will start on port 50051.
-
-## 4. Run the MCPXY Server
-
-In another terminal, start the MCPXY server which is configured to expose the gRPC server. From the root of the `grpc` example directory, run:
-
+In another terminal, start the `mcpxy` server using the provided script.
 ```bash
 ./start.sh
 ```
+The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
-The MCPXY server will start on port 8080.
+## Interacting with the Tool
 
-## 5. Interact with the Tool using Gemini CLI
+Once both servers are running, you can connect your AI assistant to `mcpxy`.
 
-Now you can use an AI tool like Gemini CLI to interact with the gRPC service through MCPXY.
+### Using Gemini CLI
 
-### Configuration
+1.  **Add `mcpxy` as an MCP Server:**
+    Register the running `mcpxy` process with the Gemini CLI.
+    ```bash
+    gemini mcp add mcpxy-grpc-greeter --address http://localhost:50050 --command "sleep" "infinity"
+    ```
 
-First, configure Gemini CLI to use the local MCPXY server as a tool extension. You can do this by modifying the Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) to add the following extension:
+2.  **List Available Tools:**
+    Ask Gemini to list the tools.
+    ```bash
+    gemini list tools
+    ```
+    You should see the `grpc-greeter/-/SayHello` tool in the list.
 
-```yaml
-extensions:
-  mcpxy-grpc-greeter:
-    http:
-      address: http://localhost:8080
-```
+3.  **Call the Tool:**
+    Call the `SayHello` tool with a name argument.
+    ```bash
+    gemini call tool grpc-greeter/-/SayHello '{"name": "World"}'
+    ```
 
-### List Available Tools
+    You should receive a JSON response with a greeting:
+    ```json
+    {
+      "message": "Hello, World"
+    }
+    ```
 
-Now, you can ask Gemini CLI to list the available tools:
-
-```
-$ gemini list tools
-```
-
-You should see the `greeter-service.SayHello` tool in the list.
-
-### Test the Service
-
-Finally, you can test the service by asking Gemini CLI to call the tool:
-
-```
-$ gemini call tool greeter-service.SayHello '{"name": "World"}'
-```
-
-You should see a response similar to this:
-
-```json
-{
-  "message": "Hello World"
-}
-```
+This example highlights how `mcpxy` can seamlessly integrate existing gRPC services with AI assistants, enabling them to interact with strongly-typed, high-performance APIs.

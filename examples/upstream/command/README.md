@@ -1,70 +1,66 @@
-# Command Upstream Example
+# Example: Wrapping a Command-Line Tool
 
-This example shows how to expose a simple shell command as a tool through MCPXY.
+This example demonstrates how to wrap a simple shell script and expose it as a tool through `mcpxy`. This powerful feature allows you to integrate any command-line tool into your AI assistant's workflow.
 
-## 1. Build the MCPXY binary
+## Overview
 
-From the root of the `core` project, run:
+This example consists of three main components:
+1.  **Upstream Script**: A simple shell script (`server/hello.sh`) that prints a greeting.
+2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to execute the script.
+3.  **`mcpxy` Server**: The `mcpxy` instance that runs the script and returns its output.
 
+## Running the Example
+
+### 1. Build the `mcpxy` Binary
+
+First, ensure the `mcpxy` binary is built. From the root of the repository, run:
 ```bash
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+### 2. Make the Script Executable
 
-## 2. Make the script executable
-
-Before running the MCPXY server, you need to make the `hello.sh` script executable. From the `server` directory, run:
-
+The shell script must be executable. From this directory (`examples/upstream/command`), run:
 ```bash
-chmod +x hello.sh
+chmod +x ./server/hello.sh
 ```
 
-## 3. Run the MCPXY Server
+### 3. Run the `mcpxy` Server
 
-In a terminal, start the MCPXY server which is configured to expose the command. From the root of the `command` example directory, run:
-
+Start the `mcpxy` server using the provided shell script.
 ```bash
 ./start.sh
 ```
+The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
-The MCPXY server will start on port 8080.
+## Interacting with the Tool
 
-## 4. Interact with the Tool using Gemini CLI
+Once the server is running, you can connect your AI assistant to `mcpxy`.
 
-Now you can use an AI tool like Gemini CLI to interact with the command through MCPXY.
+### Using Gemini CLI
 
-### Configuration
+1.  **Add `mcpxy` as an MCP Server:**
+    Register the running `mcpxy` process with the Gemini CLI.
+    ```bash
+    gemini mcp add mcpxy-command-hello --address http://localhost:50050 --command "sleep" "infinity"
+    ```
 
-First, configure Gemini CLI to use the local MCPXY server as a tool extension. You can do this by modifying the Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) to add the following extension:
+2.  **List Available Tools:**
+    Ask Gemini to list the tools.
+    ```bash
+    gemini list tools
+    ```
+    You should see the `command-hello-world/-/hello` tool in the list.
 
-```yaml
-extensions:
-  mcpxy-command-hello:
-    http:
-      address: http://localhost:8080
-```
+3.  **Call the Tool:**
+    Call the tool to execute the script.
+    ```bash
+    gemini call tool command-hello-world/-/hello
+    ```
 
-### List Available Tools
+    You should see the output of the script:
+    ```
+    Hello, World!
+    ```
 
-Now, you can ask Gemini CLI to list the available tools:
-
-```
-$ gemini list tools
-```
-
-You should see the `hello-service.hello.sh` tool in the list.
-
-### Test the Service
-
-Finally, you can test the service by asking Gemini CLI to call the tool:
-
-```
-$ gemini call tool hello-service.hello.sh
-```
-
-You should see a response similar to this:
-
-```
-Hello from command upstream!
-```
+This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.

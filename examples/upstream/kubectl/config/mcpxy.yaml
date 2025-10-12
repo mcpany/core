@@ -1,0 +1,29 @@
+upstreamServices:
+  - name: "kubectl"
+    commandService:
+      command: "kubectl"
+      calls:
+        - operationId: "get-pods"
+          description: "Get pods in a namespace"
+          args:
+            - "get"
+            - "pods"
+            - "-n"
+            - "{{ .namespace }}"
+            - "-o"
+            - "json"
+          parameterMappings:
+            - inputParameterName: "namespace"
+              targetParameterName: "namespace"
+        - operationId: "get-deployments"
+          description: "Get deployments in a namespace"
+          args:
+            - "get"
+            - "deployments"
+            - "-n"
+            - "{{ .namespace }}"
+            - "-o"
+            - "json"
+          parameterMappings:
+            - inputParameterName: "namespace"
+              targetParameterName: "namespace"
