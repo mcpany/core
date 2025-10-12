@@ -32,7 +32,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - "/mcpxy"
+            - "/app/server"
             - "--config-paths"
             - "/etc/mcpxy/config.yaml"
           ports:
@@ -43,12 +43,12 @@ spec:
               containerPort: {{ .Values.service.grpcPort }}
               protocol: TCP
           livenessProbe:
-            # A simple TCP socket probe to check if the ports are open.
-            # A proper health check endpoint would be better.
-            tcpSocket:
+            httpGet:
+              path: /healthz
               port: jsonrpc
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
               port: jsonrpc
           volumeMounts:
             - name: config

@@ -15,7 +15,7 @@ Before running any of the examples, you need to build the `mcpxy` binary. From t
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+This will create the `mcpxy` binary in the `build/bin` directory. All example scripts use this path.
 
 ## 2. Running the Examples
 
@@ -27,18 +27,18 @@ The examples are designed to be used with AI tools that can consume MCPXY extens
 
 ### Gemini CLI
 
-1.  **Configure the Extension:** Open your Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) and add an extension for the example you want to use. For example, for the HTTP time server example:
+1.  **Configure the Extension:** Open your Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) and add an extension for the example you want to use. The server for the examples usually runs on port `50050`.
 
     ```yaml
     extensions:
-      mcpxy-http-time:
+      mcpxy-example:
         http:
-          address: http://localhost:8080
+          address: http://localhost:50050
     ```
 
 2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the MCPXY server.
 
-3.  **Call a Tool:** Use the `gemini call tool` command to interact with the service.
+3.  **Call a Tool:** Use the `gemini call tool` command to interact with the service. Refer to the specific example's `README.md` for the correct tool name and arguments.
 
 ### Claude Desktop
 

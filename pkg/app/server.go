@@ -51,6 +51,7 @@ var ShutdownTimeout = 5 * time.Second
 // Runner defines the interface for running the MCP-XY application.
 type Runner interface {
 	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error
+	RunHealthServer(jsonrpcPort string) error
 }
 
 // Application is the main application struct, holding the dependencies and logic.
@@ -151,6 +152,25 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // runServerMode runs the server in the standard HTTP and gRPC server mode.
 // It starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
+// RunHealthServer starts a simple HTTP server for health checks.
+func (a *Application) RunHealthServer(jsonrpcPort string) error {
+	log := logging.GetLogger()
+	log.Info("Starting health check server", "port", jsonrpcPort)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
+	})
+
+	server := &http.Server{
+		Addr:    ":" + jsonrpcPort,
+		Handler: mux,
+	}
+
+	return server.ListenAndServe()
+}
+
 func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
@@ -158,7 +178,15 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 	httpHandler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 		return mcpSrv.Server()
 	}, nil)
-	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, httpHandler)
+
+	mux := http.NewServeMux()
+	mux.Handle("/", httpHandler)
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
+	})
+
+	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux)
 
 	if grpcPort != "" {
 		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {

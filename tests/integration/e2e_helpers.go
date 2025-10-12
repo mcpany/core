@@ -313,29 +313,13 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible and can pull images.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible.
 func IsDockerSocketAccessible() bool {
-	// First, check if the docker command itself is runnable.
 	dockerExe, dockerArgs := getDockerCommand()
-	versionCmd := exec.Command(dockerExe, append(dockerArgs, "version")...)
-	if err := versionCmd.Run(); err != nil {
-		// If 'docker version' fails, Docker is not usable.
+	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...)
+	if err := cmd.Run(); err != nil {
 		return false
 	}
-
-	// Next, try a lightweight operation that requires daemon access and registry communication.
-	// Pulling 'hello-world' is a good candidate. It's small and unlikely to be removed.
-	// We use a timeout to avoid hanging in case of network issues.
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	pullCmd := exec.CommandContext(ctx, dockerExe, append(dockerArgs, "pull", "hello-world")...)
-	if err := pullCmd.Run(); err != nil {
-		// If 'docker pull' fails (e.g., rate limits, network error, daemon issue),
-		// we consider Docker not fully accessible for tests.
-		return false
-	}
-
 	return true
 }
 
