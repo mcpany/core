@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
+	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/client"
 	"github.com/mcpxy/core/pkg/pool"
 	"github.com/mcpxy/core/pkg/prompt"
@@ -44,7 +45,7 @@ type MockToolManager struct {
 	lastErr error
 }
 
-func NewMockToolManager() *MockToolManager {
+func NewMockToolManager(bus *bus.BusProvider) *MockToolManager {
 	return &MockToolManager{
 		tools: make(map[string]tool.Tool),
 	}
@@ -109,7 +110,7 @@ func TestNewWebsocketUpstream(t *testing.T) {
 
 func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
 		var resourceManager resource.ResourceManagerInterface
@@ -140,7 +141,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 
 	t.Run("nil service config", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
 		var resourceManager resource.ResourceManagerInterface
@@ -152,7 +153,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 
 	t.Run("nil websocket service config", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
 		var resourceManager resource.ResourceManagerInterface
@@ -168,7 +169,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 
 	t.Run("add tool error", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		toolManager.lastErr = errors.New("failed to add tool")
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
@@ -192,7 +193,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 
 	t.Run("authenticator creation fails", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
 		var resourceManager resource.ResourceManagerInterface
@@ -220,7 +221,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
-		toolManager := NewMockToolManager()
+		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
 		var promptManager prompt.PromptManagerInterface
 		var resourceManager resource.ResourceManagerInterface
@@ -272,7 +273,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 
 	t.Run("successful registration", func(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
@@ -351,7 +352,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 	})
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
-		tm := tool.NewToolManager()
+		tm := tool.NewToolManager(nil)
 		upstream := NewWebsocketUpstream(poolManager)
 
 		call1 := &configv1.WebsocketCallDefinition{}
@@ -382,7 +383,7 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager()
+	tm := tool.NewToolManager(nil)
 	upstream := NewWebsocketUpstream(poolManager)
 
 	call1 := &configv1.WebsocketCallDefinition{}
