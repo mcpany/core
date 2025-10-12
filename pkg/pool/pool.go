@@ -163,6 +163,9 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 	p.mu.Unlock()
 
+	// A client is being returned, so release the semaphore permit first.
+	p.sem.Release(1)
+
 	if !client.IsHealthy() {
 		lo.Try(client.Close)
 		return
@@ -170,12 +173,11 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- client:
-		// Returned to idle queue.
+	// Returned to idle queue.
 	default:
 		// Idle queue is full, discard client.
 		lo.Try(client.Close)
 	}
-	p.sem.Release(1)
 }
 
 // Close closes the pool and all its underlying client connections.
