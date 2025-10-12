@@ -383,4 +383,3 @@ func TestServer_Getters(t *testing.T) {
 	assert.NotNil(t, server.ResourceManager())
 	assert.NotNil(t, server.ServiceRegistry())
 }
-

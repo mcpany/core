@@ -21,11 +21,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/google/jsonschema-go/jsonschema"
+	"github.com/google/uuid"
 	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/util"

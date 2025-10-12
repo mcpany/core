@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"google.golang.org/grpc"
 	pb "github.com/mcpxy/core/examples/upstream/grpc/greeter_server/proto"
+	"google.golang.org/grpc"
 )
 
 const (
