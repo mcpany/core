@@ -152,6 +152,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+		// A nil client was put back, which can happen if the factory function
+		// returns a nil client and a nil error. In this case, we just release
+		// the semaphore permit that was acquired.
+		p.sem.Release(1)
 		return
 	}
 
@@ -162,6 +166,10 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 	p.mu.Unlock()
+
+	// Release the semaphore permit first, then check health. This prevents a leak
+	// where an unhealthy client is discarded without releasing the permit it held.
+	p.sem.Release(1)
 
 	if !client.IsHealthy() {
 		lo.Try(client.Close)
@@ -175,7 +183,6 @@ func (p *poolImpl[T]) Put(client T) {
 		// Idle queue is full, discard client.
 		lo.Try(client.Close)
 	}
-	p.sem.Release(1)
 }
 
 // Close closes the pool and all its underlying client connections.
