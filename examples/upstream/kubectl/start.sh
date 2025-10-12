@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script starts the mcpxy server and configures it to expose the
-# tools defined in the ./config/mcpxy.yaml file.
+# kubectl tools defined in the ./config/mcpxy.yaml file.
 
 # The root directory of the mcpxy repository.
 MCPXY_ROOT_DIR="$(git rev-parse --show-toplevel)"
@@ -16,6 +16,14 @@ CONFIG_PATH="./config/"
 if [ ! -f "${MCPXY_SERVER_BIN}" ]; then
     echo "Error: mcpxy server binary not found at '${MCPXY_SERVER_BIN}'"
     echo "Please build the server first by running 'make build' from the root directory."
+    exit 1
+fi
+
+# Check if kubectl is installed.
+if ! command -v kubectl &> /dev/null
+then
+    echo "Error: kubectl command not found."
+    echo "Please install kubectl and configure it to connect to your cluster."
     exit 1
 fi
 

@@ -2,9 +2,20 @@
 
 This guide explains how to connect `mcpxy` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpxy` server. By integrating `mcpxy`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
 
-## Prerequisites
+There are three primary ways to run `mcpxy` for integration:
+1.  **As a Local Binary**: Run the `mcpxy` server directly on your machine.
+2.  **With Docker Compose**: Run `mcpxy` as a containerized service.
+3.  **With Helm**: Deploy `mcpxy` to a Kubernetes cluster.
 
-Before you can integrate `mcpxy` with an AI assistant, you need to have the `mcpxy` server binary built and available on your system.
+---
+
+## 1. Local Binary Integration
+
+This is the most direct method for running `mcpxy` on your local machine.
+
+### Prerequisites
+
+Before you begin, you need to have the `mcpxy` server binary built and available on your system.
 
 1.  **Clone the `mcpxy` repository:**
     ```bash
@@ -17,13 +28,15 @@ Before you can integrate `mcpxy` with an AI assistant, you need to have the `mcp
     ```bash
     make build
     ```
-    The server binary will be located at `./bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant. For example, if you cloned the repository to `/home/user/mcpxy-core`, the path would be `/home/user/mcpxy-core/bin/server`.
+    The server binary will be located at `./bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
 
-## General Configuration
+### AI Client Setup
 
-Most MCP clients require you to specify a command to start the MCP server. For `mcpxy`, this command is the absolute path to the `server` binary you built. You can also pass any of the `mcpxy` command-line arguments.
+Most AI clients require you to specify the command to start the `mcpxy` server.
 
-Here is a generic JSON configuration that can be adapted for many clients. This example shows how to point to a configuration file.
+#### General JSON Configuration
+
+This generic JSON configuration can be adapted for most clients that support it (e.g., VS Code, JetBrains, Cursor).
 
 ```json
 {
@@ -38,74 +51,96 @@ Here is a generic JSON configuration that can be adapted for many clients. This 
   }
 }
 ```
+*   **Note**: Replace `/path/to/your/mcpxy-core/bin/server` with the actual absolute path.
 
-**Note:**
-*   Replace `/path/to/your/mcpxy-core/bin/server` with the actual absolute path to the `server` binary on your filesystem.
-*   If you want to register tools dynamically without a static config file, you can omit the `args` array.
+#### Gemini CLI
 
-## AI Client Setup Examples
+To register `mcpxy` as an extension to the Gemini CLI:
 
-Below are specific instructions for popular AI assistants.
-
-### Gemini CLI
-
-You can register `mcpxy` as an extension to the Gemini CLI, making all its tools available in your chat sessions.
-
-**To add `mcpxy` for the current project:**
 ```bash
-gemini mcp add mcpxy /path/to/your/mcpxy-core/bin/server
+# Add for the current project
+gemini mcp add mcpxy "/path/to/your/mcpxy-core/bin/server"
+
+# Add with command-line arguments (like a config file)
+# Note the use of '--' to separate the command from its arguments.
+gemini mcp add mcpxy -- "/path/to/your/mcpxy-core/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
 ```
 
-**To add `mcpxy` globally for your user:**
+#### Claude CLI
+
 ```bash
-gemini mcp add -s user mcpxy /path/to/your/mcpxy-core/bin/server
+claude mcp add mcpxy "/path/to/your/mcpxy-core/bin/server"
 ```
 
-**To add `mcpxy` with command-line arguments (like a config file):**
-Use the `--` separator to pass arguments to the server command.
-```bash
-gemini mcp add mcpxy -- /path/to/your/mcpxy-core/bin/server --config-paths /path/to/your/mcpxy-config.yaml
-```
+#### Copilot CLI
 
-### Claude Code
-
-Use the `claude` CLI to add the `mcpxy` server:
-```bash
-claude mcp add mcpxy /path/to/your/mcpxy-core/bin/server
-```
-
-### Copilot CLI
-
-1.  Start the Copilot CLI in your terminal:
-    ```bash
-    copilot
-    ```
-2.  Run the command to add a new MCP server:
-    ```
-    /mcp add
-    ```
-3.  Configure the fields in the interactive prompt:
-    *   **Server name:** `mcpxy`
-    *   **Server Type:** `Local`
-    *   **Command:** `/path/to/your/mcpxy-core/bin/server`
-    *   **Arguments:** (Optional) `--config-paths`, `/path/to/your/mcpxy-config.yaml`
-4. Press `CTRL+S` to save.
-
-### VS Code / Copilot Chat
-
-Follow the official guide for [adding an MCP server in VS Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server) and use the JSON configuration from the "General Configuration" section above.
-
-### Cursor
-
-1.  Go to `Cursor Settings` -> `MCP` -> `New MCP Server`.
-2.  Use the JSON configuration from the "General Configuration" section above.
-
-### JetBrains AI Assistant & Junie
-
-1.  Go to `Settings` | `Tools` | `AI Assistant` | `Model Context Protocol (MCP)`.
-2.  Click `Add` and use the JSON configuration from the "General Configuration" section above.
-3.  The same process applies for Junie under `Settings` | `Tools` | `Junie` | `MCP Settings`.
+Use the interactive prompt (`/mcp add`) and provide the absolute path to the `server` binary and any optional arguments.
 
 ---
 
-By following these instructions, you can connect `mcpxy` to your favorite AI coding assistant and extend its capabilities significantly.
+## 2. Docker Compose Integration
+
+You can run `mcpxy` and its upstream services in a containerized environment using Docker Compose. This is ideal for creating reproducible setups.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
+
+### Running with Docker Compose
+
+The repository includes a `docker-compose.yml` file that starts `mcpxy` and a sample upstream service.
+
+1.  **Start the services:**
+    ```bash
+    docker-compose up --build
+    ```
+    The `mcpxy` server will be available on `localhost:50050`.
+
+2.  **Configure your AI Assistant:**
+    Since `mcpxy` is running as a networked service (not a local process), you need to configure your AI assistant to connect to its TCP port.
+
+    For clients like Gemini, you can add it as an HTTP extension:
+    ```bash
+    # The 'mcp' subcommand is for local processes. For networked services, use 'http'.
+    gemini http add mcpxy-docker http://localhost:50050
+    ```
+
+    For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
+
+---
+
+## 3. Helm Integration
+
+For production or staging environments, you can deploy `mcpxy` to a Kubernetes cluster using the provided Helm chart.
+
+### Prerequisites
+
+- A running Kubernetes cluster.
+- [kubectl](httpss://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
+- [Helm](https://helm.sh/docs/intro/install/) installed.
+
+### Deployment
+
+1.  **Install the Helm Chart:**
+    Navigate to the `helm` directory in this repository and install the chart.
+    ```bash
+    cd helm/
+    helm install mcpxy . -f values.yaml
+    ```
+    This will deploy `mcpxy` into your Kubernetes cluster.
+
+2.  **Expose the Service:**
+    To access `mcpxy` from your local machine, you can use `kubectl port-forward`.
+    ```bash
+    # Forward a local port (e.g., 50050) to the mcpxy service in the cluster
+    kubectl port-forward svc/mcpxy 50050:50050
+    ```
+
+3.  **Configure your AI Assistant:**
+    With the port forward running, `mcpxy` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
+
+    ```bash
+    gemini http add mcpxy-k8s http://localhost:50050
+    ```
+
+By following these instructions, you can connect `mcpxy` to your favorite AI coding assistant, regardless of how you choose to run it.

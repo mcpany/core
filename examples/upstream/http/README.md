@@ -1,75 +1,72 @@
-# HTTP Time Server Example
+# Example: Exposing an HTTP Server
 
-This example shows how to create a simple HTTP server and expose it as a tool through MCPXY.
+This example demonstrates how to expose a simple, Go-based HTTP server as a tool through `mcpxy`.
 
-## 1. Build the MCPXY binary
+## Overview
 
-From the root of the `core` project, run:
+This example consists of three main components:
+1.  **Upstream Server**: A simple Go application (`server/time_server.go`) that serves the current time on an HTTP endpoint.
+2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the upstream server and what tools to expose.
+3.  **`mcpxy` Server**: The `mcpxy` instance that acts as a bridge between the AI assistant and the upstream server.
 
+## Running the Example
+
+### 1. Build the `mcpxy` Binary
+
+First, ensure the `mcpxy` binary is built. From the root of the repository, run:
 ```bash
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory.
+### 2. Run the Upstream HTTP Server
 
-## 2. Run the Upstream HTTP Server
-
-In a separate terminal, start the upstream HTTP time server. From the `server` directory, run:
-
+In a separate terminal, start the upstream HTTP time server. From this directory (`examples/upstream/http`), run:
 ```bash
-go run time_server.go
+go run ./server/time_server.go
 ```
+The server will start and listen on port `8081`.
 
-The server will start on port 8080.
+### 3. Run the `mcpxy` Server
 
-## 3. Run the MCPXY Server
-
-In another terminal, start the MCPXY server which is configured to expose the HTTP server. From the root of the `http` example directory, run:
-
+In another terminal, start the `mcpxy` server using the provided shell script. This script points `mcpxy` to the correct configuration file.
 ```bash
 ./start.sh
 ```
+The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
-The MCPXY server will start on port 8080. Note that the upstream server and the MCPXY server are running on the same port in this example. This is generally not recommended for production, but it is fine for this example.
+## Interacting with the Tool
 
-## 4. Interact with the Tool using Gemini CLI
+Once both servers are running, you can connect your AI assistant to `mcpxy`.
 
-Now you can use an AI tool like Gemini CLI to interact with the HTTP service through MCPXY.
+### Using Gemini CLI
 
-### Configuration
+1.  **Add `mcpxy` as an MCP Server:**
+    Use the `gemini mcp add` command to register the running `mcpxy` process. Note that the `start.sh` script must be running in another terminal.
+    ```bash
+    # The 'gemini mcp add' command requires a command to run, but our server is already running.
+    # We can use 'sleep infinity' as a placeholder command.
+    # The key is to point the Gemini CLI to the correct address where mcpxy is listening.
+    gemini mcp add mcpxy-http-time --address http://localhost:50050 --command "sleep" "infinity"
+    ```
 
-First, configure Gemini CLI to use the local MCPXY server as a tool extension. You can do this by modifying the Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) to add the following extension:
+2.  **List Available Tools:**
+    Ask Gemini to list the tools exposed by `mcpxy`.
+    ```bash
+    gemini list tools
+    ```
+    You should see the `http-time-server/-/get_time` tool in the list.
 
-```yaml
-extensions:
-  mcpxy-http-time:
-    http:
-      address: http://localhost:8080
-```
+3.  **Call the Tool:**
+    Now, you can call the tool to get the current time.
+    ```bash
+    gemini call tool http-time-server/-/get_time
+    ```
 
-### List Available Tools
+    You should receive a JSON response with the current time, similar to this:
+    ```json
+    {
+      "time": "2023-10-27T10:00:00Z"
+    }
+    ```
 
-Now, you can ask Gemini CLI to list the available tools:
-
-```
-$ gemini list tools
-```
-
-You should see the `time-service.GET/time` tool in the list.
-
-### Test the Service
-
-Finally, you can test the service by asking Gemini CLI to call the tool:
-
-```
-$ gemini call tool time-service.GET/time
-```
-
-You should see a response similar to this:
-
-```json
-{
-  "current_time": "2025-10-06 10:00:00",
-  "timezone": "UTC"
-}
-```
+This example showcases how `mcpxy` can make any HTTP API available to an AI assistant with minimal configuration.
