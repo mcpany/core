@@ -299,3 +299,69 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestPool_ConcurrentGetAndClose(t *testing.T) {
+	const (
+		maxSize    = 10
+		numGetters = 20
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	wg.Add(numGetters)
+
+	// Start a bunch of goroutines that are trying to get clients.
+	for i := 0; i < numGetters; i++ {
+		go func() {
+			defer wg.Done()
+			// Loop a few times to increase the chance of catching a race.
+			for j := 0; j < 5; j++ {
+				client, err := p.Get(context.Background())
+				if err != nil {
+					// Once the pool is closing, we can get either a "full" or "closed" error.
+					// Both are acceptable. The key is that it doesn't deadlock.
+					assert.True(t, err == ErrPoolClosed || err == ErrPoolFull, "unexpected error: %v", err)
+					continue
+				}
+				// If we got a client, put it back after a short time.
+				time.Sleep(10 * time.Millisecond)
+				p.Put(client)
+			}
+		}()
+	}
+
+	// Let the getters run for a bit, then close the pool.
+	time.Sleep(20 * time.Millisecond)
+	p.Close()
+
+	// Wait for all getters to finish. They should all exit gracefully.
+	wg.Wait()
+}
+
+func TestManager_ConcurrentAccess(t *testing.T) {
+	m := NewManager()
+	var wg sync.WaitGroup
+	numGoroutines := 50
+	wg.Add(numGoroutines)
+
+	for i := 0; i < numGoroutines; i++ {
+		go func(i int) {
+			defer wg.Done()
+			poolName := "test_pool"
+
+			// Concurrently register and get pools
+			p, err := New(newMockClientFactory(true), 1, 2, 100)
+			require.NoError(t, err)
+			m.Register(poolName, p)
+
+			retrievedPool, ok := Get[*mockClient](m, poolName)
+			assert.True(t, ok)
+			assert.NotNil(t, retrievedPool)
+		}(i)
+	}
+
+	wg.Wait()
+	m.CloseAll()
+}
