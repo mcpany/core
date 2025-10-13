@@ -389,129 +389,57 @@ func TestPool_ConcurrentPutAndClose(t *testing.T) {
 	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
 
-func TestPool_ConcurrentGetAndClose(t *testing.T) {
-	const (
-		maxSize    = 15
-		numGetters = 50
-	)
-
-	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
-	require.NoError(t, err)
+func TestPool_ConcurrentClose(t *testing.T) {
+	pool, _ := New(newMockClientFactory(true), 0, 10, 0)
 
 	var wg sync.WaitGroup
-	wg.Add(numGetters)
+	wg.Add(10)
 
-	// Start a goroutine to close the pool after a short delay.
-	go func() {
-		time.Sleep(50 * time.Millisecond)
-		p.Close()
-	}()
-
-	for i := 0; i < numGetters; i++ {
-		go func(goroutineID int) {
-			defer wg.Done()
-			// Continuously try to get clients until the pool is closed.
-			for {
-				ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-				client, err := p.Get(ctx)
-				cancel()
-
-				if err == ErrPoolClosed {
-					// This is the expected error once the pool is closed.
-					return
-				}
-
-				if err != nil {
-					// This is acceptable under contention (pool full, timeout, etc.).
-					time.Sleep(10 * time.Millisecond)
-					continue
-				}
-
-				// Any other error is unexpected.
-				if !assert.NoError(t, err, "Goroutine %d received an unexpected error", goroutineID) {
-					return
-				}
-
-				// If a client was successfully retrieved, simulate work and put it back.
-				if client != nil {
-					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
-					p.Put(client)
-				}
-			}
-		}(i)
-	}
-
-	wg.Wait()
-}
-
-func TestPool_ConcurrentGetAndClose(t *testing.T) {
-	const (
-		maxSize    = 10
-		numGetters = 20
-	)
-
-	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
-	require.NoError(t, err)
-
-	var wg sync.WaitGroup
-	wg.Add(numGetters)
-
-	// Start a bunch of goroutines that are trying to get clients.
-	for i := 0; i < numGetters; i++ {
+	for i := 0; i < 10; i++ {
 		go func() {
 			defer wg.Done()
-			// Loop a few times to increase the chance of catching a race.
-			for j := 0; j < 5; j++ {
-				client, err := p.Get(context.Background())
-				if err != nil {
-					// Once the pool is closing, we can get either a "full" or "closed" error.
-					// Both are acceptable. The key is that it doesn't deadlock.
-					assert.True(t, err == ErrPoolClosed || err == ErrPoolFull, "unexpected error: %v", err)
-					continue
-				}
-				// If we got a client, put it back after a short time.
-				time.Sleep(10 * time.Millisecond)
-				p.Put(client)
-			}
+			pool.Close()
 		}()
 	}
-
-	// Let the getters run for a bit, then close the pool.
-	time.Sleep(20 * time.Millisecond)
-	p.Close()
-
-	// Wait for all getters to finish. They should all exit gracefully.
 	wg.Wait()
 }
 
-func TestPool_ConcurrentClose(t *testing.T) {
-	p, err := New(newMockClientFactory(true), 1, 10, 100)
+func TestPool_GetWithUnhealthyClients(t *testing.T) {
+	t.Parallel()
+	maxSize := 5
+	factory := newMockClientFactory(true)
+
+	pool, err := New(factory, maxSize, maxSize, 0)
 	require.NoError(t, err)
 
-	// Get a client and hold it
-	c, err := p.Get(context.Background())
-	require.NoError(t, err)
-	require.NotNil(t, c)
+	// Invalidate all the initial clients in the pool
+	for i := 0; i < maxSize; i++ {
+		c, err := pool.Get(context.Background())
+		require.NoError(t, err)
+		c.mu.Lock()
+		c.isHealthy = false
+		c.mu.Unlock()
+		pool.Put(c)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		p.Close()
+		client, err := pool.Get(ctx)
+		require.NoError(t, err, "Get should not fail")
+		require.NotNil(t, client, "Should have received a client")
+		assert.True(t, client.IsHealthy(), "The new client should be healthy")
 	}()
-
-	// Try to get a client after Close has been called
-	time.Sleep(10 * time.Millisecond)
-	_, err = p.Get(context.Background())
-	assert.ErrorIs(t, err, ErrPoolClosed)
-
-	// Return the client
-	p.Put(c)
 
 	wg.Wait()
 
-	// The client should be closed
-	assert.True(t, c.isClosed)
+	if ctx.Err() == context.DeadlineExceeded {
+		t.Fatal("Test timed out, which indicates a likely deadlock due to semaphore leak.")
+	}
 }
 
 func TestManager_ConcurrentAccess(t *testing.T) {

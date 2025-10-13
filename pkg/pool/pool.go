@@ -103,8 +103,8 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				return client, nil
 			}
 			lo.Try(client.Close)
-			// Unhealthy client found and closed. Loop again to get/create a new one.
-			// The permit for the unhealthy client is implicitly carried over.
+			// Unhealthy client found and closed. Release its permit and loop again.
+			p.sem.Release(1)
 		default:
 			// No idle clients, try to create a new one.
 			if err := p.sem.Acquire(ctx, 1); err != nil {
