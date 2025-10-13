@@ -152,29 +152,28 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 func (p *poolImpl[T]) Put(client T) {
 	defer p.sem.Release(1)
 
+	// Do not return nil clients to the pool.
 	v := reflect.ValueOf(client)
 	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 		return
 	}
 
 	p.mu.Lock()
-	if p.closed {
-		p.mu.Unlock()
-		lo.Try(client.Close)
-		return
-	}
-	p.mu.Unlock()
+	defer p.mu.Unlock()
 
-	if !client.IsHealthy() {
+	// If the pool is closed or the client is no longer healthy, close and discard it.
+	if p.closed || !client.IsHealthy() {
 		lo.Try(client.Close)
 		return
 	}
 
+	// Try to return the client to the idle channel.
+	// If the channel is full, close the client instead.
 	select {
 	case p.clients <- client:
-	// Returned to idle queue.
+		// Client returned to pool.
 	default:
-		// Idle queue is full, discard client.
+		// Pool is full, close and discard the client.
 		lo.Try(client.Close)
 	}
 }

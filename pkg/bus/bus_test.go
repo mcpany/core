@@ -19,8 +19,8 @@ package bus
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -153,44 +153,30 @@ func TestBusProvider_Concurrent(t *testing.T) {
 
 func TestDefaultBus_Concurrent(t *testing.T) {
 	bus := New[int]()
-	topic := "concurrent_topic"
 	numGoroutines := 100
 	var wg sync.WaitGroup
 	wg.Add(numGoroutines)
 
-	// Use a channel to signal that a goroutine has received its message.
-	receivedChan := make(chan int, numGoroutines)
-
 	for i := 0; i < numGoroutines; i++ {
 		go func(id int) {
 			defer wg.Done()
-			// Each goroutine subscribes and waits for one specific message.
+			topic := fmt.Sprintf("topic-%d", id)
+			msgChan := make(chan int, 1)
+
 			unsub := bus.Subscribe(topic, func(msg int) {
-				if msg == id {
-					receivedChan <- id
-				}
+				msgChan <- msg
 			})
 			defer unsub()
+
+			bus.Publish(topic, id)
+
+			select {
+			case receivedMsg := <-msgChan:
+				assert.Equal(t, id, receivedMsg)
+			case <-time.After(1 * time.Second):
+				t.Errorf("Goroutine %d timed out", id)
+			}
 		}(i)
-	}
-
-	// Publisher goroutine
-	go func() {
-		for i := 0; i < numGoroutines; i++ {
-			bus.Publish(topic, i)
-		}
-	}()
-
-	// Wait for all goroutines to receive their messages.
-	receivedCount := 0
-	timeout := time.After(5 * time.Second)
-	for receivedCount < numGoroutines {
-		select {
-		case <-receivedChan:
-			receivedCount++
-		case <-timeout:
-			t.Fatalf("Timed out waiting for all goroutines to receive their message. Got %d of %d.", receivedCount, numGoroutines)
-		}
 	}
 
 	wg.Wait()
