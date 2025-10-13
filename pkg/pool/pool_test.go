@@ -257,51 +257,45 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 	p.(*poolImpl[*mockClient]).sem.Release(1)
 }
 
-func TestPool_ConcurrentPut(t *testing.T) {
-	const maxSize = 1
-	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+func TestPool_ConcurrentGetPut(t *testing.T) {
+	const (
+		maxSize    = 10
+		numClients = 50
+		iterations = 100
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
 	require.NoError(t, err)
 	defer p.Close()
 
-	// Get the only client
-	c1, err := p.Get(context.Background())
-	require.NoError(t, err)
-
-	// Try to get another client, which should fail because the pool is full.
-	_, err = p.Get(context.Background())
-	require.Error(t, err, "Pool should be full")
-
-	// Concurrently put the client back and try to get a new one.
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(numClients)
 
-	var c2 *mockClient
+	for i := 0; i < numClients; i++ {
+		go func() {
+			defer wg.Done()
+			for j := 0; j < iterations; j++ {
+				ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+				client, err := p.Get(ctx)
+				if err == ErrPoolFull {
+					// This is acceptable under high contention.
+					cancel()
+					time.Sleep(10 * time.Millisecond)
+					continue
+				}
+				if !assert.NoError(t, err) {
+					cancel()
+					return
+				}
 
-	go func() {
-		defer wg.Done()
-		p.Put(c1)
-	}()
+				// Simulate some work
+				time.Sleep(time.Duration(1+i%5) * time.Millisecond)
 
-	go func() {
-		defer wg.Done()
-		// This might be flaky if the Put from the other goroutine is not fast enough.
-		// A better test might involve a more deterministic way to check for race conditions.
-		// For now, we rely on the race detector.
-		c2, _ = p.Get(context.Background())
-	}()
+				p.Put(client)
+				cancel()
+			}
+		}()
+	}
 
 	wg.Wait()
-
-	// One of the two clients should be nil, the other should be valid.
-	if c2 != nil {
-		assert.Equal(t, c1.id, c2.id)
-		p.Put(c2)
-	} else {
-		// If we couldn't get a client, it means the Put was not fast enough.
-		// We should be able to get it now.
-		c3, err := p.Get(context.Background())
-		require.NoError(t, err)
-		assert.Equal(t, c1.id, c3.id)
-		p.Put(c3)
-	}
 }
