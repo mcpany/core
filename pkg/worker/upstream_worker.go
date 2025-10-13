@@ -54,8 +54,8 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	log := logging.GetLogger().With("component", "UpstreamWorker")
 	log.Info("Upstream worker started")
 
-	requestBus := bus.GetBus[*bus.ToolExecutionRequest](w.bus, "tool_execution_requests")
-	resultBus := bus.GetBus[*bus.ToolExecutionResult](w.bus, "tool_execution_results")
+	requestBus := bus.GetBus[*bus.ToolExecutionRequest](w.bus, bus.ToolExecutionRequestTopic)
+	resultBus := bus.GetBus[*bus.ToolExecutionResult](w.bus, bus.ToolExecutionResultTopic)
 
 	unsubscribe := requestBus.Subscribe("request", func(req *bus.ToolExecutionRequest) {
 		log.Info("Received tool execution request", "tool", req.ToolName, "correlationID", req.CorrelationID())

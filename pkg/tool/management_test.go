@@ -275,3 +275,41 @@ func TestToolManager_AddTool_NilMCPServer(t *testing.T) {
 	_, ok := tm.GetTool(toolID)
 	assert.True(t, ok)
 }
+
+func TestToolManager_ConcurrentExecution(t *testing.T) {
+	tm := tool.NewToolManager(nil)
+	var wg sync.WaitGroup
+	numGoroutines := 50
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+
+			serviceID := fmt.Sprintf("service-%d", i)
+			toolName := "test-tool"
+			s, n := serviceID, toolName
+			mockTool := &MockTool{
+				tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
+				execute: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+					return fmt.Sprintf("result-%d", i), nil
+				},
+			}
+			err := tm.AddTool(mockTool)
+			require.NoError(t, err)
+
+			toolID, err := util.GenerateToolID(serviceID, toolName)
+			require.NoError(t, err)
+
+			req := &tool.ExecutionRequest{
+				ToolName:   toolID,
+				ToolInputs: json.RawMessage(`{}`),
+			}
+			result, err := tm.ExecuteTool(context.Background(), req)
+			require.NoError(t, err)
+			assert.Equal(t, fmt.Sprintf("result-%d", i), result)
+		}(i)
+	}
+
+	wg.Wait()
+}
