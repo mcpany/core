@@ -484,6 +484,36 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	wg.Wait()
 }
 
+func TestPool_ConcurrentClose(t *testing.T) {
+	p, err := New(newMockClientFactory(true), 1, 10, 100)
+	require.NoError(t, err)
+
+	// Get a client and hold it
+	c, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		p.Close()
+	}()
+
+	// Try to get a client after Close has been called
+	time.Sleep(10 * time.Millisecond)
+	_, err = p.Get(context.Background())
+	assert.ErrorIs(t, err, ErrPoolClosed)
+
+	// Return the client
+	p.Put(c)
+
+	wg.Wait()
+
+	// The client should be closed
+	assert.True(t, c.isClosed)
+}
+
 func TestManager_ConcurrentAccess(t *testing.T) {
 	m := NewManager()
 	var wg sync.WaitGroup

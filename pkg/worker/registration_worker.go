@@ -53,8 +53,8 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
 	log.Info("Service registration worker started")
 
-	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, "service_registration_requests")
-	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, "service_registration_results")
+	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
+	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
 
 	unsubscribe := requestBus.Subscribe("request", func(req *bus.ServiceRegistrationRequest) {
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
