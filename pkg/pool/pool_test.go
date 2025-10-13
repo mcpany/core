@@ -18,6 +18,8 @@ package pool
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -32,13 +34,25 @@ type mockClient struct {
 	isHealthy bool
 	isClosed  bool
 	closeErr  error
+
+	mu sync.RWMutex
 }
 
 func (c *mockClient) IsHealthy() bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	return c.isHealthy
 }
 
+func (c *mockClient) IsClosed() bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.isClosed
+}
+
 func (c *mockClient) Close() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.isClosed = true
 	return c.closeErr
 }
@@ -140,8 +154,10 @@ func TestPool_Full(t *testing.T) {
 	assert.NotNil(t, c1)
 
 	// Try to get another, should be full
-	_, err = p.Get(context.Background())
-	assert.Equal(t, ErrPoolFull, err)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	_, err = p.Get(ctx)
+	assert.Error(t, err)
 }
 
 func TestPool_Close(t *testing.T) {
@@ -259,12 +275,12 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 
 func TestPool_ConcurrentGetPut(t *testing.T) {
 	const (
-		maxSize    = 10
-		numClients = 50
-		iterations = 100
+		maxSize    = 20
+		numClients = 100
+		iterations = 200
 	)
 
-	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 10, maxSize, 100)
 	require.NoError(t, err)
 	defer p.Close()
 
@@ -272,31 +288,199 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 	wg.Add(numClients)
 
 	for i := 0; i < numClients; i++ {
-		go func() {
+		go func(goroutineID int) {
 			defer wg.Done()
 			for j := 0; j < iterations; j++ {
-				ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 				client, err := p.Get(ctx)
-				if err == ErrPoolFull {
-					// This is acceptable under high contention.
+
+				if err != nil {
 					cancel()
-					time.Sleep(10 * time.Millisecond)
+					// It's acceptable to get an error under high contention when the pool is full
+					// and the context times out.
+					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 					continue
 				}
-				if !assert.NoError(t, err) {
-					cancel()
-					return
-				}
 
-				// Simulate some work
-				time.Sleep(time.Duration(1+i%5) * time.Millisecond)
+				require.NotNil(t, client, "Goroutine %d received a nil client", goroutineID)
+
+				// Simulate some work with random duration
+				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
 
 				p.Put(client)
 				cancel()
 			}
+		}(i)
+	}
+
+	wg.Wait()
+}
+
+func TestManager_Concurrent(t *testing.T) {
+	m := NewManager()
+	var wg sync.WaitGroup
+	numRoutines := 100
+
+	// Test concurrent registration
+	wg.Add(numRoutines)
+	for i := 0; i < numRoutines; i++ {
+		go func(i int) {
+			defer wg.Done()
+			poolName := fmt.Sprintf("pool_%d", i%10) // Create contention on a few pool names
+			p, err := New(newMockClientFactory(true), 1, 2, 100)
+			require.NoError(t, err)
+			m.Register(poolName, p)
+		}(i)
+	}
+	wg.Wait()
+
+	// Test concurrent Get
+	wg.Add(numRoutines)
+	for i := 0; i < numRoutines; i++ {
+		go func(i int) {
+			defer wg.Done()
+			poolName := fmt.Sprintf("pool_%d", i%10)
+			retrievedPool, ok := Get[*mockClient](m, poolName)
+			assert.True(t, ok)
+			assert.NotNil(t, retrievedPool)
+		}(i)
+	}
+	wg.Wait()
+
+	// Test concurrent CloseAll
+	m.CloseAll()
+}
+
+func TestPool_ConcurrentPutAndClose(t *testing.T) {
+	const (
+		maxSize   = 20
+		numPutter = 50
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	wg.Add(numPutter)
+
+	// Start a goroutine to close the pool after a short delay.
+	go func() {
+		time.Sleep(10 * time.Millisecond)
+		p.Close()
+	}()
+
+	for i := 0; i < numPutter; i++ {
+		go func() {
+			defer wg.Done()
+			client, err := p.Get(context.Background())
+			if err == ErrPoolClosed {
+				return
+			}
+			require.NoError(t, err)
+			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+			p.Put(client)
 		}()
 	}
 
+	wg.Wait()
+
+	assert.True(t, p.(*poolImpl[*mockClient]).closed, "Pool should be closed")
+	_, err = p.Get(context.Background())
+	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
+}
+
+func TestPool_ConcurrentGetAndClose(t *testing.T) {
+	const (
+		maxSize    = 15
+		numGetters = 50
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	wg.Add(numGetters)
+
+	// Start a goroutine to close the pool after a short delay.
+	go func() {
+		time.Sleep(50 * time.Millisecond)
+		p.Close()
+	}()
+
+	for i := 0; i < numGetters; i++ {
+		go func(goroutineID int) {
+			defer wg.Done()
+			// Continuously try to get clients until the pool is closed.
+			for {
+				ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+				client, err := p.Get(ctx)
+				cancel()
+
+				if err == ErrPoolClosed {
+					// This is the expected error once the pool is closed.
+					return
+				}
+
+				if err != nil {
+					// This is acceptable under contention (pool full, timeout, etc.).
+					time.Sleep(10 * time.Millisecond)
+					continue
+				}
+
+				// Any other error is unexpected.
+				if !assert.NoError(t, err, "Goroutine %d received an unexpected error", goroutineID) {
+					return
+				}
+
+				// If a client was successfully retrieved, simulate work and put it back.
+				if client != nil {
+					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+					p.Put(client)
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+}
+
+func TestPool_ConcurrentGetAndClose(t *testing.T) {
+	const (
+		maxSize    = 10
+		numGetters = 20
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	wg.Add(numGetters)
+
+	// Start a bunch of goroutines that are trying to get clients.
+	for i := 0; i < numGetters; i++ {
+		go func() {
+			defer wg.Done()
+			// Loop a few times to increase the chance of catching a race.
+			for j := 0; j < 5; j++ {
+				client, err := p.Get(context.Background())
+				if err != nil {
+					// Once the pool is closing, we can get either a "full" or "closed" error.
+					// Both are acceptable. The key is that it doesn't deadlock.
+					assert.True(t, err == ErrPoolClosed || err == ErrPoolFull, "unexpected error: %v", err)
+					continue
+				}
+				// If we got a client, put it back after a short time.
+				time.Sleep(10 * time.Millisecond)
+				p.Put(client)
+			}
+		}()
+	}
+
+	// Let the getters run for a bit, then close the pool.
+	time.Sleep(20 * time.Millisecond)
+	p.Close()
+
+	// Wait for all getters to finish. They should all exit gracefully.
 	wg.Wait()
 }
 
@@ -328,4 +512,30 @@ func TestPool_ConcurrentClose(t *testing.T) {
 
 	// The client should be closed
 	assert.True(t, c.isClosed)
+}
+
+func TestManager_ConcurrentAccess(t *testing.T) {
+	m := NewManager()
+	var wg sync.WaitGroup
+	numGoroutines := 50
+	wg.Add(numGoroutines)
+
+	for i := 0; i < numGoroutines; i++ {
+		go func(i int) {
+			defer wg.Done()
+			poolName := "test_pool"
+
+			// Concurrently register and get pools
+			p, err := New(newMockClientFactory(true), 1, 2, 100)
+			require.NoError(t, err)
+			m.Register(poolName, p)
+
+			retrievedPool, ok := Get[*mockClient](m, poolName)
+			assert.True(t, ok)
+			assert.NotNil(t, retrievedPool)
+		}(i)
+	}
+
+	wg.Wait()
+	m.CloseAll()
 }

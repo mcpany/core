@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -126,6 +127,71 @@ func TestIntegration(t *testing.T) {
 		ToolInputs:  inputData,
 	}
 	reqBus.Publish("request", req)
+
+	wg.Wait()
+}
+
+func TestBusProvider_Concurrent(t *testing.T) {
+	provider := NewBusProvider()
+	numGoroutines := 100
+	var wg sync.WaitGroup
+	wg.Add(numGoroutines)
+
+	stringBus := GetBus[string](provider, "string_topic")
+
+	for i := 0; i < numGoroutines; i++ {
+		go func() {
+			defer wg.Done()
+			// Concurrently get the same bus
+			bus := GetBus[string](provider, "string_topic")
+			assert.Same(t, stringBus, bus, "Expected the same bus instance to be returned")
+		}()
+	}
+
+	wg.Wait()
+}
+
+func TestDefaultBus_Concurrent(t *testing.T) {
+	bus := New[int]()
+	topic := "concurrent_topic"
+	numGoroutines := 100
+	var wg sync.WaitGroup
+	wg.Add(numGoroutines)
+
+	// Use a channel to signal that a goroutine has received its message.
+	receivedChan := make(chan int, numGoroutines)
+
+	for i := 0; i < numGoroutines; i++ {
+		go func(id int) {
+			defer wg.Done()
+			// Each goroutine subscribes and waits for one specific message.
+			unsub := bus.Subscribe(topic, func(msg int) {
+				if msg == id {
+					receivedChan <- id
+				}
+			})
+			defer unsub()
+		}(i)
+	}
+
+	// Publisher goroutine
+	go func() {
+		for i := 0; i < numGoroutines; i++ {
+			bus.Publish(topic, i)
+		}
+	}()
+
+	// Wait for all goroutines to receive their messages.
+	receivedCount := 0
+	timeout := time.After(5 * time.Second)
+	for receivedCount < numGoroutines {
+		select {
+		case <-receivedChan:
+			receivedCount++
+		case <-timeout:
+			t.Fatalf("Timed out waiting for all goroutines to receive their message. Got %d of %d.", receivedCount, numGoroutines)
+		}
+	}
 
 	wg.Wait()
 }
