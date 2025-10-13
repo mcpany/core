@@ -19,6 +19,7 @@ package worker
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -63,8 +64,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 	t.Run("successful registration", func(t *testing.T) {
 		bp := bus.NewBusProvider()
-		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, "service_registration_requests")
-		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, "service_registration_results")
+		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -100,8 +101,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 	t.Run("registration failure", func(t *testing.T) {
 		bp := bus.NewBusProvider()
-		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, "service_registration_requests")
-		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, "service_registration_results")
+		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		var wg sync.WaitGroup
 		wg.Add(1)
 		expectedErr := errors.New("registration failed")
@@ -143,8 +144,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 	t.Run("successful execution", func(t *testing.T) {
 		bp := bus.NewBusProvider()
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, "tool_execution_requests")
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, "tool_execution_results")
+		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -180,8 +181,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 	t.Run("execution failure", func(t *testing.T) {
 		bp := bus.NewBusProvider()
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, "tool_execution_requests")
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, "tool_execution_results")
+		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
 		wg.Add(1)
 		expectedErr := errors.New("execution failed")
@@ -215,4 +216,92 @@ func TestUpstreamWorker(t *testing.T) {
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
+}
+
+func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	bp := bus.NewBusProvider()
+	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+
+	registry := &mockServiceRegistry{}
+	worker := NewServiceRegistrationWorker(bp, registry)
+	worker.Start(ctx)
+
+	numRequests := 100
+	var wg sync.WaitGroup
+	wg.Add(numRequests)
+
+	for i := 0; i < numRequests; i++ {
+		go func(i int) {
+			defer wg.Done()
+			req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
+			correlationID := fmt.Sprintf("test-%d", i)
+			req.SetCorrelationID(correlationID)
+
+			resultChan := make(chan *bus.ServiceRegistrationResult, 1)
+			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceRegistrationResult) {
+				resultChan <- result
+			})
+			defer unsubscribe()
+
+			requestBus.Publish("request", req)
+
+			select {
+			case result := <-resultChan:
+				assert.NoError(t, result.Error)
+				assert.Equal(t, "mock-service-key", result.ServiceKey)
+			case <-time.After(2 * time.Second):
+				t.Errorf("timed out waiting for registration result for request %d", i)
+			}
+		}(i)
+	}
+
+	wg.Wait()
+}
+
+func TestUpstreamWorker_Concurrent(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	bp := bus.NewBusProvider()
+	requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+	resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+
+	tm := &mockToolManager{}
+	worker := NewUpstreamWorker(bp, tm)
+	worker.Start(ctx)
+
+	numRequests := 100
+	var wg sync.WaitGroup
+	wg.Add(numRequests)
+
+	for i := 0; i < numRequests; i++ {
+		go func(i int) {
+			defer wg.Done()
+			req := &bus.ToolExecutionRequest{}
+			correlationID := fmt.Sprintf("exec-test-%d", i)
+			req.SetCorrelationID(correlationID)
+
+			resultChan := make(chan *bus.ToolExecutionResult, 1)
+			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
+				resultChan <- result
+			})
+			defer unsubscribe()
+
+			requestBus.Publish("request", req)
+
+			select {
+			case result := <-resultChan:
+				assert.NoError(t, result.Error)
+				assert.JSONEq(t, `"mock-result"`, string(result.Result))
+			case <-time.After(2 * time.Second):
+				t.Errorf("timed out waiting for execution result for request %d", i)
+			}
+		}(i)
+	}
+
+	wg.Wait()
 }
