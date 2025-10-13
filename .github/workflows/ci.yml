@@ -200,4 +200,12 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      run: make build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7 SERVER_IMAGE_TAG=${{ env.SERVER_IMAGE }}
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker/Dockerfile.server
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        push: true
+        tags: ${{ env.SERVER_IMAGE }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

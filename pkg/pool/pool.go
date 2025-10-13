@@ -158,12 +158,12 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 
 	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	if p.closed {
-		p.mu.Unlock()
 		lo.Try(client.Close)
 		return
 	}
-	p.mu.Unlock()
 
 	if !client.IsHealthy() {
 		lo.Try(client.Close)
@@ -172,7 +172,7 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- client:
-	// Returned to idle queue.
+		// Returned to idle queue.
 	default:
 		// Idle queue is full, discard client.
 		lo.Try(client.Close)

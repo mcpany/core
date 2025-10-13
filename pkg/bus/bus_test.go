@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -161,6 +160,13 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	// Use a channel to signal that a goroutine has received its message.
 	receivedChan := make(chan int, numGoroutines)
 
+	// Channel to signal subscriber goroutines to terminate
+	doneChan := make(chan struct{})
+
+	// WaitGroup to ensure all subscriptions are made before publishing
+	var subscribersReadyWg sync.WaitGroup
+	subscribersReadyWg.Add(numGoroutines)
+
 	for i := 0; i < numGoroutines; i++ {
 		go func(id int) {
 			defer wg.Done()
@@ -171,15 +177,17 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 				}
 			})
 			defer unsub()
+			subscribersReadyWg.Done() // Signal that subscription is done
+			<-doneChan                 // Wait here until the main test is done
 		}(i)
 	}
 
+	subscribersReadyWg.Wait() // Wait for all subscriptions to be set up
+
 	// Publisher goroutine
-	go func() {
-		for i := 0; i < numGoroutines; i++ {
-			bus.Publish(topic, i)
-		}
-	}()
+	for i := 0; i < numGoroutines; i++ {
+		bus.Publish(topic, i)
+	}
 
 	// Wait for all goroutines to receive their messages.
 	receivedCount := 0
@@ -193,5 +201,6 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 		}
 	}
 
+	close(doneChan) // Signal subscribers to terminate
 	wg.Wait()
 }
