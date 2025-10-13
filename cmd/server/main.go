@@ -73,8 +73,12 @@ func newRootCmd() *cobra.Command {
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of mcpxy",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("%s version %s\n", appconsts.Name, appconsts.Version)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", appconsts.Name, appconsts.Version)
+			if err != nil {
+				return fmt.Errorf("failed to print version: %w", err)
+			}
+			return nil
 		},
 	}
 	rootCmd.AddCommand(versionCmd)
