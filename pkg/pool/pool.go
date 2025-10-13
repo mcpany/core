@@ -155,6 +155,8 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
+	defer p.sem.Release(1)
+
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -162,9 +164,6 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 	p.mu.Unlock()
-
-	// A client is being returned, so release the semaphore permit first.
-	p.sem.Release(1)
 
 	if !client.IsHealthy() {
 		lo.Try(client.Close)
