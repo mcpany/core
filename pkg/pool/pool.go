@@ -150,12 +150,12 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 // Put returns a client to the pool. If the client is not healthy, it is closed
 // and discarded. If the pool is full, the client is also closed.
 func (p *poolImpl[T]) Put(client T) {
+	defer p.sem.Release(1)
+
 	v := reflect.ValueOf(client)
 	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 		return
 	}
-
-	defer p.sem.Release(1)
 
 	p.mu.Lock()
 	if p.closed {
