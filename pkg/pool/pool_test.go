@@ -18,8 +18,10 @@ package pool
 
 import (
 	"context"
+	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -222,5 +224,84 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 		assert.True(t, c.isClosed, "Client should be closed after being put back as unhealthy")
 		// The pool should not store the unhealthy client.
 		assert.Equal(t, 0, p.Len(), "Pool should be empty after returning an unhealthy client")
+	}
+}
+
+func TestPool_PutOnClosedPool(t *testing.T) {
+	const maxSize = 1
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	require.NoError(t, err)
+
+	// Get the only client
+	c, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	// Close the pool while the client is checked out
+	p.Close()
+
+	// Now, put the client back into the closed pool.
+	// This is where the semaphore leak occurs in the original code.
+	p.Put(c)
+
+	// The client should be closed because the pool is closed.
+	assert.True(t, c.isClosed)
+
+	// To verify the fix, we check if we can acquire and release the semaphore again.
+	// In the buggy version, the semaphore is never released, so this would hang.
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	err = p.(*poolImpl[*mockClient]).sem.Acquire(ctx, 1)
+	require.NoError(t, err, "Semaphore should not be locked after returning a client to a closed pool")
+	p.(*poolImpl[*mockClient]).sem.Release(1)
+}
+
+func TestPool_ConcurrentPut(t *testing.T) {
+	const maxSize = 1
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Get the only client
+	c1, err := p.Get(context.Background())
+	require.NoError(t, err)
+
+	// Try to get another client, which should fail because the pool is full.
+	_, err = p.Get(context.Background())
+	require.Error(t, err, "Pool should be full")
+
+	// Concurrently put the client back and try to get a new one.
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	var c2 *mockClient
+
+	go func() {
+		defer wg.Done()
+		p.Put(c1)
+	}()
+
+	go func() {
+		defer wg.Done()
+		// This might be flaky if the Put from the other goroutine is not fast enough.
+		// A better test might involve a more deterministic way to check for race conditions.
+		// For now, we rely on the race detector.
+		c2, _ = p.Get(context.Background())
+	}()
+
+	wg.Wait()
+
+	// One of the two clients should be nil, the other should be valid.
+	if c2 != nil {
+		assert.Equal(t, c1.id, c2.id)
+		p.Put(c2)
+	} else {
+		// If we couldn't get a client, it means the Put was not fast enough.
+		// We should be able to get it now.
+		c3, err := p.Get(context.Background())
+		require.NoError(t, err)
+		assert.Equal(t, c1.id, c3.id)
+		p.Put(c3)
 	}
 }

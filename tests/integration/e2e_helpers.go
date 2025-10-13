@@ -41,6 +41,27 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// A thread-safe buffer for capturing process output concurrently.
+type threadSafeBuffer struct {
+	b  bytes.Buffer
+	mu sync.RWMutex
+}
+
+// Write appends the contents of p to the buffer, growing the buffer as needed.
+func (b *threadSafeBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.b.Write(p)
+}
+
+// String returns the contents of the unread portion of the buffer
+// as a string. If the Buffer is a nil pointer, it returns "<nil>".
+func (b *threadSafeBuffer) String() string {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.b.String()
+}
+
 func ProjectRoot(t *testing.T) string {
 	t.Helper()
 	root, err := GetProjectRoot()
@@ -123,8 +144,9 @@ type ManagedProcess struct {
 	cmd                 *exec.Cmd
 	t                   *testing.T
 	wg                  sync.WaitGroup
-	stdout              bytes.Buffer
-	stderr              bytes.Buffer
+	stdout              threadSafeBuffer
+	stderr              threadSafeBuffer
+	waitDone            chan struct{}
 	label               string
 	IgnoreExitStatusOne bool
 }
@@ -141,9 +163,10 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 	}
 
 	mp := &ManagedProcess{
-		cmd:   cmd,
-		t:     t,
-		label: label,
+		cmd:      cmd,
+		t:        t,
+		label:    label,
+		waitDone: make(chan struct{}),
 	}
 	cmd.Stdout = &mp.stdout
 	cmd.Stderr = &mp.stderr
@@ -165,6 +188,7 @@ func (mp *ManagedProcess) Start() error {
 	go func() {
 		defer mp.wg.Done()
 		err := mp.cmd.Wait()
+		close(mp.waitDone)
 		// Log output regardless of error, can be useful for debugging successful exits too
 		mp.t.Logf("[%s] Process %s finished. Stdout:\n%s\nStderr:\n%s", mp.label, mp.cmd.Path, mp.stdout.String(), mp.stderr.String())
 		if err != nil {
@@ -185,7 +209,16 @@ func (mp *ManagedProcess) Start() error {
 }
 
 func (mp *ManagedProcess) Stop() {
-	if mp.cmd == nil || mp.cmd.Process == nil || mp.cmd.ProcessState != nil && mp.cmd.ProcessState.Exited() {
+	select {
+	case <-mp.waitDone:
+		mp.t.Logf("[%s] Process %s already exited.", mp.label, mp.cmd.Path)
+		mp.wg.Wait() // ensure Wait goroutine has fully finished
+		return
+	default:
+		// Not exited yet, proceed to stop it.
+	}
+
+	if mp.cmd == nil || mp.cmd.Process == nil {
 		mp.t.Logf("[%s] Process %s not running or already stopped.", mp.label, mp.cmd.Path)
 		mp.wg.Wait() // ensure Wait goroutine finishes if process exited itself
 		return
