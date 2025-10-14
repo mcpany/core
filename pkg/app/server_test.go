@@ -210,3 +210,41 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 		lis.Close()
 	}
 }
+
+func TestStartHttpServer_GoroutineLeakOnStartupFailure(t *testing.T) {
+	// Occupy a port to force a startup failure.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	addr := l.Addr().String()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTPServer", addr, nil)
+
+	// Wait for the startup error.
+	select {
+	case err := <-errChan:
+		require.Error(t, err, "Expected a startup error.")
+	case <-time.After(1 * time.Second):
+		t.Fatal("Test timed out, startHTTPServer did not send an error.")
+	}
+
+	// Now, check if the WaitGroup hangs. This indicates the goroutine leak.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// This is the desired behavior *after* the fix. Before the fix, this will not be reached.
+	case <-time.After(1 * time.Second):
+		t.Fatal("Test timed out, WaitGroup is hanging, indicating a goroutine leak.")
+	}
+}
