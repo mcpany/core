@@ -146,7 +146,7 @@ func TestPool_Full(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 	_, err = p.Get(ctx)
-	assert.Error(t, err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded, "Getting from a full pool should block until context is cancelled")
 }
 
 func TestPool_Close(t *testing.T) {
@@ -307,6 +307,48 @@ func TestManager_Concurrent(t *testing.T) {
 	}
 	wg.Wait()
 	m.CloseAll()
+}
+
+func TestPool_ConcurrentGetAndClose(t *testing.T) {
+	const (
+		maxSize    = 20
+		numGetters = 50
+	)
+
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	require.NoError(t, err)
+
+	var wg sync.WaitGroup
+	wg.Add(numGetters)
+
+	// Start a goroutine to close the pool after a short delay.
+	go func() {
+		time.Sleep(10 * time.Millisecond)
+		p.Close()
+	}()
+
+	for i := 0; i < numGetters; i++ {
+		go func() {
+			defer wg.Done()
+			client, err := p.Get(context.Background())
+			if err == ErrPoolClosed {
+				return
+			}
+			if err != nil {
+				// Under high contention, it's possible to get a context deadline exceeded error
+				// if the test machine is slow. This is acceptable.
+				return
+			}
+			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+			p.Put(client)
+		}()
+	}
+
+	wg.Wait()
+
+	assert.True(t, p.(*poolImpl[*mockClient]).closed, "Pool should be closed")
+	_, err = p.Get(context.Background())
+	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
 
 func TestPool_ConcurrentClose(t *testing.T) {
