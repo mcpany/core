@@ -85,9 +85,10 @@ func newRootCmd() *cobra.Command {
 
 	healthCmd := &cobra.Command{
 		Use:   "health",
-		Short: "Run a health check server",
+		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return appRunner.RunHealthServer(viper.GetString("jsonrpc-port"))
+			port := viper.GetString("jsonrpc-port")
+			return app.HealthCheck(port)
 		},
 	}
 	rootCmd.AddCommand(healthCmd)
