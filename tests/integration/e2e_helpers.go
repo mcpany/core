@@ -431,7 +431,7 @@ func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXY
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpxyBinary := filepath.Join(root, "build/bin/server")
+	mcpxyBinary := "/tmp/build/bin/server"
 
 	t.Logf("Using MCPXY binary from: %s", mcpxyBinary)
 

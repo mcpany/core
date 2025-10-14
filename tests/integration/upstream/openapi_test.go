@@ -40,7 +40,7 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 
 	// --- 1. Start OpenAPI Calculator Server ---
 	openapiServerPort := integration.FindFreePort(t)
-	openapiServerProc := integration.NewManagedProcess(t, "openapi_calculator_server", "../../../build/test/bin/openapi_calculator_server", []string{fmt.Sprintf("--port=%d", openapiServerPort)}, nil)
+	openapiServerProc := integration.NewManagedProcess(t, "openapi_calculator_server", "/tmp/build/test/bin/openapi_calculator_server", []string{fmt.Sprintf("--port=%d", openapiServerPort)}, nil)
 	err := openapiServerProc.Start()
 	require.NoError(t, err, "Failed to start OpenAPI Calculator server")
 	t.Cleanup(openapiServerProc.Stop)
