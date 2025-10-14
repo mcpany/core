@@ -73,8 +73,23 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-npm-
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Docker Cache
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Prepare environment
-      run: make prepare
+      run: |
+        make prepare         CACHE_TO=type=local,dest=/tmp/.buildx-cache         CACHE_FROM=type=local,src=/tmp/.buildx-cache
 
     - name: Check linting
       run: make lint
