@@ -6,32 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-x-cache-steps: &cache-steps
-  - name: Cache Go modules and build tools
-    uses: actions/cache@v4
-    with:
-      path: |
-        ~/.cache/go-build
-        ~/go/pkg/mod
-        build/env
-      key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
-      restore-keys: |
-        ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
-  - name: Cache pip dependencies
-    uses: actions/cache@v4
-    with:
-      path: ~/.cache/pip
-      key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
-      restore-keys: |
-        ${{ runner.os }}-pip-
-  - name: Cache npm dependencies
-    uses: actions/cache@v4
-    with:
-      path: ~/.npm
-      key: ${{ runner.os }}-npm-${{ hashFiles('tests/integration/upstream/package-lock.json') }}
-      restore-keys: |
-        ${{ runner.os }}-npm-
-
 jobs:
   validate_copyrights:
     runs-on: ubuntu-latest
@@ -66,7 +40,32 @@ jobs:
       with:
         node-version: '20'
 
-    - <<: *cache-steps
+    - name: Cache Go modules and build tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+          build/env
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('tests/integration/upstream/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
 
     - name: Prepare environment
       run: make prepare
@@ -94,7 +93,32 @@ jobs:
       with:
         node-version: '20'
 
-    - <<: *cache-steps
+    - name: Cache Go modules and build tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+          build/env
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('tests/integration/upstream/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
 
     - name: Prepare environment
       run: make prepare
@@ -129,7 +153,32 @@ jobs:
       with:
         node-version: '20'
 
-    - <<: *cache-steps
+    - name: Cache Go modules and build tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+          build/env
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('tests/integration/upstream/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
 
     - name: Prepare environment
       run: make prepare
