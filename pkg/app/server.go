@@ -250,6 +250,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
+		defer lis.Close()
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 
 		grpcServer := gogrpc.NewServer()
