@@ -17,8 +17,9 @@ services:
       # Mounts the Docker-specific config file into the container.
       # This allows mcpxy-server to discover and connect to the http-echo-server.
       - ./docker/config.docker.yaml:/etc/mcpxy/config.yaml
-    command:
+    entrypoint:
       # Tells the server to load the configuration from the mounted path.
+      - "/app/server"
       - "--config-paths"
       - "/etc/mcpxy/config.yaml"
     depends_on:

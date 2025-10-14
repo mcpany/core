@@ -55,9 +55,7 @@ func (c *mockClient) Close() error {
 	return c.closeErr
 }
 
-var (
-	clientIDCounter int32
-)
+var clientIDCounter int32
 
 func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, error) {
 	return func(ctx context.Context) (*mockClient, error) {
