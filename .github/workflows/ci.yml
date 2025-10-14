@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Script Permissions
         run: chmod +x .github/scripts/check_copyrights.sh
@@ -23,10 +23,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v6
       with:
         go-version: '1.24'
 
@@ -43,10 +43,13 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: /tmp/.modcache
+        path: |
+          build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
+    - name: Set GOMODCACHE
+      run: echo "GOMODCACHE=$(pwd)/build/env/go/modcache" >> $GITHUB_ENV
     - name: Cache Go build tools
       uses: actions/cache@v4
       with:
@@ -82,10 +85,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v6
       with:
         go-version: '1.24'
 
@@ -102,10 +105,13 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: /tmp/.modcache
+        path: |
+          build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
+    - name: Set GOMODCACHE
+      run: echo "GOMODCACHE=$(pwd)/build/env/go/modcache" >> $GITHUB_ENV
     - name: Cache Go build tools
       uses: actions/cache@v4
       with:
@@ -148,10 +154,10 @@ jobs:
     env:
       SERVER_IMAGE: ghcr.io/${{ github.repository }}:latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v6
       with:
         go-version: '1.24'
 
@@ -168,10 +174,13 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: /tmp/.modcache
+        path: |
+          build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
+    - name: Set GOMODCACHE
+      run: echo "GOMODCACHE=$(pwd)/build/env/go/modcache" >> $GITHUB_ENV
     - name: Cache Go build tools
       uses: actions/cache@v4
       with:
