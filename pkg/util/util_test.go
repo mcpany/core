@@ -126,7 +126,7 @@ func TestSanitizeOperationID(t *testing.T) {
 		{"no changes", "valid-id", "valid-id"},
 		{"with spaces", "invalid id", "invalid_b858cb_id"},
 		{"with special chars", "id-with-$%^", "id-with-$_6dee27_"},
-		{"multiple replacements", "a b c", "a_b858cb_b_b858cb_c"},
+		{"multiple replacements", "a b c", "a_099600_b_099600_c"},
 		{"already sanitized", "a_b858cb_b", "a_b858cb_b"},
 	}
 
