@@ -57,7 +57,6 @@ func (c *mockClient) Close() error {
 
 var (
 	clientIDCounter int32
-	ErrPoolFull     = fmt.Errorf("pool is full")
 )
 
 func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, error) {
@@ -351,6 +350,29 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
 
+func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
+	const maxSize = 1
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Get the only client, acquiring the only permit.
+	client, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	// Put a nil client back. The bug is that this does not release the permit.
+	p.Put(nil)
+
+	// Try to get a client again. With the bug, this will hang until timeout
+	// because the permit was never released. With the fix, it should succeed.
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	_, err = p.Get(ctx)
+	assert.NoError(t, err, "Should be able to get a client after putting nil, but it timed out, indicating a semaphore leak.")
+}
+
 func TestPool_ConcurrentClose(t *testing.T) {
 	pool, _ := New(newMockClientFactory(true), 0, 10, 0)
 	var wg sync.WaitGroup
@@ -416,44 +438,4 @@ func TestManager_ConcurrentAccess(t *testing.T) {
 	}
 	wg.Wait()
 	m.CloseAll()
-}
-
-func TestPool_ConcurrentGetAndClose(t *testing.T) {
-	const (
-		maxSize    = 10
-		numGetters = 50
-	)
-	p, err := New(newMockClientFactory(true), 2, maxSize, 100)
-	require.NoError(t, err)
-	var wg sync.WaitGroup
-	wg.Add(numGetters)
-	// Start a goroutine to close the pool after a short delay.
-	go func() {
-		time.Sleep(15 * time.Millisecond)
-		p.Close()
-	}()
-	for i := 0; i < numGetters; i++ {
-		go func() {
-			defer wg.Done()
-			// Continuously get and put clients until the pool is closed.
-			for {
-				client, err := p.Get(context.Background())
-				if err == ErrPoolClosed {
-					break // Exit loop when pool is closed.
-				}
-				if err != nil {
-					// Other errors are not expected in this test.
-					require.NoError(t, err)
-				}
-				// Simulate some work.
-				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
-				// Putting a client back into a closed pool is a valid operation.
-				p.Put(client)
-			}
-		}()
-	}
-	wg.Wait()
-	assert.True(t, p.(*poolImpl[*mockClient]).closed, "Pool should be closed")
-	_, err = p.Get(context.Background())
-	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
