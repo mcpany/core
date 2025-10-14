@@ -20,8 +20,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
-# Install GCC for CGO
-RUN apt-get update && apt-get install -y gcc
+# Install GCC for CGO and curl for healthchecks
+RUN apt-get update && apt-get install -y gcc curl
 
 # Copy the rest of the application source code
 COPY . .
@@ -39,6 +39,8 @@ WORKDIR /app
 
 # Copy the binary from the builder stage
 COPY --from=builder /server /app/server
+# Copy curl from the builder stage to be used in healthchecks
+COPY --from=builder /usr/bin/curl /usr/bin/curl
 
 # Expose the ports the server listens on
 EXPOSE 50050
