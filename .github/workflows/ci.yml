@@ -47,15 +47,15 @@ jobs:
           ~/.cache/go-build
           ~/go/pkg/mod
           build/env
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-go-lint-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+          ${{ runner.os }}-go-lint-${{ hashFiles('**/go.sum') }}-
 
     - name: Cache pip dependencies
       uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -100,15 +100,15 @@ jobs:
           ~/.cache/go-build
           ~/go/pkg/mod
           build/env
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-go-test-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+          ${{ runner.os }}-go-test-${{ hashFiles('**/go.sum') }}-
 
     - name: Cache pip dependencies
       uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -160,15 +160,15 @@ jobs:
           ~/.cache/go-build
           ~/go/pkg/mod
           build/env
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-go-release-${{ hashFiles('**/go.sum') }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-
+          ${{ runner.os }}-go-release-${{ hashFiles('**/go.sum') }}-
 
     - name: Cache pip dependencies
       uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
