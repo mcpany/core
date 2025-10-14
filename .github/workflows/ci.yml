@@ -43,7 +43,7 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: build/env/go/modcache
+        path: /tmp/build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
@@ -51,8 +51,8 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          build/env/go/cache
-          build/env/bin
+          /tmp/build/env/go/cache
+          /tmp/build/env/bin
         key: ${{ runner.os }}-go-build-tools-${{ hashFiles('Makefile') }}
         restore-keys: |
           ${{ runner.os }}-go-build-tools-
@@ -117,7 +117,7 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: build/env/go/modcache
+        path: /tmp/build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
@@ -125,8 +125,8 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          build/env/go/cache
-          build/env/bin
+          /tmp/build/env/go/cache
+          /tmp/build/env/bin
         key: ${{ runner.os }}-go-build-tools-${{ hashFiles('Makefile') }}
         restore-keys: |
           ${{ runner.os }}-go-build-tools-
@@ -183,7 +183,7 @@ jobs:
     - name: Cache Go modules
       uses: actions/cache@v4
       with:
-        path: build/env/go/modcache
+        path: /tmp/build/env/go/modcache
         key: ${{ runner.os }}-go-modules-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-modules-
@@ -191,8 +191,8 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          build/env/go/cache
-          build/env/bin
+          /tmp/build/env/go/cache
+          /tmp/build/env/bin
         key: ${{ runner.os }}-go-build-tools-${{ hashFiles('Makefile') }}
         restore-keys: |
           ${{ runner.os }}-go-build-tools-

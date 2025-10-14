@@ -38,7 +38,7 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 
 	// --- 1. Start WebRTC Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "webrtc_echo_server", "../../../build/test/bin/webrtc_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	echoServerProc := integration.NewManagedProcess(t, "webrtc_echo_server", "/tmp/build/test/bin/webrtc_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start WebRTC Echo server")
 	t.Cleanup(echoServerProc.Stop)

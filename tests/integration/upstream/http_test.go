@@ -38,7 +38,7 @@ func TestUpstreamService_HTTP(t *testing.T) {
 
 	// --- 1. Start HTTP Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "http_echo_server", "../../../build/test/bin/http_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	echoServerProc := integration.NewManagedProcess(t, "http_echo_server", "/tmp/build/test/bin/http_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start HTTP Echo server")
 	t.Cleanup(echoServerProc.Stop)

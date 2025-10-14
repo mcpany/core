@@ -37,7 +37,7 @@ func TestUpstreamService_Websocket(t *testing.T) {
 
 	// --- 1. Start Websocket Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "websocket_echo_server", "../../../build/test/bin/websocket_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	echoServerProc := integration.NewManagedProcess(t, "websocket_echo_server", "/tmp/build/test/bin/websocket_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start Websocket Echo server")
 	t.Cleanup(echoServerProc.Stop)
