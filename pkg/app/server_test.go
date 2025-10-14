@@ -210,3 +210,35 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 		lis.Close()
 	}
 }
+
+func TestGRPCServer_FastShutdownRace(t *testing.T) {
+	// This test is designed to be flaky if the race condition exists.
+	// We run it multiple times to increase the chance of catching it.
+	for i := 0; i < 20; i++ {
+		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
+			lis, err := net.Listen("tcp", "localhost:0")
+			require.NoError(t, err)
+			port := lis.Addr().(*net.TCPAddr).Port
+			lis.Close() // Close immediately, we just needed a free port.
+
+			ctx, cancel := context.WithCancel(context.Background())
+			errChan := make(chan error, 2)
+			var wg sync.WaitGroup
+
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {})
+
+			// Immediately cancel the context. This creates a race between
+			// the server starting up and shutting down.
+			cancel()
+
+			wg.Wait() // Wait for the server goroutine to finish.
+
+			close(errChan)
+			for err := range errChan {
+				// The race condition would manifest as the server trying to use a listener
+				// that has already been closed by the parent goroutine exiting.
+				assert.NotContains(t, err.Error(), "use of closed network connection", "gRPC server tried to use a closed listener on iteration %d", i)
+			}
+		})
+	}
+}
