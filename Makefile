@@ -2,7 +2,7 @@
 
 # Variables
 GO = go
-GO_ENV := GOCACHE=/tmp/.gocache GOMODCACHE=/tmp/.modcache
+GO_ENV := GOCACHE=$(CURDIR)/build/env/go/cache GOMODCACHE=$(CURDIR)/build/env/go/modcache
 GO_CMD := $(GO_ENV) $(GO)
 SERVER_IMAGE_TAG ?= mcpxy/server:latest
 
@@ -173,7 +173,7 @@ prepare:
 
 gen: prepare
 	@echo "Removing old protobuf files..."
-	@-find . -name "*.pb.go" -delete
+	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
 	@export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
