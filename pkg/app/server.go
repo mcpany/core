@@ -250,7 +250,6 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
-		defer lis.Close()
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 
 		grpcServer := gogrpc.NewServer()
@@ -267,6 +266,12 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		<-ctx.Done()
 		serverLog.Info("Attempting to gracefully shut down server...")
 		grpcServer.GracefulStop()
+		// It's important to close the listener after the server has been stopped.
+		// If we defer the close, the listener might be closed before the server is ready,
+		// causing a "use of closed network connection" error, especially in fast start/stop scenarios.
+		if err := lis.Close(); err != nil {
+			serverLog.Error("Failed to close gRPC listener", "error", err)
+		}
 		serverLog.Info("Server shut down.")
 	}()
 }
