@@ -40,7 +40,7 @@ func TestUpstreamService_OpenAPI_WithAPIKeyAuth(t *testing.T) {
 
 	// --- 1. Start Authenticated HTTP Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", "../../../build/test/bin/http_authed_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	echoServerProc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", "/tmp/build/test/bin/http_authed_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
 	err := echoServerProc.Start()
 	require.NoError(t, err, "Failed to start authenticated HTTP Echo server for OpenAPI test")
 	t.Cleanup(echoServerProc.Stop)
