@@ -147,8 +147,7 @@ prepare:
 		VENV_DIR=$(CURDIR)/build/venv; \
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
 		$$VENV_DIR/bin/pip install --upgrade pip; \
-		$$VENV_DIR/bin/pip install "pre-commit==$(PRE_COMMIT_VERSION)"; \
-		$$VENV_DIR/bin/pip install "fastmcp>=2.0.0" --upgrade; \
+		$$VENV_DIR/bin/pip install -r requirements.txt; \
 		if ! $$VENV_DIR/bin/pre-commit install; then \
 			echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 			echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \

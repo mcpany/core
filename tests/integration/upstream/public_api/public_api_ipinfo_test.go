@@ -20,7 +20,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
@@ -92,7 +94,31 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	toolName := fmt.Sprintf("%s%sgetIPInfo", ipInfoServiceID, consts.ToolNameServiceSeparator)
 	ipAddress := `{"ip": "8.8.8.8"}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
+
+	const maxRetries = 3
+	var res *mcp.CallToolResult
+
+	for i := 0; i < maxRetries; i++ {
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
+		if err == nil {
+			break // Success
+		}
+
+		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+			t.Logf("Attempt %d/%d: Call to ip-api.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			time.Sleep(2 * time.Second) // Wait before retrying
+			continue
+		}
+
+		// For any other error, fail the test immediately.
+		require.NoError(t, err, "unrecoverable error calling getIPInfo tool")
+	}
+
+	if err != nil {
+		t.Skipf("Skipping test: all %d retries to ip-api.com failed with transient errors. Last error: %v", maxRetries, err)
+	}
+
 	require.NoError(t, err, "Error calling getIPInfo tool")
 	require.NotNil(t, res, "Nil response from getIPInfo tool")
 
