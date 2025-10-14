@@ -288,17 +288,24 @@ ifdef HAS_DOCKER
 			esac; \
 		fi; \
 		echo "Building server Docker image ($(SERVER_IMAGE_TAG)) for platforms: $${PLATFORMS}"; \
+		CACHE_ARGS=""; \
+		if [ -n "$(CACHE_TO)" ]; then \
+			CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
+		fi; \
+		if [ -n "$(CACHE_FROM)" ]; then \
+			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
+		fi; \
 		CMD_ARGS="--platform $${PLATFORMS} -t $(SERVER_IMAGE_TAG) -f docker/Dockerfile.server ."; \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
-			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} --push; \
+			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push; \
 		else \
 			if echo "$${PLATFORMS}" | grep -q ','; then \
 				echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS}; \
+				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS}; \
 			else \
 				echo "Building single-platform image locally and loading to docker images..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} --load; \
+				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load; \
 			fi; \
 		fi; \
 	}
