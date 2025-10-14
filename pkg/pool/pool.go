@@ -29,6 +29,7 @@ import (
 
 var (
 	ErrPoolClosed = fmt.Errorf("pool has been closed")
+	ErrPoolFull   = fmt.Errorf("pool is full")
 )
 
 type ClosableClient interface {

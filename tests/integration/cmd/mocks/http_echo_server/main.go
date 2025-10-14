@@ -17,6 +17,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -24,29 +25,32 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
 )
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("http_echo_server: Received request", "method", r.Method, "path", r.URL.Path)
-	if r.Method == http.MethodPost && r.URL.Path == "/echo" {
-		bodyBytes, errRead := io.ReadAll(r.Body)
-		if errRead != nil {
-			slog.Error("http_echo_server: Error reading request body", "error", errRead)
-			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON) // Assume JSON echo
-		w.WriteHeader(http.StatusOK)
-		if _, errWrite := w.Write(bodyBytes); errWrite != nil {
-			slog.Error("http_echo_server: Error writing response body", "error", errWrite)
-		}
-		slog.Info("http_echo_server: Responded to POST /echo", "bytes", len(bodyBytes))
+	if r.Method != http.MethodPost {
+		slog.Warn("http_echo_server: Method not allowed", "method", r.Method)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	slog.Warn("http_echo_server: Path not found or method not allowed", "path", r.URL.Path, "method", r.Method)
-	http.NotFound(w, r)
+	bodyBytes, errRead := io.ReadAll(r.Body)
+	if errRead != nil {
+		slog.Error("http_echo_server: Error reading request body", "error", errRead)
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON) // Assume JSON echo
+	w.WriteHeader(http.StatusOK)
+	if _, errWrite := w.Write(bodyBytes); errWrite != nil {
+		slog.Error("http_echo_server: Error writing response body", "error", errWrite)
+	}
+	slog.Info("http_echo_server: Responded to POST /echo", "bytes", len(bodyBytes))
 }
 
 // main starts the mock HTTP echo server.
@@ -80,10 +84,30 @@ func main() {
 		Handler: mux,
 	}
 
-	// Use the listener created above, which handles the random port assignment if port was 0
-	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		slog.Error("http_echo_server: Server failed", "error", err)
-		os.Exit(1)
+	// Channel to listen for OS signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	// Goroutine to start the server
+	go func() {
+		if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
+			slog.Error("http_echo_server: Server failed", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Block until a signal is received
+	<-stop
+
+	slog.Info("http_echo_server: Shutting down the server...")
+
+	// Create a context with a timeout to allow for graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("http_echo_server: Server Shutdown Failed", "error", err)
 	}
-	slog.Info("http_echo_server: Server shut down.")
+
+	slog.Info("http_echo_server: Server gracefully stopped")
 }
