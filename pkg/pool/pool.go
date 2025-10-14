@@ -125,6 +125,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+		p.sem.Release(1)
 		return
 	}
 
