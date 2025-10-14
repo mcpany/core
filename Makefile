@@ -264,7 +264,7 @@ $(E2E_BIN_DIR):
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpxy-e2e-time-server)..."
-	-@$(DOCKER_CMD) build -t mcpxy-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver tests/integration/examples
+	@$(DOCKER_BUILDX_CMD) build 		--load 		-t mcpxy-e2e-time-server 		-f tests/integration/examples/Dockerfile.timeserver 		$(if $(CACHE_TO),--cache-to=$(CACHE_TO)) 		$(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) 		tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
