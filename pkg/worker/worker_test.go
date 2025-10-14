@@ -216,6 +216,44 @@ func TestUpstreamWorker(t *testing.T) {
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
+
+	t.Run("result marshaling failure", func(t *testing.T) {
+		bp := bus.NewBusProvider()
+		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		tm := &mockToolManager{
+			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+				// Functions are not serializable to JSON
+				return func() {}, nil
+			},
+		}
+
+		worker := NewUpstreamWorker(bp, tm)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ToolExecutionResult, 1)
+		unsubscribe := resultBus.SubscribeOnce("marshal-fail-test", func(result *bus.ToolExecutionResult) {
+			resultChan <- result
+			wg.Done()
+		})
+		defer unsubscribe()
+
+		req := &bus.ToolExecutionRequest{}
+		req.SetCorrelationID("marshal-fail-test")
+		requestBus.Publish("request", req)
+
+		wg.Wait()
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error, "Error should be nil as tool execution succeeded")
+			assert.Nil(t, result.Result, "Result should be nil due to marshaling failure")
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for execution result")
+		}
+	})
 }
 
 func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
