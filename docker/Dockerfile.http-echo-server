@@ -17,7 +17,12 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
 
 # Stage 2: Create the final, minimal production image
-FROM scratch
+FROM alpine:latest
+
+# Install wget and ca-certificates.
+# wget is needed for the healthcheck in docker-compose.yml.
+# ca-certificates are good practice to include for HTTPS requests.
+RUN apk --no-cache add wget ca-certificates
 
 # Copy the built binary from the builder stage.
 COPY --from=builder /http-echo-server /http-echo-server
