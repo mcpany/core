@@ -237,7 +237,7 @@ run: build
 # ==============================================================================
 # E2E Test Related Builds
 # ==============================================================================
-E2E_MOCK_DIR := tests/integration/cmd/mocks
+E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
 E2E_BIN_DIR := /tmp/build/test/bin
 
 # List of mock service directories (which are also their binary names)
