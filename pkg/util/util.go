@@ -109,11 +109,23 @@ func SanitizeOperationID(input string) string {
 	if !disallowedIDChars.MatchString(input) {
 		return input
 	}
-	return disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
-		h := sha1.New()
-		h.Write([]byte(s))
-		return fmt.Sprintf("_%s_", hex.EncodeToString(h.Sum(nil))[:6])
-	})
+
+	// Find all disallowed character sequences
+	matches := disallowedIDChars.FindAllString(input, -1)
+	if matches == nil {
+		return input
+	}
+
+	// Join all disallowed sequences and compute a single hash
+	fullInvalidSequence := strings.Join(matches, "")
+	h := sha1.New()
+	h.Write([]byte(fullInvalidSequence))
+	hash := hex.EncodeToString(h.Sum(nil))[:6]
+
+	// Replace every occurrence of a disallowed sequence with the same hash
+	sanitized := disallowedIDChars.ReplaceAllString(input, fmt.Sprintf("_%s_", hash))
+
+	return sanitized
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker,
