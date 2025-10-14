@@ -40,6 +40,7 @@ func TestGenerateToolID(t *testing.T) {
 		{"empty tool name", "service1", "", "", true},
 		{"invalid tool name", "service1", "tool a", "", true},
 		{"tool name shares prefix with service key but is not fully qualified", "my-service", "my-service-tool", "my-service/-/my-service-tool", false},
+		{"fully qualified tool name is passed with a different service key", "service2", "service1/-/toola", "service1/-/toola", false},
 	}
 
 	for _, tt := range tests {
