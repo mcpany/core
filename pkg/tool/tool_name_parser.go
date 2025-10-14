@@ -36,13 +36,14 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	if len(parts) == 2 {
 		namespace = parts[0]
 		tool = parts[1]
-	} else if len(parts) != 2 {
-		tool = toolName
+	} else {
+		tool = parts[0]
 	}
+
 	if tool == "" {
 		return "", "", fmt.Errorf("invalid tool name: %s", toolName)
 	}
-	return namespace, tool, err
+	return namespace, tool, nil
 }
 
 // GetFullyQualifiedToolName constructs a fully qualified tool name from a
