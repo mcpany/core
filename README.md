@@ -42,7 +42,7 @@ Before you begin, ensure you have the following installed:
     ```bash
     make build
     ```
-    The binary will be located at `build/bin/server`.
+    The binary will be located at `/tmp/build/bin/server`.
 
 ### Running the Server
 
@@ -50,7 +50,7 @@ You can run the MCP-XY server directly or by using a `make` command.
 
 -   **Directly:**
     ```bash
-    ./build/bin/server
+    /tmp/build/bin/server
     ```
 -   **Via Make:**
     ```bash
