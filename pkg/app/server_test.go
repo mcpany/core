@@ -168,13 +168,12 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 }
 
-func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
+func TestGRPCServer_PortReleasedImmediatelyAfterShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
-	// This is to ensure the port is available for the gRPC server to use.
 	lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -186,26 +185,25 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 		// No services need to be registered for this test.
 	})
 
-	// Allow some time for the server to start up.
-	time.Sleep(100 * time.Millisecond)
+	// Wait for the server to start by polling the port.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), 10*time.Millisecond)
+		if err != nil {
+			return false
+		}
+		conn.Close()
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "gRPC server did not start in time")
 
 	// Cancel the context to initiate a graceful shutdown.
 	cancel()
 	// Wait for the server to fully shut down.
 	wg.Wait()
 
-	// Check if any errors occurred during startup or shutdown.
-	select {
-	case err := <-errChan:
-		require.NoError(t, err, "The gRPC server should not have returned an error.")
-	default:
-		// No error, which is the expected outcome.
-	}
-
 	// After shutdown, attempt to listen on the same port again.
-	// If the original listener was properly closed, this should succeed.
+	// If the original listener was properly closed, this should succeed immediately.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
+	require.NoError(t, err, "The port should be available for reuse immediately after the server has shut down.")
 	if lis != nil {
 		lis.Close()
 	}

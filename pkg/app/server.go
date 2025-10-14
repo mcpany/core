@@ -250,7 +250,6 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
-		defer lis.Close()
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 
 		grpcServer := gogrpc.NewServer()
@@ -260,13 +259,24 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		go func() {
 			serverLog.Info("gRPC server listening")
 			if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
-				errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
+				// If the server is gracefully shut down, `Serve` will return an error.
+				// We only want to send non-nil errors to the channel if they are not
+				// the result of a graceful shutdown.
+				select {
+				case <-ctx.Done(): // If shutdown is in progress, the error is expected.
+				default:
+					errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
+				}
 			}
 		}()
 
 		<-ctx.Done()
 		serverLog.Info("Attempting to gracefully shut down server...")
 		grpcServer.GracefulStop()
+		// We need to explicitly close the listener, as GracefulStop does not.
+		if err := lis.Close(); err != nil {
+			serverLog.Error("Failed to close gRPC listener", "error", err)
+		}
 		serverLog.Info("Server shut down.")
 	}()
 }
