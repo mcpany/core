@@ -20,9 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
@@ -94,31 +92,7 @@ func TestUpstreamService_Universities(t *testing.T) {
 
 	toolName := fmt.Sprintf("%s%ssearchUniversities", universityServiceID, consts.ToolNameServiceSeparator)
 	country := `{"country": "United Kingdom"}`
-
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(country)})
-		if err == nil {
-			break // Success
-		}
-
-		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to universities.hipolabs.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		// For any other error, fail the test immediately.
-		require.NoError(t, err, "unrecoverable error calling searchUniversities tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to universities.hipolabs.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(country)})
 	require.NoError(t, err, "Error calling searchUniversities tool")
 	require.NotNil(t, res, "Nil response from searchUniversities tool")
 
@@ -213,31 +187,7 @@ func TestUpstreamService_UniversitiesByName(t *testing.T) {
 
 	toolName := fmt.Sprintf("%s%ssearchUniversitiesByName", universityServiceID, consts.ToolNameServiceSeparator)
 	searchParams := `{"name": "middle"}`
-
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(searchParams)})
-		if err == nil {
-			break // Success
-		}
-
-		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to universities.hipolabs.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		// For any other error, fail the test immediately.
-		require.NoError(t, err, "unrecoverable error calling searchUniversitiesByName tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to universities.hipolabs.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(searchParams)})
 	require.NoError(t, err, "Error calling searchUniversitiesByName tool")
 	require.NotNil(t, res, "Nil response from searchUniversitiesByName tool")
 
