@@ -195,11 +195,11 @@ build: gen
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
-	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
+	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./cmd/... ./pkg/... ./tests/...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s ./...
+	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s ./cmd/... ./pkg/... ./tests/...
 
 # ==============================================================================
 # Example Binaries Build
@@ -223,7 +223,7 @@ lint: gen
 	@echo "Cleaning golangci-lint cache..."
 	@$(GOLANGCI_LINT_BIN) cache clean
 	@echo "Running golangci-lint..."
-	@$(GOLANGCI_LINT_BIN) run ./...
+	@$(GOLANGCI_LINT_BIN) run ./cmd/... ./pkg/... ./tests/...
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
