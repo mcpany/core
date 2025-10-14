@@ -195,7 +195,7 @@ build: gen
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
-	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -v -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
+	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
