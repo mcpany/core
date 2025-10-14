@@ -2,7 +2,7 @@
 
 # Variables
 GO = go
-GO_ENV := GOCACHE=$(CURDIR)/build/env/go/cache GOMODCACHE=$(CURDIR)/build/env/go/modcache
+GO_ENV := GOCACHE=/tmp/go-cache GOMODCACHE=/tmp/go-modcache
 GO_CMD := $(GO_ENV) $(GO)
 SERVER_IMAGE_TAG ?= mcpxy/server:latest
 
@@ -195,11 +195,15 @@ build: gen
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 300s timeout and coverage..."
-	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./cmd/... ./pkg/... ./tests/...
+	@rm -rf build/env/go
+	@$(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s ./cmd/... ./pkg/... ./tests/...
+	@PACKAGES=$$(go list ./... | grep -v /build/); \
+	for pkg in $$PACKAGES; do \
+		$(GO_CMD) test -race -count=1 -timeout 300s $$pkg; \
+	done
 
 # ==============================================================================
 # Example Binaries Build
@@ -223,7 +227,10 @@ lint: gen
 	@echo "Cleaning golangci-lint cache..."
 	@$(GOLANGCI_LINT_BIN) cache clean
 	@echo "Running golangci-lint..."
-	@$(GOLANGCI_LINT_BIN) run ./cmd/... ./pkg/... ./tests/...
+	@PACKAGES=$$(go list ./... | grep -v /build/); \
+	for pkg in $$PACKAGES; do \
+		$(GOLANGCI_LINT_BIN) run $$pkg; \
+	done
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
