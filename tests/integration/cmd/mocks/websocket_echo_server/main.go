@@ -17,12 +17,16 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -90,10 +94,30 @@ func main() {
 		Handler: mux,
 	}
 
-	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		slog.Error("websocket_echo_server: Server failed", "error", err)
-		os.Exit(1)
+	// Channel to listen for OS signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	// Goroutine to start the server
+	go func() {
+		if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
+			slog.Error("websocket_echo_server: Server failed", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Block until a signal is received
+	<-stop
+
+	slog.Info("websocket_echo_server: Shutting down the server...")
+
+	// Create a context with a timeout to allow for graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("websocket_echo_server: Server Shutdown Failed", "error", err)
 	}
 
-	slog.Info("websocket_echo_server: Server shut down.")
+	slog.Info("websocket_echo_server: Server gracefully stopped")
 }
