@@ -44,5 +44,5 @@ COPY --from=builder /server /app/server
 EXPOSE 50050
 EXPOSE 50051
 
-# Set the command to run the server
-CMD ["/app/server"]
+# Set the entrypoint to run the server
+ENTRYPOINT ["/app/server"]
