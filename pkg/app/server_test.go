@@ -115,6 +115,21 @@ func TestRun_StdioMode(t *testing.T) {
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 }
 
+func TestRun_NoGrpcServer(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "0", "", nil)
+	}()
+
+	err := <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+}
+
 func TestRun_ServerStartupErrors(t *testing.T) {
 	app := NewApplication()
 
