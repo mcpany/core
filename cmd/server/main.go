@@ -99,7 +99,7 @@ func newRootCmd() *cobra.Command {
 	})
 
 	rootCmd.Flags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPXY_JSONRPC_PORT")
-	rootCmd.Flags().String("grpc-port", "50051", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPXY_GRPC_PORT")
+	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPXY_GRPC_PORT")
 	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPXY_STDIO")
 	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
 	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPXY_DEBUG")
