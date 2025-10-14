@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"sync"
 	"testing"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	gogrpc "google.golang.org/grpc"
 )
 
 func TestSetup(t *testing.T) {
@@ -149,4 +151,47 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
+}
+
+func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
+	// Find an available port for the gRPC server to listen on.
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	// We close the listener immediately and just use the port number.
+	// This is to ensure the port is available for the gRPC server to use.
+	lis.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server in a goroutine.
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {
+		// No services need to be registered for this test.
+	})
+
+	// Allow some time for the server to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// Cancel the context to initiate a graceful shutdown.
+	cancel()
+	// Wait for the server to fully shut down.
+	wg.Wait()
+
+	// Check if any errors occurred during startup or shutdown.
+	select {
+	case err := <-errChan:
+		require.NoError(t, err, "The gRPC server should not have returned an error.")
+	default:
+		// No error, which is the expected outcome.
+	}
+
+	// After shutdown, attempt to listen on the same port again.
+	// If the original listener was properly closed, this should succeed.
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
+	if lis != nil {
+		lis.Close()
+	}
 }
