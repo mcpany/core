@@ -66,7 +66,11 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 
 		var resultBytes json.RawMessage
 		if err == nil {
-			resultBytes, err = json.Marshal(result)
+			var marshalErr error
+			resultBytes, marshalErr = json.Marshal(result)
+			if marshalErr != nil {
+				log.Error("Failed to marshal tool execution result", "error", marshalErr)
+			}
 		}
 
 		res := &bus.ToolExecutionResult{
