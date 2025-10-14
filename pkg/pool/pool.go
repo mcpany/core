@@ -27,9 +27,7 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-var (
-	ErrPoolClosed = fmt.Errorf("pool has been closed")
-)
+var ErrPoolClosed = fmt.Errorf("pool has been closed")
 
 type ClosableClient interface {
 	Close() error
