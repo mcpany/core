@@ -49,6 +49,16 @@ func (m *mockRunner) RunHealthServer(jsonrpcPort string) error {
 	return nil
 }
 
+func TestHealthCmd(t *testing.T) {
+	// This is a basic test to ensure the command runs without panicking.
+	// A more thorough test would involve setting up a mock HTTP server.
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"health", "--jsonrpc-port", "50050"})
+	err := rootCmd.Execute()
+	// We expect an error because no server is running
+	assert.Error(t, err)
+}
+
 func TestRootCmd(t *testing.T) {
 	mock := &mockRunner{}
 	originalRunner := appRunner

@@ -51,7 +51,6 @@ var ShutdownTimeout = 5 * time.Second
 // Runner defines the interface for running the MCP-XY application.
 type Runner interface {
 	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error
-	RunHealthServer(jsonrpcPort string) error
 }
 
 // Application is the main application struct, holding the dependencies and logic.
@@ -149,28 +148,25 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
+// HealthCheck performs a health check against a running server.
+func HealthCheck(port string) error {
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
+	if err != nil {
+		return fmt.Errorf("health check failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
+	}
+
+	fmt.Println("Health check successful: server is running and healthy.")
+	return nil
+}
+
 // runServerMode runs the server in the standard HTTP and gRPC server mode.
 // It starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
-// RunHealthServer starts a simple HTTP server for health checks.
-func (a *Application) RunHealthServer(jsonrpcPort string) error {
-	log := logging.GetLogger()
-	log.Info("Starting health check server", "port", jsonrpcPort)
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "OK")
-	})
-
-	server := &http.Server{
-		Addr:    ":" + jsonrpcPort,
-		Handler: mux,
-	}
-
-	return server.ListenAndServe()
-}
-
 func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
