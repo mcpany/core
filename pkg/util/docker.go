@@ -24,9 +24,8 @@ import (
 )
 
 var (
-	dockerSocketAccessible     bool
-	dockerSocketCheckCompleted bool
-	dockerSocketCheckMutex     sync.Mutex
+	dockerSocketAccessible bool
+	dockerSocketCheckOnce  sync.Once
 )
 
 var IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
@@ -38,22 +37,15 @@ func IsDockerSocketAccessible() bool {
 }
 
 func isDockerSocketAccessibleDefault() bool {
-	dockerSocketCheckMutex.Lock()
-	defer dockerSocketCheckMutex.Unlock()
-
-	if dockerSocketCheckCompleted {
-		return dockerSocketAccessible
-	}
-
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		dockerSocketAccessible = false
-	} else {
-		defer cli.Close()
-		_, err = cli.Ping(context.Background())
-		dockerSocketAccessible = err == nil
-	}
-
-	dockerSocketCheckCompleted = true
+	dockerSocketCheckOnce.Do(func() {
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		if err != nil {
+			dockerSocketAccessible = false
+		} else {
+			defer cli.Close()
+			_, err = cli.Ping(context.Background())
+			dockerSocketAccessible = err == nil
+		}
+	})
 	return dockerSocketAccessible
 }
