@@ -33,9 +33,14 @@ ARG TARGETARCH
 RUN CGO_ENABLED=1 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -v -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
-# Using distroless base image as CGO-enabled binaries are not fully static
-FROM gcr.io/distroless/base-debian12
+# Using a slim Debian image which includes wget for the healthcheck.
+FROM debian:12-slim
 WORKDIR /app
+
+# Install wget for healthchecks and clean up apt cache.
+RUN apt-get update && \
+    apt-get install -y wget --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage
 COPY --from=builder /server /app/server
