@@ -368,8 +368,12 @@ func convertOpenAPISchemaToInputSchemaProperties(
 					fmt.Printf("Warning: could not determine item type for array '%s': %v\n", name, err)
 					// Potentially represent as array of any or skip items field.
 					// For now, we'll just not set the "items" field in the schema.
-				} else {
-					fieldSchema["items"] = itemSchemaVal // itemSchemaVal is already a *structpb.Value
+				} else if itemSchemaVal != nil {
+					// The 'items' field should be a schema object (map), not a Value.
+					// We need to unwrap the struct from the Value and convert it to a map.
+					if sv := itemSchemaVal.GetStructValue(); sv != nil {
+						fieldSchema["items"] = sv.AsMap()
+					}
 				}
 			} else {
 				// Array with no items specified.
@@ -434,11 +438,15 @@ func convertOpenAPISchemaToInputSchemaProperties(
 					props.Fields[propName] = val
 				}
 			} else {
-				// If the request body is not an object (e.g. a raw array, string),
-				// it's harder to fit into the "properties" model directly.
-				// One could wrap it, e.g. props.Fields["request_body"] = convertedSchema.
-				// For now, we only merge properties if the body is an object.
-				fmt.Printf("Warning: Request body is not an object, its schema will not be merged into properties directly.\n")
+				// If the request body is not an object (e.g., an array or a primitive),
+				// wrap its schema under a special "request_body" property.
+				val, err := convertSingleSchema("request_body", bodySchemaRef, bodyActualSchema.Description)
+				if err != nil {
+					// Log the error but continue; this might result in an empty input schema for this part.
+					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
+				} else {
+					props.Fields["request_body"] = val
+				}
 			}
 		}
 	}

@@ -184,6 +184,42 @@ const sampleOpenAPISpecJSON = `
 }
 `
 
+const nonObjectBodySpecJSON = `
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Test API for non-object request body",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/process-items": {
+      "post": {
+        "summary": "Process a list of items",
+        "operationId": "processItems",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
+`
+
 func TestSanitizeOperationID(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -737,4 +773,35 @@ func TestConvertSchemaToPbFields_Empty(t *testing.T) {
 	schemaRef = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{}}}
 	fields = convertSchemaToPbFields(schemaRef, doc)
 	assert.Empty(t, fields, "Schema with empty type array should produce no fields")
+}
+
+func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
+	loader := openapi3.NewLoader()
+	doc, err := loader.LoadFromData([]byte(nonObjectBodySpecJSON))
+	assert.NoError(t, err, "Failed to load non-object body spec")
+	err = doc.Validate(context.Background())
+	assert.NoError(t, err, "Non-object body spec failed validation")
+
+	ops := extractMcpOperationsFromOpenAPI(doc)
+	tools := convertMcpOperationsToTools(ops, doc, "test-service")
+
+	assert.Len(t, tools, 1, "Expected one tool to be generated")
+	tool := tools[0]
+
+	inputSchema := tool.GetInputSchema()
+	assert.NotNil(t, inputSchema, "InputSchema should not be nil")
+	properties := inputSchema.GetProperties().GetFields()
+	assert.NotNil(t, properties, "InputSchema properties should not be nil")
+
+	// This is the core of the bug: with the original code, the properties map will be empty.
+	// The fix should ensure a property is created to wrap the array.
+	assert.NotEmpty(t, properties, "InputSchema should have properties for the non-object request body")
+
+	// Further checks for the fixed implementation:
+	requestBodyProp, ok := properties["request_body"]
+	assert.True(t, ok, "Expected a 'request_body' property to be created for the array body")
+
+	propSchema := requestBodyProp.GetStructValue().GetFields()
+	assert.Equal(t, "array", propSchema["type"].GetStringValue(), "The wrapper property should be of type 'array'")
+	assert.NotNil(t, propSchema["items"], "The array property should have an 'items' schema")
 }
