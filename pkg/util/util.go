@@ -48,13 +48,12 @@ func GenerateToolID(serviceKey, toolName string) (string, error) {
 		return "", fmt.Errorf("tool name must match %q", validIDPattern.String())
 	}
 
+	// If the tool name is already fully qualified, return it as is.
+	if s, _, _ := ParseToolName(toolName); s != "" {
+		return toolName, nil
+	}
+
 	if serviceKey != "" {
-		// If the tool name already starts with the service key and the separator,
-		// it is considered fully qualified and returned as is.
-		if strings.HasPrefix(toolName, serviceKey+consts.ToolNameServiceSeparator) {
-			return toolName, nil
-		}
-		// Otherwise, prepend the service key and separator.
 		return serviceKey + consts.ToolNameServiceSeparator + toolName, nil
 	}
 
