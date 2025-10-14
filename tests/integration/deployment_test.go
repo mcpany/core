@@ -106,14 +106,14 @@ func TestDockerCompose(t *testing.T) {
 		echoReady := false
 		for _, s := range services {
 			name, okName := s["Name"].(string)
-			state, okState := s["State"].(string)
-			if !okName || !okState {
+			health, okHealth := s["Health"].(string)
+			if !okName || !okHealth {
 				continue
 			}
-			if strings.Contains(name, "mcpxy-server") && state == "running" {
+			if strings.Contains(name, "mcpxy-server") && health == "healthy" {
 				mcpxyReady = true
 			}
-			if strings.Contains(name, "http-echo-server") && state == "running" {
+			if strings.Contains(name, "http-echo-server") && health == "healthy" {
 				echoReady = true
 			}
 		}
