@@ -132,6 +132,13 @@ prepare:
 		echo "protoc-gen-go-grpc not found at $(PROTOC_GEN_GO_GRPC) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
 		exit 1; \
 	fi
+	@echo "Checking for protoc-gen-lint..."
+	@if [ -f "$(PROTOC_INSTALL_DIR)/protoc-gen-lint" ]; then \
+		echo "protoc-gen-lint is already installed."; \
+	else \
+		echo "Installing protoc-gen-lint..."; \
+		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install github.com/ckaznocha/protoc-gen-lint@latest; \
+	fi
 	@echo "Go protobuf plugins installation check complete."
 	@# Install Python dependencies and pre-commit hooks
 	@echo "Checking for Python to install dependencies and pre-commit hooks..."
@@ -222,6 +229,10 @@ build-calculator-stdio:
 lint: gen
 	@echo "Running golangci-lint..."
 	@$(GOLANGCI_LINT_BIN) run ./...
+
+lint-proto:
+	@echo "Linting protobuf files..."
+	@$(PROTOC_BIN) --plugin=protoc-gen-lint=$(PROTOC_INSTALL_DIR)/protoc-gen-lint --lint_out=. --proto_path=. $(PROTO_FILES)
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
