@@ -18,8 +18,8 @@ fi
 # 2. Use sed to strip existing leading whitespace and prepend the comment prefix
 # 3. Add " */" at the end (closing block comment)
 GO_HEADER=$(
-    echo "/*" 
-    # Use two sed expressions: 
+    echo "/*"
+    # Use two sed expressions:
     # 1. Remove all leading spaces/tabs from the source line.
     # 2. Prepend the block comment prefix (COMMENT_START).
     sed -e 's/^[[:space:]]*//' -e 's/^/'"$COMMENT_START"'/' "$HEADER_FILE"
@@ -35,7 +35,7 @@ find . -type f -name "$FILE_PATTERN" -not -name "*.pb.go" | while read -r file; 
         echo "Skipping $file: Header already present."
     else
         echo "Updating $file"
-        
+
         # Prepend the generated header followed by a newline
         (echo "$GO_HEADER"; echo ""; cat "$file") > "$file.tmp" && mv "$file.tmp" "$file"
     fi

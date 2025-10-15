@@ -1,3 +1,6 @@
+# Copyright (C) 2025 Author(s) of MCP-XY
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 import sys
 from fastmcp import mcp

@@ -1,5 +1,6 @@
 # Generated protobuf files
-# **/*.pb.go
+**/*.pb.go
+/tmp
 coverage.out
 
 # Build artifacts

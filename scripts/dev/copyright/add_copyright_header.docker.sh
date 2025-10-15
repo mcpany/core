@@ -25,7 +25,7 @@ find . -type f -name "$FILE_PATTERN" | while read -r file; do
         echo "Skipping $file: Header already present."
     else
         echo "Updating $file"
-        
+
         # Prepend the generated header followed by a newline
         (echo "$DOCKER_HEADER"; echo ""; cat "$file") > "$file.tmp" && mv "$file.tmp" "$file"
     fi
