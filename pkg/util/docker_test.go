@@ -17,13 +17,10 @@
 package util
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-)
-
-import (
-	"sync"
 )
 
 func TestIsDockerSocketAccessible(t *testing.T) {
