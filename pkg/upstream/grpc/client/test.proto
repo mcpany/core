@@ -1,3 +1,6 @@
+// Copyright (C) 2025 Author(s) of MCP-XY
+// SPDX-License-Identifier: Apache-2.0
+
 syntax = "proto3";
 
 package grpcclient; // This package name is for the .proto namespace, not Go.
