@@ -226,8 +226,8 @@ build-calculator-stdio:
 # ==============================================================================
 
 lint: gen
-	@echo "Running golangci-lint..."
-	@$(GOLANGCI_LINT_BIN) run ./...
+	@echo "Running all pre-commit hooks..."
+	@/tmp/build/venv/bin/pre-commit run --all-files
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
