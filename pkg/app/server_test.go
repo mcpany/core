@@ -31,18 +31,37 @@ import (
 	gogrpc "google.golang.org/grpc"
 )
 
+import (
+	"bytes"
+	"log/slog"
+	"strings"
+
+	"github.com/mcpxy/core/pkg/logging"
+)
+
 func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
+		logging.ForTestsOnlyResetLogger()
+		var buf bytes.Buffer
+		logging.Init(slog.LevelWarn, &buf)
+
 		fs := setup(nil)
 		assert.NotNil(t, fs, "setup should return a valid fs even if input is nil")
 		_, ok := fs.(*afero.OsFs)
 		assert.True(t, ok, "setup should default to OsFs")
+
+		assert.True(t, strings.Contains(buf.String(), "setup called with nil afero.Fs"), "Warning message should be logged")
 	})
 
 	t.Run("with existing fs", func(t *testing.T) {
+		logging.ForTestsOnlyResetLogger()
+		var buf bytes.Buffer
+		logging.Init(slog.LevelWarn, &buf)
+
 		memFs := afero.NewMemMapFs()
 		fs := setup(memFs)
 		assert.Equal(t, memFs, fs, "setup should return the provided fs")
+		assert.False(t, strings.Contains(buf.String(), "setup called with nil afero.Fs"), "Warning message should not be logged")
 	})
 }
 

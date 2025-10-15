@@ -133,7 +133,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 func setup(fs afero.Fs) afero.Fs {
 	log := logging.GetLogger()
 	if fs == nil {
-		log.Warn("run called with nil afero.Fs, defaulting to OS filesystem. This is not recommended for new direct calls; pass afero.NewOsFs() explicitly.")
+		log.Warn("setup called with nil afero.Fs, defaulting to OS filesystem. This is not recommended for new direct calls; pass afero.NewOsFs() explicitly.")
 		fs = afero.NewOsFs()
 	}
 	return fs
