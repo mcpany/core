@@ -118,6 +118,19 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 		require.Error(t, err)
 	})
 
+	t.Run("with malformed CA cert", func(t *testing.T) {
+		tempDir := t.TempDir()
+		malformedCertPath := filepath.Join(tempDir, "malformed.pem")
+		err := os.WriteFile(malformedCertPath, []byte("not a cert"), 0600)
+		require.NoError(t, err)
+
+		config := &configv1.TLSConfig{}
+		config.SetCaCertPath(malformedCertPath)
+		_, err = NewHttpClientWithTLS(config)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to append CA certs from PEM")
+	})
+
 	t.Run("with client certs", func(t *testing.T) {
 		tempDir := t.TempDir()
 		clientCertPath, clientKeyPath := generateTestCerts(t, tempDir)
