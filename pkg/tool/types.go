@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -231,7 +232,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if len(methodAndURL) != 2 {
 		return "", fmt.Errorf("invalid http tool definition: expected method and URL, got %q", t.tool.GetUnderlyingMethodFqn())
 	}
-	method, url := methodAndURL[0], methodAndURL[1]
+	method, rawURL := methodAndURL[0], methodAndURL[1]
+
+	url, err := url.PathUnescape(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unescape url: %w", err)
+	}
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
