@@ -30,7 +30,7 @@ import (
 
 var (
 	validIDPattern    = regexp.MustCompile(`^[\w/-]+$`)
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
+	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
 
 // GenerateToolID creates a fully qualified tool ID by combining a service key
@@ -109,20 +109,13 @@ func SanitizeOperationID(input string) string {
 		return input
 	}
 
-	// Find all disallowed character sequences
-	matches := disallowedIDChars.FindAllString(input, -1)
-	if matches == nil {
-		return input
-	}
-
-	// Join all disallowed sequences and compute a single hash
-	fullInvalidSequence := strings.Join(matches, "")
-	h := sha1.New()
-	h.Write([]byte(fullInvalidSequence))
-	hash := hex.EncodeToString(h.Sum(nil))[:6]
-
-	// Replace every occurrence of a disallowed sequence with the same hash
-	sanitized := disallowedIDChars.ReplaceAllString(input, fmt.Sprintf("_%s_", hash))
+	// Use ReplaceAllStringFunc to generate a unique hash for each match
+	sanitized := disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
+		h := sha1.New()
+		h.Write([]byte(s))
+		hash := hex.EncodeToString(h.Sum(nil))[:6]
+		return fmt.Sprintf("_%s_", hash)
+	})
 
 	return sanitized
 }
