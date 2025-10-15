@@ -21,16 +21,16 @@ The chart will deploy MCP-XY with a default configuration. You can customize the
 
 The following table lists the configurable parameters of the MCP-XY chart and their default values.
 
-| Parameter | Description | Default |
-| --- | --- | --- |
-| `replicaCount` | Number of MCP-XY replicas. | `1` |
-| `image.repository` | MCP-XY image repository. | `mcpxy/server` |
-| `image.pullPolicy` | MCP-XY image pull policy. | `IfNotPresent` |
-| `image.tag` | MCP-XY image tag. | `""` (defaults to chart's appVersion) |
-| `service.type` | Kubernetes service type. | `ClusterIP` |
-| `service.jsonrpcPort` | JSON-RPC port. | `50050` |
-| `service.grpcPort` | gRPC port. | `50051` |
-| `config` | MCP-XY configuration in YAML format. | See `values.yaml` |
+| Parameter             | Description                          | Default                               |
+| --------------------- | ------------------------------------ | ------------------------------------- |
+| `replicaCount`        | Number of MCP-XY replicas.           | `1`                                   |
+| `image.repository`    | MCP-XY image repository.             | `mcpxy/server`                        |
+| `image.pullPolicy`    | MCP-XY image pull policy.            | `IfNotPresent`                        |
+| `image.tag`           | MCP-XY image tag.                    | `""` (defaults to chart's appVersion) |
+| `service.type`        | Kubernetes service type.             | `ClusterIP`                           |
+| `service.jsonrpcPort` | JSON-RPC port.                       | `50050`                               |
+| `service.grpcPort`    | gRPC port.                           | `50051`                               |
+| `config`              | MCP-XY configuration in YAML format. | See `values.yaml`                     |
 
 You can specify your configuration in a `values.yaml` file and install the chart with it:
 

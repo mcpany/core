@@ -3,6 +3,7 @@ repos:
     rev: v4.3.0
     hooks:
     -   id: check-yaml
+        exclude: ^helm/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/golangci/golangci-lint
@@ -15,18 +16,12 @@ repos:
     hooks:
     -   id: prettier
         types: [markdown]
--   repo: local
+-   repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.23
     hooks:
-    -   id: proto-lint
-        name: Protobuf Lint
-        entry: make lint-proto
-        language: system
-        files: \.proto$
-        pass_filenames: false
-        verbose: true # Show output from make lint-proto
-    # -   id: go-unit-tests
-    #     name: Go Unit Tests
-    #     entry: make test
-    #     language: system
-    #     types: [go]
-    #     pass_filenames: false
+    -   id: helmlint
+-   repo: https://github.com/ansys/pre-commit-hooks
+    rev: v0.5.2
+    hooks:
+    -   id: add-license-headers
+        args: ["--start_year=2025", "--custom_copyright=Author(s) of MCP-XY", "--custom_license=Apache-2.0"]

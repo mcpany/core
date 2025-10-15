@@ -25,6 +25,7 @@ Follow these instructions to get MCP-XY set up and running on your local machine
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - [Go](https://golang.org/doc/install) (version 1.21 or later)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Make](https://www.gnu.org/software/make/)
@@ -32,6 +33,7 @@ Before you begin, ensure you have the following installed:
 ### Installation & Setup
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://github.com/mcpxy/core.git
     cd core
@@ -48,14 +50,14 @@ Before you begin, ensure you have the following installed:
 
 You can run the MCP-XY server directly or by using a `make` command.
 
--   **Directly:**
-    ```bash
-    /tmp/build/bin/server
-    ```
--   **Via Make:**
-    ```bash
-    make run
-    ```
+- **Directly:**
+  ```bash
+  /tmp/build/bin/server
+  ```
+- **Via Make:**
+  ```bash
+  make run
+  ```
 
 By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
 
@@ -121,18 +123,22 @@ curl -X POST -H "Content-Type: application/json" \
 For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpxy` server along with a sample `http-echo-server` to demonstrate how `mcpxy` connects to other services in a Docker network.
 
 1.  **Start the services:**
+
     ```bash
     docker compose up --build
     ```
+
     This command will build the Docker images for both the `mcpxy` server and the echo server, and then start them. The `mcpxy` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
 
 2.  **Test the setup:**
     Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpxy` JSON-RPC API:
+
     ```bash
     curl -X POST -H "Content-Type: application/json" \
       -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
       http://localhost:50050
     ```
+
     You should receive a response echoing your message.
 
 3.  **Shut down the services:**

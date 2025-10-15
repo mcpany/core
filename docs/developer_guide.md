@@ -6,9 +6,9 @@ This guide is for developers who want to contribute to the MCP-X. It provides in
 
 ### Prerequisites
 
--   **Go**: Ensure you have a recent version of Go installed. You can find installation instructions on the [official Go website](https://golang.org/doc/install).
--   **Docker**: Required for building and running the Docker images.
--   **Make**: Used for simplifying common development tasks.
+- **Go**: Ensure you have a recent version of Go installed. You can find installation instructions on the [official Go website](https://golang.org/doc/install).
+- **Docker**: Required for building and running the Docker images.
+- **Make**: Used for simplifying common development tasks.
 
 ### Tool Installation
 
@@ -16,9 +16,9 @@ This guide is for developers who want to contribute to the MCP-X. It provides in
 
     The `protoc` compiler is required to generate Go code from `.proto` files.
 
-    -   **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
-    -   **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
-    -   **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
+    - **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
+    - **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
+    - **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
 
 2.  **Install Go Protobuf Plugins**
 
@@ -35,12 +35,12 @@ This guide is for developers who want to contribute to the MCP-X. It provides in
 
 The MCP-X codebase is organized into several key packages:
 
--   **`cmd/server`**: Contains the `main` application entry point.
--   **`pkg/server`**: Implements the core MCP-X server logic.
--   **`pkg/apiserver`**: Provides the gRPC API for service registration.
--   **`pkg/grpc`**: Houses modules related to gRPC service integration.
--   **`pkg/openapi`**: Contains modules for integrating services defined by OpenAPI specifications.
--   **`proto`**: Contains all the protobuf definitions for the project.
+- **`cmd/server`**: Contains the `main` application entry point.
+- **`pkg/server`**: Implements the core MCP-X server logic.
+- **`pkg/apiserver`**: Provides the gRPC API for service registration.
+- **`pkg/grpc`**: Houses modules related to gRPC service integration.
+- **`pkg/openapi`**: Contains modules for integrating services defined by OpenAPI specifications.
+- **`proto`**: Contains all the protobuf definitions for the project.
 
 ## Working with Services
 
@@ -129,11 +129,11 @@ upstream_services:
 
 This project uses a Makefile to simplify common development tasks.
 
--   `make help`: Show this help message.
--   `make server`: Run the main server application.
--   `make build`: Build the main server application.
--   `make test`: Run all tests.
--   `make check`: Run all checks (lint, vet, etc.).
--   `make proto-gen`: Generate protobuf files.
--   `make docker-build`: Build the docker image for the server.
--   `make clean`: Clean up build artifacts.
+- `make help`: Show this help message.
+- `make server`: Run the main server application.
+- `make build`: Build the main server application.
+- `make test`: Run all tests.
+- `make check`: Run all checks (lint, vet, etc.).
+- `make proto-gen`: Generate protobuf files.
+- `make docker-build`: Build the docker image for the server.
+- `make clean`: Clean up build artifacts.

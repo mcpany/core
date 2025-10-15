@@ -14,17 +14,17 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/mcpxy/core.git
-    cd core
-    ```
+   ```bash
+   git clone https://github.com/mcpxy/core.git
+   cd core
+   ```
 
 2. **Build the application:**
-    This command will generate the necessary protobuf files and build the server executable.
+   This command will generate the necessary protobuf files and build the server executable.
 
-    ```bash
-    make build
-    ```
+   ```bash
+   make build
+   ```
 
 ## Running the Server
 
@@ -42,3 +42,4 @@ You should see log messages indicating that the server has started, for example:
 INFO main.go:29 Starting MCP-XY...
 INFO main.go:51 Attempting to start MCP-XY server on port :8080
 INFO main.go:60 MCP-XY server listening on :8080
+```
