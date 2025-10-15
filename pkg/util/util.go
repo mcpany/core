@@ -30,7 +30,7 @@ import (
 
 var (
 	validIDPattern    = regexp.MustCompile(`^[\w/-]+$`)
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
+	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~]+`)
 )
 
 // GenerateToolID creates a fully qualified tool ID by combining a service key
@@ -99,32 +99,18 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 
 // SanitizeOperationID cleans an input string to make it suitable for use as an
 // operation ID. It replaces any sequence of disallowed characters with a short
-// hexadecimal hash of that sequence, ensuring uniqueness while preserving as
-// much of the original string as possible.
+// hexadecimal hash of that specific sequence, ensuring uniqueness and
+// preserving as much of the original string as possible.
 //
 // input is the string to be sanitized.
 // It returns the sanitized string.
 func SanitizeOperationID(input string) string {
-	if !disallowedIDChars.MatchString(input) {
-		return input
-	}
-
-	// Find all disallowed character sequences
-	matches := disallowedIDChars.FindAllString(input, -1)
-	if matches == nil {
-		return input
-	}
-
-	// Join all disallowed sequences and compute a single hash
-	fullInvalidSequence := strings.Join(matches, "")
-	h := sha1.New()
-	h.Write([]byte(fullInvalidSequence))
-	hash := hex.EncodeToString(h.Sum(nil))[:6]
-
-	// Replace every occurrence of a disallowed sequence with the same hash
-	sanitized := disallowedIDChars.ReplaceAllString(input, fmt.Sprintf("_%s_", hash))
-
-	return sanitized
+	return disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
+		h := sha1.New()
+		h.Write([]byte(s))
+		hash := hex.EncodeToString(h.Sum(nil))[:6]
+		return fmt.Sprintf("_%s_", hash)
+	})
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker,

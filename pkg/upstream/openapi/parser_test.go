@@ -759,7 +759,7 @@ func TestConvertMcpOperationsToTools_NoOperationID(t *testing.T) {
 	tools := convertMcpOperationsToTools(ops, doc, "test-service")
 
 	assert.Len(t, tools, 1)
-	assert.Equal(t, "GET_/no-id", tools[0].GetName())
+	assert.Equal(t, "GET__42099b_no-id", tools[0].GetName())
 }
 
 func TestConvertSchemaToPbFields_Empty(t *testing.T) {
