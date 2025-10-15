@@ -250,22 +250,27 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
-		serverLog := logging.GetLogger().With("server", name, "port", port)
+		defer func() {
+			if err := lis.Close(); err != nil {
+				logging.GetLogger().Error("Failed to close gRPC listener", "error", err)
+			}
+		}()
 
+		serverLog := logging.GetLogger().With("server", name, "port", port)
 		grpcServer := gogrpc.NewServer()
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
 		go func() {
-			serverLog.Info("gRPC server listening")
-			if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
-				errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
-			}
+			<-ctx.Done()
+			serverLog.Info("Attempting to gracefully shut down server...")
+			grpcServer.GracefulStop()
 		}()
 
-		<-ctx.Done()
-		serverLog.Info("Attempting to gracefully shut down server...")
-		grpcServer.GracefulStop()
+		serverLog.Info("gRPC server listening")
+		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
+			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
+		}
 		serverLog.Info("Server shut down.")
 	}()
 }
