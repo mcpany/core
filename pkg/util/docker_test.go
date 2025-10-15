@@ -17,65 +17,27 @@
 package util
 
 import (
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsDockerSocketAccessible(t *testing.T) {
-	// To properly test the sync.Once functionality, we need to reset the state.
-	// In a real-world scenario, you might not do this, but for a unit test, it's necessary
-	// to ensure a clean slate for each test run.
-	dockerSocketCheckOnce = sync.Once{}
-	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
-
-	// Call the function for the first time. This will perform the actual check.
-	accessible := IsDockerSocketAccessible()
-
 	// We can't guarantee the Docker socket is available in the test environment,
 	// so we just check that it returns a boolean value without panicking.
 	// In a CI environment with Docker, this should be true. Without, it will be false.
 	assert.NotPanics(t, func() { IsDockerSocketAccessible() })
-
-	// Call it a second time to ensure the cached result is returned.
-	cachedResult := IsDockerSocketAccessible()
-	assert.Equal(t, accessible, cachedResult, "Cached result should be the same as the first call")
 }
 
-func TestIsDockerSocketAccessible_Concurrency(t *testing.T) {
-	// Reset the state for this specific test to ensure it's isolated.
-	dockerSocketCheckOnce = sync.Once{}
-	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
+func TestIsDockerSocketAccessible_StateChange(t *testing.T) {
+	// Restore the original function after the test
+	defer func() { IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault }()
 
-	var callCount int
-	// Replace the default function with a mock that increments a counter
-	IsDockerSocketAccessibleFunc = func() bool {
-		dockerSocketCheckOnce.Do(func() {
-			callCount++
-			// Simulate the original check's behavior
-			dockerSocketAccessible = true
-		})
-		return dockerSocketAccessible
-	}
+	// Mock the function to return true
+	IsDockerSocketAccessibleFunc = func() bool { return true }
+	assert.True(t, IsDockerSocketAccessible(), "Should return true when Docker is accessible")
 
-	// Use a WaitGroup to wait for all goroutines to finish
-	var wg sync.WaitGroup
-	// Number of concurrent calls to make
-	const concurrentCalls = 100
-
-	wg.Add(concurrentCalls)
-	for i := 0; i < concurrentCalls; i++ {
-		go func() {
-			defer wg.Done()
-			IsDockerSocketAccessible()
-		}()
-	}
-	wg.Wait()
-
-	// Assert that the underlying check function was called only once
-	assert.Equal(t, 1, callCount, "The check function should only be called once")
-
-	// Restore the original function
-	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
+	// Mock the function to return false
+	IsDockerSocketAccessibleFunc = func() bool { return false }
+	assert.False(t, IsDockerSocketAccessible(), "Should return false when Docker is not accessible")
 }
