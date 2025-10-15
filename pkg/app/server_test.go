@@ -46,6 +46,42 @@ func TestSetup(t *testing.T) {
 	})
 }
 
+func TestRun_WithNilFS(t *testing.T) {
+	// This test ensures that app.Run can be called with a nil afero.Fs,
+	// and it will correctly default to the OS filesystem without panicking.
+	// This is important for backward compatibility and ease of use in
+	// scenarios where a memfs is not needed.
+
+	// Create a temporary directory and a dummy config file.
+	// We use the real filesystem here to test the OsFs default.
+	tempDir, err := afero.TempDir(afero.NewOsFs(), "", "test-run-nil-fs")
+	require.NoError(t, err)
+	defer afero.NewOsFs().RemoveAll(tempDir)
+
+	configContent := `
+upstream_services:
+  - name: "test-service"
+    http_service: { address: "http://localhost:1234" }
+`
+	configPath := tempDir + "/config.yaml"
+	err = afero.WriteFile(afero.NewOsFs(), configPath, []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Call Run with a nil fs. This should not panic.
+		errChan <- app.Run(ctx, nil, false, "0", "0", []string{configPath})
+	}()
+
+	err = <-errChan
+	assert.NoError(t, err, "app.Run with nil fs should exit gracefully")
+}
+
 func TestRun_ServerMode(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
