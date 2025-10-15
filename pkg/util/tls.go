@@ -50,7 +50,9 @@ func NewHttpClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 			return nil, fmt.Errorf("failed to read CA certificate: %w", err)
 		}
 		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
+		if ok := caCertPool.AppendCertsFromPEM(caCert); !ok {
+			return nil, fmt.Errorf("failed to append CA certs from PEM")
+		}
 		config.RootCAs = caCertPool
 	}
 
