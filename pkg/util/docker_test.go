@@ -17,6 +17,7 @@
 package util
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,15 @@ func TestIsDockerSocketAccessible(t *testing.T) {
 
 func TestIsDockerSocketAccessible_StateChange(t *testing.T) {
 	// Restore the original function after the test
-	defer func() { IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault }()
+	defer func() {
+		IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
+		// Reset the singleton for other tests
+		once = sync.Once{}
+		if dockerClient != nil {
+			dockerClient.Close()
+			dockerClient = nil
+		}
+	}()
 
 	// Mock the function to return true
 	IsDockerSocketAccessibleFunc = func() bool { return true }
@@ -40,4 +49,31 @@ func TestIsDockerSocketAccessible_StateChange(t *testing.T) {
 	// Mock the function to return false
 	IsDockerSocketAccessibleFunc = func() bool { return false }
 	assert.False(t, IsDockerSocketAccessible(), "Should return false when Docker is not accessible")
+}
+
+func TestDockerClient_Singleton(t *testing.T) {
+	// Restore the original init function and reset the singleton after the test
+	originalInit := initDockerClient
+	defer func() {
+		initDockerClient = originalInit
+		once = sync.Once{}
+		if dockerClient != nil {
+			dockerClient.Close()
+			dockerClient = nil
+		}
+	}()
+
+	var initializationCount int
+	// Replace the init function with a mock that counts calls
+	initDockerClient = func() {
+		initializationCount++
+		originalInit() // Call the original init function to maintain behavior
+	}
+
+	// Call the function multiple times
+	isDockerSocketAccessibleDefault()
+	isDockerSocketAccessibleDefault()
+
+	// Check that the initialization function was called only once
+	assert.Equal(t, 1, initializationCount, "The Docker client should be initialized only once")
 }

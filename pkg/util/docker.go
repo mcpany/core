@@ -18,6 +18,7 @@ package util
 
 import (
 	"context"
+	"sync"
 
 	"github.com/docker/docker/client"
 )
@@ -25,20 +26,41 @@ import (
 var (
 	// IsDockerSocketAccessibleFunc is a function that can be replaced for testing purposes.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
+
+	dockerClient *client.Client
+	once         sync.Once
 )
+
+var initDockerClient = func() {
+	var err error
+	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		// If we can't create the client, we can't ping the server.
+		// We'll set dockerClient to nil and handle this in the check.
+		dockerClient = nil
+	}
+}
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
 
+// CloseDockerClient closes the shared Docker client.
+// It should be called on application shutdown.
+func CloseDockerClient() {
+	if dockerClient != nil {
+		dockerClient.Close()
+	}
+}
+
 func isDockerSocketAccessibleDefault() bool {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
+	once.Do(initDockerClient)
+
+	if dockerClient == nil {
 		return false
 	}
-	defer cli.Close()
 
-	_, err = cli.Ping(context.Background())
+	_, err := dockerClient.Ping(context.Background())
 	return err == nil
 }
