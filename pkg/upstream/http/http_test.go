@@ -372,3 +372,73 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
 }
+
+func TestHTTPUpstream_URLConstruction(t *testing.T) {
+	testCases := []struct {
+		name             string
+		address          string
+		endpointPath     string
+		expectedFqn      string
+		expectAnError    bool
+		nilHttpService   bool
+		invalidName      bool
+		invalidMethod    bool
+		addToolError     bool
+		mockToolManager  bool
+		isReload         bool
+		fallbackOpID     bool
+		nilAuthenticator bool
+	}{
+		{
+			name:         "trailing slash in address",
+			address:      "http://localhost:8080/",
+			endpointPath: "api/v1/test",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+		},
+		{
+			name:         "leading slash in endpoint",
+			address:      "http://localhost:8080",
+			endpointPath: "/api/v1/test",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+		},
+		{
+			name:         "both slashes present",
+			address:      "http://localhost:8080/",
+			endpointPath: "/api/v1/test",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+		},
+		{
+			name:         "no slashes",
+			address:      "http://localhost:8080",
+			endpointPath: "api/v1/test",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			pm := pool.NewManager()
+			tm := tool.NewToolManager(nil)
+			upstream := NewHTTPUpstream(pm)
+
+			httpService := &configv1.HttpUpstreamService{}
+			httpService.SetAddress(tc.address)
+			callDef := &configv1.HttpCallDefinition{}
+			callDef.SetOperationId("test-op")
+			callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+			callDef.SetEndpointPath(tc.endpointPath)
+			httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
+
+			serviceConfig := &configv1.UpstreamServiceConfig{}
+			serviceConfig.SetName("url-test-service")
+			serviceConfig.SetHttpService(httpService)
+
+			_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			assert.NoError(t, err)
+
+			registeredTool, ok := tm.GetTool("url-test-service/-/test-op")
+			assert.True(t, ok)
+			assert.Equal(t, tc.expectedFqn, registeredTool.Tool().GetUnderlyingMethodFqn())
+		})
+	}
+}
