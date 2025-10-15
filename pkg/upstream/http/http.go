@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/logging"
@@ -153,7 +154,11 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		fullURL := address + httpDef.GetEndpointPath()
+		fullURL, err := url.JoinPath(address, httpDef.GetEndpointPath())
+		if err != nil {
+			log.Error("Failed to join URL parts", "address", address, "endpoint", httpDef.GetEndpointPath(), "error", err)
+			continue
+		}
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
