@@ -235,9 +235,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 
 			close(errChan)
 			for err := range errChan {
-				// The race condition would manifest as the server trying to use a listener
-				// that has already been closed by the parent goroutine exiting.
-				assert.NotContains(t, err.Error(), "use of closed network connection", "gRPC server tried to use a closed listener on iteration %d", i)
+				assert.NoError(t, err, "gRPC server should gracefully shutdown without error on iteration %d", i)
 			}
 		})
 	}
