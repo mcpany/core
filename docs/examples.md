@@ -11,6 +11,7 @@ The examples are located in the `proto/examples` directory. Each example include
 The calculator example demonstrates how to use MCP-X with a gRPC service.
 
 1.  **Start the main server:**
+
     ```bash
     make server
     ```
@@ -26,6 +27,7 @@ The calculator example demonstrates how to use MCP-X with a gRPC service.
 The user service example demonstrates how to use MCP-X with a gRPC service that uses gRPC reflection.
 
 1.  **Start the main server:**
+
     ```bash
     make server
     ```
@@ -54,3 +56,4 @@ To execute a tool, you need to know the tool's name and the required inputs. For
 
 ```bash
 grpcurl -plaintext -d '{"tool_id": "calculator/Add", "inputs": {"a": 1, "b": 2}}' localhost:8080 mcpx.mcp_router.v1.McpRouter/ExecuteTool
+```
