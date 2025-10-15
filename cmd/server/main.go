@@ -1,4 +1,5 @@
-/*
+// Copyright (C) 2025 Author(s) of MCP-XY
+
  * Copyright 2025 Author(s) of MCP-XY
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
