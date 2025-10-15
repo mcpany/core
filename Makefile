@@ -2,8 +2,7 @@
 
 # Variables
 GO = go
-GO_ENV := GOCACHE=/tmp/build/env/go/cache GOMODCACHE=/tmp/build/env/go/modcache
-GO_CMD := $(GO_ENV) $(GO)
+GO_CMD := $(GO)
 SERVER_IMAGE_TAG ?= mcpxy/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
