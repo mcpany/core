@@ -220,8 +220,6 @@ build-calculator-stdio:
 # ==============================================================================
 
 lint: gen
-	@echo "Cleaning golangci-lint cache..."
-	@$(GOLANGCI_LINT_BIN) cache clean
 	@echo "Running golangci-lint..."
 	@$(GOLANGCI_LINT_BIN) run ./...
 
