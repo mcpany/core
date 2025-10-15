@@ -262,6 +262,38 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	}
 }
 
+func TestHTTPServer_HangOnListenError(t *testing.T) {
+	// Find a free port and occupy it
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	port := l.Addr().(*net.TCPAddr).Port
+
+	// This channel will be used to signal that the test is complete
+	done := make(chan bool)
+
+	go func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		errChan := make(chan error, 1)
+		var wg sync.WaitGroup
+
+		// This call should hang because wg.Done() is never called in the error case
+		startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil)
+
+		// The test will hang here waiting for the goroutine to finish
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// The test completed without hanging, which is the expected behavior after the fix.
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test hung for 2 seconds. The bug is still present.")
+	}
+}
+
 func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())

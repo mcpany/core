@@ -222,18 +222,18 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		}
 
 		go func() {
-			serverLog.Info("HTTP server listening")
-			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
+			<-ctx.Done()
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
+			defer cancel()
+			serverLog.Info("Attempting to gracefully shut down server...")
+			if err := server.Shutdown(shutdownCtx); err != nil {
+				serverLog.Error("Shutdown error", "error", err)
 			}
 		}()
 
-		<-ctx.Done()
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
-		defer cancel()
-		serverLog.Info("Attempting to gracefully shut down server...")
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			serverLog.Error("Shutdown error", "error", err)
+		serverLog.Info("HTTP server listening")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
 		}
 		serverLog.Info("Server shut down.")
 	}()
