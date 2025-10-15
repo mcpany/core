@@ -34,9 +34,10 @@ import (
 
 func TestHttpMethodToString(t *testing.T) {
 	testCases := []struct {
-		name     string
-		method   configv1.HttpCallDefinition_HttpMethod
-		expected string
+		name          string
+		method        configv1.HttpCallDefinition_HttpMethod
+		expected      string
+		expectAnError bool
 	}{
 		{
 			name:     "GET",
@@ -64,28 +65,28 @@ func TestHttpMethodToString(t *testing.T) {
 			expected: "PATCH",
 		},
 		{
-			name:     "unspecified",
-			method:   configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED,
-			expected: "",
+			name:          "unspecified",
+			method:        configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED,
+			expected:      "",
+			expectAnError: true,
 		},
 		{
-			name:     "invalid",
-			method:   configv1.HttpCallDefinition_HttpMethod(999),
-			expected: "",
-		},
-		{
-			name:     "default",
-			method:   configv1.HttpCallDefinition_HttpMethod(1000),
-			expected: "",
+			name:          "invalid",
+			method:        configv1.HttpCallDefinition_HttpMethod(999),
+			expected:      "",
+			expectAnError: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := httpMethodToString(tc.method)
-			if actual != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, actual)
+			actual, err := httpMethodToString(tc.method)
+			if tc.expectAnError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
+			assert.Equal(t, tc.expected, actual)
 		})
 	}
 }
@@ -192,6 +193,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		callDef := &configv1.HttpCallDefinition{}
 		callDef.SetOperationId("test-op")
+		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
 
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
@@ -285,6 +287,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 
 	callDef := &configv1.HttpCallDefinition{}
 	callDef.SetOperationId("test-op")
+	callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
 
 	httpService := &configv1.HttpUpstreamService{}
 	httpService.SetAddress("http://localhost")
@@ -314,6 +317,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	httpService1.SetAddress("http://localhost")
 	callDef1 := &configv1.HttpCallDefinition{}
 	callDef1.SetOperationId("op1")
+	callDef1.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
 	httpService1.SetCalls([]*configv1.HttpCallDefinition{callDef1})
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	serviceConfig1.SetName("reload-test")
@@ -328,6 +332,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	httpService2.SetAddress("http://localhost")
 	callDef2 := &configv1.HttpCallDefinition{}
 	callDef2.SetOperationId("op2")
+	callDef2.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
 	httpService2.SetCalls([]*configv1.HttpCallDefinition{callDef2})
 	serviceConfig2 := &configv1.UpstreamServiceConfig{}
 	serviceConfig2.SetName("reload-test")
@@ -344,4 +349,26 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	assert.True(t, ok)
 	_, ok = tm.GetTool("reload-test/-/op1")
 	assert.False(t, ok)
+}
+
+func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	callDef := &configv1.HttpCallDefinition{}
+	callDef.SetOperationId("test-op")
+	callDef.SetMethod(configv1.HttpCallDefinition_HttpMethod(999)) // Invalid method
+	callDef.SetEndpointPath("/test")
+	httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service-invalid-method")
+	serviceConfig.SetHttpService(httpService)
+
+	_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.NoError(t, err)
+	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
 }
