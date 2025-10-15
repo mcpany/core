@@ -18,34 +18,27 @@ package util
 
 import (
 	"context"
-	"sync"
 
 	"github.com/docker/docker/client"
 )
 
 var (
-	dockerSocketAccessible bool
-	dockerSocketCheckOnce  sync.Once
+	// IsDockerSocketAccessibleFunc is a function that can be replaced for testing purposes.
+	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 )
 
-var IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
-
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
-// It caches the result to avoid repeated checks.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
 
 func isDockerSocketAccessibleDefault() bool {
-	dockerSocketCheckOnce.Do(func() {
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-		if err != nil {
-			dockerSocketAccessible = false
-		} else {
-			defer cli.Close()
-			_, err = cli.Ping(context.Background())
-			dockerSocketAccessible = err == nil
-		}
-	})
-	return dockerSocketAccessible
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return false
+	}
+	defer cli.Close()
+
+	_, err = cli.Ping(context.Background())
+	return err == nil
 }
