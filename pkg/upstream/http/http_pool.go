@@ -36,7 +36,7 @@ func NewHttpPool(
 	minSize, maxSize, idleTimeout int,
 ) (pool.Pool[*client.HttpClientWrapper], error) {
 	factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: http.DefaultClient}, nil
+		return &client.HttpClientWrapper{Client: &http.Client{}}, nil
 	}
 	return pool.New(factory, minSize, maxSize, idleTimeout)
 }

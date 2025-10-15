@@ -71,6 +71,23 @@ func TestHttpPool_GetPut(t *testing.T) {
 	assert.Same(t, client, client2)
 }
 
+func TestHttpPool_UniqueClients(t *testing.T) {
+	p, err := NewHttpPool(2, 2, 10)
+	require.NoError(t, err)
+	require.NotNil(t, p)
+	defer p.Close()
+
+	client1, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, client1)
+
+	client2, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, client2)
+
+	assert.NotSame(t, client1.Client, client2.Client)
+}
+
 func TestHttpPool_Close(t *testing.T) {
 	p, err := NewHttpPool(1, 1, 10)
 	require.NoError(t, err)
