@@ -242,19 +242,15 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
+		return
+	}
+
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		lis, err := net.Listen("tcp", port)
-		if err != nil {
-			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-			return
-		}
-		defer func() {
-			if err := lis.Close(); err != nil {
-				logging.GetLogger().Error("Failed to close gRPC listener", "error", err)
-			}
-		}()
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 		grpcServer := gogrpc.NewServer()
