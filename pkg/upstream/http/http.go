@@ -35,20 +35,20 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) string {
+func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
 	switch method {
 	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
-		return http.MethodGet
+		return http.MethodGet, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_POST:
-		return http.MethodPost
+		return http.MethodPost, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
-		return http.MethodPut
+		return http.MethodPut, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
-		return http.MethodDelete
+		return http.MethodDelete, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
-		return http.MethodPatch
+		return http.MethodPatch, nil
 	default:
-		return ""
+		return "", fmt.Errorf("unsupported HTTP method: %v", method)
 	}
 }
 
@@ -146,11 +146,18 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		for _, param := range httpDef.GetParameterMappings() {
 			properties.Fields[param.GetInputParameterName()] = structpb.NewStringValue("")
 		}
+
+		method, err := httpMethodToString(httpDef.GetMethod())
+		if err != nil {
+			log.Error("Skipping tool creation due to unsupported HTTP method", "toolName", toolNamePart, "error", err)
+			continue
+		}
+
 		fullURL := address + httpDef.GetEndpointPath()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", httpMethodToString(httpDef.GetMethod()), fullURL)),
+			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			InputSchema: pb.InputSchema_builder{
 				Type:       proto.String("object"),
 				Properties: properties,
