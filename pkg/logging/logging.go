@@ -17,6 +17,7 @@
 package logging
 
 import (
+	"io"
 	"log/slog"
 	"os"
 	"sync"
@@ -27,13 +28,19 @@ var (
 	defaultLogger *slog.Logger
 )
 
+// ForTestsOnlyResetLogger is for use in tests to reset the sync.Once
+func ForTestsOnlyResetLogger() {
+	once = sync.Once{}
+	defaultLogger = nil
+}
+
 // Init initializes the application's global logger with a specific log level
 // and output destination. This function is designed to be called only once at
 // the start of the application to ensure a consistent logging setup.
 //
 // level specifies the minimum log level to be recorded.
-// output is the file to which log entries will be written.
-func Init(level slog.Level, output *os.File) {
+// output is the writer to which log entries will be written.
+func Init(level slog.Level, output io.Writer) {
 	once.Do(func() {
 		defaultLogger = slog.New(slog.NewTextHandler(output, &slog.HandlerOptions{
 			Level:     level,
