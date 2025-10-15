@@ -242,37 +242,30 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-		return
-	}
-
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		serverLog := logging.GetLogger().With("server", name, "port", port)
-
 		lis, err := net.Listen("tcp", port)
 		if err != nil {
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
 
+		serverLog := logging.GetLogger().With("server", name, "port", port)
 		grpcServer := gogrpc.NewServer()
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
 		go func() {
-			serverLog.Info("gRPC server listening")
-			if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
-				errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
-			}
+			<-ctx.Done()
+			serverLog.Info("Attempting to gracefully shut down server...")
+			grpcServer.GracefulStop()
 		}()
 
-		<-ctx.Done()
-		serverLog.Info("Attempting to gracefully shut down server...")
-		grpcServer.GracefulStop()
+		serverLog.Info("gRPC server listening")
+		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
+			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
+		}
 		serverLog.Info("Server shut down.")
 	}()
 }
