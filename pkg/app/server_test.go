@@ -265,6 +265,96 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	}
 }
 
+func TestGRPCServer_ShutdownRaceWithTimeout(t *testing.T) {
+	// This test is designed to expose a race condition where the shutdown
+	// timeout is read outside of a mutex lock, potentially causing the
+	// shutdown to use a stale value.
+
+	// Find a free port to run the test server on.
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	lis.Close()
+
+	// Set an initial shutdown timeout.
+	shutdownMutex.Lock()
+	originalShutdownTimeout := ShutdownTimeout
+	ShutdownTimeout = 10 * time.Second // A long timeout
+	shutdownMutex.Unlock()
+	defer func() {
+		shutdownMutex.Lock()
+		ShutdownTimeout = originalShutdownTimeout
+		shutdownMutex.Unlock()
+	}()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server.
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {
+		// A mock service that hangs to ensure the shutdown timeout is triggered.
+		hangService := &mockHangService{hangTime: 20 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	// Give the server a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// Concurrently, make a call to the hanging RPC.
+	go func() {
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			t.Logf("Failed to dial gRPC server: %v", err)
+			return
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	// Allow the RPC call to be initiated.
+	time.Sleep(100 * time.Millisecond)
+
+	// In a separate goroutine, modify the shutdown timeout to a very short
+	// duration. This is the race condition we are testing.
+	go func() {
+		shutdownMutex.Lock()
+		ShutdownTimeout = 10 * time.Millisecond
+		shutdownMutex.Unlock()
+	}()
+
+	// Trigger the graceful shutdown.
+	cancel()
+
+	// Before the fix, the server will hang for the original 10-second timeout,
+	// because the `time.After` was created before the timeout was updated.
+	// After the fix, the server should shut down quickly, respecting the new
+	// 10ms timeout.
+	wg.Wait()
+
+	// The test should complete without error.
+	select {
+	case err := <-errChan:
+		require.NoError(t, err, "The gRPC server should shut down gracefully without errors.")
+	default:
+		// Expected outcome.
+	}
+}
+
 func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	// This test verifies that the gRPC server hangs on graceful shutdown if an
 	// RPC is in progress, because GracefulStop() has no timeout.

@@ -276,7 +276,6 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 			shutdownMutex.Lock()
 			timeout := ShutdownTimeout
-			shutdownMutex.Unlock()
 			select {
 			case <-time.After(timeout):
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
@@ -284,6 +283,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
+			shutdownMutex.Unlock()
 		}()
 
 		serverLog.Info("gRPC server listening")
