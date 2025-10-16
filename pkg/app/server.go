@@ -191,13 +191,13 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux)
 
 	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) error {
+		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {
 			registrationServer, err := mcpserver.NewRegistrationServer(bus)
 			if err != nil {
-				return fmt.Errorf("failed to create API server: %w", err)
+				errChan <- fmt.Errorf("failed to create API server: %w", err)
+				return
 			}
 			v1.RegisterRegistrationServiceServer(s, registrationServer)
-			return nil
 		})
 	}
 
@@ -242,7 +242,6 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			return
 		}
 		serverLog.Info("Server shut down.")
 	}()
@@ -250,7 +249,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server) error) {
+func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -262,10 +261,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 		grpcServer := gogrpc.NewServer()
-		if err := register(grpcServer); err != nil {
-			errChan <- fmt.Errorf("[%s] failed to register services: %w", name, err)
-			return
-		}
+		register(grpcServer)
 		reflection.Register(grpcServer)
 
 		go func() {
