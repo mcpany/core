@@ -26,7 +26,7 @@ Follow these instructions to get MCP-XY set up and running on your local machine
 
 Before you begin, ensure you have the following installed:
 
-- [Go](https://golang.org/doc/install) (version 1.21 or later)
+- [Go](https://golang.org/doc/install) (version 1.24.3 or later)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Make](https://www.gnu.org/software/make/)
 
