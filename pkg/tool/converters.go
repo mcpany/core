@@ -29,6 +29,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// convertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
+// representation, into a protobuf-defined *pb.Tool with a structured input
+// schema. This is used to standardize tool definitions within the system.
 func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -84,6 +87,9 @@ func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	}.Build(), nil
 }
 
+// convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+// represent fields from a protobuf message, into a structpb.Struct that can be
+// used as the `properties` field in a JSON schema.
 func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -107,6 +113,9 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 	return properties, nil
 }
 
+// getJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+// "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
+// is a helper function for building JSON schemas from protobuf definitions.
 func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,

@@ -25,7 +25,15 @@ import (
 )
 
 var (
-	// NewHttpPool is a variable to allow for mocking in tests.
+	// NewHttpPool creates a new connection pool for HTTP clients. It is defined as
+	// a variable to allow for easy mocking in tests.
+	//
+	// minSize is the initial number of clients to create.
+	// maxSize is the maximum number of clients the pool can hold.
+	// idleTimeout is the duration after which an idle client may be closed (not
+	// currently implemented).
+	// It returns a new HTTP client pool or an error if the pool cannot be
+	// created.
 	NewHttpPool = func(
 		minSize, maxSize, idleTimeout int,
 	) (pool.Pool[*client.HttpClientWrapper], error) {

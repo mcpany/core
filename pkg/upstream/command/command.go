@@ -74,6 +74,9 @@ func (u *CommandUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// createAndRegisterCommandTools iterates through the command definitions in the
+// service configuration, creates a new CommandTool for each, and registers it
+// with the tool manager.
 func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, serviceKey string, commandLineService *configv1.CommandLineUpstreamService, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))

@@ -29,7 +29,11 @@ import (
 )
 
 var (
-	validIDPattern    = regexp.MustCompile(`^[\w/-]+$`)
+	// validIDPattern is a regular expression that defines the allowed characters
+	// in a valid tool or service ID.
+	validIDPattern = regexp.MustCompile(`^[\w/-]+$`)
+	// disallowedIDChars is a regular expression that matches any character that is
+	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
 

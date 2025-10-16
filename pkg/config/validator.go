@@ -32,6 +32,9 @@ import (
 // only the valid ones. It returns the modified configuration.
 //
 // config is the server configuration to be validated.
+//
+// It returns the validated configuration, which may have invalid services
+// removed, and an error if a fundamental validation issue occurs.
 func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, error) {
 	log := logging.GetLogger().With("component", "configValidator")
 	validServices := []*configv1.UpstreamServiceConfig{}
