@@ -45,11 +45,6 @@ import (
 	v1 "github.com/mcpxy/core/proto/api/v1"
 )
 
-// ShutdownTimeout is the duration the server will wait for graceful shutdown.
-var (
-	ShutdownTimeout = 5 * time.Second
-	shutdownMutex   sync.Mutex
-)
 
 // Runner defines the interface for running the MCP-XY application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
@@ -74,6 +69,7 @@ type Runner interface {
 // server, such as the stdio mode handler.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	shutdownTimeout  time.Duration
 }
 
 // NewApplication creates a new Application with default dependencies. It
@@ -84,6 +80,7 @@ type Application struct {
 func NewApplication() *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
+		shutdownTimeout:  5 * time.Second,
 	}
 }
 
@@ -159,7 +156,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	return runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort)
+	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -224,7 +221,7 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
+func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -239,10 +236,10 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 		fmt.Fprintln(w, "OK")
 	})
 
-	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux)
+	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, a.shutdownTimeout)
 
 	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {
+		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, a.shutdownTimeout, func(s *gogrpc.Server) {
 			registrationServer, err := mcpserver.NewRegistrationServer(bus)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to create API server: %w", err)
@@ -275,7 +272,7 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 // name is a descriptive name for the server, used in logging.
 // addr is the address and port on which the server will listen.
 // handler is the HTTP handler for processing requests.
-func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler) {
+func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler, shutdownTimeout time.Duration) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -287,9 +284,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 		go func() {
 			<-ctx.Done()
-			shutdownMutex.Lock()
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
-			shutdownMutex.Unlock()
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 			defer cancel()
 			serverLog.Info("Attempting to gracefully shut down server...")
 			if err := server.Shutdown(shutdownCtx); err != nil {
@@ -314,7 +309,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 // name is a descriptive name for the server, used in logging.
 // port is the port on which the server will listen.
 // register is a function that registers the gRPC services with the server.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
+func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, shutdownTimeout time.Duration, register func(*gogrpc.Server)) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -339,16 +334,13 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 				close(stopped)
 			}()
 
-			shutdownMutex.Lock()
-			timeout := ShutdownTimeout
 			select {
-			case <-time.After(timeout):
+			case <-time.After(shutdownTimeout):
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
-			shutdownMutex.Unlock()
 		}()
 
 		serverLog.Info("gRPC server listening")
