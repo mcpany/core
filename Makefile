@@ -72,9 +72,9 @@ prepare:
 	@# Check if protoc is installed
 	@export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \
-	if [ -f "$(PROTOC_BIN)" ]; then \
+	if test -f "$(PROTOC_BIN)"; then \
 		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
-		if [ "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}" ]; then \
+		if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
 			echo "protoc version $${INSTALLED_VERSION} is already installed."; \
 		else \
 			echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
@@ -84,8 +84,8 @@ prepare:
 	else \
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
-			echo "Error: curl and unzip are required to download protoc. Please install them and try again."; \
-			exit 1; \
+			echo "curl and unzip are not installed. Installing..."; \
+			apt-get update && apt-get install -y curl unzip; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-x86_64.zip"; \
@@ -94,7 +94,7 @@ prepare:
 			echo "Unzipping to $(PROTOC_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(PROTOC_INSTALL_DIR)"; \
 			mv "$(PROTOC_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
-			if [ -f "$(PROTOC_BIN)" ]; then \
+			if test -f "$(PROTOC_BIN)"; then \
 				export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
 				echo "protoc installed successfully to $(PROTOC_INSTALL_DIR). This directory has been added to PATH for this session."; \
 				echo "You may want to add it to your system PATH permanently: export PATH=$(PROTOC_INSTALL_DIR):$$PATH"; \
@@ -112,22 +112,22 @@ prepare:
 	@GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@if [ -f "$(GOLANGCI_LINT_BIN)" ]; then \
+	@if test -f "$(GOLANGCI_LINT_BIN)"; then \
 		echo "golangci-lint is already installed."; \
 	else \
 		echo "Installing golangci-lint..."; \
 		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
 	fi
-	@if [ ! -f "$(GOLANGCI_LINT_BIN)" ]; then \
+	@if ! test -f "$(GOLANGCI_LINT_BIN)"; then \
 		echo "golangci-lint not found at $(GOLANGCI_LINT_BIN) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
 		exit 1; \
 	fi
 	@echo "Checking for Go protobuf plugins..."
-	@if [ ! -f "$(PROTOC_GEN_GO)" ]; then \
+	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
 		exit 1; \
 	fi
-	@if [ ! -f "$(PROTOC_GEN_GO_GRPC)" ]; then \
+	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then \
 		echo "protoc-gen-go-grpc not found at $(PROTOC_GEN_GO_GRPC) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
 		exit 1; \
 	fi
@@ -141,7 +141,7 @@ prepare:
 	else \
 		PYTHON_CMD=""; \
 	fi; \
-	if [ -n "$$PYTHON_CMD" ]; then \
+	if test -n "$$PYTHON_CMD"; then \
 		echo "Python found. Installing/updating pre-commit and fastmcp..."; \
 		VENV_DIR=/tmp/build/venv; \
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
@@ -156,16 +156,10 @@ prepare:
 	else \
 		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 	fi
-	@echo "Checking for helm..."
-	@if command -v helm >/dev/null 2>&1; then \
-		echo "helm is already installed."; \
-	else \
-		echo "helm not found, installing..."; \
-		curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sh; \
-	fi
+	@#
 	@echo "Installing Node.js dependencies for integration tests..."
 	@if command -v npm >/dev/null 2>&1; then \
-		if [ -f "tests/integration/upstream/package.json" ]; then \
+		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
 			(cd tests/integration/upstream && npm install); \
 		else \
