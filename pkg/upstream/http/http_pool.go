@@ -24,19 +24,14 @@ import (
 	"github.com/mcpxy/core/pkg/pool"
 )
 
-// NewHttpPool creates a new connection pool for HTTP clients. It configures the
-// pool with a factory function that provides new instances of http.Client,
-// wrapped in an HttpClientWrapper.
-//
-// minSize is the initial number of clients to create.
-// maxSize is the maximum number of clients the pool can hold.
-// idleTimeout is the duration after which an idle client may be closed (not currently implemented).
-// It returns a new HTTP client pool or an error if the pool cannot be created.
-func NewHttpPool(
-	minSize, maxSize, idleTimeout int,
-) (pool.Pool[*client.HttpClientWrapper], error) {
-	factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: &http.Client{}}, nil
+var (
+	// NewHttpPool is a variable to allow for mocking in tests.
+	NewHttpPool = func(
+		minSize, maxSize, idleTimeout int,
+	) (pool.Pool[*client.HttpClientWrapper], error) {
+		factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: &http.Client{}}, nil
+		}
+		return pool.New(factory, minSize, maxSize, idleTimeout)
 	}
-	return pool.New(factory, minSize, maxSize, idleTimeout)
-}
+)
