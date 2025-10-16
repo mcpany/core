@@ -15,7 +15,6 @@ This guide is for developers who want to contribute to the MCP-X. It provides in
 1.  **Install `protoc` (Protobuf Compiler)**
 
     The `protoc` compiler is required to generate Go code from `.proto` files.
-
     - **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
     - **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
     - **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
