@@ -2,6 +2,16 @@
 
 MCP-XY is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
+## Architecture
+
+MCP-XY is built on a modular and extensible architecture. The core components are:
+
+- **MCP Server**: The main server that implements the [Model Context Protocol](https://modelcontext.protocol.ai/). It handles incoming requests and orchestrates the other components.
+- **Service Registry**: Manages the lifecycle of upstream services. It is responsible for creating and registering services from configuration files or dynamic registration requests.
+- **Tool Manager**: Keeps track of all the tools that are discovered from the upstream services. It provides a unified interface for executing tools, regardless of their underlying implementation.
+- **Upstream Services**: These are the backend services that MCP-XY connects to. Each service type (gRPC, HTTP, etc.) has a corresponding implementation that knows how to interact with the service and expose its capabilities as tools.
+- **Connection Pool**: Manages connections to upstream services to improve performance and resource usage.
+
 ## Key Features
 
 - **Dynamic Tool Registration**: Automatically discover and register tools from various backend services, either through a dynamic gRPC API or a static configuration file.
@@ -15,7 +25,7 @@ MCP-XY is a powerful and flexible server that acts as a universal adapter for ba
   - **API Keys**
   - **Bearer Tokens**
   - **Basic Auth**
-- **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](httpshttps://modelcontext.protocol.ai/).
+- **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
 ## Getting Started
@@ -63,7 +73,7 @@ By default, the server will start and listen for JSON-RPC requests on port `5005
 
 ## Configuration
 
-MCP-XY can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag.
+MCP-XY can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format.
 
 ### Example Configuration
 
@@ -93,6 +103,40 @@ make run ARGS="--config-paths ./config.yaml"
 ```
 
 The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPXY_JSONRPC_PORT=6000`.
+
+### Advanced Configuration
+
+MCP-XY supports a variety of advanced configuration options, including:
+
+- **gRPC Services**: Register a gRPC service using reflection.
+  ```yaml
+  upstreamServices:
+    - name: "my-grpc-service"
+      grpcService:
+        address: "localhost:50052"
+        reflection:
+          enabled: true
+  ```
+- **OpenAPI Services**: Register a service from an OpenAPI specification.
+  ```yaml
+  upstreamServices:
+    - name: "my-openapi-service"
+      openapiService:
+        spec:
+          path: "./openapi.json"
+  ```
+- **Authentication**: Configure authentication for an upstream service.
+  ```yaml
+  upstreamServices:
+    - name: "my-secure-service"
+      httpService:
+        address: "https://api.example.com"
+        # ...
+      upstreamAuthentication:
+        apiKey:
+          headerName: "X-API-Key"
+          apiKey: "my-secret-key"
+  ```
 
 ## Usage
 

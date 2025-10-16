@@ -110,7 +110,10 @@ func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.F
 	return parseProtoWithExistingConnection(ctx, conn)
 }
 
-// ParseProtoWithExistingConnection performs reflection on an existing gRPC connection.
+// ParseProtoWithExistingConnection performs reflection on an existing gRPC
+// connection. It is a lower-level function that allows for more control over
+// the connection lifecycle, which is useful in testing or scenarios where a
+// connection is already established.
 func parseProtoWithExistingConnection(ctx context.Context, conn *grpc.ClientConn) (*descriptorpb.FileDescriptorSet, error) {
 	// 2. Create a reflection client
 	reflectionClient := reflectpb.NewServerReflectionClient(conn)
@@ -185,7 +188,8 @@ func parseProtoWithExistingConnection(ctx context.Context, conn *grpc.ClientConn
 	return fds, nil
 }
 
-// listServices sends a ListServices request and gets the list of service names
+// listServices sends a ListServices request over a reflection stream and
+// returns the list of discovered service names.
 func listServices(stream reflectpb.ServerReflection_ServerReflectionInfoClient) ([]string, error) {
 	err := stream.Send(&reflectpb.ServerReflectionRequest{
 		MessageRequest: &reflectpb.ServerReflectionRequest_ListServices{},
@@ -211,7 +215,9 @@ func listServices(stream reflectpb.ServerReflection_ServerReflectionInfoClient) 
 	return serviceNames, nil
 }
 
-// getFileDescriptorForSymbol asks the reflection service for the FileDescriptor containing a given symbol (e.g., a service name)
+// getFileDescriptorForSymbol queries the reflection service for the
+// FileDescriptorProto that defines a given symbol (e.g., a service name,
+// message name).
 func getFileDescriptorForSymbol(stream reflectpb.ServerReflection_ServerReflectionInfoClient, symbolName string) (*descriptorpb.FileDescriptorProto, error) {
 	err := stream.Send(&reflectpb.ServerReflectionRequest{
 		MessageRequest: &reflectpb.ServerReflectionRequest_FileContainingSymbol{
@@ -241,6 +247,8 @@ func getFileDescriptorForSymbol(stream reflectpb.ServerReflection_ServerReflecti
 	return fdp, nil
 }
 
+// getFileDescriptorByFilename queries the reflection service for a
+// FileDescriptorProto by its filename (e.g., "path/to/my_service.proto").
 func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflectionInfoClient, filename string) (*descriptorpb.FileDescriptorProto, error) {
 	err := stream.Send(&reflectpb.ServerReflectionRequest{
 		MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
@@ -363,6 +371,9 @@ func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnot
 	return results, nil
 }
 
+// extractFields iterates through the fields of a message descriptor and extracts
+// them into a slice of McpField structs, including any field-level
+// descriptions defined in MCP annotations.
 func extractFields(msgDesc protoreflect.MessageDescriptor) []McpField {
 	var fields []McpField
 	for i := 0; i < msgDesc.Fields().Len(); i++ {

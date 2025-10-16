@@ -128,6 +128,9 @@ func (u *OpenAPIUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// getHTTPClient retrieves or creates an HTTP client for a given service. It
+// ensures that each service has its own dedicated client, which can be
+// configured with specific transports or timeouts.
 func (u *OpenAPIUpstream) getHTTPClient(serviceKey string) *http.Client {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -151,14 +154,21 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceKey string) *http.Client {
 	return client
 }
 
+// httpClientImpl is a simple wrapper around *http.Client that implements the
+// client.HttpClient interface. This is used to adapt the standard library's
+// HTTP client for use in components that expect this interface.
 type httpClientImpl struct {
 	client *http.Client
 }
 
+// Do sends an HTTP request and returns an HTTP response, fulfilling the
+// client.HttpClient interface.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }
 
+// addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
+// creates an OpenAPITool for each, and registers it with the tool manager.
 func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceKey string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0

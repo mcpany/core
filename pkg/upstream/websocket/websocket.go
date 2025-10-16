@@ -97,6 +97,9 @@ func (u *WebsocketUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// createAndRegisterWebsocketTools iterates through the WebSocket call
+// definitions in the service configuration, creates a new WebsocketTool for each,
+// and registers it with the tool manager.
 func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
