@@ -237,6 +237,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
+			return
 		}
 		serverLog.Info("Server shut down.")
 	}()
