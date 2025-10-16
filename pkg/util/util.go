@@ -30,7 +30,7 @@ import (
 
 var (
 	validIDPattern    = regexp.MustCompile(`^[\w/-]+$`)
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
+	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@$&'()*+,;=]+`)
 )
 
 // GenerateToolID creates a fully qualified tool ID by combining a service key

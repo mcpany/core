@@ -239,7 +239,7 @@ func TestSanitizeOperationID(t *testing.T) {
 		{
 			name:  "consecutive invalid chars",
 			input: "a<>b",
-			want:  "a_c4dd3c__091385_b",
+			want:  "a_d3270f_b",
 		},
 		{
 			name:  "different invalid chars",
