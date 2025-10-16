@@ -213,6 +213,48 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		require.NoError(t, err)
 		assert.Len(t, discoveredTools, 1, "Tool should still be registered even if auth is nil")
 	})
+
+	t.Run("registration with connection pool config", func(t *testing.T) {
+		pm := pool.NewManager()
+		tm := tool.NewToolManager(nil)
+		upstream := NewHTTPUpstream(pm)
+
+		httpService := &configv1.HttpUpstreamService{}
+		httpService.SetAddress("http://localhost")
+		callDef := &configv1.HttpCallDefinition{}
+		callDef.SetOperationId("test-op")
+		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+		callDef.SetEndpointPath("/test")
+		httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
+
+		poolConfig := &configv1.ConnectionPoolConfig{}
+		poolConfig.SetMaxConnections(50)
+		poolConfig.SetMaxIdleConnections(10)
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service-with-pool")
+		serviceConfig.SetHttpService(httpService)
+		serviceConfig.SetConnectionPool(poolConfig)
+
+		// We need to replace the NewHttpPool function with a mock to check the parameters.
+		originalNewHttpPool := NewHttpPool
+		defer func() { NewHttpPool = originalNewHttpPool }()
+
+		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
+		NewHttpPool = func(minSize, maxSize, idleTimeout int) (pool.Pool[*client.HttpClientWrapper], error) {
+			capturedMinSize = minSize
+			capturedMaxSize = maxSize
+			capturedIdleTimeout = idleTimeout
+			return originalNewHttpPool(minSize, maxSize, idleTimeout)
+		}
+
+		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		assert.NoError(t, err)
+
+		assert.Equal(t, 10, capturedMinSize)
+		assert.Equal(t, 50, capturedMaxSize)
+		assert.Equal(t, 300, capturedIdleTimeout)
+	})
 }
 
 // mockToolManager to simulate errors
