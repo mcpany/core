@@ -46,7 +46,10 @@ import (
 )
 
 // ShutdownTimeout is the duration the server will wait for graceful shutdown.
-var ShutdownTimeout = 5 * time.Second
+var (
+	ShutdownTimeout = 5 * time.Second
+	shutdownMutex   sync.Mutex
+)
 
 // Runner defines the interface for running the MCP-XY application.
 type Runner interface {
@@ -226,7 +229,9 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 		go func() {
 			<-ctx.Done()
+			shutdownMutex.Lock()
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
+			shutdownMutex.Unlock()
 			defer cancel()
 			serverLog.Info("Attempting to gracefully shut down server...")
 			if err := server.Shutdown(shutdownCtx); err != nil {
@@ -273,8 +278,11 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 				close(stopped)
 			}()
 
+			shutdownMutex.Lock()
+			timeout := ShutdownTimeout
+			shutdownMutex.Unlock()
 			select {
-			case <-time.After(ShutdownTimeout):
+			case <-time.After(timeout):
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
 			case <-stopped:
