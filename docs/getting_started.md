@@ -6,7 +6,7 @@ This guide provides a step-by-step walkthrough to get the MCP-XY up and running 
 
 Before you begin, ensure you have the following installed:
 
-- [Go](https://golang.org/doc/install) (version 1.18 or higher)
+- [Go](https://golang.org/doc/install) (version 1.24.3 or higher)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Make](https://www.gnu.org/software/make/)
 
@@ -20,7 +20,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 2. **Build the application:**
-   This command will generate the necessary protobuf files and build the server executable.
+   This command will generate the necessary protobuf files and build the server executable into `/tmp/build/bin/server`.
 
    ```bash
    make build
@@ -31,15 +31,15 @@ Before you begin, ensure you have the following installed:
 After building the project, you can run the server application:
 
 ```bash
-make server
+make run
 ```
 
-This will start the MCP-XY server. By default, the server will listen on port `8080`.
+This will start the MCP-XY server. By default, the server will listen for JSON-RPC requests on port `50050`.
 
 You should see log messages indicating that the server has started, for example:
 
 ```
-INFO main.go:29 Starting MCP-XY...
-INFO main.go:51 Attempting to start MCP-XY server on port :8080
-INFO main.go:60 MCP-XY server listening on :8080
+INFO Starting MCP-XY server locally... service=mcpxy
+INFO Configuration jsonrpc-port=50050 registration-port= grpc-port= stdio=false config-paths=[] service=mcpxy
+INFO Application started service=mcpxy
 ```
