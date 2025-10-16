@@ -176,11 +176,12 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		fullURL, err := url.JoinPath(address, httpDef.GetEndpointPath())
+		baseURL, err := url.Parse(address)
 		if err != nil {
-			log.Error("Failed to join URL parts", "address", address, "endpoint", httpDef.GetEndpointPath(), "error", err)
+			log.Error("Failed to parse base URL", "address", address, "error", err)
 			continue
 		}
+		fullURL := baseURL.JoinPath(httpDef.GetEndpointPath()).String()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
