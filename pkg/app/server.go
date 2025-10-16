@@ -262,7 +262,20 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		go func() {
 			<-ctx.Done()
 			serverLog.Info("Attempting to gracefully shut down server...")
-			grpcServer.GracefulStop()
+
+			stopped := make(chan struct{})
+			go func() {
+				grpcServer.GracefulStop()
+				close(stopped)
+			}()
+
+			select {
+			case <-time.After(ShutdownTimeout):
+				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
+				grpcServer.Stop()
+			case <-stopped:
+				serverLog.Info("Server gracefully stopped.")
+			}
 		}()
 
 		serverLog.Info("gRPC server listening")
