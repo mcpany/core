@@ -248,7 +248,8 @@ func TestUpstreamWorker(t *testing.T) {
 		wg.Wait()
 		select {
 		case result := <-resultChan:
-			assert.NoError(t, result.Error, "Error should be nil as tool execution succeeded")
+			assert.Error(t, result.Error)
+			assert.Contains(t, result.Error.Error(), "json: unsupported type: func()")
 			assert.Nil(t, result.Result, "Result should be nil due to marshaling failure")
 		case <-time.After(1 * time.Second):
 			t.Fatal("timed out waiting for execution result")
