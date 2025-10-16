@@ -306,6 +306,42 @@ func TestManager_Concurrent(t *testing.T) {
 	m.CloseAll()
 }
 
+func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
+	const maxSize = 2
+	var factoryCallCount int32
+	factory := func(ctx context.Context) (*mockClient, error) {
+		atomic.AddInt32(&factoryCallCount, 1)
+		return &mockClient{isHealthy: true}, nil
+	}
+
+	p, err := New(factory, 0, maxSize, 0)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// 1. Fill the pool up to its max size.
+	clients := make([]*mockClient, maxSize)
+	for i := 0; i < maxSize; i++ {
+		c, err := p.Get(context.Background())
+		require.NoError(t, err)
+		clients[i] = c
+	}
+	require.Equal(t, int32(maxSize), atomic.LoadInt32(&factoryCallCount), "Factory should be called max_size times to fill the pool")
+
+	// 2. Return one client to the pool, making it idle.
+	p.Put(clients[0])
+	require.Equal(t, 1, p.Len(), "Pool should have one idle client")
+
+	// 3. Request a client. It should reuse the idle one, not create a new one.
+	reusedClient, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, int32(maxSize), atomic.LoadInt32(&factoryCallCount), "Factory should not be called again when an idle client is available")
+	assert.Same(t, clients[0], reusedClient, "Should have reused the same client instance")
+
+	// 4. Clean up
+	p.Put(reusedClient)
+	p.Put(clients[1])
+}
+
 func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	const (
 		maxSize    = 20
