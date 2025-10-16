@@ -60,6 +60,11 @@ func TestParseToolName(t *testing.T) {
 			toolName: consts.ToolNameServiceSeparator,
 			wantErr:  true,
 		},
+		{
+			name:     "Invalid tool name - ends with separator",
+			toolName: "namespace" + consts.ToolNameServiceSeparator,
+			wantErr:  true,
+		},
 	}
 
 	for _, tc := range testCases {

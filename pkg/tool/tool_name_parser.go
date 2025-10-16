@@ -40,7 +40,7 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 		tool = parts[0]
 	}
 
-	if tool == "" {
+	if tool == "" || tool == "/" {
 		return "", "", fmt.Errorf("invalid tool name: %s", toolName)
 	}
 	return namespace, tool, nil
