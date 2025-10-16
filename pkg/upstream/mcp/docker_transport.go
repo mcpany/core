@@ -120,11 +120,13 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}, nil
 }
 
-// dockerConn is a simple implementation of mcp.Connection.
+// dockerConn provides a concrete implementation of the mcp.Connection interface,
+// tailored for communication with a service running in a Docker container.
 type dockerConn struct {
 	rwc io.ReadWriteCloser
 }
 
+// Read decodes a single JSON-RPC message from the container's output stream.
 func (c *dockerConn) Read(ctx context.Context) (jsonrpc.Message, error) {
 	d := json.NewDecoder(c.rwc)
 	var msg jsonrpc.Message
@@ -134,15 +136,18 @@ func (c *dockerConn) Read(ctx context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
+// Write encodes and sends a JSON-RPC message to the container's input stream.
 func (c *dockerConn) Write(ctx context.Context, msg jsonrpc.Message) error {
 	e := json.NewEncoder(c.rwc)
 	return e.Encode(msg)
 }
 
+// Close terminates the connection by closing the underlying ReadWriteCloser.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
+// SessionID returns a static identifier for the Docker transport session.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -177,12 +182,15 @@ func (c *dockerReadWriteCloser) Close() error {
 	return err
 }
 
-// slogWriter is an io.Writer that writes to a slog.Logger.
+// slogWriter implements the io.Writer interface, allowing it to be used as a
+// destination for log output. It writes each line of the input to a slog.Logger.
 type slogWriter struct {
 	log   *slog.Logger
 	level slog.Level
 }
 
+// Write takes a byte slice, scans it for lines, and logs each line
+// individually using the configured slog.Logger and level.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {

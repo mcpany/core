@@ -31,6 +31,8 @@ var (
 	once         sync.Once
 )
 
+// initDockerClient initializes the shared Docker client. This function is
+// intended to be called only once.
 var initDockerClient = func() {
 	var err error
 	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -54,6 +56,9 @@ func CloseDockerClient() {
 	}
 }
 
+// isDockerSocketAccessibleDefault is the default implementation for checking
+// Docker socket accessibility. It pings the Docker daemon to verify that it is
+// running and accessible.
 func isDockerSocketAccessibleDefault() bool {
 	once.Do(initDockerClient)
 
