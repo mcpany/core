@@ -204,8 +204,9 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) error {
 		// No services need to be registered for this test.
+		return nil
 	})
 
 	// Allow some time for the server to start up.
@@ -247,7 +248,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) error { return nil })
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -302,7 +303,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", func(_ *gogrpc.Server) {})
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", func(_ *gogrpc.Server) error { return nil })
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -331,7 +332,9 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) error {
+				return nil
+			})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -348,5 +351,28 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 				// This is the expected path.
 			}
 		})
+	}
+}
+
+func TestGRPCServer_RegistrationFailure(t *testing.T) {
+	errChan := make(chan error, 1)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var wg sync.WaitGroup
+
+	expectedErr := "registration failed"
+
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegFail", ":0", func(s *gogrpc.Server) error {
+		return fmt.Errorf("%s", expectedErr)
+	})
+
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), expectedErr, "The error from registration should be propagated")
+	case <-time.After(1 * time.Second):
+		t.Fatal("Test timed out, the server should have exited immediately after registration failure")
 	}
 }
