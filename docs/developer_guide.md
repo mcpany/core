@@ -108,7 +108,7 @@ upstreamServices:
             get:
               operationId: listPets
               responses:
-                '200':
+                "200":
                   description: "A paged array of pets"
 ```
 
