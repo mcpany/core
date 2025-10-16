@@ -51,17 +51,36 @@ var (
 	shutdownMutex   sync.Mutex
 )
 
-// Runner defines the interface for running the MCP-XY application.
+// Runner defines the interface for running the MCP-XY application. It abstracts
+// the application's entry point, allowing for different implementations or mocks
+// for testing purposes.
 type Runner interface {
+	// Run starts the MCP-XY application with the given context, filesystem, and
+	// configuration. It is the primary entry point for the server.
+	//
+	// ctx is the context that controls the application's lifecycle.
+	// fs is the filesystem interface for reading configurations.
+	// stdio specifies whether to run in standard I/O mode.
+	// jsonrpcPort is the port for the JSON-RPC server.
+	// grpcPort is the port for the gRPC registration server.
+	// configPaths is a slice of paths to configuration files.
+	//
+	// It returns an error if the application fails to start or run.
 	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and logic.
+// Application is the main application struct, holding the dependencies and logic
+// for the MCP-XY server. It encapsulates the components required to run the
+// server, such as the stdio mode handler.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 }
 
-// NewApplication creates a new Application with default dependencies.
+// NewApplication creates a new Application with default dependencies. It
+// initializes the application with the standard implementation of the stdio mode
+// runner.
+//
+// Returns a new instance of the Application.
 func NewApplication() *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
@@ -71,6 +90,15 @@ func NewApplication() *Application {
 // Run starts the MCP-XY server and all its components. It initializes the core
 // services, loads configurations, starts background workers, and launches the
 // gRPC and JSON-RPC servers.
+//
+// ctx is the context for managing the application's lifecycle.
+// fs is the filesystem for reading configuration files.
+// stdio determines if the server should run in stdio mode.
+// jsonrpcPort specifies the port for the JSON-RPC server.
+// grpcPort specifies the port for the gRPC registration server.
+// configPaths provides a list of paths to service configuration files.
+//
+// It returns an error if any part of the startup or execution fails.
 func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
@@ -136,6 +164,10 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 // setup initializes the filesystem for the server. It ensures that a valid
 // afero.Fs is available, returning an error if a nil filesystem is provided.
+//
+// fs is the filesystem to be validated.
+//
+// It returns a non-nil afero.Fs or an error if the provided filesystem is nil.
 func setup(fs afero.Fs) (afero.Fs, error) {
 	log := logging.GetLogger()
 	if fs == nil {
@@ -148,13 +180,24 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 // runStdioMode starts the server in standard I/O mode, which is useful for
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
+//
+// ctx is the context for managing the server's lifecycle.
+// mcpSrv is the MCP server instance to run.
+//
+// It returns an error if the server fails to run in stdio mode.
 func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
 	log.Info("Starting in stdio mode")
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
-// HealthCheck performs a health check against a running server.
+// HealthCheck performs a health check against a running server by sending an
+// HTTP GET request to its /healthz endpoint.
+//
+// port specifies the port on which the server is running.
+//
+// It returns nil if the server is healthy, or an error if the health check
+// fails.
 func HealthCheck(port string) error {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
 	if err != nil {
@@ -170,9 +213,17 @@ func HealthCheck(port string) error {
 	return nil
 }
 
-// runServerMode runs the server in the standard HTTP and gRPC server mode.
-// It starts the HTTP server for JSON-RPC and the gRPC server for service
+// runServerMode runs the server in the standard HTTP and gRPC server mode. It
+// starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
+//
+// ctx is the context for managing the server's lifecycle.
+// mcpSrv is the MCP server instance.
+// bus is the message bus for inter-component communication.
+// jsonrpcPort is the port for the JSON-RPC server.
+// grpcPort is the port for the gRPC registration server.
+//
+// It returns an error if any of the servers fail to start or run.
 func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
@@ -217,6 +268,13 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
+//
+// ctx is the context for managing the server's lifecycle.
+// wg is a WaitGroup to signal when the server has shut down.
+// errChan is a channel for reporting errors during startup.
+// name is a descriptive name for the server, used in logging.
+// addr is the address and port on which the server will listen.
+// handler is the HTTP handler for processing requests.
 func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler) {
 	wg.Add(1)
 	go func() {
@@ -249,6 +307,13 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
+//
+// ctx is the context for managing the server's lifecycle.
+// wg is a WaitGroup to signal when the server has shut down.
+// errChan is a channel for reporting errors during startup.
+// name is a descriptive name for the server, used in logging.
+// port is the port on which the server will listen.
+// register is a function that registers the gRPC services with the server.
 func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
 	wg.Add(1)
 	go func() {
@@ -276,7 +341,6 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 			shutdownMutex.Lock()
 			timeout := ShutdownTimeout
-			shutdownMutex.Unlock()
 			select {
 			case <-time.After(timeout):
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
@@ -284,6 +348,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
+			shutdownMutex.Unlock()
 		}()
 
 		serverLog.Info("gRPC server listening")

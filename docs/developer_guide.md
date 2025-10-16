@@ -1,60 +1,54 @@
 # 👨‍💻 Developer Guide
 
-This guide is for developers who want to contribute to the MCP-X. It provides information about the development environment, build process, and other useful tips.
+This guide is for developers who want to contribute to the MCP-XY. It provides information about the development environment, build process, and other useful tips.
 
 ## Development Setup
 
 ### Prerequisites
 
-- **Go**: Ensure you have a recent version of Go installed. You can find installation instructions on the [official Go website](https://golang.org/doc/install).
-- **Docker**: Required for building and running the Docker images.
+- **Go**: Ensure you have a recent version of Go installed (see `go.mod` for the exact version). You can find installation instructions on the [official Go website](https://golang.org/doc/install).
+- **Docker**: Required for building and running Docker images, especially for end-to-end tests.
 - **Make**: Used for simplifying common development tasks.
+- **Python**: Required for installing and running pre-commit hooks.
 
 ### Tool Installation
 
-1.  **Install `protoc` (Protobuf Compiler)**
+This project uses a `Makefile` to automate the installation of all necessary development tools, including `protoc`, Go protobuf plugins, linters, and pre-commit hooks.
 
-    The `protoc` compiler is required to generate Go code from `.proto` files.
-    - **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
-    - **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
-    - **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
+To install everything you need, simply run:
 
-2.  **Install Go Protobuf Plugins**
+```bash
+make prepare
+```
 
-    These plugins are used by `protoc` to generate Go-specific code.
-
-    ```bash
-    go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-    ```
-
-    Make sure your Go bin directory (`$GOPATH/bin` or `$HOME/go/bin`) is in your system's `PATH`.
+This command will download and install the correct versions of the tools into a `/tmp/build/env` directory, ensuring a consistent development environment without polluting your global system paths.
 
 ## Code Structure Overview
 
-The MCP-X codebase is organized into several key packages:
+The MCP-XY codebase is organized into several key packages:
 
-- **`cmd/server`**: Contains the `main` application entry point.
-- **`pkg/server`**: Implements the core MCP-X server logic.
-- **`pkg/apiserver`**: Provides the gRPC API for service registration.
-- **`pkg/grpc`**: Houses modules related to gRPC service integration.
-- **`pkg/openapi`**: Contains modules for integrating services defined by OpenAPI specifications.
-- **`proto`**: Contains all the protobuf definitions for the project.
+- **`cmd/server`**: Contains the `main` application entry point and command-line interface setup using Cobra.
+- **`pkg/app`**: Implements the core application logic, orchestrating the different components.
+- **`pkg/service`**: Defines the interfaces and registration logic for different service types (gRPC, HTTP, OpenAPI, etc.).
+- **`pkg/connector`**: Contains the concrete implementations for connecting to and interacting with various upstream services.
+- **`pkg/transformer`**: Handles the conversion of data between the internal MCP-XY format and the format of the upstream services.
+- **`proto`**: Contains all the protobuf definitions for the project, including API contracts and configuration structures.
+- **`tests`**: Contains integration and end-to-end tests.
 
 ## Working with Services
 
-MCP-X allows you to extend its capabilities by registering external services, which are then exposed as "Tools".
+MCP-XY allows you to extend its capabilities by registering external services, which are then exposed as "Tools."
 
 ### Registering Services
 
-Services can be registered with MCP-X in two ways:
+Services can be registered with MCP-XY in two ways:
 
-1.  **Dynamically via the Registration API**: The `RegistrationService` (`proto/api/v1/registration.proto`) provides an API for registering services at runtime.
+1.  **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpxy/v1/registration.proto`) provides an API for registering services at runtime.
 2.  **Statically via a configuration file**: Services can be defined in a YAML configuration file and loaded when the server starts.
 
 ### Service Configuration
 
-The `McpxServerConfig` message (`proto/config/v1/config.proto`) is the root configuration for the entire MCP-X server. It defines the global settings, upstream services, frontend services, and service bindings.
+The `UpstreamService` message (`proto/mcpxy/config/v1/config.proto`) is the core configuration for defining a service.
 
 For a comprehensive reference for all configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
@@ -67,13 +61,11 @@ Below are some examples of how to configure different upstream services using a 
 This example configures a gRPC service and uses gRPC reflection to automatically discover its tools.
 
 ```yaml
-upstream_services:
-  - id: "grpc-calculator-service"
-    name: "grpc_calculator"
-    service_config:
-      grpc_service:
-        address: "localhost:50051"
-        use_reflection: true
+upstreamServices:
+  - name: "grpc_calculator"
+    grpcService:
+      address: "localhost:50051"
+      useReflection: true
 ```
 
 #### HTTP Service with API Key Authentication
@@ -81,58 +73,54 @@ upstream_services:
 This example configures a generic HTTP service and demonstrates how to secure the connection to the upstream service using an API key.
 
 ```yaml
-upstream_services:
-  - id: "http-echo-service"
-    name: "http_echo"
-    service_config:
-      http_service:
-        address: "http://localhost:8080"
-        calls:
-          - operation_id: "echo"
-            endpoint_path: "/echo"
-            method: "HTTP_METHOD_POST"
-    upstream_authentication:
-      api_key:
-        header_name: "X-Api-Key"
-        api_key: "your-secret-api-key"
+upstreamServices:
+  - name: "http_echo"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "echo"
+          endpointPath: "/echo"
+          method: "HTTP_METHOD_POST"
+    authentication:
+      apiKey:
+        header: "X-Api-Key"
+        value: "your-secret-api-key"
 ```
 
 #### OpenAPI Service
 
-This example configures a service from an OpenAPI specification. MCP-X will parse the specification to discover the available tools.
+This example configures a service from an OpenAPI specification. MCP-XY will parse the specification to discover the available tools.
 
 ```yaml
-upstream_services:
-  - id: "openapi-petstore-service"
-    name: "openapi_petstore"
-    service_config:
-      openapi_service:
-        address: "https://petstore.swagger.io/v2"
-        openapi_spec: |
-          # You can paste an OpenAPI spec here directly
-          # or provide a path to a file.
-          swagger: "2.0"
-          info:
-            title: "Simple Pet Store API"
-            version: "1.0.0"
-          paths:
-            /pets:
-              get:
-                operationId: listPets
-                responses:
-                  '200':
-                    description: "A paged array of pets"
+upstreamServices:
+  - name: "openapi_petstore"
+    openapiService:
+      address: "https://petstore.swagger.io/v2"
+      spec:
+        # You can paste an OpenAPI spec here directly
+        # or provide a path to a file using `specPath`.
+        openapi: "2.0"
+        info:
+          title: "Simple Pet Store API"
+          version: "1.0.0"
+        paths:
+          /pets:
+            get:
+              operationId: listPets
+              responses:
+                "200":
+                  description: "A paged array of pets"
 ```
 
 ## Makefile Commands
 
-This project uses a Makefile to simplify common development tasks.
+This project uses a Makefile to simplify common development tasks. Run `make` or `make help` to see a list of all available commands.
 
-- `make help`: Show this help message.
-- `make server`: Run the main server application.
-- `make build`: Build the main server application.
-- `make test`: Run all tests.
-- `make check`: Run all checks (lint, vet, etc.).
-- `make proto-gen`: Generate protobuf files.
-- `make docker-build`: Build the docker image for the server.
-- `make clean`: Clean up build artifacts.
+- `make prepare`: Installs all necessary development tools.
+- `make run`: Builds and runs the main server application locally.
+- `make build`: Builds the main server application binary.
+- `make test`: Runs all unit and integration tests.
+- `make lint`: Runs all linters and formatters using pre-commit.
+- `make proto-gen`: Generates Go code from protobuf files.
+- `make docker-build`: Builds the Docker image for the server.
+- `make clean`: Cleans up build artifacts and generated files.
