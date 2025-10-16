@@ -65,7 +65,7 @@ func (u *WebrtcUpstream) Register(
 		return "", nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName(), "webrtc")
 	if err != nil {
 		return "", nil, err
 	}

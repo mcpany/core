@@ -52,7 +52,7 @@ func (u *CommandUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName(), "command")
 	if err != nil {
 		return "", nil, err
 	}

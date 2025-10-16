@@ -85,7 +85,7 @@ func (u *GRPCUpstream) Register(
 		return "", nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName(), "grpc")
 	if err != nil {
 		return "", nil, err
 	}

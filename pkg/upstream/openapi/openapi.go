@@ -75,7 +75,7 @@ func (u *OpenAPIUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName(), "openapi")
 	if err != nil {
 		return "", nil, err
 	}

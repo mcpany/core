@@ -66,12 +66,16 @@ func GenerateToolID(serviceKey, toolName string) (string, error) {
 //
 // serviceID is the identifier for the service.
 // It returns the validated service key or an error if the service ID is invalid.
-func GenerateServiceKey(serviceID string) (string, error) {
+func GenerateServiceKey(serviceID, serviceType string) (string, error) {
 	if serviceID == "" {
 		return "", fmt.Errorf("service ID cannot be empty")
 	}
 	if !validIDPattern.MatchString(serviceID) {
 		return "", fmt.Errorf("service ID must match %q", validIDPattern.String())
+	}
+
+	if serviceType != "" {
+		return fmt.Sprintf("%s-%s", serviceType, serviceID), nil
 	}
 
 	return serviceID, nil
