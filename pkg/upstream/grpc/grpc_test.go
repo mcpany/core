@@ -42,6 +42,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
@@ -351,4 +352,55 @@ func TestFindMethodDescriptor(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not find descriptor for service 'calculator.v1.CalculatorService'")
 	})
+}
+
+func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
+	fields := []*protobufparser.McpField{
+		{Name: "field1", Description: "a string field", Type: "TYPE_STRING"},
+		{Name: "field2", Description: "an int field", Type: "TYPE_INT32"},
+		{Name: "field3", Description: "a bool field", Type: "TYPE_BOOL"},
+		{Name: "field4", Description: "a float field", Type: "TYPE_FLOAT"},
+		{Name: "field5", Description: "", Type: "TYPE_STRING"},
+	}
+
+	properties, err := convertMcpFieldsToInputSchemaProperties(fields)
+	require.NoError(t, err)
+	assert.Len(t, properties, 5)
+
+	// Check field1 - should be a struct with type and description
+	field1, ok := properties["field1"]
+	require.True(t, ok)
+	s1, ok := field1.GetKind().(*structpb.Value_StructValue)
+	require.True(t, ok)
+	assert.Equal(t, "string", s1.StructValue.Fields["type"].GetStringValue())
+	assert.Equal(t, "a string field", s1.StructValue.Fields["description"].GetStringValue())
+
+	// Check field2
+	field2, ok := properties["field2"]
+	require.True(t, ok)
+	s2, ok := field2.GetKind().(*structpb.Value_StructValue)
+	require.True(t, ok)
+	assert.Equal(t, "integer", s2.StructValue.Fields["type"].GetStringValue())
+
+	// Check field3
+	field3, ok := properties["field3"]
+	require.True(t, ok)
+	s3, ok := field3.GetKind().(*structpb.Value_StructValue)
+	require.True(t, ok)
+	assert.Equal(t, "boolean", s3.StructValue.Fields["type"].GetStringValue())
+
+	// Check field4
+	field4, ok := properties["field4"]
+	require.True(t, ok)
+	s4, ok := field4.GetKind().(*structpb.Value_StructValue)
+	require.True(t, ok)
+	assert.Equal(t, "number", s4.StructValue.Fields["type"].GetStringValue())
+
+	// Check field5
+	field5, ok := properties["field5"]
+	require.True(t, ok)
+	s5, ok := field5.GetKind().(*structpb.Value_StructValue)
+	require.True(t, ok)
+	assert.Equal(t, "string", s5.StructValue.Fields["type"].GetStringValue())
+	assert.Equal(t, "", s5.StructValue.Fields["description"].GetStringValue())
 }
