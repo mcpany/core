@@ -44,11 +44,14 @@ type APIKeyAuthenticator struct {
 }
 
 // NewAPIKeyAuthenticator creates a new APIKeyAuthenticator from the provided
-// configuration.
+// configuration. It returns nil if the configuration is invalid.
 //
 // config contains the API key authentication settings, including the header
 // parameter name and the key value.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
+	if config == nil || config.GetParamName() == "" || config.GetKeyValue() == "" {
+		return nil
+	}
 	return &APIKeyAuthenticator{
 		HeaderName:  config.GetParamName(),
 		HeaderValue: config.GetKeyValue(),
