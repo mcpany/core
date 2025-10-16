@@ -131,26 +131,75 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 	// Loop to ensure we return a healthy client
 	for {
+		// First, try a non-blocking retrieval of an existing client.
 		select {
 		case client := <-p.clients:
+			v := reflect.ValueOf(client)
+			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+				return zero, ErrPoolClosed
+			}
 			if client.IsHealthy() {
 				return client, nil
 			}
 			lo.Try(client.Close)
-			// Unhealthy client found and closed. Release its permit and loop again.
 			p.sem.Release(1)
+			continue // Retry.
 		default:
-			// No idle clients, try to create a new one.
-			if err := p.sem.Acquire(ctx, 1); err != nil {
-				return zero, err // Context canceled or pool is full and timeout exceeded.
-			}
+			// Channel is empty, proceed.
+		}
 
-			client, err := p.factory(ctx)
-			if err != nil {
-				p.sem.Release(1) // Creation failed, release permit.
-				return zero, err
+		// If no idle client, try to create a new one without blocking.
+		if p.sem.TryAcquire(1) {
+			// Acquired a permit, but double-check for a race condition where
+			// a client was returned just before we acquired the permit.
+			select {
+			case client := <-p.clients:
+				// A client was available, so we use it and release the permit.
+				p.sem.Release(1)
+				v := reflect.ValueOf(client)
+				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+					return zero, ErrPoolClosed
+				}
+				if client.IsHealthy() {
+					return client, nil
+				}
+				lo.Try(client.Close)
+				p.sem.Release(1)
+				continue // Retry.
+			default:
+				// No client, so create a new one.
+				// We must check if the pool was closed *after* we acquired the permit.
+				p.mu.Lock()
+				closed := p.closed
+				p.mu.Unlock()
+				if closed {
+					p.sem.Release(1) // Don't leak the permit
+					return zero, ErrPoolClosed
+				}
+				client, err := p.factory(ctx)
+				if err != nil {
+					p.sem.Release(1)
+					return zero, err
+				}
+				return client, nil
 			}
-			return client, nil
+		}
+
+		// Pool is full, so we must wait for a client to be returned.
+		select {
+		case client := <-p.clients:
+			v := reflect.ValueOf(client)
+			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+				return zero, ErrPoolClosed
+			}
+			if client.IsHealthy() {
+				return client, nil
+			}
+			lo.Try(client.Close)
+			p.sem.Release(1)
+			continue // Retry.
+		case <-ctx.Done():
+			return zero, ctx.Err()
 		}
 	}
 }
