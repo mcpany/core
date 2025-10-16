@@ -188,13 +188,13 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux)
 
 	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {
+		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) error {
 			registrationServer, err := mcpserver.NewRegistrationServer(bus)
 			if err != nil {
-				errChan <- fmt.Errorf("failed to create API server: %w", err)
-				return
+				return fmt.Errorf("failed to create API server: %w", err)
 			}
 			v1.RegisterRegistrationServiceServer(s, registrationServer)
+			return nil
 		})
 	}
 
@@ -244,7 +244,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
+func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server) error) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -256,7 +256,10 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
 		grpcServer := gogrpc.NewServer()
-		register(grpcServer)
+		if err := register(grpcServer); err != nil {
+			errChan <- fmt.Errorf("[%s] failed to register services: %w", name, err)
+			return
+		}
 		reflection.Register(grpcServer)
 
 		go func() {
