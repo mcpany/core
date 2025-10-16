@@ -43,25 +43,19 @@ func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
 		var buf bytes.Buffer
-		logging.Init(slog.LevelWarn, &buf)
+		logging.Init(slog.LevelError, &buf)
 
-		fs := setup(nil)
-		assert.NotNil(t, fs, "setup should return a valid fs even if input is nil")
-		_, ok := fs.(*afero.OsFs)
-		assert.True(t, ok, "setup should default to OsFs")
-
-		assert.True(t, strings.Contains(buf.String(), "setup called with nil afero.Fs"), "Warning message should be logged")
+		fs, err := setup(nil)
+		assert.Error(t, err, "setup should return an error when fs is nil")
+		assert.Nil(t, fs, "setup should return a nil fs when an error occurs")
+		assert.True(t, strings.Contains(buf.String(), "setup called with nil afero.Fs"), "Error message should be logged")
 	})
 
 	t.Run("with existing fs", func(t *testing.T) {
-		logging.ForTestsOnlyResetLogger()
-		var buf bytes.Buffer
-		logging.Init(slog.LevelWarn, &buf)
-
 		memFs := afero.NewMemMapFs()
-		fs := setup(memFs)
+		fs, err := setup(memFs)
+		assert.NoError(t, err, "setup should not return an error for a valid fs")
 		assert.Equal(t, memFs, fs, "setup should return the provided fs")
-		assert.False(t, strings.Contains(buf.String(), "setup called with nil afero.Fs"), "Warning message should not be logged")
 	})
 }
 
@@ -151,6 +145,15 @@ func TestRun_NoGrpcServer(t *testing.T) {
 
 func TestRun_ServerStartupErrors(t *testing.T) {
 	app := NewApplication()
+
+	t.Run("nil_fs_fail", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+
+		err := app.Run(ctx, nil, false, "0", "0", nil)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to setup filesystem")
+	})
 
 	t.Run("http_server_fail", func(t *testing.T) {
 		// Find a free port and occupy it

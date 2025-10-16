@@ -70,7 +70,10 @@ func NewApplication() *Application {
 // gRPC and JSON-RPC servers.
 func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
 	log := logging.GetLogger()
-	fs = setup(fs)
+	fs, err := setup(fs)
+	if err != nil {
+		return fmt.Errorf("failed to setup filesystem: %w", err)
+	}
 
 	log.Info("Starting MCP-XY Service...")
 
@@ -129,14 +132,14 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
-// afero.Fs is available, defaulting to the OS filesystem if nil is provided.
-func setup(fs afero.Fs) afero.Fs {
+// afero.Fs is available, returning an error if a nil filesystem is provided.
+func setup(fs afero.Fs) (afero.Fs, error) {
 	log := logging.GetLogger()
 	if fs == nil {
-		log.Warn("setup called with nil afero.Fs, defaulting to OS filesystem. This is not recommended for new direct calls; pass afero.NewOsFs() explicitly.")
-		fs = afero.NewOsFs()
+		log.Error("setup called with nil afero.Fs. This is not allowed; an explicit afero.Fs must be provided.")
+		return nil, fmt.Errorf("filesystem not provided")
 	}
-	return fs
+	return fs, nil
 }
 
 // runStdioMode starts the server in standard I/O mode, which is useful for
