@@ -36,6 +36,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// httpMethodToString converts the protobuf enum for an HTTP method into its
+// corresponding string representation from the net/http package.
 func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
 	switch method {
 	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
@@ -132,6 +134,9 @@ func (u *HTTPUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// createAndRegisterHTTPTools iterates through the HTTP call definitions in the
+// service configuration, creates a new HTTPTool for each, and registers it
+// with the tool manager.
 func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetCalls()))
@@ -171,11 +176,12 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		fullURL, err := url.JoinPath(address, httpDef.GetEndpointPath())
+		baseURL, err := url.Parse(address)
 		if err != nil {
-			log.Error("Failed to join URL parts", "address", address, "endpoint", httpDef.GetEndpointPath(), "error", err)
+			log.Error("Failed to parse base URL", "address", address, "error", err)
 			continue
 		}
+		fullURL := baseURL.JoinPath(httpDef.GetEndpointPath()).String()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
