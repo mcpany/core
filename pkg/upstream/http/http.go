@@ -96,7 +96,24 @@ func (u *HTTPUpstream) Register(
 		return "", nil, fmt.Errorf("http service config is nil")
 	}
 
-	httpPool, err := NewHttpPool(0, 10, 300)
+	poolConfig := serviceConfig.GetConnectionPool()
+	maxConnections := 10
+	maxIdleConnections := 0
+	idleTimeout := 300
+
+	if poolConfig != nil {
+		if poolConfig.GetMaxConnections() > 0 {
+			maxConnections = int(poolConfig.GetMaxConnections())
+		}
+		if poolConfig.GetMaxIdleConnections() > 0 {
+			maxIdleConnections = int(poolConfig.GetMaxIdleConnections())
+		}
+		if poolConfig.GetIdleTimeout() != nil && poolConfig.GetIdleTimeout().GetSeconds() > 0 {
+			idleTimeout = int(poolConfig.GetIdleTimeout().GetSeconds())
+		}
+	}
+
+	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout)
 	if err != nil {
 		return "", nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceKey, err)
 	}
