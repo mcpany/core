@@ -280,9 +280,15 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	lis.Close()
 
 	// Set a short shutdown timeout for the test.
+	shutdownMutex.Lock()
 	originalShutdownTimeout := ShutdownTimeout
 	ShutdownTimeout = 1 * time.Second
-	defer func() { ShutdownTimeout = originalShutdownTimeout }()
+	shutdownMutex.Unlock()
+	defer func() {
+		shutdownMutex.Lock()
+		ShutdownTimeout = originalShutdownTimeout
+		shutdownMutex.Unlock()
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -362,9 +368,15 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	lis.Close()
 
 	// Set a very short shutdown timeout for the test to ensure it runs quickly.
+	shutdownMutex.Lock()
 	originalShutdownTimeout := ShutdownTimeout
 	ShutdownTimeout = 50 * time.Millisecond
-	defer func() { ShutdownTimeout = originalShutdownTimeout }()
+	shutdownMutex.Unlock()
+	defer func() {
+		shutdownMutex.Lock()
+		ShutdownTimeout = originalShutdownTimeout
+		shutdownMutex.Unlock()
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
