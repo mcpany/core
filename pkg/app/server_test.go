@@ -298,6 +298,38 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	}
 }
 
+func TestStartHTTPServer_ReturnsOnListenError(t *testing.T) {
+	// Find a free port and then occupy it to force a listen error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	l.Close() // Close the listener to make the port available, then immediately try to use it again to cause an error.
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Occupy the port again
+	l, err = net.Listen("tcp", addr)
+	require.NoError(t, err)
+	defer l.Close()
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTPServer", addr, nil)
+
+	// Wait for the server goroutine to either complete or time out.
+	wg.Wait()
+
+	// Check if an error was sent to the channel.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err, "An error should have been sent to the channel on listen failure.")
+	default:
+		t.Error("startHTTPServer should have sent an error to the channel, but it didn't.")
+	}
+}
+
 func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
