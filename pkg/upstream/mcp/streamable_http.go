@@ -70,13 +70,16 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
 
+// SetConnectForTesting provides a hook for injecting a mock mcp.Client.Connect
+// function during tests. This should only be used for testing purposes.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
 
 // MCPUpstream implements the upstream.Upstream interface for services that are
 // themselves MCP-compliant. It connects to the downstream MCP service, discovers
-// its tools, prompts, and resources, and registers them with the current server.
+// its tools, prompts, and resources, and registers them with the current server,
+// effectively acting as a proxy or aggregator.
 type MCPUpstream struct{}
 
 // NewMCPUpstream creates a new instance of MCPUpstream.
@@ -84,20 +87,26 @@ func NewMCPUpstream() upstream.Upstream {
 	return &MCPUpstream{}
 }
 
+// mcpPrompt is a wrapper around the standard mcp.Prompt that associates it with
+// a specific service and provides the necessary connection details for execution.
 type mcpPrompt struct {
 	mcpPrompt *mcp.Prompt
 	service   string
 	*mcpConnection
 }
 
+// Prompt returns the underlying *mcp.Prompt definition.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
+// Service returns the ID of the service that this prompt belongs to.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
 
+// Get executes the prompt by establishing a session with the downstream MCP
+// service and calling its GetPrompt method.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -127,20 +136,27 @@ func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetProm
 	return result, err
 }
 
+// mcpResource is a wrapper around the standard mcp.Resource that associates it
+// with a specific service and provides the necessary connection details for
+// interaction.
 type mcpResource struct {
 	mcpResource *mcp.Resource
 	service     string
 	*mcpConnection
 }
 
+// Resource returns the underlying *mcp.Resource definition.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
+// Service returns the ID of the service that this resource belongs to.
 func (r *mcpResource) Service() string {
 	return r.service
 }
 
+// Read retrieves the content of the resource by establishing a session with the
+// downstream MCP service and calling its ReadResource method.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -153,6 +169,8 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	return result, err
 }
 
+// Subscribe is not yet implemented for MCP resources. It returns an error
+// indicating that this functionality is not available.
 func (r *mcpResource) Subscribe(ctx context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
@@ -206,6 +224,9 @@ func (u *MCPUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// mcpConnection holds the necessary information to connect to a downstream MCP
+// service, whether it's via stdio or HTTP. It also implements the
+// client.MCPClient interface, allowing it to be used as a proxy.
 type mcpConnection struct {
 	client      *mcp.Client
 	stdioConfig *configv1.McpStdioConnection
@@ -213,6 +234,9 @@ type mcpConnection struct {
 	httpClient  *http.Client
 }
 
+// withMCPClientSession is a helper function that abstracts the process of
+// establishing a connection to the downstream MCP service, executing a function
+// with the active session, and ensuring the session is closed afterward.
 func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs ClientSession) error) error {
 	var transport mcp.Transport
 	switch {
@@ -256,6 +280,8 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	return f(cs)
 }
 
+// CallTool executes a tool on the downstream MCP service by establishing a
+// session and forwarding the tool call.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -266,6 +292,9 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 	return result, err
 }
 
+// buildCommandFromStdioConfig constructs an *exec.Cmd from an McpStdioConnection
+// configuration. It combines the setup commands and the main command into a
+// single shell script to be executed.
 func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	command := stdio.GetCommand()
 	args := stdio.GetArgs()
@@ -297,6 +326,10 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	return cmd
 }
 
+// createAndRegisterMCPItemsFromStdio handles the registration of an MCP service
+// that is connected via standard I/O (e.g., a local command or a Docker
+// container). It establishes the connection, discovers the service's
+// capabilities, and registers them.
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
 	serviceKey string,
@@ -440,6 +473,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	return discoveredTools, nil
 }
 
+// createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
+// service that is connected via HTTP. It establishes the connection, discovers
+// the service's capabilities, and registers them.
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceKey string,
@@ -581,11 +617,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	return discoveredTools, nil
 }
 
+// authenticatedRoundTripper is an http.RoundTripper that wraps another
+// RoundTripper and adds authentication to each request before it is sent.
 type authenticatedRoundTripper struct {
 	authenticator auth.UpstreamAuthenticator
 	base          http.RoundTripper
 }
 
+// RoundTrip applies the configured authenticator to the request and then passes
+// it to the base RoundTripper.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {

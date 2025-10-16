@@ -34,6 +34,10 @@ import (
 
 var appRunner app.Runner = app.NewApplication()
 
+// newRootCmd creates and configures the main command for the application. It
+// sets up the command-line flags, environment variable binding, and the main
+// execution logic for the server. It also adds subcommands for version and
+// health checks.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
