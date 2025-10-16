@@ -25,7 +25,15 @@ PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 PROTOC_ZIP := protoc.zip
 PROTOC_INSTALL_DIR := /tmp/build/env/bin
-PROTOC_VERSION := v32.1
+PROTOC_VERSION := v25.1
+
+# Detect architecture for protoc
+UNAME_M := $(shell uname -m)
+PROTOC_ARCH := $(UNAME_M)
+ifeq ($(UNAME_M), aarch64)
+	PROTOC_ARCH := aarch_64
+endif
+
 LOCAL_BIN_DIR := /tmp/build/bin
 PROTOC_GEN_GO := $(PROTOC_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(PROTOC_INSTALL_DIR)/protoc-gen-go-grpc
@@ -88,7 +96,7 @@ prepare:
 			apt-get update && apt-get install -y curl unzip; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
-		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-x86_64.zip"; \
+		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
 		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(PROTOC_INSTALL_DIR)..."; \
@@ -167,6 +175,17 @@ prepare:
 		fi; \
 	else \
 		echo "npm not found, skipping Node.js dependency installation."; \
+	fi
+	@# Install Helm
+	@echo "Checking for Helm..."
+	@if command -v helm >/dev/null 2>&1; then \
+		echo "Helm is already installed."; \
+	else \
+		echo "Installing Helm..."; \
+		curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; \
+		chmod 700 get_helm.sh; \
+		./get_helm.sh; \
+		rm get_helm.sh; \
 	fi
 	@echo "Preparation complete."
 
