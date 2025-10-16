@@ -45,11 +45,6 @@ import (
 	v1 "github.com/mcpxy/core/proto/api/v1"
 )
 
-// ShutdownTimeout is the duration the server will wait for graceful shutdown.
-var (
-	ShutdownTimeout = 5 * time.Second
-	shutdownMutex   sync.Mutex
-)
 
 // Runner defines the interface for running the MCP-XY application.
 type Runner interface {
@@ -188,7 +183,8 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 		fmt.Fprintln(w, "OK")
 	})
 
-	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux)
+	shutdownTimeout := 5 * time.Second
+	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
 	if grpcPort != "" {
 		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, func(s *gogrpc.Server) {
@@ -198,7 +194,7 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 				return
 			}
 			v1.RegisterRegistrationServiceServer(s, registrationServer)
-		})
+		}, shutdownTimeout)
 	}
 
 	select {
@@ -217,7 +213,7 @@ func runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusPr
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler) {
+func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler, shutdownTimeout time.Duration) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -229,9 +225,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 		go func() {
 			<-ctx.Done()
-			shutdownMutex.Lock()
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
-			shutdownMutex.Unlock()
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 			defer cancel()
 			serverLog.Info("Attempting to gracefully shut down server...")
 			if err := server.Shutdown(shutdownCtx); err != nil {
@@ -249,7 +243,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server)) {
+func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, register func(*gogrpc.Server), shutdownTimeout time.Duration) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -268,22 +262,27 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			<-ctx.Done()
 			serverLog.Info("Attempting to gracefully shut down server...")
 
+			// Create a context with a timeout for the graceful shutdown.
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+			defer cancel()
+
+			// Use a channel to signal when GracefulStop has completed.
 			stopped := make(chan struct{})
 			go func() {
 				grpcServer.GracefulStop()
 				close(stopped)
 			}()
 
-			shutdownMutex.Lock()
-			timeout := ShutdownTimeout
+			// Wait for either the shutdown to complete or the timeout to be reached.
 			select {
-			case <-time.After(timeout):
+			case <-shutdownCtx.Done():
+				// If the timeout is reached, force the server to stop.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
 			case <-stopped:
+				// If the shutdown completes successfully, log it.
 				serverLog.Info("Server gracefully stopped.")
 			}
-			shutdownMutex.Unlock()
 		}()
 
 		serverLog.Info("gRPC server listening")

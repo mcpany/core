@@ -206,7 +206,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {
 		// No services need to be registered for this test.
-	})
+	}, 5*time.Second)
 
 	// Allow some time for the server to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -247,7 +247,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {}, 5*time.Second)
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -265,6 +265,56 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	}
 }
 
+func TestGRPCServer_GracefulShutdownRaceCondition(t *testing.T) {
+	// This test is designed to expose the race condition in the gRPC server's
+	// graceful shutdown logic. With the bug, a "Graceful shutdown timed out"
+	// message is logged even when the server shuts down successfully. This test
+	// will fail if that log message is present.
+
+	// Capture log output to inspect it for the warning message.
+	logging.ForTestsOnlyResetLogger()
+	var logBuf bytes.Buffer
+	logging.Init(slog.LevelInfo, &logBuf)
+
+	// Set a very short shutdown timeout to make the race condition likely.
+	shutdownTimeout := 5 * time.Millisecond
+
+	// Find a free port for the server to listen on.
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	lis.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server in a goroutine.
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {
+		// No services are registered; we just need the server to start and stop.
+	}, shutdownTimeout)
+
+	// Allow a brief moment for the server to start up.
+	time.Sleep(50 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+	wg.Wait()
+
+	// Check that no errors were sent on the error channel.
+	select {
+	case err := <-errChan:
+		require.NoError(t, err, "The gRPC server should shut down without sending an error.")
+	default:
+		// This is the expected outcome.
+	}
+
+	// Assert that the shutdown was graceful and did not time out.
+	logs := logBuf.String()
+	assert.NotContains(t, logs, "Graceful shutdown timed out", "The shutdown should not have timed out.")
+	assert.Contains(t, logs, "Server gracefully stopped.", "The server should have reported a graceful stop.")
+}
+
 func TestGRPCServer_ShutdownRaceWithTimeout(t *testing.T) {
 	// This test is designed to expose a race condition where the shutdown
 	// timeout is read outside of a mutex lock, potentially causing the
@@ -277,15 +327,7 @@ func TestGRPCServer_ShutdownRaceWithTimeout(t *testing.T) {
 	lis.Close()
 
 	// Set an initial shutdown timeout.
-	shutdownMutex.Lock()
-	originalShutdownTimeout := ShutdownTimeout
-	ShutdownTimeout = 10 * time.Second // A long timeout
-	shutdownMutex.Unlock()
-	defer func() {
-		shutdownMutex.Lock()
-		ShutdownTimeout = originalShutdownTimeout
-		shutdownMutex.Unlock()
-	}()
+	longShutdownTimeout := 10 * time.Second
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -310,7 +352,7 @@ func TestGRPCServer_ShutdownRaceWithTimeout(t *testing.T) {
 			Metadata: "testhang.proto",
 		}
 		s.RegisterService(desc, hangService)
-	})
+	}, longShutdownTimeout)
 
 	// Give the server a moment to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -329,13 +371,8 @@ func TestGRPCServer_ShutdownRaceWithTimeout(t *testing.T) {
 	// Allow the RPC call to be initiated.
 	time.Sleep(100 * time.Millisecond)
 
-	// In a separate goroutine, modify the shutdown timeout to a very short
-	// duration. This is the race condition we are testing.
-	go func() {
-		shutdownMutex.Lock()
-		ShutdownTimeout = 10 * time.Millisecond
-		shutdownMutex.Unlock()
-	}()
+	// This test no longer tests a race condition, but it still tests that
+	// the shutdown timeout is respected.
 
 	// Trigger the graceful shutdown.
 	cancel()
@@ -369,15 +406,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	lis.Close()
 
 	// Set a short shutdown timeout for the test.
-	shutdownMutex.Lock()
-	originalShutdownTimeout := ShutdownTimeout
-	ShutdownTimeout = 1 * time.Second
-	shutdownMutex.Unlock()
-	defer func() {
-		shutdownMutex.Lock()
-		ShutdownTimeout = originalShutdownTimeout
-		shutdownMutex.Unlock()
-	}()
+	shutdownTimeout := 1 * time.Second
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -401,7 +430,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 			Metadata: "testhang.proto",
 		}
 		s.RegisterService(desc, hangService)
-	})
+	}, shutdownTimeout)
 
 	// Give the server time to start.
 	time.Sleep(100 * time.Millisecond)
@@ -457,15 +486,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	lis.Close()
 
 	// Set a very short shutdown timeout for the test to ensure it runs quickly.
-	shutdownMutex.Lock()
-	originalShutdownTimeout := ShutdownTimeout
-	ShutdownTimeout = 50 * time.Millisecond
-	shutdownMutex.Unlock()
-	defer func() {
-		shutdownMutex.Lock()
-		ShutdownTimeout = originalShutdownTimeout
-		shutdownMutex.Unlock()
-	}()
+	shutdownTimeout := 50 * time.Millisecond
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -491,7 +512,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 			Metadata: "testhang.proto",
 		}
 		s.RegisterService(desc, hangService)
-	})
+	}, shutdownTimeout)
 
 	// Give the server a moment to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -548,7 +569,7 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 		var wg sync.WaitGroup
 
 		// This call should hang because wg.Done() is never called in the error case
-		startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil)
+		startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
 		// The test will hang here waiting for the goroutine to finish
 		wg.Wait()
@@ -568,7 +589,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", func(_ *gogrpc.Server) {})
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", func(_ *gogrpc.Server) {}, 5*time.Second)
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -597,7 +618,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), func(s *gogrpc.Server) {}, 5*time.Second)
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
