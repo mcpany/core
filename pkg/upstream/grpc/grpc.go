@@ -18,7 +18,6 @@ package grpc
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -36,7 +35,6 @@ import (
 	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -278,16 +276,11 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 			schema["type"] = "boolean"
 		}
 
-		jsonBytes, err := json.Marshal(schema)
+		structValue, err := structpb.NewStruct(schema)
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal schema to json: %w", err)
+			return nil, fmt.Errorf("failed to create struct from schema: %w", err)
 		}
-
-		value := &structpb.Value{}
-		if err := protojson.Unmarshal(jsonBytes, value); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal schema from json: %w", err)
-		}
-		properties[field.Name] = value
+		properties[field.Name] = structpb.NewStructValue(structValue)
 	}
 	return properties, nil
 }
