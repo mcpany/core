@@ -25,7 +25,7 @@ PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 PROTOC_ZIP := protoc.zip
 PROTOC_INSTALL_DIR := /tmp/build/env/bin
-PROTOC_VERSION := v25.1
+PROTOC_VERSION := v33.0
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
