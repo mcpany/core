@@ -60,6 +60,8 @@ func (p *TextParser) Parse(inputType string, input []byte, config map[string]str
 	}
 }
 
+// parseJSON handles the parsing of JSON data. It uses JSONPath expressions from
+// the config map to extract values from the input JSON.
 func (p *TextParser) parseJSON(input []byte, config map[string]string) (map[string]any, error) {
 	var data any
 	if err := json.Unmarshal(input, &data); err != nil {
@@ -84,6 +86,8 @@ func (p *TextParser) parseJSON(input []byte, config map[string]string) (map[stri
 	return result, nil
 }
 
+// parseXML handles the parsing of XML data. It uses XPath expressions from the
+// config map to query and extract values from the input XML.
 func (p *TextParser) parseXML(input []byte, config map[string]string) (map[string]any, error) {
 	doc, err := xmlquery.Parse(bytes.NewReader(input))
 	if err != nil {
@@ -104,6 +108,8 @@ func (p *TextParser) parseXML(input []byte, config map[string]string) (map[strin
 	return result, nil
 }
 
+// parseText handles the parsing of plain text data. It uses regular expressions
+// from the config map to find and extract substrings from the input text.
 func (p *TextParser) parseText(input []byte, config map[string]string) (map[string]any, error) {
 	result := make(map[string]any)
 	inputText := string(input)

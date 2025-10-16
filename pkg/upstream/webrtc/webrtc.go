@@ -88,6 +88,9 @@ func (u *WebrtcUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// createAndRegisterWebrtcTools iterates through the WebRTC call definitions in
+// the service configuration, creates a new WebrtcTool for each, and registers it
+// with the tool manager.
 func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()

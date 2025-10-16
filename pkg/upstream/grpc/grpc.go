@@ -140,6 +140,9 @@ func (u *GRPCUpstream) Register(
 	return serviceKey, discoveredTools, nil
 }
 
+// createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
+// contain tool definitions extracted from protobuf options. For each tool, it
+// constructs a GRPCTool and registers it with the tool manager.
 func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	ctx context.Context,
 	serviceKey string,
@@ -226,6 +229,9 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	return discoveredTools, nil
 }
 
+// findMethodDescriptor locates a MethodDescriptor within a set of protobuf file
+// descriptors, given a fully qualified method name (e.g.,
+// "my.package.MyService/MyMethod").
 func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (protoreflect.MethodDescriptor, error) {
 	// Normalize the method name by removing any leading slash.
 	normalizedMethodName := strings.TrimPrefix(fullMethodName, "/")
@@ -258,6 +264,9 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 	return methodDesc, nil
 }
 
+// convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+// represent fields from a protobuf message, into a map suitable for use as the
+// `properties` field in a JSON schema.
 func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (map[string]*structpb.Value, error) {
 	properties := make(map[string]*structpb.Value)
 	for _, field := range fields {

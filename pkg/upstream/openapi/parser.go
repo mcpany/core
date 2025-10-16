@@ -63,8 +63,8 @@ type McpOperation struct {
 }
 
 // ParseOpenAPISpec loads and parses an OpenAPI specification from a byte slice.
-// It also returns the original openapi3.T document for more detailed
-// inspection if needed.
+// It validates the spec and returns both a simplified ParsedOpenAPIData view
+// and the original, more detailed openapi3.T document.
 func parseOpenAPISpec(ctx context.Context, specData []byte) (*ParsedOpenAPIData, *openapi3.T, error) {
 	loader := openapi3.NewLoader()
 	loader.IsExternalRefsAllowed = true // Depending on requirements
@@ -99,9 +99,9 @@ func parseOpenAPISpec(ctx context.Context, specData []byte) (*ParsedOpenAPIData,
 	return parsedData, doc, nil
 }
 
-// ExtractMcpOperationsFromOpenAPI iterates through the parsed OpenAPI spec
-// and extracts information into a list of McpOperation structs. It takes the
-// full 'doc' as input now for easier access to components.
+// ExtractMcpOperationsFromOpenAPI iterates through the paths and methods of a
+// parsed OpenAPI document and transforms each operation into a simplified
+// McpOperation struct, which is more convenient for tool registration.
 func extractMcpOperationsFromOpenAPI(doc *openapi3.T) []McpOperation {
 	var mcpOps []McpOperation
 
@@ -156,8 +156,9 @@ func extractMcpOperationsFromOpenAPI(doc *openapi3.T) []McpOperation {
 	return mcpOps
 }
 
-// ConvertMcpOperationsToTools converts McpOperation structs into MCP Tool
-// protobuf messages.
+// ConvertMcpOperationsToTools transforms a slice of McpOperation structs into a
+// slice of MCP Tool protobuf messages, which can then be registered with the
+// tool manager.
 func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerServiceKey string) []*pb.Tool {
 	tools := make([]*pb.Tool, 0, len(ops))
 
@@ -263,7 +264,8 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 	return tools
 }
 
-// isOperationIdempotent checks common HTTP methods for idempotency.
+// isOperationIdempotent checks common HTTP methods for idempotency, which is a
+// useful hint for AI models using the tools.
 func isOperationIdempotent(method string) bool {
 	switch strings.ToUpper(method) {
 	case "GET", "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE":
@@ -273,9 +275,9 @@ func isOperationIdempotent(method string) bool {
 	}
 }
 
-// convertOpenAPISchemaToInputSchemaProperties converts an OpenAPI SchemaRef
-// and a list of Parameters into a *structpb.Struct suitable for
-// InputSchema.Properties.
+// convertOpenAPISchemaToInputSchemaProperties converts an OpenAPI SchemaRef and a
+// list of Parameters into a *structpb.Struct that is suitable for use as the
+// Properties field of an InputSchema.
 func convertOpenAPISchemaToInputSchemaProperties(
 	bodySchemaRef *openapi3.SchemaRef, // Schema for the request body
 	opParameters openapi3.Parameters, // Parameters for the operation (query, path, header)
@@ -479,8 +481,9 @@ func convertOpenAPISchemaToInputSchemaProperties(
 	return props, nil
 }
 
-// convertSchemaToPbFields converts an OpenAPI schema (and its properties if
-// it's an object) into a slice of MCP Field protobuf messages.
+// convertSchemaToPbFields converts an OpenAPI schema (and its properties if it's
+// an object) into a slice of MCP Field protobuf messages, which can be used to
+// provide more detailed type information about a tool's inputs and outputs.
 func convertSchemaToPbFields(schemaRef *openapi3.SchemaRef, doc *openapi3.T) []*pb.Field {
 	var pbFields []*pb.Field
 	if schemaRef == nil {
