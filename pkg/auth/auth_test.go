@@ -26,6 +26,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNewAPIKeyAuthenticator(t *testing.T) {
+	t.Run("nil_config", func(t *testing.T) {
+		authenticator := NewAPIKeyAuthenticator(nil)
+		assert.Nil(t, authenticator)
+	})
+
+	t.Run("empty_param_name", func(t *testing.T) {
+		config := &configv1.APIKeyAuth{}
+		config.SetKeyValue("some-key")
+		authenticator := NewAPIKeyAuthenticator(config)
+		assert.Nil(t, authenticator)
+	})
+
+	t.Run("empty_key_value", func(t *testing.T) {
+		config := &configv1.APIKeyAuth{}
+		config.SetParamName("X-API-Key")
+		authenticator := NewAPIKeyAuthenticator(config)
+		assert.Nil(t, authenticator)
+	})
+}
+
 func TestAPIKeyAuthenticator(t *testing.T) {
 	config := &configv1.APIKeyAuth{}
 	config.SetParamName("X-API-Key")
