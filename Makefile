@@ -24,7 +24,7 @@ PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases
 PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 PROTOC_ZIP := protoc.zip
-PROTOC_INSTALL_DIR := /tmp/build/env/bin
+TOOL_INSTALL_DIR := /tmp/build/env/bin
 PROTOC_VERSION := v33.0
 
 # Detect architecture for protoc
@@ -35,15 +35,15 @@ ifeq ($(UNAME_M), aarch64)
 endif
 
 LOCAL_BIN_DIR := /tmp/build/bin
-PROTOC_GEN_GO := $(PROTOC_INSTALL_DIR)/protoc-gen-go
-PROTOC_GEN_GO_GRPC := $(PROTOC_INSTALL_DIR)/protoc-gen-go-grpc
-PROTOC_BIN := $(PROTOC_INSTALL_DIR)/protoc
-GOLANGCI_LINT_BIN := $(PROTOC_INSTALL_DIR)/golangci-lint
-GOFUMPT_BIN := $(PROTOC_INSTALL_DIR)/gofumpt
-GOIMPORTS_BIN := $(PROTOC_INSTALL_DIR)/goimports
+PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
+PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
+PROTOC_BIN := $(TOOL_INSTALL_DIR)/protoc
+GOLANGCI_LINT_BIN := $(TOOL_INSTALL_DIR)/golangci-lint
+GOFUMPT_BIN := $(TOOL_INSTALL_DIR)/gofumpt
+GOIMPORTS_BIN := $(TOOL_INSTALL_DIR)/goimports
 PRE_COMMIT_VERSION := 4.3.0
-PRE_COMMIT_BIN := $(PROTOC_INSTALL_DIR)/pre-commit
-HELM_BIN := $(PROTOC_INSTALL_DIR)/helm
+PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
+HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 # ==============================================================================
 # Release Targets
 # ==============================================================================
@@ -77,9 +77,9 @@ endif
 prepare:
 	@echo "Preparing development environment..."
 	@mkdir -p $(LOCAL_BIN_DIR)
-	@mkdir -p $(PROTOC_INSTALL_DIR)
+	@mkdir -p $(TOOL_INSTALL_DIR)
 	@# Check if protoc is installed
-	@export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \
 	if test -f "$(PROTOC_BIN)"; then \
 		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
@@ -100,16 +100,16 @@ prepare:
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
 		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
-			echo "Unzipping to $(PROTOC_INSTALL_DIR)..."; \
-			unzip -o "$(PROTOC_ZIP)" -d "$(PROTOC_INSTALL_DIR)"; \
-			mv "$(PROTOC_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
+			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
+			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
 			if test -f "$(PROTOC_BIN)"; then \
-				export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
-				echo "protoc installed successfully to $(PROTOC_INSTALL_DIR). This directory has been added to PATH for this session."; \
-				echo "You may want to add it to your system PATH permanently: export PATH=$(PROTOC_INSTALL_DIR):$$PATH"; \
+				export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+				echo "protoc installed successfully to $(TOOL_INSTALL_DIR). This directory has been added to PATH for this session."; \
+				echo "You may want to add it to your system PATH permanently: export PATH=$(TOOL_INSTALL_DIR):$$PATH"; \
 				$(PROTOC_BIN) --version; \
 			else \
-				echo "Error: protoc binary not found in $(PROTOC_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
+				echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
 				exit 1; \
 			fi; \
 			rm -f "$(PROTOC_ZIP)"; \
@@ -117,15 +117,15 @@ prepare:
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
-	@GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
-	@GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
+	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
+	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
 	@if test -f "$(GOLANGCI_LINT_BIN)"; then \
 		echo "golangci-lint is already installed."; \
 	else \
 		echo "Installing golangci-lint..."; \
-		GOBIN=$(PROTOC_INSTALL_DIR) $(GO_CMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+		GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
 	fi
 	@if ! test -f "$(GOLANGCI_LINT_BIN)"; then \
 		echo "golangci-lint not found at $(GOLANGCI_LINT_BIN) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -182,10 +182,10 @@ prepare:
 	@if test -f "$(HELM_BIN)"; then \
 		echo "Helm is already installed."; \
 	else \
-		echo "Installing Helm to $(PROTOC_INSTALL_DIR)..."; \
+		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
 		curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; \
 		chmod 700 get_helm.sh; \
-		HELM_INSTALL_DIR=$(PROTOC_INSTALL_DIR) ./get_helm.sh --no-sudo; \
+		HELM_INSTALL_DIR=$(TOOL_INSTALL_DIR) ./get_helm.sh --no-sudo; \
 		rm get_helm.sh; \
 		if test -f "$(HELM_BIN)"; then \
 			echo "Helm installed successfully."; \
@@ -201,7 +201,7 @@ gen: prepare
 	@echo "Removing old protobuf files..."
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
-	@export PATH=$(PROTOC_INSTALL_DIR):$$PATH; \
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
 		mkdir -p /tmp/build; \
 		find proto -name "*.proto" -exec protoc --experimental_editions=true \
