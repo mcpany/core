@@ -182,7 +182,13 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		fullURL := baseURL.JoinPath(httpDef.GetEndpointPath()).String()
+		endpointURL, err := url.Parse(httpDef.GetEndpointPath())
+		if err != nil {
+			log.Error("Failed to parse endpoint path", "path", httpDef.GetEndpointPath(), "error", err)
+			continue
+		}
+
+		fullURL := baseURL.ResolveReference(endpointURL).String()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
