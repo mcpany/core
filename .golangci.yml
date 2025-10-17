@@ -11,18 +11,23 @@ issues:
 
 linters:
   enable:
-    - stylecheck
-    - typecheck
+    - bodyclose
+    - errcheck
+    - goconst
+    - gocritic
+    - gocyclo
     - gofumpt
     - goimports
-    - revive
     - govet
-    - errcheck
-    - staticcheck
-    - unused
-    - unconvert
+    - nolintlint
     - prealloc
-    - gocritic
+    - revive
+    - staticcheck
+    - stylecheck
+    - tparallel
+    - typecheck
+    - unconvert
+    - unused
 
 linters-settings:
   stylecheck:
