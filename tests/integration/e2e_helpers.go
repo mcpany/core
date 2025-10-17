@@ -208,6 +208,9 @@ func (mp *ManagedProcess) Start() error {
 	return nil
 }
 
+// Allow patching for testing
+var syscallKill = syscall.Kill
+
 func (mp *ManagedProcess) Stop() {
 	select {
 	case <-mp.waitDone:
@@ -228,14 +231,19 @@ func (mp *ManagedProcess) Stop() {
 	pgid, err := syscall.Getpgid(mp.cmd.Process.Pid)
 	sentSignal := false
 	if err == nil {
-		if errSignal := syscall.Kill(-pgid, syscall.SIGINT); errSignal == nil {
+		// Try to kill the whole process group
+		if errSignal := syscallKill(-pgid, syscall.SIGINT); errSignal == nil {
 			sentSignal = true
 			mp.t.Logf("[%s] Sent SIGINT to process group %d for %s.", mp.label, pgid, mp.cmd.Path)
 		} else {
-			mp.t.Logf("[%s] Failed to send SIGINT to process group %d for %s: %v. Will try SIGKILL.", mp.label, pgid, mp.cmd.Path, errSignal)
+			mp.t.Logf("[%s] Failed to send SIGINT to process group %d for %s: %v. Will try single process.", mp.label, pgid, mp.cmd.Path, errSignal)
 		}
 	} else {
 		mp.t.Logf("[%s] Failed to get PGID for %s (PID: %d): %v. Attempting SIGINT to single process.", mp.label, mp.cmd.Path, mp.cmd.Process.Pid, err)
+	}
+
+	// Fallback to single process kill if group kill failed or wasn't attempted
+	if !sentSignal {
 		if errKill := mp.cmd.Process.Signal(syscall.SIGINT); errKill == nil {
 			sentSignal = true
 			mp.t.Logf("[%s] Sent SIGINT to single process %s (PID: %d).", mp.label, mp.cmd.Path, mp.cmd.Process.Pid)
@@ -262,8 +270,13 @@ func (mp *ManagedProcess) Stop() {
 
 	// Force kill if not stopped or SIGINT failed
 	if pgid != 0 {
-		if errKillGroup := syscall.Kill(-pgid, syscall.SIGKILL); errKillGroup != nil {
-			mp.t.Logf("[%s] Failed to send SIGKILL to process group %d for %s: %v.", mp.label, pgid, mp.cmd.Path, errKillGroup)
+		if errKillGroup := syscallKill(-pgid, syscall.SIGKILL); errKillGroup != nil {
+			mp.t.Logf("[%s] Failed to send SIGKILL to process group %d for %s: %v. Will try single process.", mp.label, pgid, mp.cmd.Path, errKillGroup)
+			if mp.cmd.Process != nil {
+				if errKillHard := mp.cmd.Process.Kill(); errKillHard != nil {
+					mp.t.Logf("[%s] Failed to send SIGKILL to single process %s (PID: %d): %v", mp.label, mp.cmd.Path, mp.cmd.Process.Pid, errKillHard)
+				}
+			}
 		}
 	} else if mp.cmd.Process != nil {
 		if errKillHard := mp.cmd.Process.Kill(); errKillHard != nil {
