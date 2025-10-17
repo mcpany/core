@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -70,7 +70,8 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%sCalculatorAdd", calcServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(calcServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
 	addArgs := `{"a": 10, "b": 20}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 	require.NoError(t, err, "Error calling Add tool with correct auth")

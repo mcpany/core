@@ -111,7 +111,8 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
-		assert.Equal(t, "test-service", serviceKey)
+		expectedKey, _ := util.GenerateID("test-service")
+		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 1)
 		p, ok := pool.Get[*client.HttpClientWrapper](pm, serviceKey)
 		assert.True(t, ok)
@@ -138,7 +139,8 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		upstream := NewHTTPUpstream(pm)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("invalid name") // Invalid name with spaces
+		serviceConfig.SetName("") // empty name
+		serviceConfig.SetHttpService(&configv1.HttpUpstreamService{})
 
 		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
@@ -167,7 +169,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-service-fallback")
 		serviceConfig.SetHttpService(httpService)
 
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		require.Len(t, discoveredTools, 2)
 
@@ -176,12 +178,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		// Check for sanitized description as name
 		sanitizedName := util.SanitizeOperationID("A test operation")
-		toolID1 := "test-service-fallback/-/" + sanitizedName
+		toolID1, _ := util.GenerateToolID(serviceKey, sanitizedName)
 		_, ok := tm.GetTool(toolID1)
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		toolID2 := "test-service-fallback/-/op1"
+		toolID2, _ := util.GenerateToolID(serviceKey, "op1")
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)
 	})
@@ -365,7 +367,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig1.SetName("reload-test")
 	serviceConfig1.SetHttpService(httpService1)
 
-	_, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
+	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 
@@ -387,9 +389,11 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	_, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
-	_, ok := tm.GetTool("reload-test/-/op2")
+	toolID2, _ := util.GenerateToolID(serviceKey, "op2")
+	_, ok := tm.GetTool(toolID2)
 	assert.True(t, ok)
-	_, ok = tm.GetTool("reload-test/-/op1")
+	toolID1, _ := util.GenerateToolID(serviceKey, "op1")
+	_, ok = tm.GetTool(toolID1)
 	assert.False(t, ok)
 }
 
@@ -479,11 +483,13 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			serviceConfig.SetName("url-test-service")
 			serviceConfig.SetHttpService(httpService)
 
-			_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
-			registeredTool, ok := tm.GetTool("url-test-service/-/test-op")
+			toolID, _ := util.GenerateToolID(serviceKey, "test-op")
+			registeredTool, ok := tm.GetTool(toolID)
 			assert.True(t, ok)
+			assert.NotNil(t, registeredTool)
 			assert.Equal(t, tc.expectedFqn, registeredTool.Tool().GetUnderlyingMethodFqn())
 		})
 	}

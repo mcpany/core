@@ -129,13 +129,13 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-websocket-service")
 		serviceConfig.SetWebsocketService(websocketService)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
 		assert.Len(t, tools, 1)
 
-		toolID, _ := util.GenerateToolID("test-websocket-service", "echo")
+		toolID, _ := util.GenerateToolID(serviceKey, "echo")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok, "tool should be registered")
 	})
@@ -242,18 +242,19 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-service-fallback")
 		serviceConfig.SetWebsocketService(websocketService)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
 		assert.Len(t, tools, 2)
 
-		sanitizedID, _ := util.GenerateToolID("test-service-fallback", "This_is_a_test_description")
-		_, ok := toolManager.GetTool(sanitizedID)
-		assert.False(t, ok, "tool should not be registered with sanitized description")
+		sanitizedName := util.SanitizeOperationID("This is a test description")
+		toolID1, _ := util.GenerateToolID(serviceKey, sanitizedName)
+		_, ok := toolManager.GetTool(toolID1)
+		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
-		op1ID, _ := util.GenerateToolID("test-service-fallback", "op1")
-		_, ok = toolManager.GetTool(op1ID)
+		toolID2, _ := util.GenerateToolID(serviceKey, "op1")
+		_, ok = toolManager.GetTool(toolID2)
 		assert.True(t, ok, "tool should be registered with op index")
 	})
 }
@@ -303,7 +304,8 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 
 		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
-		assert.Equal(t, "test-service", serviceKey)
+		expectedKey, _ := util.GenerateID("test-service")
+		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 2)
 		_, ok := pool.Get[*client.WebsocketClientWrapper](poolManager, serviceKey)
 		assert.True(t, ok)
@@ -323,10 +325,11 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("")
+		serviceConfig.SetWebsocketService(&configv1.WebsocketUpstreamService{})
 
 		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "service ID cannot be empty")
+		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
 
 	t.Run("authenticator creation fails", func(t *testing.T) {
@@ -347,7 +350,8 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 
 		serviceKey, tools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
-		assert.Equal(t, "auth-fail-service", serviceKey)
+		expectedKey, _ := util.GenerateID("auth-fail-service")
+		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, tools, 1, "expected one tool when authenticator is not configured")
 	})
 
@@ -371,7 +375,8 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 
 		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
-		assert.Equal(t, "fallback-op-id", serviceKey)
+		expectedKey, _ := util.GenerateID("fallback-op-id")
+		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 2)
 	})
 }
@@ -397,15 +402,16 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig.SetName("reload-test")
 	serviceConfig.SetWebsocketService(wsService)
 
-	_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
-	retrievedTool, ok := tm.GetTool(tool.GetFullyQualifiedToolName("reload-test", "test-op"))
+	toolID, _ := util.GenerateToolID(serviceKey, "test-op")
+	retrievedTool, ok := tm.GetTool(toolID)
 	assert.True(t, ok)
 	assert.NotNil(t, retrievedTool)
 
 	_, _, err = upstream.Register(context.Background(), serviceConfig, tm, nil, nil, true)
 	require.NoError(t, err)
-	retrievedTool, ok = tm.GetTool(tool.GetFullyQualifiedToolName("reload-test", "test-op"))
+	retrievedTool, ok = tm.GetTool(toolID)
 	assert.True(t, ok)
 	assert.NotNil(t, retrievedTool)
 }

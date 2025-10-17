@@ -67,7 +67,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		inputs := json.RawMessage(`{"input":"value"}`)
 		req := &tool.ExecutionRequest{
-			ToolName:   "service/-/test-tool",
+			ToolName:   "service.test-tool",
 			ToolInputs: inputs,
 		}
 
@@ -91,7 +91,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{
-			ToolName:   "service/-/test-tool",
+			ToolName:   "service.test-tool",
 			ToolInputs: inputs,
 		}
 		_, err := mcpTool.Execute(context.Background(), req)
@@ -119,7 +119,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{
-			ToolName:   "service/-/test-tool",
+			ToolName:   "service.test-tool",
 			ToolInputs: inputs,
 		}
 		_, err := mcpTool.Execute(context.Background(), req)

@@ -19,12 +19,11 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
@@ -103,7 +102,8 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, operationID)
 	toolArgs := `{"year": 2024, "countryCode": "US"}`
 
 	const maxRetries = 3

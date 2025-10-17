@@ -18,6 +18,7 @@ package util
 
 import (
 	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -28,14 +29,42 @@ import (
 	"github.com/mcpxy/core/pkg/consts"
 )
 
+const (
+	maxSanitizedPrefixLength = 53
+	hashLength               = 8
+	maxGeneratedIDLength     = maxSanitizedPrefixLength + 1 + hashLength
+)
+
 var (
-	// validIDPattern is a regular expression that defines the allowed characters
-	// in a valid tool or service ID.
-	validIDPattern = regexp.MustCompile(`^[\w/-]+$`)
+	// nonWordChars is a regular expression that matches any character that is not a word character.
+	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
+
+// GenerateID creates a unique and consistently formatted identifier from a given name.
+// The format is <sanitized_prefix>_<hash>, with a maximum length of 62 characters.
+// The <sanitized_prefix> is the first 53 characters of the original name, with all non-word characters [^\w] removed.
+// The <hash> is the first 8 characters of the SHA256 hash of the original name.
+func GenerateID(name string) (string, error) {
+	if name == "" {
+		return "", fmt.Errorf("name cannot be empty")
+	}
+
+	// Create the hash
+	h := sha256.New()
+	h.Write([]byte(name))
+	hash := hex.EncodeToString(h.Sum(nil))[:hashLength]
+
+	// Sanitize and create the prefix
+	sanitizedPrefix := nonWordChars.ReplaceAllString(name, "")
+	if len(sanitizedPrefix) > maxSanitizedPrefixLength {
+		sanitizedPrefix = sanitizedPrefix[:maxSanitizedPrefixLength]
+	}
+
+	return fmt.Sprintf("%s_%s", sanitizedPrefix, hash), nil
+}
 
 // GenerateToolID creates a fully qualified tool ID by combining a service key
 // and a tool name. If the service key is empty, the tool name is returned as is.
@@ -47,9 +76,6 @@ var (
 func GenerateToolID(serviceKey, toolName string) (string, error) {
 	if toolName == "" {
 		return "", fmt.Errorf("tool name cannot be empty")
-	}
-	if !validIDPattern.MatchString(toolName) {
-		return "", fmt.Errorf("tool name must match %q", validIDPattern.String())
 	}
 
 	// If the tool name is already fully qualified, return it as is.
@@ -64,21 +90,22 @@ func GenerateToolID(serviceKey, toolName string) (string, error) {
 	return toolName, nil
 }
 
-// GenerateServiceKey validates and returns a service key. In the current
-// implementation, it simply validates that the service ID is not empty and
-// conforms to the valid ID pattern.
+// GenerateServiceKey generates a unique and consistently formatted key for a service.
+// It uses the GenerateID function to ensure the key is valid and unique.
 //
 // serviceID is the identifier for the service.
-// It returns the validated service key or an error if the service ID is invalid.
+// It returns the generated service key or an error if the service ID is empty.
 func GenerateServiceKey(serviceID string) (string, error) {
-	if serviceID == "" {
-		return "", fmt.Errorf("service ID cannot be empty")
-	}
-	if !validIDPattern.MatchString(serviceID) {
-		return "", fmt.Errorf("service ID must match %q", validIDPattern.String())
-	}
+	return GenerateID(serviceID)
+}
 
-	return serviceID, nil
+// GenerateToolName generates a unique and consistently formatted name for a tool.
+// It uses the GenerateID function to ensure the name is valid and unique.
+//
+// toolName is the name of the tool.
+// It returns the generated tool name or an error if the tool name is empty.
+func GenerateToolName(toolName string) (string, error) {
+	return GenerateID(toolName)
 }
 
 // GenerateUUID creates a new version 4 UUID and returns it as a string.

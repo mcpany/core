@@ -24,6 +24,7 @@ import (
 	"github.com/mcpxy/core/pkg/prompt"
 	"github.com/mcpxy/core/pkg/resource"
 	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -89,7 +90,8 @@ func TestCommandUpstream_Register(t *testing.T) {
 
 		serviceKey, discoveredTools, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 		require.NoError(t, err)
-		assert.Equal(t, "test-command-service", serviceKey)
+		expectedKey, _ := util.GenerateID("test-command-service")
+		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 1)
 		assert.Equal(t, "echo", discoveredTools[0].GetName())
 		assert.Len(t, tm.ListTools(), 1)

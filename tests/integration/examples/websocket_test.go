@@ -77,9 +77,9 @@ func TestWebsocketExample(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	serviceName := "echo-service"
-	toolName, err := util.GenerateToolID(serviceName, "echo")
-	require.NoError(t, err)
+	serviceID := "echo-service"
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "echo")
 
 	// Wait for the tool to be available
 	require.Eventually(t, func() bool {
