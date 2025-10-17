@@ -43,6 +43,7 @@ GOFUMPT_BIN := $(PROTOC_INSTALL_DIR)/gofumpt
 GOIMPORTS_BIN := $(PROTOC_INSTALL_DIR)/goimports
 PRE_COMMIT_VERSION := 4.3.0
 PRE_COMMIT_BIN := $(PROTOC_INSTALL_DIR)/pre-commit
+HELM_BIN := $(PROTOC_INSTALL_DIR)/helm
 # ==============================================================================
 # Release Targets
 # ==============================================================================
@@ -178,14 +179,20 @@ prepare:
 	fi
 	@# Install Helm
 	@echo "Checking for Helm..."
-	@if command -v helm >/dev/null 2>&1; then \
+	@if test -f "$(HELM_BIN)"; then \
 		echo "Helm is already installed."; \
 	else \
-		echo "Installing Helm..."; \
+		echo "Installing Helm to $(PROTOC_INSTALL_DIR)..."; \
 		curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; \
 		chmod 700 get_helm.sh; \
-		./get_helm.sh; \
+		HELM_INSTALL_DIR=$(PROTOC_INSTALL_DIR) ./get_helm.sh --no-sudo; \
 		rm get_helm.sh; \
+		if test -f "$(HELM_BIN)"; then \
+			echo "Helm installed successfully."; \
+		else \
+			echo "Helm installation failed."; \
+			exit 1; \
+		fi; \
 	fi
 	@echo "Preparation complete."
 
