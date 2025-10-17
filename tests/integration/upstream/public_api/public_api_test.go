@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -58,7 +58,8 @@ func TestUpstreamService_PublicHttpPost(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, operationID)
 	postPayload := `{"key": "value", "number": 123}`
 
 	const maxRetries = 3
@@ -127,7 +128,8 @@ func TestUpstreamService_PublicWebsocket(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%secho", serviceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "echo")
 	echoMessage := `{"message": "hello public websocket"}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 	require.NoError(t, err, "Error calling echo tool")
@@ -168,7 +170,8 @@ func TestUpstreamService_JsonPlaceholderPost(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, operationID)
 	postPayload := `{"title": "foo", "body": "bar", "userId": 1}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(postPayload)})
 	require.NoError(t, err, "Error calling jsonplaceholder post tool")
@@ -221,7 +224,8 @@ func TestUpstreamService_LanyardWebsocket(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, operationID)
 	// This is a valid Discord user ID to test with, taken from Lanyard's documentation
 	discordUserID := "94490510688792576"
 	subscribePayload := fmt.Sprintf(`{"op": 2, "d": {"subscribe_to_id": "%s"}}`, discordUserID)

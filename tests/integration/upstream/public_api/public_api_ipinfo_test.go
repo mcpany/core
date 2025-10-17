@@ -19,12 +19,11 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
@@ -92,7 +91,8 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%sgetIPInfo", ipInfoServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(ipInfoServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "getIPInfo")
 	ipAddress := `{"ip": "8.8.8.8"}`
 
 	const maxRetries = 3

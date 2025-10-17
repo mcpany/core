@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -68,7 +68,8 @@ func TestUpstreamService_GRPC(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%sCalculatorAdd", calcServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(calcServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
 	addArgs := `{"a": 10, "b": 20}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 	require.NoError(t, err, "Error calling Add tool")

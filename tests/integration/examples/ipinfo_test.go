@@ -19,10 +19,9 @@ package examples
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
@@ -89,7 +88,8 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, operationID)
+	serviceKey, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateToolID(serviceKey, operationID)
 	// Using Google's public DNS for a stable test target
 	params := json.RawMessage(`{"ip": "8.8.8.8"}`)
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})

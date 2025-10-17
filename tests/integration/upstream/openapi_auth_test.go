@@ -23,7 +23,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -104,7 +104,8 @@ paths:
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(echoServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "echo")
 	echoMessage := `{"message": "hello world from authed openapi"}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 	require.NoError(t, err, "Error calling echo tool with correct auth")

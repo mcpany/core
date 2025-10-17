@@ -30,7 +30,7 @@ const (
 	// DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
 	DefaultOriginAllow = "*"
 	// ToolNameServiceSeparator is the separator used to construct a fully qualified tool name from a service ID and a tool name.
-	ToolNameServiceSeparator = "/-/"
+	ToolNameServiceSeparator = "."
 	// MethodToolsCall is the method for calling a tool.
 	MethodToolsCall = "tools/call"
 	// MethodToolsList is the method for listing tools.
