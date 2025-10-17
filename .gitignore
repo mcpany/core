@@ -9,3 +9,6 @@ coverage.out
 
 # E2E test dependencies
 tests/integration/upstream/node_modules/
+
+# Node
+node_modules/

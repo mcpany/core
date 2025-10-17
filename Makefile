@@ -247,7 +247,8 @@ build-calculator-stdio:
 
 lint: gen
 	@echo "Running all pre-commit hooks..."
-	@/tmp/build/venv/bin/pre-commit run --all-files
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+	/tmp/build/venv/bin/pre-commit run --all-files
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
