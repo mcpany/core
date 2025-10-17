@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -65,17 +65,18 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
 	var foundTool bool
+	serviceKey, _ := util.GenerateID(echoServiceID)
+	expectedToolName, _ := util.GenerateToolID(serviceKey, "echo")
 	for _, tool := range listToolsResult.Tools {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
-		if tool.Name == fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator) {
+		if tool.Name == expectedToolName {
 			foundTool = true
 		}
 	}
 	require.True(t, foundTool, "The webrtc echo tool was not discovered")
 
-	toolName := fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator)
 	echoMessage := `{"message": "hello world from webrtc"}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: expectedToolName, Arguments: json.RawMessage(echoMessage)})
 	require.NoError(t, err, "Error calling echo tool")
 	require.NotNil(t, res, "Nil response from echo tool")
 	switch content := res.Content[0].(type) {

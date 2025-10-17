@@ -103,6 +103,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		resp := &v1.RegisterServiceResponse{}
 		resp.SetMessage(msg)
 		resp.SetDiscoveredTools(result.DiscoveredTools)
+		resp.SetServiceKey(result.ServiceKey)
 		return resp, nil
 	case <-ctx.Done():
 		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service registration")

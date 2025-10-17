@@ -123,13 +123,13 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service")
 		serviceConfig.SetWebrtcService(webrtcService)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
 		assert.Len(t, tools, 1)
 
-		toolID, _ := util.GenerateToolID("test-webrtc-service", "echo")
+		toolID, _ := util.GenerateToolID(serviceKey, "echo")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok, "tool should be registered")
 	})

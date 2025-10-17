@@ -74,7 +74,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		assert.Contains(t, resp.GetMessage(), "registered successfully")
 
 		// Verify that the service info was added to the tool manager
-		serviceInfo, ok := toolManager.GetServiceInfo("testservice")
+		serviceKey := resp.GetServiceKey()
+		require.NotEmpty(t, serviceKey)
+		serviceInfo, ok := toolManager.GetServiceInfo(serviceKey)
 		require.True(t, ok)
 		require.NotNil(t, serviceInfo)
 		assert.Equal(t, "testservice", serviceInfo.Name)

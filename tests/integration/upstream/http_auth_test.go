@@ -23,7 +23,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -72,7 +72,8 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(echoServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "echo")
 	echoMessage := `{"message": "hello world from authed http"}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 	require.NoError(t, err, "Error calling echo tool with correct auth")
@@ -95,7 +96,8 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 		}.Build()
 		integration.RegisterHTTPService(t, registrationGRPCClient, wrongAuthServiceID, echoServiceEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)
 
-		wrongToolName := fmt.Sprintf("%s%secho", wrongAuthServiceID, consts.ToolNameServiceSeparator)
+		wrongServiceKey, _ := util.GenerateID(wrongAuthServiceID)
+		wrongToolName, _ := util.GenerateToolID(wrongServiceKey, "echo")
 		_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: wrongToolName, Arguments: json.RawMessage(echoMessage)})
 		require.Error(t, err, "Expected error when calling echo tool with incorrect auth")
 		require.Contains(t, err.Error(), "Unauthorized", "Expected error message to contain 'Unauthorized'")

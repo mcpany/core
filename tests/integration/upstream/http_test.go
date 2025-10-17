@@ -23,7 +23,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -68,7 +68,8 @@ func TestUpstreamService_HTTP(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%secho", echoServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(echoServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "echo")
 	echoMessage := `{"message": "hello world from http"}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 	require.NoError(t, err, "Error calling echo tool")
