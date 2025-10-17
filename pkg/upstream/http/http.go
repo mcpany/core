@@ -181,6 +181,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			log.Error("Failed to parse base URL", "address", address, "error", err)
 			continue
 		}
+
 		fullURL := baseURL.JoinPath(httpDef.GetEndpointPath()).String()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),

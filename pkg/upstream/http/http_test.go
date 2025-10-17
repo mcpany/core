@@ -417,19 +417,11 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 
 func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	testCases := []struct {
-		name             string
-		address          string
-		endpointPath     string
-		expectedFqn      string
-		expectAnError    bool
-		nilHttpService   bool
-		invalidName      bool
-		invalidMethod    bool
-		addToolError     bool
-		mockToolManager  bool
-		isReload         bool
-		fallbackOpID     bool
-		nilAuthenticator bool
+		name          string
+		address       string
+		endpointPath  string
+		expectedFqn   string
+		expectAnError bool
 	}{
 		{
 			name:         "trailing slash in address",
