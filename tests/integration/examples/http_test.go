@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -73,7 +73,8 @@ func TestHTTPExample(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("time-service%sGET/time", consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID("time-service")
+	toolName, _ := util.GenerateToolID(serviceKey, "GET/time")
 
 	// Wait for the tool to be available
 	require.Eventually(t, func() bool {

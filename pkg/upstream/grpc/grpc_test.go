@@ -146,7 +146,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		serviceConfig.SetGrpcService(grpcService)
 		_, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "service ID cannot be empty")
+		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
 
 	t.Run("nil grpc service config", func(t *testing.T) {
@@ -303,17 +303,18 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig.SetGrpcService(grpcService)
 
 		// First call - should populate the cache
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
 		assert.Len(t, tm.ListTools(), 2)
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
-		_, discoveredTools2, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
+		serviceKey2, discoveredTools2, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
 		assert.Len(t, tm2.ListTools(), 2)
+		assert.Equal(t, serviceKey, serviceKey2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
 	})

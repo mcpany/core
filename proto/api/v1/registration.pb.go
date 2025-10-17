@@ -96,6 +96,7 @@ type RegisterServiceResponse struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Message         *string                `protobuf:"bytes,1,opt,name=message"`
 	xxx_hidden_DiscoveredTools *[]*v1.ToolDefinition  `protobuf:"bytes,2,rep,name=discovered_tools,json=discoveredTools"`
+	xxx_hidden_ServiceKey      *string                `protobuf:"bytes,3,opt,name=service_key,json=serviceKey"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -146,13 +147,28 @@ func (x *RegisterServiceResponse) GetDiscoveredTools() []*v1.ToolDefinition {
 	return nil
 }
 
+func (x *RegisterServiceResponse) GetServiceKey() string {
+	if x != nil {
+		if x.xxx_hidden_ServiceKey != nil {
+			return *x.xxx_hidden_ServiceKey
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *RegisterServiceResponse) SetMessage(v string) {
 	x.xxx_hidden_Message = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *RegisterServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
 	x.xxx_hidden_DiscoveredTools = &v
+}
+
+func (x *RegisterServiceResponse) SetServiceKey(v string) {
+	x.xxx_hidden_ServiceKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *RegisterServiceResponse) HasMessage() bool {
@@ -162,9 +178,21 @@ func (x *RegisterServiceResponse) HasMessage() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
+func (x *RegisterServiceResponse) HasServiceKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
 func (x *RegisterServiceResponse) ClearMessage() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Message = nil
+}
+
+func (x *RegisterServiceResponse) ClearServiceKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ServiceKey = nil
 }
 
 type RegisterServiceResponse_builder struct {
@@ -172,6 +200,7 @@ type RegisterServiceResponse_builder struct {
 
 	Message         *string
 	DiscoveredTools []*v1.ToolDefinition
+	ServiceKey      *string
 }
 
 func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
@@ -179,10 +208,14 @@ func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Message != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_Message = b.Message
 	}
 	x.xxx_hidden_DiscoveredTools = &b.DiscoveredTools
+	if b.ServiceKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_ServiceKey = b.ServiceKey
+	}
 	return m0
 }
 
@@ -1022,10 +1055,12 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
 	"\x1fproto/api/v1/registration.proto\x12\vmcpx.api.v1\x1a\x1cproto/config/v1/config.proto\"W\n" +
 	"\x16RegisterServiceRequest\x12=\n" +
-	"\x06config\x18\x01 \x01(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x06config\"~\n" +
+	"\x06config\x18\x01 \x01(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x06config\"\x9f\x01\n" +
 	"\x17RegisterServiceResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12I\n" +
-	"\x10discovered_tools\x18\x02 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x0fdiscoveredTools\"X\n" +
+	"\x10discovered_tools\x18\x02 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12\x1f\n" +
+	"\vservice_key\x18\x03 \x01(\tR\n" +
+	"serviceKey\"X\n" +
 	"\x19InitiateOAuth2FlowRequest\x12\x1d\n" +
 	"\n" +
 	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x1c\n" +

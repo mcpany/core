@@ -19,12 +19,11 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
@@ -92,7 +91,8 @@ func TestUpstreamService_Universities(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%ssearchUniversities", universityServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(universityServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "searchUniversities")
 	country := `{"country": "United Kingdom"}`
 
 	const maxRetries = 3
@@ -211,7 +211,8 @@ func TestUpstreamService_UniversitiesByName(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%ssearchUniversitiesByName", universityServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(universityServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "searchUniversitiesByName")
 	searchParams := `{"name": "middle"}`
 
 	const maxRetries = 3

@@ -16,6 +16,7 @@ message RegisterServiceRequest {
 message RegisterServiceResponse {
     string message = 1;             // e.g., "Service registered successfully"
     repeated mcpx.config.v1.ToolDefinition discovered_tools = 2;
+    string service_key = 3;         // The generated key for the service
 }
 
 service RegistrationService {

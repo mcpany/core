@@ -25,7 +25,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -88,7 +88,8 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	toolName := fmt.Sprintf("%s%sadd", calcServiceID, consts.ToolNameServiceSeparator)
+	serviceKey, _ := util.GenerateID(calcServiceID)
+	toolName, _ := util.GenerateToolID(serviceKey, "add")
 	addArgs := `{"a": 5, "b": 7}`
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 	require.NoError(t, err, "Error calling add tool")

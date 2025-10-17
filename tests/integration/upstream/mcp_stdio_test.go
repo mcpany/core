@@ -19,10 +19,9 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -61,6 +60,8 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 	}
 	t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
 
+	serviceKey, _ := util.GenerateID(everythingServiceIDStdio)
+
 	testCases := []struct {
 		name       string
 		tool       string
@@ -69,22 +70,22 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 	}{
 		{
 			name:     "Tool_add",
-			tool:     fmt.Sprintf("%s%sadd", everythingServiceIDStdio, consts.ToolNameServiceSeparator),
+			tool:     "add",
 			jsonArgs: `{"a": 10, "b": 15}`,
 		},
 		{
 			name:     "Tool_echo",
-			tool:     fmt.Sprintf("%s%secho", everythingServiceIDStdio, consts.ToolNameServiceSeparator),
+			tool:     "echo",
 			jsonArgs: `{"message": "Hello, world!"}`,
 		},
 		{
 			name:     "Tool_printEnv",
-			tool:     fmt.Sprintf("%s%sprintEnv", everythingServiceIDStdio, consts.ToolNameServiceSeparator),
+			tool:     "printEnv",
 			jsonArgs: `{}`,
 		},
 		{
 			name:       "Tool_nonexistent",
-			tool:       fmt.Sprintf("%s%snonexistent_tool", everythingServiceIDStdio, consts.ToolNameServiceSeparator),
+			tool:       "nonexistent_tool",
 			jsonArgs:   `{}`,
 			expectFail: true,
 		},
@@ -92,16 +93,17 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			toolName, _ := util.GenerateToolID(serviceKey, tc.tool)
 			if tc.expectFail {
-				_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: tc.tool, Arguments: json.RawMessage(tc.jsonArgs)})
-				require.Error(t, err, "Expected error when calling nonexistent tool '%s', but got none", tc.tool)
-				t.Logf("SUCCESS: Expected failure when calling nonexistent tool '%s': %v", tc.tool, err)
+				_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
+				require.Error(t, err, "Expected error when calling nonexistent tool '%s', but got none", toolName)
+				t.Logf("SUCCESS: Expected failure when calling nonexistent tool '%s': %v", toolName, err)
 			} else {
-				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: tc.tool, Arguments: json.RawMessage(tc.jsonArgs)})
-				require.NoError(t, err, "Error calling tool '%s': %v", tc.tool, err)
-				require.NotNil(t, res, "Nil response from tool '%s'", tc.tool)
-				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", tc.tool)
-				t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", tc.tool, res.Content[0])
+				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
+				require.NoError(t, err, "Error calling tool '%s': %v", toolName, err)
+				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+				t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", toolName, res.Content[0])
 			}
 		})
 	}
