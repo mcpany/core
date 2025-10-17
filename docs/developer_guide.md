@@ -15,7 +15,6 @@ This guide is for developers who want to contribute to the MCP-XY. It provides i
 
 This project uses a `Makefile` to automate the installation of all necessary development tools, including `protoc`, Go protobuf plugins, linters, and pre-commit hooks.
 
-<<<<<<< HEAD
 To install everything you need, simply run:
 
 ```bash
