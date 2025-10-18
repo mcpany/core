@@ -61,7 +61,7 @@ type Runner interface {
 	// configPaths is a slice of paths to configuration files.
 	//
 	// It returns an error if the application fails to start or run.
-	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error
+	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error
 }
 
 // Application is the main application struct, holding the dependencies and logic
@@ -69,7 +69,6 @@ type Runner interface {
 // server, such as the stdio mode handler.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
-	shutdownTimeout  time.Duration
 }
 
 // NewApplication creates a new Application with default dependencies. It
@@ -80,7 +79,6 @@ type Application struct {
 func NewApplication() *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
-		shutdownTimeout:  5 * time.Second,
 	}
 }
 
@@ -96,7 +94,7 @@ func NewApplication() *Application {
 // configPaths provides a list of paths to service configuration files.
 //
 // It returns an error if any part of the startup or execution fails.
-func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
+func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
@@ -156,7 +154,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort)
+	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -221,7 +219,7 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string) error {
+func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -236,10 +234,10 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		fmt.Fprintln(w, "OK")
 	})
 
-	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, a.shutdownTimeout)
+	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
 	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, a.shutdownTimeout, func(s *gogrpc.Server) {
+		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, shutdownTimeout, func(s *gogrpc.Server) {
 			registrationServer, err := mcpserver.NewRegistrationServer(bus)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to create API server: %w", err)
