@@ -63,12 +63,6 @@ all: build
 # Main Targets (Default to local, use USE_DOCKER=1 to switch to Docker)
 # ==============================================================================
 
-release:
-ifeq ($(USE_DOCKER), 1)
-	@$(MAKE) release-docker
-else
-	@$(MAKE) release-local
-endif
 
 # ==============================================================================
 # Local Commands
@@ -362,7 +356,7 @@ else
 	@exit 1
 endif
 
-release-local: prepare
+release: prepare
 	@echo "Building release binaries for platforms: $(PLATFORMS)..."
 	@mkdir -p $(RELEASE_DIR)
 	@for platform in $(PLATFORMS); do \
