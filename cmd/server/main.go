@@ -105,7 +105,11 @@ func newRootCmd() *cobra.Command {
 		viper.SetEnvPrefix("MCPXY")
 	})
 
-	rootCmd.Flags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPXY_JSONRPC_PORT")
+	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPXY_JSONRPC_PORT")
+	if err := viper.BindPFlag("jsonrpc-port", rootCmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
+		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
+	}
+
 	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPXY_GRPC_PORT")
 	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPXY_STDIO")
 	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
