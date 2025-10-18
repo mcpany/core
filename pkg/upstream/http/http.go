@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/logging"
@@ -188,7 +189,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		fullURL := baseURL.ResolveReference(endpointURL).String()
+		baseURL.Path = path.Join(baseURL.Path, endpointURL.Path)
+		fullURL := baseURL.String()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
