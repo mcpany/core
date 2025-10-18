@@ -84,7 +84,7 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"})
+		errChan <- app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -103,7 +103,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"})
+	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
 }
@@ -123,7 +123,7 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app.Run(ctx, fs, true, "0", "0", nil)
+	app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 }
@@ -136,7 +136,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "0", "", nil)
+		errChan <- app.Run(ctx, fs, false, "0", "", nil, 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -150,7 +150,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 		defer cancel()
 
-		err := app.Run(ctx, nil, false, "0", "0", nil)
+		err := app.Run(ctx, nil, false, "0", "0", nil, 5*time.Second)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to setup filesystem")
 	})
@@ -167,7 +167,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "0", nil)
+		err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "0", nil, 5*time.Second)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
@@ -184,7 +184,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, "0", fmt.Sprintf("%d", port), nil)
+		err = app.Run(ctx, fs, false, "0", fmt.Sprintf("%d", port), nil, 5*time.Second)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
