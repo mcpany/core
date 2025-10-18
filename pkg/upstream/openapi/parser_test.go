@@ -234,22 +234,22 @@ func TestSanitizeOperationID(t *testing.T) {
 		{
 			name:  "ID with space",
 			input: "get pet",
-			want:  "get_b858cb_pet",
+			want:  "get_36a9e7_pet",
 		},
 		{
 			name:  "consecutive invalid chars",
 			input: "a<>b",
-			want:  "a_c4dd3c__091385_b",
+			want:  "a_dabd3a__62b67e_b",
 		},
 		{
 			name:  "different invalid chars",
 			input: "A%B",
-			want:  "A_4345cb_B",
+			want:  "A_bbf3f1_B",
 		},
 		{
 			name:  "another different invalid chars",
 			input: "A<B",
-			want:  "A_c4dd3c_B",
+			want:  "A_dabd3a_B",
 		},
 	}
 	for _, tt := range tests {
