@@ -7,7 +7,7 @@
 MCPXY_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 # The path to the mcpxy server binary.
-MCPXY_SERVER_BIN="/tmp/build/bin/server"
+MCPXY_SERVER_BIN="./build/bin/server"
 
 # The path to the configuration file for this example.
 CONFIG_PATH="./config/"

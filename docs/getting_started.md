@@ -20,7 +20,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 2. **Build the application:**
-   This command will generate the necessary protobuf files and build the server executable into `/tmp/build/bin/server`.
+   This command will generate the necessary protobuf files and build the server executable into `./build/bin/server`.
 
    ```bash
    make build
