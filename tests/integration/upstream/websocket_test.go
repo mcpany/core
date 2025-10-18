@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
@@ -37,8 +38,10 @@ func TestUpstreamService_Websocket(t *testing.T) {
 
 	// --- 1. Start Websocket Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "websocket_echo_server", "/tmp/build/test/bin/websocket_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
-	err := echoServerProc.Start()
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	echoServerProc := integration.NewManagedProcess(t, "websocket_echo_server", filepath.Join(root, "build/test/bin/websocket_echo_server"), []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	err = echoServerProc.Start()
 	require.NoError(t, err, "Failed to start Websocket Echo server")
 	t.Cleanup(echoServerProc.Stop)
 

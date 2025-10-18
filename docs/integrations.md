@@ -30,7 +30,7 @@ Before you begin, you need to have the `mcpxy` server binary built and available
     ```bash
     make build
     ```
-    The server binary will be located at `/tmp/build/bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
+    The server binary will be located at `./build/bin/server`. You will need to use the **absolute path** to this binary when configuring your AI assistant.
 
 ### AI Client Setup
 
@@ -44,14 +44,14 @@ This generic JSON configuration can be adapted for most clients that support it 
 {
   "mcpServers": {
     "mcpxy": {
-      "command": "/tmp/build/bin/server",
+      "command": "./build/bin/server",
       "args": ["--config-paths", "/path/to/your/mcpxy-config.yaml"]
     }
   }
 }
 ```
 
-- **Note**: The server binary is now located at `/tmp/build/bin/server`.
+- **Note**: The server binary is now located at `./build/bin/server`.
 
 #### Gemini CLI
 
@@ -59,17 +59,17 @@ To register `mcpxy` as an extension to the Gemini CLI:
 
 ```bash
 # Add for the current project
-gemini mcp add mcpxy "/tmp/build/bin/server"
+gemini mcp add mcpxy "./build/bin/server"
 
 # Add with command-line arguments (like a config file)
 # Note the use of '--' to separate the command from its arguments.
-gemini mcp add mcpxy -- "/tmp/build/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
+gemini mcp add mcpxy -- "./build/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
 ```
 
 #### Claude CLI
 
 ```bash
-claude mcp add mcpxy "/tmp/build/bin/server"
+claude mcp add mcpxy "./build/bin/server"
 ```
 
 #### Copilot CLI
