@@ -556,4 +556,21 @@ func TestMCPUpstream_Register(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
+
+	t.Run("nil stdio connection", func(t *testing.T) {
+		toolManager := tool.NewToolManager(nil)
+		promptManager := prompt.NewPromptManager()
+		resourceManager := resource.NewResourceManager()
+		upstream := NewMCPUpstream()
+
+		config := &configv1.UpstreamServiceConfig{}
+		config.SetName("test-service-nil-stdio")
+		mcpService := &configv1.McpUpstreamService{}
+		mcpService.SetStdioConnection(nil)
+		config.SetMcpService(mcpService)
+
+		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "MCPService definition requires either stdio_connection or http_connection")
+	})
 }

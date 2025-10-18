@@ -98,6 +98,12 @@ func TestToolManager_ListTools(t *testing.T) {
 	assert.Len(t, tools, 2, "Should have two tools")
 }
 
+func TestToolManager_ListTools_Empty(t *testing.T) {
+	tm := NewToolManager(nil)
+	tools := tm.ListTools()
+	assert.Empty(t, tools)
+}
+
 func TestToolManager_ClearToolsForService(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool1 := new(MockTool)

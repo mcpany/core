@@ -17,12 +17,86 @@
 package logging
 
 import (
+	"bytes"
 	"context"
 	"log/slog"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestGetLogger_DefaultInitialization(t *testing.T) {
+	ForTestsOnlyResetLogger()
+
+	logger := GetLogger()
+	assert.NotNil(t, logger, "GetLogger() should not return nil")
+
+	// The default level is Info, so Debug should be disabled.
+	assert.False(t, logger.Enabled(context.Background(), slog.LevelDebug), "Default logger should not have Debug level enabled")
+	assert.True(t, logger.Enabled(context.Background(), slog.LevelInfo), "Default logger should have Info level enabled")
+}
+
+func TestInit_FirstTime(t *testing.T) {
+	ForTestsOnlyResetLogger()
+
+	var buf bytes.Buffer
+	Init(slog.LevelDebug, &buf)
+
+	logger := GetLogger()
+	assert.True(t, logger.Enabled(context.Background(), slog.LevelDebug), "Logger should have Debug level enabled after Init")
+
+	logger.Debug("test message")
+	assert.Contains(t, buf.String(), "level=DEBUG", "Log output should contain the debug message")
+	assert.Contains(t, buf.String(), "msg=\"test message\"", "Log output should contain the debug message")
+}
+
+func TestInit_IsNoOpAfterInitialization(t *testing.T) {
+	ForTestsOnlyResetLogger()
+
+	var buf1 bytes.Buffer
+	Init(slog.LevelInfo, &buf1)
+	logger1 := GetLogger()
+	logger1.Info("first message")
+
+	var buf2 bytes.Buffer
+	// This call to Init should be ignored because the logger is already initialized.
+	Init(slog.LevelDebug, &buf2)
+	logger2 := GetLogger()
+
+	// The logger instance should be the same.
+	assert.Same(t, logger1, logger2, "GetLogger should return the same instance")
+
+	// The log level should still be Info, not Debug.
+	assert.False(t, logger2.Enabled(context.Background(), slog.LevelDebug), "Log level should not be changed by subsequent Init calls")
+
+	// Logging should still go to the first buffer.
+	logger2.Info("second message")
+	assert.Contains(t, buf1.String(), "first message", "First buffer should contain the first message")
+	assert.Contains(t, buf1.String(), "second message", "First buffer should also contain the second message")
+	assert.Empty(t, buf2.String(), "Second buffer should be empty")
+}
+
+func TestForTestsOnlyResetLogger(t *testing.T) {
+	ForTestsOnlyResetLogger()
+
+	// Initialize the logger.
+	var buf1 bytes.Buffer
+	Init(slog.LevelInfo, &buf1)
+	logger1 := GetLogger()
+
+	// Reset the logger.
+	ForTestsOnlyResetLogger()
+
+	// Initialize it again with different settings.
+	var buf2 bytes.Buffer
+	Init(slog.LevelDebug, &buf2)
+	logger2 := GetLogger()
+
+	assert.NotSame(t, logger1, logger2, "Loggers should be different instances after reset")
+	assert.True(t, logger2.Enabled(context.Background(), slog.LevelDebug), "New logger should have the new log level")
+}
 
 func TestInitAndGetLogger(t *testing.T) {
 	// This is a combined test to handle the singleton state. It's not a pure

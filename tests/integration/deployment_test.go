@@ -29,7 +29,6 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping TestDockerCompose for now.")
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
@@ -177,4 +176,10 @@ func TestHelmChart(t *testing.T) {
 	require.Contains(t, outputStr, "name: mcpxy-release", "Rendered template should contain the release name")
 	require.Contains(t, outputStr, "kind: Deployment", "Rendered template should contain a Deployment")
 	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpxy", "Rendered template should contain the app name label")
+
+	// 4. Try to install and uninstall the chart to a dry run server
+	installCmd := exec.Command("helm", "install", "mcpxy-release", ".", "--dry-run")
+	installCmd.Dir = helmChartPath
+	installOutput, err := installCmd.CombinedOutput()
+	require.NoError(t, err, "helm install --dry-run should not fail: %s", string(installOutput))
 }

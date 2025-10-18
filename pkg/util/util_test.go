@@ -18,6 +18,7 @@ package util
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 )
@@ -88,6 +89,31 @@ func TestGenerateServiceKey(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected %q, but got %q", expected, actual)
 	}
+}
+
+func TestGetDockerCommand(t *testing.T) {
+	t.Run("default", func(t *testing.T) {
+		os.Unsetenv("USE_SUDO_FOR_DOCKER")
+		cmd, args := GetDockerCommand()
+		if cmd != "docker" {
+			t.Errorf("Expected cmd to be 'docker', but got %q", cmd)
+		}
+		if len(args) != 0 {
+			t.Errorf("Expected args to be empty, but got %v", args)
+		}
+	})
+
+	t.Run("with sudo", func(t *testing.T) {
+		os.Setenv("USE_SUDO_FOR_DOCKER", "true")
+		defer os.Unsetenv("USE_SUDO_FOR_DOCKER")
+		cmd, args := GetDockerCommand()
+		if cmd != "sudo" {
+			t.Errorf("Expected cmd to be 'sudo', but got %q", cmd)
+		}
+		if len(args) != 1 || args[0] != "docker" {
+			t.Errorf("Expected args to be ['docker'], but got %v", args)
+		}
+	})
 }
 
 func TestGenerateToolName(t *testing.T) {
