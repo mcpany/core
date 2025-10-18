@@ -24,7 +24,7 @@ PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases
 PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 PROTOC_ZIP := protoc.zip
-TOOL_INSTALL_DIR := /tmp/build/env/bin
+TOOL_INSTALL_DIR := $(CURDIR)/build/env/bin
 PROTOC_VERSION := v33.0
 
 # Detect architecture for protoc
@@ -34,7 +34,7 @@ ifeq ($(UNAME_M), aarch64)
 	PROTOC_ARCH := aarch_64
 endif
 
-LOCAL_BIN_DIR := /tmp/build/bin
+LOCAL_BIN_DIR := $(CURDIR)/build/bin
 PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
 PROTOC_BIN := $(TOOL_INSTALL_DIR)/protoc
@@ -47,7 +47,7 @@ HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 # ==============================================================================
 # Release Targets
 # ==============================================================================
-RELEASE_DIR := /tmp/build/release
+RELEASE_DIR := $(CURDIR)/build/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
 PLATFORMS ?= linux/amd64 linux/386 linux/arm64 linux/arm
@@ -146,7 +146,7 @@ prepare:
 	fi; \
 	if test -n "$$PYTHON_CMD"; then \
 		echo "Python found. Installing/updating pre-commit and fastmcp..."; \
-		VENV_DIR=/tmp/build/venv; \
+		VENV_DIR=$(CURDIR)/build/venv; \
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
 		$$VENV_DIR/bin/pip install --upgrade pip; \
 		$$VENV_DIR/bin/pip install -r requirements.txt; \
@@ -197,10 +197,10 @@ gen: prepare
 	@echo "Generating protobuf files..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
-		mkdir -p /tmp/build; \
+		mkdir -p ./build; \
 		find proto -name "*.proto" -exec protoc --experimental_editions=true \
 			--proto_path=. \
-			--descriptor_set_out=/tmp/build/all.protoset \
+			--descriptor_set_out=$(CURDIR)/build/all.protoset \
 			--include_imports \
 			--go_out=. \
 			--go_opt=module=github.com/mcpxy/core,default_api_level=API_OPAQUE \
@@ -211,7 +211,7 @@ gen: prepare
 
 build: gen
 	@echo "Building Go project locally..."
-	@$(GO_CMD) build -buildvcs=false -o /tmp/build/bin/server ./cmd/server
+	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 600s timeout and coverage..."
@@ -224,7 +224,7 @@ test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 # ==============================================================================
 # Example Binaries Build
 # ==============================================================================
-EXAMPLE_BIN_DIR := /tmp/build/examples/bin
+EXAMPLE_BIN_DIR := $(CURDIR)/build/examples/bin
 
 # List of example binaries
 .PHONY: build-examples build-calculator-stdio
@@ -242,22 +242,22 @@ build-calculator-stdio:
 lint: gen
 	@echo "Running all pre-commit hooks..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	/tmp/build/venv/bin/pre-commit run --all-files
+	$(CURDIR)/build/venv/bin/pre-commit run --all-files
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
 	@-find . -name "*.pb.go" -delete
-	@rm -rf /tmp/build
+	@rm -rf $(CURDIR)/build
 
 run: build
 	@echo "Starting MCP-XY server locally..."
-	@/tmp/build/bin/server
+	@$(CURDIR)/build/bin/server
 
 # ==============================================================================
 # E2E Test Related Builds
 # ==============================================================================
 E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
-E2E_BIN_DIR := /tmp/build/test/bin
+E2E_BIN_DIR := $(CURDIR)/build/test/bin
 
 # List of mock service directories (which are also their binary names)
 E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_server grpc_authed_calculator_server openapi_calculator_server websocket_echo_server webrtc_echo_server

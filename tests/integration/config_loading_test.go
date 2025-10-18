@@ -57,7 +57,7 @@ func TestConfigLoading(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("MCPXY_BINARY_PATH", "/tmp/build/bin/server")
+			t.Setenv("MCPXY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
 			mcpx := StartMCPXYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
 			defer mcpx.CleanupFunc()
