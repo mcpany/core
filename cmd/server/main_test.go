@@ -21,6 +21,7 @@ import (
 	"io"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/mcpxy/core/pkg/appconsts"
 	"github.com/spf13/afero"
@@ -29,19 +30,21 @@ import (
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
-	called              bool
-	capturedStdio       bool
-	capturedJsonrpcPort string
-	capturedGrpcPort    string
-	capturedConfigPaths []string
+	called                bool
+	capturedStdio         bool
+	capturedJsonrpcPort   string
+	capturedGrpcPort      string
+	capturedConfigPaths   []string
+	capturedShutdownTimeout time.Duration
 }
 
-func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string) error {
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
 	m.called = true
 	m.capturedStdio = stdio
 	m.capturedJsonrpcPort = jsonrpcPort
 	m.capturedGrpcPort = grpcPort
 	m.capturedConfigPaths = configPaths
+	m.capturedShutdownTimeout = shutdownTimeout
 	return nil
 }
 
@@ -71,6 +74,7 @@ func TestRootCmd(t *testing.T) {
 		"--jsonrpc-port", "8081",
 		"--grpc-port", "8082",
 		"--config-paths", "/etc/config.yaml,/etc/conf.d",
+		"--shutdown-timeout", "10s",
 	})
 	rootCmd.Execute()
 
@@ -79,6 +83,7 @@ func TestRootCmd(t *testing.T) {
 	assert.Equal(t, "8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-paths should be captured")
+	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
 func TestVersionCmd(t *testing.T) {
