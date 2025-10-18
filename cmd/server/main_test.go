@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"io"
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -60,6 +61,30 @@ func TestHealthCmd(t *testing.T) {
 	err := rootCmd.Execute()
 	// We expect an error because no server is running
 	assert.Error(t, err)
+}
+
+func TestHealthCmdWithCustomPort(t *testing.T) {
+	// Start a mock HTTP server on a custom port
+	port := "8088"
+	server := &http.Server{
+		Addr: ":" + port,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}),
+	}
+	go func() {
+		server.ListenAndServe()
+	}()
+	defer server.Shutdown(context.Background())
+
+	// Wait for the server to start
+	time.Sleep(100 * time.Millisecond)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"health", "--jsonrpc-port", port})
+	err := rootCmd.Execute()
+
+	assert.NoError(t, err, "Health check should pass when server is running on custom port")
 }
 
 func TestRootCmd(t *testing.T) {
