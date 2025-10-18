@@ -119,7 +119,7 @@ prepare:
 		echo "golangci-lint is already installed."; \
 	else \
 		echo "Installing golangci-lint..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.5.0; \
 	fi
 	@if ! test -f "$(GOLANGCI_LINT_BIN)"; then \
 		echo "golangci-lint not found at $(GOLANGCI_LINT_BIN) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
