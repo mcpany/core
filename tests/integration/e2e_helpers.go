@@ -290,6 +290,14 @@ func (mp *ManagedProcess) Stop() {
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
+// WaitForText waits for specific text to appear in the process's stdout.
+func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Duration) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		return strings.Contains(mp.StdoutString(), text)
+	}, timeout, RetryInterval, "Text '%s' not found in stdout for process '%s' in time.\nStdout: %s\nStderr: %s", text, mp.label, mp.StdoutString(), mp.StderrString())
+}
+
 // WaitForTCPPort waits for a TCP port to become open and accepting connections.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
