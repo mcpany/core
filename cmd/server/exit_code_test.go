@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"testing"
+	"time"
 
 	"github.com/mcpxy/core/pkg/app"
 	"github.com/spf13/afero"
@@ -21,7 +23,11 @@ func (m *mockFailingRunner) Run(
 	jsonrpcPort string,
 	registrationPort string,
 	configPaths []string,
+	shutdownTimeout time.Duration,
 ) error {
+	if shutdownTimeout != 10*time.Second {
+		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", shutdownTimeout)
+	}
 	return errors.New("mock run failure")
 }
 
@@ -34,6 +40,7 @@ var _ app.Runner = &mockFailingRunner{}
 func TestMain_FailingExitCode(t *testing.T) {
 	if os.Getenv("GO_TEST_EXIT_CODE") == "1" {
 		appRunner = &mockFailingRunner{}
+		os.Args = append(os.Args, "--shutdown-timeout=10s")
 		main()
 		return
 	}

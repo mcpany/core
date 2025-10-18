@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/mcpxy/core/pkg/app"
 	"github.com/mcpxy/core/pkg/appconsts"
@@ -65,7 +66,9 @@ func newRootCmd() *cobra.Command {
 
 			osFs := afero.NewOsFs()
 
-			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths); err != nil {
+			shutdownTimeout := viper.GetDuration("shutdown-timeout")
+
+			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -107,6 +110,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPXY_STDIO")
 	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
 	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPXY_DEBUG")
+	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPXY_SHUTDOWN_TIMEOUT")
 
 	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
