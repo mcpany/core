@@ -128,11 +128,30 @@ type dockerConn struct {
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 func (c *dockerConn) Read(ctx context.Context) (jsonrpc.Message, error) {
+	var raw json.RawMessage
 	d := json.NewDecoder(c.rwc)
-	var msg jsonrpc.Message
-	if err := d.Decode(&msg); err != nil {
+	if err := d.Decode(&raw); err != nil {
 		return nil, err
 	}
+
+	var header struct {
+		Method string `json:"method"`
+	}
+	if err := json.Unmarshal(raw, &header); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal message header: %w", err)
+	}
+
+	var msg jsonrpc.Message
+	if header.Method != "" {
+		msg = &jsonrpc.Request{}
+	} else {
+		msg = &jsonrpc.Response{}
+	}
+
+	if err := json.Unmarshal(raw, msg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal message: %w", err)
+	}
+
 	return msg, nil
 }
 

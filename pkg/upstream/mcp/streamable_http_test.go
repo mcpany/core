@@ -19,6 +19,7 @@ package mcp
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -33,6 +34,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // Mock ClientSession for testing
@@ -556,4 +558,216 @@ func TestMCPUpstream_Register(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
+}
+
+type mockRoundTripper struct {
+	roundTripFunc func(req *http.Request) (*http.Response, error)
+}
+
+func (m *mockRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	if m.roundTripFunc != nil {
+		return m.roundTripFunc(req)
+	}
+	return &http.Response{StatusCode: http.StatusOK}, nil
+}
+
+func TestAuthenticatedRoundTripper(t *testing.T) {
+	var authenticatorCalled bool
+	mockAuthenticator := &mockAuthenticator{
+		AuthenticateFunc: func(req *http.Request) error {
+			authenticatorCalled = true
+			return nil
+		},
+	}
+
+	rt := &authenticatedRoundTripper{
+		authenticator: mockAuthenticator,
+		base:          &mockRoundTripper{},
+	}
+
+	req, _ := http.NewRequest("GET", "http://localhost", nil)
+	_, err := rt.RoundTrip(req)
+	assert.NoError(t, err)
+	assert.True(t, authenticatorCalled)
+}
+
+func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-http-error"),
+		McpService: configv1.McpUpstreamService_builder{
+			HttpConnection: configv1.McpStreamableHttpConnection_builder{
+				HttpAddress: proto.String("http://localhost:12345"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		return nil, errors.New("connection error")
+	}
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.Error(t, err)
+}
+
+type mockAuthenticator struct {
+	AuthenticateFunc func(req *http.Request) error
+}
+
+func (m *mockAuthenticator) Authenticate(req *http.Request) error {
+	if m.AuthenticateFunc != nil {
+		return m.AuthenticateFunc(req)
+	}
+	return nil
+}
+
+func TestMCPUpstream_Register_StdioConnectionError(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-stdio-error"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command: proto.String("non-existent-command"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		return nil, errors.New("connection error")
+	}
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.Error(t, err)
+}
+
+func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-list-tools-error"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command: proto.String("echo"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	mockCS := &mockClientSession{
+		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			return nil, errors.New("list tools error")
+		},
+	}
+
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		return mockCS, nil
+	}
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.Error(t, err)
+}
+
+type mockToolManager struct{}
+
+func (m *mockToolManager) AddTool(t tool.Tool) error                          { return nil }
+func (m *mockToolManager) AddServiceInfo(serviceKey string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)           { return nil, false }
+func (m *mockToolManager) ListTools() []tool.Tool                               { return nil }
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return nil, false
+}
+func (m *mockToolManager) ClearToolsForService(serviceKey string) {}
+
+type mockPromptManager struct{}
+
+func (m *mockPromptManager) AddPrompt(p prompt.Prompt)                 {}
+func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) { return nil, false }
+func (m *mockPromptManager) RemovePrompt(name string)                    {}
+func (m *mockPromptManager) ListPrompts() []prompt.Prompt                { return nil }
+func (m *mockPromptManager) OnListChanged(func())                        {}
+
+type mockResourceManager struct{}
+
+func (m *mockResourceManager) AddResource(r resource.Resource)                   {}
+func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool)    { return nil, false }
+func (m *mockResourceManager) RemoveResource(uri string)                         {}
+func (m *mockResourceManager) ListResources() []resource.Resource                { return nil }
+func (m *mockResourceManager) OnListChanged(func())                              {}
+func (m *mockResourceManager) Subscribe(ctx context.Context, uri string) error { return nil }
+
+func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-list-prompts-error"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command: proto.String("echo"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	mockCS := &mockClientSession{
+		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			return &mcp.ListToolsResult{}, nil
+		},
+		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+			return nil, errors.New("list prompts error")
+		},
+	}
+
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		return mockCS, nil
+	}
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.NoError(t, err)
+}
+
+func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-list-resources-error"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command: proto.String("echo"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	mockCS := &mockClientSession{
+		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			return &mcp.ListToolsResult{}, nil
+		},
+		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+			return &mcp.ListPromptsResult{}, nil
+		},
+		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+			return nil, errors.New("list resources error")
+		},
+	}
+
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		return mockCS, nil
+	}
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.NoError(t, err)
+}
+
+func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-invalid-config"),
+	}.Build()
+
+	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.Error(t, err)
 }
