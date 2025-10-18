@@ -14,6 +14,7 @@ linters:
     - nolintlint
     - prealloc
     - revive
+    - gosec
     - staticcheck
     - tparallel
     - unconvert

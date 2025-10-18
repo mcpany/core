@@ -17,7 +17,6 @@
 package util
 
 import (
-	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -142,7 +141,7 @@ func SanitizeOperationID(input string) string {
 
 	// Use ReplaceAllStringFunc to generate a unique hash for each match
 	sanitized := disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
-		h := sha1.New()
+		h := sha256.New()
 		h.Write([]byte(s))
 		hash := hex.EncodeToString(h.Sum(nil))[:6]
 		return fmt.Sprintf("_%s_", hash)
