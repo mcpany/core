@@ -51,7 +51,10 @@ func TestNewWebsocketTool(t *testing.T) {
 
 var upgrader = websocket.Upgrader{}
 
-func mockWebsocketServer(t *testing.T, handler func(w http.ResponseWriter, r *http.Request)) *httptest.Server {
+func mockWebsocketServer(
+	t *testing.T,
+	handler func(w http.ResponseWriter, r *http.Request),
+) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(handler))
 }
 
@@ -97,8 +100,9 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		defer server.Close()
 
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
-		conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 		require.NoError(t, err)
+		defer resp.Body.Close()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -146,8 +150,9 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		defer server.Close()
 
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
-		conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 		require.NoError(t, err)
+		defer resp.Body.Close()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -211,7 +216,13 @@ func TestWebsocketTool_Execute(t *testing.T) {
 	t.Run("pool not found", func(t *testing.T) {
 		pm := pool.NewManager()
 		toolProto := &v1.Tool{}
-		wsTool := NewWebsocketTool(toolProto, pm, "non-existent-service", nil, &configv1.WebsocketCallDefinition{})
+		wsTool := NewWebsocketTool(
+			toolProto,
+			pm,
+			"non-existent-service",
+			nil,
+			&configv1.WebsocketCallDefinition{},
+		)
 		_, err := wsTool.Execute(context.Background(), &ExecutionRequest{})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "no websocket pool found for service")
@@ -226,7 +237,13 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		}
 		pm.Register("ws-bad-input", mockPool)
 		toolProto := &v1.Tool{}
-		wsTool := NewWebsocketTool(toolProto, pm, "ws-bad-input", nil, &configv1.WebsocketCallDefinition{})
+		wsTool := NewWebsocketTool(
+			toolProto,
+			pm,
+			"ws-bad-input",
+			nil,
+			&configv1.WebsocketCallDefinition{},
+		)
 		req := &ExecutionRequest{ToolInputs: json.RawMessage(`{`)}
 		_, err := wsTool.Execute(context.Background(), req)
 		require.Error(t, err)
@@ -269,10 +286,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		})
 		defer server.Close()
 
-		conn, _, err := websocket.DefaultDialer.Dial(strings.Replace(server.URL, "http", "ws", 1), nil)
+		conn, resp, err := websocket.DefaultDialer.Dial(
+			strings.Replace(server.URL, "http", "ws", 1),
+			nil,
+		)
 		require.NoError(t, err)
-
-		// Close the connection on the client side immediately to ensure WriteMessage fails.
+		defer resp.Body.Close() // Close the connection on the client side immediately to ensure WriteMessage fails.
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 		conn.Close()
 
@@ -284,9 +303,18 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			putFunc: func(c *client.WebsocketClientWrapper) { /* no-op, already closed */ },
 		}
 		pm.Register("ws-write-error", mockPool)
-		wsTool := NewWebsocketTool(&v1.Tool{}, pm, "ws-write-error", nil, &configv1.WebsocketCallDefinition{})
+		wsTool := NewWebsocketTool(
+			&v1.Tool{},
+			pm,
+			"ws-write-error",
+			nil,
+			&configv1.WebsocketCallDefinition{},
+		)
 
-		_, err = wsTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
+		_, err = wsTool.Execute(
+			context.Background(),
+			&ExecutionRequest{ToolInputs: json.RawMessage(`{}`)},
+		)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to send message over websocket")
 	})
@@ -299,11 +327,17 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			// Read the incoming message and then immediately close with an error.
 			_, _, err = conn.ReadMessage()
 			require.NoError(t, err)
-			conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseAbnormalClosure, "read error"))
+			conn.WriteMessage(
+				websocket.CloseMessage,
+				websocket.FormatCloseMessage(websocket.CloseAbnormalClosure, "read error"),
+			)
 		})
 		defer server.Close()
 
-		conn, _, err := websocket.DefaultDialer.Dial(strings.Replace(server.URL, "http", "ws", 1), nil)
+		conn, _, err := websocket.DefaultDialer.Dial(
+			strings.Replace(server.URL, "http", "ws", 1),
+			nil,
+		)
 		require.NoError(t, err)
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
@@ -315,9 +349,18 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
 		}
 		pm.Register("ws-read-error", mockPool)
-		wsTool := NewWebsocketTool(&v1.Tool{}, pm, "ws-read-error", nil, &configv1.WebsocketCallDefinition{})
+		wsTool := NewWebsocketTool(
+			&v1.Tool{},
+			pm,
+			"ws-read-error",
+			nil,
+			&configv1.WebsocketCallDefinition{},
+		)
 
-		_, err = wsTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
+		_, err = wsTool.Execute(
+			context.Background(),
+			&ExecutionRequest{ToolInputs: json.RawMessage(`{}`)},
+		)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to read message from websocket")
 	})
@@ -332,7 +375,10 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		})
 		defer server.Close()
 
-		conn, _, err := websocket.DefaultDialer.Dial(strings.Replace(server.URL, "http", "ws", 1), nil)
+		conn, _, err := websocket.DefaultDialer.Dial(
+			strings.Replace(server.URL, "http", "ws", 1),
+			nil,
+		)
 		require.NoError(t, err)
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
@@ -342,9 +388,18 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
 		}
 		pm.Register("ws-non-json", mockPool)
-		wsTool := NewWebsocketTool(&v1.Tool{}, pm, "ws-non-json", nil, &configv1.WebsocketCallDefinition{})
+		wsTool := NewWebsocketTool(
+			&v1.Tool{},
+			pm,
+			"ws-non-json",
+			nil,
+			&configv1.WebsocketCallDefinition{},
+		)
 
-		result, err := wsTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
+		result, err := wsTool.Execute(
+			context.Background(),
+			&ExecutionRequest{ToolInputs: json.RawMessage(`{}`)},
+		)
 		require.NoError(t, err)
 		assert.Equal(t, "this is not json", result)
 	})
