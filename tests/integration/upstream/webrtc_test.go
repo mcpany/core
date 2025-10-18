@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -38,8 +39,10 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 
 	// --- 1. Start WebRTC Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "webrtc_echo_server", "/tmp/build/test/bin/webrtc_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
-	err := echoServerProc.Start()
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	echoServerProc := integration.NewManagedProcess(t, "webrtc_echo_server", filepath.Join(root, "build/test/bin/webrtc_echo_server"), []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	err = echoServerProc.Start()
 	require.NoError(t, err, "Failed to start WebRTC Echo server")
 	t.Cleanup(echoServerProc.Stop)
 	time.Sleep(2 * time.Second)

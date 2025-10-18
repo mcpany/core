@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
@@ -37,8 +38,10 @@ func TestUpstreamService_GRPC(t *testing.T) {
 
 	// --- 1. Start gRPC Calculator Server ---
 	grpcServerPort := integration.FindFreePort(t)
-	grpcServerProc := integration.NewManagedProcess(t, "grpc_calculator_server", "/tmp/build/test/bin/grpc_calculator_server", []string{fmt.Sprintf("--port=%d", grpcServerPort)}, nil)
-	err := grpcServerProc.Start()
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	grpcServerProc := integration.NewManagedProcess(t, "grpc_calculator_server", filepath.Join(root, "build/test/bin/grpc_calculator_server"), []string{fmt.Sprintf("--port=%d", grpcServerPort)}, nil)
+	err = grpcServerProc.Start()
 	require.NoError(t, err, "Failed to start gRPC Calculator server")
 	t.Cleanup(grpcServerProc.Stop)
 

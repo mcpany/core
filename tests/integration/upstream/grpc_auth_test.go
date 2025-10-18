@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
@@ -39,8 +40,10 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 
 	// --- 1. Start Authenticated gRPC Calculator Server ---
 	grpcServerPort := integration.FindFreePort(t)
-	grpcServerProc := integration.NewManagedProcess(t, "grpc_authed_calculator_server", "/tmp/build/test/bin/grpc_authed_calculator_server", []string{fmt.Sprintf("--port=%d", grpcServerPort)}, nil)
-	err := grpcServerProc.Start()
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	grpcServerProc := integration.NewManagedProcess(t, "grpc_authed_calculator_server", filepath.Join(root, "build/test/bin/grpc_authed_calculator_server"), []string{fmt.Sprintf("--port=%d", grpcServerPort)}, nil)
+	err = grpcServerProc.Start()
 	require.NoError(t, err, "Failed to start authenticated gRPC Calculator server")
 	t.Cleanup(grpcServerProc.Stop)
 	integration.WaitForTCPPort(t, grpcServerPort, integration.ServiceStartupTimeout)

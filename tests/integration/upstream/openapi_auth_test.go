@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
@@ -40,8 +41,10 @@ func TestUpstreamService_OpenAPI_WithAPIKeyAuth(t *testing.T) {
 
 	// --- 1. Start Authenticated HTTP Echo Server ---
 	echoServerPort := integration.FindFreePort(t)
-	echoServerProc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", "/tmp/build/test/bin/http_authed_echo_server", []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
-	err := echoServerProc.Start()
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	echoServerProc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
+	err = echoServerProc.Start()
 	require.NoError(t, err, "Failed to start authenticated HTTP Echo server for OpenAPI test")
 	t.Cleanup(echoServerProc.Stop)
 	integration.WaitForTCPPort(t, echoServerPort, integration.ServiceStartupTimeout)

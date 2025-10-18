@@ -29,7 +29,7 @@ jobs:
 
       - name: Package binaries
         run: |
-          RELEASE_DIR=/tmp/build/release
+          RELEASE_DIR=./build/release
           GOOS=${{ matrix.platform%/* }}
           GOARCH=${{ matrix.platform#*/ }}
           BINARY_NAME=server-$GOOS-$GOARCH
@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/build/release/*.zip
+          asset_path: ./build/release/*.zip
           asset_name: server-${{ matrix.platform }}.zip
           asset_content_type: application/zip
 
