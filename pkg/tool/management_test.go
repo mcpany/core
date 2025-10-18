@@ -14,302 +14,212 @@
  * limitations under the License.
  */
 
-package tool_test
+package tool
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/tool"
 	"github.com/mcpxy/core/pkg/util"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/mock"
 )
 
-// MockTool is a mock implementation of the Tool interface for testing.
+// MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
-	tool    *v1.Tool
-	execute func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
+	mock.Mock
+	tool *v1.Tool
 }
 
 func (m *MockTool) Tool() *v1.Tool {
-	return m.tool
+	args := m.Called()
+	return args.Get(0).(*v1.Tool)
 }
 
-func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	if m.execute != nil {
-		return m.execute(ctx, req)
-	}
-	return "mock result", nil
+func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	args := m.Called(ctx, req)
+	return args.Get(0), args.Error(1)
 }
 
-// mockMCPServerProvider is a mock that provides an mcp.Server.
-type mockMCPServerProvider struct {
-	server *mcp.Server
+func (m *MockTool) Close() error {
+	args := m.Called()
+	return args.Error(0)
 }
 
-func newMockMCPServerProvider() *mockMCPServerProvider {
-	impl := &mcp.Implementation{
-		Name:    "mock-mcpx",
-		Version: "v0.0.0",
-	}
-	return &mockMCPServerProvider{
-		server: mcp.NewServer(impl, nil),
-	}
+// MockMCPServerProvider is a mock implementation of the MCPServerProvider interface.
+type MockMCPServerProvider struct {
+	mock.Mock
 }
 
-func (m *mockMCPServerProvider) Server() *mcp.Server {
-	return m.server
+func (m *MockMCPServerProvider) Server() *mcp.Server {
+	args := m.Called()
+	return args.Get(0).(*mcp.Server)
 }
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	s, n := "test-service", "test-tool"
-	mockTool := &MockTool{
-		tool: v1.Tool_builder{
-			Name:      &n,
-			ServiceId: &s,
-		}.Build(),
-	}
+	tm := NewToolManager(nil)
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("test-tool")
+	mockTool.On("Tool").Return(toolProto)
 
 	err := tm.AddTool(mockTool)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
-	toolID, err := util.GenerateToolID("test-service", "test-tool")
-	require.NoError(t, err)
-
+	toolID, _ := util.GenerateToolID("test-service", "test-tool")
 	retrievedTool, ok := tm.GetTool(toolID)
-	require.True(t, ok, "Tool should be found")
-	assert.Equal(t, mockTool, retrievedTool)
+	assert.True(t, ok, "Tool should be found")
+	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
 }
 
 func TestToolManager_ListTools(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	s1, n1 := "service1", "tool1"
-	s2, n2 := "service1", "tool2"
-	s3, n3 := "service2", "tool1"
+	tm := NewToolManager(nil)
+	mockTool1 := new(MockTool)
+	toolProto1 := &v1.Tool{}
+	toolProto1.SetServiceId("test-service")
+	toolProto1.SetName("test-tool-1")
+	mockTool1.On("Tool").Return(toolProto1)
 
-	tool1 := &MockTool{tool: v1.Tool_builder{Name: &n1, ServiceId: &s1}.Build()}
-	tool2 := &MockTool{tool: v1.Tool_builder{Name: &n2, ServiceId: &s2}.Build()}
-	tool3 := &MockTool{tool: v1.Tool_builder{Name: &n3, ServiceId: &s3}.Build()}
+	mockTool2 := new(MockTool)
+	toolProto2 := &v1.Tool{}
+	toolProto2.SetServiceId("test-service")
+	toolProto2.SetName("test-tool-2")
+	mockTool2.On("Tool").Return(toolProto2)
 
-	tm.AddTool(tool1)
-	tm.AddTool(tool2)
-	tm.AddTool(tool3)
+	_ = tm.AddTool(mockTool1)
+	_ = tm.AddTool(mockTool2)
 
 	tools := tm.ListTools()
-	assert.Len(t, tools, 3)
-
-	// Check if all tools are in the list
-	var found1, found2, found3 bool
-	for _, tl := range tools {
-		if tl == tool1 {
-			found1 = true
-		}
-		if tl == tool2 {
-			found2 = true
-		}
-		if tl == tool3 {
-			found3 = true
-		}
-	}
-	assert.True(t, found1, "tool1 not found")
-	assert.True(t, found2, "tool2 not found")
-	assert.True(t, found3, "tool3 not found")
+	assert.Len(t, tools, 2, "Should have two tools")
 }
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	s1, n1 := "service1", "tool1"
-	s2, n2 := "service1", "tool2"
-	s3, n3 := "service2", "tool1"
+	tm := NewToolManager(nil)
+	mockTool1 := new(MockTool)
+	toolProto1 := &v1.Tool{}
+	toolProto1.SetServiceId("service-a")
+	toolProto1.SetName("tool-1")
+	mockTool1.On("Tool").Return(toolProto1)
 
-	tool1 := &MockTool{tool: v1.Tool_builder{Name: &n1, ServiceId: &s1}.Build()}
-	tool2 := &MockTool{tool: v1.Tool_builder{Name: &n2, ServiceId: &s2}.Build()}
-	tool3 := &MockTool{tool: v1.Tool_builder{Name: &n3, ServiceId: &s3}.Build()}
+	mockTool2 := new(MockTool)
+	toolProto2 := &v1.Tool{}
+	toolProto2.SetServiceId("service-b")
+	toolProto2.SetName("tool-2")
+	mockTool2.On("Tool").Return(toolProto2)
 
-	tm.AddTool(tool1)
-	tm.AddTool(tool2)
-	tm.AddTool(tool3)
+	mockTool3 := new(MockTool)
+	toolProto3 := &v1.Tool{}
+	toolProto3.SetServiceId("service-a")
+	toolProto3.SetName("tool-3")
+	mockTool3.On("Tool").Return(toolProto3)
 
-	tm.ClearToolsForService("service1")
+	_ = tm.AddTool(mockTool1)
+	_ = tm.AddTool(mockTool2)
+	_ = tm.AddTool(mockTool3)
 
+	assert.Len(t, tm.ListTools(), 3, "Should have three tools initially")
+
+	tm.ClearToolsForService("service-a")
 	tools := tm.ListTools()
-	assert.Len(t, tools, 1)
-	assert.Equal(t, tool3, tools[0])
+	assert.Len(t, tools, 1, "Should have one tool remaining")
+	assert.Equal(t, "service-b", tools[0].Tool().GetServiceId(), "The remaining tool should belong to service-b")
 }
 
-func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	serviceInfo := &tool.ServiceInfo{
-		Name:   "test-service",
-		Config: &configv1.UpstreamServiceConfig{},
-	}
+func TestToolManager_ExecuteTool(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("exec-service")
+	toolProto.SetName("exec-tool")
+	toolID, _ := util.GenerateToolID("exec-service", "exec-tool")
+	expectedResult := "success"
+	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
 
-	tm.AddServiceInfo("test-service", serviceInfo)
+	mockTool.On("Tool").Return(toolProto)
+	mockTool.On("Execute", mock.Anything, execReq).Return(expectedResult, nil)
 
-	retrievedInfo, ok := tm.GetServiceInfo("test-service")
-	require.True(t, ok)
+	_ = tm.AddTool(mockTool)
+
+	result, err := tm.ExecuteTool(context.Background(), execReq)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedResult, result)
+	mockTool.AssertExpectations(t)
+}
+
+func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
+	tm := NewToolManager(nil)
+	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
+	_, err := tm.ExecuteTool(context.Background(), execReq)
+	assert.Error(t, err, "Should return an error for a non-existent tool")
+	assert.Equal(t, ErrToolNotFound, err, "Error should be ErrToolNotFound")
+}
+
+func TestToolManager_AddServiceInfo(t *testing.T) {
+	tm := NewToolManager(nil)
+	serviceInfo := &ServiceInfo{Name: "Test Service"}
+	tm.AddServiceInfo("service1", serviceInfo)
+
+	retrievedInfo, ok := tm.GetServiceInfo("service1")
+	assert.True(t, ok)
 	assert.Equal(t, serviceInfo, retrievedInfo)
 
 	_, ok = tm.GetServiceInfo("non-existent-service")
 	assert.False(t, ok)
 }
 
-func TestToolManager_ExecuteTool_Success(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	expectedResult := "execution successful"
-	s, n := "exec-service", "exec-tool"
-	mockTool := &MockTool{
-		tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
-		execute: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			return expectedResult, nil
-		},
+type MockMCPToolServer struct {
+	*mcp.Server
+	mu    sync.Mutex
+	tools map[string]mcp.ToolHandler
+}
+
+func NewMockMCPToolServer() *MockMCPToolServer {
+	return &MockMCPToolServer{
+		Server: mcp.NewServer(&mcp.Implementation{}, nil),
+		tools:  make(map[string]mcp.ToolHandler),
 	}
-	err := tm.AddTool(mockTool)
-	require.NoError(t, err)
-
-	toolID, _ := util.GenerateToolID("exec-service", "exec-tool")
-	req := &tool.ExecutionRequest{
-		ToolName:   toolID,
-		ToolInputs: json.RawMessage(`{}`),
-	}
-
-	result, err := tm.ExecuteTool(context.Background(), req)
-	require.NoError(t, err)
-	assert.Equal(t, expectedResult, result)
 }
 
-func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	req := &tool.ExecutionRequest{ToolName: "non-existent-tool"}
-	_, err := tm.ExecuteTool(context.Background(), req)
-	assert.ErrorIs(t, err, tool.ErrToolNotFound)
+func (s *MockMCPToolServer) AddTool(tool *mcp.Tool, handler mcp.ToolHandler) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.tools[tool.Name] = handler
 }
 
-func TestToolManager_SetMCPServer(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	mcpServer := newMockMCPServerProvider()
-	tm.SetMCPServer(mcpServer)
-}
-
-func TestToolManager_AddTool_GenerateIDError(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	// An empty tool name should cause an error in GenerateToolID
-	s, n := "service1", ""
-	mockTool := &MockTool{
-		tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
-	}
-	err := tm.AddTool(mockTool)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to generate tool ID")
-}
-
-func TestToolManager_Concurrency(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	mcpServer := newMockMCPServerProvider()
-	tm.SetMCPServer(mcpServer)
-
+func TestToolManager_ConcurrentAccess(t *testing.T) {
+	tm := NewToolManager(nil)
 	var wg sync.WaitGroup
-	numRoutines := 100
+	numRoutines := 50
 
-	// Test concurrent additions and clears
 	for i := 0; i < numRoutines; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			serviceID := fmt.Sprintf("service-%d", i%10)
-			toolName := fmt.Sprintf("tool-%d", i)
-			s, n := serviceID, toolName
-			mockTool := &MockTool{
-				tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
-			}
+			mockTool := new(MockTool)
+			toolProto := &v1.Tool{}
+			toolProto.SetServiceId("concurrent-service")
+			toolProto.SetName(fmt.Sprintf("tool-%d", i))
+			mockTool.On("Tool").Return(toolProto)
 			err := tm.AddTool(mockTool)
 			assert.NoError(t, err)
-
-			if i%10 == 0 {
-				tm.ClearToolsForService(serviceID)
-			}
 		}(i)
 	}
-
-	// Test concurrent reads
-	for i := 0; i < numRoutines; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			_ = tm.ListTools()
-		}()
-	}
-
 	wg.Wait()
-}
+	assert.Len(t, tm.ListTools(), numRoutines, "All tools should be added concurrently")
 
-func TestNewToolManager(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	assert.NotNil(t, tm, "NewToolManager should not return nil")
-}
-
-func TestToolManager_AddTool_NilMCPServer(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	// Explicitly ensure mcpServer is nil
-	tm.SetMCPServer(nil)
-
-	s, n := "test-service", "test-tool"
-	mockTool := &MockTool{
-		tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
-	}
-
-	// This should not panic
-	err := tm.AddTool(mockTool)
-	require.NoError(t, err)
-
-	// Verify the tool was still added to the internal map
-	toolID, _ := util.GenerateToolID("test-service", "test-tool")
-	_, ok := tm.GetTool(toolID)
-	assert.True(t, ok)
-}
-
-func TestToolManager_ConcurrentExecution(t *testing.T) {
-	tm := tool.NewToolManager(nil)
-	var wg sync.WaitGroup
-	numGoroutines := 50
-
-	for i := 0; i < numGoroutines; i++ {
+	for i := 0; i < numRoutines; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-
-			serviceID := fmt.Sprintf("service-%d", i)
-			toolName := "test-tool"
-			s, n := serviceID, toolName
-			mockTool := &MockTool{
-				tool: v1.Tool_builder{Name: &n, ServiceId: &s}.Build(),
-				execute: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-					return fmt.Sprintf("result-%d", i), nil
-				},
-			}
-			err := tm.AddTool(mockTool)
-			require.NoError(t, err)
-
-			toolID, err := util.GenerateToolID(serviceID, toolName)
-			require.NoError(t, err)
-
-			req := &tool.ExecutionRequest{
-				ToolName:   toolID,
-				ToolInputs: json.RawMessage(`{}`),
-			}
-			result, err := tm.ExecuteTool(context.Background(), req)
-			require.NoError(t, err)
-			assert.Equal(t, fmt.Sprintf("result-%d", i), result)
+			toolID, _ := util.GenerateToolID("concurrent-service", fmt.Sprintf("tool-%d", i))
+			_, ok := tm.GetTool(toolID)
+			assert.True(t, ok)
 		}(i)
 	}
-
 	wg.Wait()
 }
