@@ -102,8 +102,12 @@ func TestWebsocketClientWrapper(t *testing.T) {
 	defer server.Close()
 
 	wsURL := "ws" + server.URL[len("http"):]
-	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	require.NoError(t, err)
+	defer func() {
+		err := resp.Body.Close()
+		require.NoError(t, err)
+	}()
 
 	wrapper := &WebsocketClientWrapper{Conn: conn}
 

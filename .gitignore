@@ -9,6 +9,7 @@ coverage.out
 
 # E2E test dependencies
 tests/integration/upstream/node_modules/
+tests/integration/upstream/package-lock.json
 
 # Node
 node_modules/
