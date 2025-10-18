@@ -122,4 +122,3 @@ jobs:
     - name: test everything
       run: |
         make test         CACHE_TO=type=local,dest=/tmp/.buildx-cache         CACHE_FROM=type=local,src=/tmp/.buildx-cache
-
