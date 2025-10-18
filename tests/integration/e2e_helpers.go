@@ -340,11 +340,12 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 		dialer := websocket.Dialer{
 			HandshakeTimeout: 2 * time.Second,
 		}
-		conn, _, err := dialer.Dial(url, nil)
+		conn, resp, err := dialer.Dial(url, nil)
 		if err != nil {
 			t.Logf("Websocket server at %s not ready: %v", url, err)
 			return false
 		}
+		defer resp.Body.Close()
 		conn.Close()
 		return true
 	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
