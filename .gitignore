@@ -3,7 +3,6 @@
 coverage.out
 
 # Build artifacts
-/build/
 
 /vendor/
 
