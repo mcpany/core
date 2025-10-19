@@ -29,32 +29,33 @@ The `mcpxy` configuration file (`upstream/http/config/mcpxy_config.yaml`) tells 
 global_settings:
   bind_address: "0.0.0.0:8080"
 upstream_services:
-- name: ip-location-service
-  http_service:
-    address: "https://ipapi.co"
-    calls:
-    - operation_id: "getLocation"
-      description: "Gets the user's current location based on their IP address."
-      endpoint_path: "/json/"
-      method: "HTTP_METHOD_GET"
-- name: weather-service
-  http_service:
-    address: "https://api.open-meteo.com"
-    calls:
-    - operation_id: "getWeather"
-      description: "Gets the current weather for a given latitude and longitude."
-      endpoint_path: "/v1/forecast"
-      method: "HTTP_METHOD_GET"
-- name: time-service
-  http_service:
-    address: "http://localhost:8081"
-    calls:
-    - operation_id: "GET/time"
-      endpoint_path: "/time"
-      method: "HTTP_METHOD_GET"
+  - name: ip-location-service
+    http_service:
+      address: "https://ipapi.co"
+      calls:
+        - operation_id: "getLocation"
+          description: "Gets the user's current location based on their IP address."
+          endpoint_path: "/json/"
+          method: "HTTP_METHOD_GET"
+  - name: weather-service
+    http_service:
+      address: "https://api.open-meteo.com"
+      calls:
+        - operation_id: "getWeather"
+          description: "Gets the current weather for a given latitude and longitude."
+          endpoint_path: "/v1/forecast"
+          method: "HTTP_METHOD_GET"
+  - name: time-service
+    http_service:
+      address: "http://localhost:8081"
+      calls:
+        - operation_id: "GET/time"
+          endpoint_path: "/time"
+          method: "HTTP_METHOD_GET"
 ```
 
 This configuration defines three tools:
+
 - `getLocation`: Gets the user's location based on their IP address using the `ipapi.co` service.
 - `getWeather`: Gets the current weather for a given latitude and longitude using the `Open-Meteo` API.
 - `GET/time`: Gets the current time from a local Go server.
@@ -71,7 +72,7 @@ This configuration defines three tools:
 
     The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
 
-    *(Note: The local time server is not required for the location and weather tools to function.)*
+    _(Note: The local time server is not required for the location and weather tools to function.)_
 
 ### Step 3: Interacting with the Tools (Chained Example)
 
