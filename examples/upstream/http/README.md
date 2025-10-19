@@ -4,11 +4,10 @@ This example demonstrates how to expose a simple, Go-based HTTP server as a tool
 
 ## Overview
 
-This example consists of three main components:
+This example consists of two main components:
 
-1.  **Upstream Server**: A simple Go application (`server/time_server.go`) that serves the current time on an HTTP endpoint.
-2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the upstream server and what tools to expose.
-3.  **`mcpxy` Server**: The `mcpxy` instance that acts as a bridge between the AI assistant and the upstream server.
+1.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the upstream server and what tools to expose.
+2.  **`mcpxy` Server**: The `mcpxy` instance that acts as a bridge between the AI assistant and the upstream server.
 
 ## Running the Example
 
@@ -20,17 +19,7 @@ First, ensure the `mcpxy` binary is built. From the root of the repository, run:
 make build
 ```
 
-### 2. Run the Upstream HTTP Server
-
-In a separate terminal, start the upstream HTTP time server. From this directory (`examples/upstream/http`), run:
-
-```bash
-go run ./server/time_server.go
-```
-
-The server will start and listen on port `8081`.
-
-### 3. Run the `mcpxy` Server
+### 2. Run the `mcpxy` Server
 
 In another terminal, start the `mcpxy` server using the provided shell script. This script points `mcpxy` to the correct configuration file.
 
@@ -42,7 +31,7 @@ The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
 ## Interacting with the Tool
 
-Once both servers are running, you can connect your AI assistant to `mcpxy`.
+Once the server is running, you can connect your AI assistant to `mcpxy`.
 
 ### Using Gemini CLI
 
@@ -63,13 +52,13 @@ Once both servers are running, you can connect your AI assistant to `mcpxy`.
     gemini list tools
     ```
 
-    You should see the `http-time-server/-/get_time` tool in the list.
+    You should see the `time-service/-/get_time_by_ip` and `ip-location-service/-/getLocation` tools in the list.
 
-3.  **Call the Tool:**
-    Now, you can call the tool to get the current time.
+3.  **Call the Tools:**
+    Now, you can ask Gemini for the current time for a specific IP address.
 
     ```bash
-    gemini call tool http-time-server/-/get_time
+    gemini 'what is the current time for 8.8.8.8'
     ```
 
     You should receive a JSON response with the current time, similar to this:
@@ -79,5 +68,13 @@ Once both servers are running, you can connect your AI assistant to `mcpxy`.
       "time": "2023-10-27T10:00:00Z"
     }
     ```
+
+    You can also ask Gemini for the location of a specific IP address.
+
+    ```bash
+    gemini 'what is the location of 8.8.8.8 in json format'
+    ```
+
+    You should receive a JSON response with the location details.
 
 This example showcases how `mcpxy` can make any HTTP API available to an AI assistant with minimal configuration.

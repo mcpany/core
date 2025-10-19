@@ -6,36 +6,31 @@ upstream_services:
     address: "https://ipapi.co"
     calls:
     - operation_id: "getLocation"
-      description: "Gets the user's current location based on their IP address."
-      endpoint_path: "/json/"
+      description: "Gets the location of a given IP address."
+      endpoint_path: "/{ip}/{format}/"
       method: "HTTP_METHOD_GET"
-- name: weather-service
-  http_service:
-    address: "https://api.open-meteo.com"
-    calls:
-    - operation_id: "getWeather"
-      description: "Gets the current weather for a given latitude and longitude."
-      endpoint_path: "/v1/forecast"
-      method: "HTTP_METHOD_GET"
-      # The following parameters are not yet supported by mcpxy, but demonstrate
-      # how you would pass parameters to the upstream service.
-      # parameters:
-      # - name: "latitude"
-      #   in: "query"
-      #   schema:
-      #     type: "number"
-      # - name: "longitude"
-      #   in: "query"
-      #   schema:
-      #     type: "number"
-      # - name: "current_weather"
-      #   in: "query"
-      #   schema:
-      #     type: "boolean"
+      parameters:
+      - name: "ip"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "format"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
 - name: time-service
   http_service:
-    address: "http://localhost:8081"
+    address: "http://worldtimeapi.org"
     calls:
-    - operation_id: "GET/time"
-      endpoint_path: "/time"
+    - operation_id: "get_time_by_ip"
+      description: "Gets the current time for a given IP address."
+      endpoint_path: "/api/ip/{ip}"
       method: "HTTP_METHOD_GET"
+      parameters:
+      - name: "ip"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
