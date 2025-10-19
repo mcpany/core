@@ -167,8 +167,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 
-		for _, param := range httpDef.GetParameterMappings() {
-			properties.Fields[param.GetInputParameterName()] = structpb.NewStringValue("")
+		for _, param := range httpDef.GetParameters() {
+			properties.Fields[param.GetName()] = structpb.NewStringValue("")
 		}
 
 		method, err := httpMethodToString(httpDef.GetMethod())

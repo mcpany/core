@@ -44,7 +44,7 @@ type WebrtcTool struct {
 	poolManager       *pool.Manager
 	serviceKey        string
 	authenticator     auth.UpstreamAuthenticator
-	parameterMappings []*configv1.WebrtcParameterMapping
+	parameters        []*configv1.WebrtcParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 }
@@ -69,7 +69,7 @@ func NewWebrtcTool(
 		poolManager:       poolManager,
 		serviceKey:        serviceKey,
 		authenticator:     authenticator,
-		parameterMappings: callDefinition.GetParameterMappings(),
+		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 	}, nil

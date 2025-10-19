@@ -66,7 +66,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			"userId": "path",
 			"q":      "query",
 		}
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{userId}", nil, &configv1.OpenAPICallDefinition{})
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{{userId}}", nil, &configv1.OpenAPICallDefinition{})
 
 		inputs := json.RawMessage(`{"userId": "123", "q": "test"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}

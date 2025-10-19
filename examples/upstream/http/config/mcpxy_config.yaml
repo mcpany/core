@@ -7,30 +7,28 @@ upstream_services:
     calls:
     - operation_id: "getLocation"
       description: "Gets the location of a given IP address."
-      endpoint_path: "/{ip}/{format}/"
+      endpoint_path: "/{{ip}}/{{format}}/"
       method: "HTTP_METHOD_GET"
       parameters:
       - name: "ip"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        description: "The IP address to get the location for."
+        is_required: true
+        type: "STRING"
       - name: "format"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        description: "The format of the response."
+        is_required: false
+        type: "STRING"
+        default_value: "json"
 - name: time-service
   http_service:
     address: "http://worldtimeapi.org"
     calls:
     - operation_id: "get_time_by_ip"
       description: "Gets the current time for a given IP address."
-      endpoint_path: "/api/ip/{ip}"
+      endpoint_path: "/api/ip/{{ip}}"
       method: "HTTP_METHOD_GET"
       parameters:
       - name: "ip"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        description: "The IP address to get the time for."
+        is_required: true
+        type: "STRING"

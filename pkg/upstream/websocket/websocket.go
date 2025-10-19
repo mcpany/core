@@ -129,8 +129,8 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 			continue
 		}
 
-		for _, param := range wsDef.GetParameterMappings() {
-			properties.Fields[param.GetInputParameterName()] = structpb.NewStringValue("")
+		for _, param := range wsDef.GetParameters() {
+			properties.Fields[param.GetName()] = structpb.NewStringValue("")
 		}
 
 		newToolProto := pb.Tool_builder{

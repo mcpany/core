@@ -252,8 +252,8 @@ message HttpCallDefinition {
   HttpMethod method = 3;
   // A description of the operation.
   string description = 4;
-  // Defines how to map input parameters to the HTTP request.
-  repeated HttpParameterMapping parameter_mappings = 5;
+  // Defines the parameters for the HTTP request.
+  repeated HttpParameterMapping parameters = 5;
   // An optional input transformer to generate the request body.
   InputTransformer input_transformer = 6;
   // An optional output transformer to parse the response body.
@@ -268,8 +268,8 @@ message WebsocketCallDefinition {
   string operation_id = 1;
   // A description of the operation.
   string description = 2;
-  // Defines how to map input parameters to the websocket message.
-  repeated WebsocketParameterMapping parameter_mappings = 3;
+  // Defines the parameters for the websocket message.
+  repeated WebsocketParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
   InputTransformer input_transformer = 4;
   // An optional output transformer to parse the response body.
@@ -282,8 +282,8 @@ message WebrtcCallDefinition {
   string operation_id = 1;
   // A description of the operation.
   string description = 2;
-  // Defines how to map input parameters to the webrtc message.
-  repeated WebrtcParameterMapping parameter_mappings = 3;
+  // Defines the parameters for the webrtc message.
+  repeated WebrtcParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
   InputTransformer input_transformer = 4;
   // An optional output transformer to parse the response body.
@@ -294,8 +294,8 @@ message WebrtcCallDefinition {
 message StdioCallDefinition {
   // The method name that maps to a tool name.
   string method = 1;
-  // Defines how to map input parameters to the stdio command.
-  repeated StdioParameterMapping parameter_mappings = 2;
+  // Defines the parameters for the stdio command.
+  repeated StdioParameterMapping parameters = 2;
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -357,52 +357,70 @@ message MCPCallDefinition {
   OutputTransformer output_transformer = 3;
 }
 
+// ParameterType defines the data type of a parameter.
+enum ParameterType {
+  STRING = 0;
+  NUMBER = 1;
+  INTEGER = 2;
+  BOOLEAN = 3;
+  ARRAY = 4;
+  OBJECT = 5;
+}
+
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 message HttpParameterMapping {
   // The name of the input parameter from the MCP call.
-  string input_parameter_name = 1;
-  // The location in the HTTP request to place the parameter.
-  enum Location {
-    QUERY = 0;
-    HEADER = 1;
-    PATH = 2;
-    BODY = 3; // For BODY, the value is often a JSON object constructed from multiple inputs.
-  }
-  Location location = 2;
-  // The name of the parameter in the target location (e.g., the query param name).
-  string target_parameter_name = 3;
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // Whether the parameter is required.
+  bool is_required = 3;
+  // The data type of the parameter.
+  ParameterType type = 4;
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 message WebsocketParameterMapping {
   // The name of the input parameter from the MCP call.
-  string input_parameter_name = 1;
-  // The name of the parameter in the target location (e.g., the query param name).
-  string target_parameter_name = 2;
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // Whether the parameter is required.
+  bool is_required = 3;
+  // The data type of the parameter.
+  ParameterType type = 4;
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 message WebrtcParameterMapping {
   // The name of the input parameter from the MCP call.
-  string input_parameter_name = 1;
-  // The name of the parameter in the target location (e.g., the query param name).
-  string target_parameter_name = 2;
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // Whether the parameter is required.
+  bool is_required = 3;
+  // The data type of the parameter.
+  ParameterType type = 4;
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5;
 }
 
 // StdioParameterMapping defines how to pass an input parameter to a stdio process.
 message StdioParameterMapping {
   // The name of the input parameter from the MCP call.
-  string input_parameter_name = 1;
-  // The location to pass the parameter to the stdio process.
-  enum Location {
-    // Passed as a command-line argument (e.g., --name value).
-    CLI_ARGUMENT = 0;
-    // Passed as an environment variable.
-    ENVIRONMENT_VARIABLE = 1;
-  }
-  Location location = 2;
-  // The name of the argument or environment variable.
-  string target_name = 3;
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // Whether the parameter is required.
+  bool is_required = 3;
+  // The data type of the parameter.
+  ParameterType type = 4;
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5;
 }
 
 

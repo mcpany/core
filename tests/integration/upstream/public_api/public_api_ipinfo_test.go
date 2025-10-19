@@ -50,14 +50,12 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/json/{ip}"),
+		EndpointPath: proto.String("/json/{{ip}}"),
 		OperationId:  proto.String("getIPInfo"),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-		ParameterMappings: []*configv1.HttpParameterMapping{
+		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
-				InputParameterName:  proto.String("ip"),
-				Location:            configv1.HttpParameterMapping_PATH.Enum(),
-				TargetParameterName: proto.String("ip"),
+				Name: proto.String("ip"),
 			}.Build(),
 		},
 	}.Build()
