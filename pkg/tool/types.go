@@ -183,7 +183,7 @@ type HTTPTool struct {
 	poolManager       *pool.Manager
 	serviceKey        string
 	authenticator     auth.UpstreamAuthenticator
-	parameterMappings []*configv1.HttpParameterMapping
+	parameters        []*configv1.HttpParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 }
@@ -202,7 +202,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, au
 		poolManager:       poolManager,
 		serviceKey:        serviceKey,
 		authenticator:     authenticator,
-		parameterMappings: callDefinition.GetParameterMappings(),
+		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 	}
@@ -246,12 +246,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
-	for _, param := range t.parameterMappings {
-		if param.GetLocation() == configv1.HttpParameterMapping_PATH {
-			if val, ok := inputs[param.GetInputParameterName()]; ok {
-				url = strings.ReplaceAll(url, "{"+param.GetTargetParameterName()+"}", fmt.Sprintf("%v", val))
-				delete(inputs, param.GetInputParameterName())
-			}
+	for _, param := range t.parameters {
+		if val, ok := inputs[param.GetName()]; ok {
+			url = strings.ReplaceAll(url, "{{"+param.GetName()+"}}", fmt.Sprintf("%v", val))
+			delete(inputs, param.GetName())
 		}
 	}
 
@@ -288,6 +286,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if contentType != "" {
 		httpReq.Header.Set("Content-Type", contentType)
 	}
+	httpReq.Header.Set("User-Agent", "mcpxy-e2e-test")
+	httpReq.Header.Set("Accept", "*/*")
+
 
 	if t.authenticator != nil {
 		if err := t.authenticator.Authenticate(httpReq); err != nil {
@@ -340,7 +341,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return parsedResult, nil
 	}
 
-	var result map[string]any
+	var result any
 	if err := json.Unmarshal(respBody, &result); err != nil {
 		return string(respBody), nil
 	}
@@ -517,7 +518,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{"+paramName+"}", fmt.Sprintf("%v", paramValue))
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", fmt.Sprintf("%v", paramValue))
 			delete(inputs, paramName)
 		}
 	}

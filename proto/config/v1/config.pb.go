@@ -25,6 +25,60 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ParameterType defines the data type of a parameter.
+type ParameterType int32
+
+const (
+	ParameterType_STRING  ParameterType = 0
+	ParameterType_NUMBER  ParameterType = 1
+	ParameterType_INTEGER ParameterType = 2
+	ParameterType_BOOLEAN ParameterType = 3
+	ParameterType_ARRAY   ParameterType = 4
+	ParameterType_OBJECT  ParameterType = 5
+)
+
+// Enum value maps for ParameterType.
+var (
+	ParameterType_name = map[int32]string{
+		0: "STRING",
+		1: "NUMBER",
+		2: "INTEGER",
+		3: "BOOLEAN",
+		4: "ARRAY",
+		5: "OBJECT",
+	}
+	ParameterType_value = map[string]int32{
+		"STRING":  0,
+		"NUMBER":  1,
+		"INTEGER": 2,
+		"BOOLEAN": 3,
+		"ARRAY":   4,
+		"OBJECT":  5,
+	}
+)
+
+func (x ParameterType) Enum() *ParameterType {
+	p := new(ParameterType)
+	*p = x
+	return p
+}
+
+func (x ParameterType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ParameterType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_config_proto_enumTypes[0].Descriptor()
+}
+
+func (ParameterType) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_config_proto_enumTypes[0]
+}
+
+func (x ParameterType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // Defines strategies for load balancing across multiple service endpoints.
 type LoadBalancingStrategy int32
 
@@ -62,11 +116,11 @@ func (x LoadBalancingStrategy) String() string {
 }
 
 func (LoadBalancingStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[0].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[1].Descriptor()
 }
 
 func (LoadBalancingStrategy) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[0]
+	return &file_proto_config_v1_config_proto_enumTypes[1]
 }
 
 func (x LoadBalancingStrategy) Number() protoreflect.EnumNumber {
@@ -109,11 +163,11 @@ func (x GlobalSettings_LogLevel) String() string {
 }
 
 func (GlobalSettings_LogLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[1].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[2].Descriptor()
 }
 
 func (GlobalSettings_LogLevel) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[1]
+	return &file_proto_config_v1_config_proto_enumTypes[2]
 }
 
 func (x GlobalSettings_LogLevel) Number() protoreflect.EnumNumber {
@@ -162,11 +216,11 @@ func (x HttpCallDefinition_HttpMethod) String() string {
 }
 
 func (HttpCallDefinition_HttpMethod) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[2].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[3].Descriptor()
 }
 
 func (HttpCallDefinition_HttpMethod) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[2]
+	return &file_proto_config_v1_config_proto_enumTypes[3]
 }
 
 func (x HttpCallDefinition_HttpMethod) Number() protoreflect.EnumNumber {
@@ -206,106 +260,14 @@ func (x OutputTransformer_OutputFormat) String() string {
 }
 
 func (OutputTransformer_OutputFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[3].Descriptor()
-}
-
-func (OutputTransformer_OutputFormat) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[3]
-}
-
-func (x OutputTransformer_OutputFormat) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// The location in the HTTP request to place the parameter.
-type HttpParameterMapping_Location int32
-
-const (
-	HttpParameterMapping_QUERY  HttpParameterMapping_Location = 0
-	HttpParameterMapping_HEADER HttpParameterMapping_Location = 1
-	HttpParameterMapping_PATH   HttpParameterMapping_Location = 2
-	HttpParameterMapping_BODY   HttpParameterMapping_Location = 3 // For BODY, the value is often a JSON object constructed from multiple inputs.
-)
-
-// Enum value maps for HttpParameterMapping_Location.
-var (
-	HttpParameterMapping_Location_name = map[int32]string{
-		0: "QUERY",
-		1: "HEADER",
-		2: "PATH",
-		3: "BODY",
-	}
-	HttpParameterMapping_Location_value = map[string]int32{
-		"QUERY":  0,
-		"HEADER": 1,
-		"PATH":   2,
-		"BODY":   3,
-	}
-)
-
-func (x HttpParameterMapping_Location) Enum() *HttpParameterMapping_Location {
-	p := new(HttpParameterMapping_Location)
-	*p = x
-	return p
-}
-
-func (x HttpParameterMapping_Location) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (HttpParameterMapping_Location) Descriptor() protoreflect.EnumDescriptor {
 	return file_proto_config_v1_config_proto_enumTypes[4].Descriptor()
 }
 
-func (HttpParameterMapping_Location) Type() protoreflect.EnumType {
+func (OutputTransformer_OutputFormat) Type() protoreflect.EnumType {
 	return &file_proto_config_v1_config_proto_enumTypes[4]
 }
 
-func (x HttpParameterMapping_Location) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// The location to pass the parameter to the stdio process.
-type StdioParameterMapping_Location int32
-
-const (
-	// Passed as a command-line argument (e.g., --name value).
-	StdioParameterMapping_CLI_ARGUMENT StdioParameterMapping_Location = 0
-	// Passed as an environment variable.
-	StdioParameterMapping_ENVIRONMENT_VARIABLE StdioParameterMapping_Location = 1
-)
-
-// Enum value maps for StdioParameterMapping_Location.
-var (
-	StdioParameterMapping_Location_name = map[int32]string{
-		0: "CLI_ARGUMENT",
-		1: "ENVIRONMENT_VARIABLE",
-	}
-	StdioParameterMapping_Location_value = map[string]int32{
-		"CLI_ARGUMENT":         0,
-		"ENVIRONMENT_VARIABLE": 1,
-	}
-)
-
-func (x StdioParameterMapping_Location) Enum() *StdioParameterMapping_Location {
-	p := new(StdioParameterMapping_Location)
-	*p = x
-	return p
-}
-
-func (x StdioParameterMapping_Location) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (StdioParameterMapping_Location) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[5].Descriptor()
-}
-
-func (StdioParameterMapping_Location) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[5]
-}
-
-func (x StdioParameterMapping_Location) Number() protoreflect.EnumNumber {
+func (x OutputTransformer_OutputFormat) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
@@ -340,11 +302,11 @@ func (x APIKeyAuth_Location) String() string {
 }
 
 func (APIKeyAuth_Location) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[6].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[5].Descriptor()
 }
 
 func (APIKeyAuth_Location) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[6]
+	return &file_proto_config_v1_config_proto_enumTypes[5]
 }
 
 func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
@@ -3263,7 +3225,7 @@ type HttpCallDefinition struct {
 	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,2,opt,name=endpoint_path,json=endpointPath"`
 	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,3,opt,name=method,enum=mcpx.config.v1.HttpCallDefinition_HttpMethod"`
 	xxx_hidden_Description       *string                       `protobuf:"bytes,4,opt,name=description"`
-	xxx_hidden_ParameterMappings *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameter_mappings,json=parameterMappings"`
+	xxx_hidden_Parameters        *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer,json=outputTransformer"`
 	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,8,opt,name=cache"`
@@ -3337,10 +3299,10 @@ func (x *HttpCallDefinition) GetDescription() string {
 	return ""
 }
 
-func (x *HttpCallDefinition) GetParameterMappings() []*HttpParameterMapping {
+func (x *HttpCallDefinition) GetParameters() []*HttpParameterMapping {
 	if x != nil {
-		if x.xxx_hidden_ParameterMappings != nil {
-			return *x.xxx_hidden_ParameterMappings
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
 		}
 	}
 	return nil
@@ -3387,8 +3349,8 @@ func (x *HttpCallDefinition) SetDescription(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
 }
 
-func (x *HttpCallDefinition) SetParameterMappings(v []*HttpParameterMapping) {
-	x.xxx_hidden_ParameterMappings = &v
+func (x *HttpCallDefinition) SetParameters(v []*HttpParameterMapping) {
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *HttpCallDefinition) SetInputTransformer(v *InputTransformer) {
@@ -3495,8 +3457,8 @@ type HttpCallDefinition_builder struct {
 	Method *HttpCallDefinition_HttpMethod
 	// A description of the operation.
 	Description *string
-	// Defines how to map input parameters to the HTTP request.
-	ParameterMappings []*HttpParameterMapping
+	// Defines the parameters for the HTTP request.
+	Parameters []*HttpParameterMapping
 	// An optional input transformer to generate the request body.
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
@@ -3525,7 +3487,7 @@ func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
 		x.xxx_hidden_Description = b.Description
 	}
-	x.xxx_hidden_ParameterMappings = &b.ParameterMappings
+	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
@@ -3537,7 +3499,7 @@ type WebsocketCallDefinition struct {
 	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
 	xxx_hidden_OperationId       *string                       `protobuf:"bytes,1,opt,name=operation_id,json=operationId"`
 	xxx_hidden_Description       *string                       `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_ParameterMappings *[]*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameter_mappings,json=parameterMappings"`
+	xxx_hidden_Parameters        *[]*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
@@ -3591,10 +3553,10 @@ func (x *WebsocketCallDefinition) GetDescription() string {
 	return ""
 }
 
-func (x *WebsocketCallDefinition) GetParameterMappings() []*WebsocketParameterMapping {
+func (x *WebsocketCallDefinition) GetParameters() []*WebsocketParameterMapping {
 	if x != nil {
-		if x.xxx_hidden_ParameterMappings != nil {
-			return *x.xxx_hidden_ParameterMappings
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
 		}
 	}
 	return nil
@@ -3624,8 +3586,8 @@ func (x *WebsocketCallDefinition) SetDescription(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *WebsocketCallDefinition) SetParameterMappings(v []*WebsocketParameterMapping) {
-	x.xxx_hidden_ParameterMappings = &v
+func (x *WebsocketCallDefinition) SetParameters(v []*WebsocketParameterMapping) {
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *WebsocketCallDefinition) SetInputTransformer(v *InputTransformer) {
@@ -3689,8 +3651,8 @@ type WebsocketCallDefinition_builder struct {
 	OperationId *string
 	// A description of the operation.
 	Description *string
-	// Defines how to map input parameters to the websocket message.
-	ParameterMappings []*WebsocketParameterMapping
+	// Defines the parameters for the websocket message.
+	Parameters []*WebsocketParameterMapping
 	// An optional input transformer to generate the request body.
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
@@ -3709,7 +3671,7 @@ func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_Description = b.Description
 	}
-	x.xxx_hidden_ParameterMappings = &b.ParameterMappings
+	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	return m0
@@ -3720,7 +3682,7 @@ type WebrtcCallDefinition struct {
 	state                        protoimpl.MessageState     `protogen:"opaque.v1"`
 	xxx_hidden_OperationId       *string                    `protobuf:"bytes,1,opt,name=operation_id,json=operationId"`
 	xxx_hidden_Description       *string                    `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_ParameterMappings *[]*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameter_mappings,json=parameterMappings"`
+	xxx_hidden_Parameters        *[]*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer          `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer         `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
@@ -3774,10 +3736,10 @@ func (x *WebrtcCallDefinition) GetDescription() string {
 	return ""
 }
 
-func (x *WebrtcCallDefinition) GetParameterMappings() []*WebrtcParameterMapping {
+func (x *WebrtcCallDefinition) GetParameters() []*WebrtcParameterMapping {
 	if x != nil {
-		if x.xxx_hidden_ParameterMappings != nil {
-			return *x.xxx_hidden_ParameterMappings
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
 		}
 	}
 	return nil
@@ -3807,8 +3769,8 @@ func (x *WebrtcCallDefinition) SetDescription(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *WebrtcCallDefinition) SetParameterMappings(v []*WebrtcParameterMapping) {
-	x.xxx_hidden_ParameterMappings = &v
+func (x *WebrtcCallDefinition) SetParameters(v []*WebrtcParameterMapping) {
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *WebrtcCallDefinition) SetInputTransformer(v *InputTransformer) {
@@ -3872,8 +3834,8 @@ type WebrtcCallDefinition_builder struct {
 	OperationId *string
 	// A description of the operation.
 	Description *string
-	// Defines how to map input parameters to the webrtc message.
-	ParameterMappings []*WebrtcParameterMapping
+	// Defines the parameters for the webrtc message.
+	Parameters []*WebrtcParameterMapping
 	// An optional input transformer to generate the request body.
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
@@ -3892,7 +3854,7 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_Description = b.Description
 	}
-	x.xxx_hidden_ParameterMappings = &b.ParameterMappings
+	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	return m0
@@ -3900,13 +3862,13 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 
 // StdioCallDefinition describes how to map an MCP call to a stdio command.
 type StdioCallDefinition struct {
-	state                        protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_Method            *string                   `protobuf:"bytes,1,opt,name=method"`
-	xxx_hidden_ParameterMappings *[]*StdioParameterMapping `protobuf:"bytes,2,rep,name=parameter_mappings,json=parameterMappings"`
-	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
-	XXX_presence                 [1]uint32
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Method      *string                   `protobuf:"bytes,1,opt,name=method"`
+	xxx_hidden_Parameters  *[]*StdioParameterMapping `protobuf:"bytes,2,rep,name=parameters"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *StdioCallDefinition) Reset() {
@@ -3944,10 +3906,10 @@ func (x *StdioCallDefinition) GetMethod() string {
 	return ""
 }
 
-func (x *StdioCallDefinition) GetParameterMappings() []*StdioParameterMapping {
+func (x *StdioCallDefinition) GetParameters() []*StdioParameterMapping {
 	if x != nil {
-		if x.xxx_hidden_ParameterMappings != nil {
-			return *x.xxx_hidden_ParameterMappings
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
 		}
 	}
 	return nil
@@ -3958,8 +3920,8 @@ func (x *StdioCallDefinition) SetMethod(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *StdioCallDefinition) SetParameterMappings(v []*StdioParameterMapping) {
-	x.xxx_hidden_ParameterMappings = &v
+func (x *StdioCallDefinition) SetParameters(v []*StdioParameterMapping) {
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *StdioCallDefinition) HasMethod() bool {
@@ -3979,8 +3941,8 @@ type StdioCallDefinition_builder struct {
 
 	// The method name that maps to a tool name.
 	Method *string
-	// Defines how to map input parameters to the stdio command.
-	ParameterMappings []*StdioParameterMapping
+	// Defines the parameters for the stdio command.
+	Parameters []*StdioParameterMapping
 }
 
 func (b0 StdioCallDefinition_builder) Build() *StdioCallDefinition {
@@ -3991,7 +3953,7 @@ func (b0 StdioCallDefinition_builder) Build() *StdioCallDefinition {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
 		x.xxx_hidden_Method = b.Method
 	}
-	x.xxx_hidden_ParameterMappings = &b.ParameterMappings
+	x.xxx_hidden_Parameters = &b.Parameters
 	return m0
 }
 
@@ -4591,14 +4553,16 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 type HttpParameterMapping struct {
-	state                          protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_InputParameterName  *string                       `protobuf:"bytes,1,opt,name=input_parameter_name,json=inputParameterName"`
-	xxx_hidden_Location            HttpParameterMapping_Location `protobuf:"varint,2,opt,name=location,enum=mcpx.config.v1.HttpParameterMapping_Location"`
-	xxx_hidden_TargetParameterName *string                       `protobuf:"bytes,3,opt,name=target_parameter_name,json=targetParameterName"`
-	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
-	XXX_presence                   [1]uint32
-	unknownFields                  protoimpl.UnknownFields
-	sizeCache                      protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsRequired   bool                   `protobuf:"varint,3,opt,name=is_required,json=isRequired"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,4,opt,name=type,enum=mcpx.config.v1.ParameterType"`
+	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *HttpParameterMapping) Reset() {
@@ -4626,124 +4590,183 @@ func (x *HttpParameterMapping) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *HttpParameterMapping) GetInputParameterName() string {
+func (x *HttpParameterMapping) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_InputParameterName != nil {
-			return *x.xxx_hidden_InputParameterName
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *HttpParameterMapping) GetLocation() HttpParameterMapping_Location {
+func (x *HttpParameterMapping) GetDescription() string {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_Location
-		}
-	}
-	return HttpParameterMapping_QUERY
-}
-
-func (x *HttpParameterMapping) GetTargetParameterName() string {
-	if x != nil {
-		if x.xxx_hidden_TargetParameterName != nil {
-			return *x.xxx_hidden_TargetParameterName
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *HttpParameterMapping) SetInputParameterName(v string) {
-	x.xxx_hidden_InputParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+func (x *HttpParameterMapping) GetIsRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_IsRequired
+	}
+	return false
 }
 
-func (x *HttpParameterMapping) SetLocation(v HttpParameterMapping_Location) {
-	x.xxx_hidden_Location = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+func (x *HttpParameterMapping) GetType() ParameterType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_Type
+		}
+	}
+	return ParameterType_STRING
 }
 
-func (x *HttpParameterMapping) SetTargetParameterName(v string) {
-	x.xxx_hidden_TargetParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+func (x *HttpParameterMapping) GetDefaultValue() *structpb.Value {
+	if x != nil {
+		return x.xxx_hidden_DefaultValue
+	}
+	return nil
 }
 
-func (x *HttpParameterMapping) HasInputParameterName() bool {
+func (x *HttpParameterMapping) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *HttpParameterMapping) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *HttpParameterMapping) SetIsRequired(v bool) {
+	x.xxx_hidden_IsRequired = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *HttpParameterMapping) SetType(v ParameterType) {
+	x.xxx_hidden_Type = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *HttpParameterMapping) SetDefaultValue(v *structpb.Value) {
+	x.xxx_hidden_DefaultValue = v
+}
+
+func (x *HttpParameterMapping) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *HttpParameterMapping) HasLocation() bool {
+func (x *HttpParameterMapping) HasDescription() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *HttpParameterMapping) HasTargetParameterName() bool {
+func (x *HttpParameterMapping) HasIsRequired() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *HttpParameterMapping) ClearInputParameterName() {
+func (x *HttpParameterMapping) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *HttpParameterMapping) HasDefaultValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DefaultValue != nil
+}
+
+func (x *HttpParameterMapping) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_InputParameterName = nil
+	x.xxx_hidden_Name = nil
 }
 
-func (x *HttpParameterMapping) ClearLocation() {
+func (x *HttpParameterMapping) ClearDescription() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Location = HttpParameterMapping_QUERY
+	x.xxx_hidden_Description = nil
 }
 
-func (x *HttpParameterMapping) ClearTargetParameterName() {
+func (x *HttpParameterMapping) ClearIsRequired() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_TargetParameterName = nil
+	x.xxx_hidden_IsRequired = false
+}
+
+func (x *HttpParameterMapping) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Type = ParameterType_STRING
+}
+
+func (x *HttpParameterMapping) ClearDefaultValue() {
+	x.xxx_hidden_DefaultValue = nil
 }
 
 type HttpParameterMapping_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The name of the input parameter from the MCP call.
-	InputParameterName *string
-	Location           *HttpParameterMapping_Location
-	// The name of the parameter in the target location (e.g., the query param name).
-	TargetParameterName *string
+	Name *string
+	// A description of the parameter.
+	Description *string
+	// Whether the parameter is required.
+	IsRequired *bool
+	// The data type of the parameter.
+	Type *ParameterType
+	// The default value of the parameter.
+	DefaultValue *structpb.Value
 }
 
 func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
 	m0 := &HttpParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.InputParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_InputParameterName = b.InputParameterName
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
 	}
-	if b.Location != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Location = *b.Location
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Description = b.Description
 	}
-	if b.TargetParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_TargetParameterName = b.TargetParameterName
+	if b.IsRequired != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_IsRequired = *b.IsRequired
 	}
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Type = *b.Type
+	}
+	x.xxx_hidden_DefaultValue = b.DefaultValue
 	return m0
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 type WebsocketParameterMapping struct {
-	state                          protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_InputParameterName  *string                `protobuf:"bytes,1,opt,name=input_parameter_name,json=inputParameterName"`
-	xxx_hidden_TargetParameterName *string                `protobuf:"bytes,2,opt,name=target_parameter_name,json=targetParameterName"`
-	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
-	XXX_presence                   [1]uint32
-	unknownFields                  protoimpl.UnknownFields
-	sizeCache                      protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsRequired   bool                   `protobuf:"varint,3,opt,name=is_required,json=isRequired"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,4,opt,name=type,enum=mcpx.config.v1.ParameterType"`
+	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *WebsocketParameterMapping) Reset() {
@@ -4771,93 +4794,183 @@ func (x *WebsocketParameterMapping) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *WebsocketParameterMapping) GetInputParameterName() string {
+func (x *WebsocketParameterMapping) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_InputParameterName != nil {
-			return *x.xxx_hidden_InputParameterName
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *WebsocketParameterMapping) GetTargetParameterName() string {
+func (x *WebsocketParameterMapping) GetDescription() string {
 	if x != nil {
-		if x.xxx_hidden_TargetParameterName != nil {
-			return *x.xxx_hidden_TargetParameterName
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *WebsocketParameterMapping) SetInputParameterName(v string) {
-	x.xxx_hidden_InputParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+func (x *WebsocketParameterMapping) GetIsRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_IsRequired
+	}
+	return false
 }
 
-func (x *WebsocketParameterMapping) SetTargetParameterName(v string) {
-	x.xxx_hidden_TargetParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+func (x *WebsocketParameterMapping) GetType() ParameterType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_Type
+		}
+	}
+	return ParameterType_STRING
 }
 
-func (x *WebsocketParameterMapping) HasInputParameterName() bool {
+func (x *WebsocketParameterMapping) GetDefaultValue() *structpb.Value {
+	if x != nil {
+		return x.xxx_hidden_DefaultValue
+	}
+	return nil
+}
+
+func (x *WebsocketParameterMapping) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *WebsocketParameterMapping) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *WebsocketParameterMapping) SetIsRequired(v bool) {
+	x.xxx_hidden_IsRequired = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *WebsocketParameterMapping) SetType(v ParameterType) {
+	x.xxx_hidden_Type = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *WebsocketParameterMapping) SetDefaultValue(v *structpb.Value) {
+	x.xxx_hidden_DefaultValue = v
+}
+
+func (x *WebsocketParameterMapping) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *WebsocketParameterMapping) HasTargetParameterName() bool {
+func (x *WebsocketParameterMapping) HasDescription() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *WebsocketParameterMapping) ClearInputParameterName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_InputParameterName = nil
+func (x *WebsocketParameterMapping) HasIsRequired() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *WebsocketParameterMapping) ClearTargetParameterName() {
+func (x *WebsocketParameterMapping) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *WebsocketParameterMapping) HasDefaultValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DefaultValue != nil
+}
+
+func (x *WebsocketParameterMapping) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *WebsocketParameterMapping) ClearDescription() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_TargetParameterName = nil
+	x.xxx_hidden_Description = nil
+}
+
+func (x *WebsocketParameterMapping) ClearIsRequired() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_IsRequired = false
+}
+
+func (x *WebsocketParameterMapping) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Type = ParameterType_STRING
+}
+
+func (x *WebsocketParameterMapping) ClearDefaultValue() {
+	x.xxx_hidden_DefaultValue = nil
 }
 
 type WebsocketParameterMapping_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The name of the input parameter from the MCP call.
-	InputParameterName *string
-	// The name of the parameter in the target location (e.g., the query param name).
-	TargetParameterName *string
+	Name *string
+	// A description of the parameter.
+	Description *string
+	// Whether the parameter is required.
+	IsRequired *bool
+	// The data type of the parameter.
+	Type *ParameterType
+	// The default value of the parameter.
+	DefaultValue *structpb.Value
 }
 
 func (b0 WebsocketParameterMapping_builder) Build() *WebsocketParameterMapping {
 	m0 := &WebsocketParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.InputParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_InputParameterName = b.InputParameterName
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
 	}
-	if b.TargetParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_TargetParameterName = b.TargetParameterName
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Description = b.Description
 	}
+	if b.IsRequired != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_IsRequired = *b.IsRequired
+	}
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Type = *b.Type
+	}
+	x.xxx_hidden_DefaultValue = b.DefaultValue
 	return m0
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 type WebrtcParameterMapping struct {
-	state                          protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_InputParameterName  *string                `protobuf:"bytes,1,opt,name=input_parameter_name,json=inputParameterName"`
-	xxx_hidden_TargetParameterName *string                `protobuf:"bytes,2,opt,name=target_parameter_name,json=targetParameterName"`
-	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
-	XXX_presence                   [1]uint32
-	unknownFields                  protoimpl.UnknownFields
-	sizeCache                      protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsRequired   bool                   `protobuf:"varint,3,opt,name=is_required,json=isRequired"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,4,opt,name=type,enum=mcpx.config.v1.ParameterType"`
+	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *WebrtcParameterMapping) Reset() {
@@ -4885,94 +4998,183 @@ func (x *WebrtcParameterMapping) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *WebrtcParameterMapping) GetInputParameterName() string {
+func (x *WebrtcParameterMapping) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_InputParameterName != nil {
-			return *x.xxx_hidden_InputParameterName
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *WebrtcParameterMapping) GetTargetParameterName() string {
+func (x *WebrtcParameterMapping) GetDescription() string {
 	if x != nil {
-		if x.xxx_hidden_TargetParameterName != nil {
-			return *x.xxx_hidden_TargetParameterName
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *WebrtcParameterMapping) SetInputParameterName(v string) {
-	x.xxx_hidden_InputParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+func (x *WebrtcParameterMapping) GetIsRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_IsRequired
+	}
+	return false
 }
 
-func (x *WebrtcParameterMapping) SetTargetParameterName(v string) {
-	x.xxx_hidden_TargetParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+func (x *WebrtcParameterMapping) GetType() ParameterType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_Type
+		}
+	}
+	return ParameterType_STRING
 }
 
-func (x *WebrtcParameterMapping) HasInputParameterName() bool {
+func (x *WebrtcParameterMapping) GetDefaultValue() *structpb.Value {
+	if x != nil {
+		return x.xxx_hidden_DefaultValue
+	}
+	return nil
+}
+
+func (x *WebrtcParameterMapping) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *WebrtcParameterMapping) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *WebrtcParameterMapping) SetIsRequired(v bool) {
+	x.xxx_hidden_IsRequired = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *WebrtcParameterMapping) SetType(v ParameterType) {
+	x.xxx_hidden_Type = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *WebrtcParameterMapping) SetDefaultValue(v *structpb.Value) {
+	x.xxx_hidden_DefaultValue = v
+}
+
+func (x *WebrtcParameterMapping) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *WebrtcParameterMapping) HasTargetParameterName() bool {
+func (x *WebrtcParameterMapping) HasDescription() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *WebrtcParameterMapping) ClearInputParameterName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_InputParameterName = nil
+func (x *WebrtcParameterMapping) HasIsRequired() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *WebrtcParameterMapping) ClearTargetParameterName() {
+func (x *WebrtcParameterMapping) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *WebrtcParameterMapping) HasDefaultValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DefaultValue != nil
+}
+
+func (x *WebrtcParameterMapping) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *WebrtcParameterMapping) ClearDescription() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_TargetParameterName = nil
+	x.xxx_hidden_Description = nil
+}
+
+func (x *WebrtcParameterMapping) ClearIsRequired() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_IsRequired = false
+}
+
+func (x *WebrtcParameterMapping) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Type = ParameterType_STRING
+}
+
+func (x *WebrtcParameterMapping) ClearDefaultValue() {
+	x.xxx_hidden_DefaultValue = nil
 }
 
 type WebrtcParameterMapping_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The name of the input parameter from the MCP call.
-	InputParameterName *string
-	// The name of the parameter in the target location (e.g., the query param name).
-	TargetParameterName *string
+	Name *string
+	// A description of the parameter.
+	Description *string
+	// Whether the parameter is required.
+	IsRequired *bool
+	// The data type of the parameter.
+	Type *ParameterType
+	// The default value of the parameter.
+	DefaultValue *structpb.Value
 }
 
 func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
 	m0 := &WebrtcParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.InputParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_InputParameterName = b.InputParameterName
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
 	}
-	if b.TargetParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_TargetParameterName = b.TargetParameterName
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Description = b.Description
 	}
+	if b.IsRequired != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_IsRequired = *b.IsRequired
+	}
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Type = *b.Type
+	}
+	x.xxx_hidden_DefaultValue = b.DefaultValue
 	return m0
 }
 
 // StdioParameterMapping defines how to pass an input parameter to a stdio process.
 type StdioParameterMapping struct {
-	state                         protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_InputParameterName *string                        `protobuf:"bytes,1,opt,name=input_parameter_name,json=inputParameterName"`
-	xxx_hidden_Location           StdioParameterMapping_Location `protobuf:"varint,2,opt,name=location,enum=mcpx.config.v1.StdioParameterMapping_Location"`
-	xxx_hidden_TargetName         *string                        `protobuf:"bytes,3,opt,name=target_name,json=targetName"`
-	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
-	XXX_presence                  [1]uint32
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsRequired   bool                   `protobuf:"varint,3,opt,name=is_required,json=isRequired"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,4,opt,name=type,enum=mcpx.config.v1.ParameterType"`
+	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *StdioParameterMapping) Reset() {
@@ -5000,112 +5202,168 @@ func (x *StdioParameterMapping) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *StdioParameterMapping) GetInputParameterName() string {
+func (x *StdioParameterMapping) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_InputParameterName != nil {
-			return *x.xxx_hidden_InputParameterName
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *StdioParameterMapping) GetLocation() StdioParameterMapping_Location {
+func (x *StdioParameterMapping) GetDescription() string {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_Location
-		}
-	}
-	return StdioParameterMapping_CLI_ARGUMENT
-}
-
-func (x *StdioParameterMapping) GetTargetName() string {
-	if x != nil {
-		if x.xxx_hidden_TargetName != nil {
-			return *x.xxx_hidden_TargetName
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *StdioParameterMapping) SetInputParameterName(v string) {
-	x.xxx_hidden_InputParameterName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+func (x *StdioParameterMapping) GetIsRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_IsRequired
+	}
+	return false
 }
 
-func (x *StdioParameterMapping) SetLocation(v StdioParameterMapping_Location) {
-	x.xxx_hidden_Location = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+func (x *StdioParameterMapping) GetType() ParameterType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_Type
+		}
+	}
+	return ParameterType_STRING
 }
 
-func (x *StdioParameterMapping) SetTargetName(v string) {
-	x.xxx_hidden_TargetName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+func (x *StdioParameterMapping) GetDefaultValue() *structpb.Value {
+	if x != nil {
+		return x.xxx_hidden_DefaultValue
+	}
+	return nil
 }
 
-func (x *StdioParameterMapping) HasInputParameterName() bool {
+func (x *StdioParameterMapping) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *StdioParameterMapping) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *StdioParameterMapping) SetIsRequired(v bool) {
+	x.xxx_hidden_IsRequired = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *StdioParameterMapping) SetType(v ParameterType) {
+	x.xxx_hidden_Type = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *StdioParameterMapping) SetDefaultValue(v *structpb.Value) {
+	x.xxx_hidden_DefaultValue = v
+}
+
+func (x *StdioParameterMapping) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *StdioParameterMapping) HasLocation() bool {
+func (x *StdioParameterMapping) HasDescription() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *StdioParameterMapping) HasTargetName() bool {
+func (x *StdioParameterMapping) HasIsRequired() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *StdioParameterMapping) ClearInputParameterName() {
+func (x *StdioParameterMapping) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *StdioParameterMapping) HasDefaultValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DefaultValue != nil
+}
+
+func (x *StdioParameterMapping) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_InputParameterName = nil
+	x.xxx_hidden_Name = nil
 }
 
-func (x *StdioParameterMapping) ClearLocation() {
+func (x *StdioParameterMapping) ClearDescription() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Location = StdioParameterMapping_CLI_ARGUMENT
+	x.xxx_hidden_Description = nil
 }
 
-func (x *StdioParameterMapping) ClearTargetName() {
+func (x *StdioParameterMapping) ClearIsRequired() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_TargetName = nil
+	x.xxx_hidden_IsRequired = false
+}
+
+func (x *StdioParameterMapping) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Type = ParameterType_STRING
+}
+
+func (x *StdioParameterMapping) ClearDefaultValue() {
+	x.xxx_hidden_DefaultValue = nil
 }
 
 type StdioParameterMapping_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The name of the input parameter from the MCP call.
-	InputParameterName *string
-	Location           *StdioParameterMapping_Location
-	// The name of the argument or environment variable.
-	TargetName *string
+	Name *string
+	// A description of the parameter.
+	Description *string
+	// Whether the parameter is required.
+	IsRequired *bool
+	// The data type of the parameter.
+	Type *ParameterType
+	// The default value of the parameter.
+	DefaultValue *structpb.Value
 }
 
 func (b0 StdioParameterMapping_builder) Build() *StdioParameterMapping {
 	m0 := &StdioParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.InputParameterName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_InputParameterName = b.InputParameterName
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
 	}
-	if b.Location != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Location = *b.Location
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Description = b.Description
 	}
-	if b.TargetName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_TargetName = b.TargetName
+	if b.IsRequired != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_IsRequired = *b.IsRequired
 	}
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Type = *b.Type
+	}
+	x.xxx_hidden_DefaultValue = b.DefaultValue
 	return m0
 }
 
@@ -7946,13 +8204,15 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x04 \x01(\bR\bisStream\"\x89\x05\n" +
+	"\tis_stream\x18\x04 \x01(\bR\bisStream\"\xfa\x04\n" +
 	"\x12HttpCallDefinition\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12#\n" +
 	"\rendpoint_path\x18\x02 \x01(\tR\fendpointPath\x12E\n" +
 	"\x06method\x18\x03 \x01(\x0e2-.mcpx.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12S\n" +
-	"\x12parameter_mappings\x18\x05 \x03(\v2$.mcpx.config.v1.HttpParameterMappingR\x11parameterMappings\x12M\n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12D\n" +
+	"\n" +
+	"parameters\x18\x05 \x03(\v2$.mcpx.config.v1.HttpParameterMappingR\n" +
+	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x06 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
 	"\x12output_transformer\x18\a \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
 	"\x05cache\x18\b \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
@@ -7963,22 +8223,28 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xd9\x02\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xca\x02\n" +
 	"\x17WebsocketCallDefinition\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12X\n" +
-	"\x12parameter_mappings\x18\x03 \x03(\v2).mcpx.config.v1.WebsocketParameterMappingR\x11parameterMappings\x12M\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12I\n" +
+	"\n" +
+	"parameters\x18\x03 \x03(\v2).mcpx.config.v1.WebsocketParameterMappingR\n" +
+	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xd3\x02\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xc4\x02\n" +
 	"\x14WebrtcCallDefinition\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12U\n" +
-	"\x12parameter_mappings\x18\x03 \x03(\v2&.mcpx.config.v1.WebrtcParameterMappingR\x11parameterMappings\x12M\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12F\n" +
+	"\n" +
+	"parameters\x18\x03 \x03(\v2&.mcpx.config.v1.WebrtcParameterMappingR\n" +
+	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\x83\x01\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"t\n" +
 	"\x13StdioCallDefinition\x12\x16\n" +
-	"\x06method\x18\x01 \x01(\tR\x06method\x12T\n" +
-	"\x12parameter_mappings\x18\x02 \x03(\v2%.mcpx.config.v1.StdioParameterMappingR\x11parameterMappings\".\n" +
+	"\x06method\x18\x01 \x01(\tR\x06method\x12E\n" +
+	"\n" +
+	"parameters\x18\x02 \x03(\v2%.mcpx.config.v1.StdioParameterMappingR\n" +
+	"parameters\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
 	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcb\x02\n" +
 	"\x11OutputTransformer\x12F\n" +
@@ -8002,31 +8268,35 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11MCPCallDefinition\x12\x1b\n" +
 	"\ttool_name\x18\x01 \x01(\tR\btoolName\x12M\n" +
 	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xfe\x01\n" +
-	"\x14HttpParameterMapping\x120\n" +
-	"\x14input_parameter_name\x18\x01 \x01(\tR\x12inputParameterName\x12I\n" +
-	"\blocation\x18\x02 \x01(\x0e2-.mcpx.config.v1.HttpParameterMapping.LocationR\blocation\x122\n" +
-	"\x15target_parameter_name\x18\x03 \x01(\tR\x13targetParameterName\"5\n" +
-	"\bLocation\x12\t\n" +
-	"\x05QUERY\x10\x00\x12\n" +
-	"\n" +
-	"\x06HEADER\x10\x01\x12\b\n" +
-	"\x04PATH\x10\x02\x12\b\n" +
-	"\x04BODY\x10\x03\"\x81\x01\n" +
-	"\x19WebsocketParameterMapping\x120\n" +
-	"\x14input_parameter_name\x18\x01 \x01(\tR\x12inputParameterName\x122\n" +
-	"\x15target_parameter_name\x18\x02 \x01(\tR\x13targetParameterName\"~\n" +
-	"\x16WebrtcParameterMapping\x120\n" +
-	"\x14input_parameter_name\x18\x01 \x01(\tR\x12inputParameterName\x122\n" +
-	"\x15target_parameter_name\x18\x02 \x01(\tR\x13targetParameterName\"\xee\x01\n" +
-	"\x15StdioParameterMapping\x120\n" +
-	"\x14input_parameter_name\x18\x01 \x01(\tR\x12inputParameterName\x12J\n" +
-	"\blocation\x18\x02 \x01(\x0e2..mcpx.config.v1.StdioParameterMapping.LocationR\blocation\x12\x1f\n" +
-	"\vtarget_name\x18\x03 \x01(\tR\n" +
-	"targetName\"6\n" +
-	"\bLocation\x12\x10\n" +
-	"\fCLI_ARGUMENT\x10\x00\x12\x18\n" +
-	"\x14ENVIRONMENT_VARIABLE\x10\x01\"\xaf\x01\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xdd\x01\n" +
+	"\x14HttpParameterMapping\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
+	"\vis_required\x18\x03 \x01(\bR\n" +
+	"isRequired\x121\n" +
+	"\x04type\x18\x04 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12;\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xe2\x01\n" +
+	"\x19WebsocketParameterMapping\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
+	"\vis_required\x18\x03 \x01(\bR\n" +
+	"isRequired\x121\n" +
+	"\x04type\x18\x04 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12;\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xdf\x01\n" +
+	"\x16WebrtcParameterMapping\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
+	"\vis_required\x18\x03 \x01(\bR\n" +
+	"isRequired\x121\n" +
+	"\x04type\x18\x04 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12;\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xde\x01\n" +
+	"\x15StdioParameterMapping\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1f\n" +
+	"\vis_required\x18\x03 \x01(\bR\n" +
+	"isRequired\x121\n" +
+	"\x04type\x18\x04 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12;\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xaf\x01\n" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
@@ -8117,158 +8387,174 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"caCertPath\x12(\n" +
 	"\x10client_cert_path\x18\x03 \x01(\tR\x0eclientCertPath\x12&\n" +
 	"\x0fclient_key_path\x18\x04 \x01(\tR\rclientKeyPath\x120\n" +
-	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x12insecureSkipVerify*K\n" +
+	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x12insecureSkipVerify*X\n" +
+	"\rParameterType\x12\n" +
+	"\n" +
+	"\x06STRING\x10\x00\x12\n" +
+	"\n" +
+	"\x06NUMBER\x10\x01\x12\v\n" +
+	"\aINTEGER\x10\x02\x12\v\n" +
+	"\aBOOLEAN\x10\x03\x12\t\n" +
+	"\x05ARRAY\x10\x04\x12\n" +
+	"\n" +
+	"\x06OBJECT\x10\x05*K\n" +
 	"\x15LoadBalancingStrategy\x12\x0f\n" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +
 	"\n" +
 	"\x06RANDOM\x10\x02B'Z%github.com/mcpxy/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_proto_config_v1_config_proto_goTypes = []any{
-	(LoadBalancingStrategy)(0),          // 0: mcpx.config.v1.LoadBalancingStrategy
-	(GlobalSettings_LogLevel)(0),        // 1: mcpx.config.v1.GlobalSettings.LogLevel
-	(HttpCallDefinition_HttpMethod)(0),  // 2: mcpx.config.v1.HttpCallDefinition.HttpMethod
-	(OutputTransformer_OutputFormat)(0), // 3: mcpx.config.v1.OutputTransformer.OutputFormat
-	(HttpParameterMapping_Location)(0),  // 4: mcpx.config.v1.HttpParameterMapping.Location
-	(StdioParameterMapping_Location)(0), // 5: mcpx.config.v1.StdioParameterMapping.Location
-	(APIKeyAuth_Location)(0),            // 6: mcpx.config.v1.APIKeyAuth.Location
-	(*McpxServerConfig)(nil),            // 7: mcpx.config.v1.McpxServerConfig
-	(*GlobalSettings)(nil),              // 8: mcpx.config.v1.GlobalSettings
-	(*FrontendService)(nil),             // 9: mcpx.config.v1.FrontendService
-	(*ServiceBinding)(nil),              // 10: mcpx.config.v1.ServiceBinding
-	(*UpstreamServiceConfig)(nil),       // 11: mcpx.config.v1.UpstreamServiceConfig
-	(*GrpcUpstreamService)(nil),         // 12: mcpx.config.v1.GrpcUpstreamService
-	(*HttpUpstreamService)(nil),         // 13: mcpx.config.v1.HttpUpstreamService
-	(*WebsocketUpstreamService)(nil),    // 14: mcpx.config.v1.WebsocketUpstreamService
-	(*WebrtcUpstreamService)(nil),       // 15: mcpx.config.v1.WebrtcUpstreamService
-	(*OpenapiUpstreamService)(nil),      // 16: mcpx.config.v1.OpenapiUpstreamService
-	(*CommandLineUpstreamService)(nil),  // 17: mcpx.config.v1.CommandLineUpstreamService
-	(*McpUpstreamService)(nil),          // 18: mcpx.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),          // 19: mcpx.config.v1.McpStdioConnection
-	(*McpStreamableHttpConnection)(nil), // 20: mcpx.config.v1.McpStreamableHttpConnection
-	(*ToolDefinition)(nil),              // 21: mcpx.config.v1.ToolDefinition
-	(*HttpCallDefinition)(nil),          // 22: mcpx.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),     // 23: mcpx.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),        // 24: mcpx.config.v1.WebrtcCallDefinition
-	(*StdioCallDefinition)(nil),         // 25: mcpx.config.v1.StdioCallDefinition
-	(*InputTransformer)(nil),            // 26: mcpx.config.v1.InputTransformer
-	(*OutputTransformer)(nil),           // 27: mcpx.config.v1.OutputTransformer
-	(*GrpcCallDefinition)(nil),          // 28: mcpx.config.v1.GrpcCallDefinition
-	(*OpenAPICallDefinition)(nil),       // 29: mcpx.config.v1.OpenAPICallDefinition
-	(*MCPCallDefinition)(nil),           // 30: mcpx.config.v1.MCPCallDefinition
-	(*HttpParameterMapping)(nil),        // 31: mcpx.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),   // 32: mcpx.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),      // 33: mcpx.config.v1.WebrtcParameterMapping
-	(*StdioParameterMapping)(nil),       // 34: mcpx.config.v1.StdioParameterMapping
-	(*ConnectionPoolConfig)(nil),        // 35: mcpx.config.v1.ConnectionPoolConfig
-	(*HttpHealthCheck)(nil),             // 36: mcpx.config.v1.HttpHealthCheck
-	(*GrpcHealthCheck)(nil),             // 37: mcpx.config.v1.GrpcHealthCheck
-	(*StdioHealthCheck)(nil),            // 38: mcpx.config.v1.StdioHealthCheck
-	(*RateLimitConfig)(nil),             // 39: mcpx.config.v1.RateLimitConfig
-	(*CacheConfig)(nil),                 // 40: mcpx.config.v1.CacheConfig
-	(*ResilienceConfig)(nil),            // 41: mcpx.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),        // 42: mcpx.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                 // 43: mcpx.config.v1.RetryConfig
-	(*AuthenticationConfig)(nil),        // 44: mcpx.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),                  // 45: mcpx.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),                  // 46: mcpx.config.v1.OAuth2Auth
-	(*UpstreamAuthentication)(nil),      // 47: mcpx.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 48: mcpx.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 49: mcpx.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 50: mcpx.config.v1.UpstreamBasicAuth
-	(*TLSConfig)(nil),                   // 51: mcpx.config.v1.TLSConfig
-	nil,                                 // 52: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Struct)(nil),             // 53: google.protobuf.Struct
+	(ParameterType)(0),                  // 0: mcpx.config.v1.ParameterType
+	(LoadBalancingStrategy)(0),          // 1: mcpx.config.v1.LoadBalancingStrategy
+	(GlobalSettings_LogLevel)(0),        // 2: mcpx.config.v1.GlobalSettings.LogLevel
+	(HttpCallDefinition_HttpMethod)(0),  // 3: mcpx.config.v1.HttpCallDefinition.HttpMethod
+	(OutputTransformer_OutputFormat)(0), // 4: mcpx.config.v1.OutputTransformer.OutputFormat
+	(APIKeyAuth_Location)(0),            // 5: mcpx.config.v1.APIKeyAuth.Location
+	(*McpxServerConfig)(nil),            // 6: mcpx.config.v1.McpxServerConfig
+	(*GlobalSettings)(nil),              // 7: mcpx.config.v1.GlobalSettings
+	(*FrontendService)(nil),             // 8: mcpx.config.v1.FrontendService
+	(*ServiceBinding)(nil),              // 9: mcpx.config.v1.ServiceBinding
+	(*UpstreamServiceConfig)(nil),       // 10: mcpx.config.v1.UpstreamServiceConfig
+	(*GrpcUpstreamService)(nil),         // 11: mcpx.config.v1.GrpcUpstreamService
+	(*HttpUpstreamService)(nil),         // 12: mcpx.config.v1.HttpUpstreamService
+	(*WebsocketUpstreamService)(nil),    // 13: mcpx.config.v1.WebsocketUpstreamService
+	(*WebrtcUpstreamService)(nil),       // 14: mcpx.config.v1.WebrtcUpstreamService
+	(*OpenapiUpstreamService)(nil),      // 15: mcpx.config.v1.OpenapiUpstreamService
+	(*CommandLineUpstreamService)(nil),  // 16: mcpx.config.v1.CommandLineUpstreamService
+	(*McpUpstreamService)(nil),          // 17: mcpx.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),          // 18: mcpx.config.v1.McpStdioConnection
+	(*McpStreamableHttpConnection)(nil), // 19: mcpx.config.v1.McpStreamableHttpConnection
+	(*ToolDefinition)(nil),              // 20: mcpx.config.v1.ToolDefinition
+	(*HttpCallDefinition)(nil),          // 21: mcpx.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),     // 22: mcpx.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),        // 23: mcpx.config.v1.WebrtcCallDefinition
+	(*StdioCallDefinition)(nil),         // 24: mcpx.config.v1.StdioCallDefinition
+	(*InputTransformer)(nil),            // 25: mcpx.config.v1.InputTransformer
+	(*OutputTransformer)(nil),           // 26: mcpx.config.v1.OutputTransformer
+	(*GrpcCallDefinition)(nil),          // 27: mcpx.config.v1.GrpcCallDefinition
+	(*OpenAPICallDefinition)(nil),       // 28: mcpx.config.v1.OpenAPICallDefinition
+	(*MCPCallDefinition)(nil),           // 29: mcpx.config.v1.MCPCallDefinition
+	(*HttpParameterMapping)(nil),        // 30: mcpx.config.v1.HttpParameterMapping
+	(*WebsocketParameterMapping)(nil),   // 31: mcpx.config.v1.WebsocketParameterMapping
+	(*WebrtcParameterMapping)(nil),      // 32: mcpx.config.v1.WebrtcParameterMapping
+	(*StdioParameterMapping)(nil),       // 33: mcpx.config.v1.StdioParameterMapping
+	(*ConnectionPoolConfig)(nil),        // 34: mcpx.config.v1.ConnectionPoolConfig
+	(*HttpHealthCheck)(nil),             // 35: mcpx.config.v1.HttpHealthCheck
+	(*GrpcHealthCheck)(nil),             // 36: mcpx.config.v1.GrpcHealthCheck
+	(*StdioHealthCheck)(nil),            // 37: mcpx.config.v1.StdioHealthCheck
+	(*RateLimitConfig)(nil),             // 38: mcpx.config.v1.RateLimitConfig
+	(*CacheConfig)(nil),                 // 39: mcpx.config.v1.CacheConfig
+	(*ResilienceConfig)(nil),            // 40: mcpx.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),        // 41: mcpx.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                 // 42: mcpx.config.v1.RetryConfig
+	(*AuthenticationConfig)(nil),        // 43: mcpx.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),                  // 44: mcpx.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),                  // 45: mcpx.config.v1.OAuth2Auth
+	(*UpstreamAuthentication)(nil),      // 46: mcpx.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),          // 47: mcpx.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil),     // 48: mcpx.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),           // 49: mcpx.config.v1.UpstreamBasicAuth
+	(*TLSConfig)(nil),                   // 50: mcpx.config.v1.TLSConfig
+	nil,                                 // 51: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Struct)(nil),             // 52: google.protobuf.Struct
+	(*structpb.Value)(nil),              // 53: google.protobuf.Value
 	(*durationpb.Duration)(nil),         // 54: google.protobuf.Duration
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	8,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
-	11, // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	9,  // 2: mcpx.config.v1.McpxServerConfig.frontend_services:type_name -> mcpx.config.v1.FrontendService
-	10, // 3: mcpx.config.v1.McpxServerConfig.service_bindings:type_name -> mcpx.config.v1.ServiceBinding
-	1,  // 4: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	35, // 5: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	47, // 6: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	40, // 7: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
-	39, // 8: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
-	0,  // 9: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
-	41, // 10: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
-	18, // 11: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
-	13, // 12: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	12, // 13: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
-	16, // 14: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
-	17, // 15: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
-	14, // 16: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
-	15, // 17: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
-	44, // 18: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	51, // 19: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	28, // 20: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	37, // 21: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	22, // 22: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
-	36, // 23: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	51, // 24: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	23, // 25: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	51, // 26: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	24, // 27: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	51, // 28: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	36, // 29: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	51, // 30: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	29, // 31: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
-	25, // 32: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
-	38, // 33: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
-	40, // 34: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
-	20, // 35: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
-	19, // 36: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
-	21, // 37: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
-	30, // 38: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	51, // 39: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	53, // 40: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	2,  // 41: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
-	31, // 42: mcpx.config.v1.HttpCallDefinition.parameter_mappings:type_name -> mcpx.config.v1.HttpParameterMapping
-	26, // 43: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	27, // 44: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	40, // 45: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32, // 46: mcpx.config.v1.WebsocketCallDefinition.parameter_mappings:type_name -> mcpx.config.v1.WebsocketParameterMapping
-	26, // 47: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	27, // 48: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	33, // 49: mcpx.config.v1.WebrtcCallDefinition.parameter_mappings:type_name -> mcpx.config.v1.WebrtcParameterMapping
-	26, // 50: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	27, // 51: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	34, // 52: mcpx.config.v1.StdioCallDefinition.parameter_mappings:type_name -> mcpx.config.v1.StdioParameterMapping
-	3,  // 53: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	52, // 54: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	26, // 55: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	27, // 56: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	26, // 57: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	27, // 58: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	4,  // 59: mcpx.config.v1.HttpParameterMapping.location:type_name -> mcpx.config.v1.HttpParameterMapping.Location
-	5,  // 60: mcpx.config.v1.StdioParameterMapping.location:type_name -> mcpx.config.v1.StdioParameterMapping.Location
-	54, // 61: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	54, // 62: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	54, // 63: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	54, // 64: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	54, // 65: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	54, // 66: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
-	54, // 67: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
-	54, // 68: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	42, // 69: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	43, // 70: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	54, // 71: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	54, // 72: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	54, // 73: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	45, // 74: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	46, // 75: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	6,  // 76: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	48, // 77: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	49, // 78: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	50, // 79: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	80, // [80:80] is the sub-list for method output_type
-	80, // [80:80] is the sub-list for method input_type
-	80, // [80:80] is the sub-list for extension type_name
-	80, // [80:80] is the sub-list for extension extendee
-	0,  // [0:80] is the sub-list for field type_name
+	7,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
+	10, // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
+	8,  // 2: mcpx.config.v1.McpxServerConfig.frontend_services:type_name -> mcpx.config.v1.FrontendService
+	9,  // 3: mcpx.config.v1.McpxServerConfig.service_bindings:type_name -> mcpx.config.v1.ServiceBinding
+	2,  // 4: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
+	34, // 5: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
+	46, // 6: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	39, // 7: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
+	38, // 8: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
+	1,  // 9: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
+	40, // 10: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
+	17, // 11: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
+	12, // 12: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
+	11, // 13: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
+	15, // 14: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
+	16, // 15: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
+	13, // 16: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
+	14, // 17: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
+	43, // 18: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
+	50, // 19: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	27, // 20: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
+	36, // 21: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
+	21, // 22: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
+	35, // 23: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	50, // 24: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	22, // 25: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
+	50, // 26: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	23, // 27: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
+	50, // 28: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	35, // 29: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	50, // 30: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	28, // 31: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
+	24, // 32: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
+	37, // 33: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
+	39, // 34: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
+	19, // 35: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
+	18, // 36: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
+	20, // 37: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
+	29, // 38: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
+	50, // 39: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	52, // 40: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	3,  // 41: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
+	30, // 42: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
+	25, // 43: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	26, // 44: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	39, // 45: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31, // 46: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
+	25, // 47: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	26, // 48: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	32, // 49: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
+	25, // 50: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	26, // 51: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	33, // 52: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
+	4,  // 53: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
+	51, // 54: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	25, // 55: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	26, // 56: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	25, // 57: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	26, // 58: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	0,  // 59: mcpx.config.v1.HttpParameterMapping.type:type_name -> mcpx.config.v1.ParameterType
+	53, // 60: mcpx.config.v1.HttpParameterMapping.default_value:type_name -> google.protobuf.Value
+	0,  // 61: mcpx.config.v1.WebsocketParameterMapping.type:type_name -> mcpx.config.v1.ParameterType
+	53, // 62: mcpx.config.v1.WebsocketParameterMapping.default_value:type_name -> google.protobuf.Value
+	0,  // 63: mcpx.config.v1.WebrtcParameterMapping.type:type_name -> mcpx.config.v1.ParameterType
+	53, // 64: mcpx.config.v1.WebrtcParameterMapping.default_value:type_name -> google.protobuf.Value
+	0,  // 65: mcpx.config.v1.StdioParameterMapping.type:type_name -> mcpx.config.v1.ParameterType
+	53, // 66: mcpx.config.v1.StdioParameterMapping.default_value:type_name -> google.protobuf.Value
+	54, // 67: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	54, // 68: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 69: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 70: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 71: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 72: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 73: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 74: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	41, // 75: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	42, // 76: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	54, // 77: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	54, // 78: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	54, // 79: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	44, // 80: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	45, // 81: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	5,  // 82: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	47, // 83: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	48, // 84: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	49, // 85: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	86, // [86:86] is the sub-list for method output_type
+	86, // [86:86] is the sub-list for method input_type
+	86, // [86:86] is the sub-list for extension type_name
+	86, // [86:86] is the sub-list for extension extendee
+	0,  // [0:86] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -8303,7 +8589,7 @@ func file_proto_config_v1_config_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
-			NumEnums:      7,
+			NumEnums:      6,
 			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   0,
