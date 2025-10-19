@@ -18,7 +18,10 @@ package http
 
 import (
 	"context"
+	"crypto/tls"
+	"net"
 	"net/http"
+	"time"
 
 	"github.com/mcpxy/core/pkg/client"
 	"github.com/mcpxy/core/pkg/pool"
@@ -38,7 +41,17 @@ var (
 		minSize, maxSize, idleTimeout int,
 	) (pool.Pool[*client.HttpClientWrapper], error) {
 		factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: &http.Client{}}, nil
+			return &client.HttpClientWrapper{
+				Client: &http.Client{
+					Transport: &http.Transport{
+						DisableKeepAlives: true,
+						TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
+						DialContext: (&net.Dialer{
+							Timeout: 30 * time.Second,
+						}).DialContext,
+					},
+				},
+			}, nil
 		}
 		return pool.New(factory, minSize, maxSize, idleTimeout)
 	}

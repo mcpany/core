@@ -585,10 +585,10 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callDef := configv1.HttpCallDefinition_builder{
-		EndpointPath:      proto.String(endpointPath),
-		OperationId:       proto.String(operationID),
-		Method:            &method,
-		ParameterMappings: params,
+		EndpointPath: proto.String(endpointPath),
+		OperationId:  proto.String(operationID),
+		Method:       &method,
+		Parameters:   params,
 	}.Build()
 
 	configBuilder := configv1.UpstreamServiceConfig_builder{

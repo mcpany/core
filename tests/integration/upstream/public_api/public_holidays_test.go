@@ -46,7 +46,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	// 2. Register Public Holidays Service with MCPXY
 	const serviceID = "e2e_public_holidays"
 	serviceURL := "https://date.nager.at"
-	endpointPath := "/api/v3/PublicHolidays/{year}/{countryCode}"
+	endpointPath := "/api/v3/PublicHolidays/{{year}}/{{countryCode}}"
 	operationID := "getPublicHolidays"
 	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
@@ -64,16 +64,12 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 		EndpointPath: proto.String(endpointPath),
 		OperationId:  proto.String(operationID),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-		ParameterMappings: []*configv1.HttpParameterMapping{
+		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
-				InputParameterName:  proto.String("year"),
-				Location:            configv1.HttpParameterMapping_PATH.Enum(),
-				TargetParameterName: proto.String("year"),
+				Name: proto.String("year"),
 			}.Build(),
 			configv1.HttpParameterMapping_builder{
-				InputParameterName:  proto.String("countryCode"),
-				Location:            configv1.HttpParameterMapping_PATH.Enum(),
-				TargetParameterName: proto.String("countryCode"),
+				Name: proto.String("countryCode"),
 			}.Build(),
 		},
 		OutputTransformer: outputTransformer,
