@@ -10,7 +10,7 @@ MCPXY_ROOT_DIR="$(git rev-parse --show-toplevel)"
 MCPXY_SERVER_BIN="${MCPXY_ROOT_DIR}/build/bin/server"
 
 # The path to the configuration file for this example.
-CONFIG_PATH="./config/"
+CONFIG_PATH="$(dirname "$0")/config/"
 
 # Check if the mcpxy server binary exists.
 if [ ! -f "${MCPXY_SERVER_BIN}" ]; then

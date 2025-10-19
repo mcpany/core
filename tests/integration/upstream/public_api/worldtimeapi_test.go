@@ -51,19 +51,15 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/api/timezone/{area}/{location}"),
+		EndpointPath: proto.String("/api/timezone/{{area}}/{{location}}"),
 		OperationId:  proto.String(operationID),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
-		ParameterMappings: []*configv1.HttpParameterMapping{
+		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
-				InputParameterName:  proto.String("area"),
-				Location:            configv1.HttpParameterMapping_PATH.Enum(),
-				TargetParameterName: proto.String("area"),
+				Name: proto.String("area"),
 			}.Build(),
 			configv1.HttpParameterMapping_builder{
-				InputParameterName:  proto.String("location"),
-				Location:            configv1.HttpParameterMapping_PATH.Enum(),
-				TargetParameterName: proto.String("location"),
+				Name: proto.String("location"),
 			}.Build(),
 		},
 	}.Build()

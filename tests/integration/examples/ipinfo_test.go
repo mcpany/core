@@ -43,7 +43,7 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	// --- 2. Register IP Info Service with MCPXY ---
 	const serviceID = "e2e_ipinfo"
 	serviceURL := "http://ip-api.com"
-	endpointPath := "/json/{ip}"
+	endpointPath := "/json/{{ip}}"
 	operationID := "getIPInfo"
 
 	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, serviceURL)
@@ -51,16 +51,14 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	method := configv1.HttpCallDefinition_HTTP_METHOD_GET
 	param := configv1.HttpParameterMapping_builder{
-		InputParameterName:  proto.String("ip"),
-		Location:            configv1.HttpParameterMapping_PATH.Enum(),
-		TargetParameterName: proto.String("ip"),
+		Name: proto.String("ip"),
 	}.Build()
 
 	callDef := configv1.HttpCallDefinition_builder{
-		OperationId:       proto.String(operationID),
-		EndpointPath:      proto.String(endpointPath),
-		Method:            &method,
-		ParameterMappings: []*configv1.HttpParameterMapping{param},
+		OperationId:  proto.String(operationID),
+		EndpointPath: proto.String(endpointPath),
+		Method:       &method,
+		Parameters:   []*configv1.HttpParameterMapping{param},
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{

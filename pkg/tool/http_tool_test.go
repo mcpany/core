@@ -296,17 +296,17 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		}, 1, 1, 0)
 		poolManager.Register("test-service", p)
 
-		methodAndURL := "GET " + server.URL + "/users/{userID}"
+		methodAndURL := "GET " + server.URL + "/users/{{userID}}"
 		mcpTool := v1.Tool_builder{
 			UnderlyingMethodFqn: &methodAndURL,
 		}.Build()
 
-		paramMapping := &configv1.HttpParameterMapping{}
-		paramMapping.SetLocation(configv1.HttpParameterMapping_PATH)
-		paramMapping.SetInputParameterName("userID")
-		paramMapping.SetTargetParameterName("userID")
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetParameterMappings([]*configv1.HttpParameterMapping{paramMapping})
+		paramMapping := configv1.HttpParameterMapping_builder{
+			Name: lo.ToPtr("userID"),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			Parameters: []*configv1.HttpParameterMapping{paramMapping},
+		}.Build()
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
 
@@ -317,10 +317,12 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("output_transformation_template_error", func(t *testing.T) {
-		outputTransformer := &configv1.OutputTransformer{}
-		outputTransformer.SetTemplate("{{.invalid")
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetOutputTransformer(outputTransformer)
+		outputTransformer := configv1.OutputTransformer_builder{
+			Template: lo.ToPtr("{{.invalid"),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			OutputTransformer: outputTransformer,
+		}.Build()
 
 		httpTool, server := setupHTTPToolTest(t, handler, callDef)
 		defer server.Close()
@@ -332,11 +334,13 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("input_transformation_render_error", func(t *testing.T) {
-		callDef := &configv1.HttpCallDefinition{}
-		it := &configv1.InputTransformer{}
-		// This template will cause a render error because we are trying to index a number.
-		it.SetTemplate(`{"key": "{{ index .some_key 0 }}"}`)
-		callDef.SetInputTransformer(it)
+		it := configv1.InputTransformer_builder{
+			// This template will cause a render error because we are trying to index a number.
+			Template: lo.ToPtr(`{"key": "{{ index .some_key 0 }}"}`),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			InputTransformer: it,
+		}.Build()
 
 		httpTool, server := setupHTTPToolTest(t, handler, callDef)
 		defer server.Close()
@@ -349,13 +353,14 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("output_transformation_parse_error", func(t *testing.T) {
-		format := configv1.OutputTransformer_JSON
-		outputTransformer := &configv1.OutputTransformer{}
-		outputTransformer.SetFormat(format)
-		outputTransformer.SetExtractionRules(map[string]string{"key": ".key"})
+		outputTransformer := configv1.OutputTransformer_builder{
+			Format:          configv1.OutputTransformer_JSON.Enum(),
+			ExtractionRules: map[string]string{"key": ".key"},
+		}.Build()
 
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetOutputTransformer(outputTransformer)
+		callDef := configv1.HttpCallDefinition_builder{
+			OutputTransformer: outputTransformer,
+		}.Build()
 
 		// Handler returns invalid JSON
 		errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

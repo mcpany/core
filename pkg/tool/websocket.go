@@ -38,7 +38,7 @@ type WebsocketTool struct {
 	poolManager       *pool.Manager
 	serviceKey        string
 	authenticator     auth.UpstreamAuthenticator
-	parameterMappings []*configv1.WebsocketParameterMapping
+	parameters        []*configv1.WebsocketParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 }
@@ -63,7 +63,7 @@ func NewWebsocketTool(
 		poolManager:       poolManager,
 		serviceKey:        serviceKey,
 		authenticator:     authenticator,
-		parameterMappings: callDefinition.GetParameterMappings(),
+		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 	}

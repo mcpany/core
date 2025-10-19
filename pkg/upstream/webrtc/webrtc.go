@@ -120,8 +120,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			continue
 		}
 
-		for _, param := range wrtcDef.GetParameterMappings() {
-			properties.Fields[param.GetInputParameterName()] = structpb.NewStringValue("")
+		for _, param := range wrtcDef.GetParameters() {
+			properties.Fields[param.GetName()] = structpb.NewStringValue("")
 		}
 
 		newToolProto := pb.Tool_builder{
