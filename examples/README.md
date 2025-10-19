@@ -17,37 +17,95 @@ make build
 
 This will create the `mcpxy` binary in the `build/bin` directory. All example scripts use this path.
 
-## 2. Running the Examples
+## 2. Creating a Simple MCP Server (Time, Location, and Weather Example)
 
-Each example has a `start.sh` script that starts the MCPXY server with the correct configuration. The upstream service needs to be started separately. Please refer to the `README.md` file in each example's directory for detailed instructions.
+This example demonstrates how to expose multiple public APIs as tools through `mcpxy`.
 
-## 3. Interacting with the Examples using AI Tools
+### Step 1: The `mcpxy` Configuration
 
-The examples are designed to be used with AI tools that can consume MCPXY extensions. Here's a general guide on how to use them with different tools.
+The `mcpxy` configuration file (`upstream/http/config/mcpxy_config.yaml`) tells `mcpxy` how to connect to the upstream public APIs and what tools to expose. Here's what it looks like:
 
-### Gemini CLI
+```yaml
+global_settings:
+  bind_address: "0.0.0.0:8080"
+upstream_services:
+- name: ip-location-service
+  http_service:
+    address: "https://ipapi.co"
+    calls:
+    - operation_id: "getLocation"
+      description: "Gets the user's current location based on their IP address."
+      endpoint_path: "/json/"
+      method: "HTTP_METHOD_GET"
+- name: weather-service
+  http_service:
+    address: "https://api.open-meteo.com"
+    calls:
+    - operation_id: "getWeather"
+      description: "Gets the current weather for a given latitude and longitude."
+      endpoint_path: "/v1/forecast"
+      method: "HTTP_METHOD_GET"
+- name: time-service
+  http_service:
+    address: "http://localhost:8081"
+    calls:
+    - operation_id: "GET/time"
+      endpoint_path: "/time"
+      method: "HTTP_METHOD_GET"
+```
 
-1.  **Configure the Extension:** Open your Gemini CLI configuration file (e.g., `~/.config/gemini/config.yaml`) and add an extension for the example you want to use. The server for the examples usually runs on port `50050`.
+This configuration defines three tools:
+- `getLocation`: Gets the user's location based on their IP address using the `ipapi.co` service.
+- `getWeather`: Gets the current weather for a given latitude and longitude using the `Open-Meteo` API.
+- `GET/time`: Gets the current time from a local Go server.
 
-    ```yaml
-    extensions:
-      mcpxy-example:
-        http:
-          address: http://localhost:50050
+### Step 2: Running the Example
+
+1.  **Run the `mcpxy` Server**
+
+    In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
+
+    ```bash
+    ./start.sh
     ```
 
-2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the MCPXY server.
+    The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
 
-3.  **Call a Tool:** Use the `gemini call tool` command to interact with the service. Refer to the specific example's `README.md` for the correct tool name and arguments.
+    *(Note: The local time server is not required for the location and weather tools to function.)*
 
-### Claude Desktop
+### Step 3: Interacting with the Tools (Chained Example)
 
-(Instructions for Claude Desktop would go here. I am not familiar with Claude Desktop, so I will leave this as a placeholder.)
+This example showcases how an AI can chain tools together to perform a more complex task.
 
-### VS Code
+#### Using Gemini CLI
 
-(Instructions for VS Code extensions would go here. I am not familiar with VS Code extensions that consume MCPXY, so I will leave this as a placeholder.)
+1.  **Add the MCP Server to Gemini CLI:**
 
-### Other Tools
+    Use the `gemini mcp add` command to register the running `mcpxy` server. Since the server is already running, we can use a placeholder command like `sleep infinity`.
 
-The general principle is to find the tool's configuration file and add an HTTP extension pointing to the MCPXY server's address (usually `http://localhost:8080` in these examples).
+    ```bash
+    gemini mcp add mcpxy-http-example --transport http --url http://localhost:8080 "sleep" "infinity"
+    ```
+
+2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service/-/getLocation` and `weather-service/-/getWeather`.
+
+3.  **Call the `getLocation` Tool:** First, get the current location.
+
+    ```bash
+    gemini call tool ip-location-service/-/getLocation
+    ```
+
+    You should receive a JSON response with your location information, including `latitude` and `longitude`.
+
+4.  **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
+
+    ```bash
+    # Replace with the actual latitude and longitude from the previous step
+    gemini call tool weather-service/-/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE current_weather=true
+    ```
+
+    This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
+
+## 3. Running Other Examples
+
+Each example has a `start.sh` script that starts the MCPXY server with the correct configuration. The upstream service needs to be started separately. Please refer to the `README.md` file in each example's directory for detailed instructions.
