@@ -26,6 +26,125 @@ message McpxServerConfig {
   repeated ServiceBinding service_bindings = 4;
 }
 
+// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
+message HttpCallDefinition {
+  enum HttpMethod {
+    HTTP_METHOD_UNSPECIFIED = 0;
+    HTTP_METHOD_GET = 1;
+    HTTP_METHOD_POST = 2;
+    HTTP_METHOD_PUT = 3;
+    HTTP_METHOD_DELETE = 4;
+    HTTP_METHOD_PATCH = 5;
+  }
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // The path of the HTTP endpoint (e.g., "/users/{userId}").
+  string endpoint_path = 2;
+  // The HTTP method to use for the request.
+  HttpMethod method = 3;
+  // Defines the parameters for the HTTP request.
+  repeated HttpParameterMapping parameters = 5;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 6;
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 7;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 8;
+}
+
+// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
+message WebsocketCallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // Defines the parameters for the websocket message.
+  repeated WebsocketParameterMapping parameters = 3;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 4;
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 5;
+}
+
+// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
+message WebrtcCallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // Defines the parameters for the webrtc message.
+  repeated WebrtcParameterMapping parameters = 3;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 4;
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 5;
+}
+
+// StdioCallDefinition describes how to map an MCP call to a stdio command.
+message StdioCallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // Defines the parameters for the stdio command.
+  repeated StdioParameterMapping parameters = 2;
+}
+
+// InputTransformer defines how to render a template from input parameters.
+message InputTransformer {
+  // A text template to be rendered.
+  // This is used for generating the request body for POST/PUT requests.
+  // The template engine is compatible with Jinja2.
+  string template = 1;
+}
+
+// OutputTransformer defines how to parse an output text into structured data.
+message OutputTransformer {
+  enum OutputFormat {
+    JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
+    XML = 1;  // The output is XML, which will be parsed using XPath expressions.
+    TEXT = 2; // The output is plain text, which will be parsed using regex.
+  }
+  // The format of the upstream service's output.
+  OutputFormat format = 1;
+  // A map of field names to the extraction expressions.
+  // The interpretation of the expression depends on the 'format':
+  // - JSON: JSONPath expressions.
+  // - XML: XPath expressions.
+  // - TEXT: Regular expressions (first capture group is used).
+  map<string, string> extraction_rules = 2;
+  // An optional template to render the extracted data into a final string.
+  // If this is not provided, the raw extracted data will be returned.
+  string template = 3;
+}
+
+// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
+message GrpcCallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // The fully-qualified gRPC service name.
+  string service = 2;
+  // The name of the gRPC method to call.
+  string method = 3;
+  // Note: For gRPC, parameter mapping is typically done by matching field names
+  // between the MCP input schema and the gRPC request message.
+}
+
+// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
+// This is often used for discovery rather than manual configuration.
+message OpenAPICallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 2;
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 3;
+}
+
+// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
+message MCPCallDefinition {
+  // Common tool schema.
+  ToolSchema schema = 1;
+  // An optional input transformer to generate the request body.
+  InputTransformer input_transformer = 2;
+  // An optional output transformer to parse the response body.
+  OutputTransformer output_transformer = 3;
+}
+
 // GlobalSettings contains server-wide operational parameters.
 message GlobalSettings {
   enum LogLevel {
@@ -222,8 +341,8 @@ message McpStreamableHttpConnection {
 
 // --- Call & Tool Definitions ---
 
-// ToolAnnotation provides common metadata for a tool.
-message ToolAnnotation {
+// ToolSchema provides common metadata for a tool.
+message ToolSchema {
   // A human-readable title for the tool.
   string title = 1;
   // If true, the tool does not modify its environment.
@@ -248,6 +367,16 @@ message ToolAnnotation {
   string name = 6;
   // A human-readable description of what the tool does.
   string description = 7;
+}
+
+// ParameterType defines the data type of a parameter.
+enum ParameterType {
+  STRING = 0;
+  NUMBER = 1;
+  INTEGER = 2;
+  BOOLEAN = 3;
+  ARRAY = 4;
+  OBJECT = 5;
 }
 
 // ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
@@ -276,157 +405,28 @@ message ToolDefinition {
   bool is_stream = 4;
 }
 
-// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
-message HttpCallDefinition {
-  enum HttpMethod {
-    HTTP_METHOD_UNSPECIFIED = 0;
-    HTTP_METHOD_GET = 1;
-    HTTP_METHOD_POST = 2;
-    HTTP_METHOD_PUT = 3;
-    HTTP_METHOD_DELETE = 4;
-    HTTP_METHOD_PATCH = 5;
-  }
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 2;
-  // The HTTP method to use for the request.
-  HttpMethod method = 3;
-  // Defines the parameters for the HTTP request.
-  repeated HttpParameterMapping parameters = 5;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 6;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 7;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 8;
-}
-
-// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
-message WebsocketCallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // Defines the parameters for the websocket message.
-  repeated WebsocketParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-}
-
-// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
-message WebrtcCallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // Defines the parameters for the webrtc message.
-  repeated WebrtcParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-}
-
-// StdioCallDefinition describes how to map an MCP call to a stdio command.
-message StdioCallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // Defines the parameters for the stdio command.
-  repeated StdioParameterMapping parameters = 2;
-}
-
-// InputTransformer defines how to render a template from input parameters.
-message InputTransformer {
-  // A text template to be rendered.
-  // This is used for generating the request body for POST/PUT requests.
-  // The template engine is compatible with Jinja2.
-  string template = 1;
-}
-
-// OutputTransformer defines how to parse an output text into structured data.
-message OutputTransformer {
-  enum OutputFormat {
-    JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
-    XML = 1;  // The output is XML, which will be parsed using XPath expressions.
-    TEXT = 2; // The output is plain text, which will be parsed using regex.
-  }
-  // The format of the upstream service's output.
-  OutputFormat format = 1;
-  // A map of field names to the extraction expressions.
-  // The interpretation of the expression depends on the 'format':
-  // - JSON: JSONPath expressions.
-  // - XML: XPath expressions.
-  // - TEXT: Regular expressions (first capture group is used).
-  map<string, string> extraction_rules = 2;
-  // An optional template to render the extracted data into a final string.
-  // If this is not provided, the raw extracted data will be returned.
-  string template = 3;
-}
-
-// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
-message GrpcCallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // The fully-qualified gRPC service name.
-  string service = 2;
-  // The name of the gRPC method to call.
-  string method = 3;
-  // Note: For gRPC, parameter mapping is typically done by matching field names
-  // between the MCP input schema and the gRPC request message.
-}
-
-// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
-// This is often used for discovery rather than manual configuration.
-message OpenAPICallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-}
-
-// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
-message MCPCallDefinition {
-  // Common tool annotation.
-  ToolAnnotation annotation = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-}
-
-// ParameterType defines the data type of a parameter.
-enum ParameterType {
-  STRING = 0;
-  NUMBER = 1;
-  INTEGER = 2;
-  BOOLEAN = 3;
-  ARRAY = 4;
-  OBJECT = 5;
-}
-
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 message HttpParameterMapping {
   // The schema for the parameter.
-  ParameterSchema parameter_schema = 1;
+  ParameterSchema schema = 1;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 message WebsocketParameterMapping {
   // The schema for the parameter.
-  ParameterSchema parameter_schema = 1;
+  ParameterSchema schema = 1;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 message WebrtcParameterMapping {
   // The schema for the parameter.
-  ParameterSchema parameter_schema = 1;
+  ParameterSchema schema = 1;
 }
 
 // StdioParameterMapping defines how to pass an input parameter to a stdio process.
 message StdioParameterMapping {
   // The schema for the parameter.
-  ParameterSchema parameter_schema = 1;
+  ParameterSchema schema = 1;
 }
 
 

@@ -113,10 +113,10 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	}
 
 	for i, wsDef := range definitions {
-		annotation := wsDef.GetAnnotation()
-		toolNamePart := annotation.GetName()
+		schema := wsDef.GetSchema()
+		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(annotation.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -131,7 +131,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 		}
 
 		for _, param := range wsDef.GetParameters() {
-			properties.Fields[param.GetParameterSchema().GetName()] = structpb.NewStringValue("")
+			properties.Fields[param.GetSchema().GetName()] = structpb.NewStringValue("")
 		}
 
 		newToolProto := pb.Tool_builder{
@@ -151,8 +151,8 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(annotation.GetName()),
-			Description: proto.String(annotation.GetDescription()),
+			Name:        proto.String(schema.GetName()),
+			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools

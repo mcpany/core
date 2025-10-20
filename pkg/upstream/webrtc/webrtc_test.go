@@ -113,7 +113,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		callDef := configv1.WebrtcCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name:        proto.String("echo"),
 				Description: proto.String("Echoes a message"),
 			}.Build(),
@@ -175,7 +175,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		callDef := configv1.WebrtcCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 		}.Build()

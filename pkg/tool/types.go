@@ -247,7 +247,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	for _, param := range t.parameters {
-		schema := param.GetParameterSchema()
+		schema := param.GetSchema()
 		if val, ok := inputs[schema.GetName()]; ok {
 			url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
 			delete(inputs, schema.GetName())

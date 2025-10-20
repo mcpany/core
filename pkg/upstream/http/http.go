@@ -151,10 +151,10 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 	}
 
 	for i, httpDef := range definitions {
-		annotation := httpDef.GetAnnotation()
-		toolNamePart := annotation.GetName()
+		schema := httpDef.GetSchema()
+		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(annotation.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -169,21 +169,21 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		}
 
 		for _, param := range httpDef.GetParameters() {
-			schema := param.GetParameterSchema()
+			paramSchema := param.GetSchema()
 			paramStruct := &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(schema.GetType())]),
-					"description": structpb.NewStringValue(schema.GetDescription()),
+					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(paramSchema.GetType())]),
+					"description": structpb.NewStringValue(paramSchema.GetDescription()),
 				},
 			}
-			properties.Fields[schema.GetName()] = structpb.NewStructValue(paramStruct)
+			properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
 		}
 
 		requiredParams := []string{}
 		for _, param := range httpDef.GetParameters() {
-			schema := param.GetParameterSchema()
-			if schema.GetIsRequired() {
-				requiredParams = append(requiredParams, schema.GetName())
+			paramSchema := param.GetSchema()
+			if paramSchema.GetIsRequired() {
+				requiredParams = append(requiredParams, paramSchema.GetName())
 			}
 		}
 
@@ -224,8 +224,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(annotation.GetName()),
-			Description: proto.String(annotation.GetDescription()),
+			Name:        proto.String(schema.GetName()),
+			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools
