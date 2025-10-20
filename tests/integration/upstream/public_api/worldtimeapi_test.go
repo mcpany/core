@@ -52,14 +52,20 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/api/timezone/{{area}}/{{location}}"),
-		OperationId:  proto.String(operationID),
-		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Annotation: configv1.ToolAnnotation_builder{
+			Name: proto.String(operationID),
+		}.Build(),
+		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
-				Name: proto.String("area"),
+				ParameterSchema: configv1.ParameterSchema_builder{
+					Name: proto.String("area"),
+				}.Build(),
 			}.Build(),
 			configv1.HttpParameterMapping_builder{
-				Name: proto.String("location"),
+				ParameterSchema: configv1.ParameterSchema_builder{
+					Name: proto.String("location"),
+				}.Build(),
 			}.Build(),
 		},
 	}.Build()

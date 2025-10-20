@@ -301,7 +301,9 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		}.Build()
 
 		paramMapping := configv1.HttpParameterMapping_builder{
-			Name: lo.ToPtr("userID"),
+			ParameterSchema: configv1.ParameterSchema_builder{
+				Name: lo.ToPtr("userID"),
+			}.Build(),
 		}.Build()
 		callDef := configv1.HttpCallDefinition_builder{
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
