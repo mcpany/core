@@ -30,6 +30,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
@@ -111,9 +112,12 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 
 		upstream := NewWebrtcUpstream(poolManager)
 
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetOperationId("echo")
-		callDef.SetDescription("Echoes a message")
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Name:        proto.String("echo"),
+				Description: proto.String("Echoes a message"),
+			}.Build(),
+		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
 		webrtcService.SetAddress("http://localhost:8080/signal")
@@ -170,8 +174,11 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		var resourceManager resource.ResourceManagerInterface
 		upstream := NewWebrtcUpstream(poolManager)
 
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetOperationId("echo")
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Name: proto.String("echo"),
+			}.Build(),
+		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
 		webrtcService.SetAddress("http://localhost:8080/signal")

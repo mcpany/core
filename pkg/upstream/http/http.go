@@ -151,9 +151,10 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 	}
 
 	for i, httpDef := range definitions {
-		toolNamePart := httpDef.GetOperationId()
+		annotation := httpDef.GetAnnotation()
+		toolNamePart := annotation.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(httpDef.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(annotation.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -168,19 +169,21 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		}
 
 		for _, param := range httpDef.GetParameters() {
+			schema := param.GetParameterSchema()
 			paramStruct := &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(param.GetType())]),
-					"description": structpb.NewStringValue(param.GetDescription()),
+					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(schema.GetType())]),
+					"description": structpb.NewStringValue(schema.GetDescription()),
 				},
 			}
-			properties.Fields[param.GetName()] = structpb.NewStructValue(paramStruct)
+			properties.Fields[schema.GetName()] = structpb.NewStructValue(paramStruct)
 		}
 
 		requiredParams := []string{}
 		for _, param := range httpDef.GetParameters() {
-			if param.GetIsRequired() {
-				requiredParams = append(requiredParams, param.GetName())
+			schema := param.GetParameterSchema()
+			if schema.GetIsRequired() {
+				requiredParams = append(requiredParams, schema.GetName())
 			}
 		}
 
@@ -221,8 +224,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(httpDef.GetOperationId()),
-			Description: proto.String(httpDef.GetDescription()),
+			Name:        proto.String(annotation.GetName()),
+			Description: proto.String(annotation.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools
