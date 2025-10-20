@@ -6,9 +6,9 @@ This example demonstrates how to wrap a simple shell script and expose it as a t
 
 This example consists of three main components:
 
-1.  **Upstream Script**: A simple shell script (`server/hello.sh`) that prints a greeting.
-2.  **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to execute the script.
-3.  **`mcpxy` Server**: The `mcpxy` instance that runs the script and returns its output.
+1. **Upstream Script**: A simple shell script (`server/hello.sh`) that prints a greeting.
+2. **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to execute the script.
+3. **`mcpxy` Server**: The `mcpxy` instance that runs the script and returns its output.
 
 ## Running the Example
 
@@ -44,33 +44,33 @@ Once the server is running, you can connect your AI assistant to `mcpxy`.
 
 ### Using Gemini CLI
 
-1.  **Add `mcpxy` as an MCP Server:**
-    Register the running `mcpxy` process with the Gemini CLI.
+1. **Add `mcpxy` as an MCP Server:**
+   Register the running `mcpxy` process with the Gemini CLI.
 
-    ```bash
-    gemini mcp add mcpxy-command-hello --address http://localhost:50050 --command "sleep" "infinity"
-    ```
+   ```bash
+   gemini mcp add mcpxy-command-hello --address http://localhost:50050 --command "sleep" "infinity"
+   ```
 
-2.  **List Available Tools:**
-    Ask Gemini to list the tools.
+2. **List Available Tools:**
+   Ask Gemini to list the tools.
 
-    ```bash
-    gemini list tools
-    ```
+   ```bash
+   gemini list tools
+   ```
 
-    You should see the `command-hello-world/-/hello` tool in the list.
+   You should see the `command-hello-world/-/hello` tool in the list.
 
-3.  **Call the Tool:**
-    Call the tool to execute the script.
+3. **Call the Tool:**
+   Call the tool to execute the script.
 
-    ```bash
-    gemini call tool command-hello-world/-/hello
-    ```
+   ```bash
+   gemini call tool command-hello-world/-/hello
+   ```
 
-    You should see the output of the script:
+   You should see the output of the script:
 
-    ```
-    Hello, World!
-    ```
+   ```
+   Hello, World!
+   ```
 
 This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.

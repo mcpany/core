@@ -42,29 +42,34 @@ Before you begin, ensure you have the following installed:
 
 ### Installation & Setup
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/mcpxy/core.git
-    cd core
-    ```
+   ```bash
+   git clone https://github.com/mcpxy/core.git
+   cd core
+   ```
 
-2.  **Build the application:**
-    This command will install dependencies, generate code, and build the `mcpxy` binary.
-    ```bash
-    make build
-    ```
-    The binary will be located at `./build/bin/server`.
+2. **Build the application:**
+   This command will install dependencies, generate code, and build the `mcpxy` binary.
+
+   ```bash
+   make build
+   ```
+
+   The binary will be located at `./build/bin/server`.
 
 ### Running the Server
 
 You can run the MCP-XY server directly or by using a `make` command.
 
 - **Directly:**
+
   ```bash
   ./build/bin/server
   ```
+
 - **Via Make:**
+
   ```bash
   make run
   ```
@@ -109,6 +114,7 @@ The server also supports configuration via environment variables. For example, y
 MCP-XY supports a variety of advanced configuration options, including:
 
 - **gRPC Services**: Register a gRPC service using reflection.
+
   ```yaml
   upstreamServices:
     - name: "my-grpc-service"
@@ -117,7 +123,9 @@ MCP-XY supports a variety of advanced configuration options, including:
         reflection:
           enabled: true
   ```
+
 - **OpenAPI Services**: Register a service from an OpenAPI specification.
+
   ```yaml
   upstreamServices:
     - name: "my-openapi-service"
@@ -125,7 +133,9 @@ MCP-XY supports a variety of advanced configuration options, including:
         spec:
           path: "./openapi.json"
   ```
+
 - **Authentication**: Configure authentication for an upstream service.
+
   ```yaml
   upstreamServices:
     - name: "my-secure-service"
@@ -170,29 +180,30 @@ curl -X POST -H "Content-Type: application/json" \
 
 For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpxy` server along with a sample `http-echo-server` to demonstrate how `mcpxy` connects to other services in a Docker network.
 
-1.  **Start the services:**
+1. **Start the services:**
 
-    ```bash
-    docker compose up --build
-    ```
+   ```bash
+   docker compose up --build
+   ```
 
-    This command will build the Docker images for both the `mcpxy` server and the echo server, and then start them. The `mcpxy` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
+   This command will build the Docker images for both the `mcpxy` server and the echo server, and then start them. The `mcpxy` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
 
-2.  **Test the setup:**
-    Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpxy` JSON-RPC API:
+2. **Test the setup:**
+   Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpxy` JSON-RPC API:
 
-    ```bash
-    curl -X POST -H "Content-Type: application/json" \
-      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
-      http://localhost:50050
-    ```
+   ```bash
+   curl -X POST -H "Content-Type: application/json" \
+     -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
+     http://localhost:50050
+   ```
 
-    You should receive a response echoing your message.
+   You should receive a response echoing your message.
 
-3.  **Shut down the services:**
-    ```bash
-    docker compose down
-    ```
+3. **Shut down the services:**
+
+   ```bash
+   docker compose down
+   ```
 
 ## Running with Helm
 

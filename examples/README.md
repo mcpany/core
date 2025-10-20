@@ -62,15 +62,17 @@ This configuration defines three tools:
 
 ### Step 2: Running the Example
 
-1.  **Run the `mcpxy` Server**
+1. **Run the `mcpxy` Server**
 
-    In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
+   In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
 
-    ```bash
-    ./start.sh
-    ```
+   ```bash
+   ./start.sh
+   ```
 
-    The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
+   The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
+
+   _(Note: The local time server is not required for the location and weather tools to function.)_
 
 ### Step 3: Interacting with the Tools (Chained Example)
 
@@ -78,7 +80,7 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 #### Using Gemini CLI
 
-1.  **Add the MCP Server to Gemini CLI:**
+1. **Add the MCP Server to Gemini CLI:**
 
     Use the `gemini mcp add` command to register the running `mcpxy` server.
 
@@ -96,14 +98,14 @@ This example showcases how an AI can chain tools together to perform a more comp
 
     You should receive a JSON response with the location information, including `latitude` and `longitude`.
 
-4.  **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
+4. **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
 
     ```bash
     # Replace with the actual latitude and longitude from the previous step
     gemini -m gemini-2.5-flash -p "What is the weather at latitude YOUR_LATITUDE and longitude YOUR_LONGITUDE?"
     ```
 
-    This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
+   This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
 
 ## 3. Running Other Examples
 
