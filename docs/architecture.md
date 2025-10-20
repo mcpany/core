@@ -39,8 +39,8 @@ graph TD
 
 The diagram above illustrates the two main workflows in MCP-X:
 
-1.  **Service Registration**: Services can be registered with the MCP-X server either dynamically via the gRPC-based `Registration API` or statically by defining them in a configuration file that is loaded at startup.
-2.  **Tool Execution**: Clients interact with the `MCP Router API` to list and execute the tools that have been made available by the registered services. The MCP-X server then dispatches these calls to the appropriate upstream service.
+1. **Service Registration**: Services can be registered with the MCP-X server either dynamically via the gRPC-based `Registration API` or statically by defining them in a configuration file that is loaded at startup.
+2. **Tool Execution**: Clients interact with the `MCP Router API` to list and execute the tools that have been made available by the registered services. The MCP-X server then dispatches these calls to the appropriate upstream service.
 
 ## Core Concepts
 

@@ -21,3 +21,15 @@ repos:
     rev: v0.1.30
     hooks:
     -   id: helmlint
+-   repo: local
+    hooks:
+    -   id: shellcheck
+        name: ShellCheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.31.1
+    hooks:
+    -   id: markdownlint
+        args: [--fix, --disable, MD013]
