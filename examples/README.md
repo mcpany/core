@@ -82,28 +82,28 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 1. **Add the MCP Server to Gemini CLI:**
 
-    Use the `gemini mcp add` command to register the running `mcpxy` server.
+   Use the `gemini mcp add` command to register the running `mcpxy` server.
 
-    ```bash
-    gemini mcp add mcpxy-http-example --transport http http://localhost:50050
-    ```
+   ```bash
+   gemini mcp add mcpxy-http-example --transport http http://localhost:50050
+   ```
 
-2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.
+2. **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.
 
-3.  **Call the `getLocation` Tool:** First, get the location for a given IP address.
+3. **Call the `getLocation` Tool:** First, get the location for a given IP address.
 
-    ```bash
-    gemini -m gemini-2.5-flash -p "What is the location of the IP address 8.8.8.8?"
-    ```
+   ```bash
+   gemini -m gemini-2.5-flash -p "What is the location of the IP address 8.8.8.8?"
+   ```
 
-    You should receive a JSON response with the location information, including `latitude` and `longitude`.
+   You should receive a JSON response with the location information, including `latitude` and `longitude`.
 
 4. **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
 
-    ```bash
-    # Replace with the actual latitude and longitude from the previous step
-    gemini -m gemini-2.5-flash -p "What is the weather at latitude YOUR_LATITUDE and longitude YOUR_LONGITUDE?"
-    ```
+   ```bash
+   # Replace with the actual latitude and longitude from the previous step
+   gemini -m gemini-2.5-flash -p "What is the weather at latitude YOUR_LATITUDE and longitude YOUR_LONGITUDE?"
+   ```
 
    This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
 

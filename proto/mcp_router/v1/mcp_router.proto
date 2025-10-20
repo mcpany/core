@@ -23,6 +23,7 @@ message Tool {
      InputSchema input_schema = 10;
      ToolAnnotations annotations = 11;
      bool is_stream = 12;
+     OutputSchema output_schema = 13;
 }
 
 message Field {
@@ -34,14 +35,32 @@ message Field {
 message InputSchema {
      string type = 1; // e.g., "object"
      google.protobuf.Struct properties = 2;
-    repeated string required = 3;
+}
+
+message OutputSchema {
+     string type = 1; // e.g., "object"
+     google.protobuf.Struct properties = 2;
 }
 
 message ToolAnnotations {
      string title = 1;
+     // If true, the tool does not modify its environment.
+     // Default: false
      bool read_only_hint = 2;
+     // If true, the tool may perform destructive updates to its environment. If
+     // false, the tool performs only additive updates.
+     // (This property is meaningful only when ReadOnlyHint == false.)
+     // Default: true
      bool destructive_hint = 3;
+     // If true, calling the tool repeatedly with the same arguments will have no
+     // additional effect on the its environment.
+     // (This property is meaningful only when ReadOnlyHint == false.)
+     // Default: false
      bool idempotent_hint = 4;
+     // If true, this tool may interact with an "open world" of external entities. If
+     // false, the tool's domain of interaction is closed. For example, the world of
+     // a web search tool is open, whereas that of a memory tool is not.
+     // Default: true
      bool open_world_hint = 5;
 }
 
