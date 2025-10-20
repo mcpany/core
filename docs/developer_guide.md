@@ -54,8 +54,8 @@ MCP-XY allows you to extend its capabilities by registering external services, w
 
 Services can be registered with MCP-XY in two ways:
 
-1.  **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpxy/v1/registration.proto`) provides an API for registering services at runtime.
-2.  **Statically via a configuration file**: Services can be defined in a YAML configuration file and loaded when the server starts.
+1. **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpxy/v1/registration.proto`) provides an API for registering services at runtime.
+2. **Statically via a configuration file**: Services can be defined in a YAML configuration file and loaded when the server starts.
 
 ### Service Configuration
 

@@ -62,17 +62,17 @@ This configuration defines three tools:
 
 ### Step 2: Running the Example
 
-1.  **Run the `mcpxy` Server**
+1. **Run the `mcpxy` Server**
 
-    In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
+   In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
 
-    ```bash
-    ./start.sh
-    ```
+   ```bash
+   ./start.sh
+   ```
 
-    The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
+   The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
 
-    _(Note: The local time server is not required for the location and weather tools to function.)_
+   _(Note: The local time server is not required for the location and weather tools to function.)_
 
 ### Step 3: Interacting with the Tools (Chained Example)
 
@@ -80,32 +80,32 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 #### Using Gemini CLI
 
-1.  **Add the MCP Server to Gemini CLI:**
+1. **Add the MCP Server to Gemini CLI:**
 
-    Use the `gemini mcp add` command to register the running `mcpxy` server. Since the server is already running, we can use a placeholder command like `sleep infinity`.
+   Use the `gemini mcp add` command to register the running `mcpxy` server. Since the server is already running, we can use a placeholder command like `sleep infinity`.
 
-    ```bash
-    gemini mcp add mcpxy-http-example --transport http --url http://localhost:8080 "sleep" "infinity"
-    ```
+   ```bash
+   gemini mcp add mcpxy-http-example --transport http --url http://localhost:8080 "sleep" "infinity"
+   ```
 
-2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service/-/getLocation` and `weather-service/-/getWeather`.
+2. **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service/-/getLocation` and `weather-service/-/getWeather`.
 
-3.  **Call the `getLocation` Tool:** First, get the current location.
+3. **Call the `getLocation` Tool:** First, get the current location.
 
-    ```bash
-    gemini call tool ip-location-service/-/getLocation
-    ```
+   ```bash
+   gemini call tool ip-location-service/-/getLocation
+   ```
 
-    You should receive a JSON response with your location information, including `latitude` and `longitude`.
+   You should receive a JSON response with your location information, including `latitude` and `longitude`.
 
-4.  **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
+4. **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
 
-    ```bash
-    # Replace with the actual latitude and longitude from the previous step
-    gemini call tool weather-service/-/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE current_weather=true
-    ```
+   ```bash
+   # Replace with the actual latitude and longitude from the previous step
+   gemini call tool weather-service/-/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE current_weather=true
+   ```
 
-    This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
+   This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
 
 ## 3. Running Other Examples
 

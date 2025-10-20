@@ -44,6 +44,7 @@ GOIMPORTS_BIN := $(TOOL_INSTALL_DIR)/goimports
 PRE_COMMIT_VERSION := 4.3.0
 PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
+SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
 # ==============================================================================
 # Release Targets
 # ==============================================================================
@@ -185,6 +186,23 @@ prepare:
 			echo "Helm installed successfully."; \
 		else \
 			echo "Helm installation failed."; \
+			exit 1; \
+		fi; \
+	fi
+	@# Install ShellCheck
+	@echo "Checking for ShellCheck..."
+	@if test -f "$(SHELLCHECK_BIN)"; then \
+		echo "ShellCheck is already installed."; \
+	else \
+		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
+		SC_VERSION="stable"; \
+		wget -qO- "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
+		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+		if test -f "$(SHELLCHECK_BIN)"; then \
+			echo "ShellCheck installed successfully."; \
+		else \
+			echo "ShellCheck installation failed."; \
 			exit 1; \
 		fi; \
 	fi
