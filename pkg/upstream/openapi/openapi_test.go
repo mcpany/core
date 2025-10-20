@@ -19,6 +19,8 @@ package openapi
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -82,6 +84,40 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
+func TestLoadOpenAPISpec(t *testing.T) {
+	u := NewOpenAPIUpstream().(*OpenAPIUpstream)
+
+	t.Run("from content", func(t *testing.T) {
+		service := configv1.OpenapiUpstreamService_builder{
+			OpenapiSpec: proto.String("test spec"),
+		}.Build()
+		content, err := u.loadOpenAPISpec(service)
+		assert.NoError(t, err)
+		assert.Equal(t, "test spec", string(content))
+	})
+
+	t.Run("no content or url", func(t *testing.T) {
+		service := &configv1.OpenapiUpstreamService{}
+		_, err := u.loadOpenAPISpec(service)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no OpenAPI spec content or URL provided")
+	})
+
+	t.Run("from url", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintln(w, "test spec from url")
+		}))
+		defer server.Close()
+
+		service := configv1.OpenapiUpstreamService_builder{
+			OpenapiSpecUrl: proto.String(server.URL),
+		}.Build()
+		content, err := u.loadOpenAPISpec(service)
+		assert.NoError(t, err)
+		assert.Equal(t, "test spec from url\n", string(content))
+	})
+}
+
 func TestNewOpenAPIUpstream(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)
@@ -143,7 +179,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
+		assert.Contains(t, err.Error(), "no OpenAPI spec content or URL provided")
 	})
 
 	t.Run("invalid openapi spec", func(t *testing.T) {

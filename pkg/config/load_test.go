@@ -172,6 +172,27 @@ upstream_services: {
 				assert.False(t, s.GetCache().GetIsEnabled(), "Cache should be disabled due to invalid TTL")
 			},
 		},
+		{
+			name: "valid openapi service with spec url",
+			textprotoContent: `
+upstream_services: {
+	name: "openapi-svc-url"
+	openapi_service: {
+		address: "http://api.example.com/v1"
+		openapi_spec_url: "http://example.com/spec.json"
+	}
+}
+`,
+			expectedCount: 1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "openapi-svc-url", s.GetName())
+				openapiService := s.GetOpenapiService()
+				require.NotNil(t, openapiService)
+				assert.Equal(t, "http://api.example.com/v1", openapiService.GetAddress())
+				assert.Equal(t, "http://example.com/spec.json", openapiService.GetOpenapiSpecUrl())
+			},
+		},
 	}
 
 	for _, tt := range tests {
