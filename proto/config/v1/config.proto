@@ -222,6 +222,48 @@ message McpStreamableHttpConnection {
 
 // --- Call & Tool Definitions ---
 
+// ToolAnnotation provides common metadata for a tool.
+message ToolAnnotation {
+  // A human-readable title for the tool.
+  string title = 1;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 2;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 3;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 4;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 5;
+  // The name of the tool, which will be used to invoke it.
+  string name = 6;
+  // A human-readable description of what the tool does.
+  string description = 7;
+}
+
+// ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
+message ParameterSchema {
+  // The name of the input parameter from the MCP call.
+  string name = 1;
+  // A description of the parameter.
+  string description = 2;
+  // The data type of the parameter.
+  ParameterType type = 3;
+  // Whether the parameter is required.
+  bool is_required = 4;
+  // The default value of the parameter.
+  google.protobuf.Value default_value = 5;
+}
+
 // ToolDefinition describes a single capability or "tool" offered by a service.
 message ToolDefinition {
   // The name of the tool, which will be used to invoke it.
@@ -244,14 +286,12 @@ message HttpCallDefinition {
     HTTP_METHOD_DELETE = 4;
     HTTP_METHOD_PATCH = 5;
   }
-  // A unique identifier for this call, mapping to a tool name.
-  string operation_id = 1;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // The path of the HTTP endpoint (e.g., "/users/{userId}").
   string endpoint_path = 2;
   // The HTTP method to use for the request.
   HttpMethod method = 3;
-  // A description of the operation.
-  string description = 4;
   // Defines the parameters for the HTTP request.
   repeated HttpParameterMapping parameters = 5;
   // An optional input transformer to generate the request body.
@@ -264,10 +304,8 @@ message HttpCallDefinition {
 
 // WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
 message WebsocketCallDefinition {
-  // A unique identifier for this call, mapping to a tool name.
-  string operation_id = 1;
-  // A description of the operation.
-  string description = 2;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // Defines the parameters for the websocket message.
   repeated WebsocketParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
@@ -278,10 +316,8 @@ message WebsocketCallDefinition {
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
 message WebrtcCallDefinition {
-  // A unique identifier for this call, mapping to a tool name.
-  string operation_id = 1;
-  // A description of the operation.
-  string description = 2;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // Defines the parameters for the webrtc message.
   repeated WebrtcParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
@@ -292,8 +328,8 @@ message WebrtcCallDefinition {
 
 // StdioCallDefinition describes how to map an MCP call to a stdio command.
 message StdioCallDefinition {
-  // The method name that maps to a tool name.
-  string method = 1;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // Defines the parameters for the stdio command.
   repeated StdioParameterMapping parameters = 2;
 }
@@ -328,10 +364,12 @@ message OutputTransformer {
 
 // GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
 message GrpcCallDefinition {
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // The fully-qualified gRPC service name.
-  string service = 1;
+  string service = 2;
   // The name of the gRPC method to call.
-  string method = 2;
+  string method = 3;
   // Note: For gRPC, parameter mapping is typically done by matching field names
   // between the MCP input schema and the gRPC request message.
 }
@@ -339,8 +377,8 @@ message GrpcCallDefinition {
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
 // This is often used for discovery rather than manual configuration.
 message OpenAPICallDefinition {
-  // A unique identifier for this call, mapping to a tool name.
-  string operation_id = 1;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // An optional input transformer to generate the request body.
   InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
@@ -349,8 +387,8 @@ message OpenAPICallDefinition {
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
 message MCPCallDefinition {
-  // The name of the tool to apply the transformers to.
-  string tool_name = 1;
+  // Common tool annotation.
+  ToolAnnotation annotation = 1;
   // An optional input transformer to generate the request body.
   InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
@@ -369,58 +407,26 @@ enum ParameterType {
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 message HttpParameterMapping {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // Whether the parameter is required.
-  bool is_required = 3;
-  // The data type of the parameter.
-  ParameterType type = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
+  // The schema for the parameter.
+  ParameterSchema parameter_schema = 1;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 message WebsocketParameterMapping {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // Whether the parameter is required.
-  bool is_required = 3;
-  // The data type of the parameter.
-  ParameterType type = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
+  // The schema for the parameter.
+  ParameterSchema parameter_schema = 1;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 message WebrtcParameterMapping {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // Whether the parameter is required.
-  bool is_required = 3;
-  // The data type of the parameter.
-  ParameterType type = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
+  // The schema for the parameter.
+  ParameterSchema parameter_schema = 1;
 }
 
 // StdioParameterMapping defines how to pass an input parameter to a stdio process.
 message StdioParameterMapping {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // Whether the parameter is required.
-  bool is_required = 3;
-  // The data type of the parameter.
-  ParameterType type = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
+  // The schema for the parameter.
+  ParameterSchema parameter_schema = 1;
 }
 
 
