@@ -28,11 +28,14 @@ jobs:
           make release PLATFORMS=${{ matrix.platform }}
 
       - name: Package binaries
+        id: package
         run: |
           RELEASE_DIR=./build/release
           PLATFORM=${{ matrix.platform }}
           GOOS=${PLATFORM%/*}
           GOARCH=${PLATFORM#*/}
+          echo "goos=${GOOS}" >> $GITHUB_OUTPUT
+          echo "goarch=${GOARCH}" >> $GITHUB_OUTPUT
           BINARY_NAME=server-$GOOS-$GOARCH
           if [ "$GOOS" = "windows" ]; then
             BINARY_NAME=$BINARY_NAME.exe
@@ -42,7 +45,7 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: release-binaries-${{ replace(matrix.platform, '/', '-') }}
+          name: release-binaries-${{ steps.package.outputs.goos }}-${{ steps.package.outputs.goarch }}
           path: ./build/release/*.zip
 
   publish:
@@ -99,6 +102,13 @@ jobs:
           asset_path: ./build/release/*.zip
           asset_content_type: application/zip
 
+      - name: Get Date
+        id: date
+        run: echo "week=$(date +'%Y-%U')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
+        env:
+          CACHE_TO: type=gha,mode=max,scope=release-cache-${{ steps.date.outputs.week }}
+          CACHE_FROM: type=gha,scope=release-cache-${{ steps.date.outputs.week }}
         run: |
           make build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 SERVER_IMAGE_TAG=ghcr.io/${{ github.repository }}:${{ github.run_number }}
