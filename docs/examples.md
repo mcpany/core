@@ -10,33 +10,35 @@ The examples are located in the `proto/examples` directory. Each example include
 
 The calculator example demonstrates how to use MCP-X with a gRPC service.
 
-1.  **Start the main server:**
+1. **Start the main server:**
 
-    ```bash
-    make server
-    ```
+   ```bash
+   make server
+   ```
 
-2.  **Start the example calculator server:**
-    In a new terminal window, run the following command:
-    ```bash
-    go run tests/e2e/calculator/cmd/server/main.go
-    ```
+2. **Start the example calculator server:**
+   In a new terminal window, run the following command:
+
+   ```bash
+   go run tests/e2e/calculator/cmd/server/main.go
+   ```
 
 ### User Service Example
 
 The user service example demonstrates how to use MCP-X with a gRPC service that uses gRPC reflection.
 
-1.  **Start the main server:**
+1. **Start the main server:**
 
-    ```bash
-    make server
-    ```
+   ```bash
+   make server
+   ```
 
-2.  **Start the example user service server:**
-    In a new terminal window, run the following command:
-    ```bash
-    go run proto/examples/userservice/v1/server/main.go
-    ```
+2. **Start the example user service server:**
+   In a new terminal window, run the following command:
+
+   ```bash
+   go run proto/examples/userservice/v1/server/main.go
+   ```
 
 ## Interacting with the Server
 
