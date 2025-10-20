@@ -21,6 +21,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -38,31 +39,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
-	"io"
 )
-
-// loadOpenAPISpec loads the OpenAPI spec from either the content or the URL.
-func (u *OpenAPIUpstream) loadOpenAPISpec(service *configv1.OpenapiUpstreamService) ([]byte, error) {
-	if service.GetOpenapiSpec() != "" {
-		return []byte(service.GetOpenapiSpec()), nil
-	}
-
-	if service.GetOpenapiSpecUrl() != "" {
-		resp, err := http.Get(service.GetOpenapiSpecUrl())
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch OpenAPI spec from URL %s: %w", service.GetOpenapiSpecUrl(), err)
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to fetch OpenAPI spec from URL %s: status code %d", service.GetOpenapiSpecUrl(), resp.StatusCode)
-		}
-
-		return io.ReadAll(resp.Body)
-	}
-
-	return nil, fmt.Errorf("no OpenAPI spec content or URL provided")
-}
 
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
@@ -115,9 +92,9 @@ func (u *OpenAPIUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceKey, info)
 
-	specContent, err := u.loadOpenAPISpec(openapiService)
+	specContent, err := u.getSpecContent(ctx, openapiService)
 	if err != nil {
-		return "", nil, err
+		return "", nil, fmt.Errorf("failed to get OpenAPI spec content for service '%s': %w", serviceKey, err)
 	}
 
 	hash := sha256.Sum256(specContent)
@@ -129,7 +106,7 @@ func (u *OpenAPIUpstream) Register(
 		doc = item.Value()
 	} else {
 		var err error
-		_, doc, err = parseOpenAPISpec(ctx, specContent)
+		_, doc, err = parseOpenAPISpec(ctx, []byte(specContent))
 		if err != nil {
 			return "", nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceKey, err)
 		}
@@ -189,6 +166,45 @@ type httpClientImpl struct {
 // client.HttpClient interface.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
+}
+
+// getSpecContent determines the source of the OpenAPI spec and retrieves it.
+// It can either be provided directly as a string or fetched from a URL.
+func (u *OpenAPIUpstream) getSpecContent(ctx context.Context, openapiService *configv1.OpenapiUpstreamService) ([]byte, error) {
+	if url := openapiService.GetOpenapiSpecUrl(); url != "" {
+		return u.fetchSpecFromURL(ctx, url)
+	}
+	if spec := openapiService.GetOpenapiSpec(); spec != "" {
+		return []byte(spec), nil
+	}
+	return nil, fmt.Errorf("no OpenAPI spec source provided")
+}
+
+// fetchSpecFromURL retrieves the content of an OpenAPI specification from a given URL.
+func (u *OpenAPIUpstream) fetchSpecFromURL(ctx context.Context, url string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for spec from URL %s: %w", url, err)
+	}
+
+	// Use a general-purpose HTTP client for fetching the spec.
+	client := u.getHTTPClient("spec-fetcher")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch spec from URL %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d when fetching spec from URL %s", resp.StatusCode, url)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body from URL %s: %w", url, err)
+	}
+
+	return body, nil
 }
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
