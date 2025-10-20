@@ -55,7 +55,9 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.HttpCallDefinition_builder{
-		OperationId:  proto.String(operationID),
+		Schema: (&configv1.ToolAnnotation_builder{
+			Title: proto.String(operationID),
+		}).Build(),
 		EndpointPath: proto.String(endpointPath),
 		Method:       &method,
 		Parameters:   []*configv1.HttpParameterMapping{param},

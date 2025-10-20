@@ -7,7 +7,9 @@
         "calls": [
           {
             "endpoint_path": "/echo",
-            "operation_id": "echo",
+            "schema": {
+              "title": "echo"
+            },
             "method": "HTTP_METHOD_POST"
           }
         ]

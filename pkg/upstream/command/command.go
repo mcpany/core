@@ -82,11 +82,11 @@ func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, ser
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
 
 	for _, toolDef := range commandLineService.GetCalls() {
-		command := toolDef.GetMethod()
+		command := toolDef.GetSchema().GetTitle()
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(command),
-			DisplayName:         proto.String(command),
-			Description:         proto.String(command),
+			DisplayName:         proto.String(toolDef.GetSchema().GetTitle()),
+			Description:         proto.String(toolDef.GetSchema().GetDescription()),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(command),
 		}.Build()

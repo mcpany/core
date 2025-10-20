@@ -36,6 +36,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
@@ -118,8 +119,10 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := &configv1.WebsocketCallDefinition{}
-		callDef.SetOperationId("echo")
-		callDef.SetDescription("Echoes a message")
+		callDef.SetSchema((&configv1.ToolAnnotation_builder{
+			Title:       proto.String("echo"),
+			Description: proto.String("Echoes a message"),
+		}).Build())
 
 		websocketService := &configv1.WebsocketUpstreamService{}
 		websocketService.SetAddress("ws://localhost:8080/echo")
@@ -177,7 +180,9 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := &configv1.WebsocketCallDefinition{}
-		callDef.SetOperationId("echo")
+		callDef.SetSchema((&configv1.ToolAnnotation_builder{
+			Title: proto.String("echo"),
+		}).Build())
 
 		websocketService := &configv1.WebsocketUpstreamService{}
 		websocketService.SetAddress("ws://localhost:8080/echo")
@@ -200,7 +205,9 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := &configv1.WebsocketCallDefinition{}
-		callDef.SetOperationId("echo")
+		callDef.SetSchema((&configv1.ToolAnnotation_builder{
+			Title: proto.String("echo"),
+		}).Build())
 
 		websocketService := &configv1.WebsocketUpstreamService{}
 		websocketService.SetAddress("ws://localhost:8080/echo")
@@ -229,7 +236,9 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 
 		// Fallback to description
 		callDef1 := &configv1.WebsocketCallDefinition{}
-		callDef1.SetDescription("This is a test description")
+		callDef1.SetSchema((&configv1.ToolAnnotation_builder{
+			Description: proto.String("This is a test description"),
+		}).Build())
 
 		// Fallback to op index
 		callDef2 := &configv1.WebsocketCallDefinition{}
@@ -287,11 +296,15 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		authConfig.SetApiKey(apiKeyAuth)
 
 		call1 := &configv1.WebsocketCallDefinition{}
-		call1.SetOperationId("test-op")
-		call1.SetDescription("A test operation")
+		call1.SetSchema((&configv1.ToolAnnotation_builder{
+			Title:       proto.String("test-op"),
+			Description: proto.String("A test operation"),
+		}).Build())
 
 		call2 := &configv1.WebsocketCallDefinition{}
-		call2.SetDescription("Another test operation")
+		call2.SetSchema((&configv1.ToolAnnotation_builder{
+			Description: proto.String("Another test operation"),
+		}).Build())
 
 		wsService := &configv1.WebsocketUpstreamService{}
 		wsService.SetAddress(wsURL)
@@ -336,7 +349,9 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		call1 := &configv1.WebsocketCallDefinition{}
-		call1.SetOperationId("test-op")
+		call1.SetSchema((&configv1.ToolAnnotation_builder{
+			Title: proto.String("test-op"),
+		}).Build())
 
 		wsService := &configv1.WebsocketUpstreamService{}
 		wsService.SetAddress(wsURL)
@@ -360,10 +375,14 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		call1 := &configv1.WebsocketCallDefinition{}
-		call1.SetDescription("A test operation")
+		call1.SetSchema((&configv1.ToolAnnotation_builder{
+			Description: proto.String("A test operation"),
+		}).Build())
 
 		call2 := &configv1.WebsocketCallDefinition{}
-		call2.SetDescription("Another test operation")
+		call2.SetSchema((&configv1.ToolAnnotation_builder{
+			Description: proto.String("Another test operation"),
+		}).Build())
 
 		wsService := &configv1.WebsocketUpstreamService{}
 		wsService.SetAddress(wsURL)
@@ -392,7 +411,9 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	upstream := NewWebsocketUpstream(poolManager)
 
 	call1 := &configv1.WebsocketCallDefinition{}
-	call1.SetOperationId("test-op")
+	call1.SetSchema((&configv1.ToolAnnotation_builder{
+		Title: proto.String("test-op"),
+	}).Build())
 
 	wsService := &configv1.WebsocketUpstreamService{}
 	wsService.SetAddress(wsURL)

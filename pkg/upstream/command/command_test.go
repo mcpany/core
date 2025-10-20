@@ -28,6 +28,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // mockToolManager to simulate errors
@@ -84,7 +85,9 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		callDef := &configv1.StdioCallDefinition{}
-		callDef.SetMethod("echo")
+		callDef.SetSchema((&configv1.ToolAnnotation_builder{
+			Title: proto.String("echo"),
+		}).Build())
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
@@ -120,7 +123,9 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-add-tool-error")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		callDef := &configv1.StdioCallDefinition{}
-		callDef.SetMethod("ls")
+		callDef.SetSchema((&configv1.ToolAnnotation_builder{
+			Title: proto.String("ls"),
+		}).Build())
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 

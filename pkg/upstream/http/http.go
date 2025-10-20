@@ -151,9 +151,9 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 	}
 
 	for i, httpDef := range definitions {
-		toolNamePart := httpDef.GetOperationId()
+		toolNamePart := httpDef.GetSchema().GetTitle()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(httpDef.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(httpDef.GetSchema().GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -170,8 +170,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		for _, param := range httpDef.GetParameters() {
 			paramStruct := &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(param.GetType())]),
-					"description": structpb.NewStringValue(param.GetDescription()),
+					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(param.GetSchema().GetType())]),
+					"description": structpb.NewStringValue(param.GetSchema().GetDescription()),
 				},
 			}
 			properties.Fields[param.GetName()] = structpb.NewStructValue(paramStruct)
@@ -179,7 +179,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 		requiredParams := []string{}
 		for _, param := range httpDef.GetParameters() {
-			if param.GetIsRequired() {
+			if param.GetSchema().GetIsRequired() {
 				requiredParams = append(requiredParams, param.GetName())
 			}
 		}
@@ -221,8 +221,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(httpDef.GetOperationId()),
-			Description: proto.String(httpDef.GetDescription()),
+			Name:        proto.String(httpDef.GetSchema().GetTitle()),
+			Description: proto.String(httpDef.GetSchema().GetDescription()),
 		}.Build())
 	}
 	return discoveredTools

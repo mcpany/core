@@ -104,9 +104,9 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	}
 
 	for i, wrtcDef := range definitions {
-		toolNamePart := wrtcDef.GetOperationId()
+		toolNamePart := wrtcDef.GetSchema().GetTitle()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(wrtcDef.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(wrtcDef.GetSchema().GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -146,8 +146,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(wrtcDef.GetOperationId()),
-			Description: proto.String(wrtcDef.GetDescription()),
+			Name:        proto.String(wrtcDef.GetSchema().GetTitle()),
+			Description: proto.String(wrtcDef.GetSchema().GetDescription()),
 		}.Build())
 	}
 	return discoveredTools

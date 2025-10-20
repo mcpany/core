@@ -586,7 +586,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 
 	callDef := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String(endpointPath),
-		OperationId:  proto.String(operationID),
+		Schema:       (&configv1.ToolAnnotation_builder{Title: proto.String(operationID)}).Build(),
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
@@ -621,7 +621,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 			Address: proto.String(baseURL),
 			Calls: []*configv1.WebsocketCallDefinition{
 				configv1.WebsocketCallDefinition_builder{
-					OperationId: proto.String(operationID),
+					Schema: (&configv1.ToolAnnotation_builder{Title: proto.String(operationID)}).Build(),
 				}.Build(),
 			},
 		}.Build(),
@@ -649,7 +649,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 			Address: proto.String(baseURL),
 			Calls: []*configv1.WebrtcCallDefinition{
 				configv1.WebrtcCallDefinition_builder{
-					OperationId: proto.String(operationID),
+					Schema: (&configv1.ToolAnnotation_builder{Title: proto.String(operationID)}).Build(),
 				}.Build(),
 			},
 		}.Build(),

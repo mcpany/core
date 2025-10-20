@@ -49,7 +49,7 @@ func TestUpstreamService_JsonPlaceholder(t *testing.T) {
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/posts"),
-		OperationId:  proto.String("getPosts"),
+		Schema:       (&configv1.ToolAnnotation_builder{Title: proto.String("getPosts")}).Build(),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 	}.Build()
 

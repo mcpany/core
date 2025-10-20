@@ -113,9 +113,9 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	}
 
 	for i, wsDef := range definitions {
-		toolNamePart := wsDef.GetOperationId()
+		toolNamePart := wsDef.GetSchema().GetTitle()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(wsDef.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(wsDef.GetSchema().GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -150,8 +150,8 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(wsDef.GetOperationId()),
-			Description: proto.String(wsDef.GetDescription()),
+			Name:        proto.String(wsDef.GetSchema().GetTitle()),
+			Description: proto.String(wsDef.GetSchema().GetDescription()),
 		}.Build())
 	}
 	return discoveredTools

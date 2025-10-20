@@ -62,7 +62,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String(endpointPath),
-		OperationId:  proto.String(operationID),
+		Schema:       (&configv1.ToolAnnotation_builder{Title: proto.String(operationID)}).Build(),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{

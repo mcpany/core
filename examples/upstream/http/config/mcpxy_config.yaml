@@ -5,52 +5,61 @@ upstream_services:
   http_service:
     address: "https://ipapi.co"
     calls:
-    - operation_id: "getLocation"
-      description: "Gets the location of a given IP address."
+    - schema:
+        title: "getLocation"
+        description: "Gets the location of a given IP address."
       endpoint_path: "/{{ip}}/{{format}}/"
       method: "HTTP_METHOD_GET"
       parameters:
       - name: "ip"
-        description: "The IP address to get the location for."
-        is_required: true
-        type: "STRING"
+        schema:
+          description: "The IP address to get the location for."
+          is_required: true
+          type: "STRING"
       - name: "format"
-        description: "The format of the response."
-        is_required: false
-        type: "STRING"
-        default_value: "json"
+        schema:
+          description: "The format of the response."
+          is_required: false
+          type: "STRING"
+          default_value: "json"
 - name: weather-service
   http_service:
     address: "https://api.open-meteo.com"
     calls:
-    - operation_id: "getWeather"
-      description: "Gets the current weather for a given latitude and longitude."
+    - schema:
+        title: "getWeather"
+        description: "Gets the current weather for a given latitude and longitude."
       endpoint_path: "/v1/forecast"
       method: "HTTP_METHOD_GET"
       parameters:
       - name: "latitude"
-        description: "The latitude to get the weather for."
-        is_required: true
-        type: "NUMBER"
+        schema:
+          description: "The latitude to get the weather for."
+          is_required: true
+          type: "NUMBER"
       - name: "longitude"
-        description: "The longitude to get the weather for."
-        is_required: true
-        type: "NUMBER"
+        schema:
+          description: "The longitude to get the weather for."
+          is_required: true
+          type: "NUMBER"
       - name: "current_weather"
-        description: "Whether to include the current weather in the response."
-        is_required: false
-        type: "BOOLEAN"
-        default_value: "true"
+        schema:
+          description: "Whether to include the current weather in the response."
+          is_required: false
+          type: "BOOLEAN"
+          default_value: "true"
 - name: time-service
   http_service:
     address: "http://worldtimeapi.org"
     calls:
-    - operation_id: "get_time_by_ip"
-      description: "Gets the current time for a given IP address."
+    - schema:
+        title: "get_time_by_ip"
+        description: "Gets the current time for a given IP address."
       endpoint_path: "/api/ip/{{ip}}"
       method: "HTTP_METHOD_GET"
       parameters:
       - name: "ip"
-        description: "The IP address to get the time for."
-        is_required: true
-        type: "STRING"
+        schema:
+          description: "The IP address to get the time for."
+          is_required: true
+          type: "STRING"
