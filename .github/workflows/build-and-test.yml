@@ -45,20 +45,20 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Docker Cache
-      uses: actions/cache@v4
-      with:
-        path: build/buildx-cache
-        key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-          ${{ runner.os }}-buildx-
-
     - name: Get Date
       id: get-date
       run: |
         echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
       shell: bash
+
+    - name: Docker Cache
+      uses: actions/cache@v4
+      with:
+        path: build/buildx-cache
+        key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
+          ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
 
     - name: Cache Tools
       uses: actions/cache@v4
@@ -114,20 +114,20 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Docker Cache
-      uses: actions/cache@v4
-      with:
-        path: build/buildx-cache
-        key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-          ${{ runner.os }}-buildx-
-
     - name: Get Date
       id: get-date
       run: |
         echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
       shell: bash
+
+    - name: Docker Cache
+      uses: actions/cache@v4
+      with:
+        path: build/buildx-cache
+        key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
+          ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
 
     - name: Cache Tools
       uses: actions/cache@v4
