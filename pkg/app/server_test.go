@@ -71,7 +71,7 @@ upstream_services:
     http_service:
       address: "http://localhost:8080"
       calls:
-        - annotation:
+        - schema:
             name: "echo"
           endpoint_path: "/echo"
           method: "HTTP_METHOD_POST"

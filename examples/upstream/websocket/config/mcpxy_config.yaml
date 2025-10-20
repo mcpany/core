@@ -5,6 +5,6 @@ upstream_services:
   websocket_service:
     address: "ws://localhost:8082/echo"
     calls:
-    - annotation:
+    - schema:
         name: "echo"
         description: "Echoes a message back."

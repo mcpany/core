@@ -119,7 +119,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name:        proto.String("echo"),
 				Description: proto.String("Echoes a message"),
 			}.Build(),
@@ -181,7 +181,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 		}.Build()
@@ -207,7 +207,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		callDef := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 		}.Build()
@@ -239,13 +239,13 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 
 		// Fallback to description
 		callDef1 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String("This is a test description"),
 			}.Build(),
 		}.Build()
 
 		callDef2 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String(""),
 			}.Build(),
 		}.Build()
@@ -303,14 +303,14 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		authConfig.SetApiKey(apiKeyAuth)
 
 		call1 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name:        proto.String("test-op"),
 				Description: proto.String("A test operation"),
 			}.Build(),
 		}.Build()
 
 		call2 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String("Another test operation"),
 			}.Build(),
 		}.Build()
@@ -358,7 +358,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		call1 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("test-op"),
 			}.Build(),
 		}.Build()
@@ -385,13 +385,13 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
 
 		call1 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String("A test operation"),
 			}.Build(),
 		}.Build()
 
 		call2 := configv1.WebsocketCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String("Another test operation"),
 			}.Build(),
 		}.Build()
@@ -423,7 +423,7 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	upstream := NewWebsocketUpstream(poolManager)
 
 	call1 := configv1.WebsocketCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("test-op"),
 		}.Build(),
 	}.Build()
