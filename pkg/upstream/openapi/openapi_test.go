@@ -84,40 +84,6 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
-func TestLoadOpenAPISpec(t *testing.T) {
-	u := NewOpenAPIUpstream().(*OpenAPIUpstream)
-
-	t.Run("from content", func(t *testing.T) {
-		service := configv1.OpenapiUpstreamService_builder{
-			OpenapiSpec: proto.String("test spec"),
-		}.Build()
-		content, err := u.loadOpenAPISpec(service)
-		assert.NoError(t, err)
-		assert.Equal(t, "test spec", string(content))
-	})
-
-	t.Run("no content or url", func(t *testing.T) {
-		service := &configv1.OpenapiUpstreamService{}
-		_, err := u.loadOpenAPISpec(service)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "no OpenAPI spec content or URL provided")
-	})
-
-	t.Run("from url", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintln(w, "test spec from url")
-		}))
-		defer server.Close()
-
-		service := configv1.OpenapiUpstreamService_builder{
-			OpenapiSpecUrl: proto.String(server.URL),
-		}.Build()
-		content, err := u.loadOpenAPISpec(service)
-		assert.NoError(t, err)
-		assert.Equal(t, "test spec from url\n", string(content))
-	})
-}
-
 func TestNewOpenAPIUpstream(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)
@@ -179,7 +145,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "no OpenAPI spec content or URL provided")
+		assert.Contains(t, err.Error(), "no OpenAPI spec source provided")
 	})
 
 	t.Run("invalid openapi spec", func(t *testing.T) {
@@ -194,6 +160,18 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
+	})
+
+	t.Run("no openapi spec source", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name:           proto.String("test-service"),
+			OpenapiService: &configv1.OpenapiUpstreamService{},
+		}.Build()
+		expectedKey, _ := util.GenerateID("test-service")
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no OpenAPI spec source provided")
 	})
 }
 
@@ -323,3 +301,73 @@ const sampleOpenAPISpecJSONForCacheTest = `{
     }
   }
 }`
+
+func TestOpenAPIUpstream_Register_URL(t *testing.T) {
+	ctx := context.Background()
+	mockToolManager := new(MockToolManager)
+	upstream := NewOpenAPIUpstream()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/openapi.json" {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(sampleOpenAPISpecJSONForCacheTest))
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	t.Run("valid spec from url", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service-url"),
+			OpenapiService: configv1.OpenapiUpstreamService_builder{
+				Address:        proto.String("http://localhost"),
+				OpenapiSpecUrl: proto.String(server.URL + "/openapi.json"),
+			}.Build(),
+		}.Build()
+
+		expectedKey, _ := util.GenerateID("test-service-url")
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+		mockToolManager.On("GetTool", mock.Anything).Return(nil, false).Once()
+		mockToolManager.On("AddTool", mock.Anything).Return(nil).Once()
+
+		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		assert.NoError(t, err)
+
+		mockToolManager.AssertExpectations(t)
+	})
+
+	t.Run("invalid spec url", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service-url-invalid"),
+			OpenapiService: configv1.OpenapiUpstreamService_builder{
+				Address:        proto.String("http://localhost"),
+				OpenapiSpecUrl: proto.String("invalid-url"),
+			}.Build(),
+		}.Build()
+
+		expectedKey, _ := util.GenerateID("test-service-url-invalid")
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+
+		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to fetch spec from URL")
+	})
+
+	t.Run("server error from url", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service-url-server-error"),
+			OpenapiService: configv1.OpenapiUpstreamService_builder{
+				Address:        proto.String("http://localhost"),
+				OpenapiSpecUrl: proto.String(server.URL + "/not-found"),
+			}.Build(),
+		}.Build()
+
+		expectedKey, _ := util.GenerateID("test-service-url-server-error")
+		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+
+		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unexpected status code 404")
+	})
+}
