@@ -34,7 +34,10 @@ jobs:
         path: |
           build/venv
           tests/integration/upstream/node_modules
-        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}
+        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-
+          ${{ runner.os }}-deps-
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -46,19 +49,23 @@ jobs:
       uses: actions/cache@v4
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
         restore-keys: |
+          ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-
 
     - name: Cache Tools
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-tools-
 
     - name: Prepare environment
       run: |
-        make prepare         CACHE_TO=type=local,dest=/tmp/.buildx-cache         CACHE_FROM=type=local,src=/tmp/.buildx-cache
+        make prepare CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
 
     - name: Check linting
       run: make lint
@@ -90,7 +97,10 @@ jobs:
         path: |
           build/venv
           tests/integration/upstream/node_modules
-        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}
+        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-
+          ${{ runner.os }}-deps-
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -102,19 +112,23 @@ jobs:
       uses: actions/cache@v4
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
         restore-keys: |
+          ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-
 
     - name: Cache Tools
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-${{ github.job }}
+        restore-keys: |
+          ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-tools-
 
     - name: Prepare environment
-      run: make prepare
+      run: make prepare CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
 
     - name: test everything
       run: |
-        make test         CACHE_TO=type=local,dest=/tmp/.buildx-cache         CACHE_FROM=type=local,src=/tmp/.buildx-cache
+        make test CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
