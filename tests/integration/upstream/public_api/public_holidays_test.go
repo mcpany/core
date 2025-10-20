@@ -57,7 +57,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 			"holidayName": "{[0].name}",
 			"holidayDate": "{[0].date}",
 		},
-		Template: proto.String("The first public holiday is {{.holidayName}} on {{.holidayDate}}."),
+		Template: proto.String("The first public holiday is {{holidayName}} on {{holidayDate}}."),
 	}.Build()
 
 	httpCall := configv1.HttpCallDefinition_builder{

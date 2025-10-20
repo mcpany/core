@@ -17,22 +17,22 @@
 package transformer
 
 import (
-	"bytes"
-	"text/template"
+	"fmt"
+	"github.com/valyala/fasttemplate"
 )
 
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 type TextTemplate struct {
-	template *template.Template
+	template *fasttemplate.Template
 }
 
-// NewTextTemplate parses a template string and creates a new TextTemplate.
+// NewTemplate parses a template string and creates a new TextTemplate.
 //
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
-func NewTextTemplate(templateString string) (*TextTemplate, error) {
-	tpl, err := template.New("tool_template").Parse(templateString)
+func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
+	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +46,10 @@ func NewTextTemplate(templateString string) (*TextTemplate, error) {
 // template.
 // It returns the rendered string or an error if the template execution fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
-	var buf bytes.Buffer
-	if err := t.template.Execute(&buf, params); err != nil {
-		return "", err
+	newParams := make(map[string]any, len(params))
+	for k, v := range params {
+		newParams[k] = fmt.Sprintf("%v", v)
 	}
-	return buf.String(), nil
+	s := t.template.ExecuteString(newParams)
+	return s, nil
 }

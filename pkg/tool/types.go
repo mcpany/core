@@ -258,7 +258,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if inputs != nil {
 		if method == http.MethodPost || method == http.MethodPut {
 			if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-				tpl, err := transformer.NewTextTemplate(t.inputTransformer.GetTemplate())
+				tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 				if err != nil {
 					return nil, fmt.Errorf("failed to create input template: %w", err)
 				}
@@ -328,7 +328,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTextTemplate(t.outputTransformer.GetTemplate())
+			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
@@ -395,7 +395,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 
 	var arguments json.RawMessage
 	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-		tpl, err := transformer.NewTextTemplate(t.inputTransformer.GetTemplate())
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
 		}
@@ -442,7 +442,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTextTemplate(t.outputTransformer.GetTemplate())
+			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
@@ -527,7 +527,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	var contentType string
 	if t.method == http.MethodPost || t.method == http.MethodPut {
 		if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTextTemplate(t.inputTransformer.GetTemplate())
+			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create input template: %w", err)
 			}
@@ -595,7 +595,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTextTemplate(t.outputTransformer.GetTemplate())
+			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
