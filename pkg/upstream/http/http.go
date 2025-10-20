@@ -168,7 +168,20 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		}
 
 		for _, param := range httpDef.GetParameters() {
-			properties.Fields[param.GetName()] = structpb.NewStringValue("")
+			paramStruct := &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(param.GetType())]),
+					"description": structpb.NewStringValue(param.GetDescription()),
+				},
+			}
+			properties.Fields[param.GetName()] = structpb.NewStructValue(paramStruct)
+		}
+
+		requiredParams := []string{}
+		for _, param := range httpDef.GetParameters() {
+			if param.GetIsRequired() {
+				requiredParams = append(requiredParams, param.GetName())
+			}
 		}
 
 		method, err := httpMethodToString(httpDef.GetMethod())
@@ -191,6 +204,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 		baseURL.Path = path.Join(baseURL.Path, endpointURL.Path)
 		fullURL := baseURL.String()
+
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
@@ -198,6 +212,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			InputSchema: pb.InputSchema_builder{
 				Type:       proto.String("object"),
 				Properties: properties,
+				Required:   requiredParams,
 			}.Build(),
 		}.Build()
 

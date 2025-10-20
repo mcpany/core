@@ -10,3 +10,6 @@ coverage.out
 # Node
 node_modules/
 package-lock.json
+
+# Gemini CLI
+.gemini/
