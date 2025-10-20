@@ -3344,10 +3344,10 @@ func (b0 WebrtcUpstreamService_builder) Build() *WebrtcUpstreamService {
 type OpenapiUpstreamService struct {
 	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_SpecSource  isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
 	xxx_hidden_HealthCheck *HttpHealthCheck                    `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Calls       *[]*OpenAPICallDefinition           `protobuf:"bytes,5,rep,name=calls"`
+	xxx_hidden_SpecSource  isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3389,24 +3389,6 @@ func (x *OpenapiUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *OpenapiUpstreamService) GetOpenapiSpec() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpec); ok {
-			return x.OpenapiSpec
-		}
-	}
-	return ""
-}
-
-func (x *OpenapiUpstreamService) GetOpenapiSpecUrl() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl); ok {
-			return x.OpenapiSpecUrl
-		}
-	}
-	return ""
-}
-
 func (x *OpenapiUpstreamService) GetHealthCheck() *HttpHealthCheck {
 	if x != nil {
 		return x.xxx_hidden_HealthCheck
@@ -3430,17 +3412,27 @@ func (x *OpenapiUpstreamService) GetCalls() []*OpenAPICallDefinition {
 	return nil
 }
 
+func (x *OpenapiUpstreamService) GetOpenapiSpec() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpec); ok {
+			return x.OpenapiSpec
+		}
+	}
+	return ""
+}
+
+func (x *OpenapiUpstreamService) GetOpenapiSpecUrl() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl); ok {
+			return x.OpenapiSpecUrl
+		}
+	}
+	return ""
+}
+
 func (x *OpenapiUpstreamService) SetAddress(v string) {
 	x.xxx_hidden_Address = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *OpenapiUpstreamService) SetOpenapiSpec(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpec{v}
-}
-
-func (x *OpenapiUpstreamService) SetOpenapiSpecUrl(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpecUrl{v}
 }
 
 func (x *OpenapiUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
@@ -3455,11 +3447,33 @@ func (x *OpenapiUpstreamService) SetCalls(v []*OpenAPICallDefinition) {
 	x.xxx_hidden_Calls = &v
 }
 
+func (x *OpenapiUpstreamService) SetOpenapiSpec(v string) {
+	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpec{v}
+}
+
+func (x *OpenapiUpstreamService) SetOpenapiSpecUrl(v string) {
+	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpecUrl{v}
+}
+
 func (x *OpenapiUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *OpenapiUpstreamService) HasHealthCheck() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_HealthCheck != nil
+}
+
+func (x *OpenapiUpstreamService) HasTlsConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_TlsConfig != nil
 }
 
 func (x *OpenapiUpstreamService) HasSpecSource() bool {
@@ -3485,23 +3499,17 @@ func (x *OpenapiUpstreamService) HasOpenapiSpecUrl() bool {
 	return ok
 }
 
-func (x *OpenapiUpstreamService) HasHealthCheck() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_HealthCheck != nil
-}
-
-func (x *OpenapiUpstreamService) HasTlsConfig() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_TlsConfig != nil
-}
-
 func (x *OpenapiUpstreamService) ClearAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Address = nil
+}
+
+func (x *OpenapiUpstreamService) ClearHealthCheck() {
+	x.xxx_hidden_HealthCheck = nil
+}
+
+func (x *OpenapiUpstreamService) ClearTlsConfig() {
+	x.xxx_hidden_TlsConfig = nil
 }
 
 func (x *OpenapiUpstreamService) ClearSpecSource() {
@@ -3518,14 +3526,6 @@ func (x *OpenapiUpstreamService) ClearOpenapiSpecUrl() {
 	if _, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl); ok {
 		x.xxx_hidden_SpecSource = nil
 	}
-}
-
-func (x *OpenapiUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
-}
-
-func (x *OpenapiUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
 }
 
 const OpenapiUpstreamService_SpecSource_not_set_case case_OpenapiUpstreamService_SpecSource = 0
@@ -3551,18 +3551,18 @@ type OpenapiUpstreamService_builder struct {
 
 	// The base URL of the API.
 	Address *string
-	// Fields of oneof xxx_hidden_SpecSource:
-	// The OpenAPI specification content (JSON or YAML).
-	OpenapiSpec *string
-	// The URL to fetch the OpenAPI specification from.
-	OpenapiSpecUrl *string
-	// -- end of xxx_hidden_SpecSource
 	// Health check configuration.
 	HealthCheck *HttpHealthCheck
 	// TLS configuration for the connection.
 	TlsConfig *TLSConfig
 	// Optional: Overrides or specific configurations for calls discovered from the spec.
 	Calls []*OpenAPICallDefinition
+	// Fields of oneof xxx_hidden_SpecSource:
+	// The OpenAPI specification content (JSON or YAML).
+	OpenapiSpec *string
+	// The URL to fetch the OpenAPI specification from.
+	OpenapiSpecUrl *string
+	// -- end of xxx_hidden_SpecSource
 }
 
 func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
@@ -3573,15 +3573,15 @@ func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Address = b.Address
 	}
+	x.xxx_hidden_HealthCheck = b.HealthCheck
+	x.xxx_hidden_TlsConfig = b.TlsConfig
+	x.xxx_hidden_Calls = &b.Calls
 	if b.OpenapiSpec != nil {
 		x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpec{*b.OpenapiSpec}
 	}
 	if b.OpenapiSpecUrl != nil {
 		x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpecUrl{*b.OpenapiSpecUrl}
 	}
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Calls = &b.Calls
 	return m0
 }
 
@@ -8138,13 +8138,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\xcd\x02\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12#\n" +
-	"\fopenapi_spec\x18\x02 \x01(\tH\x00R\vopenapiSpec\x12*\n" +
-	"\x10openapi_spec_url\x18\x06 \x01(\tH\x00R\x0eopenapiSpecUrl\x12B\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12B\n" +
 	"\fhealth_check\x18\x03 \x01(\v2\x1f.mcpx.config.v1.HttpHealthCheckR\vhealthCheck\x128\n" +
 	"\n" +
 	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x12;\n" +
-	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05callsB\r\n" +
+	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\x12#\n" +
+	"\fopenapi_spec\x18\x02 \x01(\tH\x00R\vopenapiSpec\x12*\n" +
+	"\x10openapi_spec_url\x18\x06 \x01(\tH\x00R\x0eopenapiSpecUrlB\r\n" +
 	"\vspec_source\"\xaa\x02\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
