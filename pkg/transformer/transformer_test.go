@@ -39,7 +39,7 @@ func TestTransformer_ParseAndRender(t *testing.T) {
 	assert.Equal(t, float64(25), parsedResult["temperature"])
 
 	// 3. Setup the template
-	template, err := NewTextTemplate("The weather is {{.description}} with a temperature of {{.temperature}} degrees.")
+	template, err := NewTemplate("The weather is {{description}} with a temperature of {{temperature}} degrees.", "{{", "}}")
 	require.NoError(t, err)
 
 	// 4. Render the output
