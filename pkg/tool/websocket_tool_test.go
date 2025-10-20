@@ -172,7 +172,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		callDef := &configv1.WebsocketCallDefinition{}
 		inputTransformer := &configv1.InputTransformer{}
-		inputTransformer.SetTemplate(`{"transformed_message":"{{.message}}"}`)
+		inputTransformer.SetTemplate(`{"transformed_message":"{{message}}"}`)
 		callDef.SetInputTransformer(inputTransformer)
 		outputTransformer := &configv1.OutputTransformer{}
 		outputTransformer.SetFormat(configv1.OutputTransformer_JSON)

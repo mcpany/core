@@ -98,7 +98,7 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 
 	var message []byte
 	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-		tpl, err := transformer.NewTextTemplate(t.inputTransformer.GetTemplate())
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
 		}

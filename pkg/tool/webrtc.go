@@ -118,7 +118,7 @@ func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, e
 		var message []byte
 		var err error
 		if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTextTemplate(t.inputTransformer.GetTemplate())
+			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				fmt.Printf("failed to create input template: %v\n", err)
 				return

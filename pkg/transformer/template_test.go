@@ -24,8 +24,8 @@ import (
 )
 
 func TestTextTemplate_Render(t *testing.T) {
-	templateString := "Hello, {{.name}}! You are {{.age}} years old."
-	tpl, err := NewTextTemplate(templateString)
+	templateString := "Hello, {{name}}! You are {{age}} years old."
+	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
 	params := map[string]any{
@@ -39,18 +39,18 @@ func TestTextTemplate_Render(t *testing.T) {
 }
 
 func TestTextTemplate_InvalidTemplate(t *testing.T) {
-	templateString := "Hello, {{.name!"
-	_, err := NewTextTemplate(templateString)
+	templateString := "Hello, {{name!"
+	_, err := NewTemplate(templateString, "{{", "}}")
 	require.Error(t, err)
 }
 
 func TestTextTemplate_MissingParameter(t *testing.T) {
-	templateString := "Hello, {{.name}}!"
-	tpl, err := NewTextTemplate(templateString)
+	templateString := "Hello, {{name}}!"
+	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
 	params := map[string]any{}
 	rendered, err := tpl.Render(params)
 	require.NoError(t, err)
-	assert.Equal(t, "Hello, <no value>!", rendered)
+	assert.Equal(t, "Hello, !", rendered)
 }

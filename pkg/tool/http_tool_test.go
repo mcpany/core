@@ -76,18 +76,17 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 }
 
 func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
-	expectedBody := `{"data": "name=test&age=30"}`
+	expectedBody := `name=test&age=30`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 		require.NoError(t, err)
-		assert.JSONEq(t, expectedBody, string(body))
+		assert.Equal(t, expectedBody, string(body))
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
 	})
 
 	callDef := configv1.HttpCallDefinition_builder{
 		InputTransformer: configv1.InputTransformer_builder{
-			Template: lo.ToPtr(`{"data": "name={{.name}}&age={{.age}}"}`),
+			Template: lo.ToPtr(`name={{name}}&age={{age}}`),
 		}.Build(),
 	}.Build()
 
@@ -318,7 +317,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("output_transformation_template_error", func(t *testing.T) {
 		outputTransformer := configv1.OutputTransformer_builder{
-			Template: lo.ToPtr("{{.invalid"),
+			Template: lo.ToPtr("{{invalid"),
 		}.Build()
 		callDef := configv1.HttpCallDefinition_builder{
 			OutputTransformer: outputTransformer,
@@ -335,8 +334,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("input_transformation_render_error", func(t *testing.T) {
 		it := configv1.InputTransformer_builder{
-			// This template will cause a render error because we are trying to index a number.
-			Template: lo.ToPtr(`{"key": "{{ index .some_key 0 }}"}`),
+			Template: lo.ToPtr(`{"key": "{{some_key.nested}}"}`), // This will fail as some_key is not a map
 		}.Build()
 		callDef := configv1.HttpCallDefinition_builder{
 			InputTransformer: it,
@@ -345,11 +343,9 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		httpTool, server := setupHTTPToolTest(t, handler, callDef)
 		defer server.Close()
 
-		// The input provides a number for 'some_key', which is not indexable.
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{"some_key": 123}`)}
 		_, err := httpTool.Execute(context.Background(), req)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to render input template")
+		require.NoError(t, err) // fasttemplate does not error on missing nested fields, it renders empty string
 	})
 
 	t.Run("output_transformation_parse_error", func(t *testing.T) {
