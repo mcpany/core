@@ -73,6 +73,10 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 			if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 				serviceLog.Warn("Invalid TargetAddress for OpenAPI service. This default target will be ignored if spec contains servers.", "address", openapiService.GetAddress())
 			}
+			if openapiService.GetOpenapiSpecUrl() != "" && !validation.IsValidURL(openapiService.GetOpenapiSpecUrl()) {
+				serviceLog.Warn("Invalid OpenAPI spec URL. Skipping service.", "url", openapiService.GetOpenapiSpecUrl())
+				isValidService = false
+			}
 		} else if mcpService := service.GetMcpService(); mcpService != nil {
 			switch mcpService.WhichConnectionType() {
 			case configv1.McpUpstreamService_HttpConnection_case:
