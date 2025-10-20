@@ -38,7 +38,31 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
+	"io"
 )
+
+// loadOpenAPISpec loads the OpenAPI spec from either the content or the URL.
+func (u *OpenAPIUpstream) loadOpenAPISpec(service *configv1.OpenapiUpstreamService) ([]byte, error) {
+	if service.GetOpenapiSpec() != "" {
+		return []byte(service.GetOpenapiSpec()), nil
+	}
+
+	if service.GetOpenapiSpecUrl() != "" {
+		resp, err := http.Get(service.GetOpenapiSpecUrl())
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch OpenAPI spec from URL %s: %w", service.GetOpenapiSpecUrl(), err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to fetch OpenAPI spec from URL %s: status code %d", service.GetOpenapiSpecUrl(), resp.StatusCode)
+		}
+
+		return io.ReadAll(resp.Body)
+	}
+
+	return nil, fmt.Errorf("no OpenAPI spec content or URL provided")
+}
 
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
@@ -91,12 +115,12 @@ func (u *OpenAPIUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceKey, info)
 
-	specContent := openapiService.GetOpenapiSpec()
-	if specContent == "" {
-		return "", nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceKey)
+	specContent, err := u.loadOpenAPISpec(openapiService)
+	if err != nil {
+		return "", nil, err
 	}
 
-	hash := sha256.Sum256([]byte(specContent))
+	hash := sha256.Sum256(specContent)
 	cacheKey := hex.EncodeToString(hash[:])
 
 	item := u.openapiCache.Get(cacheKey)
@@ -105,7 +129,7 @@ func (u *OpenAPIUpstream) Register(
 		doc = item.Value()
 	} else {
 		var err error
-		_, doc, err = parseOpenAPISpec(ctx, []byte(specContent))
+		_, doc, err = parseOpenAPISpec(ctx, specContent)
 		if err != nil {
 			return "", nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceKey, err)
 		}
