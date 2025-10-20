@@ -48,24 +48,30 @@ jobs:
     - name: Docker Cache
       uses: actions/cache@v4
       with:
-        path: /tmp/.buildx-cache
+        path: build/buildx-cache
         key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
         restore-keys: |
           ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Cache Tools
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-${{ github.job }}
+        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-${{ github.job }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-
+          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
       run: |
-        make prepare CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
+        make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
     - name: Check linting
       run: make lint
@@ -111,24 +117,30 @@ jobs:
     - name: Docker Cache
       uses: actions/cache@v4
       with:
-        path: /tmp/.buildx-cache
+        path: build/buildx-cache
         key: ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-${{ github.job }}
         restore-keys: |
           ${{ runner.os }}-buildx-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Cache Tools
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-${{ github.job }}
+        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-${{ github.job }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-
+          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
-      run: make prepare CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
+      run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
     - name: test everything
       run: |
-        make test CACHE_TO=type=local,dest=/tmp/.buildx-cache CACHE_FROM=type=local,src=/tmp/.buildx-cache
+        make test CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
