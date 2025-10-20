@@ -85,7 +85,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		callDef := configv1.StdioCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 		}.Build()
@@ -124,7 +124,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-add-tool-error")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		callDef := configv1.StdioCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("ls"),
 			}.Build(),
 		}.Build()

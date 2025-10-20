@@ -51,13 +51,13 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	method := configv1.HttpCallDefinition_HTTP_METHOD_GET
 	param := configv1.HttpParameterMapping_builder{
-		ParameterSchema: configv1.ParameterSchema_builder{
+		Schema: configv1.ParameterSchema_builder{
 			Name: proto.String("ip"),
 		}.Build(),
 	}.Build()
 
 	callDef := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String(operationID),
 		}.Build(),
 		EndpointPath: proto.String(endpointPath),

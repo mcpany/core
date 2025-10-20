@@ -35,6 +35,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockAuthenticator struct {
@@ -301,8 +302,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		}.Build()
 
 		paramMapping := configv1.HttpParameterMapping_builder{
-			ParameterSchema: configv1.ParameterSchema_builder{
-				Name: lo.ToPtr("userID"),
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("userID"),
 			}.Build(),
 		}.Build()
 		callDef := configv1.HttpCallDefinition_builder{

@@ -7,7 +7,7 @@
         "calls": [
           {
             "endpoint_path": "/echo",
-            "annotation": {
+            "schema": {
               "name": "echo"
             },
             "method": "HTTP_METHOD_POST"

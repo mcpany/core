@@ -93,16 +93,23 @@ func TestPublicHttpPost(t *testing.T) {
 
 func TestPublicWebsocket(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public Websocket API...")
+
+	// --- 1. Start Local Websocket Echo Server ---
+	echoServerInfo := integration.StartWebsocketEchoServer(t)
+	defer echoServerInfo.CleanupFunc()
+
+	// --- 2. Start MCPXY Server ---
 	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicWebsocketTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	const serviceID = "public_websocket_echo"
-	const baseURL = "wss://ws.postman-echo.com/raw"
+	// --- 3. Register Websocket Service with MCPXY ---
+	const serviceID = "local_websocket_echo"
+	serviceEndpoint := echoServerInfo.URL
 	const operationID = "echo"
 
-	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, baseURL)
+	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", serviceID, serviceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, baseURL, operationID, nil)
+	integration.RegisterWebsocketService(t, registrationGRPCClient, serviceID, serviceEndpoint, operationID, nil)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)

@@ -101,7 +101,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
 		callDef := configv1.HttpCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("test-op"),
 			}.Build(),
 			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -156,7 +156,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		upstream := NewHTTPUpstream(pm)
 
 		callDef1 := configv1.HttpCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String("A test operation"),
 			}.Build(),
 			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -164,7 +164,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		}.Build()
 
 		callDef2 := configv1.HttpCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Description: proto.String(""),
 			}.Build(),
 			Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
@@ -204,7 +204,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		upstream := NewHTTPUpstream(pm)
 
 		callDef := configv1.HttpCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("test-op"),
 			}.Build(),
 			Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -237,7 +237,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
 		callDef := configv1.HttpCallDefinition_builder{
-			Annotation: configv1.ToolAnnotation_builder{
+			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("test-op"),
 			}.Build(),
 			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -346,7 +346,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	upstream := &HTTPUpstream{poolManager: pm}
 
 	callDef := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("test-op"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -379,7 +379,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	httpService1 := &configv1.HttpUpstreamService{}
 	httpService1.SetAddress("http://localhost")
 	callDef1 := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("op1"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -397,7 +397,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	httpService2 := &configv1.HttpUpstreamService{}
 	httpService2.SetAddress("http://localhost")
 	callDef2 := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("op2"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
@@ -430,7 +430,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	httpService := &configv1.HttpUpstreamService{}
 	httpService.SetAddress("http://localhost")
 	callDef := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("test-op"),
 		}.Build(),
 		Method:       configv1.HttpCallDefinition_HttpMethod(999).Enum(), // Invalid method
@@ -508,7 +508,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			httpService := &configv1.HttpUpstreamService{}
 			httpService.SetAddress(tc.address)
 			callDef := configv1.HttpCallDefinition_builder{
-				Annotation: configv1.ToolAnnotation_builder{
+				Schema: configv1.ToolSchema_builder{
 					Name: proto.String("test-op"),
 				}.Build(),
 				Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
