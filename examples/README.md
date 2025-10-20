@@ -91,7 +91,7 @@ This example showcases how an AI can chain tools together to perform a more comp
 3.  **Call the `getLocation` Tool:** First, get the location for a given IP address.
 
     ```bash
-    gemini call tool ip-location-service-df37f29a/getLocation ip=8.8.8.8
+    gemini -m gemini-2.5-flash -p "What is the location of the IP address 8.8.8.8?"
     ```
 
     You should receive a JSON response with the location information, including `latitude` and `longitude`.
@@ -100,7 +100,7 @@ This example showcases how an AI can chain tools together to perform a more comp
 
     ```bash
     # Replace with the actual latitude and longitude from the previous step
-    gemini call tool weather-service-somehash/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE
+    gemini -m gemini-2.5-flash -p "What is the weather at latitude YOUR_LATITUDE and longitude YOUR_LONGITUDE?"
     ```
 
     This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.
