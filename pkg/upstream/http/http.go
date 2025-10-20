@@ -212,7 +212,6 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			InputSchema: pb.InputSchema_builder{
 				Type:       proto.String("object"),
 				Properties: properties,
-				Required:   requiredParams,
 			}.Build(),
 		}.Build()
 

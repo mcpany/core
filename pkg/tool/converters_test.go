@@ -17,7 +17,6 @@
 package tool
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -26,59 +25,90 @@ import (
 	"github.com/mcpxy/core/pkg/upstream/grpc/protobufparser"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestConvertMCPToolToProto(t *testing.T) {
-	// t.Parallel() // Removed to debug potential race conditions
-	toolName := "test-tool"
-	displayName := "Test Tool"
-	description := "A tool for testing"
-	toolType := "object"
+	t.Parallel()
 
-	inputSchema := &jsonschema.Schema{
-		Title: displayName,
-		Type:  toolType,
-		Properties: map[string]*jsonschema.Schema{
-			"arg1": {
-				Type:        "string",
-				Description: "Argument 1",
-			},
-		},
-		Required: []string{"arg1"},
-	}
-	jsonBytes, err := json.Marshal(inputSchema)
-	if err != nil {
-		t.Fatalf("failed to marshal input schema to json: %v", err)
-	}
-	propertiesStruct := &structpb.Struct{}
-	if err := protojson.Unmarshal(jsonBytes, propertiesStruct); err != nil {
-		t.Fatalf("failed to unmarshal input schema from json: %v", err)
-	}
+	destructiveHint := true
+	openWorldHint := true
 
 	mcpTool := &mcp.Tool{
-		Name:        toolName,
-		Description: description,
-		InputSchema: inputSchema,
+		Name:        "test-tool",
+		Description: "A tool for testing",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Test Tool",
+			ReadOnlyHint:    true,
+			DestructiveHint: &destructiveHint,
+			IdempotentHint:  true,
+			OpenWorldHint:   &openWorldHint,
+		},
+		InputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"arg1": map[string]any{
+					"type":        "string",
+					"description": "Argument 1",
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"result": map[string]any{
+					"type":        "string",
+					"description": "The result",
+				},
+			},
+		},
 	}
+
 	protoTool, err := convertMCPToolToProto(mcpTool)
 	if err != nil {
 		t.Fatalf("convertMCPToolToProto() failed: %v", err)
 	}
 
-	expectedInputSchema := pb.InputSchema_builder{
-		Type:       &toolType,
-		Properties: propertiesStruct,
-		Required:   []string{"arg1"},
-	}.Build()
+	// Helper to create a structpb.Struct from a map
+	mustNewStruct := func(m map[string]any) *structpb.Struct {
+		s, err := structpb.NewStruct(m)
+		if err != nil {
+			t.Fatalf("Failed to create struct: %v", err)
+		}
+		return s
+	}
 
 	expectedTool := pb.Tool_builder{
-		Name:        &toolName,
-		DisplayName: &displayName,
-		Description: &description,
-		InputSchema: expectedInputSchema,
+		Name:        proto.String("test-tool"),
+		Description: proto.String("A tool for testing"),
+		DisplayName: proto.String("Test Tool"),
+		Annotations: pb.ToolAnnotations_builder{
+			Title:           proto.String("Test Tool"),
+			ReadOnlyHint:    proto.Bool(true),
+			DestructiveHint: proto.Bool(true),
+			IdempotentHint:  proto.Bool(true),
+			OpenWorldHint:   proto.Bool(true),
+		}.Build(),
+		InputSchema: pb.InputSchema_builder{
+			Type: proto.String("object"),
+			Properties: mustNewStruct(map[string]any{
+				"arg1": map[string]any{
+					"type":        "string",
+					"description": "Argument 1",
+				},
+			}),
+		}.Build(),
+		OutputSchema: pb.OutputSchema_builder{
+			Type: proto.String("object"),
+			Properties: mustNewStruct(map[string]any{
+				"result": map[string]any{
+					"type":        "string",
+					"description": "The result",
+				},
+			}),
+		}.Build(),
 	}.Build()
 
 	if diff := cmp.Diff(expectedTool, protoTool, protocmp.Transform()); diff != "" {
