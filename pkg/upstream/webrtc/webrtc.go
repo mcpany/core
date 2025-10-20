@@ -104,9 +104,10 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	}
 
 	for i, wrtcDef := range definitions {
-		toolNamePart := wrtcDef.GetOperationId()
+		annotation := wrtcDef.GetAnnotation()
+		toolNamePart := annotation.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(wrtcDef.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(annotation.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -121,7 +122,7 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		}
 
 		for _, param := range wrtcDef.GetParameters() {
-			properties.Fields[param.GetName()] = structpb.NewStringValue("")
+			properties.Fields[param.GetParameterSchema().GetName()] = structpb.NewStringValue("")
 		}
 
 		newToolProto := pb.Tool_builder{
@@ -146,8 +147,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(wrtcDef.GetOperationId()),
-			Description: proto.String(wrtcDef.GetDescription()),
+			Name:        proto.String(annotation.GetName()),
+			Description: proto.String(annotation.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools

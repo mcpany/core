@@ -30,6 +30,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHttpMethodToString(t *testing.T) {
@@ -99,10 +100,13 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetOperationId("test-op")
-		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
-		callDef.SetEndpointPath("/test")
+		callDef := configv1.HttpCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Name: proto.String("test-op"),
+			}.Build(),
+			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+			EndpointPath: proto.String("/test"),
+		}.Build()
 		httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -151,15 +155,21 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		callDef1 := &configv1.HttpCallDefinition{}
-		callDef1.SetDescription("A test operation")
-		callDef1.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
-		callDef1.SetEndpointPath("/test")
+		callDef1 := configv1.HttpCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Description: proto.String("A test operation"),
+			}.Build(),
+			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+			EndpointPath: proto.String("/test"),
+		}.Build()
 
-		callDef2 := &configv1.HttpCallDefinition{}
-		callDef2.SetDescription("") // Empty description
-		callDef2.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_POST)
-		callDef2.SetEndpointPath("/test2")
+		callDef2 := configv1.HttpCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Description: proto.String(""),
+			}.Build(),
+			Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
+			EndpointPath: proto.String("/test2"),
+		}.Build()
 
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
@@ -193,9 +203,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetOperationId("test-op")
-		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+		callDef := configv1.HttpCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Name: proto.String("test-op"),
+			}.Build(),
+			Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		}.Build()
 
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
@@ -223,10 +236,13 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetOperationId("test-op")
-		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
-		callDef.SetEndpointPath("/test")
+		callDef := configv1.HttpCallDefinition_builder{
+			Annotation: configv1.ToolAnnotation_builder{
+				Name: proto.String("test-op"),
+			}.Build(),
+			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+			EndpointPath: proto.String("/test"),
+		}.Build()
 		httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
 
 		poolConfig := &configv1.ConnectionPoolConfig{}
@@ -329,9 +345,12 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 
 	upstream := &HTTPUpstream{poolManager: pm}
 
-	callDef := &configv1.HttpCallDefinition{}
-	callDef.SetOperationId("test-op")
-	callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+	callDef := configv1.HttpCallDefinition_builder{
+		Annotation: configv1.ToolAnnotation_builder{
+			Name: proto.String("test-op"),
+		}.Build(),
+		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+	}.Build()
 
 	httpService := &configv1.HttpUpstreamService{}
 	httpService.SetAddress("http://localhost")
@@ -359,9 +378,12 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	// Initial registration
 	httpService1 := &configv1.HttpUpstreamService{}
 	httpService1.SetAddress("http://localhost")
-	callDef1 := &configv1.HttpCallDefinition{}
-	callDef1.SetOperationId("op1")
-	callDef1.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+	callDef1 := configv1.HttpCallDefinition_builder{
+		Annotation: configv1.ToolAnnotation_builder{
+			Name: proto.String("op1"),
+		}.Build(),
+		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+	}.Build()
 	httpService1.SetCalls([]*configv1.HttpCallDefinition{callDef1})
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	serviceConfig1.SetName("reload-test")
@@ -374,9 +396,12 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	// Reload with a different tool
 	httpService2 := &configv1.HttpUpstreamService{}
 	httpService2.SetAddress("http://localhost")
-	callDef2 := &configv1.HttpCallDefinition{}
-	callDef2.SetOperationId("op2")
-	callDef2.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+	callDef2 := configv1.HttpCallDefinition_builder{
+		Annotation: configv1.ToolAnnotation_builder{
+			Name: proto.String("op2"),
+		}.Build(),
+		Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+	}.Build()
 	httpService2.SetCalls([]*configv1.HttpCallDefinition{callDef2})
 	serviceConfig2 := &configv1.UpstreamServiceConfig{}
 	serviceConfig2.SetName("reload-test")
@@ -404,10 +429,13 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 
 	httpService := &configv1.HttpUpstreamService{}
 	httpService.SetAddress("http://localhost")
-	callDef := &configv1.HttpCallDefinition{}
-	callDef.SetOperationId("test-op")
-	callDef.SetMethod(configv1.HttpCallDefinition_HttpMethod(999)) // Invalid method
-	callDef.SetEndpointPath("/test")
+	callDef := configv1.HttpCallDefinition_builder{
+		Annotation: configv1.ToolAnnotation_builder{
+			Name: proto.String("test-op"),
+		}.Build(),
+		Method:       configv1.HttpCallDefinition_HttpMethod(999).Enum(), // Invalid method
+		EndpointPath: proto.String("/test"),
+	}.Build()
 	httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -479,10 +507,13 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 
 			httpService := &configv1.HttpUpstreamService{}
 			httpService.SetAddress(tc.address)
-			callDef := &configv1.HttpCallDefinition{}
-			callDef.SetOperationId("test-op")
-			callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
-			callDef.SetEndpointPath(tc.endpointPath)
+			callDef := configv1.HttpCallDefinition_builder{
+				Annotation: configv1.ToolAnnotation_builder{
+					Name: proto.String("test-op"),
+				}.Build(),
+				Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+				EndpointPath: proto.String(tc.endpointPath),
+			}.Build()
 			httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
 
 			serviceConfig := &configv1.UpstreamServiceConfig{}
