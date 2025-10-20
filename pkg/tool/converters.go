@@ -36,55 +36,98 @@ func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
 	}
-	if tool.InputSchema == nil {
-		// If there's no input schema, we can just return the tool with the name and description.
-		name := tool.Name
-		description := tool.Description
-		return pb.Tool_builder{
-			Name:        &name,
-			Description: &description,
-		}.Build(), nil
+
+	pbTool := &pb.Tool{}
+	pbTool.Reset()
+	pbTool.SetName(tool.Name)
+	pbTool.SetDescription(tool.Description)
+
+	// Set display name based on precedence: Title, Annotations.Title, then Name
+	if tool.Title != "" {
+		pbTool.SetDisplayName(tool.Title)
+	} else if tool.Annotations != nil && tool.Annotations.Title != "" {
+		pbTool.SetDisplayName(tool.Annotations.Title)
+	} else {
+		pbTool.SetDisplayName(tool.Name)
 	}
 
-	// Marshal the provided input schema to JSON. This is a safe way to handle different
-	// underlying types (e.g., map[string]any, *jsonschema.Schema).
-	jsonBytes, err := json.Marshal(tool.InputSchema)
+	if tool.InputSchema != nil {
+		inputSchema, err := convertJSONSchemaToProto[pb.InputSchema](tool.InputSchema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert input schema: %w", err)
+		}
+		pbTool.SetInputSchema(inputSchema)
+	}
+
+	if tool.OutputSchema != nil {
+		outputSchema, err := convertJSONSchemaToProto[pb.OutputSchema](tool.OutputSchema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert output schema: %w", err)
+		}
+		pbTool.SetOutputSchema(outputSchema)
+	}
+
+	if tool.Annotations != nil {
+		pbAnnotations := &pb.ToolAnnotations{}
+		pbAnnotations.Reset()
+		pbAnnotations.SetTitle(tool.Annotations.Title)
+		pbAnnotations.SetReadOnlyHint(tool.Annotations.ReadOnlyHint)
+		pbAnnotations.SetIdempotentHint(tool.Annotations.IdempotentHint)
+		if tool.Annotations.DestructiveHint != nil {
+			pbAnnotations.SetDestructiveHint(*tool.Annotations.DestructiveHint)
+		}
+		if tool.Annotations.OpenWorldHint != nil {
+			pbAnnotations.SetOpenWorldHint(*tool.Annotations.OpenWorldHint)
+		}
+		pbTool.SetAnnotations(pbAnnotations)
+	}
+
+	return pbTool, nil
+}
+
+// convertJSONSchemaToProto is a generic function that converts a JSON schema,
+// represented as an `any` type, into a protobuf message that has `Type` and
+// `Properties` fields. This is used for both input and output schemas.
+func convertJSONSchemaToProto[T any, PT interface {
+	*T
+	Reset()
+	ProtoMessage()
+	SetType(string)
+	SetProperties(*structpb.Struct)
+}](schema any) (PT, error) {
+	if schema == nil {
+		return nil, nil
+	}
+
+	// Marshal the provided schema to JSON.
+	jsonBytes, err := json.Marshal(schema)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal input schema to json: %w", err)
-	}
-
-	// Unmarshal into a generic structpb.Struct for the properties.
-	properties := &structpb.Struct{}
-	if err := protojson.Unmarshal(jsonBytes, properties); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal input schema from json to structpb: %w", err)
+		return nil, fmt.Errorf("failed to marshal schema to json: %w", err)
 	}
 
 	// Unmarshal into a temporary struct to safely extract top-level schema fields.
 	var tempSchema struct {
-		Type     string   `json:"type,omitempty"`
-		Title    string   `json:"title,omitempty"`
-		Required []string `json:"required,omitempty"`
+		Type       string          `json:"type,omitempty"`
+		Properties json.RawMessage `json:"properties,omitempty"`
 	}
 	if err := json.Unmarshal(jsonBytes, &tempSchema); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal input schema from json to temporary struct: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal schema from json to temporary struct: %w", err)
 	}
 
-	name := tool.Name
-	displayName := tempSchema.Title
-	description := tool.Description
+	// Unmarshal the properties field into a structpb.Struct.
+	properties := &structpb.Struct{}
+	if len(tempSchema.Properties) > 0 {
+		if err := protojson.Unmarshal(tempSchema.Properties, properties); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal properties from json to structpb: %w", err)
+		}
+	}
 
-	pbInputSchema := pb.InputSchema_builder{
-		Type:       &tempSchema.Type,
-		Properties: properties,
-		Required:   tempSchema.Required,
-	}.Build()
+	pbSchema := PT(new(T))
+	pbSchema.Reset()
+	pbSchema.SetType(tempSchema.Type)
+	pbSchema.SetProperties(properties)
 
-	return pb.Tool_builder{
-		Name:        &name,
-		DisplayName: &displayName,
-		Description: &description,
-		InputSchema: pbInputSchema,
-	}.Build(), nil
+	return pbSchema, nil
 }
 
 // convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which

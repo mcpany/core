@@ -39,6 +39,7 @@ type Tool struct {
 	xxx_hidden_InputSchema         *InputSchema           `protobuf:"bytes,10,opt,name=input_schema,json=inputSchema"`
 	xxx_hidden_Annotations         *ToolAnnotations       `protobuf:"bytes,11,opt,name=annotations"`
 	xxx_hidden_IsStream            bool                   `protobuf:"varint,12,opt,name=is_stream,json=isStream"`
+	xxx_hidden_OutputSchema        *OutputSchema          `protobuf:"bytes,13,opt,name=output_schema,json=outputSchema"`
 	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
 	XXX_presence                   [1]uint32
 	unknownFields                  protoimpl.UnknownFields
@@ -179,39 +180,46 @@ func (x *Tool) GetIsStream() bool {
 	return false
 }
 
+func (x *Tool) GetOutputSchema() *OutputSchema {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *Tool) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
 }
 
 func (x *Tool) SetDisplayName(v string) {
 	x.xxx_hidden_DisplayName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
 }
 
 func (x *Tool) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 13)
 }
 
 func (x *Tool) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 13)
 }
 
 func (x *Tool) SetUnderlyingMethodFqn(v string) {
 	x.xxx_hidden_UnderlyingMethodFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 13)
 }
 
 func (x *Tool) SetRequestTypeFqn(v string) {
 	x.xxx_hidden_RequestTypeFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 13)
 }
 
 func (x *Tool) SetResponseTypeFqn(v string) {
 	x.xxx_hidden_ResponseTypeFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 13)
 }
 
 func (x *Tool) SetRequestFields(v []*Field) {
@@ -232,7 +240,11 @@ func (x *Tool) SetAnnotations(v *ToolAnnotations) {
 
 func (x *Tool) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 13)
+}
+
+func (x *Tool) SetOutputSchema(v *OutputSchema) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *Tool) HasName() bool {
@@ -305,6 +317,13 @@ func (x *Tool) HasIsStream() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
 }
 
+func (x *Tool) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *Tool) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -353,6 +372,10 @@ func (x *Tool) ClearIsStream() {
 	x.xxx_hidden_IsStream = false
 }
 
+func (x *Tool) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type Tool_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -368,6 +391,7 @@ type Tool_builder struct {
 	InputSchema         *InputSchema
 	Annotations         *ToolAnnotations
 	IsStream            *bool
+	OutputSchema        *OutputSchema
 }
 
 func (b0 Tool_builder) Build() *Tool {
@@ -375,31 +399,31 @@ func (b0 Tool_builder) Build() *Tool {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.DisplayName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
 		x.xxx_hidden_DisplayName = b.DisplayName
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 13)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 13)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.UnderlyingMethodFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 13)
 		x.xxx_hidden_UnderlyingMethodFqn = b.UnderlyingMethodFqn
 	}
 	if b.RequestTypeFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 13)
 		x.xxx_hidden_RequestTypeFqn = b.RequestTypeFqn
 	}
 	if b.ResponseTypeFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 13)
 		x.xxx_hidden_ResponseTypeFqn = b.ResponseTypeFqn
 	}
 	x.xxx_hidden_RequestFields = &b.RequestFields
@@ -407,9 +431,10 @@ func (b0 Tool_builder) Build() *Tool {
 	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_Annotations = b.Annotations
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 13)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -561,7 +586,6 @@ type InputSchema struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Type        *string                `protobuf:"bytes,1,opt,name=type"`
 	xxx_hidden_Properties  *structpb.Struct       `protobuf:"bytes,2,opt,name=properties"`
-	xxx_hidden_Required    []string               `protobuf:"bytes,3,rep,name=required"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -610,24 +634,13 @@ func (x *InputSchema) GetProperties() *structpb.Struct {
 	return nil
 }
 
-func (x *InputSchema) GetRequired() []string {
-	if x != nil {
-		return x.xxx_hidden_Required
-	}
-	return nil
-}
-
 func (x *InputSchema) SetType(v string) {
 	x.xxx_hidden_Type = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *InputSchema) SetProperties(v *structpb.Struct) {
 	x.xxx_hidden_Properties = v
-}
-
-func (x *InputSchema) SetRequired(v []string) {
-	x.xxx_hidden_Required = v
 }
 
 func (x *InputSchema) HasType() bool {
@@ -658,7 +671,6 @@ type InputSchema_builder struct {
 
 	Type       *string
 	Properties *structpb.Struct
-	Required   []string
 }
 
 func (b0 InputSchema_builder) Build() *InputSchema {
@@ -666,11 +678,113 @@ func (b0 InputSchema_builder) Build() *InputSchema {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Type != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
 		x.xxx_hidden_Type = b.Type
 	}
 	x.xxx_hidden_Properties = b.Properties
-	x.xxx_hidden_Required = b.Required
+	return m0
+}
+
+type OutputSchema struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Type        *string                `protobuf:"bytes,1,opt,name=type"`
+	xxx_hidden_Properties  *structpb.Struct       `protobuf:"bytes,2,opt,name=properties"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *OutputSchema) Reset() {
+	*x = OutputSchema{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OutputSchema) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OutputSchema) ProtoMessage() {}
+
+func (x *OutputSchema) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *OutputSchema) GetType() string {
+	if x != nil {
+		if x.xxx_hidden_Type != nil {
+			return *x.xxx_hidden_Type
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *OutputSchema) GetProperties() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_Properties
+	}
+	return nil
+}
+
+func (x *OutputSchema) SetType(v string) {
+	x.xxx_hidden_Type = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *OutputSchema) SetProperties(v *structpb.Struct) {
+	x.xxx_hidden_Properties = v
+}
+
+func (x *OutputSchema) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *OutputSchema) HasProperties() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Properties != nil
+}
+
+func (x *OutputSchema) ClearType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Type = nil
+}
+
+func (x *OutputSchema) ClearProperties() {
+	x.xxx_hidden_Properties = nil
+}
+
+type OutputSchema_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Type       *string
+	Properties *structpb.Struct
+}
+
+func (b0 OutputSchema_builder) Build() *OutputSchema {
+	m0 := &OutputSchema{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Type = b.Type
+	}
+	x.xxx_hidden_Properties = b.Properties
 	return m0
 }
 
@@ -689,7 +803,7 @@ type ToolAnnotations struct {
 
 func (x *ToolAnnotations) Reset() {
 	*x = ToolAnnotations{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[3]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -701,7 +815,7 @@ func (x *ToolAnnotations) String() string {
 func (*ToolAnnotations) ProtoMessage() {}
 
 func (x *ToolAnnotations) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[3]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -838,11 +952,25 @@ func (x *ToolAnnotations) ClearOpenWorldHint() {
 type ToolAnnotations_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Title           *string
-	ReadOnlyHint    *bool
+	Title *string
+	// If true, the tool does not modify its environment.
+	// Default: false
+	ReadOnlyHint *bool
+	// If true, the tool may perform destructive updates to its environment. If
+	// false, the tool performs only additive updates.
+	// (This property is meaningful only when ReadOnlyHint == false.)
+	// Default: true
 	DestructiveHint *bool
-	IdempotentHint  *bool
-	OpenWorldHint   *bool
+	// If true, calling the tool repeatedly with the same arguments will have no
+	// additional effect on the its environment.
+	// (This property is meaningful only when ReadOnlyHint == false.)
+	// Default: false
+	IdempotentHint *bool
+	// If true, this tool may interact with an "open world" of external entities. If
+	// false, the tool's domain of interaction is closed. For example, the world of
+	// a web search tool is open, whereas that of a memory tool is not.
+	// Default: true
+	OpenWorldHint *bool
 }
 
 func (b0 ToolAnnotations_builder) Build() *ToolAnnotations {
@@ -880,7 +1008,7 @@ type ListToolsRequest struct {
 
 func (x *ListToolsRequest) Reset() {
 	*x = ListToolsRequest{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -892,7 +1020,7 @@ func (x *ListToolsRequest) String() string {
 func (*ListToolsRequest) ProtoMessage() {}
 
 func (x *ListToolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -924,7 +1052,7 @@ type ListToolsResponse struct {
 
 func (x *ListToolsResponse) Reset() {
 	*x = ListToolsResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -936,7 +1064,7 @@ func (x *ListToolsResponse) String() string {
 func (*ListToolsResponse) ProtoMessage() {}
 
 func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -986,7 +1114,7 @@ type ExecuteToolRequest struct {
 
 func (x *ExecuteToolRequest) Reset() {
 	*x = ExecuteToolRequest{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[6]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -998,7 +1126,7 @@ func (x *ExecuteToolRequest) String() string {
 func (*ExecuteToolRequest) ProtoMessage() {}
 
 func (x *ExecuteToolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[6]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1086,7 +1214,7 @@ type ExecuteToolResponse struct {
 
 func (x *ExecuteToolResponse) Reset() {
 	*x = ExecuteToolResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1098,7 +1226,7 @@ func (x *ExecuteToolResponse) String() string {
 func (*ExecuteToolResponse) ProtoMessage() {}
 
 func (x *ExecuteToolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1161,7 +1289,7 @@ type Prompt struct {
 
 func (x *Prompt) Reset() {
 	*x = Prompt{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1173,7 +1301,7 @@ func (x *Prompt) String() string {
 func (*Prompt) ProtoMessage() {}
 
 func (x *Prompt) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1356,7 +1484,7 @@ type ListPromptsRequest struct {
 
 func (x *ListPromptsRequest) Reset() {
 	*x = ListPromptsRequest{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1368,7 +1496,7 @@ func (x *ListPromptsRequest) String() string {
 func (*ListPromptsRequest) ProtoMessage() {}
 
 func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1400,7 +1528,7 @@ type ListPromptsResponse struct {
 
 func (x *ListPromptsResponse) Reset() {
 	*x = ListPromptsResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1412,7 +1540,7 @@ func (x *ListPromptsResponse) String() string {
 func (*ListPromptsResponse) ProtoMessage() {}
 
 func (x *ListPromptsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1466,7 +1594,7 @@ type Resource struct {
 
 func (x *Resource) Reset() {
 	*x = Resource{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1478,7 +1606,7 @@ func (x *Resource) String() string {
 func (*Resource) ProtoMessage() {}
 
 func (x *Resource) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1669,7 +1797,7 @@ type ListResourcesRequest struct {
 
 func (x *ListResourcesRequest) Reset() {
 	*x = ListResourcesRequest{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1681,7 +1809,7 @@ func (x *ListResourcesRequest) String() string {
 func (*ListResourcesRequest) ProtoMessage() {}
 
 func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1713,7 +1841,7 @@ type ListResourcesResponse struct {
 
 func (x *ListResourcesResponse) Reset() {
 	*x = ListResourcesResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1725,7 +1853,7 @@ func (x *ListResourcesResponse) String() string {
 func (*ListResourcesResponse) ProtoMessage() {}
 
 func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1767,7 +1895,7 @@ var File_proto_mcp_router_v1_mcp_router_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\n" +
-	"$proto/mcp_router/v1/mcp_router.proto\x12\x12mcpx.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xb6\x04\n" +
+	"$proto/mcp_router/v1/mcp_router.proto\x12\x12mcpx.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xfd\x04\n" +
 	"\x04Tool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
@@ -1782,17 +1910,22 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\finput_schema\x18\n" +
 	" \x01(\v2\x1f.mcpx.mcp_router.v1.InputSchemaR\vinputSchema\x12E\n" +
 	"\vannotations\x18\v \x01(\v2#.mcpx.mcp_router.v1.ToolAnnotationsR\vannotations\x12\x1b\n" +
-	"\tis_stream\x18\f \x01(\bR\bisStream\"Q\n" +
+	"\tis_stream\x18\f \x01(\bR\bisStream\x12E\n" +
+	"\routput_schema\x18\r \x01(\v2 .mcpx.mcp_router.v1.OutputSchemaR\foutputSchema\"Q\n" +
 	"\x05Field\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\"v\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\"Z\n" +
 	"\vInputSchema\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x127\n" +
 	"\n" +
 	"properties\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
-	"properties\x12\x1a\n" +
-	"\brequired\x18\x03 \x03(\tR\brequired\"\xc9\x01\n" +
+	"properties\"[\n" +
+	"\fOutputSchema\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x127\n" +
+	"\n" +
+	"properties\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"properties\"\xc9\x01\n" +
 	"\x0fToolAnnotations\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
 	"\x0eread_only_hint\x18\x02 \x01(\bR\freadOnlyHint\x12)\n" +
@@ -1831,49 +1964,52 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\vListPrompts\x12&.mcpx.mcp_router.v1.ListPromptsRequest\x1a'.mcpx.mcp_router.v1.ListPromptsResponse\x12d\n" +
 	"\rListResources\x12(.mcpx.mcp_router.v1.ListResourcesRequest\x1a).mcpx.mcp_router.v1.ListResourcesResponseB+Z)github.com/mcpxy/core/proto/mcp_router/v1b\beditionsp\xe8\a"
 
-var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_proto_mcp_router_v1_mcp_router_proto_goTypes = []any{
 	(*Tool)(nil),                  // 0: mcpx.mcp_router.v1.Tool
 	(*Field)(nil),                 // 1: mcpx.mcp_router.v1.Field
 	(*InputSchema)(nil),           // 2: mcpx.mcp_router.v1.InputSchema
-	(*ToolAnnotations)(nil),       // 3: mcpx.mcp_router.v1.ToolAnnotations
-	(*ListToolsRequest)(nil),      // 4: mcpx.mcp_router.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),     // 5: mcpx.mcp_router.v1.ListToolsResponse
-	(*ExecuteToolRequest)(nil),    // 6: mcpx.mcp_router.v1.ExecuteToolRequest
-	(*ExecuteToolResponse)(nil),   // 7: mcpx.mcp_router.v1.ExecuteToolResponse
-	(*Prompt)(nil),                // 8: mcpx.mcp_router.v1.Prompt
-	(*ListPromptsRequest)(nil),    // 9: mcpx.mcp_router.v1.ListPromptsRequest
-	(*ListPromptsResponse)(nil),   // 10: mcpx.mcp_router.v1.ListPromptsResponse
-	(*Resource)(nil),              // 11: mcpx.mcp_router.v1.Resource
-	(*ListResourcesRequest)(nil),  // 12: mcpx.mcp_router.v1.ListResourcesRequest
-	(*ListResourcesResponse)(nil), // 13: mcpx.mcp_router.v1.ListResourcesResponse
-	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
+	(*OutputSchema)(nil),          // 3: mcpx.mcp_router.v1.OutputSchema
+	(*ToolAnnotations)(nil),       // 4: mcpx.mcp_router.v1.ToolAnnotations
+	(*ListToolsRequest)(nil),      // 5: mcpx.mcp_router.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),     // 6: mcpx.mcp_router.v1.ListToolsResponse
+	(*ExecuteToolRequest)(nil),    // 7: mcpx.mcp_router.v1.ExecuteToolRequest
+	(*ExecuteToolResponse)(nil),   // 8: mcpx.mcp_router.v1.ExecuteToolResponse
+	(*Prompt)(nil),                // 9: mcpx.mcp_router.v1.Prompt
+	(*ListPromptsRequest)(nil),    // 10: mcpx.mcp_router.v1.ListPromptsRequest
+	(*ListPromptsResponse)(nil),   // 11: mcpx.mcp_router.v1.ListPromptsResponse
+	(*Resource)(nil),              // 12: mcpx.mcp_router.v1.Resource
+	(*ListResourcesRequest)(nil),  // 13: mcpx.mcp_router.v1.ListResourcesRequest
+	(*ListResourcesResponse)(nil), // 14: mcpx.mcp_router.v1.ListResourcesResponse
+	(*structpb.Struct)(nil),       // 15: google.protobuf.Struct
 }
 var file_proto_mcp_router_v1_mcp_router_proto_depIdxs = []int32{
 	1,  // 0: mcpx.mcp_router.v1.Tool.request_fields:type_name -> mcpx.mcp_router.v1.Field
 	1,  // 1: mcpx.mcp_router.v1.Tool.response_fields:type_name -> mcpx.mcp_router.v1.Field
 	2,  // 2: mcpx.mcp_router.v1.Tool.input_schema:type_name -> mcpx.mcp_router.v1.InputSchema
-	3,  // 3: mcpx.mcp_router.v1.Tool.annotations:type_name -> mcpx.mcp_router.v1.ToolAnnotations
-	14, // 4: mcpx.mcp_router.v1.InputSchema.properties:type_name -> google.protobuf.Struct
-	0,  // 5: mcpx.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpx.mcp_router.v1.Tool
-	14, // 6: mcpx.mcp_router.v1.ExecuteToolRequest.inputs:type_name -> google.protobuf.Struct
-	14, // 7: mcpx.mcp_router.v1.ExecuteToolResponse.outputs:type_name -> google.protobuf.Struct
-	2,  // 8: mcpx.mcp_router.v1.Prompt.input_schema:type_name -> mcpx.mcp_router.v1.InputSchema
-	8,  // 9: mcpx.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpx.mcp_router.v1.Prompt
-	11, // 10: mcpx.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpx.mcp_router.v1.Resource
-	4,  // 11: mcpx.mcp_router.v1.McpRouter.ListTools:input_type -> mcpx.mcp_router.v1.ListToolsRequest
-	6,  // 12: mcpx.mcp_router.v1.McpRouter.ExecuteTool:input_type -> mcpx.mcp_router.v1.ExecuteToolRequest
-	9,  // 13: mcpx.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpx.mcp_router.v1.ListPromptsRequest
-	12, // 14: mcpx.mcp_router.v1.McpRouter.ListResources:input_type -> mcpx.mcp_router.v1.ListResourcesRequest
-	5,  // 15: mcpx.mcp_router.v1.McpRouter.ListTools:output_type -> mcpx.mcp_router.v1.ListToolsResponse
-	7,  // 16: mcpx.mcp_router.v1.McpRouter.ExecuteTool:output_type -> mcpx.mcp_router.v1.ExecuteToolResponse
-	10, // 17: mcpx.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpx.mcp_router.v1.ListPromptsResponse
-	13, // 18: mcpx.mcp_router.v1.McpRouter.ListResources:output_type -> mcpx.mcp_router.v1.ListResourcesResponse
-	15, // [15:19] is the sub-list for method output_type
-	11, // [11:15] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	4,  // 3: mcpx.mcp_router.v1.Tool.annotations:type_name -> mcpx.mcp_router.v1.ToolAnnotations
+	3,  // 4: mcpx.mcp_router.v1.Tool.output_schema:type_name -> mcpx.mcp_router.v1.OutputSchema
+	15, // 5: mcpx.mcp_router.v1.InputSchema.properties:type_name -> google.protobuf.Struct
+	15, // 6: mcpx.mcp_router.v1.OutputSchema.properties:type_name -> google.protobuf.Struct
+	0,  // 7: mcpx.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpx.mcp_router.v1.Tool
+	15, // 8: mcpx.mcp_router.v1.ExecuteToolRequest.inputs:type_name -> google.protobuf.Struct
+	15, // 9: mcpx.mcp_router.v1.ExecuteToolResponse.outputs:type_name -> google.protobuf.Struct
+	2,  // 10: mcpx.mcp_router.v1.Prompt.input_schema:type_name -> mcpx.mcp_router.v1.InputSchema
+	9,  // 11: mcpx.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpx.mcp_router.v1.Prompt
+	12, // 12: mcpx.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpx.mcp_router.v1.Resource
+	5,  // 13: mcpx.mcp_router.v1.McpRouter.ListTools:input_type -> mcpx.mcp_router.v1.ListToolsRequest
+	7,  // 14: mcpx.mcp_router.v1.McpRouter.ExecuteTool:input_type -> mcpx.mcp_router.v1.ExecuteToolRequest
+	10, // 15: mcpx.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpx.mcp_router.v1.ListPromptsRequest
+	13, // 16: mcpx.mcp_router.v1.McpRouter.ListResources:input_type -> mcpx.mcp_router.v1.ListResourcesRequest
+	6,  // 17: mcpx.mcp_router.v1.McpRouter.ListTools:output_type -> mcpx.mcp_router.v1.ListToolsResponse
+	8,  // 18: mcpx.mcp_router.v1.McpRouter.ExecuteTool:output_type -> mcpx.mcp_router.v1.ExecuteToolResponse
+	11, // 19: mcpx.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpx.mcp_router.v1.ListPromptsResponse
+	14, // 20: mcpx.mcp_router.v1.McpRouter.ListResources:output_type -> mcpx.mcp_router.v1.ListResourcesResponse
+	17, // [17:21] is the sub-list for method output_type
+	13, // [13:17] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_mcp_router_v1_mcp_router_proto_init() }
@@ -1887,7 +2023,7 @@ func file_proto_mcp_router_v1_mcp_router_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_mcp_router_v1_mcp_router_proto_rawDesc), len(file_proto_mcp_router_v1_mcp_router_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
