@@ -405,7 +405,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	callDefs := mcpService.GetCalls()
 	callDefMap := make(map[string]*configv1.MCPCallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetAnnotation().GetName()] = def
+		callDefMap[def.GetSchema().GetName()] = def
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -549,7 +549,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	callDefs := mcpService.GetCalls()
 	callDefMap := make(map[string]*configv1.MCPCallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetAnnotation().GetName()] = def
+		callDefMap[def.GetSchema().GetName()] = def
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))

@@ -185,7 +185,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	callDefs := openapiService.GetCalls()
 	callDefMap := make(map[string]*configv1.OpenAPICallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetAnnotation().GetName()] = def
+		callDefMap[def.GetSchema().GetName()] = def
 	}
 
 	for _, t := range pbTools {

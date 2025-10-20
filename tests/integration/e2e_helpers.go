@@ -448,6 +448,69 @@ type MCPXYTestServerInfo struct {
 	T                        *testing.T
 }
 
+// --- Websocket Echo Server Helper ---
+type WebsocketEchoServerInfo struct {
+	URL         string
+	CleanupFunc func()
+}
+
+func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
+	t.Helper()
+
+	port := FindFreePort(t)
+	addr := fmt.Sprintf("127.0.0.1:%d", port)
+
+	upgrader := websocket.Upgrader{}
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			t.Logf("Websocket upgrade error: %v", err)
+			return
+		}
+		defer c.Close()
+		for {
+			mt, message, err := c.ReadMessage()
+			if err != nil {
+				// Don't log expected closure errors
+				if !websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
+					t.Logf("Websocket read error: %v", err)
+				}
+				break
+			}
+			err = c.WriteMessage(mt, message)
+			if err != nil {
+				t.Logf("Websocket write error: %v", err)
+				break
+			}
+		}
+	})
+
+	server := &http.Server{
+		Addr:    addr,
+		Handler: handler,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			t.Logf("Websocket echo server ListenAndServe error: %v", err)
+		}
+	}()
+
+	// Wait for the server to be ready
+	WaitForTCPPort(t, port, 5*time.Second)
+
+	return &WebsocketEchoServerInfo{
+		URL: "ws://" + addr,
+		CleanupFunc: func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := server.Shutdown(ctx); err != nil {
+				t.Logf("Websocket echo server shutdown error: %v", err)
+			}
+		},
+	}
+}
+
 func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
 	t.Helper()
 
@@ -585,7 +648,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
 	callDef := configv1.HttpCallDefinition_builder{
-		Annotation: configv1.ToolAnnotation_builder{
+		Schema: configv1.ToolSchema_builder{
 			Name: proto.String(operationID),
 		}.Build(),
 		EndpointPath: proto.String(endpointPath),
@@ -623,7 +686,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 			Address: proto.String(baseURL),
 			Calls: []*configv1.WebsocketCallDefinition{
 				configv1.WebsocketCallDefinition_builder{
-					Annotation: configv1.ToolAnnotation_builder{
+					Schema: configv1.ToolSchema_builder{
 						Name: proto.String(operationID),
 					}.Build(),
 				}.Build(),
@@ -653,7 +716,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 			Address: proto.String(baseURL),
 			Calls: []*configv1.WebrtcCallDefinition{
 				configv1.WebrtcCallDefinition_builder{
-					Annotation: configv1.ToolAnnotation_builder{
+					Schema: configv1.ToolSchema_builder{
 						Name: proto.String(operationID),
 					}.Build(),
 				}.Build(),
