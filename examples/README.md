@@ -70,9 +70,7 @@ This configuration defines three tools:
     ./start.sh
     ```
 
-    The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
-
-    _(Note: The local time server is not required for the location and weather tools to function.)_
+    The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
 
 ### Step 3: Interacting with the Tools (Chained Example)
 
@@ -82,27 +80,27 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 1.  **Add the MCP Server to Gemini CLI:**
 
-    Use the `gemini mcp add` command to register the running `mcpxy` server. Since the server is already running, we can use a placeholder command like `sleep infinity`.
+    Use the `gemini mcp add` command to register the running `mcpxy` server.
 
     ```bash
-    gemini mcp add mcpxy-http-example --transport http --url http://localhost:8080 "sleep" "infinity"
+    gemini mcp add mcpxy-http-example --transport http http://localhost:50050
     ```
 
-2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service/-/getLocation` and `weather-service/-/getWeather`.
+2.  **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.
 
-3.  **Call the `getLocation` Tool:** First, get the current location.
+3.  **Call the `getLocation` Tool:** First, get the location for a given IP address.
 
     ```bash
-    gemini call tool ip-location-service/-/getLocation
+    gemini call tool ip-location-service-df37f29a/getLocation ip=8.8.8.8
     ```
 
-    You should receive a JSON response with your location information, including `latitude` and `longitude`.
+    You should receive a JSON response with the location information, including `latitude` and `longitude`.
 
 4.  **Call the `getWeather` Tool:** Now, use the latitude and longitude from the previous step to get the weather.
 
     ```bash
     # Replace with the actual latitude and longitude from the previous step
-    gemini call tool weather-service/-/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE current_weather=true
+    gemini call tool weather-service-somehash/getWeather latitude=YOUR_LATITUDE longitude=YOUR_LONGITUDE
     ```
 
     This demonstrates how an AI could first determine the user's location and then use that information to provide a local weather forecast.

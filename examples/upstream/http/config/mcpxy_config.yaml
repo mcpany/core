@@ -19,6 +19,28 @@ upstream_services:
         is_required: false
         type: "STRING"
         default_value: "json"
+- name: weather-service
+  http_service:
+    address: "https://api.open-meteo.com"
+    calls:
+    - operation_id: "getWeather"
+      description: "Gets the current weather for a given latitude and longitude."
+      endpoint_path: "/v1/forecast"
+      method: "HTTP_METHOD_GET"
+      parameters:
+      - name: "latitude"
+        description: "The latitude to get the weather for."
+        is_required: true
+        type: "NUMBER"
+      - name: "longitude"
+        description: "The longitude to get the weather for."
+        is_required: true
+        type: "NUMBER"
+      - name: "current_weather"
+        description: "Whether to include the current weather in the response."
+        is_required: false
+        type: "BOOLEAN"
+        default_value: "true"
 - name: time-service
   http_service:
     address: "http://worldtimeapi.org"

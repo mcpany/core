@@ -142,6 +142,10 @@ MCP-XY supports a variety of advanced configuration options, including:
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpxy` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
+## Examples
+
+For hands-on examples of how to use `mcpxy` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
+
 ### Listing Tools
 
 To see the list of all registered tools, you can send a `tools/list` request.
