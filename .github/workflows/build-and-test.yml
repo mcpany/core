@@ -19,25 +19,19 @@ jobs:
         cache: true
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.x'
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install Python dependencies
+      run: pip install -r requirements.txt
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: '20'
-
-    - name: Cache all dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          build/venv
-          tests/integration/upstream/node_modules
-        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-${{ github.job }}
-        restore-keys: |
-          ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-
-          ${{ runner.os }}-deps-
+        node-version: '24'
+        cache: 'npm'
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -68,13 +62,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
-
-    - name: Install Python venv if not present
-      run: |
-        if ! dpkg -s python3-venv >/dev/null 2>&1; then
-          sudo apt-get update
-          sudo apt-get install -y python3-venv
-        fi
 
     - name: Prepare environment
       run: |
@@ -95,25 +82,19 @@ jobs:
         cache: true
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.x'
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install Python dependencies
+      run: pip install -r requirements.txt
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: '20'
-
-    - name: Cache all dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          build/venv
-          tests/integration/upstream/node_modules
-        key: ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-${{ github.job }}
-        restore-keys: |
-          ${{ runner.os }}-deps-${{ hashFiles('requirements.txt', 'tests/integration/upstream/package-lock.json') }}-
-          ${{ runner.os }}-deps-
+        node-version: '24'
+        cache: 'npm'
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -144,13 +125,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
-
-    - name: Install Python venv if not present
-      run: |
-        if ! dpkg -s python3-venv >/dev/null 2>&1; then
-          sudo apt-get update
-          sudo apt-get install -y python3-venv
-        fi
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
