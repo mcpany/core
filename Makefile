@@ -138,10 +138,10 @@ prepare:
 	@echo "Go protobuf plugins installation check complete."
 	@# Install Python dependencies and pre-commit hooks
 	@echo "Checking for Python to install dependencies and pre-commit hooks..."
-	@if command -v python >/dev/null 2>&1; then \
-		PYTHON_CMD=python; \
-	elif command -v python3 >/dev/null 2>&1; then \
+	@if command -v python3 >/dev/null 2>&1; then \
 		PYTHON_CMD=python3; \
+	elif command -v python >/dev/null 2>&1; then \
+		PYTHON_CMD=python; \
 	else \
 		PYTHON_CMD=""; \
 	fi; \
@@ -149,6 +149,13 @@ prepare:
 		echo "Python found. Installing/updating pre-commit and fastmcp..."; \
 		VENV_DIR=$(CURDIR)/build/venv; \
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
+		if ! test -f "$$VENV_DIR/bin/python"; then \
+			echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
+			echo "\033[1;31mThis is likely because the 'venv' module is not installed for $$PYTHON_CMD.\033[0m"; \
+			echo "\033[1;31mPlease install it using your system's package manager.\033[0m"; \
+			echo "\033[1;31mFor Debian/Ubuntu, run: sudo apt-get update && sudo apt-get install python3-venv\033[0m"; \
+			exit 1; \
+		fi; \
 		$$VENV_DIR/bin/pip install --upgrade pip; \
 		$$VENV_DIR/bin/pip install -r requirements.txt; \
 		if ! GIT_CONFIG_GLOBAL=/dev/null $$VENV_DIR/bin/python -m pre_commit install; then \
