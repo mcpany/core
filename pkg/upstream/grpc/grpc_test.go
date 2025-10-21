@@ -42,7 +42,6 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
@@ -115,6 +114,145 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
+}
+
+// newTestFileDescriptorSet creates a mock FileDescriptorSet for testing purposes.
+func newTestFileDescriptorSet() *descriptorpb.FileDescriptorSet {
+	return &descriptorpb.FileDescriptorSet{
+		File: []*descriptorpb.FileDescriptorProto{
+			{
+				Name:    proto.String("test.proto"),
+				Package: proto.String("test"),
+				Service: []*descriptorpb.ServiceDescriptorProto{
+					{
+						Name: proto.String("TestService"),
+						Method: []*descriptorpb.MethodDescriptorProto{
+							{
+								Name:       proto.String("TestMethod"),
+								InputType:  proto.String(".test.TestRequest"),
+								OutputType: proto.String(".test.TestResponse"),
+							},
+						},
+					},
+				},
+				MessageType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("TestRequest"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("name"),
+								Number: proto.Int32(1),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("TestResponse"),
+					},
+				},
+			},
+		},
+	}
+}
+
+func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
+	fields := []*protobufparser.McpField{
+		{Name: "field_string", Description: "A string field", Type: "TYPE_STRING"},
+		{Name: "field_int32", Description: "An int32 field", Type: "TYPE_INT32"},
+		{Name: "field_double", Description: "A double field", Type: "TYPE_DOUBLE"},
+		{Name: "field_bool", Description: "A bool field", Type: "TYPE_BOOL"},
+	}
+
+	properties, err := convertMcpFieldsToInputSchemaProperties(fields)
+	require.NoError(t, err)
+	require.Len(t, properties, 4)
+
+	stringField := properties["field_string"].GetStructValue().AsMap()
+	assert.Equal(t, "string", stringField["type"])
+	assert.Equal(t, "A string field", stringField["description"])
+
+	intField := properties["field_int32"].GetStructValue().AsMap()
+	assert.Equal(t, "integer", intField["type"])
+	assert.Equal(t, "An int32 field", intField["description"])
+
+	doubleField := properties["field_double"].GetStructValue().AsMap()
+	assert.Equal(t, "number", doubleField["type"])
+	assert.Equal(t, "A double field", doubleField["description"])
+
+	boolField := properties["field_bool"].GetStructValue().AsMap()
+	assert.Equal(t, "boolean", boolField["type"])
+	assert.Equal(t, "A bool field", boolField["description"])
+}
+
+func TestGRPCUpstream_InputSchemaGeneration(t *testing.T) {
+	pm := pool.NewManager()
+	mockTm := NewMockToolManager()
+	upstream := &GRPCUpstream{poolManager: pm}
+
+	serviceKey := "test-service-key"
+	fds := newTestFileDescriptorSet()
+
+	parsedData := &protobufparser.ParsedMcpAnnotations{
+		Tools: []protobufparser.McpTool{
+			{
+				Name:           "TestTool",
+				Description:    "A test tool",
+				FullMethodName: "test.TestService.TestMethod",
+				RequestType:    ".test.TestRequest",
+				ResponseType:   ".test.TestResponse",
+				RequestFields: []protobufparser.McpField{
+					{Name: "name", Description: "The name to use", Type: "TYPE_STRING"},
+				},
+			},
+		},
+	}
+	mockTm.AddServiceInfo(serviceKey, &tool.ServiceInfo{Fds: fds})
+
+	_, err := upstream.createAndRegisterGRPCTools(context.Background(), serviceKey, parsedData, mockTm, false, fds)
+	require.NoError(t, err)
+
+	tools := mockTm.ListTools()
+	require.Len(t, tools, 1)
+	inputSchema := tools[0].Tool().GetInputSchema()
+	require.NotNil(t, inputSchema)
+	assert.Equal(t, "object", inputSchema.GetType())
+
+	properties := inputSchema.GetProperties().GetFields()
+	require.Len(t, properties, 1)
+
+	nameField := properties["name"].GetStructValue().GetFields()
+	assert.Equal(t, "string", nameField["type"].GetStringValue())
+	assert.Equal(t, "The name to use", nameField["description"].GetStringValue())
+}
+
+func TestGRPCUpstream_MCPIntegration(t *testing.T) {
+	pm := pool.NewManager()
+	tm := NewMockToolManager()
+	upstream := &GRPCUpstream{poolManager: pm}
+
+	serviceKey := "test-mcp-service-key"
+	fds := newTestFileDescriptorSet()
+
+	parsedData := &protobufparser.ParsedMcpAnnotations{
+		Tools: []protobufparser.McpTool{
+			{
+				Name:           "TestMCPTool",
+				Description:    "A test MCP tool",
+				FullMethodName: "test.TestService.TestMethod",
+				RequestType:    ".test.TestRequest",
+				ResponseType:   ".test.TestResponse",
+			},
+		},
+	}
+	tm.AddServiceInfo(serviceKey, &tool.ServiceInfo{Fds: fds})
+
+	_, err := upstream.createAndRegisterGRPCTools(context.Background(), serviceKey, parsedData, tm, false, fds)
+	require.NoError(t, err)
+
+	tools := tm.ListTools()
+	require.Len(t, tools, 1)
+	assert.NotNil(t, tools[0].Tool().GetInputSchema(), "InputSchema should be present on the Tool")
 }
 
 func TestNewGRPCUpstream(t *testing.T) {
@@ -353,55 +491,4 @@ func TestFindMethodDescriptor(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not find descriptor for service 'calculator.v1.CalculatorService'")
 	})
-}
-
-func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
-	fields := []*protobufparser.McpField{
-		{Name: "field1", Description: "a string field", Type: "TYPE_STRING"},
-		{Name: "field2", Description: "an int field", Type: "TYPE_INT32"},
-		{Name: "field3", Description: "a bool field", Type: "TYPE_BOOL"},
-		{Name: "field4", Description: "a float field", Type: "TYPE_FLOAT"},
-		{Name: "field5", Description: "", Type: "TYPE_STRING"},
-	}
-
-	properties, err := convertMcpFieldsToInputSchemaProperties(fields)
-	require.NoError(t, err)
-	assert.Len(t, properties, 5)
-
-	// Check field1 - should be a struct with type and description
-	field1, ok := properties["field1"]
-	require.True(t, ok)
-	s1, ok := field1.GetKind().(*structpb.Value_StructValue)
-	require.True(t, ok)
-	assert.Equal(t, "string", s1.StructValue.Fields["type"].GetStringValue())
-	assert.Equal(t, "a string field", s1.StructValue.Fields["description"].GetStringValue())
-
-	// Check field2
-	field2, ok := properties["field2"]
-	require.True(t, ok)
-	s2, ok := field2.GetKind().(*structpb.Value_StructValue)
-	require.True(t, ok)
-	assert.Equal(t, "integer", s2.StructValue.Fields["type"].GetStringValue())
-
-	// Check field3
-	field3, ok := properties["field3"]
-	require.True(t, ok)
-	s3, ok := field3.GetKind().(*structpb.Value_StructValue)
-	require.True(t, ok)
-	assert.Equal(t, "boolean", s3.StructValue.Fields["type"].GetStringValue())
-
-	// Check field4
-	field4, ok := properties["field4"]
-	require.True(t, ok)
-	s4, ok := field4.GetKind().(*structpb.Value_StructValue)
-	require.True(t, ok)
-	assert.Equal(t, "number", s4.StructValue.Fields["type"].GetStringValue())
-
-	// Check field5
-	field5, ok := properties["field5"]
-	require.True(t, ok)
-	s5, ok := field5.GetKind().(*structpb.Value_StructValue)
-	require.True(t, ok)
-	assert.Equal(t, "string", s5.StructValue.Fields["type"].GetStringValue())
-	assert.Equal(t, "", s5.StructValue.Fields["description"].GetStringValue())
 }
