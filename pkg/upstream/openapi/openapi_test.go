@@ -28,6 +28,7 @@ import (
 	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -265,6 +266,79 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()), "Cache length should not increase")
 
 	mockToolManager.AssertExpectations(t)
+}
+
+func TestInputSchemaGeneration(t *testing.T) {
+	ctx := context.Background()
+	mockToolManager := new(MockToolManager)
+	upstream := NewOpenAPIUpstream()
+
+	spec := `
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /users/{userId}:
+    get:
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, xml]
+      responses:
+        '200':
+          description: OK
+`
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			OpenapiSpec: proto.String(spec),
+		}.Build(),
+	}.Build()
+
+	expectedKey, _ := util.GenerateID("test-service")
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+
+	// Expect AddTool to be called and capture the tool
+	var addedTool tool.Tool
+	mockToolManager.On("AddTool", mock.Anything).Run(func(args mock.Arguments) {
+		addedTool = args.Get(0).(tool.Tool)
+	}).Return(nil)
+
+	_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+	assert.NoError(t, err)
+
+	mockToolManager.AssertCalled(t, "AddTool", mock.Anything)
+	require.NotNil(t, addedTool)
+
+	// Verify the input schema
+	inputSchema := addedTool.Tool().GetInputSchema()
+	assert.NotNil(t, inputSchema)
+	assert.Equal(t, "object", inputSchema.GetType())
+
+	properties := inputSchema.GetProperties().GetFields()
+	assert.Contains(t, properties, "userId")
+	assert.Contains(t, properties, "format")
+
+	userIdProp := properties["userId"].GetStructValue().GetFields()
+	assert.Equal(t, "string", userIdProp["type"].GetStringValue())
+
+	formatProp := properties["format"].GetStructValue().GetFields()
+	assert.Equal(t, "string", formatProp["type"].GetStringValue())
+
+	enumVals := formatProp["enum"].GetListValue().GetValues()
+	assert.Len(t, enumVals, 2)
+	assert.Equal(t, "json", enumVals[0].GetStringValue())
+	assert.Equal(t, "xml", enumVals[1].GetStringValue())
 }
 
 const sampleOpenAPISpecJSONForCacheTest = `{
