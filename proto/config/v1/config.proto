@@ -276,19 +276,14 @@ message WebrtcUpstreamService {
 message OpenapiUpstreamService {
   // The base URL of the API.
   string address = 1;
+  // The OpenAPI specification content (JSON or YAML).
+  string openapi_spec = 2;
   // Health check configuration.
   HttpHealthCheck health_check = 3;
   // TLS configuration for the connection.
   TLSConfig tls_config = 4;
   // Optional: Overrides or specific configurations for calls discovered from the spec.
   repeated OpenAPICallDefinition calls = 5;
-
-  oneof spec_source {
-    // The OpenAPI specification content (JSON or YAML).
-    string openapi_spec = 2;
-    // The URL to fetch the OpenAPI specification from.
-    string openapi_spec_url = 6;
-  }
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.

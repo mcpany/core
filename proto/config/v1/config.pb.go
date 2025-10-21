@@ -3342,12 +3342,12 @@ func (b0 WebrtcUpstreamService_builder) Build() *WebrtcUpstreamService {
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
 type OpenapiUpstreamService struct {
-	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_HealthCheck *HttpHealthCheck                    `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
-	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Calls       *[]*OpenAPICallDefinition           `protobuf:"bytes,5,rep,name=calls"`
-	xxx_hidden_SpecSource  isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Address     *string                   `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_OpenapiSpec *string                   `protobuf:"bytes,2,opt,name=openapi_spec,json=openapiSpec"`
+	xxx_hidden_HealthCheck *HttpHealthCheck          `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_TlsConfig   *TLSConfig                `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_Calls       *[]*OpenAPICallDefinition `protobuf:"bytes,5,rep,name=calls"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3389,6 +3389,16 @@ func (x *OpenapiUpstreamService) GetAddress() string {
 	return ""
 }
 
+func (x *OpenapiUpstreamService) GetOpenapiSpec() string {
+	if x != nil {
+		if x.xxx_hidden_OpenapiSpec != nil {
+			return *x.xxx_hidden_OpenapiSpec
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *OpenapiUpstreamService) GetHealthCheck() *HttpHealthCheck {
 	if x != nil {
 		return x.xxx_hidden_HealthCheck
@@ -3412,27 +3422,14 @@ func (x *OpenapiUpstreamService) GetCalls() []*OpenAPICallDefinition {
 	return nil
 }
 
-func (x *OpenapiUpstreamService) GetOpenapiSpec() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpec); ok {
-			return x.OpenapiSpec
-		}
-	}
-	return ""
-}
-
-func (x *OpenapiUpstreamService) GetOpenapiSpecUrl() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl); ok {
-			return x.OpenapiSpecUrl
-		}
-	}
-	return ""
-}
-
 func (x *OpenapiUpstreamService) SetAddress(v string) {
 	x.xxx_hidden_Address = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *OpenapiUpstreamService) SetOpenapiSpec(v string) {
+	x.xxx_hidden_OpenapiSpec = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *OpenapiUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
@@ -3447,19 +3444,18 @@ func (x *OpenapiUpstreamService) SetCalls(v []*OpenAPICallDefinition) {
 	x.xxx_hidden_Calls = &v
 }
 
-func (x *OpenapiUpstreamService) SetOpenapiSpec(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpec{v}
-}
-
-func (x *OpenapiUpstreamService) SetOpenapiSpecUrl(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpecUrl{v}
-}
-
 func (x *OpenapiUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *OpenapiUpstreamService) HasOpenapiSpec() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *OpenapiUpstreamService) HasHealthCheck() bool {
@@ -3476,32 +3472,14 @@ func (x *OpenapiUpstreamService) HasTlsConfig() bool {
 	return x.xxx_hidden_TlsConfig != nil
 }
 
-func (x *OpenapiUpstreamService) HasSpecSource() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_SpecSource != nil
-}
-
-func (x *OpenapiUpstreamService) HasOpenapiSpec() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpec)
-	return ok
-}
-
-func (x *OpenapiUpstreamService) HasOpenapiSpecUrl() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl)
-	return ok
-}
-
 func (x *OpenapiUpstreamService) ClearAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Address = nil
+}
+
+func (x *OpenapiUpstreamService) ClearOpenapiSpec() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_OpenapiSpec = nil
 }
 
 func (x *OpenapiUpstreamService) ClearHealthCheck() {
@@ -3512,57 +3490,19 @@ func (x *OpenapiUpstreamService) ClearTlsConfig() {
 	x.xxx_hidden_TlsConfig = nil
 }
 
-func (x *OpenapiUpstreamService) ClearSpecSource() {
-	x.xxx_hidden_SpecSource = nil
-}
-
-func (x *OpenapiUpstreamService) ClearOpenapiSpec() {
-	if _, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpec); ok {
-		x.xxx_hidden_SpecSource = nil
-	}
-}
-
-func (x *OpenapiUpstreamService) ClearOpenapiSpecUrl() {
-	if _, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_OpenapiSpecUrl); ok {
-		x.xxx_hidden_SpecSource = nil
-	}
-}
-
-const OpenapiUpstreamService_SpecSource_not_set_case case_OpenapiUpstreamService_SpecSource = 0
-const OpenapiUpstreamService_OpenapiSpec_case case_OpenapiUpstreamService_SpecSource = 2
-const OpenapiUpstreamService_OpenapiSpecUrl_case case_OpenapiUpstreamService_SpecSource = 6
-
-func (x *OpenapiUpstreamService) WhichSpecSource() case_OpenapiUpstreamService_SpecSource {
-	if x == nil {
-		return OpenapiUpstreamService_SpecSource_not_set_case
-	}
-	switch x.xxx_hidden_SpecSource.(type) {
-	case *openapiUpstreamService_OpenapiSpec:
-		return OpenapiUpstreamService_OpenapiSpec_case
-	case *openapiUpstreamService_OpenapiSpecUrl:
-		return OpenapiUpstreamService_OpenapiSpecUrl_case
-	default:
-		return OpenapiUpstreamService_SpecSource_not_set_case
-	}
-}
-
 type OpenapiUpstreamService_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The base URL of the API.
 	Address *string
+	// The OpenAPI specification content (JSON or YAML).
+	OpenapiSpec *string
 	// Health check configuration.
 	HealthCheck *HttpHealthCheck
 	// TLS configuration for the connection.
 	TlsConfig *TLSConfig
 	// Optional: Overrides or specific configurations for calls discovered from the spec.
 	Calls []*OpenAPICallDefinition
-	// Fields of oneof xxx_hidden_SpecSource:
-	// The OpenAPI specification content (JSON or YAML).
-	OpenapiSpec *string
-	// The URL to fetch the OpenAPI specification from.
-	OpenapiSpecUrl *string
-	// -- end of xxx_hidden_SpecSource
 }
 
 func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
@@ -3573,45 +3513,15 @@ func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Address = b.Address
 	}
+	if b.OpenapiSpec != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_OpenapiSpec = b.OpenapiSpec
+	}
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_TlsConfig = b.TlsConfig
 	x.xxx_hidden_Calls = &b.Calls
-	if b.OpenapiSpec != nil {
-		x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpec{*b.OpenapiSpec}
-	}
-	if b.OpenapiSpecUrl != nil {
-		x.xxx_hidden_SpecSource = &openapiUpstreamService_OpenapiSpecUrl{*b.OpenapiSpecUrl}
-	}
 	return m0
 }
-
-type case_OpenapiUpstreamService_SpecSource protoreflect.FieldNumber
-
-func (x case_OpenapiUpstreamService_SpecSource) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[18].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isOpenapiUpstreamService_SpecSource interface {
-	isOpenapiUpstreamService_SpecSource()
-}
-
-type openapiUpstreamService_OpenapiSpec struct {
-	// The OpenAPI specification content (JSON or YAML).
-	OpenapiSpec string `protobuf:"bytes,2,opt,name=openapi_spec,json=openapiSpec,oneof"`
-}
-
-type openapiUpstreamService_OpenapiSpecUrl struct {
-	// The URL to fetch the OpenAPI specification from.
-	OpenapiSpecUrl string `protobuf:"bytes,6,opt,name=openapi_spec_url,json=openapiSpecUrl,oneof"`
-}
-
-func (*openapiUpstreamService_OpenapiSpec) isOpenapiUpstreamService_SpecSource() {}
-
-func (*openapiUpstreamService_OpenapiSpecUrl) isOpenapiUpstreamService_SpecSource() {}
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
 type CommandLineUpstreamService struct {
@@ -8136,16 +8046,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12:\n" +
 	"\x05calls\x18\x02 \x03(\v2$.mcpx.config.v1.WebrtcCallDefinitionR\x05calls\x128\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\xcd\x02\n" +
+	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\x90\x02\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12B\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12!\n" +
+	"\fopenapi_spec\x18\x02 \x01(\tR\vopenapiSpec\x12B\n" +
 	"\fhealth_check\x18\x03 \x01(\v2\x1f.mcpx.config.v1.HttpHealthCheckR\vhealthCheck\x128\n" +
 	"\n" +
 	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x12;\n" +
-	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\x12#\n" +
-	"\fopenapi_spec\x18\x02 \x01(\tH\x00R\vopenapiSpec\x12*\n" +
-	"\x10openapi_spec_url\x18\x06 \x01(\tH\x00R\x0eopenapiSpecUrlB\r\n" +
-	"\vspec_source\"\xaa\x02\n" +
+	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\"\xaa\x02\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
 	"\x04args\x18\x02 \x03(\tR\x04args\x12+\n" +
@@ -8479,10 +8387,6 @@ func file_proto_config_v1_config_proto_init() {
 		(*upstreamServiceConfig_CommandLineService)(nil),
 		(*upstreamServiceConfig_WebsocketService)(nil),
 		(*upstreamServiceConfig_WebrtcService)(nil),
-	}
-	file_proto_config_v1_config_proto_msgTypes[18].OneofWrappers = []any{
-		(*openapiUpstreamService_OpenapiSpec)(nil),
-		(*openapiUpstreamService_OpenapiSpecUrl)(nil),
 	}
 	file_proto_config_v1_config_proto_msgTypes[20].OneofWrappers = []any{
 		(*mcpUpstreamService_HttpConnection)(nil),
