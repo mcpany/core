@@ -45,6 +45,15 @@ PRE_COMMIT_VERSION := 4.3.0
 PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
+
+# Python executable determination
+# In a CI environment, we expect Python to be set up and available in the PATH.
+# Locally, we use a virtual environment.
+ifeq ($(CI),)
+	PYTHON_EXEC := $(CURDIR)/build/venv/bin/python
+else
+	PYTHON_EXEC := python
+endif
 # ==============================================================================
 # Release Targets
 # ==============================================================================
@@ -145,27 +154,31 @@ prepare:
 	else \
 		PYTHON_CMD=""; \
 	fi; \
-	if test -n "$$PYTHON_CMD"; then \
-		echo "Python found. Installing/updating pre-commit and fastmcp..."; \
-		VENV_DIR=$(CURDIR)/build/venv; \
-		$$PYTHON_CMD -m venv $$VENV_DIR; \
-		if ! test -f "$$VENV_DIR/bin/python"; then \
-			echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
-			echo "\033[1;31mThis is likely because the 'venv' module is not installed for $$PYTHON_CMD.\033[0m"; \
-			echo "\033[1;31mPlease install it using your system's package manager.\033[0m"; \
-			echo "\033[1;31mFor Debian/Ubuntu, run: sudo apt-get update && sudo apt-get install python3-venv\033[0m"; \
-			exit 1; \
-		fi; \
-		$$VENV_DIR/bin/pip install --upgrade pip; \
-		$$VENV_DIR/bin/pip install -r requirements.txt; \
-		if ! GIT_CONFIG_GLOBAL=/dev/null $$VENV_DIR/bin/python -m pre_commit install; then \
-			echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
-			echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
-			echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
-			echo "\033[1;33mTo fix this, run: git config --unset-all core.hooksPath\n"; \
+	if test -z "$(CI)"; then \
+		if test -n "$$PYTHON_CMD"; then \
+			echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
+			VENV_DIR=$(CURDIR)/build/venv; \
+			$$PYTHON_CMD -m venv $$VENV_DIR; \
+			if ! test -f "$$VENV_DIR/bin/python"; then \
+				echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
+				echo "\033[1;31mThis is likely because the 'venv' module is not installed for $$PYTHON_CMD.\033[0m"; \
+				echo "\033[1;31mPlease install it using your system's package manager.\033[0m"; \
+				echo "\033[1;31mFor Debian/Ubuntu, run: sudo apt-get update && sudo apt-get install python3-venv\033[0m"; \
+				exit 1; \
+			fi; \
+			$(PYTHON_EXEC) -m pip install --upgrade pip; \
+			$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+			if ! GIT_CONFIG_GLOBAL=/dev/null $(PYTHON_EXEC) -m pre_commit install; then \
+				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
+				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
+				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
+				echo "\033[1;33mTo fix this, run: git config --unset-all core.hooksPath\n"; \
+			fi; \
+		else \
+			echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
 		fi; \
 	else \
-		echo "Python not found, skipping Python dependency installation and pre-commit hook setup."; \
+		echo "CI environment detected, skipping local Python venv setup."; \
 	fi
 	@#
 	@echo "Installing Node.js dependencies for integration tests..."
@@ -267,7 +280,7 @@ build-calculator-stdio:
 lint: gen
 	@echo "Running all pre-commit hooks..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	$(CURDIR)/build/venv/bin/python -m pre_commit run --all-files
+	$(PYTHON_EXEC) -m pre_commit run --all-files
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."

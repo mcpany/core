@@ -163,12 +163,12 @@ func (b *DefaultBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe fu
 // It returns a function that can be used to unsubscribe before the handler is
 // invoked.
 func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe func()) {
+	var once sync.Once
 	var unsub func()
+
 	unsub = b.Subscribe(topic, func(msg T) {
 		handler(msg)
-		if unsub != nil {
-			unsub()
-		}
+		once.Do(unsub)
 	})
 	return unsub
 }
