@@ -168,7 +168,7 @@ prepare:
 			fi; \
 			$(PYTHON_EXEC) -m pip install --upgrade pip; \
 			$(PYTHON_EXEC) -m pip install -r requirements.txt; \
-			if ! GIT_CONFIG_GLOBAL=/dev/null $(PYTHON_EXEC) -m pre_commit install; then \
+			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(CURDIR)/build/pre-commit-cache $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
@@ -280,7 +280,7 @@ build-calculator-stdio:
 lint: gen
 	@echo "Running all pre-commit hooks..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	$(PYTHON_EXEC) -m pre_commit run --all-files
+	PRE_COMMIT_HOME=$(CURDIR)/build/pre-commit-cache $(PYTHON_EXEC) -m pre_commit run --all-files
 
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."

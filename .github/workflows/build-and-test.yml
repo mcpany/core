@@ -64,6 +64,14 @@ jobs:
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
 
+    - name: Cache pre-commit
+      uses: actions/cache@v4
+      with:
+        path: build/pre-commit-cache
+        key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pre-commit-
+
     - name: Prepare environment
       run: |
         make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -127,6 +135,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+
+    - name: Cache pre-commit
+      uses: actions/cache@v4
+      with:
+        path: build/pre-commit-cache
+        key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pre-commit-
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
