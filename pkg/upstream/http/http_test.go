@@ -92,6 +92,58 @@ func TestHttpMethodToString(t *testing.T) {
 	}
 }
 
+func TestParameterTypeToJSONSchemaType(t *testing.T) {
+	testCases := []struct {
+		name        string
+		paramType   configv1.ParameterType
+		expected    string
+		expectError bool
+	}{
+		{
+			name:      "string",
+			paramType: configv1.ParameterType_STRING,
+			expected:  "string",
+		},
+		{
+			name:      "integer",
+			paramType: configv1.ParameterType_INTEGER,
+			expected:  "integer",
+		},
+		{
+			name:      "number",
+			paramType: configv1.ParameterType_NUMBER,
+			expected:  "number",
+		},
+		{
+			name:      "boolean",
+			paramType: configv1.ParameterType_BOOLEAN,
+			expected:  "boolean",
+		},
+		{
+			name:      "object",
+			paramType: configv1.ParameterType_OBJECT,
+			expected:  "object",
+		},
+		{
+			name:      "array",
+			paramType: configv1.ParameterType_ARRAY,
+			expected:  "array",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := parameterTypeToJSONSchemaType(tc.paramType)
+			if !tc.expectError {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expected, actual)
+			} else {
+				assert.Error(t, err)
+			}
+		})
+	}
+}
+
 func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
@@ -530,4 +582,96 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			assert.Equal(t, tc.expectedFqn, registeredTool.Tool().GetUnderlyingMethodFqn())
 		})
 	}
+}
+
+func TestHTTPUpstream_InputSchemaGeneration(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	callDef := configv1.HttpCallDefinition_builder{
+		Schema: configv1.ToolSchema_builder{
+			Name: proto.String("test-op-schema"),
+		}.Build(),
+		Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
+		EndpointPath: proto.String("/test"),
+		Parameters: []*configv1.HttpParameterMapping{
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name:        proto.String("param1"),
+					Description: proto.String("A string parameter"),
+					Type:        configv1.ParameterType_STRING.Enum(),
+					IsRequired:  proto.Bool(true),
+				}.Build(),
+			}.Build(),
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name:        proto.String("param2"),
+					Description: proto.String("An integer parameter"),
+					Type:        configv1.ParameterType_INTEGER.Enum(),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("schema-test-service")
+	serviceConfig.SetHttpService(httpService)
+
+	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	toolID, _ := util.GenerateToolID(serviceKey, "test-op-schema")
+	registeredTool, ok := tm.GetTool(toolID)
+	require.True(t, ok)
+
+	inputSchema := registeredTool.Tool().GetInputSchema()
+	require.NotNil(t, inputSchema)
+	assert.Equal(t, "object", inputSchema.GetType())
+
+	properties := inputSchema.GetProperties().GetFields()
+	require.Len(t, properties, 2)
+
+	param1, ok := properties["param1"]
+	require.True(t, ok)
+	param1Struct := param1.GetStructValue().GetFields()
+	assert.Equal(t, "string", param1Struct["type"].GetStringValue())
+	assert.Equal(t, "A string parameter", param1Struct["description"].GetStringValue())
+
+	param2, ok := properties["param2"]
+	require.True(t, ok)
+	param2Struct := param2.GetStructValue().GetFields()
+	assert.Equal(t, "integer", param2Struct["type"].GetStringValue())
+	assert.Equal(t, "An integer parameter", param2Struct["description"].GetStringValue())
+}
+
+func TestHTTPUpstream_MCPIntegration(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	callDef := configv1.HttpCallDefinition_builder{
+		Schema: configv1.ToolSchema_builder{
+			Name: proto.String("test-mcp-op"),
+		}.Build(),
+		Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		EndpointPath: proto.String("/test"),
+	}.Build()
+	httpService.SetCalls([]*configv1.HttpCallDefinition{callDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("mcp-test-service")
+	serviceConfig.SetHttpService(httpService)
+
+	_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	tools := tm.ListTools()
+	require.Len(t, tools, 1)
+	assert.NotNil(t, tools[0].Tool().GetInputSchema(), "InputSchema should be present on the Tool")
 }
