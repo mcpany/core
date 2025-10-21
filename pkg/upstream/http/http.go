@@ -37,27 +37,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// parameterTypeToJSONSchemaType converts a protobuf ParameterType enum to a
-// JSON Schema type string.
-func parameterTypeToJSONSchemaType(paramType configv1.ParameterType) (string, error) {
-	switch paramType {
-	case configv1.ParameterType_STRING:
-		return "string", nil
-	case configv1.ParameterType_INTEGER:
-		return "integer", nil
-	case configv1.ParameterType_NUMBER:
-		return "number", nil
-	case configv1.ParameterType_BOOLEAN:
-		return "boolean", nil
-	case configv1.ParameterType_OBJECT:
-		return "object", nil
-	case configv1.ParameterType_ARRAY:
-		return "array", nil
-	default:
-		return "", fmt.Errorf("unsupported parameter type: %v", paramType)
-	}
-}
-
 // httpMethodToString converts the protobuf enum for an HTTP method into its
 // corresponding string representation from the net/http package.
 func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
@@ -191,15 +170,9 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 		for _, param := range httpDef.GetParameters() {
 			paramSchema := param.GetSchema()
-			schemaType, err := parameterTypeToJSONSchemaType(paramSchema.GetType())
-			if err != nil {
-				log.Error("Skipping parameter due to unsupported type", "paramName", paramSchema.GetName(), "error", err)
-				continue
-			}
-
 			paramStruct := &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue(schemaType),
+					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(paramSchema.GetType())]),
 					"description": structpb.NewStringValue(paramSchema.GetDescription()),
 				},
 			}
