@@ -273,6 +273,55 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		_, ok = toolManager.GetTool(toolID2)
 		assert.True(t, ok, "tool should be registered with op index")
 	})
+
+	t.Run("correct input schema generation", func(t *testing.T) {
+		toolManager := NewMockToolManager(nil)
+		poolManager := pool.NewManager()
+		upstream := NewWebsocketUpstream(poolManager)
+
+		param1 := configv1.WebsocketParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("param1"),
+			}.Build(),
+		}.Build()
+		param2 := configv1.WebsocketParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("param2"),
+			}.Build(),
+		}.Build()
+
+		callDef := configv1.WebsocketCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("test-tool"),
+			}.Build(),
+			Parameters: []*configv1.WebsocketParameterMapping{param1, param2},
+		}.Build()
+
+		websocketService := configv1.WebsocketUpstreamService_builder{
+			Address: proto.String("ws://localhost:8080/test"),
+			Calls:   []*configv1.WebsocketCallDefinition{callDef},
+		}.Build()
+
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:             proto.String("test-websocket-service"),
+			WebsocketService: websocketService,
+		}.Build()
+
+		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+		require.NoError(t, err)
+
+		toolID, _ := util.GenerateToolID(serviceKey, "test-tool")
+		registeredTool, ok := toolManager.GetTool(toolID)
+		require.True(t, ok)
+
+		inputSchema := registeredTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+
+		properties := inputSchema.GetProperties().GetFields()
+		assert.Contains(t, properties, "param1")
+		assert.Contains(t, properties, "param2")
+	})
 }
 
 func TestWebsocketUpstream_Register_Integration(t *testing.T) {
