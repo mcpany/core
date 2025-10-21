@@ -151,7 +151,7 @@ prepare:
 		$$PYTHON_CMD -m venv $$VENV_DIR; \
 		$$VENV_DIR/bin/pip install --upgrade pip; \
 		$$VENV_DIR/bin/pip install -r requirements.txt; \
-		if ! $$VENV_DIR/bin/python -m pre_commit install; then \
+		if ! GIT_CONFIG_GLOBAL=/dev/null $$VENV_DIR/bin/python -m pre_commit install; then \
 			echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 			echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 			echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
