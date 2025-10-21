@@ -18,6 +18,8 @@ package mcpserver
 
 import (
 	"context"
+	"log"
+	"net"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/auth"
@@ -31,11 +33,46 @@ import (
 	"github.com/mcpxy/core/pkg/worker"
 	v1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
+	pb "github.com/mcpxy/core/proto/examples/calculator/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
+
+// Mock gRPC server for testing
+type mockCalculatorServer struct {
+	pb.UnimplementedCalculatorServiceServer
+}
+
+func (s *mockCalculatorServer) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) {
+	result := in.GetA() + in.GetB()
+	return pb.AddResponse_builder{Result: &result}.Build(), nil
+}
+
+func (s *mockCalculatorServer) Subtract(ctx context.Context, in *pb.SubtractRequest) (*pb.SubtractResponse, error) {
+	result := in.GetA() - in.GetB()
+	return pb.SubtractResponse_builder{Result: &result}.Build(), nil
+}
+
+func startMockServer(t *testing.T) (*grpc.Server, string) {
+	lis, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	pb.RegisterCalculatorServiceServer(s, &mockCalculatorServer{})
+	reflection.Register(s)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Printf("mock server stopped: %v", err)
+		}
+	}()
+	return s, lis.Addr().String()
+}
 
 func TestRegistrationServer_RegisterService(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -100,5 +137,155 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		st, ok := status.FromError(err)
 		require.True(t, ok)
 		assert.Equal(t, codes.InvalidArgument, st.Code())
+	})
+
+	t.Run("grpc service with input schema", func(t *testing.T) {
+		server, addr := startMockServer(t)
+		defer server.Stop()
+
+		serviceName := "calculator-service"
+		useReflection := true
+		grpcService := configv1.GrpcUpstreamService_builder{
+			Address:       &addr,
+			UseReflection: &useReflection,
+		}.Build()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			Name:        &serviceName,
+			GrpcService: grpcService,
+		}.Build()
+
+		req := &v1.RegisterServiceRequest{}
+		req.SetConfig(config)
+
+		resp, err := registrationServer.RegisterService(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		serviceKey := resp.GetServiceKey()
+		tools := toolManager.ListTools()
+		// There will be other tools from other tests, so we need to find our tools
+		var addTool tool.Tool
+		for _, t := range tools {
+			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "CalculatorAdd" {
+				addTool = t
+				break
+			}
+		}
+		require.NotNil(t, addTool)
+
+		inputSchema := addTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+		properties := inputSchema.GetProperties().GetFields()
+		require.Contains(t, properties, "a")
+		require.Contains(t, properties, "b")
+		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
+		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
+	})
+
+	t.Run("openapi service with input schema", func(t *testing.T) {
+		spec := `
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /users/{userId}:
+    get:
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+`
+		serviceName := "openapi-service"
+		openapiService := configv1.OpenapiUpstreamService_builder{
+			OpenapiSpec: &spec,
+		}.Build()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			Name:           &serviceName,
+			OpenapiService: openapiService,
+		}.Build()
+
+		req := &v1.RegisterServiceRequest{}
+		req.SetConfig(config)
+
+		resp, err := registrationServer.RegisterService(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		serviceKey := resp.GetServiceKey()
+		tools := toolManager.ListTools()
+		var openapiTool tool.Tool
+		for _, t := range tools {
+			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "getUser" {
+				openapiTool = t
+				break
+			}
+		}
+		require.NotNil(t, openapiTool)
+
+		inputSchema := openapiTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+		properties := inputSchema.GetProperties().GetFields()
+		require.Contains(t, properties, "userId")
+		assert.Equal(t, "string", properties["userId"].GetStructValue().GetFields()["type"].GetStringValue())
+	})
+
+	t.Run("websocket service with input schema", func(t *testing.T) {
+		serviceName := "websocket-service"
+		param1 := configv1.WebsocketParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("param1"),
+			}.Build(),
+		}.Build()
+		callDef := configv1.WebsocketCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("test-tool"),
+			}.Build(),
+			Parameters: []*configv1.WebsocketParameterMapping{param1},
+		}.Build()
+
+		websocketService := configv1.WebsocketUpstreamService_builder{
+			Address: proto.String("ws://localhost:8080/test"),
+			Calls:   []*configv1.WebsocketCallDefinition{callDef},
+		}.Build()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			Name:             &serviceName,
+			WebsocketService: websocketService,
+		}.Build()
+
+		req := &v1.RegisterServiceRequest{}
+		req.SetConfig(config)
+
+		resp, err := registrationServer.RegisterService(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		serviceKey := resp.GetServiceKey()
+		tools := toolManager.ListTools()
+		var wsTool tool.Tool
+		for _, t := range tools {
+			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "test-tool" {
+				wsTool = t
+				break
+			}
+		}
+		require.NotNil(t, wsTool)
+
+		inputSchema := wsTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+		properties := inputSchema.GetProperties().GetFields()
+		require.Contains(t, properties, "param1")
 	})
 }

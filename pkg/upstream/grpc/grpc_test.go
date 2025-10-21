@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -317,6 +317,51 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		assert.Equal(t, serviceKey, serviceKey2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
+	})
+
+	t.Run("correct input schema generation", func(t *testing.T) {
+		poolManager := pool.NewManager()
+		upstream := NewGRPCUpstream(poolManager)
+		tm := NewMockToolManager()
+
+		grpcService := &configv1.GrpcUpstreamService{}
+		grpcService.SetAddress(addr)
+		grpcService.SetUseReflection(true)
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("calculator-service")
+		serviceConfig.SetGrpcService(grpcService)
+
+		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		// Verify the "Add" tool's schema
+		addToolName, err := util.GenerateToolID(serviceKey, "CalculatorAdd")
+		require.NoError(t, err)
+		addTool, ok := tm.GetTool(addToolName)
+		require.True(t, ok)
+		inputSchema := addTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+		properties := inputSchema.GetProperties().GetFields()
+		require.Contains(t, properties, "a")
+		require.Contains(t, properties, "b")
+		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
+		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
+
+		// Verify the "Subtract" tool's schema
+		subtractToolName, err := util.GenerateToolID(serviceKey, "CalculatorSubtract")
+		require.NoError(t, err)
+		subtractTool, ok := tm.GetTool(subtractToolName)
+		require.True(t, ok)
+		inputSchema = subtractTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetType())
+		properties = inputSchema.GetProperties().GetFields()
+		require.Contains(t, properties, "a")
+		require.Contains(t, properties, "b")
+		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
+		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
 	})
 }
 
