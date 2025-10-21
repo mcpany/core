@@ -69,6 +69,13 @@ jobs:
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
 
+    - name: Install Python venv if not present
+      run: |
+        if ! dpkg -s python3-venv >/dev/null 2>&1; then
+          sudo apt-get update
+          sudo apt-get install -y python3-venv
+        fi
+
     - name: Prepare environment
       run: |
         make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -137,6 +144,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+
+    - name: Install Python venv if not present
+      run: |
+        if ! dpkg -s python3-venv >/dev/null 2>&1; then
+          sudo apt-get update
+          sudo apt-get install -y python3-venv
+        fi
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
