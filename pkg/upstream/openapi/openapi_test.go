@@ -19,8 +19,6 @@ package openapi
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -145,7 +143,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "no OpenAPI spec source provided")
+		assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 	})
 
 	t.Run("invalid openapi spec", func(t *testing.T) {
@@ -160,18 +158,6 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
-	})
-
-	t.Run("no openapi spec source", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Name:           proto.String("test-service"),
-			OpenapiService: &configv1.OpenapiUpstreamService{},
-		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "no OpenAPI spec source provided")
 	})
 }
 
@@ -301,73 +287,3 @@ const sampleOpenAPISpecJSONForCacheTest = `{
     }
   }
 }`
-
-func TestOpenAPIUpstream_Register_URL(t *testing.T) {
-	ctx := context.Background()
-	mockToolManager := new(MockToolManager)
-	upstream := NewOpenAPIUpstream()
-
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/openapi.json" {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(sampleOpenAPISpecJSONForCacheTest))
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
-	}))
-	defer server.Close()
-
-	t.Run("valid spec from url", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service-url"),
-			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				Address:        proto.String("http://localhost"),
-				OpenapiSpecUrl: proto.String(server.URL + "/openapi.json"),
-			}.Build(),
-		}.Build()
-
-		expectedKey, _ := util.GenerateID("test-service-url")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-		mockToolManager.On("GetTool", mock.Anything).Return(nil, false).Once()
-		mockToolManager.On("AddTool", mock.Anything).Return(nil).Once()
-
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-		assert.NoError(t, err)
-
-		mockToolManager.AssertExpectations(t)
-	})
-
-	t.Run("invalid spec url", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service-url-invalid"),
-			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				Address:        proto.String("http://localhost"),
-				OpenapiSpecUrl: proto.String("invalid-url"),
-			}.Build(),
-		}.Build()
-
-		expectedKey, _ := util.GenerateID("test-service-url-invalid")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to fetch spec from URL")
-	})
-
-	t.Run("server error from url", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service-url-server-error"),
-			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				Address:        proto.String("http://localhost"),
-				OpenapiSpecUrl: proto.String(server.URL + "/not-found"),
-			}.Build(),
-		}.Build()
-
-		expectedKey, _ := util.GenerateID("test-service-url-server-error")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "unexpected status code 404")
-	})
-}

@@ -21,7 +21,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -92,12 +91,12 @@ func (u *OpenAPIUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceKey, info)
 
-	specContent, err := u.getSpecContent(ctx, openapiService)
-	if err != nil {
-		return "", nil, fmt.Errorf("failed to get OpenAPI spec content for service '%s': %w", serviceKey, err)
+	specContent := openapiService.GetOpenapiSpec()
+	if specContent == "" {
+		return "", nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceKey)
 	}
 
-	hash := sha256.Sum256(specContent)
+	hash := sha256.Sum256([]byte(specContent))
 	cacheKey := hex.EncodeToString(hash[:])
 
 	item := u.openapiCache.Get(cacheKey)
@@ -166,45 +165,6 @@ type httpClientImpl struct {
 // client.HttpClient interface.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
-}
-
-// getSpecContent determines the source of the OpenAPI spec and retrieves it.
-// It can either be provided directly as a string or fetched from a URL.
-func (u *OpenAPIUpstream) getSpecContent(ctx context.Context, openapiService *configv1.OpenapiUpstreamService) ([]byte, error) {
-	if url := openapiService.GetOpenapiSpecUrl(); url != "" {
-		return u.fetchSpecFromURL(ctx, url)
-	}
-	if spec := openapiService.GetOpenapiSpec(); spec != "" {
-		return []byte(spec), nil
-	}
-	return nil, fmt.Errorf("no OpenAPI spec source provided")
-}
-
-// fetchSpecFromURL retrieves the content of an OpenAPI specification from a given URL.
-func (u *OpenAPIUpstream) fetchSpecFromURL(ctx context.Context, url string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request for spec from URL %s: %w", url, err)
-	}
-
-	// Use a general-purpose HTTP client for fetching the spec.
-	client := u.getHTTPClient("spec-fetcher")
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch spec from URL %s: %w", url, err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code %d when fetching spec from URL %s", resp.StatusCode, url)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body from URL %s: %w", url, err)
-	}
-
-	return body, nil
 }
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
