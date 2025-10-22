@@ -17,6 +17,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/validation"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
@@ -38,9 +39,14 @@ import (
 func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, error) {
 	log := logging.GetLogger().With("component", "configValidator")
 	validServices := []*configv1.UpstreamServiceConfig{}
+	serviceNames := make(map[string]bool)
 
 	for _, service := range config.GetUpstreamServices() {
 		serviceLog := log.With("serviceName", service.GetName())
+		if _, exists := serviceNames[service.GetName()]; exists {
+			return nil, fmt.Errorf("duplicate service name found: %s", service.GetName())
+		}
+		serviceNames[service.GetName()] = true
 		isValidService := true
 
 		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {

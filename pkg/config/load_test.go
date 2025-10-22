@@ -172,6 +172,24 @@ upstream_services: {
 				assert.False(t, s.GetCache().GetIsEnabled(), "Cache should be disabled due to invalid TTL")
 			},
 		},
+		{
+			name: "duplicate service names",
+			textprotoContent: `
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v1"
+	}
+}
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v2"
+	}
+}
+`,
+			expectLoadError: true,
+		},
 	}
 
 	for _, tt := range tests {
