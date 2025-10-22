@@ -24,7 +24,7 @@ make build
 In another terminal, start the `mcpxy` server using the provided shell script. This script points `mcpxy` to the correct configuration file.
 
 ```bash
-./start.sh
+examples/upstream/http/start.sh
 ```
 
 The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
@@ -39,42 +39,20 @@ Once the server is running, you can connect your AI assistant to `mcpxy`.
    Use the `gemini mcp add` command to register the running `mcpxy` process. Note that the `start.sh` script must be running in another terminal.
 
    ```bash
-   # The 'gemini mcp add' command requires a command to run, but our server is already running.
-   # We can use 'sleep infinity' as a placeholder command.
-   # The key is to point the Gemini CLI to the correct address where mcpxy is listening.
-   gemini mcp add mcpxy-http-time --address http://localhost:50050 --command "sleep" "infinity"
+   gemini mcp add --transport http mcpxy-server http://localhost:50050
    ```
 
-2. **List Available Tools:**
-   Ask Gemini to list the tools exposed by `mcpxy`.
+   Confirm the addition is successful:
 
    ```bash
-   gemini list tools
+   gemini mcp list
    ```
 
-   You should see the `time-service/-/get_time_by_ip` and `ip-location-service/-/getLocation` tools in the list.
-
-3. **Call the Tools:**
+2. **Call the Tools:**
    Now, you can ask Gemini for the current time for a specific IP address.
 
    ```bash
-   gemini 'what is the current time for 8.8.8.8'
+   gemini -m gemini-2.5-flash -p 'what is the current time for IP 8.8.8.8'
    ```
-
-   You should receive a JSON response with the current time, similar to this:
-
-   ```json
-   {
-     "time": "2023-10-27T10:00:00Z"
-   }
-   ```
-
-   You can also ask Gemini for the location of a specific IP address.
-
-   ```bash
-   gemini 'what is the location of 8.8.8.8 in json format'
-   ```
-
-   You should receive a JSON response with the location details.
 
 This example showcases how `mcpxy` can make any HTTP API available to an AI assistant with minimal configuration.

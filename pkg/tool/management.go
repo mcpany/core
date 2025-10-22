@@ -110,7 +110,8 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 
 	toolID, err := util.GenerateToolID(tool.Tool().GetServiceId(), tool.Tool().GetName())
 	if err != nil {
-		logging.GetLogger().Error("Failed to generate tool ID", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)
+		logging.GetLogger().
+			Error("Failed to generate tool ID", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)
 		return fmt.Errorf("failed to generate tool ID: %w", err)
 	}
 	log := logging.GetLogger().With("toolID", toolID)
@@ -133,6 +134,17 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			InputSchema:  inputSchema,
 			OutputSchema: outputSchema,
 		}
+		log.Info(
+			"Registering tool with MCP server",
+			"toolName",
+			mcpTool.Name,
+			"tool",
+			mcpTool,
+			"inputSchema",
+			string(inputSchema),
+			"outputSchema",
+			string(outputSchema),
+		)
 
 		handler := func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			logging.GetLogger().Info("Queueing tool execution", "toolName", req.Params.Name)
@@ -141,9 +153,12 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			resultChan := make(chan *bus.ToolExecutionResult, 1)
 
 			resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
-			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
-				resultChan <- result
-			})
+			unsubscribe := resultBus.SubscribeOnce(
+				correlationID,
+				func(result *bus.ToolExecutionResult) {
+					resultChan <- result
+				},
+			)
 			defer unsubscribe()
 
 			requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
@@ -158,7 +173,11 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			select {
 			case result := <-resultChan:
 				if result.Error != nil {
-					return nil, fmt.Errorf("error executing tool %s: %w", req.Params.Name, result.Error)
+					return nil, fmt.Errorf(
+						"error executing tool %s: %w",
+						req.Params.Name,
+						result.Error,
+					)
 				}
 
 				jsonResult, err := json.Marshal(result.Result)
@@ -176,7 +195,10 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			case <-ctx.Done():
 				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
 			case <-time.After(60 * time.Second): // Safety timeout
-				return nil, fmt.Errorf("timed out waiting for tool execution result for tool %s", req.Params.Name)
+				return nil, fmt.Errorf(
+					"timed out waiting for tool execution result for tool %s",
+					req.Params.Name,
+				)
 			}
 		}
 		tm.mcpServer.Server().AddTool(mcpTool, handler)

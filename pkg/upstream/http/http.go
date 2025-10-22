@@ -126,6 +126,7 @@ func (u *HTTPUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
+	log.Debug("Registering HTTP service", "serviceKey", serviceKey, "info", info)
 	toolManager.AddServiceInfo(serviceKey, info)
 
 	address := httpService.GetAddress()
@@ -158,7 +159,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
-				toolNamePart = fmt.Sprintf("op%d", i)
+				toolNamePart = fmt.Sprintf("op_%d", i)
 			}
 		}
 
@@ -217,6 +218,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 				Properties: properties,
 			}.Build(),
 		}.Build()
+
+		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
 
 		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceKey, authenticator, httpDef)
 		if err := toolManager.AddTool(httpTool); err != nil {
