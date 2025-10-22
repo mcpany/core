@@ -323,8 +323,9 @@ paths:
 	// Verify the input schema
 	inputSchema := addedTool.Tool().GetAnnotations().GetInputSchema()
 	assert.NotNil(t, inputSchema)
+	assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
 
-	properties := inputSchema.GetFields()
+	properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
 	assert.Contains(t, properties, "userId")
 	assert.Contains(t, properties, "format")
 
