@@ -193,7 +193,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		toolID2, _ := util.GenerateToolID(serviceKey, "op1")
+		toolID2, _ := util.GenerateToolID(serviceKey, "op_1")
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)
 	})

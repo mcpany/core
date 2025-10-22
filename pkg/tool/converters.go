@@ -191,35 +191,35 @@ type protoSchema interface {
 }
 
 // convertProtoSchemaToJSONSchema converts a protobuf schema representation (like
-// *pb.InputSchema or *pb.OutputSchema) into a standard *jsonschema.Schema.
-func convertProtoSchemaToJSONSchema(schema protoSchema) (*jsonschema.Schema, error) {
+// *pb.InputSchema or *pb.OutputSchema) into a json.RawMessage.
+func convertProtoSchemaToJSONSchema(schema protoSchema) (json.RawMessage, error) {
 	if schema == nil {
-		return &jsonschema.Schema{Type: "object"}, nil
+		return json.Marshal(map[string]any{"type": "object"})
 	}
 
-	jsonSchema := &jsonschema.Schema{
-		Type:       schema.GetType(),
-		Properties: make(map[string]*jsonschema.Schema),
-	}
-
-	if jsonSchema.Type == "" {
-		jsonSchema.Type = "object"
+	jsonSchema := make(map[string]any)
+	if schema.GetType() != "" {
+		jsonSchema["type"] = schema.GetType()
+	} else {
+		jsonSchema["type"] = "object"
 	}
 
 	if properties := schema.GetProperties(); properties != nil {
+		props := make(map[string]any)
 		for key, value := range properties.GetFields() {
 			jsonBytes, err := protojson.Marshal(value)
 			if err != nil {
 				return nil, fmt.Errorf("failed to marshal property '%s' to json: %w", key, err)
 			}
 
-			var propSchema jsonschema.Schema
+			var propSchema any
 			if err := json.Unmarshal(jsonBytes, &propSchema); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal property '%s' from json: %w", key, err)
 			}
-			jsonSchema.Properties[key] = &propSchema
+			props[key] = propSchema
 		}
+		jsonSchema["properties"] = props
 	}
 
-	return jsonSchema, nil
+	return json.Marshal(jsonSchema)
 }
