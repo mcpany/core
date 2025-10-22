@@ -38,6 +38,11 @@ func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 		return nil, fmt.Errorf("failed to load config from store: %w", err)
 	}
 
+	if fileConfig == nil {
+		log.Info("No configuration files found or all were empty, using default configuration.")
+		fileConfig = &configv1.McpxServerConfig{}
+	}
+
 	validatedConfig, err := Validate(fileConfig)
 	if err != nil {
 		return nil, fmt.Errorf("config validation failed: %w", err)

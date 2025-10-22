@@ -136,13 +136,17 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
-		// Publish registration requests to the bus for each service
-		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
-		for _, serviceConfig := range cfg.GetUpstreamServices() {
-			log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
-			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-			// We don't need a correlation ID since we are not waiting for a response here
-			registrationBus.Publish("request", regReq)
+		if cfg != nil {
+			// Publish registration requests to the bus for each service
+			registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
+			for _, serviceConfig := range cfg.GetUpstreamServices() {
+				log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
+				regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
+				// We don't need a correlation ID since we are not waiting for a response here
+				registrationBus.Publish("request", regReq)
+			}
+		} else {
+			log.Info("No services found in config, skipping service registration.")
 		}
 	}
 
