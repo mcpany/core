@@ -174,10 +174,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		}
 		require.NotNil(t, addTool)
 
-		inputSchema := addTool.Tool().GetInputSchema()
+		inputSchema := addTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
-		assert.Equal(t, "object", inputSchema.GetType())
-		properties := inputSchema.GetProperties().GetFields()
+		properties := inputSchema.GetFields()
 		require.Contains(t, properties, "a")
 		require.Contains(t, properties, "b")
 		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
@@ -232,10 +231,9 @@ paths:
 		}
 		require.NotNil(t, openapiTool)
 
-		inputSchema := openapiTool.Tool().GetInputSchema()
+		inputSchema := openapiTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
-		assert.Equal(t, "object", inputSchema.GetType())
-		properties := inputSchema.GetProperties().GetFields()
+		properties := inputSchema.GetFields()
 		require.Contains(t, properties, "userId")
 		assert.Equal(t, "string", properties["userId"].GetStructValue().GetFields()["type"].GetStringValue())
 	})
@@ -282,10 +280,9 @@ paths:
 		}
 		require.NotNil(t, wsTool)
 
-		inputSchema := wsTool.Tool().GetInputSchema()
+		inputSchema := wsTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
-		assert.Equal(t, "object", inputSchema.GetType())
-		properties := inputSchema.GetProperties().GetFields()
+		properties := inputSchema.GetFields()
 		require.Contains(t, properties, "param1")
 	})
 }

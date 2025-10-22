@@ -30,10 +30,10 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// convertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
+// ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
 // representation, into a protobuf-defined *pb.Tool with a structured input
 // schema. This is used to standardize tool definitions within the system.
-func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
+func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
 	}
@@ -52,22 +52,6 @@ func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		pbTool.SetDisplayName(tool.Name)
 	}
 
-	if tool.InputSchema != nil {
-		inputSchema, err := convertJSONSchemaToProto[pb.InputSchema](tool.InputSchema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert input schema: %w", err)
-		}
-		pbTool.SetInputSchema(inputSchema)
-	}
-
-	if tool.OutputSchema != nil {
-		outputSchema, err := convertJSONSchemaToProto[pb.OutputSchema](tool.OutputSchema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert output schema: %w", err)
-		}
-		pbTool.SetOutputSchema(outputSchema)
-	}
-
 	if tool.Annotations != nil {
 		pbAnnotations := &pb.ToolAnnotations{}
 		pbAnnotations.Reset()
@@ -80,22 +64,32 @@ func convertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		if tool.Annotations.OpenWorldHint != nil {
 			pbAnnotations.SetOpenWorldHint(*tool.Annotations.OpenWorldHint)
 		}
+
+		if tool.InputSchema != nil {
+			inputSchema, err := convertJSONSchemaToStruct(tool.InputSchema)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert input schema: %w", err)
+			}
+			pbAnnotations.SetInputSchema(inputSchema)
+		}
+
+		if tool.OutputSchema != nil {
+			outputSchema, err := convertJSONSchemaToStruct(tool.OutputSchema)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert output schema: %w", err)
+			}
+			pbAnnotations.SetOutputSchema(outputSchema)
+		}
+
 		pbTool.SetAnnotations(pbAnnotations)
 	}
 
 	return pbTool, nil
 }
 
-// convertJSONSchemaToProto is a generic function that converts a JSON schema,
-// represented as an `any` type, into a protobuf message that has `Type` and
-// `Properties` fields. This is used for both input and output schemas.
-func convertJSONSchemaToProto[T any, PT interface {
-	*T
-	Reset()
-	ProtoMessage()
-	SetType(string)
-	SetProperties(*structpb.Struct)
-}](schema any) (PT, error) {
+// convertJSONSchemaToStruct converts a JSON schema, represented as an `any` type,
+// into a `*structpb.Struct`.
+func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil
 	}
@@ -106,29 +100,13 @@ func convertJSONSchemaToProto[T any, PT interface {
 		return nil, fmt.Errorf("failed to marshal schema to json: %w", err)
 	}
 
-	// Unmarshal into a temporary struct to safely extract top-level schema fields.
-	var tempSchema struct {
-		Type       string          `json:"type,omitempty"`
-		Properties json.RawMessage `json:"properties,omitempty"`
-	}
-	if err := json.Unmarshal(jsonBytes, &tempSchema); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal schema from json to temporary struct: %w", err)
+	// Unmarshal the JSON into a structpb.Struct.
+	s := &structpb.Struct{}
+	if err := protojson.Unmarshal(jsonBytes, s); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal schema from json to structpb: %w", err)
 	}
 
-	// Unmarshal the properties field into a structpb.Struct.
-	properties := &structpb.Struct{}
-	if len(tempSchema.Properties) > 0 {
-		if err := protojson.Unmarshal(tempSchema.Properties, properties); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal properties from json to structpb: %w", err)
-		}
-	}
-
-	pbSchema := PT(new(T))
-	pbSchema.Reset()
-	pbSchema.SetType(tempSchema.Type)
-	pbSchema.SetProperties(properties)
-
-	return pbSchema, nil
+	return s, nil
 }
 
 // convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
@@ -184,46 +162,6 @@ func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 	return s, nil
 }
 
-// protoSchema defines a common interface for protobuf schema messages
-// (*pb.InputSchema and *pb.OutputSchema) to allow for generic conversion logic.
-type protoSchema interface {
-	GetType() string
-	GetProperties() *structpb.Struct
-}
-
-// convertProtoSchemaToJSONSchema converts a protobuf schema representation (like
-// *pb.InputSchema or *pb.OutputSchema) into a json.RawMessage.
-func convertProtoSchemaToJSONSchema(schema protoSchema) (json.RawMessage, error) {
-	if schema == nil {
-		return json.Marshal(map[string]any{"type": "object"})
-	}
-
-	jsonSchema := make(map[string]any)
-	if schema.GetType() != "" {
-		jsonSchema["type"] = schema.GetType()
-	} else {
-		jsonSchema["type"] = "object"
-	}
-
-	if properties := schema.GetProperties(); properties != nil {
-		props := make(map[string]any)
-		for key, value := range properties.GetFields() {
-			jsonBytes, err := protojson.Marshal(value)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal property '%s' to json: %w", key, err)
-			}
-
-			var propSchema any
-			if err := json.Unmarshal(jsonBytes, &propSchema); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal property '%s' from json: %w", key, err)
-			}
-			props[key] = propSchema
-		}
-		jsonSchema["properties"] = props
-	}
-
-	return json.Marshal(jsonSchema)
-}
 
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
@@ -233,21 +171,36 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
 	}
 
-	toolJSON, err := protojson.Marshal(pbTool)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal pb.Tool to JSON: %w", err)
-	}
-
-	var mcpTool mcp.Tool
-	if err := json.Unmarshal(toolJSON, &mcpTool); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal JSON to mcp.Tool: %w", err)
-	}
-
 	toolID, err := util.GenerateToolID(pbTool.GetServiceId(), pbTool.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tool ID: %w", err)
 	}
-	mcpTool.Name = toolID
 
-	return &mcpTool, nil
+	mcpTool := &mcp.Tool{
+		Name:        toolID,
+		Description: pbTool.GetDescription(),
+		Title:       pbTool.GetDisplayName(),
+	}
+
+	if pbTool.GetAnnotations() != nil {
+		annotations := pbTool.GetAnnotations()
+		mcpTool.Annotations = &mcp.ToolAnnotations{
+			Title:          annotations.GetTitle(),
+			ReadOnlyHint:   annotations.GetReadOnlyHint(),
+			IdempotentHint: annotations.GetIdempotentHint(),
+		}
+		destructiveHint := annotations.GetDestructiveHint()
+		mcpTool.Annotations.DestructiveHint = &destructiveHint
+		openWorldHint := annotations.GetOpenWorldHint()
+		mcpTool.Annotations.OpenWorldHint = &openWorldHint
+
+		if annotations.GetInputSchema() != nil {
+			mcpTool.InputSchema = annotations.GetInputSchema().AsMap()
+		}
+		if annotations.GetOutputSchema() != nil {
+			mcpTool.OutputSchema = annotations.GetOutputSchema().AsMap()
+		}
+	}
+
+	return mcpTool, nil
 }

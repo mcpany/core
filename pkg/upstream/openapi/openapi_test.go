@@ -321,11 +321,10 @@ paths:
 	require.NotNil(t, addedTool)
 
 	// Verify the input schema
-	inputSchema := addedTool.Tool().GetInputSchema()
+	inputSchema := addedTool.Tool().GetAnnotations().GetInputSchema()
 	assert.NotNil(t, inputSchema)
-	assert.Equal(t, "object", inputSchema.GetType())
 
-	properties := inputSchema.GetProperties().GetFields()
+	properties := inputSchema.GetFields()
 	assert.Contains(t, properties, "userId")
 	assert.Contains(t, properties, "format")
 

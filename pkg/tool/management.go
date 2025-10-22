@@ -119,20 +119,9 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	tm.tools.Store(toolID, tool)
 
 	if tm.mcpServer != nil {
-		inputSchema, err := convertProtoSchemaToJSONSchema(tool.Tool().GetInputSchema())
+		mcpTool, err := ConvertProtoToMCPTool(tool.Tool())
 		if err != nil {
-			return fmt.Errorf("failed to convert input schema for tool %s: %w", toolID, err)
-		}
-		outputSchema, err := convertProtoSchemaToJSONSchema(tool.Tool().GetOutputSchema())
-		if err != nil {
-			return fmt.Errorf("failed to convert output schema for tool %s: %w", toolID, err)
-		}
-
-		mcpTool := &mcp.Tool{
-			Name:         toolID,
-			Description:  tool.Tool().GetDescription(),
-			InputSchema:  inputSchema,
-			OutputSchema: outputSchema,
+			return fmt.Errorf("failed to convert proto tool to mcp tool: %w", err)
 		}
 		log.Info(
 			"Registering tool with MCP server",
