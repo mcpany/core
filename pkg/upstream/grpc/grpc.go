@@ -33,6 +33,7 @@ import (
 	"github.com/mcpxy/core/pkg/upstream"
 	"github.com/mcpxy/core/pkg/upstream/grpc/protobufparser"
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
@@ -40,7 +41,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // GRPCUpstream implements the upstream.Upstream interface for gRPC services.
@@ -179,17 +179,16 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			continue
 		}
 
-		requestFieldsPtrs := make([]*protobufparser.McpField, len(toolDef.RequestFields))
+		requestFields := make([]schemaconv.McpFieldParameter, len(toolDef.RequestFields))
 		for i := range toolDef.RequestFields {
-			requestFieldsPtrs[i] = &toolDef.RequestFields[i]
+			requestFields[i] = &toolDef.RequestFields[i]
 		}
 
-		inputSchemaProps, err := convertMcpFieldsToInputSchemaProperties(requestFieldsPtrs)
+		propertiesStruct, err := schemaconv.McpFieldsToProtoProperties(requestFields)
 		if err != nil {
 			log.Error("Failed to convert McpFields to InputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
 			continue
 		}
-		propertiesStruct := &structpb.Struct{Fields: inputSchemaProps}
 		inputSchema := pb.InputSchema_builder{
 			Type:       proto.String("object"),
 			Properties: propertiesStruct,
@@ -264,32 +263,3 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 	return methodDesc, nil
 }
 
-// convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
-// represent fields from a protobuf message, into a map suitable for use as the
-// `properties` field in a JSON schema.
-func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (map[string]*structpb.Value, error) {
-	properties := make(map[string]*structpb.Value)
-	for _, field := range fields {
-		schema := map[string]interface{}{
-			"type":        "string", // Default to string for simplicity
-			"description": field.Description,
-		}
-
-		scalarType := strings.ToLower(strings.TrimPrefix(field.Type, "TYPE_"))
-		switch scalarType {
-		case "double", "float":
-			schema["type"] = "number"
-		case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
-			schema["type"] = "integer"
-		case "bool":
-			schema["type"] = "boolean"
-		}
-
-		structValue, err := structpb.NewStruct(schema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create struct from schema: %w", err)
-		}
-		properties[field.Name] = structpb.NewStructValue(structValue)
-	}
-	return properties, nil
-}

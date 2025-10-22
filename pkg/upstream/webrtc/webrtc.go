@@ -29,10 +29,10 @@ import (
 	"github.com/mcpxy/core/pkg/tool"
 	"github.com/mcpxy/core/pkg/upstream"
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // WebrtcUpstream implements the upstream.Upstream interface for services that
@@ -115,14 +115,10 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			}
 		}
 
-		properties, err := structpb.NewStruct(make(map[string]interface{}))
+		properties, err := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
 		if err != nil {
-			log.Error("Failed to create properties struct", "error", err)
+			log.Error("Failed to convert schema to properties", "error", err)
 			continue
-		}
-
-		for _, param := range wrtcDef.GetParameters() {
-			properties.Fields[param.GetSchema().GetName()] = structpb.NewStringValue("")
 		}
 
 		newToolProto := pb.Tool_builder{
@@ -132,6 +128,13 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			InputSchema: pb.InputSchema_builder{
 				Type:       proto.String("object"),
 				Properties: properties,
+			}.Build(),
+			Annotations: pb.ToolAnnotations_builder{
+				Title:           proto.String(schema.GetTitle()),
+				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
 			}.Build(),
 		}.Build()
 
