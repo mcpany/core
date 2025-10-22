@@ -142,6 +142,10 @@ func (s *FileStore) Load() (*configv1.McpxServerConfig, error) {
 			return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
 		}
 
+		if len(b) == 0 {
+			continue
+		}
+
 		engine, err := NewEngine(path)
 		if err != nil {
 			return nil, err
