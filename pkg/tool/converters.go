@@ -23,6 +23,7 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpxy/core/pkg/upstream/grpc/protobufparser"
+	"github.com/mcpxy/core/pkg/util"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -222,4 +223,31 @@ func convertProtoSchemaToJSONSchema(schema protoSchema) (json.RawMessage, error)
 	}
 
 	return json.Marshal(jsonSchema)
+}
+
+// ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
+// *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
+// exposing internally defined tools to the outside world.
+func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
+	if pbTool == nil {
+		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
+	}
+
+	toolJSON, err := protojson.Marshal(pbTool)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal pb.Tool to JSON: %w", err)
+	}
+
+	var mcpTool mcp.Tool
+	if err := json.Unmarshal(toolJSON, &mcpTool); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON to mcp.Tool: %w", err)
+	}
+
+	toolID, err := util.GenerateToolID(pbTool.GetServiceId(), pbTool.GetName())
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate tool ID: %w", err)
+	}
+	mcpTool.Name = toolID
+
+	return &mcpTool, nil
 }

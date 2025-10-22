@@ -29,7 +29,6 @@ import (
 	"github.com/mcpxy/core/pkg/resource"
 	"github.com/mcpxy/core/pkg/serviceregistry"
 	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -157,24 +156,17 @@ func NewServer(
 
 			if method == consts.MethodToolsList {
 				if err == nil {
-					if listResult, ok := result.(*mcp.ListToolsResult); ok {
-						activeTools := s.toolManager.ListTools()
-						activeToolsMap := make(map[string]bool)
-						for _, t := range activeTools {
-							toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
-							activeToolsMap[toolID] = true
-						}
-
-						filteredTools := []*mcp.Tool{}
-						for _, t := range listResult.Tools {
-							service, bareToolName, _ := util.ParseToolName(t.Name)
-							toolID, _ := util.GenerateToolID(service, bareToolName)
-							if activeToolsMap[toolID] {
-								t.Name = toolID
-								filteredTools = append(filteredTools, t)
+					if _, ok := result.(*mcp.ListToolsResult); ok {
+						tools := s.toolManager.ListTools()
+						mcpTools := make([]*mcp.Tool, 0, len(tools))
+						for _, t := range tools {
+							mcpTool, err := tool.ConvertProtoToMCPTool(t.Tool())
+							if err != nil {
+								continue
 							}
+							mcpTools = append(mcpTools, mcpTool)
 						}
-						listResult.Tools = filteredTools
+						result = &mcp.ListToolsResult{Tools: mcpTools}
 					}
 				}
 			}
