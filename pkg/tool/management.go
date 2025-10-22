@@ -23,7 +23,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/google/uuid"
 	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/logging"
@@ -117,17 +116,24 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	log := logging.GetLogger().With("toolID", toolID)
 	log.Debug("Adding tool to ToolManager")
 	tm.tools.Store(toolID, tool)
+
 	if tm.mcpServer != nil {
-		mcpTool := &mcp.Tool{
-			Name:        toolID,
-			Description: tool.Tool().GetDescription(),
-			InputSchema: &jsonschema.Schema{
-				Type: "object",
-			},
-			OutputSchema: &jsonschema.Schema{
-				Type: "object",
-			},
+		inputSchema, err := convertProtoSchemaToJSONSchema(tool.Tool().GetInputSchema())
+		if err != nil {
+			return fmt.Errorf("failed to convert input schema for tool %s: %w", toolID, err)
 		}
+		outputSchema, err := convertProtoSchemaToJSONSchema(tool.Tool().GetOutputSchema())
+		if err != nil {
+			return fmt.Errorf("failed to convert output schema for tool %s: %w", toolID, err)
+		}
+
+		mcpTool := &mcp.Tool{
+			Name:         toolID,
+			Description:  tool.Tool().GetDescription(),
+			InputSchema:  inputSchema,
+			OutputSchema: outputSchema,
+		}
+
 		handler := func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			logging.GetLogger().Info("Queueing tool execution", "toolName", req.Params.Name)
 

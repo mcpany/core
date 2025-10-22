@@ -222,3 +222,98 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertProtoSchemaToJSONSchema(t *testing.T) {
+	t.Parallel()
+
+	// Helper to create a structpb.Struct from a map
+	mustNewStruct := func(m map[string]any) *structpb.Struct {
+		s, err := structpb.NewStruct(m)
+		if err != nil {
+			t.Fatalf("Failed to create struct: %v", err)
+		}
+		return s
+	}
+
+	testCases := []struct {
+		name          string
+		protoSchema   protoSchema
+		expected      *jsonschema.Schema
+		expectedError bool
+	}{
+		{
+			name:        "Nil schema",
+			protoSchema: nil,
+			expected: &jsonschema.Schema{
+				Type: "object",
+			},
+			expectedError: false,
+		},
+		{
+			name: "Empty schema",
+			protoSchema: pb.InputSchema_builder{
+				Type:       proto.String("object"),
+				Properties: mustNewStruct(map[string]any{}),
+			}.Build(),
+			expected: &jsonschema.Schema{
+				Type:       "object",
+				Properties: make(map[string]*jsonschema.Schema),
+			},
+			expectedError: false,
+		},
+		{
+			name: "Schema with properties",
+			protoSchema: pb.InputSchema_builder{
+				Type: proto.String("object"),
+				Properties: mustNewStruct(map[string]any{
+					"arg1": map[string]any{
+						"type":        "string",
+						"description": "Argument 1",
+					},
+					"arg2": map[string]any{
+						"type": "integer",
+					},
+				}),
+			}.Build(),
+			expected: &jsonschema.Schema{
+				Type: "object",
+				Properties: map[string]*jsonschema.Schema{
+					"arg1": {
+						Type:        "string",
+						Description: "Argument 1",
+					},
+					"arg2": {
+						Type: "integer",
+					},
+				},
+			},
+			expectedError: false,
+		},
+		{
+			name: "Schema with no type",
+			protoSchema: pb.InputSchema_builder{
+				Properties: mustNewStruct(map[string]any{}),
+			}.Build(),
+			expected: &jsonschema.Schema{
+				Type:       "object",
+				Properties: make(map[string]*jsonschema.Schema),
+			},
+			expectedError: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			result, err := convertProtoSchemaToJSONSchema(tc.protoSchema)
+			if (err != nil) != tc.expectedError {
+				t.Fatalf("convertProtoSchemaToJSONSchema() error = %v, wantErr %v", err, tc.expectedError)
+			}
+
+			if diff := cmp.Diff(tc.expected, result); diff != "" {
+				t.Errorf("convertProtoSchemaToJSONSchema() returned diff (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

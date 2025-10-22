@@ -182,3 +182,44 @@ func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 
 	return s, nil
 }
+
+// protoSchema defines a common interface for protobuf schema messages
+// (*pb.InputSchema and *pb.OutputSchema) to allow for generic conversion logic.
+type protoSchema interface {
+	GetType() string
+	GetProperties() *structpb.Struct
+}
+
+// convertProtoSchemaToJSONSchema converts a protobuf schema representation (like
+// *pb.InputSchema or *pb.OutputSchema) into a standard *jsonschema.Schema.
+func convertProtoSchemaToJSONSchema(schema protoSchema) (*jsonschema.Schema, error) {
+	if schema == nil {
+		return &jsonschema.Schema{Type: "object"}, nil
+	}
+
+	jsonSchema := &jsonschema.Schema{
+		Type:       schema.GetType(),
+		Properties: make(map[string]*jsonschema.Schema),
+	}
+
+	if jsonSchema.Type == "" {
+		jsonSchema.Type = "object"
+	}
+
+	if properties := schema.GetProperties(); properties != nil {
+		for key, value := range properties.GetFields() {
+			jsonBytes, err := protojson.Marshal(value)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal property '%s' to json: %w", key, err)
+			}
+
+			var propSchema jsonschema.Schema
+			if err := json.Unmarshal(jsonBytes, &propSchema); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal property '%s' from json: %w", key, err)
+			}
+			jsonSchema.Properties[key] = &propSchema
+		}
+	}
+
+	return jsonSchema, nil
+}
