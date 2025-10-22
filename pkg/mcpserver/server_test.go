@@ -118,6 +118,60 @@ func TestToolListFiltering(t *testing.T) {
 	assert.Len(t, listResult.Tools, 0)
 }
 
+func TestToolListFilteringServiceId(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	busProvider := bus.NewBusProvider()
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add a test tool
+	serviceKey := "test-service"
+	toolName := "test-tool"
+	compositeName, err := util.GenerateToolID(serviceKey, toolName)
+	require.NoError(t, err)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(toolName),
+			ServiceId: proto.String(serviceKey),
+		}.Build(),
+	}
+	tm.AddTool(testTool)
+
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	serverOpts := &mcp.ServerSessionOptions{
+		State: &mcp.ServerSessionState{
+			InitializeParams: &mcp.InitializeParams{
+				Capabilities: &mcp.ClientCapabilities{},
+			},
+		},
+	}
+
+	serverSession, err := server.Server().Connect(ctx, serverTransport, serverOpts)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+}
+
 type mockErrorTool struct {
 	tool *v1.Tool
 }
