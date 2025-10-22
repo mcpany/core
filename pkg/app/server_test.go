@@ -34,6 +34,7 @@ import (
 import (
 	"bytes"
 	"log/slog"
+	"net/http"
 	"strings"
 
 	"github.com/mcpxy/core/pkg/logging"
@@ -278,6 +279,62 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 				assert.NotContains(t, err.Error(), "use of closed network connection", "gRPC server tried to use a closed listener on iteration %d", i)
 			}
 		})
+	}
+}
+
+func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
+	// This test verifies that the HTTP server's graceful shutdown waits for
+	// the timeout duration when a request hangs.
+
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	lis.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	handlerStarted := make(chan struct{})
+	shutdownTimeout := 100 * time.Millisecond
+	handlerSleep := 5 * time.Second
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		close(handlerStarted)
+		time.Sleep(handlerSleep)
+		w.WriteHeader(http.StatusOK)
+	}), shutdownTimeout)
+
+	time.Sleep(50 * time.Millisecond) // give server time to start
+
+	go func() {
+		_, _ = http.Get(fmt.Sprintf("http://localhost:%d", port))
+	}()
+
+	// Wait for the handler to receive the request before we shutdown
+	select {
+	case <-handlerStarted:
+		// Great, handler is running
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for handler to start")
+	}
+
+	shutdownStartTime := time.Now()
+	cancel()
+	wg.Wait()
+	shutdownDuration := time.Since(shutdownStartTime)
+
+	// With the bug, shutdown is immediate. With the fix, it should wait for the timeout.
+	// We expect the shutdown to take at least as long as the timeout.
+	assert.GreaterOrEqual(t, shutdownDuration, shutdownTimeout, "Shutdown should take at least the shutdown timeout duration.")
+	// And it should not wait for the full handler sleep duration.
+	assert.Less(t, shutdownDuration, handlerSleep, "Shutdown should not wait for the handler to complete.")
+
+	select {
+	case err := <-errChan:
+		require.NoError(t, err, "The HTTP server should shut down gracefully without errors.")
+	default:
+		// Expected outcome.
 	}
 }
 

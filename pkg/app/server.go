@@ -282,8 +282,12 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		server := &http.Server{
 			Addr:    addr,
 			Handler: handler,
+			BaseContext: func(_ net.Listener) context.Context {
+				return ctx
+			},
 		}
 
+		shutdownComplete := make(chan struct{})
 		go func() {
 			<-ctx.Done()
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
@@ -292,12 +296,16 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			if err := server.Shutdown(shutdownCtx); err != nil {
 				serverLog.Error("Shutdown error", "error", err)
 			}
+			close(shutdownComplete)
 		}()
 
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
+			return
 		}
+
+		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
 }
@@ -326,6 +334,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
+		shutdownComplete := make(chan struct{})
 		go func() {
 			<-ctx.Done()
 			serverLog.Info("Attempting to gracefully shut down server...")
@@ -343,12 +352,14 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
+			close(shutdownComplete)
 		}()
 
 		serverLog.Info("gRPC server listening")
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 		}
+		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
 }
