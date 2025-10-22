@@ -109,6 +109,21 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to load services from config")
 }
 
+func TestRun_EmptyConfig(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Create an empty config file
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+	// This should not panic
+	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+	require.NoError(t, err)
+}
+
 func TestRun_StdioMode(t *testing.T) {
 	var stdioModeCalled bool
 	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
