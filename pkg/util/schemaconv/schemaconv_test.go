@@ -67,14 +67,14 @@ func TestConfigSchemaToProtoProperties(t *testing.T) {
 	require.True(t, ok)
 	s1 := param1.GetStructValue()
 	require.NotNil(t, s1)
-	assert.Equal(t, "STRING", s1.Fields["type"].GetStringValue())
+	assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
 	assert.Equal(t, "a string param", s1.Fields["description"].GetStringValue())
 
 	param2, ok := properties.Fields["param2"]
 	require.True(t, ok)
 	s2 := param2.GetStructValue()
 	require.NotNil(t, s2)
-	assert.Equal(t, "INTEGER", s2.Fields["type"].GetStringValue())
+	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
 	assert.Equal(t, "an int param", s2.Fields["description"].GetStringValue())
 }
 

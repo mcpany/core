@@ -238,11 +238,18 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			}
 		}
 
-		inputSchema, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
+		properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
 			fmt.Printf("Warning: Failed to convert OpenAPI schema to InputSchema for tool '%s': %v. Input schema will be empty.\n", baseOperationID, err)
-			inputSchema = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+		}
+
+		inputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(properties),
+			},
 		}
 
 		toolBuilder := pb.Tool_builder{
@@ -423,15 +430,14 @@ func convertOpenAPISchemaToInputSchemaProperties(
 		}
 
 		if bodyActualSchema != nil {
-			// Ensure bodyActualSchema.Type is not nil before accessing it
-			bodySchemaType := "object" // Default if type is not specified
+			// Check if the schema is a non-object type (e.g., array, string).
+			isObject := len(bodyActualSchema.Properties) > 0
 			if bodyActualSchema.Type != nil && len(*bodyActualSchema.Type) > 0 {
-				bodySchemaType = (*bodyActualSchema.Type)[0]
+				isObject = (*bodyActualSchema.Type)[0] == openapi3.TypeObject
 			}
 
-			if bodySchemaType == openapi3.TypeObject {
+			if isObject {
 				for propName, propSchemaRef := range bodyActualSchema.Properties {
-					// For request body properties, explicitDescription is not passed.
 					val, err := convertSingleSchema(propName, propSchemaRef, "")
 					if err != nil {
 						fmt.Printf("Warning: skipping property '%s' from request body: %v\n", propName, err)
@@ -440,11 +446,9 @@ func convertOpenAPISchemaToInputSchemaProperties(
 					props.Fields[propName] = val
 				}
 			} else {
-				// If the request body is not an object (e.g., an array or a primitive),
-				// wrap its schema under a special "request_body" property.
+				// If the request body is not an object, wrap its schema under "request_body".
 				val, err := convertSingleSchema("request_body", bodySchemaRef, bodyActualSchema.Description)
 				if err != nil {
-					// Log the error but continue; this might result in an empty input schema for this part.
 					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
 				} else {
 					props.Fields["request_body"] = val
