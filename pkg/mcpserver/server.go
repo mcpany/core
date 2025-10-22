@@ -167,7 +167,10 @@ func NewServer(
 
 						filteredTools := []*mcp.Tool{}
 						for _, t := range listResult.Tools {
-							if activeToolsMap[t.Name] {
+							service, bareToolName, _ := util.ParseToolName(t.Name)
+							toolID, _ := util.GenerateToolID(service, bareToolName)
+							if activeToolsMap[toolID] {
+								t.Name = toolID
 								filteredTools = append(filteredTools, t)
 							}
 						}
