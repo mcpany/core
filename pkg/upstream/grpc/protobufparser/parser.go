@@ -68,6 +68,21 @@ type McpField struct {
 	IsRepeated  bool
 }
 
+// GetName returns the name of the McpField.
+func (f *McpField) GetName() string {
+	return f.Name
+}
+
+// GetDescription returns the description of the McpField.
+func (f *McpField) GetDescription() string {
+	return f.Description
+}
+
+// GetType returns the type of the McpField.
+func (f *McpField) GetType() string {
+	return f.Type
+}
+
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
 type McpPrompt struct {
