@@ -140,10 +140,6 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			mcpTool.Name,
 			"tool",
 			mcpTool,
-			"inputSchema",
-			string(inputSchema),
-			"outputSchema",
-			string(outputSchema),
 		)
 
 		handler := func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
