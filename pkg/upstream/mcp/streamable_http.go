@@ -34,7 +34,6 @@ import (
 	"github.com/mcpxy/core/pkg/upstream"
 	"github.com/mcpxy/core/pkg/util"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
-	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 )
@@ -415,12 +414,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			callDef = &configv1.MCPCallDefinition{}
 		}
 
+		pbTool, err := tool.ConvertMCPToolToProto(mcpSDKTool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
+			continue
+		}
+		pbTool.SetServiceId(serviceKey)
+
 		newTool := tool.NewMCPTool(
-			pb.Tool_builder{
-				Name:        proto.String(mcpSDKTool.Name),
-				Description: proto.String(mcpSDKTool.Description),
-				ServiceId:   proto.String(serviceKey),
-			}.Build(),
+			pbTool,
 			mcpClient,
 			callDef,
 		)
@@ -559,12 +561,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			callDef = &configv1.MCPCallDefinition{}
 		}
 
+		pbTool, err := tool.ConvertMCPToolToProto(mcpSDKTool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
+			continue
+		}
+		pbTool.SetServiceId(serviceKey)
+
 		newTool := tool.NewMCPTool(
-			pb.Tool_builder{
-				Name:        proto.String(mcpSDKTool.Name),
-				Description: proto.String(mcpSDKTool.Description),
-				ServiceId:   proto.String(serviceKey),
-			}.Build(),
+			pbTool,
 			mcpClient,
 			callDef,
 		)

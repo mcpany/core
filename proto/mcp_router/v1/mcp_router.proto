@@ -20,26 +20,14 @@ message Tool {
      string response_type_fqn = 7;    // Fully qualified name of the underlying method's response message
     repeated Field request_fields = 8;
     repeated Field response_fields = 9;
-     InputSchema input_schema = 10;
      ToolAnnotations annotations = 11;
      bool is_stream = 12;
-     OutputSchema output_schema = 13;
 }
 
 message Field {
      string name = 1;
      string description = 2;
      string type = 3;
-}
-
-message InputSchema {
-     string type = 1; // e.g., "object"
-     google.protobuf.Struct properties = 2;
-}
-
-message OutputSchema {
-     string type = 1; // e.g., "object"
-     google.protobuf.Struct properties = 2;
 }
 
 message ToolAnnotations {
@@ -62,6 +50,8 @@ message ToolAnnotations {
      // a web search tool is open, whereas that of a memory tool is not.
      // Default: true
      bool open_world_hint = 5;
+     google.protobuf.Struct input_schema = 6;
+     google.protobuf.Struct output_schema = 7;
 }
 
 message ListToolsRequest {
@@ -89,7 +79,7 @@ message Prompt {
      string name = 2;
      string description = 3;
      string template = 4;
-     InputSchema input_schema = 5;
+     google.protobuf.Struct input_schema = 5;
 }
 
 message ListPromptsRequest {}

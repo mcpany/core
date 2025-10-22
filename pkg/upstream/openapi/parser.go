@@ -238,11 +238,11 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			}
 		}
 
-		inputSchemaProps, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
+		inputSchema, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
 			fmt.Printf("Warning: Failed to convert OpenAPI schema to InputSchema for tool '%s': %v. Input schema will be empty.\n", baseOperationID, err)
-			inputSchemaProps = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+			inputSchema = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
 		}
 
 		toolBuilder := pb.Tool_builder{
@@ -250,13 +250,13 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			DisplayName:         proto.String(displayName),
 			Description:         proto.String(op.Description),
 			ServiceId:           proto.String(mcpServerServiceKey),
-			InputSchema:         pb.InputSchema_builder{Type: proto.String("object"), Properties: inputSchemaProps}.Build(),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", op.Method, op.Path)),
 			Annotations: pb.ToolAnnotations_builder{
 				Title:          proto.String(op.Summary),
 				IdempotentHint: proto.Bool(isOperationIdempotent(op.Method)),
 				ReadOnlyHint:   proto.Bool(op.Method == "GET"),
 				OpenWorldHint:  proto.Bool(true), // Default, can be refined
+				InputSchema:    inputSchema,
 			}.Build(),
 		}
 		tools = append(tools, toolBuilder.Build())

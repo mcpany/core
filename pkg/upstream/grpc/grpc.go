@@ -41,6 +41,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // GRPCUpstream implements the upstream.Upstream interface for gRPC services.
@@ -189,10 +190,14 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			log.Error("Failed to convert McpFields to InputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
 			continue
 		}
-		inputSchema := pb.InputSchema_builder{
-			Type:       proto.String("object"),
-			Properties: propertiesStruct,
-		}.Build()
+		inputSchema, err := structpb.NewStruct(map[string]interface{}{
+			"type":       "object",
+			"properties": propertiesStruct,
+		})
+		if err != nil {
+			log.Error("Failed to create input schema struct", "error", err)
+			continue
+		}
 
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolName),
@@ -208,8 +213,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 				DestructiveHint: proto.Bool(toolDef.DestructiveHint),
 				IdempotentHint:  proto.Bool(toolDef.IdempotentHint),
 				OpenWorldHint:   proto.Bool(toolDef.OpenWorldHint),
+				InputSchema:     inputSchema,
 			}.Build(),
-			InputSchema: inputSchema,
 		}.Build()
 
 		clonedTool := proto.Clone(newToolProto).(*pb.Tool)
@@ -262,4 +267,3 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 	}
 	return methodDesc, nil
 }
-
