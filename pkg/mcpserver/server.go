@@ -156,17 +156,18 @@ func NewServer(
 
 			if method == consts.MethodToolsList {
 				if err == nil {
-					if _, ok := result.(*mcp.ListToolsResult); ok {
-						tools := s.toolManager.ListTools()
-						mcpTools := make([]*mcp.Tool, 0, len(tools))
-						for _, t := range tools {
-							mcpTool, err := tool.ConvertProtoToMCPTool(t.Tool())
-							if err != nil {
-								continue
+					if listToolsResult, ok := result.(*mcp.ListToolsResult); ok {
+						refreshedTools := make([]*mcp.Tool, 0, len(listToolsResult.Tools))
+						for _, mcpTool := range listToolsResult.Tools {
+							if toolInstance, toolExists := s.toolManager.GetTool(mcpTool.Name); toolExists {
+								freshMCPTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+								if err != nil {
+									continue // Skip tools that fail to convert
+								}
+								refreshedTools = append(refreshedTools, freshMCPTool)
 							}
-							mcpTools = append(mcpTools, mcpTool)
 						}
-						result = &mcp.ListToolsResult{Tools: mcpTools}
+						result = &mcp.ListToolsResult{Tools: refreshedTools}
 					}
 				}
 			}

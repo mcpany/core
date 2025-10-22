@@ -190,13 +190,14 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			log.Error("Failed to convert McpFields to InputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
 			continue
 		}
-		inputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": propertiesStruct,
-		})
-		if err != nil {
-			log.Error("Failed to create input schema struct", "error", err)
-			continue
+		if propertiesStruct == nil {
+			propertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		inputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(propertiesStruct),
+			},
 		}
 
 		newToolProto := pb.Tool_builder{
