@@ -392,8 +392,9 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if inputSchemaListPets == nil {
 		t.Fatalf("listPets InputSchema is nil")
 	}
-	if len(inputSchemaListPets.GetFields()) != 0 {
-		t.Errorf("listPets InputSchema.Properties should be empty, got %v", inputSchemaListPets.GetFields())
+	propertiesListPets := inputSchemaListPets.GetFields()["properties"].GetStructValue()
+	if len(propertiesListPets.GetFields()) != 0 {
+		t.Errorf("listPets InputSchema.Properties should be empty, got %v", propertiesListPets.GetFields())
 	}
 
 	// --- Assertions for "createPet" tool ---
@@ -420,18 +421,19 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if inputSchemaCreatePet == nil {
 		t.Fatalf("createPet InputSchema is nil")
 	}
-	if inputSchemaCreatePet.GetFields() == nil {
+	propertiesCreatePet := inputSchemaCreatePet.GetFields()["properties"].GetStructValue()
+	if propertiesCreatePet.GetFields() == nil {
 		t.Fatalf("createPet InputSchema.Properties or its fields are nil")
 	}
 	// Check PetInput properties: name (string), status (string)
-	propName, ok := inputSchemaCreatePet.GetFields()["name"]
+	propName, ok := propertiesCreatePet.GetFields()["name"]
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'name'")
 	}
 	if propName.GetStructValue().GetFields()["type"].GetStringValue() != "string" {
 		t.Errorf("createPet 'name' property type: got %s, want string", propName.GetStructValue().GetFields()["type"].GetStringValue())
 	}
-	propStatus, ok := inputSchemaCreatePet.GetFields()["status"]
+	propStatus, ok := propertiesCreatePet.GetFields()["status"]
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'status'")
 	}
@@ -467,10 +469,11 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if inputSchemaShowPetByID == nil {
 		t.Fatalf("showPetById InputSchema is nil")
 	}
-	if inputSchemaShowPetByID.GetFields() == nil {
+	propertiesShowPetByID := inputSchemaShowPetByID.GetFields()["properties"].GetStructValue()
+	if propertiesShowPetByID.GetFields() == nil {
 		t.Fatalf("showPetById InputSchema.Properties or its fields are nil")
 	}
-	propPetID, ok := inputSchemaShowPetByID.GetFields()["petId"]
+	propPetID, ok := propertiesShowPetByID.GetFields()["petId"]
 	if !ok {
 		t.Fatalf("showPetById InputSchema.Properties missing 'petId'")
 	}
@@ -787,15 +790,20 @@ func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
 
 	inputSchema := tool.GetAnnotations().GetInputSchema()
 	assert.NotNil(t, inputSchema, "InputSchema should not be nil")
-	properties := inputSchema.GetFields()
+
+	// Check for the 'type: object' wrapper
+	assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue(), "InputSchema should be a JSON schema object")
+
+	propertiesValue, ok := inputSchema.GetFields()["properties"]
+	assert.True(t, ok, "InputSchema should have a 'properties' field")
+	properties := propertiesValue.GetStructValue()
 	assert.NotNil(t, properties, "InputSchema properties should not be nil")
 
-	// This is the core of the bug: with the original code, the properties map will be empty.
 	// The fix should ensure a property is created to wrap the array.
-	assert.NotEmpty(t, properties, "InputSchema should have properties for the non-object request body")
+	assert.NotEmpty(t, properties.GetFields(), "InputSchema should have properties for the non-object request body")
 
 	// Further checks for the fixed implementation:
-	requestBodyProp, ok := properties["request_body"]
+	requestBodyProp, ok := properties.GetFields()["request_body"]
 	assert.True(t, ok, "Expected a 'request_body' property to be created for the array body")
 
 	propSchema := requestBodyProp.GetStructValue().GetFields()

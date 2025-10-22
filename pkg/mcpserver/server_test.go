@@ -39,6 +39,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type mockTool struct {
@@ -89,6 +90,14 @@ func TestToolListFiltering(t *testing.T) {
 		tool: v1.Tool_builder{
 			Name:      proto.String(toolName),
 			ServiceId: proto.String(serviceKey),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
 		}.Build(),
 	}
 	tm.AddTool(testTool)
@@ -144,6 +153,14 @@ func TestToolListFilteringServiceId(t *testing.T) {
 		tool: v1.Tool_builder{
 			Name:      proto.String(toolName),
 			ServiceId: proto.String(serviceKey),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
 		}.Build(),
 	}
 	tm.AddTool(testTool)
@@ -210,6 +227,14 @@ func TestServer_CallTool(t *testing.T) {
 		tool: v1.Tool_builder{
 			Name:      proto.String("success-tool"),
 			ServiceId: proto.String("test-service"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
 		}.Build(),
 	}
 	tm.AddTool(successTool)
@@ -218,6 +243,14 @@ func TestServer_CallTool(t *testing.T) {
 		tool: v1.Tool_builder{
 			Name:      proto.String("error-tool"),
 			ServiceId: proto.String("test-service"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
 		}.Build(),
 	}
 	tm.AddTool(errorTool)

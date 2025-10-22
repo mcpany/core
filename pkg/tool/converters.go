@@ -52,9 +52,9 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		pbTool.SetDisplayName(tool.Name)
 	}
 
+	pbAnnotations := &pb.ToolAnnotations{}
+	pbAnnotations.Reset()
 	if tool.Annotations != nil {
-		pbAnnotations := &pb.ToolAnnotations{}
-		pbAnnotations.Reset()
 		pbAnnotations.SetTitle(tool.Annotations.Title)
 		pbAnnotations.SetReadOnlyHint(tool.Annotations.ReadOnlyHint)
 		pbAnnotations.SetIdempotentHint(tool.Annotations.IdempotentHint)
@@ -64,25 +64,34 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		if tool.Annotations.OpenWorldHint != nil {
 			pbAnnotations.SetOpenWorldHint(*tool.Annotations.OpenWorldHint)
 		}
+	}
 
-		if tool.InputSchema != nil {
-			inputSchema, err := convertJSONSchemaToStruct(tool.InputSchema)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert input schema: %w", err)
-			}
+	if tool.InputSchema != nil {
+		inputSchema, err := convertJSONSchemaToStruct(tool.InputSchema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert input schema: %w", err)
+		}
+		pbAnnotations.SetInputSchema(inputSchema)
+	} else {
+		// If InputSchema is nil, create a default empty object schema
+		inputSchema, err := structpb.NewStruct(map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
+		})
+		if err == nil {
 			pbAnnotations.SetInputSchema(inputSchema)
 		}
-
-		if tool.OutputSchema != nil {
-			outputSchema, err := convertJSONSchemaToStruct(tool.OutputSchema)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert output schema: %w", err)
-			}
-			pbAnnotations.SetOutputSchema(outputSchema)
-		}
-
-		pbTool.SetAnnotations(pbAnnotations)
 	}
+
+	if tool.OutputSchema != nil {
+		outputSchema, err := convertJSONSchemaToStruct(tool.OutputSchema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert output schema: %w", err)
+		}
+		pbAnnotations.SetOutputSchema(outputSchema)
+	}
+
+	pbTool.SetAnnotations(pbAnnotations)
 
 	return pbTool, nil
 }
