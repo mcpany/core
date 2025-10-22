@@ -31,10 +31,10 @@ import (
 	"github.com/mcpxy/core/pkg/tool"
 	"github.com/mcpxy/core/pkg/upstream"
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // httpMethodToString converts the protobuf enum for an HTTP method into its
@@ -163,21 +163,10 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			}
 		}
 
-		properties, err := structpb.NewStruct(make(map[string]interface{}))
+		properties, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
 		if err != nil {
-			log.Error("Failed to create properties struct", "error", err)
+			log.Error("Failed to convert schema to properties", "error", err)
 			continue
-		}
-
-		for _, param := range httpDef.GetParameters() {
-			paramSchema := param.GetSchema()
-			paramStruct := &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue(configv1.ParameterType_name[int32(paramSchema.GetType())]),
-					"description": structpb.NewStringValue(paramSchema.GetDescription()),
-				},
-			}
-			properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
 		}
 
 		requiredParams := []string{}
@@ -216,6 +205,13 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			InputSchema: pb.InputSchema_builder{
 				Type:       proto.String("object"),
 				Properties: properties,
+			}.Build(),
+			Annotations: pb.ToolAnnotations_builder{
+				Title:           proto.String(schema.GetTitle()),
+				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
 			}.Build(),
 		}.Build()
 
