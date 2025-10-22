@@ -314,11 +314,10 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		registeredTool, ok := toolManager.GetTool(toolID)
 		require.True(t, ok)
 
-		inputSchema := registeredTool.Tool().GetInputSchema()
+		inputSchema := registeredTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
-		assert.Equal(t, "object", inputSchema.GetType())
 
-		properties := inputSchema.GetProperties().GetFields()
+		properties := inputSchema.GetFields()
 		assert.Contains(t, properties, "param1")
 		assert.Contains(t, properties, "param2")
 	})

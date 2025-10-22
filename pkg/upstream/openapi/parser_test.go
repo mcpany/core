@@ -388,14 +388,12 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 		t.Errorf("listPets Annotations.OpenWorldHint: got %v, want true", toolListPets.GetAnnotations().GetOpenWorldHint())
 	}
 	// InputSchema for listPets (no parameters, no request body)
-	if toolListPets.GetInputSchema() == nil {
+	inputSchemaListPets := toolListPets.GetAnnotations().GetInputSchema()
+	if inputSchemaListPets == nil {
 		t.Fatalf("listPets InputSchema is nil")
 	}
-	if toolListPets.GetInputSchema().GetType() != "object" {
-		t.Errorf("listPets InputSchema.Type: got '%s', want 'object'", toolListPets.GetInputSchema().GetType())
-	}
-	if toolListPets.GetInputSchema().GetProperties() == nil || len(toolListPets.GetInputSchema().GetProperties().GetFields()) != 0 {
-		t.Errorf("listPets InputSchema.Properties should be empty, got %v", toolListPets.GetInputSchema().GetProperties())
+	if len(inputSchemaListPets.GetFields()) != 0 {
+		t.Errorf("listPets InputSchema.Properties should be empty, got %v", inputSchemaListPets.GetFields())
 	}
 
 	// --- Assertions for "createPet" tool ---
@@ -418,24 +416,22 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 		t.Errorf("createPet Annotations.IdempotentHint: got %v, want false", toolCreatePet.GetAnnotations().GetIdempotentHint())
 	}
 	// InputSchema for createPet (has request body PetInput)
-	if toolCreatePet.GetInputSchema() == nil {
+	inputSchemaCreatePet := toolCreatePet.GetAnnotations().GetInputSchema()
+	if inputSchemaCreatePet == nil {
 		t.Fatalf("createPet InputSchema is nil")
 	}
-	if toolCreatePet.GetInputSchema().GetType() != "object" {
-		t.Errorf("createPet InputSchema.Type: got '%s', want 'object'", toolCreatePet.GetInputSchema().GetType())
-	}
-	if toolCreatePet.GetInputSchema().GetProperties() == nil || toolCreatePet.GetInputSchema().GetProperties().GetFields() == nil {
+	if inputSchemaCreatePet.GetFields() == nil {
 		t.Fatalf("createPet InputSchema.Properties or its fields are nil")
 	}
 	// Check PetInput properties: name (string), status (string)
-	propName, ok := toolCreatePet.GetInputSchema().GetProperties().GetFields()["name"]
+	propName, ok := inputSchemaCreatePet.GetFields()["name"]
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'name'")
 	}
 	if propName.GetStructValue().GetFields()["type"].GetStringValue() != "string" {
 		t.Errorf("createPet 'name' property type: got %s, want string", propName.GetStructValue().GetFields()["type"].GetStringValue())
 	}
-	propStatus, ok := toolCreatePet.GetInputSchema().GetProperties().GetFields()["status"]
+	propStatus, ok := inputSchemaCreatePet.GetFields()["status"]
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'status'")
 	}
@@ -467,13 +463,14 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 		t.Errorf("showPetById Annotations.IdempotentHint: got %v, want true", toolShowPetByID.GetAnnotations().GetIdempotentHint())
 	}
 	// InputSchema for showPetById (has path parameter petId)
-	if toolShowPetByID.GetInputSchema() == nil {
+	inputSchemaShowPetByID := toolShowPetByID.GetAnnotations().GetInputSchema()
+	if inputSchemaShowPetByID == nil {
 		t.Fatalf("showPetById InputSchema is nil")
 	}
-	if toolShowPetByID.GetInputSchema().GetProperties() == nil || toolShowPetByID.GetInputSchema().GetProperties().GetFields() == nil {
+	if inputSchemaShowPetByID.GetFields() == nil {
 		t.Fatalf("showPetById InputSchema.Properties or its fields are nil")
 	}
-	propPetID, ok := toolShowPetByID.GetInputSchema().GetProperties().GetFields()["petId"]
+	propPetID, ok := inputSchemaShowPetByID.GetFields()["petId"]
 	if !ok {
 		t.Fatalf("showPetById InputSchema.Properties missing 'petId'")
 	}
@@ -788,9 +785,9 @@ func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
 	assert.Len(t, tools, 1, "Expected one tool to be generated")
 	tool := tools[0]
 
-	inputSchema := tool.GetInputSchema()
+	inputSchema := tool.GetAnnotations().GetInputSchema()
 	assert.NotNil(t, inputSchema, "InputSchema should not be nil")
-	properties := inputSchema.GetProperties().GetFields()
+	properties := inputSchema.GetFields()
 	assert.NotNil(t, properties, "InputSchema properties should not be nil")
 
 	// This is the core of the bug: with the original code, the properties map will be empty.

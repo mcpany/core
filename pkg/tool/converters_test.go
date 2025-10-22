@@ -17,17 +17,14 @@
 package tool
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpxy/core/pkg/upstream/grpc/protobufparser"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -69,9 +66,9 @@ func TestConvertMCPToolToProto(t *testing.T) {
 		},
 	}
 
-	protoTool, err := convertMCPToolToProto(mcpTool)
+	protoTool, err := ConvertMCPToolToProto(mcpTool)
 	if err != nil {
-		t.Fatalf("convertMCPToolToProto() failed: %v", err)
+		t.Fatalf("ConvertMCPToolToProto() failed: %v", err)
 	}
 
 	// Helper to create a structpb.Struct from a map
@@ -93,22 +90,22 @@ func TestConvertMCPToolToProto(t *testing.T) {
 			DestructiveHint: proto.Bool(true),
 			IdempotentHint:  proto.Bool(true),
 			OpenWorldHint:   proto.Bool(true),
-		}.Build(),
-		InputSchema: pb.InputSchema_builder{
-			Type: proto.String("object"),
-			Properties: mustNewStruct(map[string]any{
-				"arg1": map[string]any{
-					"type":        "string",
-					"description": "Argument 1",
+			InputSchema: mustNewStruct(map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"arg1": map[string]any{
+						"type":        "string",
+						"description": "Argument 1",
+					},
 				},
 			}),
-		}.Build(),
-		OutputSchema: pb.OutputSchema_builder{
-			Type: proto.String("object"),
-			Properties: mustNewStruct(map[string]any{
-				"result": map[string]any{
-					"type":        "string",
-					"description": "The result",
+			OutputSchema: mustNewStruct(map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"result": map[string]any{
+						"type":        "string",
+						"description": "The result",
+					},
 				},
 			}),
 		}.Build(),
@@ -223,168 +220,5 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 				t.Errorf("getJSONSchemaForScalarType() returned diff (-want +got):\n%s", diff)
 			}
 		})
-	}
-}
-
-func TestConvertProtoSchemaToJSONSchema(t *testing.T) {
-	t.Parallel()
-
-	// Helper to create a structpb.Struct from a map
-	mustNewStruct := func(m map[string]any) *structpb.Struct {
-		s, err := structpb.NewStruct(m)
-		if err != nil {
-			t.Fatalf("Failed to create struct: %v", err)
-		}
-		return s
-	}
-
-	// mustMarshal is a helper function that marshals a map to a json.RawMessage, failing the test on error.
-	mustMarshal := func(m map[string]any) json.RawMessage {
-		bytes, err := json.Marshal(m)
-		if err != nil {
-			t.Fatalf("Failed to marshal map to JSON: %v", err)
-		}
-		return bytes
-	}
-
-	testCases := []struct {
-		name          string
-		protoSchema   protoSchema
-		expected      json.RawMessage
-		expectedError bool
-	}{
-		{
-			name:        "Nil schema",
-			protoSchema: nil,
-			expected:    mustMarshal(map[string]any{"type": "object"}),
-		},
-		{
-			name: "Empty schema",
-			protoSchema: pb.InputSchema_builder{
-				Type:       proto.String("object"),
-				Properties: mustNewStruct(map[string]any{}),
-			}.Build(),
-			expected: mustMarshal(map[string]any{"type": "object", "properties": map[string]any{}}),
-		},
-		{
-			name: "Schema with properties",
-			protoSchema: pb.InputSchema_builder{
-				Type: proto.String("object"),
-				Properties: mustNewStruct(map[string]any{
-					"arg1": map[string]any{
-						"type":        "string",
-						"description": "Argument 1",
-					},
-					"arg2": map[string]any{
-						"type": "integer",
-					},
-				}),
-			}.Build(),
-			expected: mustMarshal(map[string]any{
-				"type": "object",
-				"properties": map[string]any{
-					"arg1": map[string]any{
-						"type":        "string",
-						"description": "Argument 1",
-					},
-					"arg2": map[string]any{
-						"type": "integer",
-					},
-				},
-			}),
-		},
-		{
-			name: "Schema with no type",
-			protoSchema: pb.InputSchema_builder{
-				Properties: mustNewStruct(map[string]any{}),
-			}.Build(),
-			expected: mustMarshal(map[string]any{"type": "object", "properties": map[string]any{}}),
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
-			result, err := convertProtoSchemaToJSONSchema(tc.protoSchema)
-			if (err != nil) != tc.expectedError {
-				t.Fatalf("convertProtoSchemaToJSONSchema() error = %v, wantErr %v", err, tc.expectedError)
-			}
-
-			var expectedMap, resultMap map[string]any
-			if err := json.Unmarshal(tc.expected, &expectedMap); err != nil {
-				t.Fatalf("Failed to unmarshal expected JSON: %v", err)
-			}
-			if err := json.Unmarshal(result, &resultMap); err != nil {
-				t.Fatalf("Failed to unmarshal result JSON: %v", err)
-			}
-
-			if diff := cmp.Diff(expectedMap, resultMap); diff != "" {
-				t.Errorf("convertProtoSchemaToJSONSchema() returned diff (-want +got):\n%s", diff)
-			}
-		})
-	}
-}
-
-func TestProtoToJSONSchemaConversion(t *testing.T) {
-	t.Parallel()
-
-	httpDef := configv1.HttpCallDefinition_builder{
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getLocation"),
-		}.Build(),
-		Parameters: []*configv1.HttpParameterMapping{
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name:        proto.String("ip"),
-					Description: proto.String("The IP address to get the location for."),
-					Type:        configv1.ParameterType_STRING.Enum(),
-				}.Build(),
-			}.Build(),
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name:        proto.String("format"),
-					Description: proto.String("The format of the response."),
-					Type:        configv1.ParameterType_STRING.Enum(),
-				}.Build(),
-			}.Build(),
-		},
-	}.Build()
-
-	properties := &structpb.Struct{
-		Fields: make(map[string]*structpb.Value),
-	}
-
-	for _, param := range httpDef.GetParameters() {
-		paramSchema := param.GetSchema()
-		paramStruct := &structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue("string"),
-				"description": structpb.NewStringValue(paramSchema.GetDescription()),
-			},
-		}
-		properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
-	}
-
-	inputSchema := pb.InputSchema_builder{
-		Type:       proto.String("object"),
-		Properties: properties,
-	}.Build()
-
-	// Now, convert this back to JSON
-	jsonSchema, err := convertProtoSchemaToJSONSchema(inputSchema)
-	require.NoError(t, err)
-
-	// And compare with the expected JSON
-	expectedJSON := `{"properties":{"format":{"description":"The format of the response.","type":"string"},"ip":{"description":"The IP address to get the location for.","type":"string"}},"type":"object"}`
-
-	var expectedMap, actualMap map[string]any
-	err = json.Unmarshal([]byte(expectedJSON), &expectedMap)
-	require.NoError(t, err)
-	err = json.Unmarshal(jsonSchema, &actualMap)
-	require.NoError(t, err)
-
-	if diff := cmp.Diff(expectedMap, actualMap); diff != "" {
-		t.Errorf("mismatch (-want +got):\n%s", diff)
 	}
 }

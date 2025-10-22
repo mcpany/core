@@ -34,6 +34,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // WebsocketUpstream implements the upstream.Upstream interface for services that
@@ -130,20 +131,27 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 			continue
 		}
 
+		if properties == nil {
+			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		inputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(properties),
+			},
+		}
+
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WS %s", address)),
-			InputSchema: pb.InputSchema_builder{
-				Type:       proto.String("object"),
-				Properties: properties,
-			}.Build(),
 			Annotations: pb.ToolAnnotations_builder{
 				Title:           proto.String(schema.GetTitle()),
 				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
 				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
 				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
 				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
+				InputSchema:     inputSchema,
 			}.Build(),
 		}.Build()
 
