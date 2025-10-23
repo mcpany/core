@@ -38,7 +38,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/proto"
 )
 
 // A thread-safe buffer for capturing process output concurrently.
@@ -149,6 +148,7 @@ type ManagedProcess struct {
 	waitDone            chan struct{}
 	label               string
 	IgnoreExitStatusOne bool
+	Port                int
 }
 
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
@@ -647,29 +647,28 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
-	callDef := configv1.HttpCallDefinition_builder{
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String(operationID),
-		}.Build(),
-		EndpointPath: proto.String(endpointPath),
-		Method:       &method,
-		Parameters:   params,
-	}.Build()
+	b := configv1.HttpCallDefinition_builder{}
+	b.Schema = configv1.ToolSchema_builder{Name: &operationID}.Build()
+	b.EndpointPath = &endpointPath
+	b.Method = &method
+	b.Parameters = params
+	callDef := b.Build()
 
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(serviceID),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String(baseURL),
-			Calls:   []*configv1.HttpCallDefinition{callDef},
-		}.Build(),
-	}
+	httpUpstreamServiceBuilder := configv1.HttpUpstreamService_builder{}
+	httpUpstreamServiceBuilder.Address = &baseURL
+	httpUpstreamServiceBuilder.Calls = []*configv1.HttpCallDefinition{callDef}
+	httpUpstreamService := httpUpstreamServiceBuilder.Build()
 
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.HttpService = httpUpstreamService
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
 
 	RegisterServiceViaAPI(t, regClient, req)
@@ -680,26 +679,25 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(serviceID),
-		WebsocketService: configv1.WebsocketUpstreamService_builder{
-			Address: proto.String(baseURL),
-			Calls: []*configv1.WebsocketCallDefinition{
-				configv1.WebsocketCallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String(operationID),
-					}.Build(),
-				}.Build(),
-			},
-		}.Build(),
-	}
+	b := configv1.WebsocketCallDefinition_builder{}
+	b.Schema = configv1.ToolSchema_builder{Name: &operationID}.Build()
+	callDef := b.Build()
 
+	websocketUpstreamServiceBuilder := configv1.WebsocketUpstreamService_builder{}
+	websocketUpstreamServiceBuilder.Address = &baseURL
+	websocketUpstreamServiceBuilder.Calls = []*configv1.WebsocketCallDefinition{callDef}
+	websocketUpstreamService := websocketUpstreamServiceBuilder.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.WebsocketService = websocketUpstreamService
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
 
 	RegisterServiceViaAPI(t, regClient, req)
@@ -710,26 +708,25 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(serviceID),
-		WebrtcService: configv1.WebrtcUpstreamService_builder{
-			Address: proto.String(baseURL),
-			Calls: []*configv1.WebrtcCallDefinition{
-				configv1.WebrtcCallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String(operationID),
-					}.Build(),
-				}.Build(),
-			},
-		}.Build(),
-	}
+	b := configv1.WebrtcCallDefinition_builder{}
+	b.Schema = configv1.ToolSchema_builder{Name: &operationID}.Build()
+	callDef := b.Build()
 
+	webrtcUpstreamServiceBuilder := configv1.WebrtcUpstreamService_builder{}
+	webrtcUpstreamServiceBuilder.Address = &baseURL
+	webrtcUpstreamServiceBuilder.Calls = []*configv1.WebrtcCallDefinition{callDef}
+	webrtcUpstreamService := webrtcUpstreamServiceBuilder.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.WebrtcService = webrtcUpstreamService
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
 
 	RegisterServiceViaAPI(t, regClient, req)
@@ -738,23 +735,28 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(serviceID),
-		McpService: configv1.McpUpstreamService_builder{
-			ToolAutoDiscovery: proto.Bool(toolAutoDiscovery),
-			HttpConnection: (&configv1.McpStreamableHttpConnection_builder{
-				HttpAddress: proto.String(targetURL),
-			}).Build(),
-		}.Build(),
-	}
 
+	mcpStreamableHttpConnectionBuilder := configv1.McpStreamableHttpConnection_builder{}
+	mcpStreamableHttpConnectionBuilder.HttpAddress = &targetURL
+	mcpStreamableHttpConnection := mcpStreamableHttpConnectionBuilder.Build()
+
+	mcpUpstreamServiceBuilder := configv1.McpUpstreamService_builder{}
+	mcpUpstreamServiceBuilder.ToolAutoDiscovery = &toolAutoDiscovery
+	mcpUpstreamServiceBuilder.HttpConnection = mcpStreamableHttpConnection
+	mcpUpstreamService := mcpUpstreamServiceBuilder.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.McpService = mcpUpstreamService
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
+
 	RegisterServiceViaAPI(t, regClient, req)
 	t.Logf("Streamable MCP HTTP Service '%s' registration request sent via API: URL %s", serviceID, targetURL)
 }
@@ -771,21 +773,24 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: &serviceID,
-		GrpcService: configv1.GrpcUpstreamService_builder{
-			Address:       proto.String(grpcTargetAddress),
-			UseReflection: proto.Bool(true),
-		}.Build(),
-	}
+	grpcUpstreamServiceBuilder := configv1.GrpcUpstreamService_builder{}
+	grpcUpstreamServiceBuilder.Address = &grpcTargetAddress
+	grpcUpstreamServiceBuilder.UseReflection = new(bool)
+	*grpcUpstreamServiceBuilder.UseReflection = true
+	grpcUpstreamService := grpcUpstreamServiceBuilder.Build()
 
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.GrpcService = grpcUpstreamService
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
+
 	RegisterServiceViaAPI(t, regClient, req)
 	t.Logf("gRPC Service '%s' registration request sent via API: target %s", serviceID, grpcTargetAddress)
 }
@@ -797,24 +802,29 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, commandArgs ...string) {
 	t.Helper()
-	stdioConnection := configv1.McpStdioConnection_builder{
-		Command:          &commandName,
-		Args:             commandArgs,
-		WorkingDirectory: &workingDir,
-		ContainerImage:   &containerImage,
-		SetupCommands:    setupCommands,
-	}.Build()
-	mcpService := configv1.McpUpstreamService_builder{
-		ToolAutoDiscovery: &toolAutoDiscovery,
-		StdioConnection:   stdioConnection,
-	}.Build()
-	cfg := configv1.UpstreamServiceConfig_builder{
-		Name:       &serviceID,
-		McpService: mcpService,
-	}.Build()
+
+	mcpStdioConnectionBuilder := configv1.McpStdioConnection_builder{}
+	mcpStdioConnectionBuilder.Command = &commandName
+	mcpStdioConnectionBuilder.Args = commandArgs
+	mcpStdioConnectionBuilder.WorkingDirectory = &workingDir
+	mcpStdioConnectionBuilder.ContainerImage = &containerImage
+	mcpStdioConnectionBuilder.SetupCommands = setupCommands
+	stdioConnection := mcpStdioConnectionBuilder.Build()
+
+	mcpServiceBuilder := configv1.McpUpstreamService_builder{}
+	mcpServiceBuilder.ToolAutoDiscovery = &toolAutoDiscovery
+	mcpServiceBuilder.StdioConnection = stdioConnection
+	mcpService := mcpServiceBuilder.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.McpService = mcpService
+	cfg := upstreamServiceConfigBuilder.Build()
+
 	req := apiv1.RegisterServiceRequest_builder{
 		Config: cfg,
 	}.Build()
+
 	fullCommand := append([]string{commandName}, commandArgs...)
 	t.Logf("Registering stdio service '%s' with command: %v", serviceID, fullCommand)
 	time.Sleep(250 * time.Millisecond)
@@ -830,22 +840,24 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	specContent, err := os.ReadFile(absSpecPath)
 	require.NoError(t, err)
 	spec := string(specContent)
-	openapiServiceDef := configv1.OpenapiUpstreamService_builder{
-		OpenapiSpec: &spec,
-		Address:     &serverURLOverride,
-	}.Build()
-	configBuilder := configv1.UpstreamServiceConfig_builder{
-		Name:           &serviceID,
-		OpenapiService: openapiServiceDef,
-	}
 
+	openapiUpstreamServiceBuilder := configv1.OpenapiUpstreamService_builder{}
+	openapiUpstreamServiceBuilder.OpenapiSpec = &spec
+	openapiUpstreamServiceBuilder.Address = &serverURLOverride
+	openapiServiceDef := openapiUpstreamServiceBuilder.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{}
+	upstreamServiceConfigBuilder.Name = &serviceID
+	upstreamServiceConfigBuilder.OpenapiService = openapiServiceDef
 	if authConfig != nil {
-		configBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
 	}
+	config := upstreamServiceConfigBuilder.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
-		Config: configBuilder.Build(),
+		Config: config,
 	}.Build()
+
 	RegisterServiceViaAPI(t, regClient, req)
 	t.Logf("OpenAPI Service '%s' registration request sent via API (spec: %s, intended server: %s)", serviceID, absSpecPath, serverURLOverride)
 }
