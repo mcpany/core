@@ -27,6 +27,7 @@ import (
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -171,7 +172,6 @@ func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 	return s, nil
 }
 
-
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
 // exposing internally defined tools to the outside world.
@@ -194,14 +194,12 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool.GetAnnotations() != nil {
 		annotations := pbTool.GetAnnotations()
 		mcpTool.Annotations = &mcp.ToolAnnotations{
-			Title:          annotations.GetTitle(),
-			ReadOnlyHint:   annotations.GetReadOnlyHint(),
-			IdempotentHint: annotations.GetIdempotentHint(),
+			Title:           annotations.GetTitle(),
+			ReadOnlyHint:    annotations.GetReadOnlyHint(),
+			IdempotentHint:  annotations.GetIdempotentHint(),
+			DestructiveHint: proto.Bool(annotations.GetDestructiveHint()),
+			OpenWorldHint:   proto.Bool(annotations.GetOpenWorldHint()),
 		}
-		destructiveHint := annotations.GetDestructiveHint()
-		mcpTool.Annotations.DestructiveHint = &destructiveHint
-		openWorldHint := annotations.GetOpenWorldHint()
-		mcpTool.Annotations.OpenWorldHint = &openWorldHint
 
 		if annotations.GetInputSchema() != nil {
 			mcpTool.InputSchema = annotations.GetInputSchema().AsMap()
