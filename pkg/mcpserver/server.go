@@ -25,6 +25,7 @@ import (
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/bus"
 	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/prompt"
 	"github.com/mcpxy/core/pkg/resource"
 	"github.com/mcpxy/core/pkg/serviceregistry"
@@ -85,33 +86,45 @@ func NewServer(
 		bus:             bus,
 	}
 
-	s.router.Register(consts.MethodPromptsList, func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
-		if r, ok := req.(*mcp.ListPromptsRequest); ok {
-			return s.ListPrompts(ctx, r)
-		}
-		return nil, fmt.Errorf("invalid request type for %s", consts.MethodPromptsList)
-	})
+	s.router.Register(
+		consts.MethodPromptsList,
+		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.ListPromptsRequest); ok {
+				return s.ListPrompts(ctx, r)
+			}
+			return nil, fmt.Errorf("invalid request type for %s", consts.MethodPromptsList)
+		},
+	)
 
-	s.router.Register(consts.MethodPromptsGet, func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
-		if r, ok := req.(*mcp.GetPromptRequest); ok {
-			return s.GetPrompt(ctx, r)
-		}
-		return nil, fmt.Errorf("invalid request type for %s", consts.MethodPromptsGet)
-	})
+	s.router.Register(
+		consts.MethodPromptsGet,
+		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.GetPromptRequest); ok {
+				return s.GetPrompt(ctx, r)
+			}
+			return nil, fmt.Errorf("invalid request type for %s", consts.MethodPromptsGet)
+		},
+	)
 
-	s.router.Register(consts.MethodResourcesList, func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
-		if r, ok := req.(*mcp.ListResourcesRequest); ok {
-			return s.ListResources(ctx, r)
-		}
-		return nil, fmt.Errorf("invalid request type for %s", consts.MethodResourcesList)
-	})
+	s.router.Register(
+		consts.MethodResourcesList,
+		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.ListResourcesRequest); ok {
+				return s.ListResources(ctx, r)
+			}
+			return nil, fmt.Errorf("invalid request type for %s", consts.MethodResourcesList)
+		},
+	)
 
-	s.router.Register(consts.MethodResourcesRead, func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
-		if r, ok := req.(*mcp.ReadResourceRequest); ok {
-			return s.ReadResource(ctx, r)
-		}
-		return nil, fmt.Errorf("invalid request type for %s", consts.MethodResourcesRead)
-	})
+	s.router.Register(
+		consts.MethodResourcesRead,
+		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.ReadResourceRequest); ok {
+				return s.ReadResource(ctx, r)
+			}
+			return nil, fmt.Errorf("invalid request type for %s", consts.MethodResourcesRead)
+		},
+	)
 
 	mcpServer := mcp.NewServer(&mcp.Implementation{
 		Name:    appconsts.Name,
@@ -161,6 +174,8 @@ func NewServer(
 						for _, mcpTool := range listToolsResult.Tools {
 							if toolInstance, toolExists := s.toolManager.GetTool(mcpTool.Name); toolExists {
 								freshMCPTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+								logging.GetLogger().
+									Info("Refreshing tool in MCP tool list", "toolName", mcpTool.Name, "tool", freshMCPTool)
 								if err != nil {
 									continue // Skip tools that fail to convert
 								}
@@ -184,7 +199,10 @@ func NewServer(
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
 // available prompts from the PromptManager and returns them to the client.
-func (s *Server) ListPrompts(ctx context.Context, req *mcp.ListPromptsRequest) (*mcp.ListPromptsResult, error) {
+func (s *Server) ListPrompts(
+	_ context.Context,
+	_ *mcp.ListPromptsRequest,
+) (*mcp.ListPromptsResult, error) {
 	prompts := s.promptManager.ListPrompts()
 	mcpPrompts := make([]*mcp.Prompt, len(prompts))
 	for i, p := range prompts {
@@ -198,7 +216,10 @@ func (s *Server) ListPrompts(ctx context.Context, req *mcp.ListPromptsRequest) (
 // GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
 // prompt by name from the PromptManager and executes it with the provided
 // arguments, returning the result.
-func (s *Server) GetPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+func (s *Server) GetPrompt(
+	ctx context.Context,
+	req *mcp.GetPromptRequest,
+) (*mcp.GetPromptResult, error) {
 	p, ok := s.promptManager.GetPrompt(req.Params.Name)
 	if !ok {
 		return nil, prompt.ErrPromptNotFound
@@ -214,7 +235,10 @@ func (s *Server) GetPrompt(ctx context.Context, req *mcp.GetPromptRequest) (*mcp
 
 // ListResources handles the "resources/list" MCP request. It fetches the list of
 // available resources from the ResourceManager and returns them to the client.
-func (s *Server) ListResources(ctx context.Context, req *mcp.ListResourcesRequest) (*mcp.ListResourcesResult, error) {
+func (s *Server) ListResources(
+	_ context.Context,
+	_ *mcp.ListResourcesRequest,
+) (*mcp.ListResourcesResult, error) {
 	resources := s.resourceManager.ListResources()
 	mcpResources := make([]*mcp.Resource, len(resources))
 	for i, r := range resources {
@@ -227,7 +251,10 @@ func (s *Server) ListResources(ctx context.Context, req *mcp.ListResourcesReques
 
 // ReadResource handles the "resources/read" MCP request. It retrieves a specific
 // resource by its URI from the ResourceManager and returns its content.
-func (s *Server) ReadResource(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
+func (s *Server) ReadResource(
+	ctx context.Context,
+	req *mcp.ReadResourceRequest,
+) (*mcp.ReadResourceResult, error) {
 	r, ok := s.resourceManager.GetResource(req.Params.URI)
 	if !ok {
 		return nil, resource.ErrResourceNotFound
