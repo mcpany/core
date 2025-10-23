@@ -23,7 +23,7 @@ import (
 func TestHTTPUpstreamExample(t *testing.T) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		t.Skip("Skipping test because GEMINI_API_KEY is not set")
+		t.Fatal("GEMINI_API_KEY is not set. Please set it to run this test.")
 	}
 
 	root, err := integration.GetProjectRoot()
