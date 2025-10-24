@@ -53,7 +53,8 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // registration of a new upstream service.
 type ServiceRegistrationRequest struct {
 	BaseMessage
-	Config *configv1.UpstreamServiceConfig
+	Context context.Context
+	Config  *configv1.UpstreamServiceConfig
 }
 
 // ServiceRegistrationResult is a message published in response to a
