@@ -1,61 +1,18 @@
 global_settings:
   bind_address: "0.0.0.0:8080"
 upstream_services:
-- name: ip-location-service
+- name: ip-info-service
+  upstream_authentication:
+    use_environment_variable: true
+    bearer_token:
+      token: "{{env.IPINFO_API_TOKEN}}"
   http_service:
-    address: "https://ipapi.co"
-    calls:
-    - schema:
-        name: "getLocation"
-        description: "Gets the location of a given IP address."
-      endpoint_path: "/{{ip}}/{{format}}/"
-      method: "HTTP_METHOD_GET"
-      parameters:
-      - schema:
-          name: "ip"
-          description: "The IP address to get the location for."
-          is_required: true
-          type: "STRING"
-      - schema:
-          name: "format"
-          description: "The format of the response."
-          is_required: false
-          type: "STRING"
-          default_value: "json"
-- name: weather-service
-  http_service:
-    address: "https://api.open-meteo.com"
-    calls:
-    - schema:
-        name: "getWeather"
-        description: "Gets the current weather for a given latitude and longitude."
-      endpoint_path: "/v1/forecast"
-      method: "HTTP_METHOD_GET"
-      parameters:
-      - schema:
-          name: "latitude"
-          description: "The latitude to get the weather for."
-          is_required: true
-          type: "NUMBER"
-      - schema:
-          name: "longitude"
-          description: "The longitude to get the weather for."
-          is_required: true
-          type: "NUMBER"
-      - schema:
-          name: "current_weather"
-          description: "Whether to include the current weather in the response."
-          is_required: false
-          type: "BOOLEAN"
-          default_value: "true"
-- name: time-service
-  http_service:
-    address: "http://worldtimeapi.org"
+    address: "https://ipinfo.io"
     calls:
     - schema:
         name: "get_time_by_ip"
         description: "Gets the current time for a given IP address."
-      endpoint_path: "/api/ip/{{ip}}"
+      endpoint_path: "/{{ip}}/json"
       method: "HTTP_METHOD_GET"
       parameters:
       - schema:

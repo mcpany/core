@@ -7178,10 +7178,13 @@ func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
 // UpstreamAuthentication defines the authentication method to use when mcpx communicates
 // with an upstream service.
 type UpstreamAuthentication struct {
-	state                 protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod isUpstreamAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                             protoimpl.MessageState              `protogen:"opaque.v1"`
+	xxx_hidden_AuthMethod             isUpstreamAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
+	xxx_hidden_UseEnvironmentVariable bool                                `protobuf:"varint,4,opt,name=use_environment_variable,json=useEnvironmentVariable"`
+	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
+	XXX_presence                      [1]uint32
+	unknownFields                     protoimpl.UnknownFields
+	sizeCache                         protoimpl.SizeCache
 }
 
 func (x *UpstreamAuthentication) Reset() {
@@ -7236,6 +7239,13 @@ func (x *UpstreamAuthentication) GetBasicAuth() *UpstreamBasicAuth {
 	return nil
 }
 
+func (x *UpstreamAuthentication) GetUseEnvironmentVariable() bool {
+	if x != nil {
+		return x.xxx_hidden_UseEnvironmentVariable
+	}
+	return false
+}
+
 func (x *UpstreamAuthentication) SetApiKey(v *UpstreamAPIKeyAuth) {
 	if v == nil {
 		x.xxx_hidden_AuthMethod = nil
@@ -7258,6 +7268,11 @@ func (x *UpstreamAuthentication) SetBasicAuth(v *UpstreamBasicAuth) {
 		return
 	}
 	x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{v}
+}
+
+func (x *UpstreamAuthentication) SetUseEnvironmentVariable(v bool) {
+	x.xxx_hidden_UseEnvironmentVariable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *UpstreamAuthentication) HasAuthMethod() bool {
@@ -7291,6 +7306,13 @@ func (x *UpstreamAuthentication) HasBasicAuth() bool {
 	return ok
 }
 
+func (x *UpstreamAuthentication) HasUseEnvironmentVariable() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
 func (x *UpstreamAuthentication) ClearAuthMethod() {
 	x.xxx_hidden_AuthMethod = nil
 }
@@ -7311,6 +7333,11 @@ func (x *UpstreamAuthentication) ClearBasicAuth() {
 	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth); ok {
 		x.xxx_hidden_AuthMethod = nil
 	}
+}
+
+func (x *UpstreamAuthentication) ClearUseEnvironmentVariable() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_UseEnvironmentVariable = false
 }
 
 const UpstreamAuthentication_AuthMethod_not_set_case case_UpstreamAuthentication_AuthMethod = 0
@@ -7342,6 +7369,7 @@ type UpstreamAuthentication_builder struct {
 	BearerToken *UpstreamBearerTokenAuth
 	BasicAuth   *UpstreamBasicAuth
 	// -- end of xxx_hidden_AuthMethod
+	UseEnvironmentVariable *bool
 }
 
 func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
@@ -7356,6 +7384,10 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 	}
 	if b.BasicAuth != nil {
 		x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{b.BasicAuth}
+	}
+	if b.UseEnvironmentVariable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_UseEnvironmentVariable = *b.UseEnvironmentVariable
 	}
 	return m0
 }
@@ -8174,12 +8206,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x1b\n" +
 	"\ttoken_url\x18\x03 \x01(\tR\btokenUrl\x12+\n" +
 	"\x11authorization_url\x18\x04 \x01(\tR\x10authorizationUrl\x12\x16\n" +
-	"\x06scopes\x18\x05 \x01(\tR\x06scopes\"\xf8\x01\n" +
+	"\x06scopes\x18\x05 \x01(\tR\x06scopes\"\xb2\x02\n" +
 	"\x16UpstreamAuthentication\x12=\n" +
 	"\aapi_key\x18\x01 \x01(\v2\".mcpx.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12L\n" +
 	"\fbearer_token\x18\x02 \x01(\v2'.mcpx.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12B\n" +
 	"\n" +
-	"basic_auth\x18\x03 \x01(\v2!.mcpx.config.v1.UpstreamBasicAuthH\x00R\tbasicAuthB\r\n" +
+	"basic_auth\x18\x03 \x01(\v2!.mcpx.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x128\n" +
+	"\x18use_environment_variable\x18\x04 \x01(\bR\x16useEnvironmentVariableB\r\n" +
 	"\vauth_method\"N\n" +
 	"\x12UpstreamAPIKeyAuth\x12\x1f\n" +
 	"\vheader_name\x18\x01 \x01(\tR\n" +
