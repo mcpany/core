@@ -22,7 +22,9 @@ import (
 	"testing"
 
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
+
 	"github.com/mcpxy/core/tests/integration"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
@@ -31,7 +33,38 @@ type E2ETestCase struct {
 	UpstreamServiceType string
 	BuildUpstream       func(t *testing.T) *integration.ManagedProcess
 	RegisterUpstream    func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
+	ValidateTool        func(t *testing.T, mcpxyEndpoint string)
 	InvokeAIClient      func(t *testing.T, mcpxyEndpoint string)
+}
+
+func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	defer cancel()
+
+	client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
+
+	transport := &mcp.StreamableClientTransport{
+		Endpoint: mcpxyEndpoint,
+	}
+
+	session, err := client.Connect(ctx, transport, nil)
+	require.NoError(t, err)
+	defer session.Close()
+
+	tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err)
+
+	var foundTool *mcp.Tool
+	for _, tool := range tools.Tools {
+		if tool.Name == expectedTool.Name {
+			foundTool = tool
+			break
+		}
+	}
+
+	require.NotNil(t, foundTool, "tool %q not found", expectedTool.Name)
+	require.Equal(t, expectedTool.Description, foundTool.Description)
+	require.Equal(t, expectedTool.InputSchema, foundTool.InputSchema)
 }
 
 func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
@@ -59,7 +92,14 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 		testCase.RegisterUpstream(t, mcpxyTestServerInfo.RegistrationClient, upstreamEndpoint)
 		t.Logf("INFO: Upstream service registered.")
 
-		// --- 4. Invoke AI Client ---
+		// --- 4. Validate Registered Tool ---
+		if testCase.ValidateTool != nil {
+			t.Logf("INFO: Validating registered tool...")
+			testCase.ValidateTool(t, mcpxyTestServerInfo.HTTPEndpoint)
+			t.Logf("INFO: Tool validated.")
+		}
+
+		// --- 5. Invoke AI Client ---
 		testCase.InvokeAIClient(t, mcpxyTestServerInfo.HTTPEndpoint)
 
 		t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
