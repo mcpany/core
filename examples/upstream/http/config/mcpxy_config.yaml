@@ -5,7 +5,7 @@ upstream_services:
   upstream_authentication:
     use_environment_variable: true
     bearer_token:
-      token: "{{env.IPINFO_API_TOKEN}}"
+        token: "{{IPINFO_API_TOKEN}}"
   http_service:
     address: "https://ipinfo.io"
     calls:
