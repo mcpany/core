@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"os/exec"
 	"testing"
 	"time"
@@ -21,11 +20,6 @@ import (
 // It uses the MCP SDK to interact with the server instead of the Gemini CLI
 // due to persistent timeouts and instabilities with the CLI in the test environment.
 func TestHTTPUpstreamExample(t *testing.T) {
-	apiKey := os.Getenv("GEMINI_API_KEY")
-	if apiKey == "" {
-		t.Fatal("GEMINI_API_KEY is not set. Please set it to run this test.")
-	}
-
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
@@ -48,7 +42,7 @@ func TestHTTPUpstreamExample(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	toolName := fmt.Sprintf("time-service_c0eda60c%sget_time_by_ip", consts.ToolNameServiceSeparator)
+	toolName := fmt.Sprintf("ip-info-service_a4c2a749%sget_time_by_ip", consts.ToolNameServiceSeparator)
 	t.Cleanup(func() {
 		if t.Failed() {
 			t.Logf("MCPXY Server Stdout:\n%s", serverInfo.Process.StdoutString())
@@ -82,5 +76,5 @@ func TestHTTPUpstreamExample(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected content to be of type TextContent")
 	t.Logf("Tool output: %s", textContent.Text)
-	require.NotEmpty(t, textContent.Text, "Expected non-empty response from tool")
+	require.Contains(t, textContent.Text, "dns.google", "Expected response to contain 'dns.google'")
 }

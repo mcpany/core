@@ -593,6 +593,7 @@ message UpstreamAuthentication {
     UpstreamBearerTokenAuth bearer_token = 2;
     UpstreamBasicAuth basic_auth = 3;
   }
+  bool use_environment_variable = 4;
 }
 
 // UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.

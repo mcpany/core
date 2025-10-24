@@ -18,6 +18,7 @@ package auth
 
 import (
 	"net/http"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpxy/core/proto/config/v1"
@@ -127,4 +128,47 @@ func TestBasicAuth_Authenticate(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "testuser", user)
 	assert.Equal(t, "testpassword", pass)
+}
+
+func TestSubstituteEnvVars(t *testing.T) {
+	os.Setenv("TEST_API_KEY", "test-key")
+	os.Setenv("TEST_BEARER_TOKEN", "test-token")
+	os.Setenv("TEST_USERNAME", "test-user")
+	os.Setenv("TEST_PASSWORD", "test-password")
+
+	t.Run("APIKeyAuth", func(t *testing.T) {
+		authConfig := (&configv1.UpstreamAuthentication_builder{
+			ApiKey: (&configv1.UpstreamAPIKeyAuth_builder{
+				HeaderName: proto.String("X-API-Key"),
+				ApiKey:     proto.String("{{TEST_API_KEY}}"),
+			}).Build(),
+		}).Build()
+		err := substituteEnvVars(authConfig)
+		require.NoError(t, err)
+		require.Equal(t, "test-key", authConfig.GetApiKey().GetApiKey())
+	})
+
+	t.Run("BearerTokenAuth", func(t *testing.T) {
+		authConfig := (&configv1.UpstreamAuthentication_builder{
+			BearerToken: (&configv1.UpstreamBearerTokenAuth_builder{
+				Token: proto.String("{{TEST_BEARER_TOKEN}}"),
+			}).Build(),
+		}).Build()
+		err := substituteEnvVars(authConfig)
+		require.NoError(t, err)
+		require.Equal(t, "test-token", authConfig.GetBearerToken().GetToken())
+	})
+
+	t.Run("BasicAuth", func(t *testing.T) {
+		authConfig := (&configv1.UpstreamAuthentication_builder{
+			BasicAuth: (&configv1.UpstreamBasicAuth_builder{
+				Username: proto.String("{{TEST_USERNAME}}"),
+				Password: proto.String("{{TEST_PASSWORD}}"),
+			}).Build(),
+		}).Build()
+		err := substituteEnvVars(authConfig)
+		require.NoError(t, err)
+		require.Equal(t, "test-user", authConfig.GetBasicAuth().GetUsername())
+		require.Equal(t, "test-password", authConfig.GetBasicAuth().GetPassword())
+	})
 }
