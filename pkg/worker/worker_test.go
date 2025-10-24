@@ -136,6 +136,59 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			t.Fatal("timed out waiting for registration result")
 		}
 	})
+
+	t.Run("uses request context", func(t *testing.T) {
+		bp := bus.NewBusProvider()
+		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		workerCtx, workerCancel := context.WithCancel(context.Background())
+		defer workerCancel()
+
+		registry := &mockServiceRegistry{
+			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error) {
+				// Check if the worker context is done, but the request context is not.
+				if workerCtx.Err() != nil && ctx.Err() == nil {
+					return "success-key-request-context", nil, nil
+				}
+				return "", nil, errors.New("unexpected context state")
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(workerCtx) // Worker starts with its own context.
+
+		// Cancel the worker's context to simulate shutdown.
+		workerCancel()
+
+		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
+		unsubscribe := resultBus.SubscribeOnce("test-req-ctx", func(result *bus.ServiceRegistrationResult) {
+			resultChan <- result
+			wg.Done()
+		})
+		defer unsubscribe()
+
+		// Create a new context for the request that is NOT canceled.
+		reqCtx := context.Background()
+		req := &bus.ServiceRegistrationRequest{
+			Context: reqCtx,
+			Config:  &configv1.UpstreamServiceConfig{},
+		}
+		req.SetCorrelationID("test-req-ctx")
+		requestBus.Publish("request", req)
+
+		wg.Wait()
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+			assert.Equal(t, "success-key-request-context", result.ServiceKey)
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for registration result")
+		}
+	})
+
 }
 
 func TestUpstreamWorker(t *testing.T) {

@@ -58,7 +58,13 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 
 	unsubscribe := requestBus.Subscribe("request", func(req *bus.ServiceRegistrationRequest) {
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
-		serviceKey, discoveredTools, err := w.serviceRegistry.RegisterService(ctx, req.Config)
+
+		requestCtx := req.Context
+		if requestCtx == nil {
+			requestCtx = context.Background()
+		}
+
+		serviceKey, discoveredTools, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 		res := &bus.ServiceRegistrationResult{
 			ServiceKey:      serviceKey,
