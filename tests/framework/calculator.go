@@ -43,9 +43,19 @@ func RegisterCalculatorService(t *testing.T, registrationClient apiv1.Registrati
 	const serviceID = "e2e_http_calculator"
 	paramA := "a"
 	paramB := "b"
+	paramADesc := "first number"
+	paramBDesc := "second number"
 	params := []*configv1.HttpParameterMapping{
-		configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: &paramA}.Build()}.Build(),
-		configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: &paramB}.Build()}.Build(),
+		configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: &paramA, Description: &paramADesc}.Build()}.Build(),
+		configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: &paramB, Description: &paramBDesc}.Build()}.Build(),
 	}
-	integration.RegisterHTTPServiceWithParams(t, registrationClient, serviceID, upstreamEndpoint, "add", "/add", http.MethodPost, params, nil)
+
+	toolName := "add"
+	toolDesc := "add two numbers"
+	toolSchema := configv1.ToolSchema_builder{
+		Name:        &toolName,
+		Description: &toolDesc,
+	}.Build()
+
+	integration.RegisterHTTPServiceWithParams(t, registrationClient, serviceID, upstreamEndpoint, toolSchema, "/add", http.MethodPost, params, nil)
 }

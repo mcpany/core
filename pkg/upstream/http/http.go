@@ -211,6 +211,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
+			Description:         proto.String(schema.GetDescription()),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			Annotations: pb.ToolAnnotations_builder{

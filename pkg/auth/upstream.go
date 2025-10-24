@@ -19,6 +19,10 @@ package auth
 import (
 	"errors"
 	"net/http"
+	"os"
+	"strings"
+
+	"github.com/valyala/fasttemplate"
 
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
@@ -44,6 +48,13 @@ type UpstreamAuthenticator interface {
 func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
+	}
+
+	if authConfig.GetUseEnvironmentVariable() {
+		err := substituteEnvVars(authConfig)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if apiKey := authConfig.GetApiKey(); apiKey != nil {
@@ -76,6 +87,28 @@ func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (Upst
 	}
 
 	return nil, nil
+}
+
+
+func substituteEnvVars(authConfig *configv1.UpstreamAuthentication) error {
+	envVars := make(map[string]interface{})
+	for _, env := range os.Environ() {
+		pair := strings.SplitN(env, "=", 2)
+		envVars[pair[0]] = pair[1]
+	}
+
+	if apiKey := authConfig.GetApiKey(); apiKey != nil {
+		apiKey.SetHeaderName(fasttemplate.New(apiKey.GetHeaderName(), "{{", "}}").ExecuteString(envVars))
+		apiKey.SetApiKey(fasttemplate.New(apiKey.GetApiKey(), "{{", "}}").ExecuteString(envVars))
+	}
+	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
+		bearerToken.SetToken(fasttemplate.New(bearerToken.GetToken(), "{{", "}}").ExecuteString(envVars))
+	}
+	if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
+		basicAuth.SetUsername(fasttemplate.New(basicAuth.GetUsername(), "{{", "}}").ExecuteString(envVars))
+		basicAuth.SetPassword(fasttemplate.New(basicAuth.GetPassword(), "{{", "}}").ExecuteString(envVars))
+	}
+	return nil
 }
 
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
