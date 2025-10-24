@@ -16,25 +16,20 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"strings"
 	"github.com/stretchr/testify/require"
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestGRPCExample(t *testing.T) {
-	t.Skip("Skipping gRPC example test due to persistent timeout issues.")
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
 	testCase := &framework.E2ETestCase{
-		Name:            "gRPC Example",
+		Name:                "gRPC Example",
 		UpstreamServiceType: "grpc",
+		RegistrationMethods: []framework.RegistrationMethod{framework.FileRegistration, framework.GRPCRegistration},
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			// 1. Build the MCPXY binary
-			buildCmd := exec.Command("make", "build")
-			buildCmd.Dir = root
-			err = buildCmd.Run()
-			require.NoError(t, err, "Failed to build mcpxy binary")
-
-			// 2. Generate Protobuf Files
+			// 1. Generate Protobuf Files
 			generateCmd := exec.Command("./generate.sh")
 			generateCmd.Dir = root + "/examples/upstream/grpc/greeter_server"
 			err = generateCmd.Run()
@@ -50,7 +45,7 @@ func TestGRPCExample(t *testing.T) {
 			// Find a free port for the upstream server
 			port := integration.FindFreePort(t)
 
-			// 3. Build and run the Upstream gRPC Server
+			// 2. Build and run the Upstream gRPC Server
 			serverPath := filepath.Join(t.TempDir(), "grpc_greeter_server")
 			buildCmd2 := exec.Command("go", "build", "-o", serverPath)
 			buildCmd2.Dir = filepath.Join(root, "examples", "upstream", "grpc", "greeter_server", "server")
@@ -62,19 +57,23 @@ func TestGRPCExample(t *testing.T) {
 				[]string{"GRPC_PORT=" + strconv.Itoa(port)},
 			)
 			upstreamServerProcess.Port = port
-			err = upstreamServerProcess.Start()
-			require.NoError(t, err, "Failed to start upstream gRPC server")
-
-			t.Logf("Upstream gRPC server stdout:\n%s", upstreamServerProcess.StdoutString())
-			t.Logf("Upstream gRPC server stderr:\n%s", upstreamServerProcess.StderrString())
-
-			grpcServiceEndpoint := fmt.Sprintf("localhost:%d", port)
-			integration.WaitForGRPCReady(t, grpcServiceEndpoint, 30*time.Second)
-
 			return upstreamServerProcess
 		},
-		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-			integration.RegisterGRPCService(t, registrationClient, "greeter-service", strings.TrimPrefix(upstreamEndpoint, "http://"), nil)
+		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+			upstreamServiceConfig := &configv1.UpstreamService{
+				Name: "greeter-service",
+				GrpcService: &configv1.GrpcUpstreamService{
+					Address:       strings.TrimPrefix(upstreamEndpoint, "http://"),
+					UseReflection: true,
+				},
+			}
+			config := &configv1.Config{
+				Services: []*configv1.UpstreamService{upstreamServiceConfig},
+			}
+
+			jsonBytes, err := protojson.Marshal(config)
+			require.NoError(t, err)
+			return string(jsonBytes)
 		},
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
