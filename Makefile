@@ -306,7 +306,9 @@ E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_se
 
 # Target to build all E2E mock services
 .PHONY: build-e2e-mocks
-build-e2e-mocks: $(E2E_BIN_DIR) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
+build-e2e-mocks:
+	@mkdir -p $(E2E_BIN_DIR)
+	@$(MAKE) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
 
 # Rule to build a single E2E mock service
 # < is the first prerequisite (the main.go file)
