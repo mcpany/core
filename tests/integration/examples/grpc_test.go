@@ -32,6 +32,7 @@ func TestGRPCExample(t *testing.T) {
 		Name:                "gRPC Example",
 		UpstreamServiceType: "grpc",
 		RegistrationMethods: []framework.RegistrationMethod{
+			framework.FileRegistration,
 			framework.GRPCRegistration,
 		},
 		RegisterUpstream: func(
@@ -52,8 +53,9 @@ func TestGRPCExample(t *testing.T) {
 			if os.Getenv("SKIP_PROTO_GENERATION") != "true" {
 				generateCmd := exec.Command("./generate.sh")
 				generateCmd.Dir = root + "/examples/upstream/grpc/greeter_server"
-				err = generateCmd.Run()
-				require.NoError(t, err, "Failed to generate protobuf files")
+				if err := generateCmd.Run(); err != nil {
+					require.NoError(t, err, "Failed to generate protobuf files")
+				}
 			}
 
 			// Tidy dependencies for the upstream server
@@ -67,8 +69,9 @@ func TestGRPCExample(t *testing.T) {
 			)
 			tidyCmd := exec.Command("go", "mod", "tidy")
 			tidyCmd.Dir = serverDir
-			err = tidyCmd.Run()
-			require.NoError(t, err, "Failed to tidy go module for gRPC server")
+			if err := tidyCmd.Run(); err != nil {
+				require.NoError(t, err, "Failed to tidy go module for gRPC server")
+			}
 
 			// Find a free port for the upstream server
 			port := integration.FindFreePort(t)
