@@ -26,6 +26,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func BuildCalculatorServer(t *testing.T) *integration.ManagedProcess {
@@ -50,11 +51,9 @@ func RegisterCalculatorService(t *testing.T, registrationClient apiv1.Registrati
 		configv1.HttpParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: &paramB, Description: &paramBDesc}.Build()}.Build(),
 	}
 
-	toolName := "add"
-	toolDesc := "add two numbers"
 	toolSchema := configv1.ToolSchema_builder{
-		Name:        &toolName,
-		Description: &toolDesc,
+		Name:        proto.String("add"),
+		Description: proto.String("add two numbers"),
 	}.Build()
 
 	integration.RegisterHTTPServiceWithParams(t, registrationClient, serviceID, upstreamEndpoint, toolSchema, "/add", http.MethodPost, params, nil)
