@@ -86,6 +86,7 @@ func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mc
 
 func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 	for _, method := range testCase.RegistrationMethods {
+		method := method
 		t.Run(fmt.Sprintf("%s_%s", testCase.Name, method), func(t *testing.T) {
 			_, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
