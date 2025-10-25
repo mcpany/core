@@ -113,7 +113,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			UnderlyingMethodFqn: proto.String(command),
 		}.Build()
 
-		newTool := tool.NewCommandTool(newToolProto, command)
+		newTool := tool.NewCommandTool(newToolProto, commandLineService.GetCommand())
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			return nil, err
