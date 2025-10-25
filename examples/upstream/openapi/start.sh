@@ -3,7 +3,7 @@
 set -e
 
 # Start the server
-go run ./echo_server/server/main.go &
+go run ./server/main.go &
 
 # Wait for the server to start
 sleep 1

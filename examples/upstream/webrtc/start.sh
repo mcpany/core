@@ -3,10 +3,10 @@
 set -e
 
 # Start the server
-go run ./echo_server/server/main.go &
+go run ./server/main.go > server.log 2>&1 &
 
 # Wait for the server to start
-sleep 1
+sleep 3
 
 # Run the client
 go run ./client/main.go
