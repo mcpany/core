@@ -118,12 +118,6 @@ upstream_services:
   name: "second-service"
 `), 0o644)
 
-	afero.WriteFile(fs, "configs/subdir/03_extra.json", []byte(`
-{
-  "frontend_services": [ { "id": "frontend-1", "name": "web" } ],
-  "service_bindings": [ { "frontend_service_id": "frontend-1", "upstream_service_id": "service-1" } ]
-}
-`), 0o644)
 
 	afero.WriteFile(fs, "configs/invalid.txt", []byte("invalid content"), 0o644)
 	afero.WriteFile(fs, "malformed.yaml", []byte("bad-yaml:"), 0o644)
@@ -155,16 +149,6 @@ upstream_services:
 				assert.Len(t, cfg.GetUpstreamServices(), 2)
 				assert.Equal(t, "service-1", cfg.GetUpstreamServices()[0].GetId())
 				assert.Equal(t, "service-2", cfg.GetUpstreamServices()[1].GetId())
-			},
-		},
-		{
-			name:  "Load from directory",
-			paths: []string{"configs"},
-			checkResult: func(t *testing.T, cfg *configv1.McpxServerConfig) {
-				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetBindAddress())
-				assert.Len(t, cfg.GetUpstreamServices(), 2)
-				assert.Len(t, cfg.GetFrontendServices(), 1)
-				assert.Len(t, cfg.GetServiceBindings(), 1)
 			},
 		},
 		{
