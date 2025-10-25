@@ -19,6 +19,7 @@ import (
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+	"github.com/mcpxy/core/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -136,7 +137,9 @@ func TestGRPCExample(t *testing.T) {
 			require.NoError(t, err, "Failed to connect to MCPXY server")
 			defer cs.Close()
 
-			toolName := fmt.Sprintf("greeter-service%sSayHello", consts.ToolNameServiceSeparator)
+			serviceKey, err := util.GenerateServiceKey("greeter-service")
+			require.NoError(t, err)
+			toolName := fmt.Sprintf("%s%sSayHello", serviceKey, consts.ToolNameServiceSeparator)
 
 			// Wait for the tool to be available
 			require.Eventually(t, func() bool {
