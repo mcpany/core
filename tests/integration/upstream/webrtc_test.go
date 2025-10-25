@@ -19,75 +19,55 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_Webrtc(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
-	defer cancel()
+	testCase := &framework.E2ETestCase{
+		Name:                "WebRTC Echo Server",
+		UpstreamServiceType: "webrtc",
+		BuildUpstream:       framework.BuildWebrtcServer,
+		RegisterUpstream:    framework.RegisterWebrtcService,
+		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for WebRTC Echo Server...")
-	t.Parallel()
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			require.NoError(t, err)
+			defer cs.Close()
 
-	// --- 1. Start WebRTC Echo Server ---
-	echoServerPort := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	echoServerProc := integration.NewManagedProcess(t, "webrtc_echo_server", filepath.Join(root, "build/test/bin/webrtc_echo_server"), []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
-	err = echoServerProc.Start()
-	require.NoError(t, err, "Failed to start WebRTC Echo server")
-	t.Cleanup(echoServerProc.Stop)
-	time.Sleep(2 * time.Second)
+			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+			require.NoError(t, err)
+			var foundTool bool
+			serviceKey, _ := util.GenerateID("e2e_webrtc_echo")
+			expectedToolName, _ := util.GenerateToolID(serviceKey, "echo")
+			for _, tool := range listToolsResult.Tools {
+				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+				if tool.Name == expectedToolName {
+					foundTool = true
+				}
+			}
+			require.True(t, foundTool, "The webrtc echo tool was not discovered")
 
-	// --- 2. Start MCPXY Server ---
-	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EWebrtcEchoServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
-
-	// --- 3. Register Webrtc Echo Server with MCPXY ---
-	const echoServiceID = "e2e_webrtc_echo"
-	echoServiceEndpoint := fmt.Sprintf("http://localhost:%d/signal", echoServerPort)
-	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", echoServiceID, echoServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-	integration.RegisterWebrtcService(t, registrationGRPCClient, echoServiceID, echoServiceEndpoint, "echo", nil)
-	t.Logf("INFO: '%s' registered.", echoServiceID)
-
-	// --- 4. Call Tool via MCPXY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
-
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	var foundTool bool
-	serviceKey, _ := util.GenerateID(echoServiceID)
-	expectedToolName, _ := util.GenerateToolID(serviceKey, "echo")
-	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
-		if tool.Name == expectedToolName {
-			foundTool = true
-		}
-	}
-	require.True(t, foundTool, "The webrtc echo tool was not discovered")
-
-	echoMessage := `{"message": "hello world from webrtc"}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: expectedToolName, Arguments: json.RawMessage(echoMessage)})
-	require.NoError(t, err, "Error calling echo tool")
-	require.NotNil(t, res, "Nil response from echo tool")
-	switch content := res.Content[0].(type) {
-	case *mcp.TextContent:
-		require.JSONEq(t, echoMessage, content.Text, "The echoed message does not match the original")
-	default:
-		t.Fatalf("Unexpected content type: %T", content)
+			echoMessage := `{"message": "hello world from webrtc"}`
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: expectedToolName, Arguments: json.RawMessage(echoMessage)})
+			require.NoError(t, err, "Error calling echo tool")
+			require.NotNil(t, res, "Nil response from echo tool")
+			switch content := res.Content[0].(type) {
+			case *mcp.TextContent:
+				require.JSONEq(t, echoMessage, content.Text, "The echoed message does not match the original")
+			default:
+				t.Fatalf("Unexpected content type: %T", content)
+			}
+		},
 	}
 
-	t.Log("INFO: E2E Test Scenario for WebRTC Echo Server Completed Successfully!")
+	framework.RunE2ETest(t, testCase)
 }

@@ -19,13 +19,13 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
+	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -33,78 +33,72 @@ import (
 )
 
 func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
-	defer cancel()
+	testCase := &framework.E2ETestCase{
+		Name:                "Authenticated HTTP Echo Server",
+		UpstreamServiceType: "http",
+		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
+		RegisterUpstream:    framework.RegisterHTTPAuthedEchoService,
+		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Authenticated HTTP Echo Server...")
-	t.Parallel()
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			require.NoError(t, err)
+			defer cs.Close()
 
-	// --- 1. Start Authenticated HTTP Echo Server ---
-	echoServerPort := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	echoServerProc := integration.NewManagedProcess(t, "http_authed_echo_server", filepath.Join(root, "build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", echoServerPort)}, nil)
-	err = echoServerProc.Start()
-	require.NoError(t, err, "Failed to start authenticated HTTP Echo server")
-	t.Cleanup(echoServerProc.Stop)
-	integration.WaitForTCPPort(t, echoServerPort, integration.ServiceStartupTimeout)
-
-	// --- 2. Start MCPXY Server ---
-	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EHttpAuthedEchoServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
-
-	// --- 3. Register Authenticated HTTP Echo Server with MCPXY ---
-	const echoServiceID = "e2e_http_authed_echo"
-	echoServiceEndpoint := fmt.Sprintf("http://localhost:%d", echoServerPort)
-	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", echoServiceID, echoServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-
-	authConfig := configv1.UpstreamAuthentication_builder{
-		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
-			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     proto.String("test-api-key"),
-		}.Build(),
-	}.Build()
-
-	integration.RegisterHTTPService(t, registrationGRPCClient, echoServiceID, echoServiceEndpoint, "echo", "/echo", http.MethodPost, authConfig)
-	t.Logf("INFO: '%s' registered.", echoServiceID)
-
-	// --- 4. Call Tool via MCPXY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
-
-	serviceKey, _ := util.GenerateID(echoServiceID)
-	toolName, _ := util.GenerateToolID(serviceKey, "echo")
-	echoMessage := `{"message": "hello world from authed http"}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
-	require.NoError(t, err, "Error calling echo tool with correct auth")
-	require.NotNil(t, res, "Nil response from echo tool with correct auth")
-	switch content := res.Content[0].(type) {
-	case *mcp.TextContent:
-		require.JSONEq(t, echoMessage, content.Text, "The echoed message does not match the original")
-	default:
-		t.Fatalf("Unexpected content type: %T", content)
+			const echoServiceID = "e2e_http_authed_echo"
+			serviceKey, _ := util.GenerateID(echoServiceID)
+			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			echoMessage := `{"message": "hello world from authed http"}`
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
+			require.NoError(t, err, "Error calling echo tool with correct auth")
+			require.NotNil(t, res, "Nil response from echo tool with correct auth")
+			switch content := res.Content[0].(type) {
+			case *mcp.TextContent:
+				require.JSONEq(t, echoMessage, content.Text, "The echoed message does not match the original")
+			default:
+				t.Fatalf("Unexpected content type: %T", content)
+			}
+		},
 	}
 
-	// --- 5. Test with incorrect auth ---
-	t.Run("IncorrectAuth", func(t *testing.T) {
-		const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
-		wrongAuthConfig := configv1.UpstreamAuthentication_builder{
-			ApiKey: configv1.UpstreamAPIKeyAuth_builder{
-				HeaderName: proto.String("X-Api-Key"),
-				ApiKey:     proto.String("wrong-key"),
-			}.Build(),
-		}.Build()
-		integration.RegisterHTTPService(t, registrationGRPCClient, wrongAuthServiceID, echoServiceEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)
+	framework.RunE2ETest(t, testCase)
+}
 
-		wrongServiceKey, _ := util.GenerateID(wrongAuthServiceID)
-		wrongToolName, _ := util.GenerateToolID(wrongServiceKey, "echo")
-		_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: wrongToolName, Arguments: json.RawMessage(echoMessage)})
-		require.Error(t, err, "Expected error when calling echo tool with incorrect auth")
-		require.Contains(t, err.Error(), "Unauthorized", "Expected error message to contain 'Unauthorized'")
-	})
+func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
+	testCase := &framework.E2ETestCase{
+		Name:                "Authenticated HTTP Echo Server with Incorrect API Key",
+		UpstreamServiceType: "http",
+		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
+		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
+			wrongAuthConfig := configv1.UpstreamAuthentication_builder{
+				ApiKey: configv1.UpstreamAPIKeyAuth_builder{
+					HeaderName: proto.String("X-Api-Key"),
+					ApiKey:     proto.String("wrong-key"),
+				}.Build(),
+			}.Build()
+			integration.RegisterHTTPService(t, registrationClient, wrongAuthServiceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)
+		},
+		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-	t.Log("INFO: E2E Test Scenario for Authenticated HTTP Echo Server Completed Successfully!")
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			require.NoError(t, err)
+			defer cs.Close()
+
+			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
+			wrongServiceKey, _ := util.GenerateID(wrongAuthServiceID)
+			wrongToolName, _ := util.GenerateToolID(wrongServiceKey, "echo")
+			echoMessage := `{"message": "hello world from authed http"}`
+			_, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: wrongToolName, Arguments: json.RawMessage(echoMessage)})
+			require.Error(t, err, "Expected error when calling echo tool with incorrect auth")
+			require.Contains(t, err.Error(), "Unauthorized", "Expected error message to contain 'Unauthorized'")
+		},
+	}
+
+	framework.RunE2ETest(t, testCase)
 }

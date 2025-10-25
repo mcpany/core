@@ -19,9 +19,15 @@ package framework
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 	"testing"
 
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -76,18 +82,40 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 		t.Parallel()
 
 		// --- 1. Start Upstream Service ---
-		upstreamServerProc := testCase.BuildUpstream(t)
-		err := upstreamServerProc.Start()
-		require.NoError(t, err, "Failed to start upstream server")
-		t.Cleanup(upstreamServerProc.Stop)
-		integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+		var upstreamServerProc *integration.ManagedProcess
+		if testCase.BuildUpstream != nil {
+			upstreamServerProc = testCase.BuildUpstream(t)
+			if upstreamServerProc != nil {
+				err := upstreamServerProc.Start()
+				require.NoError(t, err, "Failed to start upstream server")
+				t.Cleanup(upstreamServerProc.Stop)
+				if upstreamServerProc.Port != 0 {
+					integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+				}
+			}
+		}
 
 		// --- 2. Start MCPXY Server ---
 		mcpxyTestServerInfo := integration.StartMCPXYServer(t, testCase.Name)
 		defer mcpxyTestServerInfo.CleanupFunc()
 
 		// --- 3. Register Upstream Service with MCPXY ---
-		upstreamEndpoint := fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+		var upstreamEndpoint string
+		if testCase.UpstreamServiceType == "stdio" {
+			upstreamEndpoint = ""
+		} else if testCase.UpstreamServiceType == "grpc" {
+			upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
+		} else if testCase.UpstreamServiceType == "websocket" {
+			upstreamEndpoint = fmt.Sprintf("ws://localhost:%d/echo", upstreamServerProc.Port)
+		} else if testCase.UpstreamServiceType == "webrtc" {
+			upstreamEndpoint = fmt.Sprintf("http://localhost:%d/signal", upstreamServerProc.Port)
+		} else if testCase.UpstreamServiceType == "openapi" {
+			upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+		} else if testCase.UpstreamServiceType == "streamablehttp" {
+			upstreamEndpoint = fmt.Sprintf("http://localhost:%d/mcp", upstreamServerProc.Port)
+		} else {
+			upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+		}
 		t.Logf("INFO: Registering upstream service with MCPXY at endpoint %s...", upstreamEndpoint)
 		testCase.RegisterUpstream(t, mcpxyTestServerInfo.RegistrationClient, upstreamEndpoint)
 		t.Logf("INFO: Upstream service registered.")
@@ -104,4 +132,189 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 
 		t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
 	})
+}
+
+func BuildGRPCServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "grpc_calculator_server", filepath.Join(root, "build/test/bin/grpc_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterGRPCService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_grpc_calculator"
+	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, nil)
+}
+
+func BuildGRPCAuthedServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "grpc_authed_calculator_server", filepath.Join(root, "build/test/bin/grpc_authed_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterGRPCAuthedService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_grpc_authed_calculator"
+	authConfig := configv1.UpstreamAuthentication_builder{
+		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
+			Token: proto.String("test-bearer-token"),
+		}.Build(),
+	}.Build()
+	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, authConfig)
+}
+
+func BuildWebsocketServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "websocket_echo_server", filepath.Join(root, "build/test/bin/websocket_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterWebsocketService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_websocket_echo"
+	integration.RegisterWebsocketService(t, registrationClient, serviceID, upstreamEndpoint, "echo", nil)
+}
+
+func BuildWebrtcServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "webrtc_echo_server", filepath.Join(root, "build/test/bin/webrtc_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterWebrtcService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_webrtc_echo"
+	integration.RegisterWebrtcService(t, registrationClient, serviceID, upstreamEndpoint, "echo", nil)
+}
+
+func BuildStdioServer(t *testing.T) *integration.ManagedProcess {
+	return nil
+}
+
+func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_everything_server_stdio"
+	serviceStdioEndpoint := "npx @modelcontextprotocol/server-everything stdio"
+	integration.RegisterStdioMCPService(t, registrationClient, serviceID, serviceStdioEndpoint, true)
+}
+
+func BuildStdioDockerServer(t *testing.T) *integration.ManagedProcess {
+	return nil
+}
+
+func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e-cowsay-server"
+	command := "python3"
+	args := []string{"-u", "main.py", "--mcp-stdio"}
+	setupCommands := []string{"pip install -q cowsay"}
+	integration.RegisterStdioServiceWithSetup(
+		t,
+		registrationClient,
+		serviceID,
+		command,
+		true,
+		"/work/tests/integration/cmd/mocks/python_cowsay_server", // working directory
+		"python:3.11-slim", // No explicit container image
+		setupCommands,
+		args...,
+	)
+}
+
+func BuildOpenAPIServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "openapi_calculator_server", filepath.Join(root, "build/test/bin/openapi_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterOpenAPIService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_openapi_calculator"
+	openapiSpecEndpoint := fmt.Sprintf("%s/openapi.json", upstreamEndpoint)
+	resp, err := http.Get(openapiSpecEndpoint)
+	require.NoError(t, err, "Failed to fetch OpenAPI spec from server")
+	defer resp.Body.Close()
+	specContent, err := io.ReadAll(resp.Body)
+	require.NoError(t, err, "Failed to read OpenAPI spec content")
+	tmpfile, err := os.CreateTemp("", "openapi-*.json")
+	require.NoError(t, err, "Failed to create temp file for OpenAPI spec")
+	defer os.Remove(tmpfile.Name())
+	_, err = tmpfile.Write(specContent)
+	require.NoError(t, err, "Failed to write spec to temp file")
+	err = tmpfile.Close()
+	require.NoError(t, err, "Failed to close temp file")
+	integration.RegisterOpenAPIService(t, registrationClient, serviceID, tmpfile.Name(), upstreamEndpoint, nil)
+}
+
+func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterOpenAPIAuthedService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_openapi_authed_echo"
+	openapiSpec := fmt.Sprintf(`
+openapi: 3.0.0
+info:
+  title: Authenticated Echo Service
+  version: 1.0.0
+servers:
+  - url: %s
+paths:
+  /echo:
+    post:
+      operationId: echo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      responses:
+        '200':
+          description: OK
+`, upstreamEndpoint)
+	tmpfile, err := os.CreateTemp("", "openapi-auth-*.json")
+	require.NoError(t, err)
+	defer os.Remove(tmpfile.Name())
+	_, err = tmpfile.WriteString(openapiSpec)
+	require.NoError(t, err)
+	err = tmpfile.Close()
+	require.NoError(t, err)
+	authConfig := configv1.UpstreamAuthentication_builder{
+		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
+			HeaderName: proto.String("X-Api-Key"),
+			ApiKey:     proto.String("test-api-key"),
+		}.Build(),
+	}.Build()
+	integration.RegisterOpenAPIService(t, registrationClient, serviceID, tmpfile.Name(), upstreamEndpoint, authConfig)
+}
+
+func BuildStreamableHTTPServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
+	env := []string{fmt.Sprintf("PORT=%d", port)}
+	proc := integration.NewManagedProcess(t, "everything_streamable_server", "npx", args, env)
+	proc.IgnoreExitStatusOne = true
+	proc.Port = port
+	return proc
+}
+
+func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_everything_server_streamable"
+	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
 }
