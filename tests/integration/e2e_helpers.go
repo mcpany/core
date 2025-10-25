@@ -42,12 +42,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamService) string {
+func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
-	mcpxyConfig := &configv1.Config{
-		Services: []*configv1.UpstreamService{config},
-	}
+	mcpxyConfig := configv1.McpxServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
+	}.Build()
 
 	data, err := yaml.Marshal(mcpxyConfig)
 	require.NoError(t, err)

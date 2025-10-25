@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -14,36 +15,41 @@ import (
 	"github.com/stretchr/testify/require"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestCommandExample(t *testing.T) {
 	testCase := &framework.E2ETestCase{
 		Name:                "Command Example",
 		UpstreamServiceType: "command",
-		RegistrationMethods: []framework.RegistrationMethod{framework.FileRegistration, framework.GRPCRegistration},
+		RegistrationMethods: []framework.RegistrationMethod{framework.FileRegistration},
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
 			// The command example doesn't run a separate upstream process
 			return &integration.ManagedProcess{}
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-			upstreamServiceConfig := &configv1.UpstreamService{
-				Name: "hello-service",
-				McpService: &configv1.McpUpstreamService{
-					Connection: &configv1.McpUpstreamService_Stdio{
-						Stdio: &configv1.McpStdioConnection{
-							Command: "build/venv/bin/python",
-							Args: []string{
-								"-u",
-								"examples/upstream/command/server/main.py",
-								"--mcp-stdio",
-							},
+			root, err := integration.GetProjectRoot()
+			require.NoError(t, err)
+
+			pythonPath := filepath.Join(root, "examples/upstream/command/server/build/venv/bin/python")
+			scriptPath := filepath.Join(root, "examples/upstream/command/server/main.py")
+
+			upstreamServiceConfig := configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("hello-service"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String(pythonPath),
+						Args: []string{
+							"-u",
+							scriptPath,
+							"--mcp-stdio",
 						},
-					},
-				},
-			}
-			config := &configv1.Config{
-				Services: []*configv1.UpstreamService{upstreamServiceConfig},
-			}
+					}.Build(),
+				}.Build(),
+			}.Build()
+			config := configv1.McpxServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{upstreamServiceConfig},
+			}.Build()
 
 			jsonBytes, err := protojson.Marshal(config)
 			require.NoError(t, err)

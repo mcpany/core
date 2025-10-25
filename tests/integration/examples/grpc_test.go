@@ -60,16 +60,16 @@ func TestGRPCExample(t *testing.T) {
 			return upstreamServerProcess
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-			upstreamServiceConfig := &configv1.UpstreamService{
-				Name: "greeter-service",
-				GrpcService: &configv1.GrpcUpstreamService{
-					Address:       strings.TrimPrefix(upstreamEndpoint, "http://"),
-					UseReflection: true,
-				},
-			}
-			config := &configv1.Config{
-				Services: []*configv1.UpstreamService{upstreamServiceConfig},
-			}
+			upstreamServiceConfig := configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("greeter-service"),
+				GrpcService: configv1.GrpcUpstreamService_builder{
+					Address:       proto.String(strings.TrimPrefix(upstreamEndpoint, "http://")),
+					UseReflection: proto.Bool(true),
+				}.Build(),
+			}.Build()
+			config := configv1.McpxServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{upstreamServiceConfig},
+			}.Build()
 
 			jsonBytes, err := protojson.Marshal(config)
 			require.NoError(t, err)
