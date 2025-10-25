@@ -68,8 +68,23 @@ func (u *CommandUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceKey, info)
 
-	discoveredTools := u.createAndRegisterCommandTools(ctx, serviceKey, commandLineService, toolManager, isReload)
-	log.Info("Registered command service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
+	discoveredTools, err := u.createAndRegisterCommandTools(
+		ctx,
+		serviceKey,
+		commandLineService,
+		toolManager,
+		isReload,
+	)
+	if err != nil {
+		return "", nil, err
+	}
+	log.Info(
+		"Registered command service",
+		"serviceKey",
+		serviceKey,
+		"toolsAdded",
+		len(discoveredTools),
+	)
 
 	return serviceKey, discoveredTools, nil
 }
@@ -77,7 +92,13 @@ func (u *CommandUpstream) Register(
 // createAndRegisterCommandTools iterates through the command definitions in the
 // service configuration, creates a new CommandTool for each, and registers it
 // with the tool manager.
-func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, serviceKey string, commandLineService *configv1.CommandLineUpstreamService, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *CommandUpstream) createAndRegisterCommandTools(
+	_ context.Context,
+	serviceKey string,
+	commandLineService *configv1.CommandLineUpstreamService,
+	toolManager tool.ToolManagerInterface,
+	_ bool,
+) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
 
@@ -95,12 +116,12 @@ func (u *CommandUpstream) createAndRegisterCommandTools(ctx context.Context, ser
 		newTool := tool.NewCommandTool(newToolProto, command)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
-			continue
+			return nil, err
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name: proto.String(command),
 		}.Build())
 	}
 
-	return discoveredTools
+	return discoveredTools, nil
 }
