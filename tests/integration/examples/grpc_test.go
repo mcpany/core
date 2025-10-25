@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
+	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
@@ -22,7 +24,6 @@ import (
 )
 
 func TestGRPCExample(t *testing.T) {
-	t.SkipNow()
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
@@ -30,15 +31,29 @@ func TestGRPCExample(t *testing.T) {
 		Name:                "gRPC Example",
 		UpstreamServiceType: "grpc",
 		RegistrationMethods: []framework.RegistrationMethod{
-			framework.FileRegistration,
 			framework.GRPCRegistration,
+		},
+		RegisterUpstream: func(
+			t *testing.T,
+			registrationClient apiv1.RegistrationServiceClient,
+			upstreamEndpoint string,
+		) {
+			integration.RegisterGRPCService(
+				t,
+				registrationClient,
+				"greeter-service",
+				upstreamEndpoint,
+				nil,
+			)
 		},
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
 			// 1. Generate Protobuf Files
-			generateCmd := exec.Command("./generate.sh")
-			generateCmd.Dir = root + "/examples/upstream/grpc/greeter_server"
-			err = generateCmd.Run()
-			require.NoError(t, err, "Failed to generate protobuf files")
+			if os.Getenv("SKIP_PROTO_GENERATION") != "true" {
+				generateCmd := exec.Command("./generate.sh")
+				generateCmd.Dir = root + "/examples/upstream/grpc/greeter_server"
+				err = generateCmd.Run()
+				require.NoError(t, err, "Failed to generate protobuf files")
+			}
 
 			// Tidy dependencies for the upstream server
 			serverDir := filepath.Join(
@@ -81,7 +96,7 @@ func TestGRPCExample(t *testing.T) {
 				"upstream-grpc-server",
 				serverPath,
 				nil,
-				[]string{"GRPC_PORT=" + strconv.Itoa(port)},
+				[]string{"GRPC_PORT=" + strconv.Itoa(port), "SKIP_PROTO_GENERATION=true"},
 			)
 			upstreamServerProcess.Port = port
 			return upstreamServerProcess
