@@ -269,7 +269,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 
 				// Check if the tool is already registered
 				toolID := fmt.Sprintf("%s.%s", serviceKey, methodDesc.Name())
-				if tm.GetTool(toolID) != nil {
+				if _, ok := tm.GetTool(toolID); ok {
 					continue
 				}
 
