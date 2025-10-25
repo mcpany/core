@@ -22,91 +22,84 @@ import (
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_MCP_Stdio(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
-	defer cancel()
+	testCase := &framework.E2ETestCase{
+		Name:                "everything server (Stdio)",
+		UpstreamServiceType: "stdio",
+		BuildUpstream:       framework.BuildStdioServer,
+		RegisterUpstream:    framework.RegisterStdioService,
+		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for 'everything' server (Stdio)...")
-	t.Parallel()
-
-	// --- 1. Start MCPXY Server ---
-	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EEverythingServerTest_Stdio")
-	defer mcpxTestServerInfo.CleanupFunc()
-
-	// --- 2. Register 'everything' server with MCPXY ---
-	const everythingServiceIDStdio = "e2e_everything_server_stdio"
-	serviceStdioEndpoint := "npx @modelcontextprotocol/server-everything stdio"
-	t.Logf("INFO: Registering '%s' with MCPXY...", everythingServiceIDStdio)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-	integration.RegisterStdioMCPService(t, registrationGRPCClient, everythingServiceIDStdio, serviceStdioEndpoint, true)
-	t.Logf("INFO: '%s' registered with command: %s", everythingServiceIDStdio, serviceStdioEndpoint)
-
-	// Create MCP client to MCPXY server
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cs.Close()
-
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	if err != nil {
-		t.Fatalf("failed to list tools from MCP service: %v", err)
-	}
-	t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
-
-	serviceKey, _ := util.GenerateID(everythingServiceIDStdio)
-
-	testCases := []struct {
-		name       string
-		tool       string
-		jsonArgs   string
-		expectFail bool
-	}{
-		{
-			name:     "Tool_add",
-			tool:     "add",
-			jsonArgs: `{"a": 10, "b": 15}`,
-		},
-		{
-			name:     "Tool_echo",
-			tool:     "echo",
-			jsonArgs: `{"message": "Hello, world!"}`,
-		},
-		{
-			name:     "Tool_printEnv",
-			tool:     "printEnv",
-			jsonArgs: `{}`,
-		},
-		{
-			name:       "Tool_nonexistent",
-			tool:       "nonexistent_tool",
-			jsonArgs:   `{}`,
-			expectFail: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			toolName, _ := util.GenerateToolID(serviceKey, tc.tool)
-			if tc.expectFail {
-				_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
-				require.Error(t, err, "Expected error when calling nonexistent tool '%s', but got none", toolName)
-				t.Logf("SUCCESS: Expected failure when calling nonexistent tool '%s': %v", toolName, err)
-			} else {
-				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
-				require.NoError(t, err, "Error calling tool '%s': %v", toolName, err)
-				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-				t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", toolName, res.Content[0])
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			if err != nil {
+				t.Fatal(err)
 			}
-		})
+			defer cs.Close()
+
+			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+			if err != nil {
+				t.Fatalf("failed to list tools from MCP service: %v", err)
+			}
+			t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
+
+			serviceKey, _ := util.GenerateID("e2e_everything_server_stdio")
+
+			testCases := []struct {
+				name       string
+				tool       string
+				jsonArgs   string
+				expectFail bool
+			}{
+				{
+					name:     "Tool_add",
+					tool:     "add",
+					jsonArgs: `{"a": 10, "b": 15}`,
+				},
+				{
+					name:     "Tool_echo",
+					tool:     "echo",
+					jsonArgs: `{"message": "Hello, world!"}`,
+				},
+				{
+					name:     "Tool_printEnv",
+					tool:     "printEnv",
+					jsonArgs: `{}`,
+				},
+				{
+					name:       "Tool_nonexistent",
+					tool:       "nonexistent_tool",
+					jsonArgs:   `{}`,
+					expectFail: true,
+				},
+			}
+
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					toolName, _ := util.GenerateToolID(serviceKey, tc.tool)
+					if tc.expectFail {
+						_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
+						require.Error(t, err, "Expected error when calling nonexistent tool '%s', but got none", toolName)
+						t.Logf("SUCCESS: Expected failure when calling nonexistent tool '%s': %v", toolName, err)
+					} else {
+						res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
+						require.NoError(t, err, "Error calling tool '%s': %v", toolName, err)
+						require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+						require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+						t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", toolName, res.Content[0])
+					}
+				})
+			}
+		},
 	}
 
-	t.Log("INFO: E2E Test Scenario for 'everything' server (Stdio) Completed Successfully!")
+	framework.RunE2ETest(t, testCase)
 }
