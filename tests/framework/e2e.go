@@ -87,12 +87,15 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			t.Parallel()
 
 			// --- 1. Start Upstream Service ---
-			upstreamServerProc := testCase.BuildUpstream(t)
-			err := upstreamServerProc.Start()
-			require.NoError(t, err, "Failed to start upstream server")
-			t.Cleanup(upstreamServerProc.Stop)
-			integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
-			upstreamEndpoint := fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
+			var upstreamEndpoint string
+			if testCase.UpstreamServiceType != "command" {
+				upstreamServerProc := testCase.BuildUpstream(t)
+				err := upstreamServerProc.Start()
+				require.NoError(t, err, "Failed to start upstream server")
+				t.Cleanup(upstreamServerProc.Stop)
+				integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+				upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
+			}
 
 			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
 			if method == FileRegistration {
