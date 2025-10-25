@@ -7,17 +7,18 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"strings"
 	"github.com/stretchr/testify/require"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGRPCExample(t *testing.T) {
