@@ -20,10 +20,6 @@ message McpxServerConfig {
   GlobalSettings global_settings = 1;
   // A list of all configured upstream services that mcpx can proxy to.
   repeated UpstreamServiceConfig upstream_services = 2;
-  // A list of all defined public-facing frontend services.
-  repeated FrontendService frontend_services = 3;
-  // A list of bindings that link a frontend service to a specific upstream service.
-  repeated ServiceBinding service_bindings = 4;
 }
 
 // HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
@@ -163,21 +159,6 @@ message GlobalSettings {
   string protoc_version = 4;
 }
 
-// FrontendService defines the public-facing identity of a service.
-message FrontendService {
-  // A UUID to uniquely identify this frontend service.
-  string id = 1;
-  // A human-readable name for the service (e.g., "user-api").
-  string name = 2;
-}
-
-// ServiceBinding links a FrontendService to an UpstreamServiceConfig using their IDs.
-message ServiceBinding {
-  // The ID of the FrontendService to bind.
-  string frontend_service_id = 1;
-  // The ID of the UpstreamServiceConfig to bind.
-  string upstream_service_id = 2;
-}
 
 // ===================================================================
 // Upstream Service Definitions
