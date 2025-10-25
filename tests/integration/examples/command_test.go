@@ -14,8 +14,10 @@ import (
 	"time"
 
 	"github.com/mcpxy/core/tests/framework"
+	"github.com/mcpxy/core/pkg/consts"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -88,21 +90,52 @@ upstream_services:
 				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
 				textContent, ok := res.Content[0].(*mcp.TextContent)
 				require.True(t, ok, "Expected content to be of type TextContent")
-				require.Equal(t, "hello", textContent.Text)
+
+		var result map[string]interface{}
+		err = json.Unmarshal([]byte(textContent.Text), &result)
+		require.NoError(t, err, "Failed to unmarshal tool output")
+
+		assert.Equal(t, "hello", result["stdout"])
+		assert.Equal(t, "", result["stderr"])
+				assert.Equal(t, consts.CommandStatusSuccess, result["status"])
+		assert.Equal(t, float64(0), result["return_code"])
 			})
 
 			t.Run("error", func(t *testing.T) {
 				params := json.RawMessage(`{"args": ["--stderr", "error", "--exit-code", "1"]}`)
-				_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-				require.Error(t, err, "Expected an error when calling tool '%s' with an error exit code", toolName)
+		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
+		require.NoError(t, err, "Error calling tool '%s'", toolName)
+		require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+		require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+		textContent, ok := res.Content[0].(*mcp.TextContent)
+		require.True(t, ok, "Expected content to be of type TextContent")
+
+		var result map[string]interface{}
+		err = json.Unmarshal([]byte(textContent.Text), &result)
+		require.NoError(t, err, "Failed to unmarshal tool output")
+
+		assert.Equal(t, "", result["stdout"])
+		assert.Equal(t, "error", result["stderr"])
+				assert.Equal(t, consts.CommandStatusError, result["status"])
+		assert.Equal(t, float64(1), result["return_code"])
 			})
 
 			t.Run("timeout", func(t *testing.T) {
-				params := json.RawMessage(`{"args": ["--sleep", "10s"]}`)
+		params := json.RawMessage(`{"args": ["--sleep", "2s"]}`)
 				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 				defer cancel()
-				_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-				require.Error(t, err, "Expected a timeout error when calling tool '%s'", toolName)
+		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
+		require.NoError(t, err, "Error calling tool '%s'", toolName)
+		require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+		require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+		textContent, ok := res.Content[0].(*mcp.TextContent)
+		require.True(t, ok, "Expected content to be of type TextContent")
+
+		var result map[string]interface{}
+		err = json.Unmarshal([]byte(textContent.Text), &result)
+		require.NoError(t, err, "Failed to unmarshal tool output")
+
+				assert.Equal(t, consts.CommandStatusTimeout, result["status"])
 			})
 		},
 	}

@@ -22,6 +22,7 @@ message Tool {
     repeated Field response_fields = 9;
      ToolAnnotations annotations = 11;
      bool is_stream = 12;
+     google.protobuf.Struct output_schema = 13;
 }
 
 message Field {
