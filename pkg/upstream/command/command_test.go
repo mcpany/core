@@ -18,6 +18,7 @@ package command
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"testing"
 
@@ -81,6 +82,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 	u := NewCommandUpstream()
 
 	t.Run("successful registration", func(t *testing.T) {
+		tm := newMockToolManager()
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
@@ -92,13 +94,34 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
-		serviceKey, discoveredTools, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
+		serviceKey, discoveredTools, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("test-command-service")
 		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 1)
 		assert.Equal(t, "echo", discoveredTools[0].GetName())
 		assert.Len(t, tm.ListTools(), 1)
+
+		// Execute the registered tool
+		cmdTool := tm.ListTools()[0]
+		assert.Equal(t, "echo", cmdTool.Tool().GetName())
+
+		inputData := map[string]interface{}{"args": []string{"hello from test"}}
+		inputs, err := json.Marshal(inputData)
+		require.NoError(t, err)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		assert.Equal(t, "hello from test\n", result)
 	})
 
 	t.Run("nil command line service config", func(t *testing.T) {
@@ -131,9 +154,17 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
-		_, discoveredTools, err := u.Register(context.Background(), serviceConfig, tmWithError, prm, rm, false)
-		require.NoError(t, err)
-		assert.Empty(t, discoveredTools)
+		_, discoveredTools, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tmWithError,
+			prm,
+			rm,
+			false,
+		)
+		require.Error(t, err)
+		assert.Nil(t, discoveredTools)
 		assert.Empty(t, tmWithError.ListTools())
+		assert.Contains(t, err.Error(), "failed to add tool")
 	})
 }

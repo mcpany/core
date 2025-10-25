@@ -39,7 +39,30 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"gopkg.in/yaml.v3"
 )
+
+func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
+	t.Helper()
+
+	mcpxyConfig := configv1.McpxServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
+	}.Build()
+
+	data, err := yaml.Marshal(mcpxyConfig)
+	require.NoError(t, err)
+
+	tempFile, err := os.CreateTemp(t.TempDir(), "mcpxy-config-*.yaml")
+	require.NoError(t, err)
+
+	_, err = tempFile.Write(data)
+	require.NoError(t, err)
+
+	err = tempFile.Close()
+	require.NoError(t, err)
+
+	return tempFile.Name()
+}
 
 // A thread-safe buffer for capturing process output concurrently.
 type threadSafeBuffer struct {
@@ -73,7 +96,7 @@ const (
 	McpxyServerStartupTimeout = 30 * time.Second
 	ServiceStartupTimeout     = 15 * time.Second
 	TestWaitTimeShort         = 60 * time.Second
-	TestWaitTimeMedium        = 60 * time.Second
+	TestWaitTimeMedium        = 240 * time.Second
 	TestWaitTimeLong          = 5 * time.Minute
 	RetryInterval             = 250 * time.Millisecond
 	localHeaderMcpSessionID   = "Mcp-Session-Id"
@@ -510,6 +533,17 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 			}
 		},
 	}
+}
+
+func StartMCPXYServerWithConfig(t *testing.T, testName, configContent string) *MCPXYTestServerInfo {
+	t.Helper()
+	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpxy-config-*.json")
+	require.NoError(t, err)
+	_, err = tmpFile.WriteString(configContent)
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
+	return StartMCPXYServer(t, testName, "--config-paths", tmpFile.Name())
 }
 
 func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {

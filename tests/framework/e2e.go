@@ -34,13 +34,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type RegistrationMethod string
+
+const (
+	FileRegistration   RegistrationMethod = "file"
+	GRPCRegistration   RegistrationMethod = "grpc"
+	JSONRPCRegistration RegistrationMethod = "jsonrpc"
+)
+
 type E2ETestCase struct {
-	Name                string
-	UpstreamServiceType string
-	BuildUpstream       func(t *testing.T) *integration.ManagedProcess
-	RegisterUpstream    func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
-	ValidateTool        func(t *testing.T, mcpxyEndpoint string)
-	InvokeAIClient      func(t *testing.T, mcpxyEndpoint string)
+	Name                   string
+	UpstreamServiceType    string
+	BuildUpstream          func(t *testing.T) *integration.ManagedProcess
+	RegisterUpstream       func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
+	ValidateTool           func(t *testing.T, mcpxyEndpoint string)
+	InvokeAIClient         func(t *testing.T, mcpxyEndpoint string)
+	RegistrationMethods    []RegistrationMethod
+	GenerateUpstreamConfig func(upstreamEndpoint string) string
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
@@ -74,64 +84,74 @@ func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mc
 }
 
 func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
-	t.Run(testCase.Name, func(t *testing.T) {
-		_, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
-		defer cancel()
+	for _, method := range testCase.RegistrationMethods {
+		t.Run(fmt.Sprintf("%s_%s", testCase.Name, method), func(t *testing.T) {
+			_, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-		t.Logf("INFO: Starting E2E Test Scenario for %s...", testCase.Name)
-		t.Parallel()
+			t.Logf("INFO: Starting E2E Test Scenario for %s with %s registration...", testCase.Name, method)
+			t.Parallel()
 
-		// --- 1. Start Upstream Service ---
-		var upstreamServerProc *integration.ManagedProcess
-		if testCase.BuildUpstream != nil {
-			upstreamServerProc = testCase.BuildUpstream(t)
-			if upstreamServerProc != nil {
-				err := upstreamServerProc.Start()
-				require.NoError(t, err, "Failed to start upstream server")
-				t.Cleanup(upstreamServerProc.Stop)
-				if upstreamServerProc.Port != 0 {
-					integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+			// --- 1. Start Upstream Service ---
+			var upstreamServerProc *integration.ManagedProcess
+			if testCase.BuildUpstream != nil {
+				upstreamServerProc = testCase.BuildUpstream(t)
+				if upstreamServerProc != nil {
+					err := upstreamServerProc.Start()
+					require.NoError(t, err, "Failed to start upstream server")
+					t.Cleanup(upstreamServerProc.Stop)
+					if upstreamServerProc.Port != 0 {
+						integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+					}
 				}
 			}
-		}
 
-		// --- 2. Start MCPXY Server ---
-		mcpxyTestServerInfo := integration.StartMCPXYServer(t, testCase.Name)
-		defer mcpxyTestServerInfo.CleanupFunc()
+			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
+			if method == FileRegistration {
+				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
+				mcpxyTestServerInfo = integration.StartMCPXYServerWithConfig(t, testCase.Name, configContent)
+			} else {
+				mcpxyTestServerInfo = integration.StartMCPXYServer(t, testCase.Name)
+			}
+			defer mcpxyTestServerInfo.CleanupFunc()
 
-		// --- 3. Register Upstream Service with MCPXY ---
-		var upstreamEndpoint string
-		if testCase.UpstreamServiceType == "stdio" {
-			upstreamEndpoint = ""
-		} else if testCase.UpstreamServiceType == "grpc" {
-			upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
-		} else if testCase.UpstreamServiceType == "websocket" {
-			upstreamEndpoint = fmt.Sprintf("ws://localhost:%d/echo", upstreamServerProc.Port)
-		} else if testCase.UpstreamServiceType == "webrtc" {
-			upstreamEndpoint = fmt.Sprintf("http://localhost:%d/signal", upstreamServerProc.Port)
-		} else if testCase.UpstreamServiceType == "openapi" {
-			upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
-		} else if testCase.UpstreamServiceType == "streamablehttp" {
-			upstreamEndpoint = fmt.Sprintf("http://localhost:%d/mcp", upstreamServerProc.Port)
-		} else {
-			upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
-		}
-		t.Logf("INFO: Registering upstream service with MCPXY at endpoint %s...", upstreamEndpoint)
-		testCase.RegisterUpstream(t, mcpxyTestServerInfo.RegistrationClient, upstreamEndpoint)
-		t.Logf("INFO: Upstream service registered.")
+			// --- 3. Register Upstream Service with MCPXY ---
+			var upstreamEndpoint string
+			if testCase.UpstreamServiceType == "stdio" {
+				upstreamEndpoint = ""
+			} else if testCase.UpstreamServiceType == "grpc" {
+				upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
+			} else if testCase.UpstreamServiceType == "websocket" {
+				upstreamEndpoint = fmt.Sprintf("ws://localhost:%d/echo", upstreamServerProc.Port)
+			} else if testCase.UpstreamServiceType == "webrtc" {
+				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/signal", upstreamServerProc.Port)
+			} else if testCase.UpstreamServiceType == "openapi" {
+				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+			} else if testCase.UpstreamServiceType == "streamablehttp" {
+				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/mcp", upstreamServerProc.Port)
+			} else {
+				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+			}
+			t.Logf("INFO: Registering upstream service with MCPXY at endpoint %s...", upstreamEndpoint)
+			if method == GRPCRegistration {
+				testCase.RegisterUpstream(t, mcpxyTestServerInfo.RegistrationClient, upstreamEndpoint)
+			}
+			//TODO: JSONRPC registration
+			t.Logf("INFO: Upstream service registered.")
 
-		// --- 4. Validate Registered Tool ---
-		if testCase.ValidateTool != nil {
-			t.Logf("INFO: Validating registered tool...")
-			testCase.ValidateTool(t, mcpxyTestServerInfo.HTTPEndpoint)
-			t.Logf("INFO: Tool validated.")
-		}
+			// --- 4. Validate Registered Tool ---
+			if testCase.ValidateTool != nil {
+				t.Logf("INFO: Validating registered tool...")
+				testCase.ValidateTool(t, mcpxyTestServerInfo.HTTPEndpoint)
+				t.Logf("INFO: Tool validated.")
+			}
 
-		// --- 5. Invoke AI Client ---
-		testCase.InvokeAIClient(t, mcpxyTestServerInfo.HTTPEndpoint)
+			// --- 5. Invoke AI Client ---
+			testCase.InvokeAIClient(t, mcpxyTestServerInfo.HTTPEndpoint)
 
-		t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
-	})
+			t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
+		})
+	}
 }
 
 func BuildGRPCServer(t *testing.T) *integration.ManagedProcess {
