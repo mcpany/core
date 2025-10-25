@@ -21,8 +21,43 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+// MethodDescriptorToProtoProperties converts the fields of a method's input
+// message into a `structpb.Struct` for use as the `properties` field in a tool
+// input schema.
+func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
+	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+	inputFields := methodDesc.Input().Fields()
+
+	for i := 0; i < inputFields.Len(); i++ {
+		field := inputFields.Get(i)
+		schema := map[string]interface{}{
+			"type": "string", // Default
+		}
+
+		switch field.Kind() {
+		case protoreflect.DoubleKind, protoreflect.FloatKind:
+			schema["type"] = "number"
+		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
+			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
+			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
+			schema["type"] = "integer"
+		case protoreflect.BoolKind:
+			schema["type"] = "boolean"
+		}
+
+		structValue, err := structpb.NewStruct(schema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create struct for field %s: %w", field.Name(), err)
+		}
+		properties.Fields[string(field.Name())] = structpb.NewStructValue(structValue)
+	}
+
+	return properties, nil
+}
 
 // ConfigParameter an interface for config parameter schemas
 type ConfigParameter interface {

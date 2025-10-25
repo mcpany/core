@@ -341,38 +341,41 @@ func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnot
 			for j := 0; j < methods.Len(); j++ {
 				methodDesc := methods.Get(j)
 				methodOpts := methodDesc.Options()
-				if methodOpts == nil {
-					continue
-				}
+				var toolName, toolDesc string
+				var readOnlyHint, destructiveHint, idempotentHint, openWorldHint bool
 
-				if proto.HasExtension(methodOpts, mcpopt.E_ToolName) {
-					toolName := proto.GetExtension(methodOpts, mcpopt.E_ToolName).(string)
-					toolDesc := ""
+				if methodOpts != nil {
+					if proto.HasExtension(methodOpts, mcpopt.E_ToolName) {
+						toolName = proto.GetExtension(methodOpts, mcpopt.E_ToolName).(string)
+					}
 					if proto.HasExtension(methodOpts, mcpopt.E_ToolDescription) {
 						toolDesc = proto.GetExtension(methodOpts, mcpopt.E_ToolDescription).(string)
 					}
-
-					readOnlyHint := proto.GetExtension(methodOpts, mcpopt.E_McpToolReadonlyHint).(bool)
-					destructiveHint := proto.GetExtension(methodOpts, mcpopt.E_McpToolDestructiveHint).(bool)
-					idempotentHint := proto.GetExtension(methodOpts, mcpopt.E_McpToolIdempotentHint).(bool)
-					openWorldHint := proto.GetExtension(methodOpts, mcpopt.E_McpToolOpenworldHint).(bool)
-
-					tools = append(tools, McpTool{
-						Name:            toolName,
-						Description:     toolDesc,
-						ServiceName:     string(serviceDesc.Name()),
-						MethodName:      string(methodDesc.Name()),
-						FullMethodName:  fmt.Sprintf("/%s/%s", serviceDesc.FullName(), methodDesc.Name()),
-						RequestType:     string(methodDesc.Input().FullName()),
-						ResponseType:    string(methodDesc.Output().FullName()),
-						RequestFields:   extractFields(methodDesc.Input()),
-						ResponseFields:  extractFields(methodDesc.Output()),
-						ReadOnlyHint:    readOnlyHint,
-						DestructiveHint: destructiveHint,
-						IdempotentHint:  idempotentHint,
-						OpenWorldHint:   openWorldHint,
-					})
+					readOnlyHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolReadonlyHint).(bool)
+					destructiveHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolDestructiveHint).(bool)
+					idempotentHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolIdempotentHint).(bool)
+					openWorldHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolOpenworldHint).(bool)
 				}
+
+				if toolName == "" {
+					toolName = string(methodDesc.Name())
+				}
+
+				tools = append(tools, McpTool{
+					Name:            toolName,
+					Description:     toolDesc,
+					ServiceName:     string(serviceDesc.Name()),
+					MethodName:      string(methodDesc.Name()),
+					FullMethodName:  fmt.Sprintf("/%s/%s", serviceDesc.FullName(), methodDesc.Name()),
+					RequestType:     string(methodDesc.Input().FullName()),
+					ResponseType:    string(methodDesc.Output().FullName()),
+					RequestFields:   extractFields(methodDesc.Input()),
+					ResponseFields:  extractFields(methodDesc.Output()),
+					ReadOnlyHint:    readOnlyHint,
+					DestructiveHint: destructiveHint,
+					IdempotentHint:  idempotentHint,
+					OpenWorldHint:   openWorldHint,
+				})
 
 			}
 		}

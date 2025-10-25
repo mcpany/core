@@ -136,6 +136,13 @@ func (u *GRPCUpstream) Register(
 	if err != nil {
 		return "", nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceKey, err)
 	}
+
+	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceKey, toolManager, isReload, fds)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceKey, err)
+	}
+	discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
+
 	log.Info("Registered gRPC service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
 	return serviceKey, discoveredTools, nil
@@ -230,6 +237,87 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		}.Build())
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
+
+	return discoveredTools, nil
+}
+
+func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
+	ctx context.Context,
+	serviceKey string,
+	tm tool.ToolManagerInterface,
+	isReload bool,
+	fds *descriptorpb.FileDescriptorSet,
+) ([]*configv1.ToolDefinition, error) {
+	log := logging.GetLogger()
+	if fds == nil {
+		return nil, nil
+	}
+
+	files, err := protodesc.NewFiles(fds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create protodesc files: %w", err)
+	}
+
+	discoveredTools := make([]*configv1.ToolDefinition, 0)
+	files.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
+		services := fd.Services()
+		for i := 0; i < services.Len(); i++ {
+			serviceDesc := services.Get(i)
+			methods := serviceDesc.Methods()
+			for j := 0; j < methods.Len(); j++ {
+				methodDesc := methods.Get(j)
+
+				// Check if the tool is already registered
+				toolID := fmt.Sprintf("%s.%s", serviceKey, methodDesc.Name())
+				if tm.GetTool(toolID) != nil {
+					continue
+				}
+
+				propertiesStruct, err := schemaconv.MethodDescriptorToProtoProperties(methodDesc)
+				if err != nil {
+					log.Error("Failed to convert MethodDescriptor to InputSchema, skipping.", "method", methodDesc.FullName(), "error", err)
+					continue
+				}
+
+				if propertiesStruct == nil {
+					propertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+				}
+				inputSchema := &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(propertiesStruct),
+					},
+				}
+
+				newToolProto := pb.Tool_builder{
+					Name:                proto.String(string(methodDesc.Name())),
+					DisplayName:         proto.String(string(methodDesc.Name())),
+					Description:         proto.String(string(methodDesc.FullName())),
+					ServiceId:           proto.String(serviceKey),
+					UnderlyingMethodFqn: proto.String(string(methodDesc.FullName())),
+					RequestTypeFqn:      proto.String(string(methodDesc.Input().FullName())),
+					ResponseTypeFqn:     proto.String(string(methodDesc.Output().FullName())),
+					Annotations: pb.ToolAnnotations_builder{
+						Title:       proto.String(string(methodDesc.Name())),
+						InputSchema: inputSchema,
+					}.Build(),
+				}.Build()
+
+				clonedTool := proto.Clone(newToolProto).(*pb.Tool)
+				grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceKey, methodDesc)
+				if err := tm.AddTool(grpcTool); err != nil {
+					log.Error("Failed to add gRPC tool", "tool_name", methodDesc.Name(), "error", err)
+					continue
+				}
+				discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
+					Name:        proto.String(string(methodDesc.Name())),
+					Description: proto.String(string(methodDesc.FullName())),
+				}.Build())
+				log.Info("Registered gRPC tool from descriptor", "tool_id", newToolProto.GetName(), "is_reload", isReload)
+			}
+		}
+		return true
+	})
 
 	return discoveredTools, nil
 }

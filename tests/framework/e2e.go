@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
@@ -114,6 +115,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				mcpxyTestServerInfo = integration.StartMCPXYServer(t, testCase.Name)
 			}
 			defer mcpxyTestServerInfo.CleanupFunc()
+
+			// Add a small delay to ensure the server is ready to accept registrations
+			time.Sleep(1 * time.Second)
 
 			// --- 3. Register Upstream Service with MCPXY ---
 			var upstreamEndpoint string
