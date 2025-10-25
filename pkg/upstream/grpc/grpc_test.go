@@ -305,14 +305,15 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
-		assert.Len(t, tm.ListTools(), 2)
+		// We expect 2 tools from the annotations + 2 from the descriptors, and 1 for reflection
+		assert.Len(t, tm.ListTools(), 5)
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
 		serviceKey2, discoveredTools2, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
-		assert.Len(t, tm2.ListTools(), 2)
+		assert.Len(t, tm2.ListTools(), 5)
 		assert.Equal(t, serviceKey, serviceKey2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
