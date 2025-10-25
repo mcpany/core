@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/mcpxy/core/pkg/consts"
+	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
@@ -22,7 +23,6 @@ import (
 )
 
 func TestGRPCExample(t *testing.T) {
-	t.SkipNow()
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
@@ -32,6 +32,10 @@ func TestGRPCExample(t *testing.T) {
 		RegistrationMethods: []framework.RegistrationMethod{
 			framework.FileRegistration,
 			framework.GRPCRegistration,
+		},
+		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+			const serviceID = "greeter-service"
+			integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, nil)
 		},
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
 			// 1. Generate Protobuf Files
@@ -121,7 +125,7 @@ func TestGRPCExample(t *testing.T) {
 			require.NoError(t, err, "Failed to connect to MCPXY server")
 			defer cs.Close()
 
-			toolName := fmt.Sprintf("greeter-service%sSayHello", consts.ToolNameServiceSeparator)
+			toolName := fmt.Sprintf("greeter-service%sGreeter%sSayHello", consts.ToolNameServiceSeparator, consts.ToolNameServiceSeparator)
 
 			// Wait for the tool to be available
 			require.Eventually(t, func() bool {
