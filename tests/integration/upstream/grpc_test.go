@@ -19,70 +19,51 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_GRPC(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-	defer cancel()
+	testCase := &framework.E2ETestCase{
+		Name:                "gRPC Calculator Server",
+		UpstreamServiceType: "grpc",
+		BuildUpstream:       framework.BuildGRPCServer,
+		RegisterUpstream:    framework.RegisterGRPCService,
+		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+			defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for gRPC Calculator Server...")
-	t.Parallel()
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			require.NoError(t, err)
+			defer cs.Close()
 
-	// --- 1. Start gRPC Calculator Server ---
-	grpcServerPort := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	grpcServerProc := integration.NewManagedProcess(t, "grpc_calculator_server", filepath.Join(root, "build/test/bin/grpc_calculator_server"), []string{fmt.Sprintf("--port=%d", grpcServerPort)}, nil)
-	err = grpcServerProc.Start()
-	require.NoError(t, err, "Failed to start gRPC Calculator server")
-	t.Cleanup(grpcServerProc.Stop)
+			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+			require.NoError(t, err)
+			for _, tool := range listToolsResult.Tools {
+				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+			}
 
-	grpcServerProc.WaitForText(t, "GRPC_SERVER_READY", integration.ServiceStartupTimeout)
-
-	// --- 2. Start MCPXY Server ---
-	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EGrpcCalculatorServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
-
-	// --- 3. Register gRPC Calculator Server with MCPXY ---
-	const calcServiceID = "e2e_grpc_calculator"
-	grpcServiceEndpoint := fmt.Sprintf("localhost:%d", grpcServerPort)
-	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s...", calcServiceID, grpcServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-	integration.RegisterGRPCService(t, registrationGRPCClient, calcServiceID, grpcServiceEndpoint, nil)
-	t.Logf("INFO: '%s' registered.", calcServiceID)
-
-	// --- 4. Call Tool via MCPXY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
-
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+			const calcServiceID = "e2e_grpc_calculator"
+			serviceKey, _ := util.GenerateID(calcServiceID)
+			toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
+			addArgs := `{"a": 10, "b": 20}`
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
+			require.NoError(t, err, "Error calling Add tool")
+			require.NotNil(t, res, "Nil response from Add tool")
+			switch content := res.Content[0].(type) {
+			case *mcp.TextContent:
+				require.JSONEq(t, `{"result": 30}`, content.Text, "The sum is incorrect")
+			default:
+				t.Fatalf("Unexpected content type: %T", content)
+			}
+		},
 	}
 
-	serviceKey, _ := util.GenerateID(calcServiceID)
-	toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
-	addArgs := `{"a": 10, "b": 20}`
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
-	require.NoError(t, err, "Error calling Add tool")
-	require.NotNil(t, res, "Nil response from Add tool")
-	switch content := res.Content[0].(type) {
-	case *mcp.TextContent:
-		require.JSONEq(t, `{"result": 30}`, content.Text, "The sum is incorrect")
-	default:
-		t.Fatalf("Unexpected content type: %T", content)
-	}
-
-	t.Log("INFO: E2E Test Scenario for gRPC Calculator Server Completed Successfully!")
+	framework.RunE2ETest(t, testCase)
 }

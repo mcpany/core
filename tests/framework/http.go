@@ -23,8 +23,10 @@ import (
 	"testing"
 
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
@@ -39,4 +41,24 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
+}
+
+func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server", filepath.Join(root, "build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc.Port = port
+	return proc
+}
+
+func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_http_authed_echo"
+	authConfig := configv1.UpstreamAuthentication_builder{
+		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
+			HeaderName: proto.String("X-Api-Key"),
+			ApiKey:     proto.String("test-api-key"),
+		}.Build(),
+	}.Build()
+	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)
 }
