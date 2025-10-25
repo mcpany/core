@@ -27,9 +27,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/client"
+	"github.com/mcpxy/core/pkg/consts"
 	"github.com/mcpxy/core/pkg/pool"
 	"github.com/mcpxy/core/pkg/transformer"
 	"github.com/mcpxy/core/pkg/util"
@@ -40,6 +42,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // ToolManagerInterface defines the contract for a tool manager, which is
@@ -630,6 +633,46 @@ type CommandTool struct {
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
 func NewCommandTool(tool *v1.Tool, command string) *CommandTool {
+	outputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"command": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"args": {
+				Kind: &structpb.Value_ListValue{
+					ListValue: &structpb.ListValue{
+						Values: []*structpb.Value{
+							{
+								Kind: &structpb.Value_StringValue{StringValue: "string"},
+							},
+						},
+					},
+				},
+			},
+			"stdout": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"stderr": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"combined_output": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"start_time": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"end_time": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"return_code": {
+				Kind: &structpb.Value_NumberValue{NumberValue: 0},
+			},
+			"status": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+		},
+	}
+	tool.SetOutputSchema(outputSchema)
 	return &CommandTool{
 		tool:    tool,
 		command: command,
@@ -676,14 +719,32 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	cmd.Env = env
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w, output: %s", err, string(output))
+	var stdout, stderr bytes.Buffer
+	var combinedOutput bytes.Buffer
+	cmd.Stdout = io.MultiWriter(&stdout, &combinedOutput)
+	cmd.Stderr = io.MultiWriter(&stderr, &combinedOutput)
+
+	startTime := time.Now()
+	err := cmd.Run()
+	endTime := time.Now()
+
+	status := consts.CommandStatusSuccess
+	if ctx.Err() == context.DeadlineExceeded {
+		status = consts.CommandStatusTimeout
+	} else if err != nil {
+		status = consts.CommandStatusError
 	}
 
-	var result map[string]any
-	if err := json.Unmarshal(output, &result); err != nil {
-		return string(output), nil
+	result := map[string]interface{}{
+		"command":         t.command,
+		"args":            args,
+		"stdout":          stdout.String(),
+		"stderr":          stderr.String(),
+		"combined_output": combinedOutput.String(),
+		"start_time":      startTime,
+		"end_time":        endTime,
+		"return_code":     cmd.ProcessState.ExitCode(),
+		"status":          status,
 	}
 
 	return result, nil

@@ -50,3 +50,12 @@ const (
 	// NotificationResourcesListChanged is the notification for when the resources list has changed.
 	NotificationResourcesListChanged = "notifications/resources/list_changed"
 )
+
+const (
+	// CommandStatusSuccess is the status for a successful command execution.
+	CommandStatusSuccess = "SUCCESS"
+	// CommandStatusError is the status for a failed command execution.
+	CommandStatusError = "ERROR"
+	// CommandStatusTimeout is the status for a command that timed out.
+	CommandStatusTimeout = "TIMEOUT"
+)
