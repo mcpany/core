@@ -18,6 +18,8 @@ package auth
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -118,5 +120,43 @@ func TestAuthManager(t *testing.T) {
 		// No headers, but should pass as no authenticator is configured
 		_, err := authManager.Authenticate(context.Background(), "unregistered-service", req)
 		assert.NoError(t, err)
+	})
+}
+
+func TestAddOAuth2Authenticator(t *testing.T) {
+	authManager := NewAuthManager()
+	require.NotNil(t, authManager)
+
+	// Mock OIDC provider
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintln(w, `{"issuer": "`+server.URL+`", "jwks_uri": "`+server.URL+`/jwks"}`)
+		}
+	}))
+	defer server.Close()
+
+	config := &OAuth2Config{
+		IssuerURL: server.URL,
+	}
+
+	serviceID := "test-service"
+
+	t.Run("successful_add", func(t *testing.T) {
+		err := authManager.AddOAuth2Authenticator(context.Background(), serviceID, config)
+		assert.NoError(t, err)
+
+		authenticator, ok := authManager.GetAuthenticator(serviceID)
+		assert.True(t, ok)
+		assert.NotNil(t, authenticator)
+	})
+
+	t.Run("nil_config", func(t *testing.T) {
+		err := authManager.AddOAuth2Authenticator(context.Background(), "another-service", nil)
+		assert.NoError(t, err)
+
+		_, ok := authManager.GetAuthenticator("another-service")
+		assert.False(t, ok)
 	})
 }

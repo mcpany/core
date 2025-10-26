@@ -75,7 +75,7 @@ func (p *TextParser) parseJSON(input []byte, config map[string]string) (map[stri
 			return nil, fmt.Errorf("failed to parse JSONPath for key '%s': %w", key, err)
 		}
 		values, err := j.FindResults(data)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "is not found") {
 			return nil, fmt.Errorf("failed to find results for JSONPath '%s': %w", path, err)
 		}
 
