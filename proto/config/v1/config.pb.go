@@ -6704,11 +6704,11 @@ func (b0 APIKeyAuth_builder) Build() *APIKeyAuth {
 // OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 type OAuth2Auth struct {
 	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ClientId         *string                `protobuf:"bytes,1,opt,name=client_id,json=clientId"`
+	xxx_hidden_ClientSecret     *string                `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret"`
 	xxx_hidden_TokenUrl         *string                `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl"`
 	xxx_hidden_AuthorizationUrl *string                `protobuf:"bytes,4,opt,name=authorization_url,json=authorizationUrl"`
 	xxx_hidden_Scopes           *string                `protobuf:"bytes,5,opt,name=scopes"`
-	xxx_hidden_IssuerUrl        *string                `protobuf:"bytes,6,opt,name=issuer_url,json=issuerUrl"`
-	xxx_hidden_Audience         *string                `protobuf:"bytes,7,opt,name=audience"`
 	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
 	XXX_presence                [1]uint32
 	unknownFields               protoimpl.UnknownFields
@@ -6738,6 +6738,26 @@ func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
+}
+
+func (x *OAuth2Auth) GetClientId() string {
+	if x != nil {
+		if x.xxx_hidden_ClientId != nil {
+			return *x.xxx_hidden_ClientId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *OAuth2Auth) GetClientSecret() string {
+	if x != nil {
+		if x.xxx_hidden_ClientSecret != nil {
+			return *x.xxx_hidden_ClientSecret
+		}
+		return ""
+	}
+	return ""
 }
 
 func (x *OAuth2Auth) GetTokenUrl() string {
@@ -6770,145 +6790,125 @@ func (x *OAuth2Auth) GetScopes() string {
 	return ""
 }
 
-func (x *OAuth2Auth) GetIssuerUrl() string {
-	if x != nil {
-		if x.xxx_hidden_IssuerUrl != nil {
-			return *x.xxx_hidden_IssuerUrl
-		}
-		return ""
-	}
-	return ""
+func (x *OAuth2Auth) SetClientId(v string) {
+	x.xxx_hidden_ClientId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
-func (x *OAuth2Auth) GetAudience() string {
-	if x != nil {
-		if x.xxx_hidden_Audience != nil {
-			return *x.xxx_hidden_Audience
-		}
-		return ""
-	}
-	return ""
+func (x *OAuth2Auth) SetClientSecret(v string) {
+	x.xxx_hidden_ClientSecret = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *OAuth2Auth) SetTokenUrl(v string) {
 	x.xxx_hidden_TokenUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *OAuth2Auth) SetAuthorizationUrl(v string) {
 	x.xxx_hidden_AuthorizationUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
 }
 
 func (x *OAuth2Auth) SetScopes(v string) {
 	x.xxx_hidden_Scopes = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
-}
-
-func (x *OAuth2Auth) SetIssuerUrl(v string) {
-	x.xxx_hidden_IssuerUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
-}
-
-func (x *OAuth2Auth) SetAudience(v string) {
-	x.xxx_hidden_Audience = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
-func (x *OAuth2Auth) HasTokenUrl() bool {
+func (x *OAuth2Auth) HasClientId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *OAuth2Auth) HasAuthorizationUrl() bool {
+func (x *OAuth2Auth) HasClientSecret() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *OAuth2Auth) HasScopes() bool {
+func (x *OAuth2Auth) HasTokenUrl() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *OAuth2Auth) HasIssuerUrl() bool {
+func (x *OAuth2Auth) HasAuthorizationUrl() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
-func (x *OAuth2Auth) HasAudience() bool {
+func (x *OAuth2Auth) HasScopes() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
-func (x *OAuth2Auth) ClearTokenUrl() {
+func (x *OAuth2Auth) ClearClientId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ClientId = nil
+}
+
+func (x *OAuth2Auth) ClearClientSecret() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ClientSecret = nil
+}
+
+func (x *OAuth2Auth) ClearTokenUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_TokenUrl = nil
 }
 
 func (x *OAuth2Auth) ClearAuthorizationUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_AuthorizationUrl = nil
 }
 
 func (x *OAuth2Auth) ClearScopes() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Scopes = nil
-}
-
-func (x *OAuth2Auth) ClearIssuerUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_IssuerUrl = nil
-}
-
-func (x *OAuth2Auth) ClearAudience() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Audience = nil
+	x.xxx_hidden_Scopes = nil
 }
 
 type OAuth2Auth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	ClientId         *string
+	ClientSecret     *string
 	TokenUrl         *string
 	AuthorizationUrl *string
 	// Space-delimited list of scopes.
-	Scopes    *string
-	IssuerUrl *string
-	Audience  *string
+	Scopes *string
 }
 
 func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
 	m0 := &OAuth2Auth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.TokenUrl != nil {
+	if b.ClientId != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_ClientId = b.ClientId
+	}
+	if b.ClientSecret != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_ClientSecret = b.ClientSecret
+	}
+	if b.TokenUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
 		x.xxx_hidden_TokenUrl = b.TokenUrl
 	}
 	if b.AuthorizationUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
 		x.xxx_hidden_AuthorizationUrl = b.AuthorizationUrl
 	}
 	if b.Scopes != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Scopes = b.Scopes
-	}
-	if b.IssuerUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_IssuerUrl = b.IssuerUrl
-	}
-	if b.Audience != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Audience = b.Audience
+		x.xxx_hidden_Scopes = b.Scopes
 	}
 	return m0
 }
@@ -7929,15 +7929,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bLocation\x12\n" +
 	"\n" +
 	"\x06HEADER\x10\x00\x12\t\n" +
-	"\x05QUERY\x10\x01\"\xa9\x01\n" +
+	"\x05QUERY\x10\x01\"\xb0\x01\n" +
 	"\n" +
 	"OAuth2Auth\x12\x1b\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
+	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x1b\n" +
 	"\ttoken_url\x18\x03 \x01(\tR\btokenUrl\x12+\n" +
 	"\x11authorization_url\x18\x04 \x01(\tR\x10authorizationUrl\x12\x16\n" +
-	"\x06scopes\x18\x05 \x01(\tR\x06scopes\x12\x1d\n" +
-	"\n" +
-	"issuer_url\x18\x06 \x01(\tR\tissuerUrl\x12\x1a\n" +
-	"\baudience\x18\a \x01(\tR\baudience\"\xb2\x02\n" +
+	"\x06scopes\x18\x05 \x01(\tR\x06scopes\"\xb2\x02\n" +
 	"\x16UpstreamAuthentication\x12=\n" +
 	"\aapi_key\x18\x01 \x01(\v2\".mcpx.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12L\n" +
 	"\fbearer_token\x18\x02 \x01(\v2'.mcpx.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12B\n" +
