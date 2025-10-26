@@ -1,0 +1,53 @@
+# Copyright (C) 2025 Author(s) of MCP-XY
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This is an example of an upstream service configuration that is secured
+# with OAuth2. The server will require a valid JWT from the specified
+# issuer to be presented in the Authorization header.
+#
+# To run this example, you will need to have a running OIDC provider,
+# such as Keycloak. You will also need to configure the issuer_url and
+# audience to match your OIDC provider's settings.
+#
+# You can then run the server with the following command:
+#
+# go run cmd/server/main.go --config-paths examples/upstream/oauth2/service.yaml
+#
+# To test the service, you can use a tool like curl to make a request
+# to the server, including a valid JWT in the Authorization header:
+#
+# curl -X POST -H "Content-Type: application/json" \
+# -H "Authorization: Bearer <your-jwt>" \
+# -d '{"jsonrpc": "2.0", "method": "get_user", "params": {"user_id": "123"}, "id": 1}' \
+# http://localhost:50050
+
+name: oauth2-protected-http-service
+authentication:
+  oauth2:
+    issuer_url: "http://localhost:8080/realms/master"
+    audience: "mcp-server"
+http_service:
+  address: "http://localhost:8081"
+  calls:
+    - schema:
+        name: get_user
+        description: "Get a user by ID"
+      endpoint_path: "/users/{user_id}"
+      method: "HTTP_METHOD_GET"
+      parameters:
+        - schema:
+            name: user_id
+            description: "The ID of the user to get"
+            type: "STRING"
+            is_required: true
