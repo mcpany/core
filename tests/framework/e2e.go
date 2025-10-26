@@ -52,6 +52,7 @@ type E2ETestCase struct {
 	InvokeAIClient         func(t *testing.T, mcpxyEndpoint string)
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
+	StartMCPXYServer       func(t *testing.T, testName string, extraArgs ...string) *integration.MCPXYTestServerInfo
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
@@ -109,7 +110,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
-			if method == FileRegistration {
+			if testCase.StartMCPXYServer != nil {
+				mcpxyTestServerInfo = testCase.StartMCPXYServer(t, testCase.Name)
+			} else if method == FileRegistration {
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
 				mcpxyTestServerInfo = integration.StartMCPXYServerWithConfig(t, testCase.Name, configContent)
 			} else {
