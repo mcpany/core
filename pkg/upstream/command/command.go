@@ -105,12 +105,25 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	for _, toolDef := range commandLineService.GetCalls() {
 		schema := toolDef.GetSchema()
 		command := schema.GetName()
+		responseFields := []*pb.Field{
+			pb.Field_builder{Name: proto.String("command"), Type: proto.String("string"), Description: proto.String("The command that was executed.")}.Build(),
+			pb.Field_builder{Name: proto.String("args"), Type: proto.String("array"), Description: proto.String("The arguments passed to the command.")}.Build(),
+			pb.Field_builder{Name: proto.String("stdout"), Type: proto.String("string"), Description: proto.String("The standard output of the command.")}.Build(),
+			pb.Field_builder{Name: proto.String("stderr"), Type: proto.String("string"), Description: proto.String("The standard error of the command.")}.Build(),
+			pb.Field_builder{Name: proto.String("combined_output"), Type: proto.String("string"), Description: proto.String("The combined standard output and standard error.")}.Build(),
+			pb.Field_builder{Name: proto.String("start_time"), Type: proto.String("string"), Description: proto.String("The time the command started executing.")}.Build(),
+			pb.Field_builder{Name: proto.String("end_time"), Type: proto.String("string"), Description: proto.String("The time the command finished executing.")}.Build(),
+			pb.Field_builder{Name: proto.String("return_code"), Type: proto.String("integer"), Description: proto.String("The exit code of the command.")}.Build(),
+			pb.Field_builder{Name: proto.String("status"), Type: proto.String("string"), Description: proto.String("The execution status of the command (e.g., success, error, timeout).")}.Build(),
+		}
+
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(command),
 			DisplayName:         proto.String(command),
 			Description:         proto.String(schema.GetDescription()),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(command),
+			ResponseFields:      responseFields,
 		}.Build()
 
 		newTool := tool.NewCommandTool(newToolProto, commandLineService.GetCommand())
