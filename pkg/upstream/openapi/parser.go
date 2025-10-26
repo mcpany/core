@@ -185,47 +185,6 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			displayName = op.Method + " " + op.Path
 		}
 
-		// For RequestFields, pick the most common content type, e.g., application/json
-		if _, ok := op.RequestBodySchema["application/json"]; ok {
-			// requestPbFields = convertSchemaToPbFields(schemaRef, doc)
-		} else if len(op.RequestBodySchema) > 0 { // Pick first available if no json
-			for _, sr := range op.RequestBodySchema {
-				_ = convertSchemaToPbFields(sr, doc)
-				break
-			}
-		}
-
-		// For ResponseFields, pick the most common success response (e.g., "200")
-		// and content type (e.g., "application/json")
-		if responseContent, ok := op.ResponseSchemas["200"]; ok {
-			if _, ok := responseContent["application/json"]; ok {
-				// responsePbFields = convertSchemaToPbFields(schemaRef, doc)
-			} else if len(responseContent) > 0 { // Pick first available if no json
-				for _, sr := range responseContent {
-					_ = convertSchemaToPbFields(sr, doc)
-					break
-				}
-			}
-		} else if responseContent, ok := op.ResponseSchemas["201"]; ok { // Check for 201 if 200 not found
-			if _, ok := responseContent["application/json"]; ok {
-				// responsePbFields = convertSchemaToPbFields(schemaRef, doc)
-			} else if len(responseContent) > 0 {
-				for _, sr := range responseContent {
-					_ = convertSchemaToPbFields(sr, doc)
-					break
-				}
-			}
-		} else if len(op.ResponseSchemas) > 0 { // Pick first available status if no 200/201
-			for _, responseContent := range op.ResponseSchemas {
-				if len(responseContent) > 0 {
-					for _, sr := range responseContent {
-						_ = convertSchemaToPbFields(sr, doc)
-						goto foundResponse // break out of nested loops
-					}
-				}
-			}
-		foundResponse:
-		}
 
 		// Determine request body schema (e.g. application/json)
 		var bodySchemaRef *openapi3.SchemaRef
@@ -252,18 +211,46 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			},
 		}
 
+		// Determine response body schema for output
+		var outputSchemaRef *openapi3.SchemaRef
+		if responseContent, ok := op.ResponseSchemas["200"]; ok {
+			if ref, ok := responseContent["application/json"]; ok {
+				outputSchemaRef = ref
+			}
+		} else if responseContent, ok := op.ResponseSchemas["201"]; ok {
+			if ref, ok := responseContent["application/json"]; ok {
+				outputSchemaRef = ref
+			}
+		}
+
+		outputProperties, err := convertOpenAPISchemaToOutputSchemaProperties(outputSchemaRef, doc)
+		if err != nil {
+			fmt.Printf("Warning: Failed to convert OpenAPI schema to OutputSchema for tool '%s': %v. Output schema will be empty.\n", baseOperationID, err)
+			outputProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+		}
+
+		outputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(outputProperties),
+			},
+		}
+
 		toolBuilder := pb.Tool_builder{
 			Name:                proto.String(baseOperationID),
 			DisplayName:         proto.String(displayName),
 			Description:         proto.String(op.Description),
 			ServiceId:           proto.String(mcpServerServiceKey),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", op.Method, op.Path)),
+			InputSchema:         inputSchema,
+			OutputSchema:        outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
 				Title:          proto.String(op.Summary),
 				IdempotentHint: proto.Bool(isOperationIdempotent(op.Method)),
 				ReadOnlyHint:   proto.Bool(op.Method == "GET"),
 				OpenWorldHint:  proto.Bool(true), // Default, can be refined
 				InputSchema:    inputSchema,
+				OutputSchema:   outputSchema,
 			}.Build(),
 		}
 		tools = append(tools, toolBuilder.Build())
@@ -280,6 +267,140 @@ func isOperationIdempotent(method string) bool {
 	default: // POST, PATCH etc. are generally not idempotent
 		return false
 	}
+}
+
+func convertOpenAPISchemaToOutputSchemaProperties(
+	bodySchemaRef *openapi3.SchemaRef, // Schema for the response body
+	doc *openapi3.T,
+) (*structpb.Struct, error) {
+	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+
+	// Helper to convert a single OpenAPI Schema (or SchemaRef) to a structpb.Value representing its schema
+	var convertSingleSchema func(name string, sr *openapi3.SchemaRef, explicitDescription string) (*structpb.Value, error)
+	convertSingleSchema = func(name string, sr *openapi3.SchemaRef, explicitDescription string) (*structpb.Value, error) {
+		if sr == nil {
+			return nil, fmt.Errorf("schema reference is nil for %s", name)
+		}
+
+		var sVal *openapi3.Schema
+		if sr.Ref != "" {
+			refName := strings.TrimPrefix(sr.Ref, "#/components/schemas/")
+			if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
+				if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
+					sVal = componentSchemaRef.Value
+				} else {
+					return nil, fmt.Errorf("could not resolve schema reference: %s", sr.Ref)
+				}
+			} else {
+				return nil, fmt.Errorf("cannot resolve schema reference '%s' due to nil doc or components", sr.Ref)
+			}
+		} else {
+			sVal = sr.Value
+		}
+
+		if sVal == nil {
+			return nil, fmt.Errorf("schema value is nil for %s after potential dereferencing", name)
+		}
+
+		schemaType := "object"
+		if sVal.Type != nil && len(*sVal.Type) > 0 {
+			schemaType = (*sVal.Type)[0]
+		}
+
+		description := sVal.Description
+		if explicitDescription != "" {
+			description = explicitDescription
+		}
+
+		fieldSchema := map[string]interface{}{
+			"description": description,
+		}
+
+		switch schemaType {
+		case openapi3.TypeObject:
+			fieldSchema["type"] = "object"
+			nestedProps := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+			if sVal.Properties != nil {
+				for propName, propSchemaRef := range sVal.Properties {
+					nestedVal, err := convertSingleSchema(propName, propSchemaRef, "")
+					if err != nil {
+						fmt.Printf("Warning: skipping property '%s' of object '%s': %v\n", propName, name, err)
+						continue
+					}
+					nestedProps.Fields[propName] = nestedVal
+				}
+			}
+			fieldSchema["properties"] = structpb.NewStructValue(nestedProps)
+		case openapi3.TypeArray:
+			fieldSchema["type"] = "array"
+			if sVal.Items != nil {
+				itemSchemaVal, err := convertSingleSchema(name+"_items", sVal.Items, "")
+				if err != nil {
+					fmt.Printf("Warning: could not determine item type for array '%s': %v\n", name, err)
+				} else if itemSchemaVal != nil {
+					if sv := itemSchemaVal.GetStructValue(); sv != nil {
+						fieldSchema["items"] = sv.AsMap()
+					}
+				}
+			}
+		case openapi3.TypeString, openapi3.TypeNumber, openapi3.TypeInteger, openapi3.TypeBoolean:
+			fieldSchema["type"] = (*sVal.Type)[0]
+		default:
+			fmt.Printf("Warning: unhandled schema type '%s' for field '%s'. Defaulting to 'string'.\n", schemaType, name)
+			fieldSchema["type"] = "string"
+		}
+
+		finalSchemaStruct, err := structpb.NewStruct(fieldSchema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert field schema map for '%s' to structpb.Struct: %w", name, err)
+		}
+		return structpb.NewStructValue(finalSchemaStruct), nil
+	}
+
+	if bodySchemaRef != nil {
+		var bodyActualSchema *openapi3.Schema
+		if bodySchemaRef.Ref != "" {
+			refName := strings.TrimPrefix(bodySchemaRef.Ref, "#/components/schemas/")
+			if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
+				if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
+					bodyActualSchema = componentSchemaRef.Value
+				} else {
+					return nil, fmt.Errorf("could not resolve request body schema reference: %s", bodySchemaRef.Ref)
+				}
+			} else {
+				return nil, fmt.Errorf("cannot resolve request body schema reference '%s' due to nil doc or components", bodySchemaRef.Ref)
+			}
+		} else {
+			bodyActualSchema = bodySchemaRef.Value
+		}
+
+		if bodyActualSchema != nil {
+			isObject := len(bodyActualSchema.Properties) > 0
+			if bodyActualSchema.Type != nil && len(*bodyActualSchema.Type) > 0 {
+				isObject = (*bodyActualSchema.Type)[0] == openapi3.TypeObject
+			}
+
+			if isObject {
+				for propName, propSchemaRef := range bodyActualSchema.Properties {
+					val, err := convertSingleSchema(propName, propSchemaRef, "")
+					if err != nil {
+						fmt.Printf("Warning: skipping property '%s' from request body: %v\n", propName, err)
+						continue
+					}
+					props.Fields[propName] = val
+				}
+			} else {
+				val, err := convertSingleSchema("response_body", bodySchemaRef, bodyActualSchema.Description)
+				if err != nil {
+					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
+				} else {
+					props.Fields["response_body"] = val
+				}
+			}
+		}
+	}
+
+	return props, nil
 }
 
 // convertOpenAPISchemaToInputSchemaProperties converts an OpenAPI SchemaRef and a
@@ -485,137 +606,3 @@ func convertOpenAPISchemaToInputSchemaProperties(
 	return props, nil
 }
 
-// convertSchemaToPbFields converts an OpenAPI schema (and its properties if it's
-// an object) into a slice of MCP Field protobuf messages, which can be used to
-// provide more detailed type information about a tool's inputs and outputs.
-func convertSchemaToPbFields(schemaRef *openapi3.SchemaRef, doc *openapi3.T) []*pb.Field {
-	var pbFields []*pb.Field
-	if schemaRef == nil {
-		return pbFields
-	}
-
-	var schema *openapi3.Schema
-	if schemaRef.Ref != "" {
-		// Attempt to resolve the reference using the document's components.
-		// This is a simplified $ref resolver. kin-openapi's loader should generally handle this
-		// if components are correctly defined and $refs are within the same document or resolvable.
-		refName := strings.TrimPrefix(schemaRef.Ref, "#/components/schemas/")
-		if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
-			if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
-				schema = componentSchemaRef.Value // Use the resolved schema's value
-			} else {
-				// If ref not found in components, or it's an external/complex ref not supported by this simple resolver
-				// We might fall back to schemaRef.Value if it's somehow pre-resolved or contains partial info.
-				// However, if Ref is set, Value is usually nil until resolved.
-				// For robustness, if we can't resolve, we can't proceed with this schema.
-				// Or, one could try `schemaRef.Resolve(doc)` if loader context is set up for it.
-				// For now, if direct lookup fails, we assume it's unresolvable by this simple code.
-				fmt.Printf("Warning: Could not resolve schema reference: %s\n", schemaRef.Ref)
-				return pbFields // Cannot proceed with this schema
-			}
-		} else {
-			// Document or components are nil, cannot resolve.
-			fmt.Printf("Warning: Cannot resolve schema reference '%s' due to nil doc or components.\n", schemaRef.Ref)
-			return pbFields
-		}
-	} else {
-		schema = schemaRef.Value
-	}
-
-	if schema == nil {
-		return pbFields
-	}
-
-	// Handle nil schema.Type or empty type array
-	if schema.Type == nil || len(*schema.Type) == 0 {
-		// If type is not specified or empty, cannot determine structure.
-		// Consider logging this or returning a default field if appropriate.
-		return pbFields
-	}
-	primaryType := (*schema.Type)[0] // Use the first type for switch
-
-	switch primaryType { // Use the first type for switching logic
-	case openapi3.TypeObject:
-		if schema.Properties != nil {
-			for propName, propSchemaRef := range schema.Properties {
-				// Recursively call for nested schemas, but pass the propSchemaRef itself
-				// This simple version doesn't try to represent full nested structure in pb.Fields,
-				// but it extracts properties of the current object.
-				// For a property that is itself an object or array, its 'Type' will reflect that.
-
-				var propSchemaValue *openapi3.Schema
-				if propSchemaRef.Ref != "" {
-					refName := strings.TrimPrefix(propSchemaRef.Ref, "#/components/schemas/")
-					if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
-						if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
-							propSchemaValue = componentSchemaRef.Value
-						} else {
-							fmt.Printf("Warning: Could not resolve property schema reference: %s\n", propSchemaRef.Ref)
-							continue
-						}
-					} else {
-						fmt.Printf("Warning: Cannot resolve property schema reference '%s' due to nil doc or components.\n", propSchemaRef.Ref)
-						continue
-					}
-				} else {
-					propSchemaValue = propSchemaRef.Value
-				}
-
-				if propSchemaValue != nil {
-					var fieldTypeStr string
-					if propSchemaValue.Type != nil && len(*propSchemaValue.Type) > 0 {
-						fieldTypeStr = (*propSchemaValue.Type)[0] // Use first type
-					} else {
-						fieldTypeStr = "unknown_property_type"
-					}
-					fieldBuilder := pb.Field_builder{
-						Name:        &propName,
-						Description: &propSchemaValue.Description,
-						Type:        &fieldTypeStr,
-					}
-					// Check type of property, if it's an array, format its item type
-					if propSchemaValue.Type != nil && len(*propSchemaValue.Type) > 0 && (*propSchemaValue.Type)[0] == openapi3.TypeArray &&
-						propSchemaValue.Items != nil && propSchemaValue.Items.Value != nil &&
-						propSchemaValue.Items.Value.Type != nil && len(*propSchemaValue.Items.Value.Type) > 0 {
-						val := fmt.Sprintf("array[%s]", (*propSchemaValue.Items.Value.Type)[0])
-						fieldBuilder.Type = &val
-					}
-					// Note: For nested objects (fieldTypeStr == "object"), field.Type will be "object".
-					// Deeper conversion of nested objects into a flat list of pb.Field is complex
-					// and depends on how you want to represent that structure.
-					pbFields = append(pbFields, fieldBuilder.Build())
-				}
-			}
-		}
-	case openapi3.TypeArray:
-		fieldType := "array"
-		if schema.Items != nil { // Check schema.Items itself first
-			itemSchemaRef := schema.Items // itemSchemaRef is *openapi3.SchemaRef
-			itemTypeStr := "unknown_array_item_type"
-
-			if itemSchemaRef.Ref != "" {
-				itemTypeStr = strings.TrimPrefix(itemSchemaRef.Ref, "#/components/schemas/")
-			} else if itemSchemaRef.Value != nil && itemSchemaRef.Value.Type != nil && len(*itemSchemaRef.Value.Type) > 0 {
-				itemTypeStr = (*itemSchemaRef.Value.Type)[0] // Use first type
-			}
-			fieldType = fmt.Sprintf("array[%s]", itemTypeStr)
-		}
-		name := "array_items"
-		pbFields = append(pbFields, pb.Field_builder{
-			Name:        &name, // Placeholder name if schema itself is an array
-			Description: &schema.Description,
-			Type:        &fieldType,
-		}.Build())
-	default: // string, number, integer, boolean
-		// schema.Type is already confirmed non-nil and non-empty here due to earlier check and primaryType assignment
-		fieldTypeStr := primaryType
-		name := "value"
-		pbFields = append(pbFields, pb.Field_builder{
-			Name:        &name, // Placeholder name if schema is a primitive
-			Description: &schema.Description,
-			Type:        &fieldTypeStr,
-		}.Build())
-	}
-
-	return pbFields
-}

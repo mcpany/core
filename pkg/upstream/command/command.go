@@ -26,9 +26,11 @@ import (
 	"github.com/mcpxy/core/pkg/tool"
 	"github.com/mcpxy/core/pkg/upstream"
 	"github.com/mcpxy/core/pkg/util"
+	"github.com/mcpxy/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // CommandUpstream implements the upstream.Upstream interface for services that
@@ -105,16 +107,39 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	for _, toolDef := range commandLineService.GetCalls() {
 		schema := toolDef.GetSchema()
 		command := schema.GetName()
-		responseFields := []*pb.Field{
-			pb.Field_builder{Name: proto.String("command"), Type: proto.String("string"), Description: proto.String("The command that was executed.")}.Build(),
-			pb.Field_builder{Name: proto.String("args"), Type: proto.String("array"), Description: proto.String("The arguments passed to the command.")}.Build(),
-			pb.Field_builder{Name: proto.String("stdout"), Type: proto.String("string"), Description: proto.String("The standard output of the command.")}.Build(),
-			pb.Field_builder{Name: proto.String("stderr"), Type: proto.String("string"), Description: proto.String("The standard error of the command.")}.Build(),
-			pb.Field_builder{Name: proto.String("combined_output"), Type: proto.String("string"), Description: proto.String("The combined standard output and standard error.")}.Build(),
-			pb.Field_builder{Name: proto.String("start_time"), Type: proto.String("string"), Description: proto.String("The time the command started executing.")}.Build(),
-			pb.Field_builder{Name: proto.String("end_time"), Type: proto.String("string"), Description: proto.String("The time the command finished executing.")}.Build(),
-			pb.Field_builder{Name: proto.String("return_code"), Type: proto.String("integer"), Description: proto.String("The exit code of the command.")}.Build(),
-			pb.Field_builder{Name: proto.String("status"), Type: proto.String("string"), Description: proto.String("The execution status of the command (e.g., success, error, timeout).")}.Build(),
+
+		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(toolDef.GetParameters())
+		if err != nil {
+			log.Error("Failed to convert config schema to proto properties", "error", err)
+			continue
+		}
+		inputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(inputProperties),
+			},
+		}
+
+		outputProperties, err := structpb.NewStruct(map[string]interface{}{
+			"command":         map[string]interface{}{"type": "string", "description": "The command that was executed."},
+			"args":            map[string]interface{}{"type": "array", "description": "The arguments passed to the command."},
+			"stdout":          map[string]interface{}{"type": "string", "description": "The standard output of the command."},
+			"stderr":          map[string]interface{}{"type": "string", "description": "The standard error of the command."},
+			"combined_output": map[string]interface{}{"type": "string", "description": "The combined standard output and standard error."},
+			"start_time":      map[string]interface{}{"type": "string", "description": "The time the command started executing."},
+			"end_time":        map[string]interface{}{"type": "string", "description": "The time the command finished executing."},
+			"return_code":     map[string]interface{}{"type": "integer", "description": "The exit code of the command."},
+			"status":          map[string]interface{}{"type": "string", "description": "The execution status of the command (e.g., success, error, timeout)."},
+		})
+		if err != nil {
+			log.Error("Failed to create output properties", "error", err)
+			continue
+		}
+		outputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(outputProperties),
+			},
 		}
 
 		newToolProto := pb.Tool_builder{
@@ -123,7 +148,8 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			Description:         proto.String(schema.GetDescription()),
 			ServiceId:           proto.String(serviceKey),
 			UnderlyingMethodFqn: proto.String(command),
-			ResponseFields:      responseFields,
+			InputSchema:         inputSchema,
+			OutputSchema:        outputSchema,
 		}.Build()
 
 		newTool := tool.NewCommandTool(newToolProto, commandLineService.GetCommand())
