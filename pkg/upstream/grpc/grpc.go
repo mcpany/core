@@ -108,17 +108,25 @@ func (u *GRPCUpstream) Register(
 	}
 	u.poolManager.Register(serviceKey, grpcPool)
 
-	item := u.reflectionCache.Get(address)
 	var fds *descriptorpb.FileDescriptorSet
-	if item != nil {
-		fds = item.Value()
+	if grpcService.GetUseReflection() {
+		item := u.reflectionCache.Get(address)
+		if item != nil {
+			fds = item.Value()
+		} else {
+			var err error
+			fds, err = protobufparser.ParseProtoByReflection(ctx, address)
+			if err != nil {
+				return "", nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
+			}
+			u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
+		}
 	} else {
 		var err error
-		fds, err = protobufparser.ParseProtoByReflection(ctx, address)
+		fds, err = protobufparser.ParseProtoFromDefs(ctx, grpcService.GetProtoDefinitions(), grpcService.GetProtoCollection())
 		if err != nil {
-			return "", nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
+			return "", nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
 		}
-		u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
 	}
 
 	toolManager.AddServiceInfo(serviceKey, &tool.ServiceInfo{

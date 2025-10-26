@@ -29,7 +29,12 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
 
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
 )
 
@@ -81,6 +86,187 @@ func (f *McpField) GetDescription() string {
 // GetType returns the type of the McpField.
 func (f *McpField) GetType() string {
 	return f.Type
+}
+
+// ParseProtoFromDefs parses a set of protobuf definitions from a slice of
+// ProtoDefinition and a ProtoCollection. It writes the proto files to a
+// temporary directory, invokes protoc to generate a FileDescriptorSet, and
+// then returns the parsed FileDescriptorSet.
+func ParseProtoFromDefs(
+	ctx context.Context,
+	protoDefinitions []*configv1.ProtoDefinition,
+	protoCollections []*configv1.ProtoCollection,
+) (*descriptorpb.FileDescriptorSet, error) {
+	// Create a temporary directory to store the proto files
+	tempDir, err := os.MkdirTemp("", "proto-defs-*")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create a temporary file for the descriptor set
+	descriptorSetFile, err := os.CreateTemp(tempDir, "descriptor-set-*.bin")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary file for descriptor set: %w", err)
+	}
+	descriptorSetPath := descriptorSetFile.Name()
+	descriptorSetFile.Close()
+
+	var protoFiles []string
+
+	// Process ProtoCollection first
+	for _, protoCollection := range protoCollections {
+		if protoCollection != nil {
+			collectionFiles, err := processProtoCollection(protoCollection, tempDir)
+			if err != nil {
+				return nil, fmt.Errorf("failed to process proto collection: %w", err)
+			}
+			protoFiles = append(protoFiles, collectionFiles...)
+		}
+	}
+
+	// Process ProtoDefinitions
+	for _, def := range protoDefinitions {
+		switch def.WhichProtoRef() {
+		case configv1.ProtoDefinition_ProtoFile_case:
+			protoFile := def.GetProtoFile()
+			filePath, err := writeProtoFile(protoFile, tempDir)
+			if err != nil {
+				return nil, fmt.Errorf("failed to write proto file: %w", err)
+			}
+			protoFiles = append(protoFiles, filePath)
+		case configv1.ProtoDefinition_ProtoDescriptor_case:
+			// For now, we assume proto descriptors are handled by protoc
+			// by being included in the import paths.
+		}
+	}
+
+	if len(protoFiles) == 0 {
+		return nil, fmt.Errorf("no proto files found to parse")
+	}
+
+	// Invoke protoc to generate the FileDescriptorSet
+	protocPath := "/app/build/env/bin/protoc"
+	if _, err := os.Stat(protocPath); os.IsNotExist(err) {
+		protocPath, err = exec.LookPath("protoc")
+		if err != nil {
+			return nil, fmt.Errorf("protoc not found in PATH: %w", err)
+		}
+	}
+
+	args := []string{
+		"--descriptor_set_out=" + descriptorSetPath,
+		"--proto_path=" + tempDir,
+	}
+	args = append(args, protoFiles...)
+
+	cmd := exec.CommandContext(ctx, protocPath, args...)
+	cmd.Dir = tempDir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("protoc failed: %w\nOutput: %s", err, string(output))
+	}
+
+	// Read the generated FileDescriptorSet
+	fdsBytes, err := os.ReadFile(descriptorSetPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read descriptor set file: %w", err)
+	}
+
+	fds := &descriptorpb.FileDescriptorSet{}
+	if err := proto.Unmarshal(fdsBytes, fds); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal FileDescriptorSet: %w", err)
+	}
+
+	return fds, nil
+}
+
+func processProtoCollection(
+	collection *configv1.ProtoCollection,
+	tempDir string,
+) ([]string, error) {
+	var protoFiles []string
+	regex, err := regexp.Compile(collection.GetPathMatchRegex())
+	if err != nil {
+		return nil, fmt.Errorf("invalid path_match_regex: %w", err)
+	}
+
+	walkFunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && regex.MatchString(path) {
+			relPath, err := filepath.Rel(collection.GetRootPath(), path)
+			if err != nil {
+				return fmt.Errorf("failed to get relative path for %s: %w", path, err)
+			}
+
+			destPath := filepath.Join(tempDir, relPath)
+			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+				return fmt.Errorf("failed to create directory for proto file: %w", err)
+			}
+
+			content, err := os.ReadFile(path)
+			if err != nil {
+				return fmt.Errorf("failed to read proto file %s: %w", path, err)
+			}
+			if err := os.WriteFile(destPath, content, 0644); err != nil {
+				return fmt.Errorf("failed to write proto file to temp dir: %w", err)
+			}
+			protoFiles = append(protoFiles, destPath)
+		}
+		return nil
+	}
+
+	if collection.GetIsRecursive() {
+		if err := filepath.Walk(collection.GetRootPath(), walkFunc); err != nil {
+			return nil, fmt.Errorf("failed to walk root path: %w", err)
+		}
+	} else {
+		entries, err := os.ReadDir(collection.GetRootPath())
+		if err != nil {
+			return nil, fmt.Errorf("failed to read root path: %w", err)
+		}
+		for _, entry := range entries {
+			fullPath := filepath.Join(collection.GetRootPath(), entry.Name())
+			info, err := entry.Info()
+			if err != nil {
+				return nil, fmt.Errorf("failed to get file info: %w", err)
+			}
+			if err := walkFunc(fullPath, info, nil); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return protoFiles, nil
+}
+
+func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, error) {
+	filePath := filepath.Join(tempDir, protoFile.GetFileName())
+	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+		return "", fmt.Errorf("failed to create directory for proto file: %w", err)
+	}
+
+	var content []byte
+	var err error
+	switch protoFile.WhichFileRef() {
+	case configv1.ProtoFile_FileContent_case:
+		content = []byte(protoFile.GetFileContent())
+	case configv1.ProtoFile_FilePath_case:
+		filePathRef := protoFile.GetFilePath()
+		content, err = os.ReadFile(filePathRef)
+		if err != nil {
+			return "", fmt.Errorf("failed to read proto file from path %s: %w", filePathRef, err)
+		}
+	default:
+		return "", fmt.Errorf("proto file definition for '%s' has neither content nor a path", protoFile.GetFileName())
+	}
+
+	if err := os.WriteFile(filePath, content, 0644); err != nil {
+		return "", fmt.Errorf("failed to write proto file: %w", err)
+	}
+	return filePath, nil
 }
 
 // McpPrompt represents the information extracted from a gRPC method that has
