@@ -42,7 +42,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // ToolManagerInterface defines the contract for a tool manager, which is
@@ -633,63 +632,9 @@ type CommandTool struct {
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
 func NewCommandTool(tool *v1.Tool, command string) *CommandTool {
-	if tool.GetOutputSchema() == nil {
-		tool.SetOutputSchema(generateSchemaFromFields(tool.GetResponseFields()))
-	}
 	return &CommandTool{
 		tool:    tool,
 		command: command,
-	}
-}
-
-// generateSchemaFromFields converts a slice of Field definitions into a
-// JSON schema-like protobuf Struct, which can be used for describing the
-// expected input or output of a tool.
-func generateSchemaFromFields(fields []*v1.Field) *structpb.Struct {
-	properties := make(map[string]*structpb.Value)
-	for _, field := range fields {
-		fieldProps := map[string]*structpb.Value{
-			"type": {
-				Kind: &structpb.Value_StringValue{StringValue: field.GetType()},
-			},
-			"description": {
-				Kind: &structpb.Value_StringValue{StringValue: field.GetDescription()},
-			},
-		}
-		if field.GetType() == "array" {
-			fieldProps["items"] = &structpb.Value{
-				Kind: &structpb.Value_StructValue{
-					StructValue: &structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"type": {
-								Kind: &structpb.Value_StringValue{StringValue: "string"},
-							},
-						},
-					},
-				},
-			}
-		}
-		properties[field.GetName()] = &structpb.Value{
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: fieldProps,
-				},
-			},
-		}
-	}
-	return &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"type": {
-				Kind: &structpb.Value_StringValue{StringValue: "object"},
-			},
-			"properties": {
-				Kind: &structpb.Value_StructValue{
-					StructValue: &structpb.Struct{
-						Fields: properties,
-					},
-				},
-			},
-		},
 	}
 }
 

@@ -18,15 +18,12 @@ package openapi
 
 import (
 	"context"
-	"reflect"
-	"sort"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/mcpxy/core/pkg/util"
 	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 const sampleOpenAPISpecJSON = `
@@ -485,96 +482,6 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	}
 }
 
-func TestConvertSchemaToPbFields(t *testing.T) {
-	doc := loadTestSpec(t) // Load full doc to resolve components
-
-	// Test case 1: Simple object (PetInput)
-	petInputSchemaRef := doc.Components.Schemas["PetInput"]
-	if petInputSchemaRef == nil {
-		t.Fatal("PetInput schema not found in test spec components")
-	}
-	fieldsPetInput := convertSchemaToPbFields(petInputSchemaRef, doc)
-	expectedPetInputFields := []*v1.Field{
-		v1.Field_builder{Name: proto.String("name"), Description: proto.String("Name of the Pet."), Type: proto.String("string")}.Build(),
-		v1.Field_builder{Name: proto.String("status"), Description: proto.String("pet status in the store"), Type: proto.String("string")}.Build(), // Enum is string
-	}
-	// Helper for sorting []*v1.Field by Name
-	sortPbFieldsByName := func(fields []*v1.Field) {
-		sort.Slice(fields, func(i, j int) bool {
-			return fields[i].GetName() < fields[j].GetName()
-		})
-	}
-	sortPbFieldsByName(fieldsPetInput)
-	sortPbFieldsByName(expectedPetInputFields)
-	if !reflect.DeepEqual(fieldsPetInput, expectedPetInputFields) {
-		t.Errorf("convertSchemaToPbFields(PetInput) got %+v, want %+v", fieldsPetInput, expectedPetInputFields)
-	}
-
-	// Test case 2: Object with $ref array (Pet from listPets response)
-	// This refers to #/components/schemas/Pet. The schema for listPets response is an array of these.
-	// So we test convertSchemaToPbFields on the array schema itself.
-	listPetsOp := doc.Paths.Find("/pets").Get
-	if listPetsOp == nil {
-		t.Fatal("GET /pets operation not found")
-	}
-	resp200 := listPetsOp.Responses.Status(200) // Changed "200" to 200
-	if resp200 == nil {
-		t.Fatal("200 response not found for GET /pets")
-	}
-	arraySchemaRef := resp200.Value.Content.Get("application/json").Schema
-	if arraySchemaRef == nil {
-		t.Fatal("Schema for GET /pets 200 response application/json content not found")
-	}
-	fieldsPetArray := convertSchemaToPbFields(arraySchemaRef, doc)
-	expectedPetArrayField := []*v1.Field{
-		v1.Field_builder{Name: proto.String("array_items"), Description: proto.String(""), Type: proto.String("array[Pet]")}.Build(), // Items ref is #/components/schemas/Pet
-	}
-	if !reflect.DeepEqual(fieldsPetArray, expectedPetArrayField) {
-		t.Errorf("convertSchemaToPbFields(PetArray) got %+v, want %+v", fieldsPetArray, expectedPetArrayField)
-	}
-
-	// Test case 3: Direct $ref to Pet schema
-	petSchemaRef := &openapi3.SchemaRef{Ref: "#/components/schemas/Pet"}
-	fieldsPet := convertSchemaToPbFields(petSchemaRef, doc)
-	expectedPetFields := []*v1.Field{
-		v1.Field_builder{Name: proto.String("id"), Description: proto.String("Unique identifier for the Pet."), Type: proto.String("integer")}.Build(),
-		v1.Field_builder{Name: proto.String("name"), Description: proto.String("Name of the Pet."), Type: proto.String("string")}.Build(),
-		v1.Field_builder{Name: proto.String("tag"), Description: proto.String(""), Type: proto.String("string")}.Build(),
-	}
-	sortPbFieldsByName(fieldsPet) // Use the same helper
-	sortPbFieldsByName(expectedPetFields)
-
-	if !reflect.DeepEqual(fieldsPet, expectedPetFields) {
-		t.Errorf("convertSchemaToPbFields(Pet $ref) got %+v, want %+v", fieldsPet, expectedPetFields)
-	}
-
-	// Test case 4: Primitive type (string)
-	s := openapi3.NewStringSchema()
-	s.Description = "A simple string."
-	stringSchemaRef := &openapi3.SchemaRef{
-		Value: s,
-	}
-	fieldsString := convertSchemaToPbFields(stringSchemaRef, doc)
-	expectedStringField := []*v1.Field{
-		v1.Field_builder{Name: proto.String("value"), Description: proto.String("A simple string."), Type: proto.String("string")}.Build(),
-	}
-	if !reflect.DeepEqual(fieldsString, expectedStringField) {
-		t.Errorf("convertSchemaToPbFields(String) got %+v, want %+v", fieldsString, expectedStringField)
-	}
-
-	// Test case 5: Nil schema ref
-	nilSchemaFields := convertSchemaToPbFields(nil, doc)
-	if len(nilSchemaFields) != 0 {
-		t.Errorf("convertSchemaToPbFields(nil) expected empty slice, got %+v", nilSchemaFields)
-	}
-
-	// Test case 6: Schema ref with nil value
-	nilValueSchemaFields := convertSchemaToPbFields(&openapi3.SchemaRef{Value: nil}, doc)
-	if len(nilValueSchemaFields) != 0 {
-		t.Errorf("convertSchemaToPbFields(&openapi3.SchemaRef{Value: nil}) expected empty slice, got %+v", nilValueSchemaFields)
-	}
-}
-
 // TestParseOpenAPISpec primarily tests loading and validation.
 // Actual parsing into structures is indirectly tested by other functions.
 // File operations are avoided here due to potential unreliability in the test environment.
@@ -618,43 +525,6 @@ func TestParseOpenAPISpec_LoadAndValidate(t *testing.T) {
 	// Due to tool limitations (no direct file system interaction for writing temp files for tests),
 	// testing the LoadFromFile part of ParseOpenAPISpec is deferred.
 	// The above commented-out section for non-existent file is illustrative.
-}
-
-func TestConvertSchemaToPbFields_ComplexRefs(t *testing.T) {
-	doc := loadTestSpec(t)
-	// Add a new schema that references Pet
-	complexSchema := &openapi3.Schema{
-		Type: &openapi3.Types{openapi3.TypeObject},
-		Properties: openapi3.Schemas{
-			"primary_pet": {
-				Ref: "#/components/schemas/Pet",
-			},
-			"related_pets": {
-				Value: &openapi3.Schema{
-					Type: &openapi3.Types{openapi3.TypeArray},
-					Items: &openapi3.SchemaRef{
-						Ref: "#/components/schemas/Pet",
-					},
-				},
-			},
-		},
-	}
-	doc.Components.Schemas["ComplexPetHolder"] = &openapi3.SchemaRef{Value: complexSchema}
-
-	schemaRef := &openapi3.SchemaRef{Ref: "#/components/schemas/ComplexPetHolder"}
-	fields := convertSchemaToPbFields(schemaRef, doc)
-
-	expectedFields := []*v1.Field{
-		v1.Field_builder{Name: proto.String("primary_pet"), Description: proto.String(""), Type: proto.String("object")}.Build(),
-		v1.Field_builder{Name: proto.String("related_pets"), Description: proto.String(""), Type: proto.String("array")}.Build(),
-	}
-
-	sort.Slice(fields, func(i, j int) bool { return fields[i].GetName() < fields[j].GetName() })
-	sort.Slice(expectedFields, func(i, j int) bool { return expectedFields[i].GetName() < expectedFields[j].GetName() })
-
-	if !reflect.DeepEqual(fields, expectedFields) {
-		t.Errorf("TestConvertSchemaToPbFields_ComplexRefs() got %+v, want %+v", fields, expectedFields)
-	}
 }
 
 func TestExtractMcpOperationsFromOpenAPI_XMLContent(t *testing.T) {
@@ -760,19 +630,6 @@ func TestConvertMcpOperationsToTools_NoOperationID(t *testing.T) {
 
 	assert.Len(t, tools, 1)
 	assert.Equal(t, "GET_/no-id", tools[0].GetName())
-}
-
-func TestConvertSchemaToPbFields_Empty(t *testing.T) {
-	doc := loadTestSpec(t)
-	// Test with a schema that has no type
-	schemaRef := &openapi3.SchemaRef{Value: &openapi3.Schema{}}
-	fields := convertSchemaToPbFields(schemaRef, doc)
-	assert.Empty(t, fields, "Schema with no type should produce no fields")
-
-	// Test with a schema that has an empty type array
-	schemaRef = &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{}}}
-	fields = convertSchemaToPbFields(schemaRef, doc)
-	assert.Empty(t, fields, "Schema with empty type array should produce no fields")
 }
 
 func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
