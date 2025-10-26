@@ -24,14 +24,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/mcpserver"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	gogrpc "google.golang.org/grpc"
-)
-
-import (
 	"bytes"
 	"log/slog"
 	"net/http"
@@ -39,6 +31,11 @@ import (
 	"strings"
 
 	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/mcpserver"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	gogrpc "google.golang.org/grpc"
 )
 
 func TestHealthCheck(t *testing.T) {
@@ -174,7 +171,7 @@ func TestRun_StdioMode(t *testing.T) {
 	var stdioModeCalled bool
 	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
 		stdioModeCalled = true
-		return nil
+		return fmt.Errorf("stdio mode error")
 	}
 
 	app := &Application{
@@ -185,9 +182,10 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
+	err := app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
+	assert.EqualError(t, err, "stdio mode error")
 }
 
 func TestRun_NoGrpcServer(t *testing.T) {
