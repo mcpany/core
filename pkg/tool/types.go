@@ -633,49 +633,63 @@ type CommandTool struct {
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
 func NewCommandTool(tool *v1.Tool, command string) *CommandTool {
-	outputSchema := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"command": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
+	if tool.GetOutputSchema() == nil {
+		tool.SetOutputSchema(generateSchemaFromFields(tool.GetResponseFields()))
+	}
+	return &CommandTool{
+		tool:    tool,
+		command: command,
+	}
+}
+
+// generateSchemaFromFields converts a slice of Field definitions into a
+// JSON schema-like protobuf Struct, which can be used for describing the
+// expected input or output of a tool.
+func generateSchemaFromFields(fields []*v1.Field) *structpb.Struct {
+	properties := make(map[string]*structpb.Value)
+	for _, field := range fields {
+		fieldProps := map[string]*structpb.Value{
+			"type": {
+				Kind: &structpb.Value_StringValue{StringValue: field.GetType()},
 			},
-			"args": {
-				Kind: &structpb.Value_ListValue{
-					ListValue: &structpb.ListValue{
-						Values: []*structpb.Value{
-							{
+			"description": {
+				Kind: &structpb.Value_StringValue{StringValue: field.GetDescription()},
+			},
+		}
+		if field.GetType() == "array" {
+			fieldProps["items"] = &structpb.Value{
+				Kind: &structpb.Value_StructValue{
+					StructValue: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {
 								Kind: &structpb.Value_StringValue{StringValue: "string"},
 							},
 						},
 					},
 				},
+			}
+		}
+		properties[field.GetName()] = &structpb.Value{
+			Kind: &structpb.Value_StructValue{
+				StructValue: &structpb.Struct{
+					Fields: fieldProps,
+				},
 			},
-			"stdout": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
+		}
+	}
+	return &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"type": {
+				Kind: &structpb.Value_StringValue{StringValue: "object"},
 			},
-			"stderr": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
-			},
-			"combined_output": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
-			},
-			"start_time": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
-			},
-			"end_time": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
-			},
-			"return_code": {
-				Kind: &structpb.Value_NumberValue{NumberValue: 0},
-			},
-			"status": {
-				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			"properties": {
+				Kind: &structpb.Value_StructValue{
+					StructValue: &structpb.Struct{
+						Fields: properties,
+					},
+				},
 			},
 		},
-	}
-	tool.SetOutputSchema(outputSchema)
-	return &CommandTool{
-		tool:    tool,
-		command: command,
 	}
 }
 
