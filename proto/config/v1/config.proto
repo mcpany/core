@@ -222,6 +222,38 @@ message UpstreamServiceConfig {
   AuthenticationConfig authentication = 15;
 }
 
+// ProtoDefinition defines a single protobuf source, which can be a file or a descriptor.
+message ProtoDefinition {
+  oneof proto_ref {
+    ProtoFile proto_file = 1;
+    ProtoDescriptor proto_descriptor = 2;
+  }
+}
+
+// ProtoFile represents a .proto file, which can be specified by content or path.
+message ProtoFile {
+  string file_name = 1;
+  oneof file_ref {
+    string file_content = 2;
+    string file_path = 3;
+  }
+}
+
+// ProtoDescriptor represents a compiled protobuf descriptor file (.dsc).
+message ProtoDescriptor {
+  string file_name = 1;
+  oneof file_ref {
+    string file_path = 2;
+  }
+}
+
+// ProtoCollection defines a way to discover multiple .proto files from the filesystem.
+message ProtoCollection {
+  string root_path = 1;
+  string path_match_regex = 2;
+  bool is_recursive = 3;
+}
+
 // --- Upstream Service Types ---
 
 // GrpcUpstreamService defines an upstream service that speaks gRPC.
@@ -238,36 +270,8 @@ message GrpcUpstreamService {
   GrpcHealthCheck health_check = 6;
   // A list of protobuf definitions for the gRPC service.
   repeated ProtoDefinition proto_definitions = 7;
-  // A list of protobuf collections.
+  // A collection of protobuf files to be discovered.
   repeated ProtoCollection proto_collections = 8;
-}
-
-message ProtoDefinition {
-  oneof proto_ref {
-    ProtoFile proto_file = 1;
-    ProtoDescriptor proto_descriptor = 2;
-  }
-}
-
-message ProtoFile {
-  string file_name = 1;
-  oneof file_ref {
-    string file_content = 2;
-    string file_path = 3;
-  }
-}
-
-message ProtoDescriptor {
-  string file_name = 1;
-  oneof file_ref {
-    string file_path = 2;
-  }
-}
-
-message ProtoCollection {
-  string root_path = 1;
-  string path_match_regex = 2;
-  bool is_recursive = 3;
 }
 
 // HttpUpstreamService defines an upstream service that speaks HTTP.

@@ -17,18 +17,15 @@
 package protobufparser
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
-	"github.com/mcpxy/core/pkg/logging"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
@@ -36,6 +33,8 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+
+	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
@@ -88,192 +87,6 @@ func (f *McpField) GetType() string {
 	return f.Type
 }
 
-// ParseProto parses the given proto definitions and returns a FileDescriptorSet.
-func ParseProto(protoDefinitions []*configv1.ProtoDefinition, protoCollections []*configv1.ProtoCollection) (*descriptorpb.FileDescriptorSet, error) {
-	log := logging.GetLogger()
-	tempDir, err := os.MkdirTemp("", "proto-")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create temp dir: %w", err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	protoFiles := make([]string, 0)
-
-	for _, p := range protoDefinitions {
-		if protoFile := p.GetProtoFile(); protoFile != nil {
-			filePath, err := handleProtoFile(protoFile, tempDir)
-			if err != nil {
-				return nil, err
-			}
-			protoFiles = append(protoFiles, filePath)
-		} else if protoDescriptor := p.GetProtoDescriptor(); protoDescriptor != nil {
-			filePath, err := handleProtoDescriptor(protoDescriptor, tempDir)
-			if err != nil {
-				return nil, err
-			}
-			protoFiles = append(protoFiles, filePath)
-		}
-	}
-
-	for _, protoCollection := range protoCollections {
-		collectionFiles, err := handleProtoCollection(protoCollection, tempDir)
-		if err != nil {
-			return nil, err
-		}
-		protoFiles = append(protoFiles, collectionFiles...)
-	}
-
-	if len(protoFiles) == 0 {
-		return nil, fmt.Errorf("no proto files found")
-	}
-
-	descriptorSetPath := filepath.Join(tempDir, "descriptor.pb")
-	protocArgs := []string{
-		"--proto_path=" + tempDir,
-		"--descriptor_set_out=" + descriptorSetPath,
-	}
-	protocArgs = append(protocArgs, protoFiles...)
-
-	log.Info("Running protoc", "args", protocArgs)
-	cmd := exec.Command("protoc", protocArgs...)
-	cmd.Dir = tempDir
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("protoc failed: %s\n%w", output, err)
-	}
-
-	fdsBytes, err := os.ReadFile(descriptorSetPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read descriptor set file: %w", err)
-	}
-
-	fds := &descriptorpb.FileDescriptorSet{}
-	if err := proto.Unmarshal(fdsBytes, fds); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal file descriptor set: %w", err)
-	}
-
-	return fds, nil
-}
-
-func handleProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, error) {
-	if protoFile == nil {
-		return "", fmt.Errorf("proto file is nil")
-	}
-	fileName := protoFile.GetFileName()
-	if fileName == "" {
-		return "", fmt.Errorf("proto file name is empty")
-	}
-	filePath := filepath.Join(tempDir, fileName)
-	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
-		return "", fmt.Errorf("failed to create dir for proto file: %w", err)
-	}
-
-	if fileContent := protoFile.GetFileContent(); fileContent != "" {
-		if err := os.WriteFile(filePath, []byte(fileContent), 0644); err != nil {
-			return "", fmt.Errorf("failed to write proto file content: %w", err)
-		}
-	} else if filePathFromRef := protoFile.GetFilePath(); filePathFromRef != "" {
-		content, err := os.ReadFile(filePathFromRef)
-		if err != nil {
-			return "", fmt.Errorf("failed to read proto file from path: %w", err)
-		}
-		if err := os.WriteFile(filePath, content, 0644); err != nil {
-			return "", fmt.Errorf("failed to write proto file content: %w", err)
-		}
-	}
-
-	return filePath, nil
-}
-
-func handleProtoDescriptor(protoDescriptor *configv1.ProtoDescriptor, tempDir string) (string, error) {
-	if protoDescriptor == nil {
-		return "", fmt.Errorf("proto descriptor is nil")
-	}
-	fileName := protoDescriptor.GetFileName()
-	if fileName == "" {
-		return "", fmt.Errorf("proto descriptor file name is empty")
-	}
-	filePath := filepath.Join(tempDir, fileName)
-	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
-		return "", fmt.Errorf("failed to create dir for proto descriptor file: %w", err)
-	}
-
-	if filePathFromRef := protoDescriptor.GetFilePath(); filePathFromRef != "" {
-		content, err := os.ReadFile(filePathFromRef)
-		if err != nil {
-			return "", fmt.Errorf("failed to read proto descriptor file from path: %w", err)
-		}
-		if err := os.WriteFile(filePath, content, 0644); err != nil {
-			return "", fmt.Errorf("failed to write proto descriptor file content: %w", err)
-		}
-	} else {
-		return "", fmt.Errorf("proto descriptor file path is empty")
-	}
-
-	return filePath, nil
-}
-
-func handleProtoCollection(collection *configv1.ProtoCollection, tempDir string) ([]string, error) {
-	if collection == nil {
-		return nil, nil
-	}
-	rootPath := collection.GetRootPath()
-	if rootPath == "" {
-		return nil, fmt.Errorf("proto collection root path is empty")
-	}
-	pathMatchRegex, err := regexp.Compile(collection.GetPathMatchRegex())
-	if err != nil {
-		return nil, fmt.Errorf("invalid path match regex: %w", err)
-	}
-
-	protoFiles := make([]string, 0)
-	walkFunc := func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() && pathMatchRegex.MatchString(path) {
-			relPath, err := filepath.Rel(rootPath, path)
-			if err != nil {
-				return err
-			}
-			destPath := filepath.Join(tempDir, relPath)
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-				return err
-			}
-			content, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			if err := os.WriteFile(destPath, content, 0644); err != nil {
-				return err
-			}
-			protoFiles = append(protoFiles, destPath)
-		}
-		return nil
-	}
-
-	if collection.GetIsRecursive() {
-		err = filepath.Walk(rootPath, walkFunc)
-	} else {
-		entries, err := os.ReadDir(rootPath)
-		if err != nil {
-			return nil, err
-		}
-		for _, entry := range entries {
-			path := filepath.Join(rootPath, entry.Name())
-			info, err := entry.Info()
-			if err != nil {
-				return nil, err
-			}
-			if err := walkFunc(path, info, nil); err != nil {
-				return nil, err
-			}
-		}
-	}
-
-	return protoFiles, err
-}
-
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
 type McpPrompt struct {
@@ -285,6 +98,62 @@ type McpPrompt struct {
 	FullMethodName string
 	RequestType    string
 	ResponseType   string
+}
+
+// ParseProtoFiles parses a list of proto files and returns a FileDescriptorSet.
+func ParseProtoFiles(protoFiles map[string]string, includePaths []string) (*descriptorpb.FileDescriptorSet, error) {
+	if len(protoFiles) == 0 {
+		return &descriptorpb.FileDescriptorSet{}, nil
+	}
+	// Create a temporary directory to store the proto files
+	tmpDir, err := os.MkdirTemp("", "proto-")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// Write the proto files to the temporary directory
+	for fileName, fileContent := range protoFiles {
+		filePath := filepath.Join(tmpDir, fileName)
+		if err := os.WriteFile(filePath, []byte(fileContent), 0644); err != nil {
+			return nil, fmt.Errorf("failed to write proto file %s: %w", fileName, err)
+		}
+	}
+
+	// Get the absolute paths of the proto files
+	protoFilePaths := make([]string, 0, len(protoFiles))
+	for fileName := range protoFiles {
+		protoFilePaths = append(protoFilePaths, filepath.Join(tmpDir, fileName))
+	}
+
+	// Add the temporary directory to the include paths
+	includePaths = append([]string{tmpDir}, includePaths...)
+
+	// Run protoc to generate the FileDescriptorSet
+	fds := &descriptorpb.FileDescriptorSet{}
+	protocArgs := []string{
+		"--descriptor_set_out=/dev/stdout",
+	}
+	for _, includePath := range includePaths {
+		protocArgs = append(protocArgs, "-I="+includePath)
+	}
+	if len(protoFilePaths) > 0 {
+		protocArgs = append(protocArgs, protoFilePaths...)
+	}
+
+	cmd := exec.Command("protoc", protocArgs...)
+	var out, stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("failed to run protoc with args %v: %w\n%s", protocArgs, err, stderr.String())
+	}
+
+	if err := proto.Unmarshal(out.Bytes(), fds); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal FileDescriptorSet: %w", err)
+	}
+
+	return fds, nil
 }
 
 // McpResource represents a protobuf message that has been annotated as an MCP

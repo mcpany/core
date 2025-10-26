@@ -19,11 +19,15 @@ package grpc
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -363,6 +367,33 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
 		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
 	})
+	t.Run("gRPC reflection is implemented correctly", func(t *testing.T) {
+		poolManager := pool.NewManager()
+		upstream := NewGRPCUpstream(poolManager)
+		tm := NewMockToolManager()
+
+		grpcService := &configv1.GrpcUpstreamService{}
+		grpcService.SetAddress(addr)
+		grpcService.SetUseReflection(true)
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("calculator-service")
+		serviceConfig.SetGrpcService(grpcService)
+
+		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		require.NoError(t, err)
+		assert.NotEmpty(t, discoveredTools)
+
+		// Check if the reflection service tool is registered
+		calculatorToolFound := false
+		for _, tool := range tm.ListTools() {
+			if tool.Tool().GetName() == "CalculatorAdd" {
+				calculatorToolFound = true
+				break
+			}
+		}
+		assert.True(t, calculatorToolFound, "gRPC reflection tool should be registered")
+	})
 }
 
 func TestFindMethodDescriptor(t *testing.T) {
@@ -397,5 +428,141 @@ func TestFindMethodDescriptor(t *testing.T) {
 		_, err := findMethodDescriptor(files, "calculator.v1.CalculatorService/NonExistentMethod")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not find descriptor for service 'calculator.v1.CalculatorService'")
+	})
+}
+
+func TestGRPCUpstream_Register_WithProtoFiles(t *testing.T) {
+	var promptManager prompt.PromptManagerInterface
+	var resourceManager resource.ResourceManagerInterface
+
+	// Set the PATH to include the location of the protoc binary
+	originalPath := os.Getenv("PATH")
+	defer os.Setenv("PATH", originalPath)
+	os.Setenv("PATH", originalPath+":/usr/local/bin:/app/build/env/bin")
+	out, _ := exec.Command("protoc", "--version").Output()
+	t.Log(string(out))
+
+	// Create a temporary directory for proto files
+	tmpDir, err := ioutil.TempDir("", "proto-test")
+	require.NoError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	// Create a proto file
+	protoContent := `
+syntax = "proto3";
+package test;
+service TestService {
+  rpc TestMethod(TestRequest) returns (TestResponse);
+}
+message TestRequest {
+  string name = 1;
+}
+message TestResponse {
+  string message = 1;
+}
+`
+	protoFilePath := filepath.Join(tmpDir, "test.proto")
+	err = ioutil.WriteFile(protoFilePath, []byte(protoContent), 0644)
+	require.NoError(t, err)
+
+	t.Run("successful registration with proto collection", func(t *testing.T) {
+		poolManager := pool.NewManager()
+		upstream := NewGRPCUpstream(poolManager)
+		tm := NewMockToolManager()
+
+		grpcService := &configv1.GrpcUpstreamService{}
+		grpcService.SetUseReflection(false)
+		grpcService.SetProtoCollections([]*configv1.ProtoCollection{
+			(&configv1.ProtoCollection_builder{
+				RootPath:       &tmpDir,
+				PathMatchRegex: proto.String(".*\\.proto"),
+				IsRecursive:    proto.Bool(true),
+			}).Build(),
+		})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service-collection")
+		serviceConfig.SetGrpcService(grpcService)
+
+		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		require.NoError(t, err)
+		assert.NotEmpty(t, discoveredTools)
+		assert.Len(t, tm.ListTools(), 1)
+
+		toolName, err := util.GenerateToolID(serviceKey, "TestMethod")
+		require.NoError(t, err)
+		_, ok := tm.GetTool(toolName)
+		assert.True(t, ok)
+	})
+
+	t.Run("successful registration with proto definition", func(t *testing.T) {
+		poolManager := pool.NewManager()
+		upstream := NewGRPCUpstream(poolManager)
+		tm := NewMockToolManager()
+
+		grpcService := &configv1.GrpcUpstreamService{}
+		grpcService.SetUseReflection(false)
+		grpcService.SetProtoDefinitions([]*configv1.ProtoDefinition{
+			(&configv1.ProtoDefinition_builder{
+				ProtoFile: (&configv1.ProtoFile_builder{
+					FileName:    proto.String("test.proto"),
+					FileContent: &protoContent,
+				}).Build(),
+			}).Build(),
+		})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service-definition")
+		serviceConfig.SetGrpcService(grpcService)
+
+		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		require.NoError(t, err)
+		assert.NotEmpty(t, discoveredTools)
+		assert.Len(t, tm.ListTools(), 1)
+
+		toolName, err := util.GenerateToolID(serviceKey, "TestMethod")
+		require.NoError(t, err)
+		_, ok := tm.GetTool(toolName)
+		assert.True(t, ok)
+	})
+
+	t.Run("successful registration with proto descriptor", func(t *testing.T) {
+		poolManager := pool.NewManager()
+		upstream := NewGRPCUpstream(poolManager)
+		tm := NewMockToolManager()
+
+		// Create a proto file descriptor set
+		fds, err := protobufparser.ParseProtoFiles(map[string]string{"test.proto": protoContent}, []string{})
+		require.NoError(t, err)
+		fdsBytes, err := proto.Marshal(fds)
+		require.NoError(t, err)
+		descriptorFilePath := filepath.Join(tmpDir, "test.dsc")
+		err = ioutil.WriteFile(descriptorFilePath, fdsBytes, 0644)
+		require.NoError(t, err)
+
+		grpcService := &configv1.GrpcUpstreamService{}
+		grpcService.SetUseReflection(false)
+		grpcService.SetProtoDefinitions([]*configv1.ProtoDefinition{
+			(&configv1.ProtoDefinition_builder{
+				ProtoDescriptor: (&configv1.ProtoDescriptor_builder{
+					FileName: proto.String("test.dsc"),
+					FilePath: &descriptorFilePath,
+				}).Build(),
+			}).Build(),
+		})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service-descriptor")
+		serviceConfig.SetGrpcService(grpcService)
+
+		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		require.NoError(t, err)
+		assert.NotEmpty(t, discoveredTools)
+		assert.Len(t, tm.ListTools(), 1)
+
+		toolName, err := util.GenerateToolID(serviceKey, "TestMethod")
+		require.NoError(t, err)
+		_, ok := tm.GetTool(toolName)
+		assert.True(t, ok)
 	})
 }

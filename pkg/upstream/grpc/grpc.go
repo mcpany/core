@@ -42,6 +42,10 @@ import (
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/structpb"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"regexp"
 )
 
 // GRPCUpstream implements the upstream.Upstream interface for gRPC services.
@@ -109,21 +113,69 @@ func (u *GRPCUpstream) Register(
 	u.poolManager.Register(serviceKey, grpcPool)
 
 	var fds *descriptorpb.FileDescriptorSet
-	if len(grpcService.GetProtoDefinitions()) > 0 || len(grpcService.GetProtoCollections()) > 0 {
-		fds, err = protobufparser.ParseProto(grpcService.GetProtoDefinitions(), grpcService.GetProtoCollections())
-		if err != nil {
-			return "", nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
-		}
-	} else if grpcService.GetUseReflection() {
+	if !grpcService.HasUseReflection() || grpcService.GetUseReflection() {
 		item := u.reflectionCache.Get(address)
 		if item != nil {
 			fds = item.Value()
 		} else {
+			var err error
 			fds, err = protobufparser.ParseProtoByReflection(ctx, address)
 			if err != nil {
 				return "", nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
 			}
 			u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
+		}
+	} else {
+		protoFiles := make(map[string]string)
+		var fdsBytes [][]byte
+		for _, definition := range grpcService.GetProtoDefinitions() {
+			switch definition.WhichProtoRef() {
+			case configv1.ProtoDefinition_ProtoFile_case:
+				protoFile := definition.GetProtoFile()
+				switch protoFile.WhichFileRef() {
+				case configv1.ProtoFile_FileContent_case:
+					protoFiles[protoFile.GetFileName()] = protoFile.GetFileContent()
+				case configv1.ProtoFile_FilePath_case:
+					content, err := ioutil.ReadFile(protoFile.GetFilePath())
+					if err != nil {
+						return "", nil, fmt.Errorf("failed to read proto file %s: %w", protoFile.GetFilePath(), err)
+					}
+					protoFiles[protoFile.GetFileName()] = string(content)
+				}
+			case configv1.ProtoDefinition_ProtoDescriptor_case:
+				protoDescriptor := definition.GetProtoDescriptor()
+				content, err := ioutil.ReadFile(protoDescriptor.GetFilePath())
+				if err != nil {
+					return "", nil, fmt.Errorf("failed to read proto descriptor file %s: %w", protoDescriptor.GetFilePath(), err)
+				}
+				fdsBytes = append(fdsBytes, content)
+			}
+		}
+
+		for _, collection := range grpcService.GetProtoCollections() {
+			collectionFiles, err := u.collectProtoFiles(collection)
+			if err != nil {
+				return "", nil, fmt.Errorf("failed to collect proto files: %w", err)
+			}
+			for name, content := range collectionFiles {
+				protoFiles[name] = content
+			}
+		}
+
+		var includePaths []string
+		for _, collection := range grpcService.GetProtoCollections() {
+			includePaths = append(includePaths, collection.GetRootPath())
+		}
+		fds, err = protobufparser.ParseProtoFiles(protoFiles, includePaths)
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to parse proto files for %s: %w", serviceKey, err)
+		}
+		for _, bytes := range fdsBytes {
+			newFds := &descriptorpb.FileDescriptorSet{}
+			if err := proto.Unmarshal(bytes, newFds); err != nil {
+				return "", nil, fmt.Errorf("failed to unmarshal FileDescriptorSet: %w", err)
+			}
+			fds.File = append(fds.File, newFds.File...)
 		}
 	}
 
@@ -152,6 +204,50 @@ func (u *GRPCUpstream) Register(
 	log.Info("Registered gRPC service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
 	return serviceKey, discoveredTools, nil
+}
+
+func (u *GRPCUpstream) collectProtoFiles(collection *configv1.ProtoCollection) (map[string]string, error) {
+	protoFiles := make(map[string]string)
+	regex, err := regexp.Compile(collection.GetPathMatchRegex())
+	if err != nil {
+		return nil, fmt.Errorf("invalid path match regex: %w", err)
+	}
+
+	walkFunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && regex.MatchString(path) {
+			content, err := ioutil.ReadFile(path)
+			if err != nil {
+				return fmt.Errorf("failed to read proto file %s: %w", path, err)
+			}
+			relPath, err := filepath.Rel(collection.GetRootPath(), path)
+			if err != nil {
+				return fmt.Errorf("failed to get relative path for %s: %w", path, err)
+			}
+			protoFiles[relPath] = string(content)
+		}
+		return nil
+	}
+
+	if collection.GetIsRecursive() {
+		if err := filepath.Walk(collection.GetRootPath(), walkFunc); err != nil {
+			return nil, err
+		}
+	} else {
+		files, err := ioutil.ReadDir(collection.GetRootPath())
+		if err != nil {
+			return nil, fmt.Errorf("failed to read directory %s: %w", collection.GetRootPath(), err)
+		}
+		for _, file := range files {
+			if err := walkFunc(filepath.Join(collection.GetRootPath(), file.Name()), file, nil); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return protoFiles, nil
 }
 
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which

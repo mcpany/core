@@ -2731,6 +2731,678 @@ func (*upstreamServiceConfig_WebsocketService) isUpstreamServiceConfig_ServiceCo
 
 func (*upstreamServiceConfig_WebrtcService) isUpstreamServiceConfig_ServiceConfig() {}
 
+// ProtoDefinition defines a single protobuf source, which can be a file or a descriptor.
+type ProtoDefinition struct {
+	state               protoimpl.MessageState     `protogen:"opaque.v1"`
+	xxx_hidden_ProtoRef isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ProtoDefinition) Reset() {
+	*x = ProtoDefinition{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtoDefinition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoDefinition) ProtoMessage() {}
+
+func (x *ProtoDefinition) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProtoDefinition) GetProtoFile() *ProtoFile {
+	if x != nil {
+		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
+			return x.ProtoFile
+		}
+	}
+	return nil
+}
+
+func (x *ProtoDefinition) GetProtoDescriptor() *ProtoDescriptor {
+	if x != nil {
+		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
+			return x.ProtoDescriptor
+		}
+	}
+	return nil
+}
+
+func (x *ProtoDefinition) SetProtoFile(v *ProtoFile) {
+	if v == nil {
+		x.xxx_hidden_ProtoRef = nil
+		return
+	}
+	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{v}
+}
+
+func (x *ProtoDefinition) SetProtoDescriptor(v *ProtoDescriptor) {
+	if v == nil {
+		x.xxx_hidden_ProtoRef = nil
+		return
+	}
+	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{v}
+}
+
+func (x *ProtoDefinition) HasProtoRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ProtoRef != nil
+}
+
+func (x *ProtoDefinition) HasProtoFile() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile)
+	return ok
+}
+
+func (x *ProtoDefinition) HasProtoDescriptor() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor)
+	return ok
+}
+
+func (x *ProtoDefinition) ClearProtoRef() {
+	x.xxx_hidden_ProtoRef = nil
+}
+
+func (x *ProtoDefinition) ClearProtoFile() {
+	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
+		x.xxx_hidden_ProtoRef = nil
+	}
+}
+
+func (x *ProtoDefinition) ClearProtoDescriptor() {
+	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
+		x.xxx_hidden_ProtoRef = nil
+	}
+}
+
+const ProtoDefinition_ProtoRef_not_set_case case_ProtoDefinition_ProtoRef = 0
+const ProtoDefinition_ProtoFile_case case_ProtoDefinition_ProtoRef = 1
+const ProtoDefinition_ProtoDescriptor_case case_ProtoDefinition_ProtoRef = 2
+
+func (x *ProtoDefinition) WhichProtoRef() case_ProtoDefinition_ProtoRef {
+	if x == nil {
+		return ProtoDefinition_ProtoRef_not_set_case
+	}
+	switch x.xxx_hidden_ProtoRef.(type) {
+	case *protoDefinition_ProtoFile:
+		return ProtoDefinition_ProtoFile_case
+	case *protoDefinition_ProtoDescriptor:
+		return ProtoDefinition_ProtoDescriptor_case
+	default:
+		return ProtoDefinition_ProtoRef_not_set_case
+	}
+}
+
+type ProtoDefinition_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_ProtoRef:
+	ProtoFile       *ProtoFile
+	ProtoDescriptor *ProtoDescriptor
+	// -- end of xxx_hidden_ProtoRef
+}
+
+func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
+	m0 := &ProtoDefinition{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ProtoFile != nil {
+		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{b.ProtoFile}
+	}
+	if b.ProtoDescriptor != nil {
+		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{b.ProtoDescriptor}
+	}
+	return m0
+}
+
+type case_ProtoDefinition_ProtoRef protoreflect.FieldNumber
+
+func (x case_ProtoDefinition_ProtoRef) String() string {
+	md := file_proto_config_v1_config_proto_msgTypes[14].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isProtoDefinition_ProtoRef interface {
+	isProtoDefinition_ProtoRef()
+}
+
+type protoDefinition_ProtoFile struct {
+	ProtoFile *ProtoFile `protobuf:"bytes,1,opt,name=proto_file,json=protoFile,oneof"`
+}
+
+type protoDefinition_ProtoDescriptor struct {
+	ProtoDescriptor *ProtoDescriptor `protobuf:"bytes,2,opt,name=proto_descriptor,json=protoDescriptor,oneof"`
+}
+
+func (*protoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
+
+func (*protoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
+
+// ProtoFile represents a .proto file, which can be specified by content or path.
+type ProtoFile struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
+	xxx_hidden_FileRef     isProtoFile_FileRef    `protobuf_oneof:"file_ref"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ProtoFile) Reset() {
+	*x = ProtoFile{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtoFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoFile) ProtoMessage() {}
+
+func (x *ProtoFile) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProtoFile) GetFileName() string {
+	if x != nil {
+		if x.xxx_hidden_FileName != nil {
+			return *x.xxx_hidden_FileName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ProtoFile) GetFileContent() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
+			return x.FileContent
+		}
+	}
+	return ""
+}
+
+func (x *ProtoFile) GetFilePath() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
+			return x.FilePath
+		}
+	}
+	return ""
+}
+
+func (x *ProtoFile) SetFileName(v string) {
+	x.xxx_hidden_FileName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ProtoFile) SetFileContent(v string) {
+	x.xxx_hidden_FileRef = &protoFile_FileContent{v}
+}
+
+func (x *ProtoFile) SetFilePath(v string) {
+	x.xxx_hidden_FileRef = &protoFile_FilePath{v}
+}
+
+func (x *ProtoFile) HasFileName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ProtoFile) HasFileRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_FileRef != nil
+}
+
+func (x *ProtoFile) HasFileContent() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent)
+	return ok
+}
+
+func (x *ProtoFile) HasFilePath() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath)
+	return ok
+}
+
+func (x *ProtoFile) ClearFileName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_FileName = nil
+}
+
+func (x *ProtoFile) ClearFileRef() {
+	x.xxx_hidden_FileRef = nil
+}
+
+func (x *ProtoFile) ClearFileContent() {
+	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
+		x.xxx_hidden_FileRef = nil
+	}
+}
+
+func (x *ProtoFile) ClearFilePath() {
+	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
+		x.xxx_hidden_FileRef = nil
+	}
+}
+
+const ProtoFile_FileRef_not_set_case case_ProtoFile_FileRef = 0
+const ProtoFile_FileContent_case case_ProtoFile_FileRef = 2
+const ProtoFile_FilePath_case case_ProtoFile_FileRef = 3
+
+func (x *ProtoFile) WhichFileRef() case_ProtoFile_FileRef {
+	if x == nil {
+		return ProtoFile_FileRef_not_set_case
+	}
+	switch x.xxx_hidden_FileRef.(type) {
+	case *protoFile_FileContent:
+		return ProtoFile_FileContent_case
+	case *protoFile_FilePath:
+		return ProtoFile_FilePath_case
+	default:
+		return ProtoFile_FileRef_not_set_case
+	}
+}
+
+type ProtoFile_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	FileName *string
+	// Fields of oneof xxx_hidden_FileRef:
+	FileContent *string
+	FilePath    *string
+	// -- end of xxx_hidden_FileRef
+}
+
+func (b0 ProtoFile_builder) Build() *ProtoFile {
+	m0 := &ProtoFile{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.FileName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_FileName = b.FileName
+	}
+	if b.FileContent != nil {
+		x.xxx_hidden_FileRef = &protoFile_FileContent{*b.FileContent}
+	}
+	if b.FilePath != nil {
+		x.xxx_hidden_FileRef = &protoFile_FilePath{*b.FilePath}
+	}
+	return m0
+}
+
+type case_ProtoFile_FileRef protoreflect.FieldNumber
+
+func (x case_ProtoFile_FileRef) String() string {
+	md := file_proto_config_v1_config_proto_msgTypes[15].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isProtoFile_FileRef interface {
+	isProtoFile_FileRef()
+}
+
+type protoFile_FileContent struct {
+	FileContent string `protobuf:"bytes,2,opt,name=file_content,json=fileContent,oneof"`
+}
+
+type protoFile_FilePath struct {
+	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
+}
+
+func (*protoFile_FileContent) isProtoFile_FileRef() {}
+
+func (*protoFile_FilePath) isProtoFile_FileRef() {}
+
+// ProtoDescriptor represents a compiled protobuf descriptor file (.dsc).
+type ProtoDescriptor struct {
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
+	xxx_hidden_FileRef     isProtoDescriptor_FileRef `protobuf_oneof:"file_ref"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ProtoDescriptor) Reset() {
+	*x = ProtoDescriptor{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtoDescriptor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoDescriptor) ProtoMessage() {}
+
+func (x *ProtoDescriptor) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProtoDescriptor) GetFileName() string {
+	if x != nil {
+		if x.xxx_hidden_FileName != nil {
+			return *x.xxx_hidden_FileName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ProtoDescriptor) GetFilePath() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
+			return x.FilePath
+		}
+	}
+	return ""
+}
+
+func (x *ProtoDescriptor) SetFileName(v string) {
+	x.xxx_hidden_FileName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ProtoDescriptor) SetFilePath(v string) {
+	x.xxx_hidden_FileRef = &protoDescriptor_FilePath{v}
+}
+
+func (x *ProtoDescriptor) HasFileName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ProtoDescriptor) HasFileRef() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_FileRef != nil
+}
+
+func (x *ProtoDescriptor) HasFilePath() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath)
+	return ok
+}
+
+func (x *ProtoDescriptor) ClearFileName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_FileName = nil
+}
+
+func (x *ProtoDescriptor) ClearFileRef() {
+	x.xxx_hidden_FileRef = nil
+}
+
+func (x *ProtoDescriptor) ClearFilePath() {
+	if _, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
+		x.xxx_hidden_FileRef = nil
+	}
+}
+
+const ProtoDescriptor_FileRef_not_set_case case_ProtoDescriptor_FileRef = 0
+const ProtoDescriptor_FilePath_case case_ProtoDescriptor_FileRef = 2
+
+func (x *ProtoDescriptor) WhichFileRef() case_ProtoDescriptor_FileRef {
+	if x == nil {
+		return ProtoDescriptor_FileRef_not_set_case
+	}
+	switch x.xxx_hidden_FileRef.(type) {
+	case *protoDescriptor_FilePath:
+		return ProtoDescriptor_FilePath_case
+	default:
+		return ProtoDescriptor_FileRef_not_set_case
+	}
+}
+
+type ProtoDescriptor_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	FileName *string
+	// Fields of oneof xxx_hidden_FileRef:
+	FilePath *string
+	// -- end of xxx_hidden_FileRef
+}
+
+func (b0 ProtoDescriptor_builder) Build() *ProtoDescriptor {
+	m0 := &ProtoDescriptor{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.FileName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_FileName = b.FileName
+	}
+	if b.FilePath != nil {
+		x.xxx_hidden_FileRef = &protoDescriptor_FilePath{*b.FilePath}
+	}
+	return m0
+}
+
+type case_ProtoDescriptor_FileRef protoreflect.FieldNumber
+
+func (x case_ProtoDescriptor_FileRef) String() string {
+	md := file_proto_config_v1_config_proto_msgTypes[16].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isProtoDescriptor_FileRef interface {
+	isProtoDescriptor_FileRef()
+}
+
+type protoDescriptor_FilePath struct {
+	FilePath string `protobuf:"bytes,2,opt,name=file_path,json=filePath,oneof"`
+}
+
+func (*protoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
+
+// ProtoCollection defines a way to discover multiple .proto files from the filesystem.
+type ProtoCollection struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path,json=rootPath"`
+	xxx_hidden_PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex,json=pathMatchRegex"`
+	xxx_hidden_IsRecursive    bool                   `protobuf:"varint,3,opt,name=is_recursive,json=isRecursive"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *ProtoCollection) Reset() {
+	*x = ProtoCollection{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtoCollection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtoCollection) ProtoMessage() {}
+
+func (x *ProtoCollection) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProtoCollection) GetRootPath() string {
+	if x != nil {
+		if x.xxx_hidden_RootPath != nil {
+			return *x.xxx_hidden_RootPath
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ProtoCollection) GetPathMatchRegex() string {
+	if x != nil {
+		if x.xxx_hidden_PathMatchRegex != nil {
+			return *x.xxx_hidden_PathMatchRegex
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ProtoCollection) GetIsRecursive() bool {
+	if x != nil {
+		return x.xxx_hidden_IsRecursive
+	}
+	return false
+}
+
+func (x *ProtoCollection) SetRootPath(v string) {
+	x.xxx_hidden_RootPath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *ProtoCollection) SetPathMatchRegex(v string) {
+	x.xxx_hidden_PathMatchRegex = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ProtoCollection) SetIsRecursive(v bool) {
+	x.xxx_hidden_IsRecursive = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *ProtoCollection) HasRootPath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ProtoCollection) HasPathMatchRegex() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ProtoCollection) HasIsRecursive() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *ProtoCollection) ClearRootPath() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_RootPath = nil
+}
+
+func (x *ProtoCollection) ClearPathMatchRegex() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_PathMatchRegex = nil
+}
+
+func (x *ProtoCollection) ClearIsRecursive() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_IsRecursive = false
+}
+
+type ProtoCollection_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	RootPath       *string
+	PathMatchRegex *string
+	IsRecursive    *bool
+}
+
+func (b0 ProtoCollection_builder) Build() *ProtoCollection {
+	m0 := &ProtoCollection{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.RootPath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_RootPath = b.RootPath
+	}
+	if b.PathMatchRegex != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_PathMatchRegex = b.PathMatchRegex
+	}
+	if b.IsRecursive != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_IsRecursive = *b.IsRecursive
+	}
+	return m0
+}
+
 // GrpcUpstreamService defines an upstream service that speaks gRPC.
 type GrpcUpstreamService struct {
 	state                       protoimpl.MessageState `protogen:"opaque.v1"`
@@ -2749,7 +3421,7 @@ type GrpcUpstreamService struct {
 
 func (x *GrpcUpstreamService) Reset() {
 	*x = GrpcUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2761,7 +3433,7 @@ func (x *GrpcUpstreamService) String() string {
 func (*GrpcUpstreamService) ProtoMessage() {}
 
 func (x *GrpcUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2921,7 +3593,7 @@ type GrpcUpstreamService_builder struct {
 	HealthCheck *GrpcHealthCheck
 	// A list of protobuf definitions for the gRPC service.
 	ProtoDefinitions []*ProtoDefinition
-	// A list of protobuf collections.
+	// A collection of protobuf files to be discovered.
 	ProtoCollections []*ProtoCollection
 }
 
@@ -2942,674 +3614,6 @@ func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_ProtoDefinitions = &b.ProtoDefinitions
 	x.xxx_hidden_ProtoCollections = &b.ProtoCollections
-	return m0
-}
-
-type ProtoDefinition struct {
-	state               protoimpl.MessageState     `protogen:"opaque.v1"`
-	xxx_hidden_ProtoRef isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
-}
-
-func (x *ProtoDefinition) Reset() {
-	*x = ProtoDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProtoDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProtoDefinition) ProtoMessage() {}
-
-func (x *ProtoDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProtoDefinition) GetProtoFile() *ProtoFile {
-	if x != nil {
-		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
-			return x.ProtoFile
-		}
-	}
-	return nil
-}
-
-func (x *ProtoDefinition) GetProtoDescriptor() *ProtoDescriptor {
-	if x != nil {
-		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
-			return x.ProtoDescriptor
-		}
-	}
-	return nil
-}
-
-func (x *ProtoDefinition) SetProtoFile(v *ProtoFile) {
-	if v == nil {
-		x.xxx_hidden_ProtoRef = nil
-		return
-	}
-	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{v}
-}
-
-func (x *ProtoDefinition) SetProtoDescriptor(v *ProtoDescriptor) {
-	if v == nil {
-		x.xxx_hidden_ProtoRef = nil
-		return
-	}
-	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{v}
-}
-
-func (x *ProtoDefinition) HasProtoRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_ProtoRef != nil
-}
-
-func (x *ProtoDefinition) HasProtoFile() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile)
-	return ok
-}
-
-func (x *ProtoDefinition) HasProtoDescriptor() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor)
-	return ok
-}
-
-func (x *ProtoDefinition) ClearProtoRef() {
-	x.xxx_hidden_ProtoRef = nil
-}
-
-func (x *ProtoDefinition) ClearProtoFile() {
-	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
-		x.xxx_hidden_ProtoRef = nil
-	}
-}
-
-func (x *ProtoDefinition) ClearProtoDescriptor() {
-	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
-		x.xxx_hidden_ProtoRef = nil
-	}
-}
-
-const ProtoDefinition_ProtoRef_not_set_case case_ProtoDefinition_ProtoRef = 0
-const ProtoDefinition_ProtoFile_case case_ProtoDefinition_ProtoRef = 1
-const ProtoDefinition_ProtoDescriptor_case case_ProtoDefinition_ProtoRef = 2
-
-func (x *ProtoDefinition) WhichProtoRef() case_ProtoDefinition_ProtoRef {
-	if x == nil {
-		return ProtoDefinition_ProtoRef_not_set_case
-	}
-	switch x.xxx_hidden_ProtoRef.(type) {
-	case *protoDefinition_ProtoFile:
-		return ProtoDefinition_ProtoFile_case
-	case *protoDefinition_ProtoDescriptor:
-		return ProtoDefinition_ProtoDescriptor_case
-	default:
-		return ProtoDefinition_ProtoRef_not_set_case
-	}
-}
-
-type ProtoDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_ProtoRef:
-	ProtoFile       *ProtoFile
-	ProtoDescriptor *ProtoDescriptor
-	// -- end of xxx_hidden_ProtoRef
-}
-
-func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
-	m0 := &ProtoDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ProtoFile != nil {
-		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{b.ProtoFile}
-	}
-	if b.ProtoDescriptor != nil {
-		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{b.ProtoDescriptor}
-	}
-	return m0
-}
-
-type case_ProtoDefinition_ProtoRef protoreflect.FieldNumber
-
-func (x case_ProtoDefinition_ProtoRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[15].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isProtoDefinition_ProtoRef interface {
-	isProtoDefinition_ProtoRef()
-}
-
-type protoDefinition_ProtoFile struct {
-	ProtoFile *ProtoFile `protobuf:"bytes,1,opt,name=proto_file,json=protoFile,oneof"`
-}
-
-type protoDefinition_ProtoDescriptor struct {
-	ProtoDescriptor *ProtoDescriptor `protobuf:"bytes,2,opt,name=proto_descriptor,json=protoDescriptor,oneof"`
-}
-
-func (*protoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
-
-func (*protoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
-
-type ProtoFile struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
-	xxx_hidden_FileRef     isProtoFile_FileRef    `protobuf_oneof:"file_ref"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *ProtoFile) Reset() {
-	*x = ProtoFile{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProtoFile) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProtoFile) ProtoMessage() {}
-
-func (x *ProtoFile) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProtoFile) GetFileName() string {
-	if x != nil {
-		if x.xxx_hidden_FileName != nil {
-			return *x.xxx_hidden_FileName
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ProtoFile) GetFileContent() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
-			return x.FileContent
-		}
-	}
-	return ""
-}
-
-func (x *ProtoFile) GetFilePath() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
-			return x.FilePath
-		}
-	}
-	return ""
-}
-
-func (x *ProtoFile) SetFileName(v string) {
-	x.xxx_hidden_FileName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *ProtoFile) SetFileContent(v string) {
-	x.xxx_hidden_FileRef = &protoFile_FileContent{v}
-}
-
-func (x *ProtoFile) SetFilePath(v string) {
-	x.xxx_hidden_FileRef = &protoFile_FilePath{v}
-}
-
-func (x *ProtoFile) HasFileName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ProtoFile) HasFileRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_FileRef != nil
-}
-
-func (x *ProtoFile) HasFileContent() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent)
-	return ok
-}
-
-func (x *ProtoFile) HasFilePath() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath)
-	return ok
-}
-
-func (x *ProtoFile) ClearFileName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FileName = nil
-}
-
-func (x *ProtoFile) ClearFileRef() {
-	x.xxx_hidden_FileRef = nil
-}
-
-func (x *ProtoFile) ClearFileContent() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
-		x.xxx_hidden_FileRef = nil
-	}
-}
-
-func (x *ProtoFile) ClearFilePath() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
-		x.xxx_hidden_FileRef = nil
-	}
-}
-
-const ProtoFile_FileRef_not_set_case case_ProtoFile_FileRef = 0
-const ProtoFile_FileContent_case case_ProtoFile_FileRef = 2
-const ProtoFile_FilePath_case case_ProtoFile_FileRef = 3
-
-func (x *ProtoFile) WhichFileRef() case_ProtoFile_FileRef {
-	if x == nil {
-		return ProtoFile_FileRef_not_set_case
-	}
-	switch x.xxx_hidden_FileRef.(type) {
-	case *protoFile_FileContent:
-		return ProtoFile_FileContent_case
-	case *protoFile_FilePath:
-		return ProtoFile_FilePath_case
-	default:
-		return ProtoFile_FileRef_not_set_case
-	}
-}
-
-type ProtoFile_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	FileName *string
-	// Fields of oneof xxx_hidden_FileRef:
-	FileContent *string
-	FilePath    *string
-	// -- end of xxx_hidden_FileRef
-}
-
-func (b0 ProtoFile_builder) Build() *ProtoFile {
-	m0 := &ProtoFile{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.FileName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_FileName = b.FileName
-	}
-	if b.FileContent != nil {
-		x.xxx_hidden_FileRef = &protoFile_FileContent{*b.FileContent}
-	}
-	if b.FilePath != nil {
-		x.xxx_hidden_FileRef = &protoFile_FilePath{*b.FilePath}
-	}
-	return m0
-}
-
-type case_ProtoFile_FileRef protoreflect.FieldNumber
-
-func (x case_ProtoFile_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[16].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isProtoFile_FileRef interface {
-	isProtoFile_FileRef()
-}
-
-type protoFile_FileContent struct {
-	FileContent string `protobuf:"bytes,2,opt,name=file_content,json=fileContent,oneof"`
-}
-
-type protoFile_FilePath struct {
-	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
-}
-
-func (*protoFile_FileContent) isProtoFile_FileRef() {}
-
-func (*protoFile_FilePath) isProtoFile_FileRef() {}
-
-type ProtoDescriptor struct {
-	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
-	xxx_hidden_FileRef     isProtoDescriptor_FileRef `protobuf_oneof:"file_ref"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *ProtoDescriptor) Reset() {
-	*x = ProtoDescriptor{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProtoDescriptor) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProtoDescriptor) ProtoMessage() {}
-
-func (x *ProtoDescriptor) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProtoDescriptor) GetFileName() string {
-	if x != nil {
-		if x.xxx_hidden_FileName != nil {
-			return *x.xxx_hidden_FileName
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ProtoDescriptor) GetFilePath() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
-			return x.FilePath
-		}
-	}
-	return ""
-}
-
-func (x *ProtoDescriptor) SetFileName(v string) {
-	x.xxx_hidden_FileName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *ProtoDescriptor) SetFilePath(v string) {
-	x.xxx_hidden_FileRef = &protoDescriptor_FilePath{v}
-}
-
-func (x *ProtoDescriptor) HasFileName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ProtoDescriptor) HasFileRef() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_FileRef != nil
-}
-
-func (x *ProtoDescriptor) HasFilePath() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath)
-	return ok
-}
-
-func (x *ProtoDescriptor) ClearFileName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FileName = nil
-}
-
-func (x *ProtoDescriptor) ClearFileRef() {
-	x.xxx_hidden_FileRef = nil
-}
-
-func (x *ProtoDescriptor) ClearFilePath() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
-		x.xxx_hidden_FileRef = nil
-	}
-}
-
-const ProtoDescriptor_FileRef_not_set_case case_ProtoDescriptor_FileRef = 0
-const ProtoDescriptor_FilePath_case case_ProtoDescriptor_FileRef = 2
-
-func (x *ProtoDescriptor) WhichFileRef() case_ProtoDescriptor_FileRef {
-	if x == nil {
-		return ProtoDescriptor_FileRef_not_set_case
-	}
-	switch x.xxx_hidden_FileRef.(type) {
-	case *protoDescriptor_FilePath:
-		return ProtoDescriptor_FilePath_case
-	default:
-		return ProtoDescriptor_FileRef_not_set_case
-	}
-}
-
-type ProtoDescriptor_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	FileName *string
-	// Fields of oneof xxx_hidden_FileRef:
-	FilePath *string
-	// -- end of xxx_hidden_FileRef
-}
-
-func (b0 ProtoDescriptor_builder) Build() *ProtoDescriptor {
-	m0 := &ProtoDescriptor{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.FileName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_FileName = b.FileName
-	}
-	if b.FilePath != nil {
-		x.xxx_hidden_FileRef = &protoDescriptor_FilePath{*b.FilePath}
-	}
-	return m0
-}
-
-type case_ProtoDescriptor_FileRef protoreflect.FieldNumber
-
-func (x case_ProtoDescriptor_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[17].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isProtoDescriptor_FileRef interface {
-	isProtoDescriptor_FileRef()
-}
-
-type protoDescriptor_FilePath struct {
-	FilePath string `protobuf:"bytes,2,opt,name=file_path,json=filePath,oneof"`
-}
-
-func (*protoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
-
-type ProtoCollection struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path,json=rootPath"`
-	xxx_hidden_PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex,json=pathMatchRegex"`
-	xxx_hidden_IsRecursive    bool                   `protobuf:"varint,3,opt,name=is_recursive,json=isRecursive"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
-}
-
-func (x *ProtoCollection) Reset() {
-	*x = ProtoCollection{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProtoCollection) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProtoCollection) ProtoMessage() {}
-
-func (x *ProtoCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProtoCollection) GetRootPath() string {
-	if x != nil {
-		if x.xxx_hidden_RootPath != nil {
-			return *x.xxx_hidden_RootPath
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ProtoCollection) GetPathMatchRegex() string {
-	if x != nil {
-		if x.xxx_hidden_PathMatchRegex != nil {
-			return *x.xxx_hidden_PathMatchRegex
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ProtoCollection) GetIsRecursive() bool {
-	if x != nil {
-		return x.xxx_hidden_IsRecursive
-	}
-	return false
-}
-
-func (x *ProtoCollection) SetRootPath(v string) {
-	x.xxx_hidden_RootPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *ProtoCollection) SetPathMatchRegex(v string) {
-	x.xxx_hidden_PathMatchRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
-}
-
-func (x *ProtoCollection) SetIsRecursive(v bool) {
-	x.xxx_hidden_IsRecursive = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *ProtoCollection) HasRootPath() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ProtoCollection) HasPathMatchRegex() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *ProtoCollection) HasIsRecursive() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *ProtoCollection) ClearRootPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_RootPath = nil
-}
-
-func (x *ProtoCollection) ClearPathMatchRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_PathMatchRegex = nil
-}
-
-func (x *ProtoCollection) ClearIsRecursive() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_IsRecursive = false
-}
-
-type ProtoCollection_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	RootPath       *string
-	PathMatchRegex *string
-	IsRecursive    *bool
-}
-
-func (b0 ProtoCollection_builder) Build() *ProtoCollection {
-	m0 := &ProtoCollection{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.RootPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_RootPath = b.RootPath
-	}
-	if b.PathMatchRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_PathMatchRegex = b.PathMatchRegex
-	}
-	if b.IsRecursive != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_IsRecursive = *b.IsRecursive
-	}
 	return m0
 }
 
@@ -8722,16 +8726,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0ewebrtc_service\x18\x11 \x01(\v2%.mcpx.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12\x18\n" +
 	"\aversion\x18\x0e \x01(\tR\aversion\x12L\n" +
 	"\x0eauthentication\x18\x0f \x01(\v2$.mcpx.config.v1.AuthenticationConfigR\x0eauthenticationB\x10\n" +
-	"\x0eservice_config\"\xaa\x03\n" +
-	"\x13GrpcUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
-	"\x0euse_reflection\x18\x03 \x01(\bR\ruseReflection\x128\n" +
-	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x128\n" +
-	"\x05calls\x18\x05 \x03(\v2\".mcpx.config.v1.GrpcCallDefinitionR\x05calls\x12B\n" +
-	"\fhealth_check\x18\x06 \x01(\v2\x1f.mcpx.config.v1.GrpcHealthCheckR\vhealthCheck\x12L\n" +
-	"\x11proto_definitions\x18\a \x03(\v2\x1f.mcpx.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
-	"\x11proto_collections\x18\b \x03(\v2\x1f.mcpx.config.v1.ProtoCollectionR\x10protoCollections\"\xa8\x01\n" +
+	"\x0eservice_config\"\xa8\x01\n" +
 	"\x0fProtoDefinition\x12:\n" +
 	"\n" +
 	"proto_file\x18\x01 \x01(\v2\x19.mcpx.config.v1.ProtoFileH\x00R\tprotoFile\x12L\n" +
@@ -8751,7 +8746,16 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1b\n" +
 	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xe7\x01\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xaa\x03\n" +
+	"\x13GrpcUpstreamService\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
+	"\x0euse_reflection\x18\x03 \x01(\bR\ruseReflection\x128\n" +
+	"\n" +
+	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x128\n" +
+	"\x05calls\x18\x05 \x03(\v2\".mcpx.config.v1.GrpcCallDefinitionR\x05calls\x12B\n" +
+	"\fhealth_check\x18\x06 \x01(\v2\x1f.mcpx.config.v1.GrpcHealthCheckR\vhealthCheck\x12L\n" +
+	"\x11proto_definitions\x18\a \x03(\v2\x1f.mcpx.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
+	"\x11proto_collections\x18\b \x03(\v2\x1f.mcpx.config.v1.ProtoCollectionR\x10protoCollections\"\xe7\x01\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x128\n" +
 	"\x05calls\x18\x02 \x03(\v2\".mcpx.config.v1.HttpCallDefinitionR\x05calls\x12B\n" +
@@ -8959,11 +8963,11 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*FrontendService)(nil),             // 17: mcpx.config.v1.FrontendService
 	(*ServiceBinding)(nil),              // 18: mcpx.config.v1.ServiceBinding
 	(*UpstreamServiceConfig)(nil),       // 19: mcpx.config.v1.UpstreamServiceConfig
-	(*GrpcUpstreamService)(nil),         // 20: mcpx.config.v1.GrpcUpstreamService
-	(*ProtoDefinition)(nil),             // 21: mcpx.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                   // 22: mcpx.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),             // 23: mcpx.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),             // 24: mcpx.config.v1.ProtoCollection
+	(*ProtoDefinition)(nil),             // 20: mcpx.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                   // 21: mcpx.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),             // 22: mcpx.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),             // 23: mcpx.config.v1.ProtoCollection
+	(*GrpcUpstreamService)(nil),         // 24: mcpx.config.v1.GrpcUpstreamService
 	(*HttpUpstreamService)(nil),         // 25: mcpx.config.v1.HttpUpstreamService
 	(*WebsocketUpstreamService)(nil),    // 26: mcpx.config.v1.WebsocketUpstreamService
 	(*WebrtcUpstreamService)(nil),       // 27: mcpx.config.v1.WebrtcUpstreamService
@@ -9040,19 +9044,19 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	46, // 35: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
 	30, // 36: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
 	25, // 37: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	20, // 38: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
+	24, // 38: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
 	28, // 39: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
 	29, // 40: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
 	26, // 41: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
 	27, // 42: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
 	49, // 43: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	56, // 44: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	13, // 45: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	42, // 46: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	21, // 47: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
-	24, // 48: mcpx.config.v1.GrpcUpstreamService.proto_collections:type_name -> mcpx.config.v1.ProtoCollection
-	22, // 49: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
-	23, // 50: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
+	21, // 44: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
+	22, // 45: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
+	56, // 46: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	13, // 47: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
+	42, // 48: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
+	20, // 49: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
+	23, // 50: mcpx.config.v1.GrpcUpstreamService.proto_collections:type_name -> mcpx.config.v1.ProtoCollection
 	7,  // 51: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
 	41, // 52: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
 	56, // 53: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
@@ -9118,15 +9122,15 @@ func file_proto_config_v1_config_proto_init() {
 		(*upstreamServiceConfig_WebsocketService)(nil),
 		(*upstreamServiceConfig_WebrtcService)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[14].OneofWrappers = []any{
 		(*protoDefinition_ProtoFile)(nil),
 		(*protoDefinition_ProtoDescriptor)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[16].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
 		(*protoFile_FileContent)(nil),
 		(*protoFile_FilePath)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[17].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[16].OneofWrappers = []any{
 		(*protoDescriptor_FilePath)(nil),
 	}
 	file_proto_config_v1_config_proto_msgTypes[24].OneofWrappers = []any{
