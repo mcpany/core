@@ -18,14 +18,8 @@ package grpc
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -50,69 +44,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func (u *GRPCUpstream) handleProtoCollections(grpcService *configv1.GrpcUpstreamService) error {
-	for _, collection := range grpcService.GetProtoCollection() {
-		rootPath := collection.GetRootPath()
-		pathMatchRegex := collection.GetPathMatchRegex()
-		isRecursive := collection.GetIsRecursive()
-
-		regex, err := regexp.Compile(pathMatchRegex)
-		if err != nil {
-			return fmt.Errorf("invalid path_match_regex: %w", err)
-		}
-
-		walkFunc := func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
-			if !d.IsDir() && regex.MatchString(path) {
-				content, err := os.ReadFile(path)
-				if err != nil {
-					return fmt.Errorf("failed to read proto file %s: %w", path, err)
-				}
-
-				relPath, err := filepath.Rel(rootPath, path)
-				if err != nil {
-					return fmt.Errorf("failed to get relative path for %s: %w", path, err)
-				}
-
-				contentStr := string(content)
-				protoFile := (configv1.ProtoFile_builder{
-					FileName:    &relPath,
-					FileContent: &contentStr,
-				}).Build()
-				protoDefinition := (configv1.ProtoDefinition_builder{
-					ProtoFile: protoFile,
-				}).Build()
-				grpcService.SetProtoDefinitions(append(grpcService.GetProtoDefinitions(), protoDefinition))
-			}
-			return nil
-		}
-
-		if isRecursive {
-			return filepath.WalkDir(rootPath, walkFunc)
-		}
-
-		entries, err := os.ReadDir(rootPath)
-		if err != nil {
-			return fmt.Errorf("failed to read directory %s: %w", rootPath, err)
-		}
-		for _, entry := range entries {
-			if err := walkFunc(filepath.Join(rootPath, entry.Name()), entry, nil); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
 // GRPCUpstream implements the upstream.Upstream interface for gRPC services.
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
 type GRPCUpstream struct {
-	poolManager          *pool.Manager
-	reflectionCache      *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
-	protoDefinitionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
+	poolManager     *pool.Manager
+	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
 }
 
 // NewGRPCUpstream creates a new instance of GRPCUpstream.
@@ -120,20 +57,14 @@ type GRPCUpstream struct {
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
 func NewGRPCUpstream(poolManager *pool.Manager) upstream.Upstream {
-	reflectionCache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
+	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
 	)
-	go reflectionCache.Start()
-
-	protoDefinitionCache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
-		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
-	)
-	go protoDefinitionCache.Start()
+	go cache.Start()
 
 	return &GRPCUpstream{
-		poolManager:          poolManager,
-		reflectionCache:      reflectionCache,
-		protoDefinitionCache: protoDefinitionCache,
+		poolManager:     poolManager,
+		reflectionCache: cache,
 	}
 }
 
@@ -163,10 +94,6 @@ func (u *GRPCUpstream) Register(
 		return "", nil, fmt.Errorf("grpc service config is nil")
 	}
 
-	if err := u.handleProtoCollections(grpcService); err != nil {
-		return "", nil, fmt.Errorf("failed to handle proto collection: %w", err)
-	}
-
 	address := grpcService.GetAddress()
 
 	upstreamAuthenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -182,36 +109,21 @@ func (u *GRPCUpstream) Register(
 	u.poolManager.Register(serviceKey, grpcPool)
 
 	var fds *descriptorpb.FileDescriptorSet
-	if grpcService.GetUseReflection() {
+	if len(grpcService.GetProtoDefinitions()) > 0 || len(grpcService.GetProtoCollections()) > 0 {
+		fds, err = protobufparser.ParseProto(grpcService.GetProtoDefinitions(), grpcService.GetProtoCollections())
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
+		}
+	} else if grpcService.GetUseReflection() {
 		item := u.reflectionCache.Get(address)
 		if item != nil {
 			fds = item.Value()
 		} else {
-			var err error
 			fds, err = protobufparser.ParseProtoByReflection(ctx, address)
 			if err != nil {
 				return "", nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
 			}
 			u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
-		}
-	} else {
-		// Generate a cache key for the proto definitions
-		h := sha256.New()
-		for _, def := range grpcService.GetProtoDefinitions() {
-			fmt.Fprintf(h, "%v", def)
-		}
-		cacheKey := hex.EncodeToString(h.Sum(nil))
-
-		item := u.protoDefinitionCache.Get(cacheKey)
-		if item != nil {
-			fds = item.Value()
-		} else {
-			var err error
-			fds, err = protobufparser.ParseProtoDefinitions(grpcService.GetProtoDefinitions())
-			if err != nil {
-				return "", nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
-			}
-			u.protoDefinitionCache.Set(cacheKey, fds, ttlcache.DefaultTTL)
 		}
 	}
 

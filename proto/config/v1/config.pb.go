@@ -2731,6 +2731,220 @@ func (*upstreamServiceConfig_WebsocketService) isUpstreamServiceConfig_ServiceCo
 
 func (*upstreamServiceConfig_WebrtcService) isUpstreamServiceConfig_ServiceConfig() {}
 
+// GrpcUpstreamService defines an upstream service that speaks gRPC.
+type GrpcUpstreamService struct {
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address          *string                `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_UseReflection    bool                   `protobuf:"varint,3,opt,name=use_reflection,json=useReflection"`
+	xxx_hidden_TlsConfig        *TLSConfig             `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_Calls            *[]*GrpcCallDefinition `protobuf:"bytes,5,rep,name=calls"`
+	xxx_hidden_HealthCheck      *GrpcHealthCheck       `protobuf:"bytes,6,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition    `protobuf:"bytes,7,rep,name=proto_definitions,json=protoDefinitions"`
+	xxx_hidden_ProtoCollections *[]*ProtoCollection    `protobuf:"bytes,8,rep,name=proto_collections,json=protoCollections"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *GrpcUpstreamService) Reset() {
+	*x = GrpcUpstreamService{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GrpcUpstreamService) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GrpcUpstreamService) ProtoMessage() {}
+
+func (x *GrpcUpstreamService) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GrpcUpstreamService) GetAddress() string {
+	if x != nil {
+		if x.xxx_hidden_Address != nil {
+			return *x.xxx_hidden_Address
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GrpcUpstreamService) GetUseReflection() bool {
+	if x != nil {
+		return x.xxx_hidden_UseReflection
+	}
+	return false
+}
+
+func (x *GrpcUpstreamService) GetTlsConfig() *TLSConfig {
+	if x != nil {
+		return x.xxx_hidden_TlsConfig
+	}
+	return nil
+}
+
+func (x *GrpcUpstreamService) GetCalls() []*GrpcCallDefinition {
+	if x != nil {
+		if x.xxx_hidden_Calls != nil {
+			return *x.xxx_hidden_Calls
+		}
+	}
+	return nil
+}
+
+func (x *GrpcUpstreamService) GetHealthCheck() *GrpcHealthCheck {
+	if x != nil {
+		return x.xxx_hidden_HealthCheck
+	}
+	return nil
+}
+
+func (x *GrpcUpstreamService) GetProtoDefinitions() []*ProtoDefinition {
+	if x != nil {
+		if x.xxx_hidden_ProtoDefinitions != nil {
+			return *x.xxx_hidden_ProtoDefinitions
+		}
+	}
+	return nil
+}
+
+func (x *GrpcUpstreamService) GetProtoCollections() []*ProtoCollection {
+	if x != nil {
+		if x.xxx_hidden_ProtoCollections != nil {
+			return *x.xxx_hidden_ProtoCollections
+		}
+	}
+	return nil
+}
+
+func (x *GrpcUpstreamService) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+}
+
+func (x *GrpcUpstreamService) SetUseReflection(v bool) {
+	x.xxx_hidden_UseReflection = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+}
+
+func (x *GrpcUpstreamService) SetTlsConfig(v *TLSConfig) {
+	x.xxx_hidden_TlsConfig = v
+}
+
+func (x *GrpcUpstreamService) SetCalls(v []*GrpcCallDefinition) {
+	x.xxx_hidden_Calls = &v
+}
+
+func (x *GrpcUpstreamService) SetHealthCheck(v *GrpcHealthCheck) {
+	x.xxx_hidden_HealthCheck = v
+}
+
+func (x *GrpcUpstreamService) SetProtoDefinitions(v []*ProtoDefinition) {
+	x.xxx_hidden_ProtoDefinitions = &v
+}
+
+func (x *GrpcUpstreamService) SetProtoCollections(v []*ProtoCollection) {
+	x.xxx_hidden_ProtoCollections = &v
+}
+
+func (x *GrpcUpstreamService) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GrpcUpstreamService) HasUseReflection() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *GrpcUpstreamService) HasTlsConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_TlsConfig != nil
+}
+
+func (x *GrpcUpstreamService) HasHealthCheck() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_HealthCheck != nil
+}
+
+func (x *GrpcUpstreamService) ClearAddress() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Address = nil
+}
+
+func (x *GrpcUpstreamService) ClearUseReflection() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_UseReflection = false
+}
+
+func (x *GrpcUpstreamService) ClearTlsConfig() {
+	x.xxx_hidden_TlsConfig = nil
+}
+
+func (x *GrpcUpstreamService) ClearHealthCheck() {
+	x.xxx_hidden_HealthCheck = nil
+}
+
+type GrpcUpstreamService_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The address of the gRPC server (e.g., "localhost:50051").
+	Address *string
+	// If true, mcpx will use gRPC reflection to discover services and methods.
+	UseReflection *bool
+	// TLS configuration for the gRPC connection.
+	TlsConfig *TLSConfig
+	// Manually defined mappings from MCP tools to gRPC calls.
+	Calls []*GrpcCallDefinition
+	// Health check configuration.
+	HealthCheck *GrpcHealthCheck
+	// A list of protobuf definitions for the gRPC service.
+	ProtoDefinitions []*ProtoDefinition
+	// A list of protobuf collections.
+	ProtoCollections []*ProtoCollection
+}
+
+func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
+	m0 := &GrpcUpstreamService{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Address != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Address = b.Address
+	}
+	if b.UseReflection != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_UseReflection = *b.UseReflection
+	}
+	x.xxx_hidden_TlsConfig = b.TlsConfig
+	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_HealthCheck = b.HealthCheck
+	x.xxx_hidden_ProtoDefinitions = &b.ProtoDefinitions
+	x.xxx_hidden_ProtoCollections = &b.ProtoCollections
+	return m0
+}
+
 type ProtoDefinition struct {
 	state               protoimpl.MessageState     `protogen:"opaque.v1"`
 	xxx_hidden_ProtoRef isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
@@ -2740,7 +2954,7 @@ type ProtoDefinition struct {
 
 func (x *ProtoDefinition) Reset() {
 	*x = ProtoDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2752,7 +2966,7 @@ func (x *ProtoDefinition) String() string {
 func (*ProtoDefinition) ProtoMessage() {}
 
 func (x *ProtoDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2879,7 +3093,7 @@ func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
 type case_ProtoDefinition_ProtoRef protoreflect.FieldNumber
 
 func (x case_ProtoDefinition_ProtoRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[14].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[15].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -2914,7 +3128,7 @@ type ProtoFile struct {
 
 func (x *ProtoFile) Reset() {
 	*x = ProtoFile{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2926,7 +3140,7 @@ func (x *ProtoFile) String() string {
 func (*ProtoFile) ProtoMessage() {}
 
 func (x *ProtoFile) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3077,7 +3291,7 @@ func (b0 ProtoFile_builder) Build() *ProtoFile {
 type case_ProtoFile_FileRef protoreflect.FieldNumber
 
 func (x case_ProtoFile_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[15].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[16].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3112,7 +3326,7 @@ type ProtoDescriptor struct {
 
 func (x *ProtoDescriptor) Reset() {
 	*x = ProtoDescriptor{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3124,7 +3338,7 @@ func (x *ProtoDescriptor) String() string {
 func (*ProtoDescriptor) ProtoMessage() {}
 
 func (x *ProtoDescriptor) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3241,7 +3455,7 @@ func (b0 ProtoDescriptor_builder) Build() *ProtoDescriptor {
 type case_ProtoDescriptor_FileRef protoreflect.FieldNumber
 
 func (x case_ProtoDescriptor_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[16].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[17].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3271,7 +3485,7 @@ type ProtoCollection struct {
 
 func (x *ProtoCollection) Reset() {
 	*x = ProtoCollection{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3283,7 +3497,7 @@ func (x *ProtoCollection) String() string {
 func (*ProtoCollection) ProtoMessage() {}
 
 func (x *ProtoCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3396,220 +3610,6 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
 		x.xxx_hidden_IsRecursive = *b.IsRecursive
 	}
-	return m0
-}
-
-// GrpcUpstreamService defines an upstream service that speaks gRPC.
-type GrpcUpstreamService struct {
-	state                       protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Address          *string                `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition    `protobuf:"bytes,2,rep,name=proto_definitions,json=protoDefinitions"`
-	xxx_hidden_UseReflection    bool                   `protobuf:"varint,3,opt,name=use_reflection,json=useReflection"`
-	xxx_hidden_TlsConfig        *TLSConfig             `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Calls            *[]*GrpcCallDefinition `protobuf:"bytes,5,rep,name=calls"`
-	xxx_hidden_HealthCheck      *GrpcHealthCheck       `protobuf:"bytes,6,opt,name=health_check,json=healthCheck"`
-	xxx_hidden_ProtoCollection  *[]*ProtoCollection    `protobuf:"bytes,7,rep,name=proto_collection,json=protoCollection"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
-}
-
-func (x *GrpcUpstreamService) Reset() {
-	*x = GrpcUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GrpcUpstreamService) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GrpcUpstreamService) ProtoMessage() {}
-
-func (x *GrpcUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *GrpcUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *GrpcUpstreamService) GetProtoDefinitions() []*ProtoDefinition {
-	if x != nil {
-		if x.xxx_hidden_ProtoDefinitions != nil {
-			return *x.xxx_hidden_ProtoDefinitions
-		}
-	}
-	return nil
-}
-
-func (x *GrpcUpstreamService) GetUseReflection() bool {
-	if x != nil {
-		return x.xxx_hidden_UseReflection
-	}
-	return false
-}
-
-func (x *GrpcUpstreamService) GetTlsConfig() *TLSConfig {
-	if x != nil {
-		return x.xxx_hidden_TlsConfig
-	}
-	return nil
-}
-
-func (x *GrpcUpstreamService) GetCalls() []*GrpcCallDefinition {
-	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
-		}
-	}
-	return nil
-}
-
-func (x *GrpcUpstreamService) GetHealthCheck() *GrpcHealthCheck {
-	if x != nil {
-		return x.xxx_hidden_HealthCheck
-	}
-	return nil
-}
-
-func (x *GrpcUpstreamService) GetProtoCollection() []*ProtoCollection {
-	if x != nil {
-		if x.xxx_hidden_ProtoCollection != nil {
-			return *x.xxx_hidden_ProtoCollection
-		}
-	}
-	return nil
-}
-
-func (x *GrpcUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
-}
-
-func (x *GrpcUpstreamService) SetProtoDefinitions(v []*ProtoDefinition) {
-	x.xxx_hidden_ProtoDefinitions = &v
-}
-
-func (x *GrpcUpstreamService) SetUseReflection(v bool) {
-	x.xxx_hidden_UseReflection = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
-}
-
-func (x *GrpcUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
-}
-
-func (x *GrpcUpstreamService) SetCalls(v []*GrpcCallDefinition) {
-	x.xxx_hidden_Calls = &v
-}
-
-func (x *GrpcUpstreamService) SetHealthCheck(v *GrpcHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
-}
-
-func (x *GrpcUpstreamService) SetProtoCollection(v []*ProtoCollection) {
-	x.xxx_hidden_ProtoCollection = &v
-}
-
-func (x *GrpcUpstreamService) HasAddress() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *GrpcUpstreamService) HasUseReflection() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *GrpcUpstreamService) HasTlsConfig() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_TlsConfig != nil
-}
-
-func (x *GrpcUpstreamService) HasHealthCheck() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_HealthCheck != nil
-}
-
-func (x *GrpcUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
-}
-
-func (x *GrpcUpstreamService) ClearUseReflection() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_UseReflection = false
-}
-
-func (x *GrpcUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
-}
-
-func (x *GrpcUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
-}
-
-type GrpcUpstreamService_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The address of the gRPC server (e.g., "localhost:50051").
-	Address *string
-	// A list of protobuf definitions for the gRPC service.
-	ProtoDefinitions []*ProtoDefinition
-	// If true, mcpx will use gRPC reflection to discover services and methods.
-	UseReflection *bool
-	// TLS configuration for the gRPC connection.
-	TlsConfig *TLSConfig
-	// Manually defined mappings from MCP tools to gRPC calls.
-	Calls []*GrpcCallDefinition
-	// Health check configuration.
-	HealthCheck *GrpcHealthCheck
-	// A collection of protobuf files to be discovered from a folder.
-	ProtoCollection []*ProtoCollection
-}
-
-func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
-	m0 := &GrpcUpstreamService{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Address = b.Address
-	}
-	x.xxx_hidden_ProtoDefinitions = &b.ProtoDefinitions
-	if b.UseReflection != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_UseReflection = *b.UseReflection
-	}
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Calls = &b.Calls
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_ProtoCollection = &b.ProtoCollection
 	return m0
 }
 
@@ -8722,7 +8722,16 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0ewebrtc_service\x18\x11 \x01(\v2%.mcpx.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12\x18\n" +
 	"\aversion\x18\x0e \x01(\tR\aversion\x12L\n" +
 	"\x0eauthentication\x18\x0f \x01(\v2$.mcpx.config.v1.AuthenticationConfigR\x0eauthenticationB\x10\n" +
-	"\x0eservice_config\"\xa8\x01\n" +
+	"\x0eservice_config\"\xaa\x03\n" +
+	"\x13GrpcUpstreamService\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
+	"\x0euse_reflection\x18\x03 \x01(\bR\ruseReflection\x128\n" +
+	"\n" +
+	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x128\n" +
+	"\x05calls\x18\x05 \x03(\v2\".mcpx.config.v1.GrpcCallDefinitionR\x05calls\x12B\n" +
+	"\fhealth_check\x18\x06 \x01(\v2\x1f.mcpx.config.v1.GrpcHealthCheckR\vhealthCheck\x12L\n" +
+	"\x11proto_definitions\x18\a \x03(\v2\x1f.mcpx.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
+	"\x11proto_collections\x18\b \x03(\v2\x1f.mcpx.config.v1.ProtoCollectionR\x10protoCollections\"\xa8\x01\n" +
 	"\x0fProtoDefinition\x12:\n" +
 	"\n" +
 	"proto_file\x18\x01 \x01(\v2\x19.mcpx.config.v1.ProtoFileH\x00R\tprotoFile\x12L\n" +
@@ -8742,16 +8751,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1b\n" +
 	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xa8\x03\n" +
-	"\x13GrpcUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12L\n" +
-	"\x11proto_definitions\x18\x02 \x03(\v2\x1f.mcpx.config.v1.ProtoDefinitionR\x10protoDefinitions\x12%\n" +
-	"\x0euse_reflection\x18\x03 \x01(\bR\ruseReflection\x128\n" +
-	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x128\n" +
-	"\x05calls\x18\x05 \x03(\v2\".mcpx.config.v1.GrpcCallDefinitionR\x05calls\x12B\n" +
-	"\fhealth_check\x18\x06 \x01(\v2\x1f.mcpx.config.v1.GrpcHealthCheckR\vhealthCheck\x12J\n" +
-	"\x10proto_collection\x18\a \x03(\v2\x1f.mcpx.config.v1.ProtoCollectionR\x0fprotoCollection\"\xe7\x01\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xe7\x01\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x128\n" +
 	"\x05calls\x18\x02 \x03(\v2\".mcpx.config.v1.HttpCallDefinitionR\x05calls\x12B\n" +
@@ -8959,11 +8959,11 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*FrontendService)(nil),             // 17: mcpx.config.v1.FrontendService
 	(*ServiceBinding)(nil),              // 18: mcpx.config.v1.ServiceBinding
 	(*UpstreamServiceConfig)(nil),       // 19: mcpx.config.v1.UpstreamServiceConfig
-	(*ProtoDefinition)(nil),             // 20: mcpx.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                   // 21: mcpx.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),             // 22: mcpx.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),             // 23: mcpx.config.v1.ProtoCollection
-	(*GrpcUpstreamService)(nil),         // 24: mcpx.config.v1.GrpcUpstreamService
+	(*GrpcUpstreamService)(nil),         // 20: mcpx.config.v1.GrpcUpstreamService
+	(*ProtoDefinition)(nil),             // 21: mcpx.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                   // 22: mcpx.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),             // 23: mcpx.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),             // 24: mcpx.config.v1.ProtoCollection
 	(*HttpUpstreamService)(nil),         // 25: mcpx.config.v1.HttpUpstreamService
 	(*WebsocketUpstreamService)(nil),    // 26: mcpx.config.v1.WebsocketUpstreamService
 	(*WebrtcUpstreamService)(nil),       // 27: mcpx.config.v1.WebrtcUpstreamService
@@ -9040,19 +9040,19 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	46, // 35: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
 	30, // 36: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
 	25, // 37: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	24, // 38: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
+	20, // 38: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
 	28, // 39: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
 	29, // 40: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
 	26, // 41: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
 	27, // 42: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
 	49, // 43: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	21, // 44: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
-	22, // 45: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
-	20, // 46: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
-	56, // 47: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	13, // 48: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	42, // 49: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	23, // 50: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
+	56, // 44: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	13, // 45: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
+	42, // 46: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
+	21, // 47: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
+	24, // 48: mcpx.config.v1.GrpcUpstreamService.proto_collections:type_name -> mcpx.config.v1.ProtoCollection
+	22, // 49: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
+	23, // 50: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
 	7,  // 51: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
 	41, // 52: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
 	56, // 53: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
@@ -9118,15 +9118,15 @@ func file_proto_config_v1_config_proto_init() {
 		(*upstreamServiceConfig_WebsocketService)(nil),
 		(*upstreamServiceConfig_WebrtcService)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[14].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
 		(*protoDefinition_ProtoFile)(nil),
 		(*protoDefinition_ProtoDescriptor)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[16].OneofWrappers = []any{
 		(*protoFile_FileContent)(nil),
 		(*protoFile_FilePath)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[16].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[17].OneofWrappers = []any{
 		(*protoDescriptor_FilePath)(nil),
 	}
 	file_proto_config_v1_config_proto_msgTypes[24].OneofWrappers = []any{

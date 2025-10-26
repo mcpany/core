@@ -24,8 +24,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
-	"path/filepath"
 	"sync"
 	"testing"
 
@@ -45,16 +43,6 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
-
-func createTempProtoFile(t *testing.T, content string) (string, func()) {
-	t.Helper()
-	dir, err := os.MkdirTemp("", "proto")
-	require.NoError(t, err)
-	filePath := filepath.Join(dir, "test.proto")
-	err = os.WriteFile(filePath, []byte(content), 0644)
-	require.NoError(t, err)
-	return filePath, func() { os.RemoveAll(dir) }
-}
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
 type MockToolManager struct {
@@ -214,150 +202,6 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		_, _, err = upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to discover service by reflection")
-	})
-}
-
-func TestGRPCUpstream_RegisterWithProtoDefinitions(t *testing.T) {
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
-
-	server, addr := startMockServer(t)
-	defer server.Stop()
-
-	t.Run("successful registration with proto definitions", func(t *testing.T) {
-		poolManager := pool.NewManager()
-		upstream := NewGRPCUpstream(poolManager)
-		tm := NewMockToolManager()
-
-		protoContent := `
-syntax = "proto3";
-package calculator.v1;
-option go_package = "github.com/mcpxy/core/proto/examples/calculator/v1";
-message AddRequest {
-  int32 a = 1;
-  int32 b = 2;
-}
-message AddResponse {
-  int32 result = 1;
-}
-service CalculatorService {
-  rpc Add(AddRequest) returns (AddResponse);
-}
-`
-		filePath, cleanup := createTempProtoFile(t, protoContent)
-		defer cleanup()
-
-		grpcService := (configv1.GrpcUpstreamService_builder{
-			Address: &addr,
-			ProtoDefinitions: []*configv1.ProtoDefinition{
-				(configv1.ProtoDefinition_builder{
-					ProtoFile: (configv1.ProtoFile_builder{
-						FileName: proto.String("test.proto"),
-						FilePath: &filePath,
-					}).Build(),
-				}).Build(),
-			},
-		}).Build()
-
-		serviceConfig := (configv1.UpstreamServiceConfig_builder{
-			Name:        proto.String("calculator-service-no-reflection"),
-			GrpcService: grpcService,
-		}).Build()
-
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
-		require.NoError(t, err)
-		assert.NotEmpty(t, discoveredTools)
-		assert.Len(t, tm.ListTools(), 1)
-	})
-}
-
-func TestGRPCUpstream_RegisterWithProtoCollection(t *testing.T) {
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
-
-	server, addr := startMockServer(t)
-	defer server.Stop()
-
-	t.Run("successful registration with proto collection", func(t *testing.T) {
-		poolManager := pool.NewManager()
-		upstream := NewGRPCUpstream(poolManager)
-		tm := NewMockToolManager()
-
-		// Create a temporary directory for proto files
-		protoDir, err := os.MkdirTemp("", "protoproto")
-		require.NoError(t, err)
-		defer os.RemoveAll(protoDir)
-
-		protoContent1 := `
-syntax = "proto3";
-package greeter.v1;
-option go_package = "github.com/mcpxy/core/proto/examples/greeter/v1";
-message GreetRequest {
-  string name = 1;
-}
-message GreetResponse {
-  string message = 1;
-}
-service GreeterService {
-  rpc Greet(GreetRequest) returns (GreetResponse);
-}
-`
-		err = os.WriteFile(filepath.Join(protoDir, "greeter.proto"), []byte(protoContent1), 0644)
-		require.NoError(t, err)
-
-		protoContent2 := `
-syntax = "proto3";
-package calculator.v1;
-option go_package = "github.com/mcpxy/core/proto/examples/calculator/v1";
-message AddRequest {
-  int32 a = 1;
-  int32 b = 2;
-}
-message AddResponse {
-  int32 result = 1;
-}
-service CalculatorService {
-  rpc Add(AddRequest) returns (AddResponse);
-}
-`
-		err = os.WriteFile(filepath.Join(protoDir, "calculator.proto"), []byte(protoContent2), 0644)
-		require.NoError(t, err)
-
-		grpcService := (configv1.GrpcUpstreamService_builder{
-			Address: &addr,
-			ProtoCollection: []*configv1.ProtoCollection{
-				(configv1.ProtoCollection_builder{
-					RootPath:       &protoDir,
-					PathMatchRegex: proto.String(`.*\.proto`),
-					IsRecursive:    proto.Bool(true),
-				}).Build(),
-			},
-		}).Build()
-
-		serviceConfig := (configv1.UpstreamServiceConfig_builder{
-			Name:        proto.String("multi-service-collection"),
-			GrpcService: grpcService,
-		}).Build()
-
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
-		require.NoError(t, err)
-		assert.NotEmpty(t, discoveredTools)
-		// GreeterService.Greet and CalculatorService.Add
-		assert.Len(t, tm.ListTools(), 2)
-
-		// Verify that the tools were created correctly
-		greeterToolExists := false
-		calculatorToolExists := false
-		for _, tool := range tm.ListTools() {
-			if tool.Tool().GetName() == "Greet" {
-				greeterToolExists = true
-			}
-			if tool.Tool().GetName() == "Add" {
-				calculatorToolExists = true
-			}
-		}
-		assert.True(t, greeterToolExists, "Greeter tool not found")
-		assert.True(t, calculatorToolExists, "Calculator tool not found")
 	})
 }
 
