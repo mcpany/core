@@ -4472,15 +4472,16 @@ func (b0 ParameterSchema_builder) Build() *ParameterSchema {
 
 // ToolDefinition describes a single capability or "tool" offered by a service.
 type ToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Description *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_InputSchema *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema"`
-	xxx_hidden_IsStream    bool                   `protobuf:"varint,4,opt,name=is_stream,json=isStream"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_InputSchema  *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema"`
+	xxx_hidden_OutputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema"`
+	xxx_hidden_IsStream     bool                   `protobuf:"varint,5,opt,name=is_stream,json=isStream"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *ToolDefinition) Reset() {
@@ -4535,6 +4536,13 @@ func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
 	return nil
 }
 
+func (x *ToolDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *ToolDefinition) GetIsStream() bool {
 	if x != nil {
 		return x.xxx_hidden_IsStream
@@ -4544,21 +4552,25 @@ func (x *ToolDefinition) GetIsStream() bool {
 
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
 	x.xxx_hidden_InputSchema = v
 }
 
+func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
+}
+
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -4582,11 +4594,18 @@ func (x *ToolDefinition) HasInputSchema() bool {
 	return x.xxx_hidden_InputSchema != nil
 }
 
+func (x *ToolDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *ToolDefinition) HasIsStream() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *ToolDefinition) ClearName() {
@@ -4603,8 +4622,12 @@ func (x *ToolDefinition) ClearInputSchema() {
 	x.xxx_hidden_InputSchema = nil
 }
 
+func (x *ToolDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 func (x *ToolDefinition) ClearIsStream() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
 	x.xxx_hidden_IsStream = false
 }
 
@@ -4617,6 +4640,8 @@ type ToolDefinition_builder struct {
 	Description *string
 	// The schema for the input parameters required by the tool.
 	InputSchema *structpb.Struct
+	// The schema for the output of the tool.
+	OutputSchema *structpb.Struct
 	// Indicates if the tool produces a continuous stream of responses.
 	IsStream *bool
 }
@@ -4626,16 +4651,17 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_Description = b.Description
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	return m0
@@ -8077,12 +8103,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04type\x18\x03 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12\x1f\n" +
 	"\vis_required\x18\x04 \x01(\bR\n" +
 	"isRequired\x12;\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\x9f\x01\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xdd\x01\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x04 \x01(\bR\bisStream\"O\n" +
+	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
+	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
+	"\tis_stream\x18\x05 \x01(\bR\bisStream\"O\n" +
 	"\x14HttpParameterMapping\x127\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"T\n" +
 	"\x19WebsocketParameterMapping\x127\n" +
@@ -8331,32 +8358,32 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	15, // 61: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
 	51, // 62: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	0,  // 63: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	53, // 64: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	54, // 65: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	28, // 66: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	28, // 67: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	28, // 68: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	28, // 69: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	55, // 70: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	55, // 71: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	55, // 72: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	55, // 73: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	55, // 74: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	55, // 75: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
-	55, // 76: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
-	55, // 77: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	41, // 78: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	42, // 79: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	55, // 80: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	55, // 81: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	55, // 82: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	44, // 83: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	45, // 84: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,  // 85: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	47, // 86: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	48, // 87: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	49, // 88: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	50, // 89: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	52, // 64: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	53, // 65: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	53, // 66: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	28, // 67: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	28, // 68: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	28, // 69: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	28, // 70: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	54, // 71: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	54, // 72: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 73: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 74: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 75: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 76: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
+	54, // 77: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
+	54, // 78: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	41, // 79: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	42, // 80: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	54, // 81: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	54, // 82: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	54, // 83: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	44, // 84: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	45, // 85: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	5,  // 86: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	47, // 87: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	48, // 88: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	49, // 89: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
 	90, // [90:90] is the sub-list for method output_type
 	90, // [90:90] is the sub-list for method input_type
 	90, // [90:90] is the sub-list for extension type_name

@@ -18,17 +18,10 @@ message Tool {
      string underlying_method_fqn = 5; // Fully qualified name of the gRPC method, e.g., /pkg.UserService/Method
      string request_type_fqn = 6;     // Fully qualified name of the underlying method's request message
      string response_type_fqn = 7;    // Fully qualified name of the underlying method's response message
-    repeated Field request_fields = 8;
-    repeated Field response_fields = 9;
+     google.protobuf.Struct input_schema = 8;
+     google.protobuf.Struct output_schema = 9;
      ToolAnnotations annotations = 11;
      bool is_stream = 12;
-     google.protobuf.Struct output_schema = 13;
-}
-
-message Field {
-     string name = 1;
-     string description = 2;
-     string type = 3;
 }
 
 message ToolAnnotations {
