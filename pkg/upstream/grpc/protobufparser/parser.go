@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jhump/protoreflect/desc/protoparse"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 
@@ -104,14 +104,6 @@ func ParseProtoFromDefs(
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create a temporary file for the descriptor set
-	descriptorSetFile, err := os.CreateTemp(tempDir, "descriptor-set-*.bin")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create temporary file for descriptor set: %w", err)
-	}
-	descriptorSetPath := descriptorSetFile.Name()
-	descriptorSetFile.Close()
-
 	var protoFiles []string
 
 	// Process ProtoCollection first
@@ -145,37 +137,27 @@ func ParseProtoFromDefs(
 		return nil, fmt.Errorf("no proto files found to parse")
 	}
 
-	// Invoke protoc to generate the FileDescriptorSet
-	protocPath := "/app/build/env/bin/protoc"
-	if _, err := os.Stat(protocPath); os.IsNotExist(err) {
-		protocPath, err = exec.LookPath("protoc")
-		if err != nil {
-			return nil, fmt.Errorf("protoc not found in PATH: %w", err)
-		}
+	// Use protoparse to generate the FileDescriptorSet
+	parser := protoparse.Parser{
+		ImportPaths:      []string{tempDir},
+		InferImportPaths: true,
 	}
 
-	args := []string{
-		"--descriptor_set_out=" + descriptorSetPath,
-		"--proto_path=" + tempDir,
+	// The file names passed to ParseFiles must be relative to the import paths.
+	// Since tempDir is our import path, we need to get the base names of the files.
+	relativeFiles := make([]string, len(protoFiles))
+	for i, p := range protoFiles {
+		relativeFiles[i] = filepath.Base(p)
 	}
-	args = append(args, protoFiles...)
 
-	cmd := exec.CommandContext(ctx, protocPath, args...)
-	cmd.Dir = tempDir
-	output, err := cmd.CombinedOutput()
+	fileDescriptors, err := parser.ParseFiles(relativeFiles...)
 	if err != nil {
-		return nil, fmt.Errorf("protoc failed: %w\nOutput: %s", err, string(output))
-	}
-
-	// Read the generated FileDescriptorSet
-	fdsBytes, err := os.ReadFile(descriptorSetPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read descriptor set file: %w", err)
+		return nil, fmt.Errorf("failed to parse proto files: %w", err)
 	}
 
 	fds := &descriptorpb.FileDescriptorSet{}
-	if err := proto.Unmarshal(fdsBytes, fds); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal FileDescriptorSet: %w", err)
+	for _, fd := range fileDescriptors {
+		fds.File = append(fds.File, fd.AsFileDescriptorProto())
 	}
 
 	return fds, nil
