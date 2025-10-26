@@ -118,24 +118,3 @@ func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) 
 	authenticator, ok := am.authenticators[serviceID]
 	return authenticator, ok
 }
-
-// AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for the
-// given service ID. It initializes the authenticator using the provided OAuth2
-// configuration.
-//
-// ctx is the context for initializing the OIDC provider.
-// serviceID is the unique identifier for the service.
-// config is the OAuth2 configuration for the authenticator.
-//
-// It returns an error if the authenticator cannot be created.
-func (am *AuthManager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
-	if config == nil {
-		return nil
-	}
-	authenticator, err := NewOAuth2Authenticator(ctx, config)
-	if err != nil {
-		return fmt.Errorf("failed to create OAuth2 authenticator for service %s: %w", serviceID, err)
-	}
-	am.AddAuthenticator(serviceID, authenticator)
-	return nil
-}
