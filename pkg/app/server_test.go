@@ -35,10 +35,55 @@ import (
 	"bytes"
 	"log/slog"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 
 	"github.com/mcpxy/core/pkg/logging"
 )
+
+func TestHealthCheck(t *testing.T) {
+	t.Run("successful health check", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/healthz", r.URL.Path)
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		// Extract port from server URL
+		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
+		require.NoError(t, err)
+
+		err = HealthCheck(port)
+		assert.NoError(t, err)
+	})
+
+	t.Run("failed health check with non-200 status", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
+		require.NoError(t, err)
+
+		err = HealthCheck(port)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "health check failed with status code: 500")
+	})
+
+	t.Run("failed health check with connection error", func(t *testing.T) {
+		// Find a free port, then close it, to ensure it's not listening
+		l, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		port := l.Addr().(*net.TCPAddr).Port
+		l.Close()
+
+		err = HealthCheck(fmt.Sprintf("%d", port))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "health check failed:")
+	})
+}
+
 
 func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
