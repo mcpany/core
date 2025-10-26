@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpxy/core/proto/config/v1"
+	calculatorpb "github.com/mcpxy/core/proto/examples/calculator/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -101,4 +102,46 @@ func TestMcpFieldsToProtoProperties(t *testing.T) {
 	require.NotNil(t, s2)
 	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
 	assert.Equal(t, "an int field", s2.Fields["description"].GetStringValue())
+}
+
+func TestMethodDescriptorToProtoProperties(t *testing.T) {
+	fileDescriptor := calculatorpb.File_proto_examples_calculator_v1_calculator_proto
+	serviceDescriptor := fileDescriptor.Services().ByName("CalculatorService")
+	require.NotNil(t, serviceDescriptor)
+	methodDescriptor := serviceDescriptor.Methods().ByName("Add")
+	require.NotNil(t, methodDescriptor)
+
+	properties, err := MethodDescriptorToProtoProperties(methodDescriptor)
+	require.NoError(t, err)
+	assert.Len(t, properties.Fields, 2)
+
+	a, ok := properties.Fields["a"]
+	require.True(t, ok)
+	s1 := a.GetStructValue()
+	require.NotNil(t, s1)
+	assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
+
+	b, ok := properties.Fields["b"]
+	require.True(t, ok)
+	s2 := b.GetStructValue()
+	require.NotNil(t, s2)
+	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
+}
+
+func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
+	fileDescriptor := calculatorpb.File_proto_examples_calculator_v1_calculator_proto
+	serviceDescriptor := fileDescriptor.Services().ByName("CalculatorService")
+	require.NotNil(t, serviceDescriptor)
+	methodDescriptor := serviceDescriptor.Methods().ByName("Add")
+	require.NotNil(t, methodDescriptor)
+
+	properties, err := MethodOutputDescriptorToProtoProperties(methodDescriptor)
+	require.NoError(t, err)
+	assert.Len(t, properties.Fields, 1)
+
+	result, ok := properties.Fields["result"]
+	require.True(t, ok)
+	s1 := result.GetStructValue()
+	require.NotNil(t, s1)
+	assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
 }
