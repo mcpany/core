@@ -19,9 +19,12 @@ package protobufparser
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/bufbuild/protocompile"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
@@ -30,8 +33,90 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 
+	configpb "github.com/mcpxy/core/proto/config/v1"
 	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
 )
+
+// ParseProtoDefinitions parses a collection of user-supplied proto definitions
+// into a FileDescriptorSet. It handles raw proto content, file paths, and descriptor files.
+func ParseProtoDefinitions(protoDefinitions []*configpb.ProtoDefinition) (*descriptorpb.FileDescriptorSet, error) {
+	if len(protoDefinitions) == 0 {
+		return nil, fmt.Errorf("no proto definitions provided")
+	}
+
+	tempDir, err := os.MkdirTemp("", "proto-compiler-")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	protoFileNames := []string{}
+	fileContents := make(map[string]string)
+
+	for _, def := range protoDefinitions {
+		if protoFile := def.GetProtoFile(); protoFile != nil {
+			var content []byte
+			var err error
+
+			fileName := protoFile.GetFileName()
+			fileContent := protoFile.GetFileContent()
+			filePathSrc := protoFile.GetFilePath()
+
+			if fileContent != "" {
+				content = []byte(fileContent)
+			} else if filePathSrc != "" {
+				content, err = os.ReadFile(filePathSrc)
+				if err != nil {
+					return nil, fmt.Errorf("failed to read proto file '%s': %w", filePathSrc, err)
+				}
+			} else {
+				return nil, fmt.Errorf("ProtoFile for '%s' has neither file_content nor file_path", fileName)
+			}
+
+			err = os.WriteFile(filepath.Join(tempDir, fileName), content, 0644)
+			if err != nil {
+				return nil, fmt.Errorf("failed to write temporary proto file: %w", err)
+			}
+			fileContents[fileName] = string(content)
+			protoFileNames = append(protoFileNames, fileName)
+
+		} else if desc := def.GetProtoDescriptor(); desc != nil {
+			// Read the descriptor set file
+			descBytes, err := os.ReadFile(desc.GetFilePath())
+			if err != nil {
+				return nil, fmt.Errorf("failed to read descriptor set file: %w", err)
+			}
+
+			fds := &descriptorpb.FileDescriptorSet{}
+			if err := proto.Unmarshal(descBytes, fds); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal FileDescriptorSet: %w", err)
+			}
+			return fds, nil
+		}
+	}
+
+	if len(protoFileNames) == 0 {
+		return nil, fmt.Errorf("no .proto files found in the definitions")
+	}
+
+	resolver := &protocompile.SourceResolver{
+		ImportPaths: []string{tempDir},
+	}
+	compiler := protocompile.Compiler{
+		Resolver: resolver,
+	}
+	files, err := compiler.Compile(context.Background(), protoFileNames...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to compile protos: %w", err)
+	}
+
+	fds := new(descriptorpb.FileDescriptorSet)
+	for _, file := range files {
+		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(file))
+	}
+
+	return fds, nil
+}
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
