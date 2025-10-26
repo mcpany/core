@@ -18,105 +18,105 @@ package auth
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"encoding/json"
+	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/square/go-jose.v2/jwt"
 )
 
-func TestNewAPIKeyAuthenticator(t *testing.T) {
-	t.Run("nil_config", func(t *testing.T) {
-		authenticator := NewAPIKeyAuthenticator(nil)
-		assert.Nil(t, authenticator)
-	})
-
-	t.Run("empty_param_name", func(t *testing.T) {
-		config := &configv1.APIKeyAuth{}
-		config.SetKeyValue("some-key")
-		authenticator := NewAPIKeyAuthenticator(config)
-		assert.Nil(t, authenticator)
-	})
-
-	t.Run("empty_key_value", func(t *testing.T) {
-		config := &configv1.APIKeyAuth{}
-		config.SetParamName("X-API-Key")
-		authenticator := NewAPIKeyAuthenticator(config)
-		assert.Nil(t, authenticator)
-	})
-}
-
-func TestAPIKeyAuthenticator(t *testing.T) {
-	config := &configv1.APIKeyAuth{}
-	config.SetParamName("X-API-Key")
-	config.SetKeyValue("secret-key")
-
-	authenticator := NewAPIKeyAuthenticator(config)
-	require.NotNil(t, authenticator)
-
-	t.Run("successful_authentication", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("X-API-Key", "secret-key")
-		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.NoError(t, err)
-	})
-
-	t.Run("failed_authentication_wrong_key", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("X-API-Key", "wrong-key")
-		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.Error(t, err)
-		assert.Equal(t, "unauthorized", err.Error())
-	})
-
-	t.Run("failed_authentication_missing_header", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/", nil)
-		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.Error(t, err)
-		assert.Equal(t, "unauthorized", err.Error())
-	})
-}
-
 func TestAuthManager(t *testing.T) {
-	authManager := NewAuthManager()
+	// Generate a mock RSA private key
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+
+	// Create a JWK from the private key
+	jwk := jose.JSONWebKey{Key: privateKey, Algorithm: string(jose.RS256)}
+
+	// Create a mock OIDC provider
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(struct {
+				Issuer  string `json:"issuer"`
+				JWKSURI string `json:"jwks_uri"`
+			}{
+				Issuer:  "http://" + r.Host,
+				JWKSURI: "http://" + r.Host + "/jwks",
+			})
+		} else if r.URL.Path == "/jwks" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(jose.JSONWebKeySet{
+				Keys: []jose.JSONWebKey{jwk.Public()},
+			})
+		}
+	}))
+	defer server.Close()
+
+	// Create a new AuthManager with the mock provider's URL
+	authManager := NewAuthManager(server.URL, "test-audience", "http://localhost:50050")
 	require.NotNil(t, authManager)
 
-	config := &configv1.APIKeyAuth{}
-	config.SetParamName("X-API-Key")
-	config.SetKeyValue("secret-key")
-	apiKeyAuth := NewAPIKeyAuthenticator(config)
+	// Create a signer from the private key
+	signer, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: jwk}, nil)
+	require.NoError(t, err)
 
-	serviceID := "test-service"
-	authManager.AddAuthenticator(serviceID, apiKeyAuth)
+	t.Run("successful_token_verification", func(t *testing.T) {
+		claims := jwt.Claims{
+			Issuer:   server.URL,
+			Audience: jwt.Audience{"test-audience"},
+			Expiry:   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+		}
+		rawToken, err := jwt.Signed(signer).Claims(claims).CompactSerialize()
+		require.NoError(t, err)
 
-	t.Run("get_authenticator", func(t *testing.T) {
-		authenticator, ok := authManager.GetAuthenticator(serviceID)
-		assert.True(t, ok)
-		assert.Equal(t, apiKeyAuth, authenticator)
-
-		_, ok = authManager.GetAuthenticator("non-existent-service")
-		assert.False(t, ok)
+		_, err = authManager.VerifyToken(context.Background(), rawToken)
+		assert.NoError(t, err)
 	})
 
-	t.Run("authenticate_with_registered_service", func(t *testing.T) {
-		// Successful authentication
-		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("X-API-Key", "secret-key")
-		_, err := authManager.Authenticate(context.Background(), serviceID, req)
-		assert.NoError(t, err)
+	t.Run("failed_token_verification_wrong_issuer", func(t *testing.T) {
+		claims := jwt.Claims{
+			Issuer:   "wrong-issuer",
+			Audience: jwt.Audience{"test-audience"},
+			Expiry:   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+		}
+		rawToken, err := jwt.Signed(signer).Claims(claims).CompactSerialize()
+		require.NoError(t, err)
 
-		// Failed authentication
-		req = httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("X-API-Key", "wrong-key")
-		_, err = authManager.Authenticate(context.Background(), serviceID, req)
+		_, err = authManager.VerifyToken(context.Background(), rawToken)
 		assert.Error(t, err)
 	})
 
-	t.Run("authenticate_with_unregistered_service", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/", nil)
-		// No headers, but should pass as no authenticator is configured
-		_, err := authManager.Authenticate(context.Background(), "unregistered-service", req)
-		assert.NoError(t, err)
+	t.Run("failed_token_verification_wrong_audience", func(t *testing.T) {
+		claims := jwt.Claims{
+			Issuer:   server.URL,
+			Audience: jwt.Audience{"wrong-audience"},
+			Expiry:   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+		}
+		rawToken, err := jwt.Signed(signer).Claims(claims).CompactSerialize()
+		require.NoError(t, err)
+
+		_, err = authManager.VerifyToken(context.Background(), rawToken)
+		assert.Error(t, err)
+	})
+
+	t.Run("failed_token_verification_expired_token", func(t *testing.T) {
+		claims := jwt.Claims{
+			Issuer:   server.URL,
+			Audience: jwt.Audience{"test-audience"},
+			Expiry:   jwt.NewNumericDate(time.Now().Add(-1 * time.Hour)),
+		}
+		rawToken, err := jwt.Signed(signer).Claims(claims).CompactSerialize()
+		require.NoError(t, err)
+
+		_, err = authManager.VerifyToken(context.Background(), rawToken)
+		assert.Error(t, err)
 	})
 }

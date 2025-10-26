@@ -1,0 +1,29 @@
+{
+  "realm": "mcp",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "mcp-client",
+      "secret": "test-secret",
+      "publicClient": false,
+      "redirectUris": ["http://localhost:3000/*"],
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "implicitFlowEnabled": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "test-user",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test-password"
+        }
+      ]
+    }
+  ]
+}

@@ -61,7 +61,7 @@ type Runner interface {
 	// configPaths is a slice of paths to configuration files.
 	//
 	// It returns an error if the application fails to start or run.
-	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error
+	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration, authIssuerURL, authAudience, authResourceURL string) error
 }
 
 // Application is the main application struct, holding the dependencies and logic
@@ -94,7 +94,7 @@ func NewApplication() *Application {
 // configPaths provides a list of paths to service configuration files.
 //
 // It returns an error if any part of the startup or execution fails.
-func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration, authIssuerURL, authAudience, authResourceURL string) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
@@ -110,7 +110,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	authManager := auth.NewAuthManager(authIssuerURL, authAudience, authResourceURL)
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
 
 	// New message bus and workers
@@ -237,6 +237,7 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
+	mux.HandleFunc("/.well-known/oauth-protected-resource", mcpSrv.AuthManager().ProtectedResourceMetadataHandler())
 
 	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 

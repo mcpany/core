@@ -18,103 +18,81 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/coreos/go-oidc/v3/oidc"
 )
 
-// Authenticator defines the interface for authentication strategies. Each
-// implementation is responsible for authenticating an incoming request and
-// returning a context, which may be modified to include authentication-related
-// information.
-type Authenticator interface {
-	// Authenticate validates the credentials in an HTTP request. It returns a
-	// context, which may be enriched with authentication details, and an error if
-	// the authentication fails.
-	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
+// Manager handles the authentication and token validation logic.
+type Manager struct {
+	provider   *oidc.Provider
+	verifier   *oidc.IDTokenVerifier
+	issuerURL  string
+	audience   string
+	resource   string
 }
 
-// APIKeyAuthenticator provides an authentication mechanism based on a static
-// API key. It checks for the presence of a specific header and validates its
-// value.
-type APIKeyAuthenticator struct {
-	HeaderName  string
-	HeaderValue string
-}
-
-// NewAPIKeyAuthenticator creates a new APIKeyAuthenticator from the provided
-// configuration. It returns nil if the configuration is invalid.
-//
-// config contains the API key authentication settings, including the header
-// parameter name and the key value.
-func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
-	if config == nil || config.GetParamName() == "" || config.GetKeyValue() == "" {
-		return nil
+// NewAuthManager creates a new authentication manager.
+func NewAuthManager(issuerURL, audience, resource string) *Manager {
+	if issuerURL == "" {
+		return &Manager{}
 	}
-	return &APIKeyAuthenticator{
-		HeaderName:  config.GetParamName(),
-		HeaderValue: config.GetKeyValue(),
+
+	provider, err := oidc.NewProvider(context.Background(), issuerURL)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create OIDC provider: %v", err))
 	}
-}
 
-// Authenticate verifies the API key in the request headers. It checks if the
-// header specified by HeaderName matches the expected HeaderValue.
-//
-// ctx is the request context, which is returned unmodified on success.
-// r is the HTTP request to authenticate.
-func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
-	if r.Header.Get(a.HeaderName) == a.HeaderValue {
-		return ctx, nil
-	}
-	return ctx, fmt.Errorf("unauthorized")
-}
+	verifier := provider.Verifier(&oidc.Config{
+		ClientID: audience,
+	})
 
-// AuthManager oversees the authentication process for the server. It maintains a
-// registry of authenticators, each associated with a specific service ID, and
-// delegates the authentication of requests to the appropriate authenticator.
-type AuthManager struct {
-	authenticators map[string]Authenticator
-}
-
-// NewAuthManager creates and initializes a new AuthManager with an empty
-// authenticator registry.
-func NewAuthManager() *AuthManager {
-	return &AuthManager{
-		authenticators: make(map[string]Authenticator),
+	return &Manager{
+		provider:   provider,
+		verifier:   verifier,
+		issuerURL:  issuerURL,
+		audience:   audience,
+		resource:   resource,
 	}
 }
 
-// AddAuthenticator registers an authenticator for a given service ID.
-//
-// serviceID is the unique identifier for the service.
-// authenticator is the authenticator to be associated with the service.
-func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenticator) {
-	am.authenticators[serviceID] = authenticator
-}
-
-// Authenticate authenticates a request for a specific service. If an
-// authenticator is registered for the service, it will be used to validate the
-// request. If no authenticator is found, the request is allowed to proceed.
-//
-// ctx is the request context.
-// serviceID is the identifier of the service being accessed.
-// r is the HTTP request to authenticate.
-func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
-	if authenticator, ok := am.authenticators[serviceID]; ok {
-		return authenticator.Authenticate(ctx, r)
+// VerifyToken verifies the provided ID token.
+func (m *Manager) VerifyToken(ctx context.Context, rawIDToken string) (*oidc.IDToken, error) {
+	if m.verifier == nil {
+		return nil, fmt.Errorf("auth manager not configured")
 	}
-	// If no authenticator is configured for the service, we'll allow the request to proceed.
-	return ctx, nil
+	return m.verifier.Verify(ctx, rawIDToken)
 }
 
-// GetAuthenticator retrieves the authenticator registered for a specific
-// service.
-//
-// serviceID is the identifier of the service.
-// It returns the authenticator and a boolean indicating whether an
-// authenticator was found.
-func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) {
-	authenticator, ok := am.authenticators[serviceID]
-	return authenticator, ok
+// IsEnabled returns true if the authentication manager is configured.
+func (m *Manager) IsEnabled() bool {
+	return m.issuerURL != ""
+}
+
+// ProtectedResourceMetadataHandler returns an HTTP handler that serves the
+// .well-known/oauth-protected-resource metadata.
+func (m *Manager) ProtectedResourceMetadataHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !m.IsEnabled() {
+			http.NotFound(w, r)
+			return
+		}
+
+		metadata := struct {
+			Resource              string   `json:"resource"`
+			AuthorizationServers []string `json:"authorization_servers"`
+			ScopesSupported      []string `json:"scopes_supported"`
+		}{
+			Resource:              m.resource,
+			AuthorizationServers: []string{m.issuerURL},
+			ScopesSupported:      []string{"mcp:tools", "mcp:resources"},
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(metadata); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		}
+	}
 }

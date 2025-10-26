@@ -67,8 +67,11 @@ func newRootCmd() *cobra.Command {
 			osFs := afero.NewOsFs()
 
 			shutdownTimeout := viper.GetDuration("shutdown-timeout")
+			authIssuerURL := viper.GetString("auth-issuer-url")
+			authAudience := viper.GetString("auth-audience")
+			authResourceURL := viper.GetString("auth-resource-url")
 
-			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths, shutdownTimeout, authIssuerURL, authAudience, authResourceURL); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -115,6 +118,9 @@ func newRootCmd() *cobra.Command {
 	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
 	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPXY_DEBUG")
 	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPXY_SHUTDOWN_TIMEOUT")
+	rootCmd.Flags().String("auth-issuer-url", "", "OIDC issuer URL for token validation. Env: MCPXY_AUTH_ISSUER_URL")
+	rootCmd.Flags().String("auth-audience", "", "Audience for JWT validation. Env: MCPXY_AUTH_AUDIENCE")
+	rootCmd.Flags().String("auth-resource-url", "http://localhost:50050", "Resource URL for the MCP server. Env: MCPXY_AUTH_RESOURCE_URL")
 
 	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
