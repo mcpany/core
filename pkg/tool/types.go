@@ -633,122 +633,45 @@ type CommandTool struct {
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
 func NewCommandTool(tool *v1.Tool, command string) *CommandTool {
-	response_fields := map[string]*structpb.Value{
-		"command": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The command that was executed."}},
-					},
-				},
-			},
-		},
-		"args": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": {Kind: &structpb.Value_StringValue{StringValue: "array"}},
-						"items": {
-							Kind: &structpb.Value_StructValue{
-								StructValue: &structpb.Struct{
-									Fields: map[string]*structpb.Value{
-										"type": {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-									},
-								},
-							},
-						},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The arguments that were passed to the command."}},
-					},
-				},
-			},
-		},
-		"stdout": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The standard output of the command."}},
-					},
-				},
-			},
-		},
-		"stderr": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The standard error of the command."}},
-					},
-				},
-			},
-		},
-		"combined_output": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The combined standard output and standard error of the command."}},
-					},
-				},
-			},
-		},
-		"start_time": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The time the command started."}},
-					},
-				},
-			},
-		},
-		"end_time": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The time the command finished."}},
-					},
-				},
-			},
-		},
-		"return_code": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "integer"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The return code of the command."}},
-					},
-				},
-			},
-		},
-		"status": {
-			Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
-						"description": {Kind: &structpb.Value_StringValue{StringValue: "The status of the command execution."}},
-					},
-				},
-			},
-		},
-	}
 	outputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
-			"type": {
-				Kind: &structpb.Value_StringValue{StringValue: "object"},
+			"command": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
 			},
-			"properties": {
-				Kind: &structpb.Value_StructValue{
-					StructValue: &structpb.Struct{
-						Fields: response_fields,
+			"args": {
+				Kind: &structpb.Value_ListValue{
+					ListValue: &structpb.ListValue{
+						Values: []*structpb.Value{
+							{
+								Kind: &structpb.Value_StringValue{StringValue: "string"},
+							},
+						},
 					},
 				},
 			},
+			"stdout": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"stderr": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"combined_output": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"start_time": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"end_time": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
+			"return_code": {
+				Kind: &structpb.Value_NumberValue{NumberValue: 0},
+			},
+			"status": {
+				Kind: &structpb.Value_StringValue{StringValue: "string"},
+			},
 		},
 	}
-
 	tool.SetOutputSchema(outputSchema)
 	return &CommandTool{
 		tool:    tool,
