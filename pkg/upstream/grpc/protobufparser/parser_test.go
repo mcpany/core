@@ -99,3 +99,24 @@ func TestExtractMcpDefinitions(t *testing.T) {
 		assert.Error(t, err, "Should fail with corrupted/incomplete FileDescriptorSet")
 	})
 }
+
+func TestMcpField_Getters(t *testing.T) {
+	field := McpField{
+		Name:        "test_name",
+		Description: "test_description",
+		Type:        "test_type",
+		IsRepeated:  true,
+	}
+
+	t.Run("GetName", func(t *testing.T) {
+		assert.Equal(t, "test_name", field.GetName())
+	})
+
+	t.Run("GetDescription", func(t *testing.T) {
+		assert.Equal(t, "test_description", field.GetDescription())
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		assert.Equal(t, "test_type", field.GetType())
+	})
+}

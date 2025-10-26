@@ -74,3 +74,43 @@ func TestTextParser_UnsupportedType(t *testing.T) {
 	_, err := parser.Parse("yaml", []byte{}, nil)
 	require.Error(t, err)
 }
+
+func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
+	parser := NewTextParser()
+	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
+
+	t.Run("invalid_jsonpath", func(t *testing.T) {
+		config := map[string]string{"name": `{.person.name[`}
+		_, err := parser.Parse("json", jsonInput, config)
+		assert.Error(t, err)
+	})
+
+	t.Run("jsonpath_not_found", func(t *testing.T) {
+		config := map[string]string{"name": `{.person.nonexistent}`}
+		result, err := parser.Parse("json", jsonInput, config)
+		assert.NoError(t, err)
+		assert.Empty(t, result)
+	})
+}
+
+func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
+	parser := NewTextParser()
+	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
+
+	t.Run("invalid_xpath", func(t *testing.T) {
+		config := map[string]string{"name": `//name[`}
+		_, err := parser.Parse("xml", xmlInput, config)
+		assert.Error(t, err)
+	})
+}
+
+func TestTextParser_ParseText_ErrorCases(t *testing.T) {
+	parser := NewTextParser()
+	textInput := []byte(`User ID: 12345, Name: John Doe`)
+
+	t.Run("invalid_regex", func(t *testing.T) {
+		config := map[string]string{"userId": `User ID: (\d+[`}
+		_, err := parser.Parse("text", textInput, config)
+		assert.Error(t, err)
+	})
+}

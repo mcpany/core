@@ -117,3 +117,61 @@ message TestResponse2 {
 		assert.Error(t, err)
 	})
 }
+
+func TestProcessProtoCollection(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "proto-collection-*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	protoContent := `syntax = "proto3"; package test; message Test {}`
+	protoFilePath := filepath.Join(tempDir, "test.proto")
+	err = os.WriteFile(protoFilePath, []byte(protoContent), 0644)
+	require.NoError(t, err)
+
+	collection := &configv1.ProtoCollection{}
+	collection.SetRootPath(tempDir)
+	collection.SetPathMatchRegex(".*\\.proto")
+	collection.SetIsRecursive(true)
+
+	files, err := processProtoCollection(collection, tempDir)
+	require.NoError(t, err)
+	assert.Len(t, files, 1)
+	assert.Equal(t, filepath.Join(tempDir, "test.proto"), files[0])
+}
+
+func TestWriteProtoFile(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "proto-file-*")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	t.Run("from_content", func(t *testing.T) {
+		protoFile := &configv1.ProtoFile{}
+		protoFile.SetFileName("test.proto")
+		protoFile.SetFileContent(`syntax = "proto3"; package test; message Test {}`)
+		filePath, err := writeProtoFile(protoFile, tempDir)
+		require.NoError(t, err)
+		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
+
+		content, err := os.ReadFile(filePath)
+		require.NoError(t, err)
+		assert.Equal(t, protoFile.GetFileContent(), string(content))
+	})
+
+	t.Run("from_path", func(t *testing.T) {
+		protoContent := `syntax = "proto3"; package test; message Test {}`
+		protoFilePath := filepath.Join(tempDir, "source.proto")
+		err = os.WriteFile(protoFilePath, []byte(protoContent), 0644)
+		require.NoError(t, err)
+
+		protoFile := &configv1.ProtoFile{}
+		protoFile.SetFileName("test.proto")
+		protoFile.SetFilePath(protoFilePath)
+		filePath, err := writeProtoFile(protoFile, tempDir)
+		require.NoError(t, err)
+		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
+
+		content, err := os.ReadFile(filePath)
+		require.NoError(t, err)
+		assert.Equal(t, protoContent, string(content))
+	})
+}
