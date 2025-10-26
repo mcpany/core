@@ -44,7 +44,7 @@ var (
 			return &client.HttpClientWrapper{
 				Client: &http.Client{
 					Transport: &http.Transport{
-						DisableKeepAlives: true,
+						DisableKeepAlives: false,
 						TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
 						DialContext: (&net.Dialer{
 							Timeout: 30 * time.Second,
