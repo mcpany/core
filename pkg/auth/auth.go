@@ -36,18 +36,23 @@ type Authenticator interface {
 }
 
 // APIKeyAuthenticator provides an authentication mechanism based on a static
-// API key. It checks for the presence of a specific header and validates its
-// value.
+// API key. It implements the `Authenticator` interface and checks for the
+// presence of a specific header, validating its value against a configured key.
 type APIKeyAuthenticator struct {
 	HeaderName  string
 	HeaderValue string
 }
 
 // NewAPIKeyAuthenticator creates a new APIKeyAuthenticator from the provided
-// configuration. It returns nil if the configuration is invalid.
+// configuration. It returns `nil` if the configuration is invalid (e.g., if
+// the header name or key value is missing).
 //
-// config contains the API key authentication settings, including the header
-// parameter name and the key value.
+// Parameters:
+//   - config: The API key authentication settings, including the header
+//     parameter name and the key value.
+//
+// Returns a new instance of APIKeyAuthenticator or `nil` if the configuration
+// is invalid.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	if config == nil || config.GetParamName() == "" || config.GetKeyValue() == "" {
 		return nil
@@ -59,10 +64,16 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 }
 
 // Authenticate verifies the API key in the request headers. It checks if the
-// header specified by HeaderName matches the expected HeaderValue.
+// header specified by `HeaderName` matches the expected `HeaderValue`.
 //
-// ctx is the request context, which is returned unmodified on success.
-// r is the HTTP request to authenticate.
+// If the API key is valid, the original context is returned with no error. If
+// the key is invalid or missing, an "unauthorized" error is returned.
+//
+// Parameters:
+//   - ctx: The request context, which is returned unmodified on success.
+//   - r: The HTTP request to authenticate.
+//
+// Returns the original context and `nil` on success, or an error on failure.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	if r.Header.Get(a.HeaderName) == a.HeaderValue {
 		return ctx, nil
@@ -73,33 +84,46 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 // AuthManager oversees the authentication process for the server. It maintains a
 // registry of authenticators, each associated with a specific service ID, and
 // delegates the authentication of requests to the appropriate authenticator.
+// This allows for different authentication strategies to be used for different
+// services.
 type AuthManager struct {
 	authenticators map[string]Authenticator
 }
 
 // NewAuthManager creates and initializes a new AuthManager with an empty
-// authenticator registry.
+// authenticator registry. This manager can then be used to register and manage
+// authenticators for various services.
 func NewAuthManager() *AuthManager {
 	return &AuthManager{
 		authenticators: make(map[string]Authenticator),
 	}
 }
 
-// AddAuthenticator registers an authenticator for a given service ID.
+// AddAuthenticator registers an authenticator for a given service ID. If an
+// authenticator is already registered for the same service ID, it will be
+// overwritten.
 //
-// serviceID is the unique identifier for the service.
-// authenticator is the authenticator to be associated with the service.
+// Parameters:
+//   - serviceID: The unique identifier for the service.
+//   - authenticator: The authenticator to be associated with the service.
 func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenticator) {
 	am.authenticators[serviceID] = authenticator
 }
 
-// Authenticate authenticates a request for a specific service. If an
-// authenticator is registered for the service, it will be used to validate the
-// request. If no authenticator is found, the request is allowed to proceed.
+// Authenticate authenticates a request for a specific service. It looks up the
+// authenticator registered for the given service ID and, if found, uses it to
+// validate the request.
 //
-// ctx is the request context.
-// serviceID is the identifier of the service being accessed.
-// r is the HTTP request to authenticate.
+// If no authenticator is found for the service, the request is allowed to
+// proceed without authentication.
+//
+// Parameters:
+//   - ctx: The request context.
+//   - serviceID: The identifier of the service being accessed.
+//   - r: The HTTP request to authenticate.
+//
+// Returns a potentially modified context on success, or an error if
+// authentication fails.
 func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if authenticator, ok := am.authenticators[serviceID]; ok {
 		return authenticator.Authenticate(ctx, r)
@@ -111,23 +135,29 @@ func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *ht
 // GetAuthenticator retrieves the authenticator registered for a specific
 // service.
 //
-// serviceID is the identifier of the service.
-// It returns the authenticator and a boolean indicating whether an
-// authenticator was found.
+// Parameters:
+//   - serviceID: The identifier of the service.
+//
+// Returns the authenticator and a boolean indicating whether an authenticator
+// was found.
 func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	authenticator, ok := am.authenticators[serviceID]
 	return authenticator, ok
 }
 
-// AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for the
+// AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for a
 // given service ID. It initializes the authenticator using the provided OAuth2
 // configuration.
 //
-// ctx is the context for initializing the OIDC provider.
-// serviceID is the unique identifier for the service.
-// config is the OAuth2 configuration for the authenticator.
+// This is a convenience method that simplifies the process of setting up OAuth2
+// authentication for a service.
 //
-// It returns an error if the authenticator cannot be created.
+// Parameters:
+//   - ctx: The context for initializing the OIDC provider.
+//   - serviceID: The unique identifier for the service.
+//   - config: The OAuth2 configuration for the authenticator.
+//
+// Returns an error if the authenticator cannot be created.
 func (am *AuthManager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
 	if config == nil {
 		return nil

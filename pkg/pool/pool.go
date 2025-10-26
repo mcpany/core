@@ -74,13 +74,20 @@ type poolImpl[T ClosableClient] struct {
 }
 
 // New creates a new connection pool with the specified factory and size
-// constraints.
+// constraints. The pool is initialized with a minimum number of clients and can
+// grow up to a maximum size.
 //
-// factory is a function that creates new clients.
-// minSize is the initial number of clients to create.
-// maxSize is the maximum number of clients the pool can hold.
-// idleTimeout is not yet used but is intended for future implementation of
-// idle connection handling.
+// The type parameter `T` is constrained to types that implement the
+// `ClosableClient` interface.
+//
+// Parameters:
+//   - factory: A function that creates new clients.
+//   - minSize: The initial number of clients to create.
+//   - maxSize: The maximum number of clients the pool can hold.
+//   - idleTimeout: (Not yet used) Intended for future implementation of idle
+//     connection handling.
+//
+// Returns a new `Pool` instance or an error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	minSize, maxSize, idleTimeout int, // idleTimeout is not used yet
@@ -116,9 +123,20 @@ func New[T ClosableClient](
 }
 
 // Get retrieves a client from the pool. It first attempts to fetch an idle
-// client. If none are available, and the pool has not reached its maximum size,
-// it creates a new client using the pool's factory. It ensures that any client
-// returned is healthy.
+// client from the channel. If none are available and the pool has not reached
+// its maximum size, it creates a new client using the pool's factory.
+//
+// The method ensures that any client returned is healthy by checking
+// `IsHealthy()`. If an unhealthy client is found, it is closed, and the process
+// is retried. If the pool is full, the method will block until a client is
+// returned to the pool or the context is canceled.
+//
+// Parameters:
+//   - ctx: The context for the operation, which can be used to cancel the wait
+//     for a client.
+//
+// Returns a client from the pool or an error if the pool is closed, the context
+// is canceled, or the factory fails to create a new client.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -204,9 +222,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	}
 }
 
-// Put returns a client to the pool. If the pool is closed or the client is not
-// healthy, the client is closed and discarded. If the pool's idle queue is
-// full, the client is also discarded.
+// Put returns a client to the pool for reuse. If the pool is closed or the
+// client is not healthy, the client is closed and discarded. If the pool's idle
+// queue is full, the client is also discarded to prevent blocking. In all cases
+// where a client is discarded, a permit is released to allow a new client to be
+// created if needed.
+//
+// Parameters:
+//   - client: The client to return to the pool.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
@@ -241,7 +264,7 @@ func (p *poolImpl[T]) Put(client T) {
 }
 
 // Close shuts down the pool, closing all idle clients and preventing any new
-// operations on the pool.
+// operations. Any subsequent calls to `Get` will return `ErrPoolClosed`.
 func (p *poolImpl[T]) Close() {
 	p.mu.Lock()
 	if p.closed {
@@ -272,13 +295,16 @@ type UntypedPool interface {
 }
 
 // Manager provides a way to manage multiple named connection pools. It allows
-// for registering, retrieving, and closing pools in a centralized manner.
+// for registering, retrieving, and closing pools in a centralized manner, which
+// is useful for applications that need to connect to multiple upstream
+// services.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
 }
 
-// NewManager creates and returns a new pool Manager.
+// NewManager creates and returns a new pool Manager for managing multiple named
+// connection pools.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -287,7 +313,12 @@ func NewManager() *Manager {
 
 // Register adds a new pool to the manager under a given name. If a pool with
 // the same name already exists, the old pool is closed before the new one is
-// added.
+// registered. This ensures that there are no resource leaks from orphaned
+// pools.
+//
+// Parameters:
+//   - name: The name to register the pool under.
+//   - pool: The pool to register.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -301,8 +332,15 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
-// Get retrieves a typed pool from the manager by name. It returns the pool and
-// a boolean indicating whether the pool was found and of the correct type.
+// Get retrieves a typed pool from the manager by name. It uses a type parameter
+// `T` to ensure that the returned pool is of the expected type.
+//
+// Parameters:
+//   - m: The Manager instance.
+//   - name: The name of the pool to retrieve.
+//
+// Returns the typed `Pool` and a boolean indicating whether the pool was found
+// and of the correct type.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -314,7 +352,9 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	return pool, ok
 }
 
-// CloseAll iterates through all registered pools in the manager and closes them.
+// CloseAll iterates through all registered pools in the manager and closes them,
+// releasing all their associated resources. This is typically called during a
+// graceful shutdown of the application.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
