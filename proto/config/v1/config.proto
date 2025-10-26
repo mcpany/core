@@ -575,6 +575,7 @@ message UpstreamAuthentication {
     UpstreamAPIKeyAuth api_key = 1;
     UpstreamBearerTokenAuth bearer_token = 2;
     UpstreamBasicAuth basic_auth = 3;
+    UpstreamOAuth2Auth oauth2 = 5;
   }
   bool use_environment_variable = 4;
 }
@@ -597,6 +598,14 @@ message UpstreamBearerTokenAuth {
 message UpstreamBasicAuth {
   string username = 1;
   string password = 2;
+}
+
+// UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
+message UpstreamOAuth2Auth {
+  string token_url = 1;
+  string client_id = 2;
+  string client_secret = 3;
+  string scopes = 4;
 }
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
