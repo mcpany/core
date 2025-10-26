@@ -35,6 +35,7 @@ import (
 // concrete server implementation.
 type MCPServerProvider interface {
 	Server() *mcp.Server
+	RemoveTool(toolName string)
 }
 
 // ToolManager is a thread-safe manager for registering, retrieving, and
@@ -229,6 +230,13 @@ func (tm *ToolManager) ClearToolsForService(serviceKey string) {
 	tm.tools.Range(func(key, value interface{}) bool {
 		tool := value.(Tool)
 		if tool.Tool().GetServiceId() == serviceKey {
+			toolID, err := util.GenerateToolID(tool.Tool().GetServiceId(), tool.Tool().GetName())
+			if err != nil {
+				log.Error("Failed to generate tool ID for removal", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)
+			} else if tm.mcpServer != nil {
+				log.Debug("Removing tool from MCP server", "toolID", toolID)
+				tm.mcpServer.RemoveTool(toolID)
+			}
 			tm.tools.Delete(key)
 			deletedCount++
 		}

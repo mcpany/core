@@ -56,6 +56,11 @@ func (s *Server) Server() *mcp.Server {
 	return s.server
 }
 
+// RemoveTool removes a tool from the MCP server.
+func (s *Server) RemoveTool(toolName string) {
+	s.server.RemoveTool(toolName)
+}
+
 // NewServer creates and initializes a new MCP-X Server. It sets up the
 // necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for

@@ -23,21 +23,22 @@ import (
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
 	mock.Mock
-	tool *v1.Tool
+	tool *pb.Tool
 }
 
-func (m *MockTool) Tool() *v1.Tool {
+func (m *MockTool) Tool() *pb.Tool {
 	args := m.Called()
-	return args.Get(0).(*v1.Tool)
+	return args.Get(0).(*pb.Tool)
 }
 
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
@@ -60,10 +61,14 @@ func (m *MockMCPServerProvider) Server() *mcp.Server {
 	return args.Get(0).(*mcp.Server)
 }
 
+func (m *MockMCPServerProvider) RemoveTool(toolName string) {
+	m.Called(toolName)
+}
+
 func TestToolManager_AddAndGetTool(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool := new(MockTool)
-	toolProto := &v1.Tool{}
+	toolProto := &pb.Tool{}
 	toolProto.SetServiceId("test-service")
 	toolProto.SetName("test-tool")
 	mockTool.On("Tool").Return(toolProto)
@@ -80,13 +85,13 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 func TestToolManager_ListTools(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool1 := new(MockTool)
-	toolProto1 := &v1.Tool{}
+	toolProto1 := &pb.Tool{}
 	toolProto1.SetServiceId("test-service")
 	toolProto1.SetName("test-tool-1")
 	mockTool1.On("Tool").Return(toolProto1)
 
 	mockTool2 := new(MockTool)
-	toolProto2 := &v1.Tool{}
+	toolProto2 := &pb.Tool{}
 	toolProto2.SetServiceId("test-service")
 	toolProto2.SetName("test-tool-2")
 	mockTool2.On("Tool").Return(toolProto2)
@@ -101,19 +106,19 @@ func TestToolManager_ListTools(t *testing.T) {
 func TestToolManager_ClearToolsForService(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool1 := new(MockTool)
-	toolProto1 := &v1.Tool{}
+	toolProto1 := &pb.Tool{}
 	toolProto1.SetServiceId("service-a")
 	toolProto1.SetName("tool-1")
 	mockTool1.On("Tool").Return(toolProto1)
 
 	mockTool2 := new(MockTool)
-	toolProto2 := &v1.Tool{}
+	toolProto2 := &pb.Tool{}
 	toolProto2.SetServiceId("service-b")
 	toolProto2.SetName("tool-2")
 	mockTool2.On("Tool").Return(toolProto2)
 
 	mockTool3 := new(MockTool)
-	toolProto3 := &v1.Tool{}
+	toolProto3 := &pb.Tool{}
 	toolProto3.SetServiceId("service-a")
 	toolProto3.SetName("tool-3")
 	mockTool3.On("Tool").Return(toolProto3)
@@ -133,7 +138,7 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 func TestToolManager_ExecuteTool(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool := new(MockTool)
-	toolProto := &v1.Tool{}
+	toolProto := &pb.Tool{}
 	toolProto.SetServiceId("exec-service")
 	toolProto.SetName("exec-tool")
 	toolID, _ := util.GenerateToolID("exec-service", "exec-tool")
@@ -191,6 +196,61 @@ func (s *MockMCPToolServer) AddTool(tool *mcp.Tool, handler mcp.ToolHandler) {
 	s.tools[tool.Name] = handler
 }
 
+func (s *MockMCPToolServer) RemoveTool(toolName string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.tools, toolName)
+}
+
+func (s *MockMCPToolServer) GetTool(toolName string) (mcp.ToolHandler, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	handler, ok := s.tools[toolName]
+	return handler, ok
+}
+
+func TestToolManager_ClearToolsForService_UnregistersFromMCPServer(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockMCPServer := NewMockMCPToolServer()
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mockMCPServer.Server)
+	tm.SetMCPServer(mockProvider)
+
+	mockTool := new(MockTool)
+	toolProto := &pb.Tool{}
+	toolProto.SetServiceId("service-to-clear")
+	toolProto.SetName("tool-to-clear")
+	// Create a valid input schema using structpb
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"test": map[string]interface{}{
+				"type": "string",
+			},
+		},
+	})
+	assert.NoError(t, err)
+	annotations := &pb.ToolAnnotations{}
+	annotations.SetInputSchema(inputSchema)
+	toolProto.SetAnnotations(annotations)
+	mockTool.On("Tool").Return(toolProto)
+
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	toolID, _ := util.GenerateToolID("service-to-clear", "tool-to-clear")
+
+	// Expect the RemoveTool method to be called with the correct tool ID
+	mockProvider.On("RemoveTool", toolID).Run(func(args mock.Arguments) {
+		mockMCPServer.RemoveTool(args.String(0))
+	}).Once()
+
+	tm.ClearToolsForService("service-to-clear")
+
+	_, ok := mockMCPServer.GetTool(toolID)
+	assert.False(t, ok, "Tool should be unregistered from the MCP server after clearing")
+}
+
 func TestToolManager_ConcurrentAccess(t *testing.T) {
 	tm := NewToolManager(nil)
 	var wg sync.WaitGroup
@@ -201,7 +261,7 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 			mockTool := new(MockTool)
-			toolProto := &v1.Tool{}
+			toolProto := &pb.Tool{}
 			toolProto.SetServiceId("concurrent-service")
 			toolProto.SetName(fmt.Sprintf("tool-%d", i))
 			mockTool.On("Tool").Return(toolProto)
