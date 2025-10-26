@@ -19,12 +19,13 @@ package schemaconv
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// Mock types for testing generic functions
 type mockConfigParameter struct {
 	schema *configv1.ParameterSchema
 }
@@ -51,54 +52,172 @@ func (m *mockMcpFieldParameter) GetType() string {
 	return m.typ
 }
 
+func strPtr(s string) *string {
+	return &s
+}
+
 func TestConfigSchemaToProtoProperties(t *testing.T) {
-	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
-	intType := configv1.ParameterType(configv1.ParameterType_value["INTEGER"])
-	params := []*mockConfigParameter{
-		{schema: configv1.ParameterSchema_builder{Name: proto.String("param1"), Description: proto.String("a string param"), Type: &stringType}.Build()},
-		{schema: configv1.ParameterSchema_builder{Name: proto.String("param2"), Description: proto.String("an int param"), Type: &intType}.Build()},
+	tests := []struct {
+		name    string
+		params  []*mockConfigParameter
+		want    *structpb.Struct
+		wantErr bool
+	}{
+		{
+			name: "successful conversion",
+			params: []*mockConfigParameter{
+				{schema: configv1.ParameterSchema_builder{
+					Name:        strPtr("param1"),
+					Description: strPtr("desc1"),
+					Type:        configv1.ParameterType_STRING.Enum(),
+				}.Build()},
+				{schema: configv1.ParameterSchema_builder{
+					Name:        strPtr("param2"),
+					Description: strPtr("desc2"),
+					Type:        configv1.ParameterType_INTEGER.Enum(),
+				}.Build()},
+			},
+			want: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"param1": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc1"}},
+								},
+							},
+						},
+					},
+					"param2": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "integer"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc2"}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:   "empty params",
+			params: []*mockConfigParameter{},
+			want: &structpb.Struct{
+				Fields: map[string]*structpb.Value{},
+			},
+			wantErr: false,
+		},
+		{
+			name: "nil schema",
+			params: []*mockConfigParameter{
+				{schema: nil},
+			},
+			want: &structpb.Struct{
+				Fields: map[string]*structpb.Value{},
+			},
+			wantErr: false,
+		},
 	}
 
-	properties, err := ConfigSchemaToProtoProperties(params)
-	require.NoError(t, err)
-	assert.Len(t, properties.Fields, 2)
-
-	param1, ok := properties.Fields["param1"]
-	require.True(t, ok)
-	s1 := param1.GetStructValue()
-	require.NotNil(t, s1)
-	assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
-	assert.Equal(t, "a string param", s1.Fields["description"].GetStringValue())
-
-	param2, ok := properties.Fields["param2"]
-	require.True(t, ok)
-	s2 := param2.GetStructValue()
-	require.NotNil(t, s2)
-	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
-	assert.Equal(t, "an int param", s2.Fields["description"].GetStringValue())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ConfigSchemaToProtoProperties(tt.params)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ConfigSchemaToProtoProperties() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if diff := cmp.Diff(tt.want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("ConfigSchemaToProtoProperties() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }
 
 func TestMcpFieldsToProtoProperties(t *testing.T) {
-	params := []*mockMcpFieldParameter{
-		{name: "field1", description: "a string field", typ: "TYPE_STRING"},
-		{name: "field2", description: "an int field", typ: "TYPE_INT32"},
+	tests := []struct {
+		name    string
+		params  []*mockMcpFieldParameter
+		want    *structpb.Struct
+		wantErr bool
+	}{
+		{
+			name: "successful conversion",
+			params: []*mockMcpFieldParameter{
+				{name: "param1", description: "desc1", typ: "TYPE_STRING"},
+				{name: "param2", description: "desc2", typ: "TYPE_INT32"},
+				{name: "param3", description: "desc3", typ: "TYPE_BOOL"},
+				{name: "param4", description: "desc4", typ: "TYPE_DOUBLE"},
+			},
+			want: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"param1": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc1"}},
+								},
+							},
+						},
+					},
+					"param2": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "integer"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc2"}},
+								},
+							},
+						},
+					},
+					"param3": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "boolean"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc3"}},
+								},
+							},
+						},
+					},
+					"param4": {
+						Kind: &structpb.Value_StructValue{
+							StructValue: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type":        {Kind: &structpb.Value_StringValue{StringValue: "number"}},
+									"description": {Kind: &structpb.Value_StringValue{StringValue: "desc4"}},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name:   "empty params",
+			params: []*mockMcpFieldParameter{},
+			want: &structpb.Struct{
+				Fields: map[string]*structpb.Value{},
+			},
+			wantErr: false,
+		},
 	}
 
-	properties, err := McpFieldsToProtoProperties(params)
-	require.NoError(t, err)
-	assert.Len(t, properties.Fields, 2)
-
-	field1, ok := properties.Fields["field1"]
-	require.True(t, ok)
-	s1 := field1.GetStructValue()
-	require.NotNil(t, s1)
-	assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
-	assert.Equal(t, "a string field", s1.Fields["description"].GetStringValue())
-
-	field2, ok := properties.Fields["field2"]
-	require.True(t, ok)
-	s2 := field2.GetStructValue()
-	require.NotNil(t, s2)
-	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
-	assert.Equal(t, "an int field", s2.Fields["description"].GetStringValue())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := McpFieldsToProtoProperties(tt.params)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("McpFieldsToProtoProperties() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if diff := cmp.Diff(tt.want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("McpFieldsToProtoProperties() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
 }
