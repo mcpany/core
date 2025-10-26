@@ -90,16 +90,75 @@ func TestGenerateServiceKey(t *testing.T) {
 	}
 }
 
+func TestSanitizeOperationID(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "no disallowed characters",
+			input:    "get-user-by-id",
+			expected: "get-user-by-id",
+		},
+		{
+			name:     "with disallowed characters",
+			input:    "get user by id",
+			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id",
+		},
+		{
+			name:     "with multiple disallowed characters",
+			input:    "get user by id (new)",
+			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id_36a9e7_(new)",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := SanitizeOperationID(tc.input)
+			if actual != tc.expected {
+				t.Errorf("Expected %q, but got %q", tc.expected, actual)
+			}
+		})
+	}
+}
+
+func TestGetDockerCommand(t *testing.T) {
+	t.Run("without sudo", func(t *testing.T) {
+		t.Setenv("USE_SUDO_FOR_DOCKER", "false")
+		cmd, args := GetDockerCommand()
+		if cmd != "docker" {
+			t.Errorf("Expected command to be 'docker', but got %q", cmd)
+		}
+		if len(args) != 0 {
+			t.Errorf("Expected no arguments, but got %v", args)
+		}
+	})
+
+	t.Run("with sudo", func(t *testing.T) {
+		t.Setenv("USE_SUDO_FOR_DOCKER", "true")
+		cmd, args := GetDockerCommand()
+		if cmd != "sudo" {
+			t.Errorf("Expected command to be 'sudo', but got %q", cmd)
+		}
+		if len(args) != 1 || args[0] != "docker" {
+			t.Errorf("Expected arguments to be ['docker'], but got %v", args)
+		}
+	})
+}
+
 func TestGenerateToolName(t *testing.T) {
-	input := "test_tool"
-	expected, _ := GenerateID(input)
-	actual, err := GenerateToolName(input)
+	t.Run("GenerateToolName", func(t *testing.T) {
+		input := "test_tool"
+		expected, _ := GenerateID(input)
+		actual, err := GenerateToolName(input)
 
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
 
-	if actual != expected {
-		t.Errorf("Expected %q, but got %q", expected, actual)
-	}
+		if actual != expected {
+			t.Errorf("Expected %q, but got %q", expected, actual)
+		}
+	})
 }
