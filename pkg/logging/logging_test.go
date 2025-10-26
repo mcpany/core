@@ -17,6 +17,7 @@
 package logging
 
 import (
+	"bytes"
 	"context"
 	"log/slog"
 	"os"
@@ -24,64 +25,84 @@ import (
 	"testing"
 )
 
-func TestInitAndGetLogger(t *testing.T) {
-	// This is a combined test to handle the singleton state. It's not a pure
-	// unit test for Init, but it's a pragmatic way to test this package given
-	// the use of sync.Once with global variables.
+// setup is a helper function to reset the logger for each test.
+func setup(t *testing.T) {
+	t.Helper()
+	ForTestsOnlyResetLogger()
+}
 
-	// --- Part 1: Test Init on a (hopefully) clean slate ---
+func TestGetLogger_DefaultInitialization(t *testing.T) {
+	setup(t)
 
-	// Create a temporary file to act as the log output.
-	tmpfile, err := os.CreateTemp("", "testlog.*.log")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
-	// Use a variable to hold the file name because tmpfile will be closed.
-	logFileName := tmpfile.Name()
-	defer os.Remove(logFileName)
+	// Capture the initial stderr.
+	oldStderr := os.Stderr
+	_, w, _ := os.Pipe()
+	os.Stderr = w
 
-	// Call Init. This will only execute the inner function if it's the first
-	// time Init() or GetLogger() has been called in this test suite.
-	Init(slog.LevelDebug, tmpfile)
-
-	// Get the logger. It should now be the one we just initialized (or a
-	// pre-existing one if another test ran first).
 	logger := GetLogger()
 
-	// Log a message at a level that should be enabled if our Init call was successful.
-	logger.Debug("unique debug message for init test")
-	logger.Info("another message to ensure logger is working")
+	// Restore stderr.
+	w.Close()
+	os.Stderr = oldStderr
 
-	// Close the file to ensure content is flushed to disk.
-	if err := tmpfile.Close(); err != nil {
-		t.Fatalf("Failed to close temp file: %v", err)
+	if !logger.Enabled(context.Background(), slog.LevelInfo) {
+		t.Error("Default logger should have Info level enabled")
 	}
-
-	// Read the file and check if the debug message is there.
-	content, err := os.ReadFile(logFileName)
-	if err != nil {
-		t.Fatalf("Failed to read temp file: %v", err)
+	if logger.Enabled(context.Background(), slog.LevelDebug) {
+		t.Error("Default logger should not have Debug level enabled")
 	}
+}
 
-	// This check determines if our Init() call was the one that configured the logger.
-	if strings.Contains(string(content), "unique debug message for init test") {
-		t.Log("Init() successfully configured the logger on the first run.")
-		if !logger.Enabled(context.Background(), slog.LevelDebug) {
-			t.Error("Logger should have Debug level enabled after successful Init")
-		}
-	} else {
-		// If the debug message isn't there, it means the logger was already initialized
-		// by a previous call to GetLogger() in another test.
-		t.Log("Logger was already initialized; Init() call was correctly a no-op.")
-		if logger.Enabled(context.Background(), slog.LevelDebug) {
-			// This case would be strange: it means some other test set the level to Debug.
-			t.Log("Warning: Logger already had Debug level enabled, possibly from another test.")
-		}
+func TestInit_FirstTime(t *testing.T) {
+	setup(t)
+
+	var buf bytes.Buffer
+	Init(slog.LevelDebug, &buf)
+
+	logger := GetLogger()
+	logger.Debug("test message")
+
+	if !strings.Contains(buf.String(), "test message") {
+		t.Error("Log message was not written to the buffer")
 	}
+	if !logger.Enabled(context.Background(), slog.LevelDebug) {
+		t.Error("Logger should have Debug level enabled")
+	}
+}
 
-	// --- Part 2: Test that GetLogger returns a singleton ---
+func TestInit_IsNoOpAfterFirstCall(t *testing.T) {
+	setup(t)
+
+	var buf1, buf2 bytes.Buffer
+	Init(slog.LevelDebug, &buf1)
+	Init(slog.LevelInfo, &buf2)
+
+	logger := GetLogger()
+	logger.Debug("test message")
+
+	if !strings.Contains(buf1.String(), "test message") {
+		t.Error("Log message was not written to the first buffer")
+	}
+	if len(buf2.String()) > 0 {
+		t.Error("Second Init call should be a no-op and not write to the second buffer")
+	}
+}
+
+func TestGetLogger_ReturnsSingleton(t *testing.T) {
+	setup(t)
+
+	logger1 := GetLogger()
 	logger2 := GetLogger()
-	if logger != logger2 {
-		t.Error("GetLogger() should always return the same logger instance")
+
+	if logger1 != logger2 {
+		t.Error("GetLogger should always return the same instance")
+	}
+
+	var buf bytes.Buffer
+	Init(slog.LevelDebug, &buf)
+	logger3 := GetLogger()
+
+	if logger1 != logger3 {
+		t.Error("GetLogger should return the same instance even after Init")
 	}
 }
