@@ -289,3 +289,42 @@ paths:
 		require.Contains(t, properties, "param1")
 	})
 }
+
+func TestRegistrationServer_Unimplemented(t *testing.T) {
+	ctx := context.Background()
+	busProvider := bus.NewBusProvider()
+	registrationServer, err := NewRegistrationServer(busProvider)
+	require.NoError(t, err)
+
+	t.Run("UnregisterService", func(t *testing.T) {
+		_, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
+	t.Run("InitiateOAuth2Flow", func(t *testing.T) {
+		_, err := registrationServer.InitiateOAuth2Flow(ctx, &v1.InitiateOAuth2FlowRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
+	t.Run("RegisterTools", func(t *testing.T) {
+		_, err := registrationServer.RegisterTools(ctx, &v1.RegisterToolsRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
+	t.Run("GetServiceStatus", func(t *testing.T) {
+		_, err := registrationServer.GetServiceStatus(ctx, &v1.GetServiceStatusRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+}
