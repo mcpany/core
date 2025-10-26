@@ -29,7 +29,6 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping TestDockerCompose for now.")
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}

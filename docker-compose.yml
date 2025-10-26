@@ -23,7 +23,7 @@ services:
       - "--config-paths"
       - "/etc/mcpxy/config.yaml"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
+      test: ["CMD", "/app/server", "health"]
       interval: 5s
       timeout: 2s
       retries: 5
