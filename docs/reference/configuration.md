@@ -8,10 +8,10 @@ This document provides a comprehensive reference for configuring the MCP-X serve
 
 The `McpxServerConfig` is the top-level configuration object for the entire MCP-X server.
 
-| Field               | Type                             | Description                                                                                                                                   |
-| ------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                           |
-| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP-X will proxy to. Each service has its own specific configuration and policies.            |
+| Field               | Type                             | Description                                                                                                                        |
+| ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                |
+| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP-X will proxy to. Each service has its own specific configuration and policies. |
 
 ### `GlobalSettings`
 
