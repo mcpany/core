@@ -554,12 +554,12 @@ message APIKeyAuth {
 
 // OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 message OAuth2Auth {
-  string client_id = 1;
-  string client_secret = 2;
   string token_url = 3;
   string authorization_url = 4;
   // Space-delimited list of scopes.
   string scopes = 5;
+  string issuer_url = 6;
+  string audience = 7;
 }
 
 // ===================================================================
