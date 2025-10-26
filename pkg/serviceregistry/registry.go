@@ -98,6 +98,15 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 			authenticator := auth.NewAPIKeyAuthenticator(apiKeyConfig)
 			r.authManager.AddAuthenticator(serviceKey, authenticator)
 		}
+		if oauth2Config := authConfig.GetOauth2(); oauth2Config != nil {
+			config := &auth.OAuth2Config{
+				IssuerURL:    oauth2Config.GetIssuerUrl(),
+				Audience:     oauth2Config.GetAudience(),
+			}
+			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceKey, config); err != nil {
+				return "", nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)
+			}
+		}
 	}
 
 	return serviceKey, discoveredTools, nil
