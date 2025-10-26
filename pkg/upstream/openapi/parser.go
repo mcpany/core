@@ -605,4 +605,3 @@ func convertOpenAPISchemaToInputSchemaProperties(
 
 	return props, nil
 }
-
