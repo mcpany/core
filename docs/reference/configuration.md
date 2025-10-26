@@ -8,12 +8,10 @@ This document provides a comprehensive reference for configuring the MCP-X serve
 
 The `McpxServerConfig` is the top-level configuration object for the entire MCP-X server.
 
-| Field               | Type                             | Description                                                                                                                                   |
-| ------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                           |
-| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP-X will proxy to. Each service has its own specific configuration and policies.            |
-| `frontend_services` | `repeated FrontendService`       | A list of all defined public-facing frontend services. This allows you to decouple the public-facing service from the backend implementation. |
-| `service_bindings`  | `repeated ServiceBinding`        | A list of bindings that link a `FrontendService` to a specific `UpstreamServiceConfig`.                                                       |
+| Field               | Type                             | Description                                                                                                                        |
+| ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                |
+| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP-X will proxy to. Each service has its own specific configuration and policies. |
 
 ### `GlobalSettings`
 
@@ -25,24 +23,6 @@ Contains server-wide operational parameters.
 | `mcp_basepath`   | `string` | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
 | `log_level`      | `enum`   | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `protoc_version` | `string` | The version of `protoc` to use for parsing `.proto` files.                    |
-
-### `FrontendService`
-
-Defines the public-facing identity of a service.
-
-| Field  | Type     | Description                                               |
-| ------ | -------- | --------------------------------------------------------- |
-| `id`   | `string` | A UUID to uniquely identify this frontend service.        |
-| `name` | `string` | A human-readable name for the service (e.g., "user-api"). |
-
-### `ServiceBinding`
-
-Links a `FrontendService` to an `UpstreamServiceConfig` using their IDs.
-
-| Field                 | Type     | Description                                    |
-| --------------------- | -------- | ---------------------------------------------- |
-| `frontend_service_id` | `string` | The ID of the `FrontendService` to bind.       |
-| `upstream_service_id` | `string` | The ID of the `UpstreamServiceConfig` to bind. |
 
 ## Upstream Service Configuration (`UpstreamServiceConfig`)
 

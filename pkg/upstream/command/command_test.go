@@ -86,6 +86,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
+		cmdService.SetCommand("/bin/echo")
 		callDef := configv1.StdioCallDefinition_builder{
 			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
@@ -113,10 +114,13 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdTool := tm.ListTools()[0]
 		assert.Equal(t, "echo", cmdTool.Tool().GetName())
 
-		// This test is broken, it's not passing the command to the tool
-		// and it's not checking the output correctly.
-		// I'm skipping it for now, as it's not related to my changes.
-		t.SkipNow()
+		cmdTool.Tool().GetOutputSchema()
+		outputSchema := cmdTool.Tool().GetOutputSchema()
+		assert.NotNil(t, outputSchema)
+		assert.Equal(t, "object", outputSchema.Fields["type"].GetStringValue())
+		properties := outputSchema.Fields["properties"].GetStructValue().GetFields()
+		assert.Contains(t, properties, "stdout")
+		assert.Equal(t, "string", properties["stdout"].GetStructValue().GetFields()["type"].GetStringValue())
 
 		inputData := map[string]interface{}{"args": []string{"hello from test"}}
 		inputs, err := json.Marshal(inputData)
@@ -126,7 +130,10 @@ func TestCommandUpstream_Register(t *testing.T) {
 		result, err := cmdTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 
-		assert.Equal(t, "hello from test\n", result)
+		resultMap, ok := result.(map[string]interface{})
+		require.True(t, ok)
+		assert.Equal(t, "hello from test\n", resultMap["stdout"])
+		assert.Equal(t, "/bin/echo", resultMap["command"])
 	})
 
 	t.Run("nil command line service config", func(t *testing.T) {
