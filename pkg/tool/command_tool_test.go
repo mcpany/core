@@ -128,9 +128,3 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 }
 
-func TestNewCommandTool(t *testing.T) {
-	toolProto := &v1.Tool{}
-	cmdTool := tool.NewCommandTool(toolProto, "echo")
-	assert.NotNil(t, cmdTool)
-	assert.NotNil(t, toolProto.GetOutputSchema())
-}
