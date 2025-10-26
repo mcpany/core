@@ -29,19 +29,27 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// RegistrationServer implements the gRPC server for service registration.
-// It handles gRPC requests for registering and managing upstream services by
+// RegistrationServer implements the gRPC server for service registration. It
+// handles gRPC requests for registering and managing upstream services by
 // publishing messages to the event bus and waiting for the results from the
-// corresponding workers.
+// corresponding workers. This decouples the gRPC server from the core service
+// registration logic, allowing for a more modular and scalable architecture.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus *bus.BusProvider
 }
 
-// NewRegistrationServer creates a new RegistrationServer with the provided event
-// bus.
+// NewRegistrationServer creates a new RegistrationServer with the provided
+// event bus.
 //
-// bus is the event bus used for communication with service registration workers.
+// The bus is used for communicating with the service registration workers,
+// allowing for an asynchronous, decoupled registration process.
+//
+// Parameters:
+//   - bus: The event bus used for communication.
+//
+// Returns a new instance of the RegistrationServer or an error if the bus is
+// nil.
 func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
@@ -50,12 +58,21 @@ func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
-// It sends a registration request to the event bus and waits for a response from
-// the registration worker. This process is asynchronous, allowing the server to
-// remain responsive while the registration is in progress.
+// It sends a registration request to the event bus and waits for a response
+// from the registration worker. This process is asynchronous, allowing the
+// server to remain responsive while the registration is in progress.
 //
-// ctx is the context for the gRPC call.
-// req contains the configuration of the service to be registered.
+// A correlation ID is used to match the request with the corresponding result
+// from the worker. The method waits for the result, with a timeout, and returns
+// the registration details, including any discovered tools.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the configuration of the service to be
+//     registered.
+//
+// Returns a response with the registration status and discovered tools, or an
+// error if the registration fails or times out.
 func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.RegisterServiceRequest) (*v1.RegisterServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -112,22 +129,26 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 }
 
-// UnregisterService is not yet implemented.
+// UnregisterService is not yet implemented. It is intended to handle the
+// unregistration of a service.
 func (s *RegistrationServer) UnregisterService(ctx context.Context, req *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
-// InitiateOAuth2Flow is not yet implemented.
+// InitiateOAuth2Flow is not yet implemented. It is intended to handle the
+// initiation of an OAuth2 flow for a service.
 func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
 }
 
-// RegisterTools is not yet implemented.
+// RegisterTools is not yet implemented. It is intended to handle the
+// registration of tools for a service.
 func (s *RegistrationServer) RegisterTools(ctx context.Context, req *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 
-// GetServiceStatus is not yet implemented.
+// GetServiceStatus is not yet implemented. It is intended to handle requests
+// for the status of a service.
 func (s *RegistrationServer) GetServiceStatus(ctx context.Context, req *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }

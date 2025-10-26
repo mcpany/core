@@ -49,8 +49,9 @@ type Server struct {
 	bus             *bus.BusProvider
 }
 
-// Server returns the underlying *mcp.Server instance, providing access to the
-// core MCP server functionality.
+// Server returns the underlying *mcp.Server instance, which provides access to
+// the core MCP server functionality. This can be used for advanced
+// configurations or direct interaction with the MCP server.
 func (s *Server) Server() *mcp.Server {
 	return s.server
 }
@@ -58,15 +59,21 @@ func (s *Server) Server() *mcp.Server {
 // NewServer creates and initializes a new MCP-X Server. It sets up the
 // necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for
-// request processing and validation.
+// request processing, such as routing and tool list filtering.
 //
-// ctx is the application's root context.
-// toolManager manages the lifecycle and access to tools.
-// promptManager manages the lifecycle and access to prompts.
-// resourceManager manages the lifecycle and access to resources.
-// authManager handles authentication for incoming requests.
-// serviceRegistry keeps track of all registered upstream services.
-// bus is the event bus used for asynchronous communication between components.
+// The server is initialized with all the necessary components for handling MCP
+// requests and managing the lifecycle of tools, prompts, and resources.
+//
+// Parameters:
+//   - ctx: The application's root context.
+//   - toolManager: Manages the lifecycle and access to tools.
+//   - promptManager: Manages the lifecycle and access to prompts.
+//   - resourceManager: Manages the lifecycle and access to resources.
+//   - authManager: Handles authentication for incoming requests.
+//   - serviceRegistry: Keeps track of all registered upstream services.
+//   - bus: The event bus used for asynchronous communication between components.
+//
+// Returns a new instance of the Server and an error if initialization fails.
 func NewServer(
 	ctx context.Context,
 	toolManager tool.ToolManagerInterface,
@@ -198,7 +205,14 @@ func NewServer(
 }
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
-// available prompts from the PromptManager and returns them to the client.
+// available prompts from the PromptManager, converts them to the MCP format, and
+// returns them to the client.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The "prompts/list" request from the client.
+//
+// Returns a list of available prompts or an error if the retrieval fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -215,7 +229,16 @@ func (s *Server) ListPrompts(
 
 // GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
 // prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result.
+// arguments, returning the result. If the prompt is not found, it returns a
+// prompt.ErrPromptNotFound error.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The "prompts/get" request from the client, containing the prompt
+//     name and arguments.
+//
+// Returns the result of the prompt execution or an error if the prompt is not
+// found or execution fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -233,8 +256,15 @@ func (s *Server) GetPrompt(
 	return p.Get(ctx, argsBytes)
 }
 
-// ListResources handles the "resources/list" MCP request. It fetches the list of
-// available resources from the ResourceManager and returns them to the client.
+// ListResources handles the "resources/list" MCP request. It fetches the list
+// of available resources from the ResourceManager, converts them to the MCP
+// format, and returns them to the client.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The "resources/list" request from the client.
+//
+// Returns a list of available resources or an error if the retrieval fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -249,8 +279,18 @@ func (s *Server) ListResources(
 	}, nil
 }
 
-// ReadResource handles the "resources/read" MCP request. It retrieves a specific
-// resource by its URI from the ResourceManager and returns its content.
+// ReadResource handles the "resources/read" MCP request. It retrieves a
+// specific resource by its URI from the ResourceManager and returns its content.
+// If the resource is not found, it returns a resource.ErrResourceNotFound
+// error.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The "resources/read" request from the client, containing the URI
+//     of the resource to be read.
+//
+// Returns the content of the resource or an error if the resource is not found
+// or reading fails.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -262,27 +302,32 @@ func (s *Server) ReadResource(
 	return r.Read(ctx)
 }
 
-// AuthManager returns the server's authentication manager.
+// AuthManager returns the server's authentication manager, which is responsible
+// for handling authentication for incoming requests.
 func (s *Server) AuthManager() *auth.AuthManager {
 	return s.authManager
 }
 
-// ToolManager returns the server's tool manager.
+// ToolManager returns the server's tool manager, which is responsible for
+// managing the lifecycle and access to tools.
 func (s *Server) ToolManager() tool.ToolManagerInterface {
 	return s.toolManager
 }
 
-// PromptManager returns the server's prompt manager.
+// PromptManager returns the server's prompt manager, which is responsible for
+// managing the lifecycle and access to prompts.
 func (s *Server) PromptManager() prompt.PromptManagerInterface {
 	return s.promptManager
 }
 
-// ResourceManager returns the server's resource manager.
+// ResourceManager returns the server's resource manager, which is responsible
+// for managing the lifecycle and access to resources.
 func (s *Server) ResourceManager() resource.ResourceManagerInterface {
 	return s.resourceManager
 }
 
-// ServiceRegistry returns the server's service registry.
+// ServiceRegistry returns the server's service registry, which keeps track of
+// all registered upstream services.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }

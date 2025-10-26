@@ -64,18 +64,19 @@ type Runner interface {
 	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error
 }
 
-// Application is the main application struct, holding the dependencies and logic
-// for the MCP-XY server. It encapsulates the components required to run the
-// server, such as the stdio mode handler.
+// Application is the main application struct, holding the dependencies and
+// logic for the MCP-XY server. It encapsulates the components required to run
+// the server, such as the stdio mode handler, and provides the main `Run`
+// method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 }
 
-// NewApplication creates a new Application with default dependencies. It
-// initializes the application with the standard implementation of the stdio mode
-// runner.
+// NewApplication creates a new Application with default dependencies.
+// It initializes the application with the standard implementation of the stdio
+// mode runner, making it ready to be configured and started.
 //
-// Returns a new instance of the Application.
+// Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
@@ -83,17 +84,25 @@ func NewApplication() *Application {
 }
 
 // Run starts the MCP-XY server and all its components. It initializes the core
-// services, loads configurations, starts background workers, and launches the
-// gRPC and JSON-RPC servers.
+// services, loads configurations from the provided paths, starts background
+// workers for handling service registration and upstream service communication,
+// and launches the gRPC and JSON-RPC servers.
 //
-// ctx is the context for managing the application's lifecycle.
-// fs is the filesystem for reading configuration files.
-// stdio determines if the server should run in stdio mode.
-// jsonrpcPort specifies the port for the JSON-RPC server.
-// grpcPort specifies the port for the gRPC registration server.
-// configPaths provides a list of paths to service configuration files.
+// The server's lifecycle is managed by the provided context. A graceful
+// shutdown is initiated when the context is canceled.
 //
-// It returns an error if any part of the startup or execution fails.
+// Parameters:
+//   - ctx: The context for managing the application's lifecycle.
+//   - fs: The filesystem interface for reading configuration files.
+//   - stdio: A boolean indicating whether to run in standard I/O mode.
+//   - jsonrpcPort: The port for the JSON-RPC server.
+//   - grpcPort: The port for the gRPC registration server. An empty string
+//     disables the gRPC server.
+//   - configPaths: A slice of paths to service configuration files.
+//   - shutdownTimeout: The duration to wait for a graceful shutdown before
+//     forcing termination.
+//
+// Returns an error if any part of the startup or execution fails.
 func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
@@ -191,12 +200,19 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 }
 
 // HealthCheck performs a health check against a running server by sending an
-// HTTP GET request to its /healthz endpoint.
+// HTTP GET request to its /healthz endpoint. This is useful for monitoring and
+// ensuring the server is operational.
 //
-// port specifies the port on which the server is running.
+// The function constructs the health check URL from the provided port and sends
+// an HTTP GET request. It expects a 200 OK status code for a successful health
+// check.
 //
-// It returns nil if the server is healthy, or an error if the health check
-// fails.
+// Parameters:
+//   - port: The port on which the server is running.
+//
+// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
+// error if the health check fails for any reason (e.g., connection error,
+// non-200 status code).
 func HealthCheck(port string) error {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
 	if err != nil {

@@ -35,10 +35,20 @@ import (
 
 var appRunner app.Runner = app.NewApplication()
 
-// newRootCmd creates and configures the main command for the application. It
-// sets up the command-line flags, environment variable binding, and the main
-// execution logic for the server. It also adds subcommands for version and
-// health checks.
+// newRootCmd creates and configures the main command for the application.
+// It sets up the command-line flags for configuring the server, such as ports,
+// configuration paths, and operational modes (e.g., stdio). It also handles
+// environment variable binding, allowing for configuration through both flags
+// and environment variables.
+//
+// The command's main execution logic initializes the logger, sets up a context
+// for graceful shutdown, and starts the application runner with the parsed
+// configuration.
+//
+// Additionally, it adds subcommands for `version` to print the application's
+// version and `health` to perform a health check against a running server.
+//
+// Returns the configured root command, ready to be executed.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
@@ -124,8 +134,11 @@ func newRootCmd() *cobra.Command {
 }
 
 // main is the entry point for the MCP-XY server application. It initializes and
-// executes the root command, which handles command-line argument parsing,
-// configuration, and the startup of the server.
+// executes the root command, which is responsible for parsing command-line
+// arguments, loading configuration, and starting the server.
+//
+// The application will exit with a non-zero status code if an error occurs
+// during the execution of the command.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)

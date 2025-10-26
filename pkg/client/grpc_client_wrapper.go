@@ -21,20 +21,23 @@ import (
 	"google.golang.org/grpc/connectivity"
 )
 
-// GrpcClientWrapper wraps a *grpc.ClientConn to adapt it to the
-// pool.ClosableClient interface. This allows gRPC clients to be managed by a
-// connection pool.
+// GrpcClientWrapper wraps a `*grpc.ClientConn` to adapt it to the
+// `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
+// connection pool, which can improve performance by reusing connections.
 type GrpcClientWrapper struct {
 	*grpc.ClientConn
 }
 
 // IsHealthy checks if the underlying gRPC connection is in a usable state.
-// It returns true if the connection is not in the Shutdown state.
+//
+// It returns `true` if the connection's state is not `connectivity.Shutdown`,
+// indicating that it is still active and can be used for new RPCs.
 func (w *GrpcClientWrapper) IsHealthy() bool {
 	return w.GetState() != connectivity.Shutdown
 }
 
-// Close terminates the underlying gRPC connection.
+// Close terminates the underlying gRPC connection, releasing any associated
+// resources.
 func (w *GrpcClientWrapper) Close() error {
 	return w.ClientConn.Close()
 }

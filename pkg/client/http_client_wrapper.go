@@ -18,22 +18,24 @@ package client
 
 import "net/http"
 
-// HttpClientWrapper wraps an *http.Client to adapt it to the
-// pool.ClosableClient interface. This allows HTTP clients to be managed by a
-// connection pool.
+// HttpClientWrapper wraps an `*http.Client` to adapt it to the
+// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
+// connection pool, which can help control the number of concurrent connections
+// and reuse them where appropriate.
 type HttpClientWrapper struct {
 	*http.Client
 }
 
-// IsHealthy always returns true for an *http.Client. Unlike gRPC connections,
-// HTTP clients are generally long-lived and do not have a persistent connection
-// state to check.
+// IsHealthy always returns true for an `*http.Client`. Unlike gRPC
+// connections, HTTP clients are generally long-lived and do not have a
+// persistent connection state to check.
 func (w *HttpClientWrapper) IsHealthy() bool {
 	return true
 }
 
-// Close is a no-op for the *http.Client wrapper. The underlying transport manages
-// connections, and closing the client is not necessary.
+// Close is a no-op for the `*http.Client` wrapper. The underlying transport
+// manages the connections, and closing the client itself is not typically
+// necessary.
 func (w *HttpClientWrapper) Close() error {
 	return nil
 }
