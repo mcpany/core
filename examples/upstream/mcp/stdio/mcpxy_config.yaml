@@ -1,0 +1,5 @@
+upstream_services:
+- name: mcp-cat-service
+  mcp_service:
+    stdio_connection:
+      command: "cat"

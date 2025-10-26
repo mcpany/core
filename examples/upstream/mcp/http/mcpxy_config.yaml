@@ -1,0 +1,5 @@
+upstream_services:
+- name: mcp-dog-service
+  mcp_service:
+    http_connection:
+      http_address: "http://localhost:{{.Port}}"
