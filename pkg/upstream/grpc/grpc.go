@@ -231,9 +231,27 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			log.Error("Failed to add gRPC tool", "tool_name", toolName, "error", err)
 			continue
 		}
+
+		responsePropertiesStruct, err := schemaconv.OutputMessageDescriptorToProtoProperties(methodDescriptor.Output())
+		if err != nil {
+			log.Error("Failed to convert MethodDescriptor to ResponseFields, skipping.", "method", methodDescriptor.FullName(), "error", err)
+			continue
+		}
+		if responsePropertiesStruct == nil {
+			responsePropertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		responseSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(responsePropertiesStruct),
+			},
+		}
+
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDef.Name),
-			Description: proto.String(toolDef.Description),
+			Name:           proto.String(toolDef.Name),
+			Description:    proto.String(toolDef.Description),
+			InputSchema:    inputSchema,
+			ResponseFields: responseSchema,
 		}.Build())
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
@@ -309,9 +327,27 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					log.Error("Failed to add gRPC tool", "tool_name", methodDesc.Name(), "error", err)
 					continue
 				}
+
+				responsePropertiesStruct, err := schemaconv.OutputMessageDescriptorToProtoProperties(methodDesc.Output())
+				if err != nil {
+					log.Error("Failed to convert MethodDescriptor to ResponseFields, skipping.", "method", methodDesc.FullName(), "error", err)
+					continue
+				}
+				if responsePropertiesStruct == nil {
+					responsePropertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+				}
+				responseSchema := &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(responsePropertiesStruct),
+					},
+				}
+
 				discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-					Name:        proto.String(string(methodDesc.Name())),
-					Description: proto.String(string(methodDesc.FullName())),
+					Name:           proto.String(string(methodDesc.Name())),
+					Description:    proto.String(string(methodDesc.FullName())),
+					InputSchema:    inputSchema,
+					ResponseFields: responseSchema,
 				}.Build())
 				log.Info("Registered gRPC tool from descriptor", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 			}

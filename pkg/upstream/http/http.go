@@ -231,9 +231,21 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			log.Error("Failed to add tool", "error", err)
 			continue
 		}
+
+		// Create a placeholder for response fields since we can't know them ahead of time for HTTP.
+		responsePropertiesStruct := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		responseSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(responsePropertiesStruct),
+			},
+		}
+
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(schema.GetName()),
-			Description: proto.String(schema.GetDescription()),
+			Name:           proto.String(schema.GetName()),
+			Description:    proto.String(schema.GetDescription()),
+			InputSchema:    inputSchema,
+			ResponseFields: responseSchema,
 		}.Build())
 	}
 	return discoveredTools

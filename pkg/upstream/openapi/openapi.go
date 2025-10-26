@@ -38,6 +38,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
@@ -116,9 +117,30 @@ func (u *OpenAPIUpstream) Register(
 	pbTools := convertMcpOperationsToTools(mcpOps, doc, serviceKey)
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(mcpOps))
 	for _, op := range mcpOps {
+		var responseSchemaRef *openapi3.SchemaRef
+		if responseContent, ok := op.ResponseSchemas["200"]; ok {
+			if ref, ok := responseContent["application/json"]; ok {
+				responseSchemaRef = ref
+			}
+		}
+
+		responseProperties, err := convertOpenAPISchemaToResponseSchemaProperties(responseSchemaRef, doc)
+		if err != nil {
+			log.Error("Failed to convert OpenAPI schema to ResponseFields", "error", err)
+			responseProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+
+		responseSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(responseProperties),
+			},
+		}
+
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(op.OperationID),
-			Description: proto.String(op.Description),
+			Name:           proto.String(op.OperationID),
+			Description:    proto.String(op.Description),
+			ResponseFields: responseSchema,
 		}.Build())
 	}
 

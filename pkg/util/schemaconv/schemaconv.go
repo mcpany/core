@@ -59,6 +59,40 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 	return properties, nil
 }
 
+// OutputMessageDescriptorToProtoProperties converts the fields of a message
+// into a `structpb.Struct` for use as the `properties` field in a tool
+// output schema.
+func OutputMessageDescriptorToProtoProperties(messageDesc protoreflect.MessageDescriptor) (*structpb.Struct, error) {
+	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+	outputFields := messageDesc.Fields()
+
+	for i := 0; i < outputFields.Len(); i++ {
+		field := outputFields.Get(i)
+		schema := map[string]interface{}{
+			"type": "string", // Default
+		}
+
+		switch field.Kind() {
+		case protoreflect.DoubleKind, protoreflect.FloatKind:
+			schema["type"] = "number"
+		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
+			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
+			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
+			schema["type"] = "integer"
+		case protoreflect.BoolKind:
+			schema["type"] = "boolean"
+		}
+
+		structValue, err := structpb.NewStruct(schema)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create struct for field %s: %w", field.Name(), err)
+		}
+		properties.Fields[string(field.Name())] = structpb.NewStructValue(structValue)
+	}
+
+	return properties, nil
+}
+
 // ConfigParameter an interface for config parameter schemas
 type ConfigParameter interface {
 	GetSchema() *configv1.ParameterSchema

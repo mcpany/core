@@ -431,8 +431,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(mcpSDKTool.Name),
-			Description: proto.String(mcpSDKTool.Description),
+			Name:           proto.String(mcpSDKTool.Name),
+			Description:    proto.String(mcpSDKTool.Description),
+			InputSchema:    pbTool.GetAnnotations().GetInputSchema(),
+			ResponseFields: pbTool.GetAnnotations().GetOutputSchema(),
 		}.Build())
 	}
 
@@ -578,8 +580,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(mcpSDKTool.Name),
-			Description: proto.String(mcpSDKTool.Description),
+			Name:           proto.String(mcpSDKTool.Name),
+			Description:    proto.String(mcpSDKTool.Description),
+			InputSchema:    pbTool.GetAnnotations().GetInputSchema(),
+			ResponseFields: pbTool.GetAnnotations().GetOutputSchema(),
 		}.Build())
 	}
 
