@@ -71,7 +71,11 @@ type DefaultBus[T any] struct {
 	publishTimeout time.Duration
 }
 
-// New creates and returns a new instance of DefaultBus.
+// New creates and returns a new instance of DefaultBus, which is the default,
+// thread-safe implementation of the Bus interface. It is initialized with the
+// default publish timeout.
+//
+// The type parameter T specifies the type of message that the bus will handle.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),
@@ -80,12 +84,17 @@ func New[T any]() *DefaultBus[T] {
 }
 
 // Publish sends a message to all handlers subscribed to the specified topic.
-// It sends the message to a channel for each subscriber, and the subscriber's
-// dedicated goroutine will process the message. This call blocks for a configurable
-// timeout duration if a subscriber's channel is full.
+// It sends the message to a channel for each subscriber, where it will be
+// processed by the subscriber's dedicated goroutine.
 //
-// topic is the topic to publish the message to.
-// msg is the message to be sent.
+// To prevent a slow subscriber from blocking the publisher indefinitely, this
+// call will time out after a configurable duration if a subscriber's channel is
+// full. If a timeout occurs, the message is dropped for that subscriber, and a
+// warning is logged.
+//
+// Parameters:
+//   - topic: The topic to publish the message to.
+//   - msg: The message to be sent.
 func (b *DefaultBus[T]) Publish(topic string, msg T) {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -106,13 +115,20 @@ func (b *DefaultBus[T]) Publish(topic string, msg T) {
 }
 
 // Subscribe registers a handler function for a given topic. It starts a new
-// goroutine for each subscription to process messages, ensuring that messages
-// are handled independently for each subscriber.
+// goroutine for each subscription to process messages from a buffered channel,
+// ensuring that subscribers handle messages independently and do not block each
+// other.
 //
-// topic is the topic to subscribe to.
-// handler is the function to execute when a message is received.
-// It returns an unsubscribe function that can be called to remove the
-// subscription.
+// Each subscriber is assigned a unique ID, and its channel is added to the list
+// of subscribers for the given topic.
+//
+// Parameters:
+//   - topic: The topic to subscribe to.
+//   - handler: The function to execute when a message is received.
+//
+// Returns an `unsubscribe` function that can be called to remove the
+// subscription. When called, it removes the subscriber from the bus and closes
+// its channel, terminating the associated goroutine.
 func (b *DefaultBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -155,12 +171,18 @@ func (b *DefaultBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe fu
 	}
 }
 
-// SubscribeOnce registers a handler for a topic that will be executed only once.
-// After the handler is called, the subscription is automatically removed.
+// SubscribeOnce registers a handler for a topic that will be executed only
+// once. After the handler is invoked for the first time, the subscription is
+// automatically removed.
 //
-// topic is the topic to subscribe to.
-// handler is the function to execute.
-// It returns a function that can be used to unsubscribe before the handler is
+// This is useful for scenarios where a component needs to wait for a specific
+// event to occur once and then stop listening.
+//
+// Parameters:
+//   - topic: The topic to subscribe to.
+//   - handler: The function to execute.
+//
+// Returns a function that can be used to unsubscribe before the handler is
 // invoked.
 func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
@@ -173,28 +195,39 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 	return unsub
 }
 
-// BusProvider is a thread-safe container for managing multiple topic-based bus
-// instances. It ensures that each topic has a dedicated bus, creating one on
-// demand if it doesn't already exist.
+// BusProvider is a thread-safe container for managing multiple, type-safe bus
+// instances, with each bus being dedicated to a specific topic. It ensures that
+// for any given topic, there is only one bus instance, creating one on demand
+// if it doesn't already exist.
+//
+// This allows different parts of the application to get a bus for a specific
+// message type and topic without needing to manage the lifecycle of the bus
+// instances themselves.
 type BusProvider struct {
 	buses map[string]any
 	mu    sync.RWMutex
 }
 
-// NewBusProvider creates and returns a new BusProvider.
+// NewBusProvider creates and returns a new BusProvider, which is used to manage
+// multiple topic-based bus instances.
 func NewBusProvider() *BusProvider {
 	return &BusProvider{
 		buses: make(map[string]any),
 	}
 }
 
-// GetBus retrieves or creates a bus for a specific topic and message type.
-// It ensures that for any given topic, there is only one bus instance.
+// GetBus retrieves or creates a bus for a specific topic and message type. If a
+// bus for the given topic already exists, it is returned; otherwise, a new one
+// is created and stored for future use.
 //
-// T is the message type for the bus.
-// p is the BusProvider instance.
-// topic is the name of the topic for which to get the bus.
-// It returns a Bus instance for the specified message type and topic.
+// The type parameter T specifies the message type for the bus, ensuring
+// type safety for each topic.
+//
+// Parameters:
+//   - p: The BusProvider instance.
+//   - topic: The name of the topic for which to get the bus.
+//
+// Returns a Bus instance for the specified message type and topic.
 func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	p.mu.Lock()
 	defer p.mu.Unlock()

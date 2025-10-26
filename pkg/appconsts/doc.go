@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-// Package appconsts contains application-wide constants for the MCP-X server.
-// These constants include essential application identifiers and configuration
-// parameters, such as the server name and version.
-//
-// By centralizing these values, the package promotes consistency and ease of
-// maintenance across the application. It ensures that all parts of the server
-// reference the same fundamental properties, reducing the risk of discrepancies
-// and making future updates more straightforward.
+// Package appconsts contains application-level constants for the MCP-X server,
+// such as the application name and version.
 package appconsts

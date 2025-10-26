@@ -38,9 +38,11 @@ type ServiceRegistryInterface interface {
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, error)
 }
 
-// ServiceRegistry is responsible for managing the lifecycle of upstream services.
-// It orchestrates the creation of upstream instances via a factory and registers
-// their associated tools, prompts, and resources with the respective managers.
+// ServiceRegistry is responsible for managing the lifecycle of upstream
+// services. It orchestrates the creation of upstream service instances via a
+// factory and registers their associated tools, prompts, and resources with the
+// respective managers. It also handles the configuration of authentication for
+// each service.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -51,13 +53,17 @@ type ServiceRegistry struct {
 	authManager     *auth.AuthManager
 }
 
-// New creates a new ServiceRegistry instance.
+// New creates a new ServiceRegistry instance, which is responsible for managing
+// the lifecycle of upstream services.
 //
-// factory is the factory used to create upstream service instances.
-// toolManager is the manager for registering discovered tools.
-// promptManager is the manager for registering discovered prompts.
-// resourceManager is the manager for registering discovered resources.
-// authManager is the manager for registering service-specific authenticators.
+// Parameters:
+//   - factory: The factory used to create upstream service instances.
+//   - toolManager: The manager for registering discovered tools.
+//   - promptManager: The manager for registering discovered prompts.
+//   - resourceManager: The manager for registering discovered resources.
+//   - authManager: The manager for registering service-specific authenticators.
+//
+// Returns a new instance of `ServiceRegistry`.
 func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -70,13 +76,19 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 }
 
 // RegisterService handles the registration of a new upstream service. It uses
-// the factory to create an upstream instance and then calls its Register method
-// to discover and register its capabilities (tools, prompts, resources).
+// the factory to create an upstream instance, discovers its capabilities (tools,
+// prompts, resources), and registers them with the appropriate managers. It also
+// sets up any required authenticators for the service.
 //
-// ctx is the context for the registration process.
-// serviceConfig is the configuration for the service to be registered.
-// It returns the unique service key, a slice of discovered tool definitions,
-// and an error if the registration fails.
+// If a service with the same name is already registered, the registration will
+// fail.
+//
+// Parameters:
+//   - ctx: The context for the registration process.
+//   - serviceConfig: The configuration for the service to be registered.
+//
+// Returns the unique service key, a slice of discovered tool definitions, and
+// an error if the registration fails.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -119,9 +131,11 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // GetServiceConfig returns the configuration for a given service key.
 //
-// serviceKey is the unique identifier for the service.
-// It returns the service configuration and a boolean indicating whether the
-// service was found.
+// Parameters:
+//   - serviceKey: The unique identifier for the service.
+//
+// Returns the service configuration and a boolean indicating whether the service
+// was found.
 func (r *ServiceRegistry) GetServiceConfig(serviceKey string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

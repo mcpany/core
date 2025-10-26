@@ -17,45 +17,48 @@
 package consts
 
 const (
-	// ContentTypeApplicationJSON is the content type for JSON.
+	// ContentTypeApplicationJSON defines the standard "application/json" content type.
 	ContentTypeApplicationJSON = "application/json"
-	// ContentTypeTextEventStream is the content type for text event streams.
+	// ContentTypeTextEventStream defines the standard "text/event-stream" content type.
 	ContentTypeTextEventStream = "text/event-stream"
-	// HeaderMcpSessionID is the header for the MCP session ID.
+	// HeaderMcpSessionID is the standard header for the MCP session ID.
 	HeaderMcpSessionID = "Mcp-Session-Id"
-	// MethodConfigureCache is the method for configuring the cache.
+	// MethodConfigureCache is the MCP method for configuring the cache.
 	MethodConfigureCache = "configure_cache"
-	// OauthCallbackPath is the path for the OAuth2 callback.
+	// OauthCallbackPath is the standard path for the OAuth2 callback.
 	OauthCallbackPath = "/v1/oauth2/callback"
 	// DefaultOriginAllow is the default value for the Access-Control-Allow-Origin header.
 	DefaultOriginAllow = "*"
-	// ToolNameServiceSeparator is the separator used to construct a fully qualified tool name from a service ID and a tool name.
+	// ToolNameServiceSeparator is the separator used to construct a fully qualified
+	// tool name from a service ID and a tool name.
 	ToolNameServiceSeparator = "."
-	// MethodToolsCall is the method for calling a tool.
+	// MethodToolsCall is the standard MCP method for calling a tool.
 	MethodToolsCall = "tools/call"
-	// MethodToolsList is the method for listing tools.
+	// MethodToolsList is the standard MCP method for listing tools.
 	MethodToolsList = "tools/list"
-	// MethodPromptsList is the method for listing prompts.
+	// MethodPromptsList is the standard MCP method for listing prompts.
 	MethodPromptsList = "prompts/list"
-	// MethodPromptsGet is the method for getting a prompt.
+	// MethodPromptsGet is the standard MCP method for getting a prompt.
 	MethodPromptsGet = "prompts/get"
-	// MethodResourcesList is the method for listing resources.
+	// MethodResourcesList is the standard MCP method for listing resources.
 	MethodResourcesList = "resources/list"
-	// MethodResourcesRead is the method for reading a resource.
+	// MethodResourcesRead is the standard MCP method for reading a resource.
 	MethodResourcesRead = "resources/read"
-	// MethodResourcesSubscribe is the method for subscribing to a resource.
+	// MethodResourcesSubscribe is the standard MCP method for subscribing to a resource.
 	MethodResourcesSubscribe = "resources/subscribe"
-	// NotificationPromptsListChanged is the notification for when the prompts list has changed.
+	// NotificationPromptsListChanged is the standard MCP notification for when the
+	// prompts list has changed.
 	NotificationPromptsListChanged = "notifications/prompts/list_changed"
-	// NotificationResourcesListChanged is the notification for when the resources list has changed.
+	// NotificationResourcesListChanged is the standard MCP notification for when the
+	// resources list has changed.
 	NotificationResourcesListChanged = "notifications/resources/list_changed"
 )
 
 const (
-	// CommandStatusSuccess is the status for a successful command execution.
+	// CommandStatusSuccess represents the status for a successful command execution.
 	CommandStatusSuccess = "SUCCESS"
-	// CommandStatusError is the status for a failed command execution.
+	// CommandStatusError represents the status for a failed command execution.
 	CommandStatusError = "ERROR"
-	// CommandStatusTimeout is the status for a command that timed out.
+	// CommandStatusTimeout represents the status for a command that timed out.
 	CommandStatusTimeout = "TIMEOUT"
 )

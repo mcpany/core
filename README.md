@@ -222,6 +222,45 @@ The following commands are available for development:
 - `make docker-build`: Build the docker image for the server.
 - `make clean`: Clean up build artifacts.
 
+## Code Documentation
+
+The Go code in this repository is fully documented with GoDoc comments. You can
+view the documentation locally by running a GoDoc server:
+
+```bash
+godoc -http=:6060
+```
+
+Then, navigate to `http://localhost:6060/pkg/github.com/mcpxy/core` in your
+browser.
+
+The `pkg` directory contains the core logic of the application, organized into
+the following subpackages:
+
+- **`app`**: The main application entry point and server lifecycle management.
+- **`auth`**: Authentication strategies for both incoming requests and
+  connections to upstream services.
+- **`bus`**: A type-safe, topic-based event bus for inter-component
+  communication.
+- **`client`**: Interfaces and wrappers for gRPC and HTTP clients.
+- **`config`**: Configuration loading, parsing, and validation.
+- **`consts`**: Application-wide constants.
+- **`logging`**: The global logger initialization and access.
+- **`mcpserver`**: The core MCP server implementation, including request routing
+  and handling.
+- **`middleware`**: MCP middleware for handling concerns like logging, CORS, and
+  authentication.
+- **`pool`**: A generic connection pool for managing upstream client
+  connections.
+- **`serviceregistry`**: The service registry for managing the lifecycle of
+  upstream services.
+- **`tool`**: Tool management and execution.
+- **`upstream`**: Implementations for various upstream service types (gRPC,
+  HTTP, etc.).
+
+For more detailed information on each package and its components, please refer
+to the GoDoc comments in the source code.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
