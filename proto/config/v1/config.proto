@@ -209,16 +209,46 @@ message UpstreamServiceConfig {
 message GrpcUpstreamService {
   // The address of the gRPC server (e.g., "localhost:50051").
   string address = 1;
-  // The content of the main .proto file.
-  string proto_content = 2;
   // If true, mcpx will use gRPC reflection to discover services and methods.
-  bool use_reflection = 3;
+  bool use_reflection = 2;
   // TLS configuration for the gRPC connection.
-  TLSConfig tls_config = 4;
+  TLSConfig tls_config = 3;
   // Manually defined mappings from MCP tools to gRPC calls.
-  repeated GrpcCallDefinition calls = 5;
+  repeated GrpcCallDefinition calls = 4;
   // Health check configuration.
-  GrpcHealthCheck health_check = 6;
+  GrpcHealthCheck health_check = 5;
+  // A list of protobuf definitions for the gRPC service.
+  repeated ProtoDefinition proto_definitions = 6;
+  // A collection of protobuf files to be discovered.
+  repeated ProtoCollection proto_collection = 7;
+}
+
+message ProtoDefinition {
+  oneof proto_ref {
+    ProtoFile proto_file = 1;
+    ProtoDescriptor proto_descriptor = 2;
+  }
+}
+
+message ProtoFile {
+  string file_name = 1;
+  oneof file_ref {
+    string file_content = 2;
+    string file_path = 3;
+  }
+}
+
+message ProtoDescriptor {
+  string file_name = 1;
+  oneof file_ref {
+    string file_path = 2;
+  }
+}
+
+message ProtoCollection {
+  string root_path = 1;
+  string path_match_regex = 2;
+  bool is_recursive = 3;
 }
 
 // HttpUpstreamService defines an upstream service that speaks HTTP.
