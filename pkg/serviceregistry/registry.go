@@ -91,6 +91,11 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, err
 	}
 
+	if _, ok := r.serviceConfigs[serviceKey]; ok {
+		r.toolManager.ClearToolsForService(serviceKey) // Clean up the just-registered tools
+		return "", nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+	}
+
 	r.serviceConfigs[serviceKey] = serviceConfig
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {

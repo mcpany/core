@@ -169,3 +169,30 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), upstreamErr.Error())
 }
+
+func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, error) {
+					// Both services will have the same key because they have the same name
+					return "test-service_e3b0c442", nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service")
+	_, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err, "First registration should succeed")
+
+	// Attempt to register another service with the same name
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service")
+	_, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.Error(t, err, "Second registration with the same name should fail")
+	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+}
