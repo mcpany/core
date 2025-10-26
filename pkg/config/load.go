@@ -24,11 +24,16 @@ import (
 )
 
 // LoadServices loads, validates, and processes the MCP-X server configuration
-// from a given store. It orchestrates the reading of the configuration and
-// ensures its integrity before returning it.
+// from a given store. It orchestrates the reading of the configuration,
+// validates its contents, and returns a sanitized configuration object.
 //
-// store is the configuration store from which to load the configuration.
-// It returns a validated McpxServerConfig or an error if loading or validation
+// If the provided store is empty or contains no configuration files, a default,
+// empty configuration is returned.
+//
+// Parameters:
+//   - store: The configuration store from which to load the configuration.
+//
+// Returns a validated `McpxServerConfig` or an error if loading or validation
 // fails.
 func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")

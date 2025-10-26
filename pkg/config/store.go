@@ -43,10 +43,14 @@ type Engine interface {
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format
-// indicated by the file extension of the given path. It supports .json, .yaml,
-// .yml, and .textproto.
+// indicated by the file extension of the given path. It supports `.json`,
+// `.yaml`, `.yml`, and `.textproto` file formats.
 //
-// path is the file path used to determine the configuration format.
+// Parameters:
+//   - path: The file path used to determine the configuration format.
+//
+// Returns an `Engine` implementation for the corresponding file format, or an
+// error if the format is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -64,9 +68,11 @@ func NewEngine(path string) (Engine, error) {
 // yamlEngine implements the Engine interface for YAML configuration files.
 type yamlEngine struct{}
 
-// Unmarshal parses a YAML byte slice into a proto.Message. It achieves this by
-// first unmarshaling the YAML into a generic map, then marshaling that map to
-// JSON, and finally unmarshaling the JSON into the target protobuf message.
+// Unmarshal parses a YAML byte slice into a `proto.Message`. It achieves this
+// by first unmarshaling the YAML into a generic map, then marshaling that map
+// to JSON, and finally unmarshaling the JSON into the target protobuf message.
+// This two-step process is a common pattern for converting YAML to a protobuf
+// message.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -84,10 +90,11 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	return protojson.Unmarshal(jsonData, v)
 }
 
-// textprotoEngine implements the Engine interface for textproto configuration files.
+// textprotoEngine implements the Engine interface for textproto configuration
+// files.
 type textprotoEngine struct{}
 
-// Unmarshal parses a textproto byte slice into a proto.Message.
+// Unmarshal parses a textproto byte slice into a `proto.Message`.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -95,7 +102,7 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 // jsonEngine implements the Engine interface for JSON configuration files.
 type jsonEngine struct{}
 
-// Unmarshal parses a JSON byte slice into a proto.Message.
+// Unmarshal parses a JSON byte slice into a `proto.Message`.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	return protojson.Unmarshal(b, v)
 }
@@ -108,8 +115,10 @@ type Store interface {
 	Load() (*configv1.McpxServerConfig, error)
 }
 
-// FileStore implements the Store interface for loading configurations from one or
-// more files or directories on a filesystem.
+// FileStore implements the `Store` interface for loading configurations from one
+// or more files or directories on a filesystem. It supports multiple file
+// formats (JSON, YAML, and textproto) and merges the configurations into a
+// single `McpxServerConfig`.
 type FileStore struct {
 	fs    afero.Fs
 	paths []string
@@ -118,16 +127,26 @@ type FileStore struct {
 // NewFileStore creates a new FileStore with the given filesystem and a list of
 // paths to load configurations from.
 //
-// fs is the filesystem interface to use for file operations.
-// paths is a slice of file or directory paths to scan for configuration files.
+// Parameters:
+//   - fs: The filesystem interface to use for file operations.
+//   - paths: A slice of file or directory paths to scan for configuration
+//     files.
+//
+// Returns a new instance of `FileStore`.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
-// Load scans the configured paths for supported configuration files, reads them,
-// unmarshals their contents, and merges them into a single McpxServerConfig.
-// The files are processed in alphabetical order, and later configurations are
-// merged into earlier ones.
+// Load scans the configured paths for supported configuration files (JSON,
+// YAML, and textproto), reads them, unmarshals their contents, and merges them
+// into a single `McpxServerConfig`.
+//
+// The files are processed in alphabetical order, and configurations from later
+// files are merged into earlier ones. This allows for a cascading configuration
+// setup where base configurations can be overridden by more specific ones.
+//
+// Returns the merged `McpxServerConfig` or an error if any part of the process
+// fails.
 func (s *FileStore) Load() (*configv1.McpxServerConfig, error) {
 	var mergedConfig *configv1.McpxServerConfig
 

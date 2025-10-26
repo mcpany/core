@@ -26,10 +26,17 @@ import (
 )
 
 // LoggingMiddleware creates an MCP middleware that logs information about each
-// incoming request. It records when a request is received and when it is
-// completed, including the duration of the handling.
+// incoming request. It records the start and completion of each request,
+// including the duration of the handling.
 //
-// log is the logger to be used. If nil, the default global logger will be used.
+// This is useful for debugging and monitoring the flow of requests through the
+// server.
+//
+// Parameters:
+//   - log: The logger to be used. If `nil`, the default global logger will be
+//     used.
+//
+// Returns an `mcp.Middleware` function.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

@@ -37,13 +37,20 @@ type UpstreamAuthenticator interface {
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an UpstreamAuthenticator based on the
+// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
 // provided authentication configuration. It supports API key, bearer token, and
-// basic authentication.
+// basic authentication, as well as substitution of environment variables in the
+// authentication parameters.
 //
-// authConfig is the configuration that specifies the authentication method and
-// its parameters. If authConfig is nil, no authenticator is created.
-// It returns an UpstreamAuthenticator or an error if the configuration is
+// If the `authConfig` is `nil`, no authenticator is created, and the function
+// returns `nil, nil`. If the configuration is invalid (e.g., missing required
+// fields), an error is returned.
+//
+// Parameters:
+//   - authConfig: The configuration that specifies the authentication method
+//     and its parameters.
+//
+// Returns an `UpstreamAuthenticator` or an error if the configuration is
 // invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
@@ -120,7 +127,10 @@ type APIKeyAuth struct {
 
 // Authenticate adds the configured API key to the request's header.
 //
-// req is the HTTP request to be modified.
+// Parameters:
+//   - req: The HTTP request to be modified.
+//
+// Returns `nil` on success.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	req.Header.Set(a.HeaderName, a.HeaderValue)
 	return nil
@@ -134,7 +144,10 @@ type BearerTokenAuth struct {
 
 // Authenticate adds the bearer token to the request's "Authorization" header.
 //
-// req is the HTTP request to be modified.
+// Parameters:
+//   - req: The HTTP request to be modified.
+//
+// Returns `nil` on success.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	req.Header.Set("Authorization", "Bearer "+b.Token)
 	return nil
@@ -149,7 +162,10 @@ type BasicAuth struct {
 
 // Authenticate sets the request's basic authentication credentials.
 //
-// req is the HTTP request to be modified.
+// Parameters:
+//   - req: The HTTP request to be modified.
+//
+// Returns `nil` on success.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	req.SetBasicAuth(b.Username, b.Password)
 	return nil
