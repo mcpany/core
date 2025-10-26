@@ -292,7 +292,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	httpReq.Header.Set("User-Agent", "mcpxy-e2e-test")
 	httpReq.Header.Set("Accept", "*/*")
 
-
 	if t.authenticator != nil {
 		if err := t.authenticator.Authenticate(httpReq); err != nil {
 			return nil, fmt.Errorf("failed to authenticate request: %w", err)
