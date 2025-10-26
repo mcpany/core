@@ -382,8 +382,10 @@ message ToolDefinition {
   string description = 2;
   // The schema for the input parameters required by the tool.
   google.protobuf.Struct input_schema = 3;
+  // The schema for the output of the tool.
+  google.protobuf.Struct output_schema = 4;
   // Indicates if the tool produces a continuous stream of responses.
-  bool is_stream = 4;
+  bool is_stream = 5;
 }
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.

@@ -207,6 +207,25 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			},
 		}
 
+		responseFields := make([]schemaconv.McpFieldParameter, len(toolDef.ResponseFields))
+		for i := range toolDef.ResponseFields {
+			responseFields[i] = &toolDef.ResponseFields[i]
+		}
+		outputPropertiesStruct, err := schemaconv.McpFieldsToProtoProperties(responseFields)
+		if err != nil {
+			log.Error("Failed to convert McpFields to OutputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
+			continue
+		}
+		if outputPropertiesStruct == nil {
+			outputPropertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		outputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(outputPropertiesStruct),
+			},
+		}
+
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolName),
 			DisplayName:         proto.String(toolDef.Name),
@@ -215,6 +234,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			UnderlyingMethodFqn: proto.String(string(methodDescriptor.FullName())),
 			RequestTypeFqn:      proto.String(toolDef.RequestType),
 			ResponseTypeFqn:     proto.String(toolDef.ResponseType),
+			InputSchema:         inputSchema,
+			OutputSchema:        outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
 				Title:           proto.String(toolDef.Name),
 				ReadOnlyHint:    proto.Bool(toolDef.ReadOnlyHint),
@@ -222,6 +243,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 				IdempotentHint:  proto.Bool(toolDef.IdempotentHint),
 				OpenWorldHint:   proto.Bool(toolDef.OpenWorldHint),
 				InputSchema:     inputSchema,
+				OutputSchema:    outputSchema,
 			}.Build(),
 		}.Build()
 
@@ -232,8 +254,10 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDef.Name),
-			Description: proto.String(toolDef.Description),
+			Name:         proto.String(toolDef.Name),
+			Description:  proto.String(toolDef.Description),
+			InputSchema:  inputSchema,
+			OutputSchema: outputSchema,
 		}.Build())
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
@@ -289,6 +313,22 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					},
 				}
 
+				outputPropertiesStruct, err := schemaconv.MethodOutputDescriptorToProtoProperties(methodDesc)
+				if err != nil {
+					log.Error("Failed to convert MethodDescriptor to OutputSchema, skipping.", "method", methodDesc.FullName(), "error", err)
+					continue
+				}
+
+				if outputPropertiesStruct == nil {
+					outputPropertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+				}
+				outputSchema := &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(outputPropertiesStruct),
+					},
+				}
+
 				newToolProto := pb.Tool_builder{
 					Name:                proto.String(string(methodDesc.Name())),
 					DisplayName:         proto.String(string(methodDesc.Name())),
@@ -297,9 +337,12 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					UnderlyingMethodFqn: proto.String(string(methodDesc.FullName())),
 					RequestTypeFqn:      proto.String(string(methodDesc.Input().FullName())),
 					ResponseTypeFqn:     proto.String(string(methodDesc.Output().FullName())),
+					InputSchema:         inputSchema,
+					OutputSchema:        outputSchema,
 					Annotations: pb.ToolAnnotations_builder{
-						Title:       proto.String(string(methodDesc.Name())),
-						InputSchema: inputSchema,
+						Title:        proto.String(string(methodDesc.Name())),
+						InputSchema:  inputSchema,
+						OutputSchema: outputSchema,
 					}.Build(),
 				}.Build()
 
@@ -310,8 +353,10 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					continue
 				}
 				discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-					Name:        proto.String(string(methodDesc.Name())),
-					Description: proto.String(string(methodDesc.FullName())),
+					Name:         proto.String(string(methodDesc.Name())),
+					Description:  proto.String(string(methodDesc.FullName())),
+					InputSchema:  inputSchema,
+					OutputSchema: outputSchema,
 				}.Build())
 				log.Info("Registered gRPC tool from descriptor", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 			}
