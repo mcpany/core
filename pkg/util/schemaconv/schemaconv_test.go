@@ -20,9 +20,11 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpxy/core/proto/config/v1"
+	calculatorv1 "github.com/mcpxy/core/proto/examples/calculator/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type mockConfigParameter struct {
@@ -101,4 +103,186 @@ func TestMcpFieldsToProtoProperties(t *testing.T) {
 	require.NotNil(t, s2)
 	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
 	assert.Equal(t, "an int field", s2.Fields["description"].GetStringValue())
+}
+
+// mockFieldDescriptor is a mock implementation of protoreflect.FieldDescriptor for testing.
+type mockFieldDescriptor struct {
+	protoreflect.FieldDescriptor
+	kind protoreflect.Kind
+	name string
+}
+
+func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
+	return m.kind
+}
+
+func (m *mockFieldDescriptor) Name() protoreflect.Name {
+	return protoreflect.Name(m.name)
+}
+
+// mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
+type mockFieldDescriptors struct {
+	protoreflect.FieldDescriptors
+	fields []protoreflect.FieldDescriptor
+}
+
+func (m *mockFieldDescriptors) Len() int {
+	return len(m.fields)
+}
+
+func (m *mockFieldDescriptors) Get(i int) protoreflect.FieldDescriptor {
+	return m.fields[i]
+}
+
+// mockMessageDescriptor is a mock implementation of protoreflect.MessageDescriptor for testing.
+type mockMessageDescriptor struct {
+	protoreflect.MessageDescriptor
+	fields protoreflect.FieldDescriptors
+}
+
+func (m *mockMessageDescriptor) Fields() protoreflect.FieldDescriptors {
+	return m.fields
+}
+
+// mockMethodDescriptor is a mock implementation of protoreflect.MethodDescriptor for testing.
+type mockMethodDescriptor struct {
+	protoreflect.MethodDescriptor
+	input  protoreflect.MessageDescriptor
+	output protoreflect.MessageDescriptor
+}
+
+func (m *mockMethodDescriptor) Input() protoreflect.MessageDescriptor {
+	return m.input
+}
+
+func (m *mockMethodDescriptor) Output() protoreflect.MessageDescriptor {
+	return m.output
+}
+
+func TestMethodDescriptorToProtoProperties(t *testing.T) {
+	t.Run("with real proto", func(t *testing.T) {
+		fileDesc := calculatorv1.File_proto_examples_calculator_v1_calculator_proto
+		require.NotNil(t, fileDesc)
+
+		serviceDesc := fileDesc.Services().ByName("CalculatorService")
+		require.NotNil(t, serviceDesc)
+
+		methodDesc := serviceDesc.Methods().ByName("Add")
+		require.NotNil(t, methodDesc)
+
+		properties, err := MethodDescriptorToProtoProperties(methodDesc)
+		require.NoError(t, err)
+		require.Len(t, properties.Fields, 2)
+
+		aField, ok := properties.Fields["a"]
+		require.True(t, ok)
+		s1 := aField.GetStructValue()
+		require.NotNil(t, s1)
+		assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
+
+		bField, ok := properties.Fields["b"]
+		require.True(t, ok)
+		s2 := bField.GetStructValue()
+		require.NotNil(t, s2)
+		assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
+	})
+
+	t.Run("with mocks", func(t *testing.T) {
+		testCases := []struct {
+			name         string
+			fieldKind    protoreflect.Kind
+			expectedType string
+		}{
+			{"string", protoreflect.StringKind, "string"},
+			{"double", protoreflect.DoubleKind, "number"},
+			{"float", protoreflect.FloatKind, "number"},
+			{"int32", protoreflect.Int32Kind, "integer"},
+			{"bool", protoreflect.BoolKind, "boolean"},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				mockMethod := &mockMethodDescriptor{
+					input: &mockMessageDescriptor{
+						fields: &mockFieldDescriptors{
+							fields: []protoreflect.FieldDescriptor{
+								&mockFieldDescriptor{name: "test_field", kind: tc.fieldKind},
+							},
+						},
+					},
+				}
+
+				properties, err := MethodDescriptorToProtoProperties(mockMethod)
+				require.NoError(t, err)
+				require.Len(t, properties.Fields, 1)
+
+				field, ok := properties.Fields["test_field"]
+				require.True(t, ok)
+				s := field.GetStructValue()
+				require.NotNil(t, s)
+				assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
+			})
+		}
+	})
+}
+
+func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
+	t.Run("with real proto", func(t *testing.T) {
+		fileDesc := calculatorv1.File_proto_examples_calculator_v1_calculator_proto
+		require.NotNil(t, fileDesc)
+
+		serviceDesc := fileDesc.Services().ByName("CalculatorService")
+		require.NotNil(t, serviceDesc)
+
+		methodDesc := serviceDesc.Methods().ByName("Add")
+		require.NotNil(t, methodDesc)
+
+		properties, err := MethodOutputDescriptorToProtoProperties(methodDesc)
+		require.NoError(t, err)
+		require.Len(t, properties.Fields, 1)
+
+		resultField, ok := properties.Fields["result"]
+		require.True(t, ok)
+		s1 := resultField.GetStructValue()
+		require.NotNil(t, s1)
+		assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
+	})
+
+	t.Run("with mocks", func(t *testing.T) {
+		testCases := []struct {
+			name         string
+			fieldKind    protoreflect.Kind
+			expectedType string
+		}{
+			{"string", protoreflect.StringKind, "string"},
+			{"double", protoreflect.DoubleKind, "number"},
+			{"float", protoreflect.FloatKind, "number"},
+			{"int32", protoreflect.Int32Kind, "integer"},
+			{"bool", protoreflect.BoolKind, "boolean"},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				mockMethod := &mockMethodDescriptor{
+					output: &mockMessageDescriptor{
+						fields: &mockFieldDescriptors{
+							fields: []protoreflect.FieldDescriptor{
+								&mockFieldDescriptor{name: "test_field", kind: tc.fieldKind},
+							},
+						},
+					},
+				}
+
+				properties, err := MethodOutputDescriptorToProtoProperties(mockMethod)
+				require.NoError(t, err)
+				require.Len(t, properties.Fields, 1)
+
+				field, ok := properties.Fields["test_field"]
+				require.True(t, ok)
+				s := field.GetStructValue()
+				require.NotNil(t, s)
+				assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
+			})
+		}
+	})
 }
