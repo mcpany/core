@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.http-echo-server
     ports:
-      - "8080:8080"
+      - "8090:8080"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 5s

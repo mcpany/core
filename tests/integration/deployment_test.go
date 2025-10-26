@@ -29,15 +29,12 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping TestDockerCompose for now.")
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
 	if !commandExists("docker") {
 		t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
-
-	t.Parallel()
 
 	rootDir := integration.ProjectRoot(t)
 	dockerComposeFile := filepath.Join(rootDir, "docker-compose.yml")
@@ -155,7 +152,6 @@ func TestHelmChart(t *testing.T) {
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
-	t.Parallel()
 
 	helmChartPath := filepath.Join(integration.ProjectRoot(t), "helm", "mcpxy")
 
