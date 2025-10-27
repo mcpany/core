@@ -76,5 +76,23 @@ func TestHTTPUpstreamExample(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected content to be of type TextContent")
 	t.Logf("Tool output: %s", textContent.Text)
-	require.Contains(t, textContent.Text, "dns.google", "Expected response to contain 'dns.google'")
+
+	var ipInfoResponse struct {
+		IP       string `json:"ip"`
+		Hostname string `json:"hostname"`
+		City     string `json:"city"`
+		Region   string `json:"region"`
+		Country  string `json:"country"`
+		Org      string `json:"org"`
+	}
+
+	err = json.Unmarshal([]byte(textContent.Text), &ipInfoResponse)
+	require.NoError(t, err, "Failed to unmarshal ipinfo.io response")
+
+	require.Equal(t, "8.8.8.8", ipInfoResponse.IP, "Expected IP to be 8.8.8.8")
+	require.Equal(t, "dns.google", ipInfoResponse.Hostname, "Expected hostname to be dns.google")
+	require.Equal(t, "Mountain View", ipInfoResponse.City, "Expected city to be Mountain View")
+	require.Equal(t, "California", ipInfoResponse.Region, "Expected region to be California")
+	require.Equal(t, "US", ipInfoResponse.Country, "Expected country to be US")
+	require.Contains(t, ipInfoResponse.Org, "Google", "Expected org to contain Google")
 }
