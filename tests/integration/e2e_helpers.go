@@ -173,6 +173,7 @@ type ManagedProcess struct {
 	label               string
 	IgnoreExitStatusOne bool
 	Port                int
+	Dir                 string
 }
 
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
@@ -202,6 +203,9 @@ func (mp *ManagedProcess) Cmd() *exec.Cmd {
 }
 
 func (mp *ManagedProcess) Start() error {
+	if mp.Dir != "" {
+		mp.cmd.Dir = mp.Dir
+	}
 	mp.t.Logf("[%s] Starting process: %s %v", mp.label, mp.cmd.Path, mp.cmd.Args)
 	if err := mp.cmd.Start(); err != nil {
 		// Give a tiny moment for stderr to populate on immediate start failure.

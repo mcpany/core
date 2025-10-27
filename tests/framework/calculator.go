@@ -34,8 +34,14 @@ func BuildCalculatorServer(t *testing.T) *integration.ManagedProcess {
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 
-	calculatorPath := filepath.Join(root, "build/test/bin/calculator")
-	proc := integration.NewManagedProcess(t, "http_calculator_server", calculatorPath, []string{fmt.Sprintf("--port=%d", port)}, nil)
+	cmd := "uvicorn"
+	args := []string{
+		"main:app",
+		"--host", "0.0.0.0",
+		"--port", fmt.Sprintf("%d", port),
+	}
+	proc := integration.NewManagedProcess(t, "http_calculator_server", cmd, args, nil)
+	proc.Dir = filepath.Join(root, "examples/upstream/http/calculator")
 	proc.Port = port
 	return proc
 }
