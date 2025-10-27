@@ -302,7 +302,7 @@ E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
 E2E_BIN_DIR := $(CURDIR)/build/test/bin
 
 # List of mock service directories (which are also their binary names)
-E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_server grpc_authed_calculator_server openapi_calculator_server websocket_echo_server webrtc_echo_server calculator command-tester
+E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_server grpc_authed_calculator_server openapi_calculator_server websocket_echo_server webrtc_echo_server command-tester
 
 # Target to build all E2E mock services
 .PHONY: build-e2e-mocks
@@ -320,10 +320,6 @@ $(E2E_BIN_DIR)/%: $(E2E_MOCK_DIR)/%/main.go
 
 $(E2E_BIN_DIR)/command-tester: tests/integration/cmd/command-tester/main.go
 	@echo "Building E2E mock service: command-tester from $< into $(E2E_BIN_DIR)"
-	@$(GO_CMD) build -buildvcs=false -o $@ $<
-
-$(E2E_BIN_DIR)/calculator: tests/integration/calculator/main.go
-	@echo "Building E2E mock service: calculator from $< into $(E2E_BIN_DIR)"
 	@$(GO_CMD) build -buildvcs=false -o $@ $<
 
 # Target to ensure the E2E binary directory exists
