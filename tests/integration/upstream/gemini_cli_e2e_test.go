@@ -25,7 +25,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGeminiCLIE2E_Calculator(t *testing.T) {
+func TestGeminiCLIE2E_Everything(t *testing.T) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		t.Skip("GEMINI_API_KEY not set, skipping test")
@@ -35,10 +35,10 @@ func TestGeminiCLIE2E_Calculator(t *testing.T) {
 	gemini.Install()
 
 	testCase := &framework.E2ETestCase{
-		Name:                "Gemini CLI with HTTP Calculator Service",
-		UpstreamServiceType: "http",
-		BuildUpstream:       framework.BuildCalculatorServer,
-		RegisterUpstream:    framework.RegisterCalculatorService,
+		Name:                "Gemini CLI with HTTP Everything Service",
+		UpstreamServiceType: "streamablehttp",
+		BuildUpstream:       framework.BuildEverythingServer,
+		RegisterUpstream:    framework.RegisterEverythingService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
 			defer gemini.RemoveMCP("mcpxy-server")
