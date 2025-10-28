@@ -288,13 +288,9 @@ test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 EXAMPLE_BIN_DIR := $(CURDIR)/build/examples/bin
 
 # List of example binaries
-.PHONY: build-examples build-calculator-stdio
-build-examples: build-calculator-stdio
+.PHONY: build-examples
+build-examples:
 
-build-calculator-stdio:
-	@echo "Building example service: calculator-stdio"
-	@mkdir -p $(EXAMPLE_BIN_DIR)
-	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/calculator-stdio ./tests/integration/calculator/cmd/stdio/main.go
 
 # ==============================================================================
 # Other Commands
