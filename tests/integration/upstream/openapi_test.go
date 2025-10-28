@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2025 Author(s) of MCP-XY
  *
@@ -17,50 +19,34 @@
 package upstream
 
 import (
-	"context"
-	"encoding/json"
+	"os"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_OpenAPI(t *testing.T) {
+	gemini := framework.NewGeminiCLI(t)
+	gemini.Install()
+
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		t.Skip("GEMINI_API_KEY is not set")
+	}
+
 	testCase := &framework.E2ETestCase{
 		Name:                "OpenAPI Calculator Server",
 		UpstreamServiceType: "openapi",
 		BuildUpstream:       framework.BuildOpenAPIServer,
 		RegisterUpstream:    framework.RegisterOpenAPIService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
-			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-			defer cancel()
-
-			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			framework.VerifyMCPClient(t, mcpxyEndpoint)
+			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
+			defer gemini.RemoveMCP("mcpxy-server")
+			output, err := gemini.Run(apiKey, "what is the result of 10 + 5")
 			require.NoError(t, err)
-			defer cs.Close()
-
-			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-			require.NoError(t, err)
-			for _, tool := range listToolsResult.Tools {
-				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
-			}
-
-			serviceKey, _ := util.GenerateID("e2e_openapi_calculator")
-			toolName, _ := util.GenerateToolID(serviceKey, "add")
-			addArgs := `{"a": 5, "b": 7}`
-			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
-			require.NoError(t, err, "Error calling add tool")
-			require.NotNil(t, res, "Nil response from add tool")
-			switch content := res.Content[0].(type) {
-			case *mcp.TextContent:
-				require.JSONEq(t, `{"result": 12}`, content.Text, "The sum is incorrect")
-			default:
-				t.Fatalf("Unexpected content type: %T", content)
-			}
+			require.Contains(t, output, "15")
 		},
 	}
 

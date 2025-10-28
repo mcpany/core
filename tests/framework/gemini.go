@@ -25,6 +25,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const DefaultModel = "gemini-2.5-flash"
+
 type GeminiCLI struct {
 	t *testing.T
 }
@@ -56,13 +58,16 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 	}
 }
 
-func (g *GeminiCLI) Run(apiKey, model, prompt string) (string, error) {
+func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
+	if apiKey == "" {
+		g.t.Skip("GEMINI_API_KEY is not set. Please get one from AI Studio.")
+	}
 	os.Setenv("GEMINI_API_KEY", apiKey)
 	defer os.Unsetenv("GEMINI_API_KEY")
 
 	var outputBuffer strings.Builder
-	cmd := exec.Command("gemini", "-m", model, "-p", prompt)
+	cmd := exec.Command("gemini", "-m", DefaultModel, "-p", prompt)
 	cmd.Stdout = &outputBuffer
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2025 Author(s) of MCP-XY
  *
@@ -17,55 +19,34 @@
 package upstream
 
 import (
-	"context"
-	"encoding/json"
+	"os"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestUpstreamService_Webrtc(t *testing.T) {
+	gemini := framework.NewGeminiCLI(t)
+	gemini.Install()
+
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		t.Skip("GEMINI_API_KEY is not set")
+	}
+
 	testCase := &framework.E2ETestCase{
 		Name:                "WebRTC Echo Server",
 		UpstreamServiceType: "webrtc",
 		BuildUpstream:       framework.BuildWebrtcServer,
 		RegisterUpstream:    framework.RegisterWebrtcService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
-			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
-			defer cancel()
-
-			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			framework.VerifyMCPClient(t, mcpxyEndpoint)
+			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
+			defer gemini.RemoveMCP("mcpxy-server")
+			output, err := gemini.Run(apiKey, "echo hello world from webrtc")
 			require.NoError(t, err)
-			defer cs.Close()
-
-			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-			require.NoError(t, err)
-			var foundTool bool
-			serviceKey, _ := util.GenerateID("e2e_webrtc_echo")
-			expectedToolName, _ := util.GenerateToolID(serviceKey, "echo")
-			for _, tool := range listToolsResult.Tools {
-				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
-				if tool.Name == expectedToolName {
-					foundTool = true
-				}
-			}
-			require.True(t, foundTool, "The webrtc echo tool was not discovered")
-
-			echoMessage := `{"message": "hello world from webrtc"}`
-			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: expectedToolName, Arguments: json.RawMessage(echoMessage)})
-			require.NoError(t, err, "Error calling echo tool")
-			require.NotNil(t, res, "Nil response from echo tool")
-			switch content := res.Content[0].(type) {
-			case *mcp.TextContent:
-				require.JSONEq(t, echoMessage, content.Text, "The echoed message does not match the original")
-			default:
-				t.Fatalf("Unexpected content type: %T", content)
-			}
+			require.Contains(t, output, "hello world from webrtc")
 		},
 	}
 
