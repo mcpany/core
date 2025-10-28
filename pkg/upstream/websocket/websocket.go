@@ -64,25 +64,25 @@ func (u *WebsocketUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
-		return "", nil, errors.New("service config is nil")
+		return "", nil, nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	websocketService := serviceConfig.GetWebsocketService()
 	if websocketService == nil {
-		return "", nil, fmt.Errorf("websocket service config is nil")
+		return "", nil, nil, fmt.Errorf("websocket service config is nil")
 	}
 
 	address := websocketService.GetAddress()
 	wsPool, err := NewWebsocketPool(10, 300*time.Second, address)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create websocket pool for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create websocket pool for %s: %w", serviceKey, err)
 	}
 	u.poolManager.Register(serviceKey, wsPool)
 
@@ -95,7 +95,7 @@ func (u *WebsocketUpstream) Register(
 	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
 	log.Info("Registered Websocket service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // createAndRegisterWebsocketTools iterates through the WebSocket call

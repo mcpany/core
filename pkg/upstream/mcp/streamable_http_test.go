@@ -236,7 +236,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		serviceKey, discoveredTools, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("test-service")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -294,7 +294,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		wg.Wait()
@@ -348,7 +348,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		wg.Wait()
@@ -405,7 +405,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		wg.Wait()
@@ -450,7 +450,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
 
-		serviceKey, discoveredTools, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("test-service-http")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -488,7 +488,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to connect to MCP service")
 		wg.Wait()
@@ -524,7 +524,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to list tools from MCP service")
 		wg.Wait()
@@ -540,7 +540,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		config.SetName("test-service-nil")
 		config.SetMcpService(nil)
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "mcp service config is nil")
 	})
@@ -554,7 +554,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("") // empty name
 
-		_, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
@@ -607,7 +607,7 @@ func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
 		return nil, errors.New("connection error")
 	}
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
 }
 
@@ -638,7 +638,7 @@ func TestMCPUpstream_Register_StdioConnectionError(t *testing.T) {
 		return nil, errors.New("connection error")
 	}
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
 }
 
@@ -664,7 +664,7 @@ func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
 		return mockCS, nil
 	}
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
 }
 
@@ -725,7 +725,7 @@ func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
 		return mockCS, nil
 	}
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.NoError(t, err)
 }
 
@@ -757,7 +757,7 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 		return mockCS, nil
 	}
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.NoError(t, err)
 }
 
@@ -768,6 +768,6 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 		Name: proto.String("test-service-invalid-config"),
 	}.Build()
 
-	_, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
 }

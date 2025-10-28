@@ -49,5 +49,5 @@ type Upstream interface {
 		promptManager prompt.PromptManagerInterface,
 		resourceManager resource.ResourceManagerInterface,
 		isReload bool,
-	) (string, []*configv1.ToolDefinition, error)
+	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }

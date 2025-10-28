@@ -64,12 +64,13 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			requestCtx = context.Background()
 		}
 
-		serviceKey, discoveredTools, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
+		serviceKey, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 		res := &bus.ServiceRegistrationResult{
-			ServiceKey:      serviceKey,
-			DiscoveredTools: discoveredTools,
-			Error:           err,
+			ServiceKey:         serviceKey,
+			DiscoveredTools:    discoveredTools,
+			DiscoveredResources: discoveredResources,
+			Error:              err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		resultBus.Publish(req.CorrelationID(), res)

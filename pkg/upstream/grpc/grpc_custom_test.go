@@ -96,7 +96,7 @@ message TestResponse3 {
 	pm := pool.NewManager()
 	upstream := NewGRPCUpstream(pm)
 
-	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	// Check if the service info was added

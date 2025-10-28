@@ -1,0 +1,17 @@
+// Copyright (C) 2025 Author(s) of MCP-XY
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpx.config.v1;
+
+option go_package = "github.com/mcpxy/core/proto/config/v1";
+
+message ResourceDefinition {
+    string uri = 1;
+    string name = 2;
+    string title = 3;
+    string description = 4;
+    string mime_type = 5;
+    int64 size = 6;
+}
