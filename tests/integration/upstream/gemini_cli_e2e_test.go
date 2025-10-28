@@ -42,7 +42,7 @@ func TestGeminiCLIE2E_Calculator(t *testing.T) {
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
 			defer gemini.RemoveMCP("mcpxy-server")
-			output, err := gemini.Run(apiKey, "gemini-2.5-flash", "what is the result of 10 + 5")
+			output, err := gemini.Run(apiKey, "what is the result of 10 + 5")
 			require.NoError(t, err)
 			require.Contains(t, output, "15")
 		},
