@@ -35,7 +35,7 @@ type ServiceRegistryInterface interface {
 	// RegisterService registers a new upstream service based on the provided
 	// configuration. It returns the generated service key, a list of any tools
 	// discovered during registration, and an error if the registration fails.
-	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, error)
+	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -89,23 +89,23 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 //
 // Returns the unique service key, a slice of discovered tool definitions, and
 // an error if the registration fails.
-func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, error) {
+func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
+		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	serviceKey, discoveredTools, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	serviceKey, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	if _, ok := r.serviceConfigs[serviceKey]; ok {
 		r.toolManager.ClearToolsForService(serviceKey) // Clean up the just-registered tools
-		return "", nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
 	r.serviceConfigs[serviceKey] = serviceConfig
@@ -121,12 +121,12 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 				Audience:     oauth2Config.GetAudience(),
 			}
 			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceKey, config); err != nil {
-				return "", nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)
+				return "", nil, nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)
 			}
 		}
 	}
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, discoveredResources, nil
 }
 
 // GetServiceConfig returns the configuration for a given service key.

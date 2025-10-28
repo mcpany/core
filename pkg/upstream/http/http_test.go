@@ -113,7 +113,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-service")
 		serviceConfig.SetHttpService(httpService)
 
-		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
 		expectedKey, _ := util.GenerateID("test-service")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -132,7 +132,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-service")
 		serviceConfig.SetGrpcService(&configv1.GrpcUpstreamService{})
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "http service config is nil")
 	})
@@ -146,7 +146,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("") // empty name
 		serviceConfig.SetHttpService(&configv1.HttpUpstreamService{})
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
 	})
 
@@ -179,7 +179,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-service-fallback")
 		serviceConfig.SetHttpService(httpService)
 
-		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		require.Len(t, discoveredTools, 2)
 
@@ -224,7 +224,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig.SetHttpService(httpService)
 		serviceConfig.SetUpstreamAuthentication(authConfig)
 
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		assert.Len(t, discoveredTools, 1, "Tool should still be registered even if auth is nil")
 	})
@@ -266,7 +266,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			return originalNewHttpPool(minSize, maxSize, idleTimeout)
 		}
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 10, capturedMinSize)
@@ -363,7 +363,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	var promptManager prompt.PromptManagerInterface
 	var resourceManager resource.ResourceManagerInterface
 
-	_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, mockTm, promptManager, resourceManager, false)
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, promptManager, resourceManager, false)
 
 	require.NoError(t, err)
 	assert.Empty(t, discoveredTools, "No tools should be discovered if AddTool fails")
@@ -389,7 +389,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig1.SetName("reload-test")
 	serviceConfig1.SetHttpService(httpService1)
 
-	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
+	serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 
@@ -411,7 +411,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	// Since the upstream doesn't expose the tool manager, this is the best we can do
 	// without further refactoring. The logic is tested implicitly by checking the
 	// final state of the tools.
-	_, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
+	_, _, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 	toolID2, _ := util.GenerateToolID(serviceKey, "op2")
@@ -442,7 +442,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	serviceConfig.SetName("test-service-invalid-method")
 	serviceConfig.SetHttpService(httpService)
 
-	_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
 }
@@ -520,7 +520,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			serviceConfig.SetName("url-test-service")
 			serviceConfig.SetHttpService(httpService)
 
-			serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
 			toolID, _ := util.GenerateToolID(serviceKey, "test-op")

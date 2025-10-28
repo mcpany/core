@@ -73,16 +73,16 @@ func (u *OpenAPIUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	openapiService := serviceConfig.GetOpenapiService()
 	if openapiService == nil {
-		return "", nil, fmt.Errorf("openapi service config is nil")
+		return "", nil, nil, fmt.Errorf("openapi service config is nil")
 	}
 
 	info := &tool.ServiceInfo{
@@ -93,7 +93,7 @@ func (u *OpenAPIUpstream) Register(
 
 	specContent := openapiService.GetOpenapiSpec()
 	if specContent == "" {
-		return "", nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceKey)
+		return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceKey)
 	}
 
 	hash := sha256.Sum256([]byte(specContent))
@@ -107,7 +107,7 @@ func (u *OpenAPIUpstream) Register(
 		var err error
 		_, doc, err = parseOpenAPISpec(ctx, []byte(specContent))
 		if err != nil {
-			return "", nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceKey, err)
+			return "", nil, nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceKey, err)
 		}
 		u.openapiCache.Set(cacheKey, doc, ttlcache.DefaultTTL)
 	}
@@ -125,7 +125,7 @@ func (u *OpenAPIUpstream) Register(
 	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, toolManager, isReload, doc, serviceConfig)
 	log.Info("Registered OpenAPI service", "serviceKey", serviceKey, "toolsAdded", numToolsAdded)
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // getHTTPClient retrieves or creates an HTTP client for a given service. It

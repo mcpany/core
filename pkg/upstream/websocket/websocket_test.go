@@ -133,7 +133,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-websocket-service")
 		serviceConfig.SetWebsocketService(websocketService)
 
-		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
@@ -151,7 +151,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		var resourceManager resource.ResourceManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
-		_, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service config is nil")
 	})
@@ -167,7 +167,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-websocket-service")
 		serviceConfig.SetWebsocketService(nil)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Equal(t, "websocket service config is nil", err.Error())
 	})
@@ -194,7 +194,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-websocket-service")
 		serviceConfig.SetWebsocketService(websocketService)
 
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.Empty(t, discoveredTools)
 	})
@@ -225,7 +225,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetWebsocketService(websocketService)
 		serviceConfig.SetUpstreamAuthentication(authConfig)
 
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.Len(t, discoveredTools, 1, "a tool should be discovered if auth config is incomplete")
 	})
@@ -258,7 +258,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		serviceConfig.SetName("test-service-fallback")
 		serviceConfig.SetWebsocketService(websocketService)
 
-		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
@@ -307,7 +307,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 			WebsocketService: websocketService,
 		}.Build()
 
-		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 		require.NoError(t, err)
 
 		toolID, _ := util.GenerateToolID(serviceKey, "test-tool")
@@ -373,7 +373,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		serviceConfig.SetUpstreamAuthentication(authConfig)
 		serviceConfig.SetWebsocketService(wsService)
 
-		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("test-service")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -387,7 +387,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("nil-config-service")
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "websocket service config is nil")
 	})
@@ -398,7 +398,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		serviceConfig.SetName("")
 		serviceConfig.SetWebsocketService(&configv1.WebsocketUpstreamService{})
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
@@ -422,7 +422,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		serviceConfig.SetUpstreamAuthentication(&configv1.UpstreamAuthentication{})
 		serviceConfig.SetWebsocketService(wsService)
 
-		serviceKey, tools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("auth-fail-service")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -453,7 +453,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 		serviceConfig.SetName("fallback-op-id")
 		serviceConfig.SetWebsocketService(wsService)
 
-		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		expectedKey, _ := util.GenerateID("fallback-op-id")
 		assert.Equal(t, expectedKey, serviceKey)
@@ -485,14 +485,14 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig.SetName("reload-test")
 	serviceConfig.SetWebsocketService(wsService)
 
-	serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	toolID, _ := util.GenerateToolID(serviceKey, "test-op")
 	retrievedTool, ok := tm.GetTool(toolID)
 	assert.True(t, ok)
 	assert.NotNil(t, retrievedTool)
 
-	_, _, err = upstream.Register(context.Background(), serviceConfig, tm, nil, nil, true)
+	_, _, _, err = upstream.Register(context.Background(), serviceConfig, tm, nil, nil, true)
 	require.NoError(t, err)
 	retrievedTool, ok = tm.GetTool(toolID)
 	assert.True(t, ok)

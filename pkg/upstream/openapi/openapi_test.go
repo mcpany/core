@@ -116,7 +116,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String(""),
 		}.Build()
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
@@ -128,7 +128,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		}.Build()
 		expectedKey, _ := util.GenerateID("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "openapi service config is nil")
 	})
@@ -142,7 +142,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		}.Build()
 		expectedKey, _ := util.GenerateID("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 	})
@@ -156,7 +156,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		}.Build()
 		expectedKey, _ := util.GenerateID("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-		_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
 	})
@@ -256,12 +256,12 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	mockToolManager.On("AddTool", mock.Anything).Return(nil)
 
 	// First registration, should parse and cache
-	_, _, err := u.Register(ctx, config, mockToolManager, nil, nil, false)
+	_, _, _, err := u.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()))
 
 	// Second registration with same spec, should use cache
-	_, _, err = u.Register(ctx, config, mockToolManager, nil, nil, false)
+	_, _, _, err = u.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()), "Cache length should not increase")
 
@@ -314,7 +314,7 @@ paths:
 		addedTool = args.Get(0).(tool.Tool)
 	}).Return(nil)
 
-	_, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 
 	mockToolManager.AssertCalled(t, "AddTool", mock.Anything)
