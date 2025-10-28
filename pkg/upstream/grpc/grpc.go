@@ -79,32 +79,32 @@ func (u *GRPCUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
-		return "", nil, errors.New("service config is nil")
+		return "", nil, nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {
-		return "", nil, fmt.Errorf("grpc service config is nil")
+		return "", nil, nil, fmt.Errorf("grpc service config is nil")
 	}
 
 	address := grpcService.GetAddress()
 
 	upstreamAuthenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create upstream authenticator for gRPC service %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator for gRPC service %s: %w", serviceKey, err)
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
 	grpcPool, err := NewGrpcPool(0, 10, 300, address, nil, grpcCreds)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create gRPC pool for %s: %w", address, err)
+		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", address, err)
 	}
 	u.poolManager.Register(serviceKey, grpcPool)
 
@@ -117,7 +117,7 @@ func (u *GRPCUpstream) Register(
 			var err error
 			fds, err = protobufparser.ParseProtoByReflection(ctx, address)
 			if err != nil {
-				return "", nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
+				return "", nil, nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
 			}
 			u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
 		}
@@ -125,7 +125,7 @@ func (u *GRPCUpstream) Register(
 		var err error
 		fds, err = protobufparser.ParseProtoFromDefs(ctx, grpcService.GetProtoDefinitions(), grpcService.GetProtoCollection())
 		if err != nil {
-			return "", nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
+			return "", nil, nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
 		}
 	}
 
@@ -137,23 +137,23 @@ func (u *GRPCUpstream) Register(
 
 	parsedMcpData, err := protobufparser.ExtractMcpDefinitions(fds)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceKey, err)
 	}
 
 	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceKey, parsedMcpData, toolManager, isReload, fds)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceKey, err)
 	}
 
 	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceKey, toolManager, isReload, fds)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceKey, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
 
 	log.Info("Registered gRPC service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which

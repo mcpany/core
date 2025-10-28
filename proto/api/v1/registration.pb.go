@@ -93,14 +93,15 @@ func (b0 RegisterServiceRequest_builder) Build() *RegisterServiceRequest {
 }
 
 type RegisterServiceResponse struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Message         *string                `protobuf:"bytes,1,opt,name=message"`
-	xxx_hidden_DiscoveredTools *[]*v1.ToolDefinition  `protobuf:"bytes,2,rep,name=discovered_tools,json=discoveredTools"`
-	xxx_hidden_ServiceKey      *string                `protobuf:"bytes,3,opt,name=service_key,json=serviceKey"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Message             *string                   `protobuf:"bytes,1,opt,name=message"`
+	xxx_hidden_DiscoveredTools     *[]*v1.ToolDefinition     `protobuf:"bytes,2,rep,name=discovered_tools,json=discoveredTools"`
+	xxx_hidden_ServiceKey          *string                   `protobuf:"bytes,3,opt,name=service_key,json=serviceKey"`
+	xxx_hidden_DiscoveredResources *[]*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources"`
+	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
+	XXX_presence                   [1]uint32
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *RegisterServiceResponse) Reset() {
@@ -157,9 +158,18 @@ func (x *RegisterServiceResponse) GetServiceKey() string {
 	return ""
 }
 
+func (x *RegisterServiceResponse) GetDiscoveredResources() []*v1.ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_DiscoveredResources != nil {
+			return *x.xxx_hidden_DiscoveredResources
+		}
+	}
+	return nil
+}
+
 func (x *RegisterServiceResponse) SetMessage(v string) {
 	x.xxx_hidden_Message = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *RegisterServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
@@ -168,7 +178,11 @@ func (x *RegisterServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
 
 func (x *RegisterServiceResponse) SetServiceKey(v string) {
 	x.xxx_hidden_ServiceKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *RegisterServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinition) {
+	x.xxx_hidden_DiscoveredResources = &v
 }
 
 func (x *RegisterServiceResponse) HasMessage() bool {
@@ -198,9 +212,10 @@ func (x *RegisterServiceResponse) ClearServiceKey() {
 type RegisterServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Message         *string
-	DiscoveredTools []*v1.ToolDefinition
-	ServiceKey      *string
+	Message             *string
+	DiscoveredTools     []*v1.ToolDefinition
+	ServiceKey          *string
+	DiscoveredResources []*v1.ResourceDefinition
 }
 
 func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
@@ -208,14 +223,15 @@ func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Message != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Message = b.Message
 	}
 	x.xxx_hidden_DiscoveredTools = &b.DiscoveredTools
 	if b.ServiceKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_ServiceKey = b.ServiceKey
 	}
+	x.xxx_hidden_DiscoveredResources = &b.DiscoveredResources
 	return m0
 }
 
@@ -1053,14 +1069,15 @@ var File_proto_api_v1_registration_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/api/v1/registration.proto\x12\vmcpx.api.v1\x1a\x1cproto/config/v1/config.proto\"W\n" +
+	"\x1fproto/api/v1/registration.proto\x12\vmcpx.api.v1\x1a\x1cproto/config/v1/config.proto\x1a\x1eproto/config/v1/resource.proto\"W\n" +
 	"\x16RegisterServiceRequest\x12=\n" +
-	"\x06config\x18\x01 \x01(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x06config\"\x9f\x01\n" +
+	"\x06config\x18\x01 \x01(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x06config\"\xf6\x01\n" +
 	"\x17RegisterServiceResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12I\n" +
 	"\x10discovered_tools\x18\x02 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12\x1f\n" +
 	"\vservice_key\x18\x03 \x01(\tR\n" +
-	"serviceKey\"X\n" +
+	"serviceKey\x12U\n" +
+	"\x14discovered_resources\x18\x04 \x03(\v2\".mcpx.config.v1.ResourceDefinitionR\x13discoveredResources\"X\n" +
 	"\x19InitiateOAuth2FlowRequest\x12\x1d\n" +
 	"\n" +
 	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x1c\n" +
@@ -1111,28 +1128,30 @@ var file_proto_api_v1_registration_proto_goTypes = []any{
 	nil,                                // 10: mcpx.api.v1.GetServiceStatusResponse.MetricsEntry
 	(*v1.UpstreamServiceConfig)(nil),   // 11: mcpx.config.v1.UpstreamServiceConfig
 	(*v1.ToolDefinition)(nil),          // 12: mcpx.config.v1.ToolDefinition
+	(*v1.ResourceDefinition)(nil),      // 13: mcpx.config.v1.ResourceDefinition
 }
 var file_proto_api_v1_registration_proto_depIdxs = []int32{
 	11, // 0: mcpx.api.v1.RegisterServiceRequest.config:type_name -> mcpx.config.v1.UpstreamServiceConfig
 	12, // 1: mcpx.api.v1.RegisterServiceResponse.discovered_tools:type_name -> mcpx.config.v1.ToolDefinition
-	12, // 2: mcpx.api.v1.RegisterToolsRequest.tools:type_name -> mcpx.config.v1.ToolDefinition
-	12, // 3: mcpx.api.v1.GetServiceStatusResponse.tools:type_name -> mcpx.config.v1.ToolDefinition
-	10, // 4: mcpx.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpx.api.v1.GetServiceStatusResponse.MetricsEntry
-	0,  // 5: mcpx.api.v1.RegistrationService.RegisterService:input_type -> mcpx.api.v1.RegisterServiceRequest
-	4,  // 6: mcpx.api.v1.RegistrationService.UnregisterService:input_type -> mcpx.api.v1.UnregisterServiceRequest
-	2,  // 7: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpx.api.v1.InitiateOAuth2FlowRequest
-	6,  // 8: mcpx.api.v1.RegistrationService.RegisterTools:input_type -> mcpx.api.v1.RegisterToolsRequest
-	8,  // 9: mcpx.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpx.api.v1.GetServiceStatusRequest
-	1,  // 10: mcpx.api.v1.RegistrationService.RegisterService:output_type -> mcpx.api.v1.RegisterServiceResponse
-	5,  // 11: mcpx.api.v1.RegistrationService.UnregisterService:output_type -> mcpx.api.v1.UnregisterServiceResponse
-	3,  // 12: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpx.api.v1.InitiateOAuth2FlowResponse
-	7,  // 13: mcpx.api.v1.RegistrationService.RegisterTools:output_type -> mcpx.api.v1.RegisterToolsResponse
-	9,  // 14: mcpx.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpx.api.v1.GetServiceStatusResponse
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	13, // 2: mcpx.api.v1.RegisterServiceResponse.discovered_resources:type_name -> mcpx.config.v1.ResourceDefinition
+	12, // 3: mcpx.api.v1.RegisterToolsRequest.tools:type_name -> mcpx.config.v1.ToolDefinition
+	12, // 4: mcpx.api.v1.GetServiceStatusResponse.tools:type_name -> mcpx.config.v1.ToolDefinition
+	10, // 5: mcpx.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpx.api.v1.GetServiceStatusResponse.MetricsEntry
+	0,  // 6: mcpx.api.v1.RegistrationService.RegisterService:input_type -> mcpx.api.v1.RegisterServiceRequest
+	4,  // 7: mcpx.api.v1.RegistrationService.UnregisterService:input_type -> mcpx.api.v1.UnregisterServiceRequest
+	2,  // 8: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpx.api.v1.InitiateOAuth2FlowRequest
+	6,  // 9: mcpx.api.v1.RegistrationService.RegisterTools:input_type -> mcpx.api.v1.RegisterToolsRequest
+	8,  // 10: mcpx.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpx.api.v1.GetServiceStatusRequest
+	1,  // 11: mcpx.api.v1.RegistrationService.RegisterService:output_type -> mcpx.api.v1.RegisterServiceResponse
+	5,  // 12: mcpx.api.v1.RegistrationService.UnregisterService:output_type -> mcpx.api.v1.UnregisterServiceResponse
+	3,  // 13: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpx.api.v1.InitiateOAuth2FlowResponse
+	7,  // 14: mcpx.api.v1.RegistrationService.RegisterTools:output_type -> mcpx.api.v1.RegisterToolsResponse
+	9,  // 15: mcpx.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpx.api.v1.GetServiceStatusResponse
+	11, // [11:16] is the sub-list for method output_type
+	6,  // [6:11] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_proto_api_v1_registration_proto_init() }

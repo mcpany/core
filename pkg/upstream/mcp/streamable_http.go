@@ -185,16 +185,16 @@ func (u *MCPUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	mcpService := serviceConfig.GetMcpService()
 	if mcpService == nil {
-		return "", nil, fmt.Errorf("mcp service config is nil")
+		return "", nil, nil, fmt.Errorf("mcp service config is nil")
 	}
 
 	info := &tool.ServiceInfo{
@@ -204,23 +204,24 @@ func (u *MCPUpstream) Register(
 	toolManager.AddServiceInfo(serviceKey, info)
 
 	var discoveredTools []*configv1.ToolDefinition
+	var discoveredResources []*configv1.ResourceDefinition
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_StdioConnection_case:
-		discoveredTools, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceKey, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceKey, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
 		if err != nil {
-			return "", nil, err
+			return "", nil, nil, err
 		}
 	case configv1.McpUpstreamService_HttpConnection_case:
-		discoveredTools, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceKey, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceKey, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
 		if err != nil {
-			return "", nil, err
+			return "", nil, nil, err
 		}
 	default:
-		return "", nil, fmt.Errorf("MCPService definition requires either stdio_connection or http_connection")
+		return "", nil, nil, fmt.Errorf("MCPService definition requires either stdio_connection or http_connection")
 	}
 
 	log.Info("Registered MCP service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, discoveredResources, nil
 }
 
 // mcpConnection holds the necessary information to connect to a downstream MCP
@@ -338,9 +339,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
-) ([]*configv1.ToolDefinition, error) {
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if stdio == nil {
-		return nil, fmt.Errorf("stdio connection config is nil")
+		return nil, nil, fmt.Errorf("stdio connection config is nil")
 	}
 
 	var transport mcp.Transport
@@ -351,7 +352,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 				StdioConfig: stdio,
 			}
 		} else {
-			return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
+			return nil, nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
 		}
 	} else {
 		cmd := buildCommandFromStdioConfig(stdio)
@@ -380,14 +381,14 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to MCP service: %w", err)
+		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
 	defer cs.Close()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
+		return nil, nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
 	}
 
 	var mcpClient client.MCPClient
@@ -459,20 +460,23 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	if err != nil {
 		// Do not fail if resources are not supported
 		logging.GetLogger().Warn("Failed to list resources from MCP service", "error", err)
-	} else {
-		for _, mcpSDKResource := range listResourcesResult.Resources {
-			resourceManager.AddResource(&mcpResource{
-				mcpResource: mcpSDKResource,
-				service:     serviceKey,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					stdioConfig: stdio,
-				},
-			})
-		}
+		return discoveredTools, nil, nil
 	}
 
-	return discoveredTools, nil
+	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(listResourcesResult.Resources))
+	for _, mcpSDKResource := range listResourcesResult.Resources {
+		resourceManager.AddResource(&mcpResource{
+			mcpResource: mcpSDKResource,
+			service:     serviceKey,
+			mcpConnection: &mcpConnection{
+				client:      mcpSdkClient,
+				stdioConfig: stdio,
+			},
+		})
+		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	return discoveredTools, discoveredResources, nil
 }
 
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
@@ -487,15 +491,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
-) ([]*configv1.ToolDefinition, error) {
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create authenticator for MCP upstream: %w", err)
+		return nil, nil, fmt.Errorf("failed to create authenticator for MCP upstream: %w", err)
 	}
 
 	httpClient, err := util.NewHttpClientWithTLS(httpConnection.GetTlsConfig())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create http client with tls config: %w", err)
+		return nil, nil, fmt.Errorf("failed to create http client with tls config: %w", err)
 	}
 	httpClient.Transport = &authenticatedRoundTripper{
 		authenticator: authenticator,
@@ -526,14 +530,14 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to MCP service: %w", err)
+		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
 	defer cs.Close()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
+		return nil, nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
 	}
 
 	var mcpClient client.MCPClient
@@ -605,21 +609,35 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
 	if err != nil {
 		logging.GetLogger().Warn("Failed to list resources from MCP service", "error", err)
-	} else {
-		for _, mcpSDKResource := range listResourcesResult.Resources {
-			resourceManager.AddResource(&mcpResource{
-				mcpResource: mcpSDKResource,
-				service:     serviceKey,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					httpAddress: httpAddress,
-					httpClient:  httpClient,
-				},
-			})
-		}
+		return discoveredTools, nil, nil
 	}
 
-	return discoveredTools, nil
+	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(listResourcesResult.Resources))
+	for _, mcpSDKResource := range listResourcesResult.Resources {
+		resourceManager.AddResource(&mcpResource{
+			mcpResource: mcpSDKResource,
+			service:     serviceKey,
+			mcpConnection: &mcpConnection{
+				client:      mcpSdkClient,
+				httpAddress: httpAddress,
+				httpClient:  httpClient,
+			},
+		})
+		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	return discoveredTools, discoveredResources, nil
+}
+
+func convertMCPResourceToProto(resource *mcp.Resource) *configv1.ResourceDefinition {
+	return configv1.ResourceDefinition_builder{
+		Uri:         proto.String(resource.URI),
+		Name:        proto.String(resource.Name),
+		Title:       proto.String(resource.Title),
+		Description: proto.String(resource.Description),
+		MimeType:    proto.String(resource.MIMEType),
+		Size:        proto.Int64(resource.Size),
+	}.Build()
 }
 
 // authenticatedRoundTripper is an http.RoundTripper that wraps another

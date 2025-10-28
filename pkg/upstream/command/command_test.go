@@ -95,7 +95,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
-		serviceKey, discoveredTools, err := u.Register(
+		serviceKey, discoveredTools, _, err := u.Register(
 			context.Background(),
 			serviceConfig,
 			tm,
@@ -139,7 +139,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 	t.Run("nil command line service config", func(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-nil-config")
-		_, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
+		_, _, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "command line service config is nil")
 	})
@@ -147,7 +147,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 	t.Run("invalid service name", func(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("") // empty name
-		_, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
+		_, _, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 		require.Error(t, err)
 	})
 
@@ -166,7 +166,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
-		_, discoveredTools, err := u.Register(
+		_, discoveredTools, _, err := u.Register(
 			context.Background(),
 			serviceConfig,
 			tmWithError,

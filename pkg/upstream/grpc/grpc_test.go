@@ -130,7 +130,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 	t.Run("nil service config", func(t *testing.T) {
 		poolManager := pool.NewManager()
 		upstream := NewGRPCUpstream(poolManager)
-		_, _, err := upstream.Register(context.Background(), nil, nil, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), nil, nil, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service config is nil")
 	})
@@ -143,7 +143,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		grpcService := &configv1.GrpcUpstreamService{}
 		grpcService.SetAddress("localhost:50051")
 		serviceConfig.SetGrpcService(grpcService)
-		_, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "name cannot be empty")
 	})
@@ -153,7 +153,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		upstream := NewGRPCUpstream(poolManager)
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test")
-		_, _, err := upstream.Register(context.Background(), serviceConfig, nil, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, nil, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Equal(t, "grpc service config is nil", err.Error())
 	})
@@ -171,7 +171,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		}).Build()
 		serviceConfig.SetUpstreamAuthentication(authConfig)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create upstream authenticator")
 	})
@@ -199,7 +199,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("reflection-fail-service")
 		serviceConfig.SetGrpcService(grpcService)
 
-		_, _, err = upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		_, _, _, err = upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to discover service by reflection")
 	})
@@ -302,7 +302,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig.SetGrpcService(grpcService)
 
 		// First call - should populate the cache
-		serviceKey, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
 		// We expect 2 tools from the annotations + 2 from the descriptors, and 1 for reflection
@@ -310,7 +310,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
-		serviceKey2, discoveredTools2, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
+		serviceKey2, discoveredTools2, _, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
 		assert.Len(t, tm2.ListTools(), 5)
@@ -332,7 +332,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig.SetName("calculator-service")
 		serviceConfig.SetGrpcService(grpcService)
 
-		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		// Verify the "Add" tool's schema
