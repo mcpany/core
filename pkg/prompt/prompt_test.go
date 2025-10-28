@@ -83,23 +83,3 @@ func TestPromptManager_AddGetListRemovePrompt(t *testing.T) {
 	assert.False(t, ok)
 	assert.Len(t, pm.ListPrompts(), 1)
 }
-
-func TestPromptManager_OnListChanged(t *testing.T) {
-	pm := NewPromptManager()
-	var changedCount int
-	pm.OnListChanged(func() {
-		changedCount++
-	})
-
-	// Add should trigger the callback
-	pm.AddPrompt(&mockPrompt{name: "p1"})
-	assert.Equal(t, 1, changedCount, "OnListChanged should be called on AddPrompt")
-
-	// Remove should trigger the callback
-	pm.RemovePrompt("p1")
-	assert.Equal(t, 2, changedCount, "OnListChanged should be called on RemovePrompt")
-
-	// Removing a non-existent prompt should not trigger the callback
-	pm.RemovePrompt("non-existent")
-	assert.Equal(t, 2, changedCount, "OnListChanged should not be called for non-existent prompt removal")
-}

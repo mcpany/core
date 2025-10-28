@@ -689,7 +689,7 @@ func (m *mockPromptManager) AddPrompt(p prompt.Prompt)                 {}
 func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) { return nil, false }
 func (m *mockPromptManager) RemovePrompt(name string)                    {}
 func (m *mockPromptManager) ListPrompts() []prompt.Prompt                { return nil }
-func (m *mockPromptManager) OnListChanged(func())                        {}
+func (m *mockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {}
 
 type mockResourceManager struct{}
 
