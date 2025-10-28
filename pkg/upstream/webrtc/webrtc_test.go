@@ -127,7 +127,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service")
 		serviceConfig.SetWebrtcService(webrtcService)
 
-		serviceKey, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
@@ -145,7 +145,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		var resourceManager resource.ResourceManagerInterface
 		upstream := NewWebrtcUpstream(poolManager)
 
-		_, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service config is nil")
 	})
@@ -161,7 +161,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service")
 		serviceConfig.SetWebrtcService(nil)
 
-		_, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
 		assert.Equal(t, "webrtc service config is nil", err.Error())
 	})
@@ -188,7 +188,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service")
 		serviceConfig.SetWebrtcService(webrtcService)
 
-		_, discoveredTools, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.Empty(t, discoveredTools)
 	})

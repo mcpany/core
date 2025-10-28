@@ -68,9 +68,10 @@ type ServiceRegistrationRequest struct {
 // discovered, or an error if the registration failed.
 type ServiceRegistrationResult struct {
 	BaseMessage
-	ServiceKey      string
-	DiscoveredTools []*configv1.ToolDefinition
-	Error           error
+	ServiceKey         string
+	DiscoveredTools    []*configv1.ToolDefinition
+	DiscoveredResources []*configv1.ResourceDefinition
+	Error              error
 }
 
 // ToolExecutionRequest is a message sent to the bus to request the execution of

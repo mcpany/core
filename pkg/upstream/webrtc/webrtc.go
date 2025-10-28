@@ -61,19 +61,19 @@ func (u *WebrtcUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
-		return "", nil, errors.New("service config is nil")
+		return "", nil, nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	webrtcService := serviceConfig.GetWebrtcService()
 	if webrtcService == nil {
-		return "", nil, fmt.Errorf("webrtc service config is nil")
+		return "", nil, nil, fmt.Errorf("webrtc service config is nil")
 	}
 
 	info := &tool.ServiceInfo{
@@ -86,7 +86,7 @@ func (u *WebrtcUpstream) Register(
 	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
 	log.Info("Registered WebRTC service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // createAndRegisterWebrtcTools iterates through the WebRTC call definitions in

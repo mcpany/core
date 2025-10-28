@@ -6,6 +6,7 @@ edition = "2023";
 package mcpx.api.v1;
 
 import "proto/config/v1/config.proto";
+import "proto/config/v1/resource.proto";
 
 option go_package = "github.com/mcpxy/core/proto/api/v1";
 
@@ -17,6 +18,7 @@ message RegisterServiceResponse {
     string message = 1;             // e.g., "Service registered successfully"
     repeated mcpx.config.v1.ToolDefinition discovered_tools = 2;
     string service_key = 3;         // The generated key for the service
+    repeated mcpx.config.v1.ResourceDefinition discovered_resources = 4;
 }
 
 service RegistrationService {

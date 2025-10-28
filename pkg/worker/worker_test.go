@@ -36,14 +36,14 @@ import (
 
 type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
-	registerFunc func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error)
+	registerFunc func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error) {
+func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if m.registerFunc != nil {
 		return m.registerFunc(ctx, serviceConfig)
 	}
-	return "mock-service-key", nil, nil
+	return "mock-service-key", nil, nil, nil
 }
 
 type mockToolManager struct {
@@ -70,8 +70,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		wg.Add(1)
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error) {
-				return "success-key", nil, nil
+			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+				return "success-key", nil, nil, nil
 			},
 		}
 
@@ -108,8 +108,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		expectedErr := errors.New("registration failed")
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error) {
-				return "", nil, expectedErr
+			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+				return "", nil, nil, expectedErr
 			},
 		}
 
@@ -148,12 +148,12 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		defer workerCancel()
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, error) {
+			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 				// Check if the worker context is done, but the request context is not.
 				if workerCtx.Err() != nil && ctx.Err() == nil {
-					return "success-key-request-context", nil, nil
+					return "success-key-request-context", nil, nil, nil
 				}
-				return "", nil, errors.New("unexpected context state")
+				return "", nil, nil, errors.New("unexpected context state")
 			},
 		}
 

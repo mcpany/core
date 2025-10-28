@@ -84,11 +84,11 @@ func (u *HTTPUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	if isReload {
@@ -97,7 +97,7 @@ func (u *HTTPUpstream) Register(
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {
-		return "", nil, fmt.Errorf("http service config is nil")
+		return "", nil, nil, fmt.Errorf("http service config is nil")
 	}
 
 	poolConfig := serviceConfig.GetConnectionPool()
@@ -119,7 +119,7 @@ func (u *HTTPUpstream) Register(
 
 	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceKey, err)
 	}
 	u.poolManager.Register(serviceKey, httpPool)
 
@@ -134,7 +134,7 @@ func (u *HTTPUpstream) Register(
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
 	log.Info("Registered HTTP service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the

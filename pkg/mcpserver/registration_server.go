@@ -109,10 +109,16 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 			"service_name", req.GetConfig().GetName(),
 			"service_key", result.ServiceKey,
 			"discovered_tools_count", len(result.DiscoveredTools),
+			"discovered_resources_count", len(result.DiscoveredResources),
 		)
 		if len(result.DiscoveredTools) > 0 {
 			for _, tool := range result.DiscoveredTools {
 				log.InfoContext(ctx, "Discovered tool", "tool", tool)
+			}
+		}
+		if len(result.DiscoveredResources) > 0 {
+			for _, resource := range result.DiscoveredResources {
+				log.InfoContext(ctx, "Discovered resource", "resource", resource)
 			}
 		}
 
@@ -121,6 +127,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		resp.SetMessage(msg)
 		resp.SetDiscoveredTools(result.DiscoveredTools)
 		resp.SetServiceKey(result.ServiceKey)
+		resp.SetDiscoveredResources(result.DiscoveredResources)
 		return resp, nil
 	case <-ctx.Done():
 		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service registration")

@@ -52,16 +52,16 @@ func (u *CommandUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
-) (string, []*configv1.ToolDefinition, error) {
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 
 	commandLineService := serviceConfig.GetCommandLineService()
 	if commandLineService == nil {
-		return "", nil, fmt.Errorf("command line service config is nil")
+		return "", nil, nil, fmt.Errorf("command line service config is nil")
 	}
 
 	info := &tool.ServiceInfo{
@@ -78,7 +78,7 @@ func (u *CommandUpstream) Register(
 		isReload,
 	)
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 	log.Info(
 		"Registered command service",
@@ -88,7 +88,7 @@ func (u *CommandUpstream) Register(
 		len(discoveredTools),
 	)
 
-	return serviceKey, discoveredTools, nil
+	return serviceKey, discoveredTools, nil, nil
 }
 
 // createAndRegisterCommandTools iterates through the command definitions in the
