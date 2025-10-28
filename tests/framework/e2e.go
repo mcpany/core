@@ -346,3 +346,19 @@ func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.Regist
 	const serviceID = "e2e_everything_server_streamable"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
 }
+
+func VerifyMCPClient(t *testing.T, mcpxyEndpoint string) {
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	defer cancel()
+
+	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+	require.NoError(t, err)
+	defer cs.Close()
+
+	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err)
+	for _, tool := range listToolsResult.Tools {
+		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+	}
+}
