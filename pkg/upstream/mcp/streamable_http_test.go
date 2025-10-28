@@ -611,6 +611,46 @@ func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestAuthenticatedRoundTripper_NilAuthenticator(t *testing.T) {
+	var baseCalled bool
+	rt := &authenticatedRoundTripper{
+		authenticator: nil,
+		base: &mockRoundTripper{
+			roundTripFunc: func(req *http.Request) (*http.Response, error) {
+				baseCalled = true
+				return &http.Response{StatusCode: http.StatusOK}, nil
+			},
+		},
+	}
+
+	req, _ := http.NewRequest("GET", "http://localhost", nil)
+	_, err := rt.RoundTrip(req)
+
+	assert.NoError(t, err)
+	assert.True(t, baseCalled)
+}
+
+func TestMCPUpstream_Register_DockerSocketInaccessibleError(t *testing.T) {
+	originalIsDockerSocketAccessibleFunc := util.IsDockerSocketAccessibleFunc
+	util.IsDockerSocketAccessibleFunc = func() bool { return false }
+	defer func() { util.IsDockerSocketAccessibleFunc = originalIsDockerSocketAccessibleFunc }()
+
+	u := NewMCPUpstream()
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-docker-socket-inaccessible"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				ContainerImage: proto.String("some-image"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "docker socket not accessible")
+}
+
 type mockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
