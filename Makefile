@@ -46,6 +46,10 @@ PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
 
+# Helm installation variables
+HELM_VERSION ?= v3.19.0
+HELM_DOWNLOAD_URL_BASE ?= https://get.helm.sh
+
 # Python executable determination
 # In a CI environment, we expect Python to be set up and available in the PATH.
 # Locally, we use a virtual environment.
@@ -198,14 +202,29 @@ prepare:
 		echo "Helm is already installed."; \
 	else \
 		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
-		curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; \
-		chmod 700 get_helm.sh; \
-		HELM_INSTALL_DIR=$(TOOL_INSTALL_DIR) ./get_helm.sh --no-sudo; \
-		rm get_helm.sh; \
-		if test -f "$(HELM_BIN)"; then \
-			echo "Helm installed successfully."; \
+		OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
+		ARCH=$$(uname -m); \
+		case $${ARCH} in \
+			x86_64) ARCH=amd64 ;; \
+			aarch64) ARCH=arm64 ;; \
+		esac; \
+		HELM_TARBALL="helm-$(HELM_VERSION)-$${OS}-$${ARCH}.tar.gz"; \
+		HELM_DOWNLOAD_URL="$(HELM_DOWNLOAD_URL_BASE)/$${HELM_TARBALL}"; \
+		echo "Downloading Helm from $${HELM_DOWNLOAD_URL}..."; \
+		if curl -sSL "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
+			echo "Unpacking to $(TOOL_INSTALL_DIR)..."; \
+			tar -zxvf "/tmp/$${HELM_TARBALL}" -C "/tmp"; \
+			mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
+			rm "/tmp/$${HELM_TARBALL}"; \
+			rm -rf "/tmp/$${OS}-$${ARCH}"; \
+			if test -f "$(HELM_BIN)"; then \
+				echo "Helm installed successfully."; \
+			else \
+				echo "Helm installation failed."; \
+				exit 1; \
+			fi; \
 		else \
-			echo "Helm installation failed."; \
+			echo "Failed to download Helm."; \
 			exit 1; \
 		fi; \
 	fi
