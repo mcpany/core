@@ -25,6 +25,7 @@ import (
 
 	"github.com/mcpxy/core/pkg/client"
 	"github.com/mcpxy/core/pkg/pool"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
 
 var (
@@ -35,10 +36,12 @@ var (
 	// maxSize is the maximum number of clients the pool can hold.
 	// idleTimeout is the duration after which an idle client may be closed (not
 	// currently implemented).
+	// healthCheck is the configuration for the health check.
 	// It returns a new HTTP client pool or an error if the pool cannot be
 	// created.
 	NewHttpPool = func(
 		minSize, maxSize, idleTimeout int,
+		healthCheck *configv1.HttpHealthCheck,
 	) (pool.Pool[*client.HttpClientWrapper], error) {
 		factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
 			return &client.HttpClientWrapper{
@@ -51,6 +54,7 @@ var (
 						}).DialContext,
 					},
 				},
+				HealthCheck: healthCheck,
 			}, nil
 		}
 		return pool.New(factory, minSize, maxSize, idleTimeout)

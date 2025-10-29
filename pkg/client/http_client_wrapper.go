@@ -16,7 +16,15 @@
 
 package client
 
-import "net/http"
+import (
+	"context"
+	"io"
+	"net/http"
+	"strings"
+
+	"github.com/mcpxy/core/pkg/logging"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
+)
 
 // HttpClientWrapper wraps an `*http.Client` to adapt it to the
 // `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
@@ -24,12 +32,53 @@ import "net/http"
 // and reuse them where appropriate.
 type HttpClientWrapper struct {
 	*http.Client
+	HealthCheck *configv1.HttpHealthCheck
 }
 
-// IsHealthy always returns true for an `*http.Client`. Unlike gRPC
-// connections, HTTP clients are generally long-lived and do not have a
-// persistent connection state to check.
+// IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
 func (w *HttpClientWrapper) IsHealthy() bool {
+	if w.HealthCheck == nil {
+		return true
+	}
+
+	log := logging.GetLogger()
+	ctx := context.Background()
+	if w.HealthCheck.GetTimeout() != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, w.HealthCheck.GetTimeout().AsDuration())
+		defer cancel()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", w.HealthCheck.GetUrl(), nil)
+	if err != nil {
+		log.Warn("Failed to create health check request", "error", err)
+		return false
+	}
+
+	resp, err := w.Do(req)
+	if err != nil {
+		log.Warn("Health check request failed", "error", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	if w.HealthCheck.GetExpectedCode() > 0 && int(w.HealthCheck.GetExpectedCode()) != resp.StatusCode {
+		log.Warn("Health check returned unexpected status code", "expected", w.HealthCheck.GetExpectedCode(), "actual", resp.StatusCode)
+		return false
+	}
+
+	if w.HealthCheck.GetExpectedResponseBodyContains() != "" {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Warn("Failed to read health check response body", "error", err)
+			return false
+		}
+		if !strings.Contains(string(body), w.HealthCheck.GetExpectedResponseBodyContains()) {
+			log.Warn("Health check response body does not contain expected string", "expected", w.HealthCheck.GetExpectedResponseBodyContains())
+			return false
+		}
+	}
+
 	return true
 }
 
