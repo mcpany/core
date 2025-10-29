@@ -117,7 +117,7 @@ func (u *HTTPUpstream) Register(
 		}
 	}
 
-	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout)
+	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout, httpService.GetHealthCheck())
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceKey, err)
 	}
