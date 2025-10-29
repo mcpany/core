@@ -43,12 +43,12 @@ func InvokeAIWithPrompt(t *testing.T, mcpxyEndpoint string) {
 	gemini.Install()
 
 	// Configure the MCP server with the Gemini CLI
-	serverName := "mcpxy_e2e_prompt"
+	serverName := "mcpxy_e2e_prompt_test"
 	gemini.AddMCP(serverName, mcpxyEndpoint)
 	defer gemini.RemoveMCP(serverName)
 
 	// Run a prompt and validate the output
-	prompt := "@mcpxy_e2e_prompt hello"
+	prompt := fmt.Sprintf("@%s hello", serverName)
 	output, err := gemini.Run(os.Getenv("GEMINI_API_KEY"), prompt)
 	require.NoError(t, err, "gemini-cli failed to run")
 
