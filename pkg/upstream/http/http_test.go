@@ -259,11 +259,11 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		defer func() { NewHttpPool = originalNewHttpPool }()
 
 		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHttpPool = func(minSize, maxSize, idleTimeout int) (pool.Pool[*client.HttpClientWrapper], error) {
+		NewHttpPool = func(minSize, maxSize, idleTimeout int, healthCheck *configv1.HttpHealthCheck) (pool.Pool[*client.HttpClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
-			return originalNewHttpPool(minSize, maxSize, idleTimeout)
+			return originalNewHttpPool(minSize, maxSize, idleTimeout, healthCheck)
 		}
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
