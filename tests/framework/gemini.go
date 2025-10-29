@@ -19,9 +19,11 @@ package framework
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/mcpxy/core/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,21 +39,32 @@ func NewGeminiCLI(t *testing.T) *GeminiCLI {
 
 func (g *GeminiCLI) Install() {
 	g.t.Helper()
-	cmd := exec.Command("npm", "install", "-g", "@google/gemini-cli")
-	err := cmd.Run()
+	root, err := integration.GetProjectRoot()
+	require.NoError(g.t, err)
+	cmd := exec.Command("npm", "install")
+	cmd.Dir = filepath.Join(root, "tests", "integration", "upstream")
+	err = cmd.Run()
 	require.NoError(g.t, err, "failed to install gemini-cli")
+}
+
+func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
+	g.t.Helper()
+	root, err := integration.GetProjectRoot()
+	require.NoError(g.t, err)
+	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
+	return exec.Command(geminiPath, args...)
 }
 
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
-	cmd := exec.Command("gemini", "mcp", "add", "--transport", "http", name, endpoint)
+	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)
 	err := cmd.Run()
 	require.NoError(g.t, err, "failed to configure gemini-cli")
 }
 
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
-	cmd := exec.Command("gemini", "mcp", "remove", name)
+	cmd := g.geminiCommand("mcp", "remove", name)
 	err := cmd.Run()
 	if err != nil {
 		g.t.Logf("failed to remove mcp server '%s': %v", name, err)
@@ -63,11 +76,10 @@ func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	if apiKey == "" {
 		g.t.Skip("GEMINI_API_KEY is not set. Please get one from AI Studio.")
 	}
-	os.Setenv("GEMINI_API_KEY", apiKey)
-	defer os.Unsetenv("GEMINI_API_KEY")
 
 	var outputBuffer strings.Builder
-	cmd := exec.Command("gemini", "-m", DefaultModel, "-p", prompt)
+	cmd := g.geminiCommand("-m", DefaultModel, "-p", prompt)
+	cmd.Env = append(os.Environ(), "GEMINI_API_KEY="+apiKey)
 	cmd.Stdout = &outputBuffer
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
