@@ -27,7 +27,7 @@ import (
 
 func TestHttpPool_New(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
-		p, err := NewHttpPool(1, 5, 100)
+		p, err := NewHttpPool(1, 5, 100, nil)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		defer p.Close()
@@ -44,13 +44,13 @@ func TestHttpPool_New(t *testing.T) {
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		_, err := NewHttpPool(5, 1, 10)
+		_, err := NewHttpPool(5, 1, 10, nil)
 		assert.Error(t, err)
 	})
 }
 
 func TestHttpPool_GetPut(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10)
+	p, err := NewHttpPool(1, 1, 10, nil)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -72,7 +72,7 @@ func TestHttpPool_GetPut(t *testing.T) {
 }
 
 func TestHttpPool_UniqueClients(t *testing.T) {
-	p, err := NewHttpPool(2, 2, 10)
+	p, err := NewHttpPool(2, 2, 10, nil)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer p.Close()
@@ -89,7 +89,7 @@ func TestHttpPool_UniqueClients(t *testing.T) {
 }
 
 func TestHttpPool_Close(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10)
+	p, err := NewHttpPool(1, 1, 10, nil)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -101,7 +101,7 @@ func TestHttpPool_Close(t *testing.T) {
 }
 
 func TestHttpPool_PoolFull(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 1)
+	p, err := NewHttpPool(1, 1, 1, nil)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
