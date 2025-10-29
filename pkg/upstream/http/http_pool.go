@@ -41,11 +41,11 @@ var (
 	// created.
 	NewHttpPool = func(
 		minSize, maxSize, idleTimeout int,
-		healthCheck *configv1.HttpHealthCheck,
+		config *configv1.UpstreamServiceConfig,
 	) (pool.Pool[*client.HttpClientWrapper], error) {
 		factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{
-				Client: &http.Client{
+			return client.NewHttpClientWrapper(
+				&http.Client{
 					Transport: &http.Transport{
 						DisableKeepAlives: true,
 						TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
@@ -54,8 +54,8 @@ var (
 						}).DialContext,
 					},
 				},
-				HealthCheck: healthCheck,
-			}, nil
+				config,
+			), nil
 		}
 		return pool.New(factory, minSize, maxSize, idleTimeout)
 	}

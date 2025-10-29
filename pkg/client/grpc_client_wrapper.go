@@ -17,6 +17,10 @@
 package client
 
 import (
+	"context"
+
+	"github.com/mcpxy/core/pkg/health"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )
@@ -26,14 +30,26 @@ import (
 // connection pool, which can improve performance by reusing connections.
 type GrpcClientWrapper struct {
 	*grpc.ClientConn
+	config *configv1.UpstreamServiceConfig
+}
+
+// NewGrpcClientWrapper creates a new GrpcClientWrapper.
+func NewGrpcClientWrapper(conn *grpc.ClientConn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
+	return &GrpcClientWrapper{
+		ClientConn: conn,
+		config:     config,
+	}
 }
 
 // IsHealthy checks if the underlying gRPC connection is in a usable state.
 //
 // It returns `true` if the connection's state is not `connectivity.Shutdown`,
 // indicating that it is still active and can be used for new RPCs.
-func (w *GrpcClientWrapper) IsHealthy() bool {
-	return w.GetState() != connectivity.Shutdown
+func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
+	if w.GetState() == connectivity.Shutdown {
+		return false
+	}
+	return health.Check(ctx, w.config)
 }
 
 // Close terminates the underlying gRPC connection, releasing any associated

@@ -17,6 +17,7 @@
 package client
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -24,18 +25,32 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestHttpClientWrapper(t *testing.T) {
-	client := &HttpClientWrapper{Client: &http.Client{}}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	configJSON := `{"http_service": {"address": "` + server.URL[7:] + `"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	client := &HttpClientWrapper{
+		Client: &http.Client{},
+		config: config,
+	}
 
 	t.Run("IsHealthy", func(t *testing.T) {
-		assert.True(t, client.IsHealthy())
+		assert.True(t, client.IsHealthy(context.Background()))
 	})
 
 	t.Run("Close", func(t *testing.T) {
@@ -59,7 +74,14 @@ func TestGrpcClientWrapper(t *testing.T) {
 	conn, err := grpc.NewClient(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
-	wrapper := &GrpcClientWrapper{ClientConn: conn}
+	configJSON := `{"grpc_service": {"address": "` + lis.Addr().String() + `"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	wrapper := &GrpcClientWrapper{
+		ClientConn: conn,
+		config:     config,
+	}
 
 	t.Run("IsHealthy_Initially", func(t *testing.T) {
 		// Wait for the connection to be ready or idle. This is a more robust check.
@@ -67,7 +89,7 @@ func TestGrpcClientWrapper(t *testing.T) {
 			state := wrapper.GetState()
 			return state == connectivity.Ready || state == connectivity.Idle
 		}, time.Second*5, 10*time.Millisecond, "gRPC client should connect")
-		assert.True(t, wrapper.IsHealthy())
+		assert.True(t, wrapper.IsHealthy(context.Background()))
 	})
 
 	t.Run("Close and IsHealthy", func(t *testing.T) {
@@ -79,7 +101,7 @@ func TestGrpcClientWrapper(t *testing.T) {
 			return wrapper.GetState() == connectivity.Shutdown
 		}, time.Second, 10*time.Millisecond, "gRPC client state should be Shutdown")
 
-		assert.False(t, wrapper.IsHealthy())
+		assert.False(t, wrapper.IsHealthy(context.Background()))
 	})
 }
 
@@ -112,13 +134,13 @@ func TestWebsocketClientWrapper(t *testing.T) {
 	wrapper := &WebsocketClientWrapper{Conn: conn}
 
 	t.Run("IsHealthy_Connected", func(t *testing.T) {
-		assert.True(t, wrapper.IsHealthy())
+		assert.True(t, wrapper.IsHealthy(context.Background()))
 	})
 
 	t.Run("Close and IsHealthy", func(t *testing.T) {
 		err := wrapper.Close()
 		require.NoError(t, err)
 		// After closing, IsHealthy should fail
-		assert.False(t, wrapper.IsHealthy())
+		assert.False(t, wrapper.IsHealthy(context.Background()))
 	})
 }

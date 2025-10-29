@@ -192,23 +192,6 @@ prepare:
 	else \
 		echo "npm not found, skipping Node.js dependency installation."; \
 	fi
-	@# Install Helm
-	@echo "Checking for Helm..."
-	@if test -f "$(HELM_BIN)"; then \
-		echo "Helm is already installed."; \
-	else \
-		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
-		curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3; \
-		chmod 700 get_helm.sh; \
-		HELM_INSTALL_DIR=$(TOOL_INSTALL_DIR) ./get_helm.sh --no-sudo; \
-		rm get_helm.sh; \
-		if test -f "$(HELM_BIN)"; then \
-			echo "Helm installed successfully."; \
-		else \
-			echo "Helm installation failed."; \
-			exit 1; \
-		fi; \
-	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
 	@if test -f "$(SHELLCHECK_BIN)"; then \

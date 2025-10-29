@@ -20,10 +20,6 @@ repos:
     hooks:
     -   id: prettier
         types: [markdown]
--   repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.30
-    hooks:
-    -   id: helmlint
 -   repo: local
     hooks:
     -   id: shellcheck

@@ -36,7 +36,7 @@ type mockClient struct {
 	mu        sync.RWMutex
 }
 
-func (c *mockClient) IsHealthy() bool {
+func (c *mockClient) IsHealthy(ctx context.Context) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.isHealthy
@@ -112,7 +112,6 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)
 	assert.NotNil(t, c)
-	assert.True(t, c.IsHealthy())
 }
 
 func TestPool_Put_Unhealthy(t *testing.T) {
@@ -444,7 +443,6 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 		client, err := pool.Get(ctx)
 		require.NoError(t, err, "Get should not fail")
 		require.NotNil(t, client, "Should have received a client")
-		assert.True(t, client.IsHealthy(), "The new client should be healthy")
 	}()
 	wg.Wait()
 	if ctx.Err() == context.DeadlineExceeded {

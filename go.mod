@@ -26,6 +26,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.11.1
 	github.com/valyala/fasttemplate v1.2.2
+	github.comcom/gorilla/websocket v0.0.0-00010101000000-000000000000
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/sync v0.16.0
 	google.golang.org/grpc v1.75.0
@@ -118,3 +119,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 )
+
+replace github.comcom/gorilla/websocket => github.com/gorilla/websocket v1.5.0
+
+replace github.comcom/mcpxy/core/pkg/client => /app/pkg/client

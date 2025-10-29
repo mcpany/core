@@ -42,7 +42,7 @@ type ClosableClient interface {
 	// Close terminates the client's connection.
 	Close() error
 	// IsHealthy returns true if the client's connection is active and usable.
-	IsHealthy() bool
+	IsHealthy(ctx context.Context) bool
 }
 
 // Pool defines the interface for a generic connection pool. It supports getting
@@ -156,7 +156,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 				return zero, ErrPoolClosed
 			}
-			if client.IsHealthy() {
+			if client.IsHealthy(ctx) {
 				return client, nil
 			}
 			lo.Try(client.Close)
@@ -178,7 +178,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 					return zero, ErrPoolClosed
 				}
-				if client.IsHealthy() {
+				if client.IsHealthy(ctx) {
 					return client, nil
 				}
 				lo.Try(client.Close)
@@ -210,7 +210,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 				return zero, ErrPoolClosed
 			}
-			if client.IsHealthy() {
+			if client.IsHealthy(ctx) {
 				return client, nil
 			}
 			lo.Try(client.Close)
@@ -245,7 +245,8 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
-	if !client.IsHealthy() {
+	// Use a background context for health checks in Put to avoid blocking.
+	if !client.IsHealthy(context.Background()) {
 		p.mu.Unlock()
 		lo.Try(client.Close)
 		p.sem.Release(1)
