@@ -136,16 +136,12 @@ func NewServer(
 	mcpServer := mcp.NewServer(&mcp.Implementation{
 		Name:    appconsts.Name,
 		Version: appconsts.Version,
-		Capabilities: mcp.Capabilities{
-			"prompts": mcp.Capability{
-				"listChanged": true,
-			},
-		},
 	}, &mcp.ServerOptions{})
 	s.server = mcpServer
 
 	s.toolManager.SetMCPServer(s)
 
+	// TODO: Re-enable notifications when the go-sdk supports them
 	// s.promptManager.OnListChanged(func() {
 	// 	if s.server != nil {
 	// 		s.server.Notify(consts.NotificationPromptsListChanged, nil)
