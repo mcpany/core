@@ -43,8 +43,8 @@ func TestUpstreamService_OpenAPI_WithAPIKeyAuth(t *testing.T) {
 			require.NoError(t, err)
 			defer cs.Close()
 
-			serviceKey, _ := util.GenerateID("e2e_openapi_authed_echo")
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceID, _ := util.GenerateID("e2e_openapi_authed_echo")
+			toolName, _ := util.GenerateID(serviceID, "echo")
 			echoMessage := `{"message": "hello world from authed openapi"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool with correct auth")

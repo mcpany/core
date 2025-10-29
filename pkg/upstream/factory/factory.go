@@ -26,8 +26,6 @@ import (
 	"github.com/mcpxy/core/pkg/upstream/http"
 	"github.com/mcpxy/core/pkg/upstream/mcp"
 	"github.com/mcpxy/core/pkg/upstream/openapi"
-	"github.com/mcpxy/core/pkg/upstream/webrtc"
-	"github.com/mcpxy/core/pkg/upstream/websocket"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
 
@@ -74,10 +72,6 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return mcp.NewMCPUpstream(), nil
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		return command.NewCommandUpstream(), nil
-	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		return websocket.NewWebsocketUpstream(f.poolManager), nil
-	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		return webrtc.NewWebrtcUpstream(f.poolManager), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}

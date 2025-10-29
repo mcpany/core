@@ -89,6 +89,7 @@ func TestPromptsEndToEnd(t *testing.T) {
 		promptManager,
 		resourceManager,
 		authManager,
+		nil,
 	)
 	mcpServer, err := mcpserver.NewServer(
 		ctx,

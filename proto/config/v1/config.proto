@@ -149,14 +149,21 @@ message GlobalSettings {
     ERROR = 2;
     DEBUG = 3;
   }
+  enum ServiceNameStrategy {
+    DEFAULT = 0;
+    MERGE = 1;
+    MERGE_HASH = 2;
+    MERGE_IGNORE = 3;
+    STRICT = 4;
+  }
   // The address and port the server should bind to (e.g., "0.0.0.0:8080").
   string bind_address = 1;
   // The base path for all MCP API endpoints (e.g., "/mcp/v1").
   string mcp_basepath = 2;
   // The logging level for the server.
   LogLevel log_level = 3;
-  // The version of protoc to use.
-  string protoc_version = 4;
+  // The strategy to use for handling service name conflicts.
+  ServiceNameStrategy service_name_strategy = 4;
 }
 
 

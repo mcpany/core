@@ -79,6 +79,7 @@ func (u *GRPCUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
 		return "", nil, nil, errors.New("service config is nil")
@@ -140,12 +141,12 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceKey, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceKey, parsedMcpData, toolManager, isReload, fds)
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, isReload, fds, strategy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceKey, err)
 	}
 
-	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceKey, toolManager, isReload, fds)
+	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, isReload, fds, strategy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceKey, err)
 	}
@@ -166,6 +167,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	tm tool.ToolManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if parsedData == nil {
@@ -187,6 +189,19 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		toolName := toolDef.Name
 		if toolName == "" {
 			toolName = toolDef.MethodName
+		}
+		fullToolName := util.GenerateID(serviceID, toolName)
+
+		if tm.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				toolName = util.GenerateID(toolName, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return nil, fmt.Errorf("tool %q already exists for service %q", toolName, serviceID)
+			}
 		}
 
 		methodDescriptor, err := findMethodDescriptor(files, toolDef.FullMethodName)
@@ -279,6 +294,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	tm tool.ToolManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if fds == nil {
@@ -298,11 +314,20 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 			methods := serviceDesc.Methods()
 			for j := 0; j < methods.Len(); j++ {
 				methodDesc := methods.Get(j)
+				toolName := string(methodDesc.Name())
+				fullToolName := util.GenerateID(serviceID, toolName)
 
-				// Check if the tool is already registered
-				toolID := fmt.Sprintf("%s.%s", serviceKey, methodDesc.Name())
-				if _, ok := tm.GetTool(toolID); ok {
-					continue
+				if tm.GetTool(fullToolName) != nil {
+					switch strategy {
+					case configv1.GlobalSettings_MERGE_HASH:
+						toolName = util.GenerateID(toolName, serviceID)
+					case configv1.GlobalSettings_MERGE_IGNORE:
+						log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+						continue
+					case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+						log.Error("Tool already exists", "tool", fullToolName)
+						continue
+					}
 				}
 
 				propertiesStruct, err := schemaconv.MethodDescriptorToProtoProperties(methodDesc)
@@ -338,8 +363,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 				}
 
 				newToolProto := pb.Tool_builder{
-					Name:                proto.String(string(methodDesc.Name())),
-					DisplayName:         proto.String(string(methodDesc.Name())),
+					Name:                proto.String(toolName),
+					DisplayName:         proto.String(toolName),
 					Description:         proto.String(string(methodDesc.FullName())),
 					ServiceId:           proto.String(serviceKey),
 					UnderlyingMethodFqn: proto.String(string(methodDesc.FullName())),
@@ -348,7 +373,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					InputSchema:         inputSchema,
 					OutputSchema:        outputSchema,
 					Annotations: pb.ToolAnnotations_builder{
-						Title:        proto.String(string(methodDesc.Name())),
+						Title:        proto.String(toolName),
 						InputSchema:  inputSchema,
 						OutputSchema: outputSchema,
 					}.Build(),

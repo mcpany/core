@@ -71,7 +71,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 	err := tm.AddTool(mockTool)
 	assert.NoError(t, err)
 
-	toolID, _ := util.GenerateToolID("test-service", "test-tool")
+	toolID, _ := util.GenerateID("test-service", "test-tool")
 	retrievedTool, ok := tm.GetTool(toolID)
 	assert.True(t, ok, "Tool should be found")
 	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")

@@ -18,75 +18,133 @@ package util
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateID(t *testing.T) {
 	testCases := []struct {
-		name        string
-		input       string
-		expected    string
-		expectError bool
+		name          string
+		parts         []string
+		expectedRegex string
+		expectError   bool
+		errorMessage  string
 	}{
 		{
-			name:        "valid id",
-			input:       "test_service",
-			expected:    "test_service_96b74ebc",
-			expectError: false,
+			name:          "single valid part",
+			parts:         []string{"valid-part"},
+			expectedRegex: `^valid-part$`,
 		},
 		{
-			name:        "id with special characters",
-			input:       "test-service-1.0",
-			expected:    "test-service-10_57f3fff2",
-			expectError: false,
+			name:          "multiple valid parts",
+			parts:         []string{"serviceA", "toolB"},
+			expectedRegex: `^serviceA\.toolB$`,
 		},
 		{
-			name:        "long id",
-			input:       strings.Repeat("a", 100),
-			expected:    fmt.Sprintf("%s_28165978", strings.Repeat("a", 53)),
-			expectError: false,
+			name:          "single part with invalid characters",
+			parts:         []string{"invalid part!"},
+			expectedRegex: `^invalidpart_[a-f0-9]{8}$`,
 		},
 		{
-			name:        "empty id",
-			input:       "",
-			expectError: true,
+			name:          "multiple parts with invalid characters",
+			parts:         []string{"service A!", "tool B?"},
+			expectedRegex: `^serviceA_[a-f0-9]{8}\.toolB_[a-f0-9]{8}$`,
+		},
+		{
+			name:          "mixed valid and invalid parts",
+			parts:         []string{"valid-service", "invalid tool!"},
+			expectedRegex: `^valid-service\.invalidtool_[a-f0-9]{8}$`,
+		},
+		{
+			name:          "part exceeding max length",
+			parts:         []string{strings.Repeat("a", 70)},
+			expectedRegex: `^aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_[a-f0-9]{8}$`,
+		},
+		{
+			name:          "empty parts",
+			parts:         []string{},
+			expectError:   true,
+			errorMessage:  "at least one part must be provided",
+		},
+		{
+			name:          "empty string in parts",
+			parts:         []string{"valid", ""},
+			expectError:   true,
+			errorMessage:  "name parts cannot be empty",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := GenerateID(tc.input)
+			actual, err := GenerateID(tc.parts...)
 
 			if tc.expectError {
-				if err == nil {
-					t.Errorf("Expected an error, but got none")
-				}
+				assert.Error(t, err)
+				assert.Equal(t, tc.errorMessage, err.Error())
 			} else {
-				if err != nil {
-					t.Errorf("Unexpected error: %v", err)
-				}
-				if actual != tc.expected {
-					t.Errorf("Expected %q, but got %q", tc.expected, actual)
-				}
-				if len(actual) > maxGeneratedIDLength {
-					t.Errorf("Generated ID exceeds max length of %d", maxGeneratedIDLength)
-				}
+				assert.NoError(t, err)
+				assert.Regexp(t, regexp.MustCompile(tc.expectedRegex), actual)
 			}
 		})
 	}
 }
 
-func TestGenerateServiceKey(t *testing.T) {
-	input := "test_service"
-	expected, _ := GenerateID(input)
-	actual, err := GenerateServiceKey(input)
-
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
+func TestParseToolName(t *testing.T) {
+	testCases := []struct {
+		name               string
+		toolName           string
+		expectedService    string
+		expectedBareTool   string
+		expectError        bool
+		expectedErrMessage string
+	}{
+		{
+			name:             "Valid tool name",
+			toolName:         "service1.tool1",
+			expectedService:  "service1",
+			expectedBareTool: "tool1",
+			expectError:      false,
+		},
+		{
+			name:             "Tool name with no service",
+			toolName:         "tool1",
+			expectedService:  "",
+			expectedBareTool: "tool1",
+			expectError:      false,
+		},
+		{
+			name:             "Tool name with multiple separators",
+			toolName:         "service1.tool1.extra",
+			expectedService:  "service1",
+			expectedBareTool: "tool1.extra",
+			expectError:      false,
+		},
+		{
+			name:             "Empty tool name",
+			toolName:         "",
+			expectedService:  "",
+			expectedBareTool: "",
+			expectError:      false,
+		},
 	}
-	if actual != expected {
-		t.Errorf("Expected %q, but got %q", expected, actual)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service, bareTool, err := ParseToolName(tc.toolName)
+
+			assert.Equal(t, tc.expectedService, service)
+			assert.Equal(t, tc.expectedBareTool, bareTool)
+
+			if tc.expectError {
+				assert.Error(t, err)
+				assert.Equal(t, tc.expectedErrMessage, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
@@ -97,68 +155,36 @@ func TestSanitizeOperationID(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "no disallowed characters",
-			input:    "get-user-by-id",
-			expected: "get-user-by-id",
+			name:     "No sanitization needed",
+			input:    "valid-operation-id",
+			expected: "valid-operation-id",
 		},
 		{
-			name:     "with disallowed characters",
-			input:    "get user by id",
-			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id",
+			name:     "Spaces replaced with hash",
+			input:    "operation with spaces",
+			expected: fmt.Sprintf("operation_%s_with_%s_spaces", hashString(" "), hashString(" ")),
 		},
 		{
-			name:     "with multiple disallowed characters",
-			input:    "get user by id (new)",
-			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id_36a9e7_(new)",
+			name:     "Multiple invalid characters replaced",
+			input:    "op!@#$id",
+			expected: fmt.Sprintf("op_%s_id", hashString("!@#$")),
+		},
+		{
+			name:     "Starts and ends with invalid characters",
+			input:    "$$op-id##",
+			expected: fmt.Sprintf("_%s_op-id_%s_", hashString("$$"), hashString("##")),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := SanitizeOperationID(tc.input)
-			if actual != tc.expected {
-				t.Errorf("Expected %q, but got %q", tc.expected, actual)
-			}
+			assert.Equal(t, tc.expected, actual)
 		})
 	}
 }
 
-func TestGetDockerCommand(t *testing.T) {
-	t.Run("without sudo", func(t *testing.T) {
-		t.Setenv("USE_SUDO_FOR_DOCKER", "false")
-		cmd, args := GetDockerCommand()
-		if cmd != "docker" {
-			t.Errorf("Expected command to be 'docker', but got %q", cmd)
-		}
-		if len(args) != 0 {
-			t.Errorf("Expected no arguments, but got %v", args)
-		}
-	})
-
-	t.Run("with sudo", func(t *testing.T) {
-		t.Setenv("USE_SUDO_FOR_DOCKER", "true")
-		cmd, args := GetDockerCommand()
-		if cmd != "sudo" {
-			t.Errorf("Expected command to be 'sudo', but got %q", cmd)
-		}
-		if len(args) != 1 || args[0] != "docker" {
-			t.Errorf("Expected arguments to be ['docker'], but got %v", args)
-		}
-	})
-}
-
-func TestGenerateToolName(t *testing.T) {
-	t.Run("GenerateToolName", func(t *testing.T) {
-		input := "test_tool"
-		expected, _ := GenerateID(input)
-		actual, err := GenerateToolName(input)
-
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-
-		if actual != expected {
-			t.Errorf("Expected %q, but got %q", expected, actual)
-		}
-	})
+// Helper function to hash a string for testing SanitizeOperationID
+func hashString(s string) string {
+	return SanitizeOperationID(s)[1:7]
 }

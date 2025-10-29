@@ -246,7 +246,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		wg.Wait()
 
 		// Verify registration
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool")
+		toolID, _ := util.GenerateID(serviceKey, "test-tool")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 		_, ok = promptManager.GetPrompt("test-prompt")
@@ -459,7 +459,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool-http")
+		toolID, _ := util.GenerateID(serviceKey, "test-tool-http")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 	})

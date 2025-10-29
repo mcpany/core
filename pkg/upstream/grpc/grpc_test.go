@@ -65,7 +65,7 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	if m.lastErr != nil {
 		return m.lastErr
 	}
-	toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
+	toolID, _ := util.GenerateID(t.Tool().GetServiceId(), t.Tool().GetName())
 	m.tools[toolID] = t
 	return nil
 }
@@ -336,7 +336,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		require.NoError(t, err)
 
 		// Verify the "Add" tool's schema
-		addToolName, err := util.GenerateToolID(serviceKey, "CalculatorAdd")
+		addToolName, err := util.GenerateID(serviceKey, "CalculatorAdd")
 		require.NoError(t, err)
 		addTool, ok := tm.GetTool(addToolName)
 		require.True(t, ok)
@@ -350,7 +350,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
 
 		// Verify the "Subtract" tool's schema
-		subtractToolName, err := util.GenerateToolID(serviceKey, "CalculatorSubtract")
+		subtractToolName, err := util.GenerateID(serviceKey, "CalculatorSubtract")
 		require.NoError(t, err)
 		subtractTool, ok := tm.GetTool(subtractToolName)
 		require.True(t, ok)

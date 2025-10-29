@@ -112,6 +112,12 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 	log.Info("Starting MCP-XY Service...")
 
+	store := config.NewFileStore(fs, configPaths)
+	cfg, err := config.LoadServices(store)
+	if err != nil {
+		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+
 	// Core components
 	busProvider := bus.NewBusProvider()
 	poolManager := pool.NewManager()
@@ -120,7 +126,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager, cfg.GetGlobalSettings())
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
@@ -138,25 +144,18 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 	toolManager.SetMCPServer(mcpSrv)
 
-	// Load initial services from config files
-	if len(configPaths) > 0 {
-		store := config.NewFileStore(fs, configPaths)
-		cfg, err := config.LoadServices(store)
-		if err != nil {
-			return fmt.Errorf("failed to load services from config: %w", err)
+	// Register services from config
+	if cfg != nil && len(cfg.GetUpstreamServices()) > 0 {
+		// Publish registration requests to the bus for each service
+		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
+		for _, serviceConfig := range cfg.GetUpstreamServices() {
+			log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
+			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
+			// We don't need a correlation ID since we are not waiting for a response here
+			registrationBus.Publish("request", regReq)
 		}
-		if cfg != nil {
-			// Publish registration requests to the bus for each service
-			registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
-			for _, serviceConfig := range cfg.GetUpstreamServices() {
-				log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
-				regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-				// We don't need a correlation ID since we are not waiting for a response here
-				registrationBus.Publish("request", regReq)
-			}
-		} else {
-			log.Info("No services found in config, skipping service registration.")
-		}
+	} else {
+		log.Info("No services found in config, skipping service registration.")
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())

@@ -108,7 +108,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
-	toolID, err := util.GenerateToolID(tool.Tool().GetServiceId(), tool.Tool().GetName())
+	toolID, err := util.GenerateID(tool.Tool().GetServiceId(), tool.Tool().GetName())
 	if err != nil {
 		logging.GetLogger().
 			Error("Failed to generate tool ID", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)
@@ -214,25 +214,25 @@ func (tm *ToolManager) ListTools() []Tool {
 	return tools
 }
 
-// ClearToolsForService removes all tools associated with a given service key from
+// ClearToolsForService removes all tools associated with a given service ID from
 // the manager. This is useful when a service is being re-registered or
 // unregistered.
 //
-// serviceKey is the unique identifier for the service whose tools should be
+// serviceID is the unique identifier for the service whose tools should be
 // cleared.
-func (tm *ToolManager) ClearToolsForService(serviceKey string) {
+func (tm *ToolManager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
-	log := logging.GetLogger().With("serviceKey", serviceKey)
-	log.Debug("Clearing existing tools for serviceKey before reload/overwrite.")
+	log := logging.GetLogger().With("serviceID", serviceID)
+	log.Debug("Clearing existing tools for serviceID before reload/overwrite.")
 	deletedCount := 0
 	tm.tools.Range(func(key, value interface{}) bool {
 		tool := value.(Tool)
-		if tool.Tool().GetServiceId() == serviceKey {
+		if tool.Tool().GetServiceId() == serviceID {
 			tm.tools.Delete(key)
 			deletedCount++
 		}
 		return true
 	})
-	log.Debug("Cleared tools for serviceKey", "count", deletedCount)
+	log.Debug("Cleared tools for serviceID", "count", deletedCount)
 }

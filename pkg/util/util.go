@@ -31,71 +31,60 @@ import (
 const (
 	maxSanitizedPrefixLength = 53
 	hashLength               = 8
-	maxGeneratedIDLength     = maxSanitizedPrefixLength + 1 + hashLength
+	maxGeneratedIDLength     = 62
 )
 
 var (
 	// nonWordChars is a regular expression that matches any character that is not a word character.
 	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
+	// wordChars is a regular expression that matches only word characters.
+	wordChars = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
 
-// GenerateID creates a unique and consistently formatted identifier from a given name.
-// The format is <sanitized_prefix>_<hash>, with a maximum length of 62 characters.
-// The <sanitized_prefix> is the first 53 characters of the original name, with all non-word characters [^\w] removed.
-// The <hash> is the first 8 characters of the SHA256 hash of the original name.
-func GenerateID(name string) (string, error) {
-	if name == "" {
-		return "", fmt.Errorf("name cannot be empty")
-	}
-
-	// Create the hash
-	h := sha256.New()
-	h.Write([]byte(name))
-	hash := hex.EncodeToString(h.Sum(nil))[:hashLength]
-
-	// Sanitize and create the prefix
-	sanitizedPrefix := nonWordChars.ReplaceAllString(name, "")
-	if len(sanitizedPrefix) > maxSanitizedPrefixLength {
-		sanitizedPrefix = sanitizedPrefix[:maxSanitizedPrefixLength]
-	}
-
-	return fmt.Sprintf("%s_%s", sanitizedPrefix, hash), nil
-}
-
-// GenerateToolID creates a fully qualified tool ID by combining a service key
-// and a tool name. If the service key is empty, the tool name is returned as is.
+// GenerateID creates a unique and consistently formatted identifier from a given set of parts.
+// For each part, if it's considered valid (matches `wordChars` and is within `maxGeneratedIDLength`),
+// it's used as is. Otherwise, it is sanitized and hashed. The final ID is created by joining
+// the processed parts with a ".".
 //
-// serviceKey is the unique identifier for the service.
-// toolName is the name of the tool within the service.
-// It returns the fully qualified tool ID or an error if the tool name is
-// invalid.
-func GenerateToolID(serviceKey, toolName string) (string, error) {
-	if toolName == "" {
-		return "", fmt.Errorf("tool name cannot be empty")
+// The sanitization format is <sanitized_prefix>_<hash>, with a maximum length of 62 characters.
+// The <sanitized_prefix> is the first 53 characters of the original part, with all non-word characters removed.
+// The <hash> is the first 8 characters of the SHA256 hash of the original part.
+func GenerateID(parts ...string) (string, error) {
+	if len(parts) == 0 {
+		return "", fmt.Errorf("at least one part must be provided")
 	}
 
-	// If the tool name is already fully qualified, return it as is.
-	if s, _, _ := ParseToolName(toolName); s != "" {
-		return toolName, nil
+	processedParts := make([]string, 0, len(parts))
+
+	for _, part := range parts {
+		if part == "" {
+			return "", fmt.Errorf("name parts cannot be empty")
+		}
+
+		// Check if the part is valid and within the length limit
+		if wordChars.MatchString(part) && len(part) <= maxGeneratedIDLength {
+			processedParts = append(processedParts, part)
+			continue
+		}
+
+		// If not valid, sanitize and hash it
+		h := sha256.New()
+		h.Write([]byte(part))
+		hash := hex.EncodeToString(h.Sum(nil))[:hashLength]
+
+		sanitizedPrefix := nonWordChars.ReplaceAllString(part, "")
+		if len(sanitizedPrefix) > maxSanitizedPrefixLength {
+			sanitizedPrefix = sanitizedPrefix[:maxSanitizedPrefixLength]
+		}
+
+		processedPart := fmt.Sprintf("%s_%s", sanitizedPrefix, hash)
+		processedParts = append(processedParts, processedPart)
 	}
 
-	if serviceKey != "" {
-		return serviceKey + consts.ToolNameServiceSeparator + toolName, nil
-	}
-
-	return toolName, nil
-}
-
-// GenerateServiceKey generates a unique and consistently formatted key for a service.
-// It uses the GenerateID function to ensure the key is valid and unique.
-//
-// serviceID is the identifier for the service.
-// It returns the generated service key or an error if the service ID is empty.
-func GenerateServiceKey(serviceID string) (string, error) {
-	return GenerateID(serviceID)
+	return strings.Join(processedParts, consts.ToolNameServiceSeparator), nil
 }
 
 // GenerateToolName generates a unique and consistently formatted name for a tool.
@@ -112,12 +101,12 @@ func GenerateUUID() string {
 	return uuid.New().String()
 }
 
-// ParseToolName deconstructs a fully qualified tool name into its service key
+// ParseToolName deconstructs a fully qualified tool name into its service ID
 // and bare tool name components. It splits the name using the standard
 // separator.
 //
 // toolName is the fully qualified tool name.
-// It returns the service key, the bare tool name, and an error if parsing fails
+// It returns the service ID, the bare tool name, and an error if parsing fails
 // (though the current implementation does not return an error).
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)

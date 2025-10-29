@@ -74,11 +74,11 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 
 func TestNewGRPCTool(t *testing.T) {
 	pm := pool.NewManager()
-	serviceKey := "test-service"
+	serviceID := "test-service"
 	toolProto := &v1.Tool{}
 	methodDesc := findMethodDescriptor(t, "CalculatorService", "Add")
 
-	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceKey, methodDesc)
+	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceID, methodDesc)
 	require.NotNil(t, grpcTool)
 	assert.Equal(t, toolProto, grpcTool.Tool())
 }

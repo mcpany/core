@@ -18,6 +18,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/mcpxy/core/pkg/logging"
@@ -52,6 +53,7 @@ func (u *CommandUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
@@ -76,6 +78,7 @@ func (u *CommandUpstream) Register(
 		commandLineService,
 		toolManager,
 		isReload,
+		strategy,
 	)
 	if err != nil {
 		return "", nil, nil, err
@@ -100,6 +103,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	commandLineService *configv1.CommandLineUpstreamService,
 	toolManager tool.ToolManagerInterface,
 	_ bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
@@ -107,6 +111,19 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	for _, toolDef := range commandLineService.GetCalls() {
 		schema := toolDef.GetSchema()
 		command := schema.GetName()
+		fullToolName := util.GenerateID(serviceID, command)
+
+		if toolManager.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				command = util.GenerateID(command, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return nil, fmt.Errorf("tool %q already exists for service %q", command, serviceID)
+			}
+		}
 
 		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(toolDef.GetParameters())
 		if err != nil {
@@ -154,8 +171,25 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 
 		newTool := tool.NewCommandTool(newToolProto, commandLineService.GetCommand())
 		if err := toolManager.AddTool(newTool); err != nil {
-			log.Error("Failed to add tool", "error", err)
-			return nil, err
+			if errors.Is(err, tool.ErrToolExists) {
+				switch strategy {
+				case configv1.GlobalSettings_MERGE_HASH:
+					hashedCommand := util.GenerateID(command, serviceID)
+					newTool.Proto().Name = proto.String(hashedCommand)
+					if err := toolManager.AddTool(newTool); err != nil {
+						log.Error("Failed to add tool with hashed name", "error", err)
+						return nil, err
+					}
+				case configv1.GlobalSettings_MERGE_IGNORE:
+					log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+					continue
+				case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+					return nil, fmt.Errorf("tool %q already exists for service %q", command, serviceID)
+				}
+			} else {
+				log.Error("Failed to add tool", "error", err)
+				return nil, err
+			}
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name: proto.String(command),

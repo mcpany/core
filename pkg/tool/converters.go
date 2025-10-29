@@ -180,7 +180,7 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
 	}
 
-	toolID, err := util.GenerateToolID(pbTool.GetServiceId(), pbTool.GetName())
+	toolID, err := util.GenerateID(pbTool.GetServiceId(), pbTool.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tool ID: %w", err)
 	}

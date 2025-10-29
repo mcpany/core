@@ -40,7 +40,7 @@ type Upstream interface {
 	// resourceManager is the manager where discovered resources will be registered.
 	// isReload indicates whether this is an initial registration or a reload of an
 	// existing service.
-	// It returns a unique service key, a list of discovered tool definitions, and
+	// It returns a unique service ID, a list of discovered tool definitions, and
 	// an error if registration fails.
 	Register(
 		ctx context.Context,
@@ -49,5 +49,6 @@ type Upstream interface {
 		promptManager prompt.PromptManagerInterface,
 		resourceManager resource.ResourceManagerInterface,
 		isReload bool,
+		strategy configv1.GlobalSettings_ServiceNameStrategy,
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }

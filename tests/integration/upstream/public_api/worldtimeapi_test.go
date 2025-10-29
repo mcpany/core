@@ -93,8 +93,8 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, operationID)
 	args := `{"area": "Europe", "location": "London"}`
 
 	const maxRetries = 3

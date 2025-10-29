@@ -84,6 +84,7 @@ func (u *HTTPUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
@@ -131,7 +132,10 @@ func (u *HTTPUpstream) Register(
 	toolManager.AddServiceInfo(serviceKey, info)
 
 	address := httpService.GetAddress()
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
+	discoveredTools, err := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, isReload, strategy)
+	if err != nil {
+		return "", nil, nil, err
+	}
 	log.Info("Registered HTTP service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
 
 	return serviceKey, discoveredTools, nil, nil
@@ -140,7 +144,7 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool, strategy configv1.GlobalSettings_ServiceNameStrategy) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetCalls()))
 	httpService := serviceConfig.GetHttpService()
@@ -161,6 +165,19 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 				toolNamePart = sanitizedSummary
 			} else {
 				toolNamePart = fmt.Sprintf("op_%d", i)
+			}
+		}
+		fullToolName := util.GenerateID(serviceID, toolNamePart)
+
+		if toolManager.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				toolNamePart = util.GenerateID(toolNamePart, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return nil, fmt.Errorf("tool %q already exists for service %q", toolNamePart, serviceID)
 			}
 		}
 
@@ -236,5 +253,5 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
-	return discoveredTools
+	return discoveredTools, nil
 }

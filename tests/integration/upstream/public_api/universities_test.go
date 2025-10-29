@@ -84,8 +84,8 @@ func TestUpstreamService_JsonPlaceholder(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, "getPosts")
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, "getPosts")
 
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 	require.NoError(t, err, "Error calling getPosts tool")

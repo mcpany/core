@@ -18,7 +18,9 @@ package serviceregistry
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"regexp"
 	"sync"
 
 	"github.com/mcpxy/core/pkg/auth"
@@ -29,11 +31,17 @@ import (
 	config "github.com/mcpxy/core/proto/config/v1"
 )
 
+var (
+	// serviceNameRegex is the regular expression for validating service names.
+	// It allows word characters (a-z, A-Z, 0-9, _), and hyphens.
+	serviceNameRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+)
+
 // ServiceRegistryInterface defines the interface for a service registry.
 // It provides a method for registering new upstream services.
 type ServiceRegistryInterface interface {
 	// RegisterService registers a new upstream service based on the provided
-	// configuration. It returns the generated service key, a list of any tools
+	// configuration. It returns the generated service ID, a list of any tools
 	// discovered during registration, and an error if the registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 }
@@ -51,6 +59,7 @@ type ServiceRegistry struct {
 	promptManager   prompt.PromptManagerInterface
 	resourceManager resource.ResourceManagerInterface
 	authManager     *auth.AuthManager
+	globalConfig    *config.GlobalSettings
 }
 
 // New creates a new ServiceRegistry instance, which is responsible for managing
@@ -64,7 +73,7 @@ type ServiceRegistry struct {
 //   - authManager: The manager for registering service-specific authenticators.
 //
 // Returns a new instance of `ServiceRegistry`.
-func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
+func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager, globalConfig *config.GlobalSettings) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		factory:         factory,
@@ -72,7 +81,19 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 		promptManager:   promptManager,
 		resourceManager: resourceManager,
 		authManager:     authManager,
+		globalConfig:    globalConfig,
 	}
+}
+
+// validateServiceName checks if the service name is valid.
+func (r *ServiceRegistry) validateServiceName(name string) error {
+	if len(name) > 62 {
+		return errors.New("service name length exceeds 62 characters")
+	}
+	if !serviceNameRegex.MatchString(name) {
+		return errors.New("service name contains invalid characters")
+	}
+	return nil
 }
 
 // RegisterService handles the registration of a new upstream service. It uses
@@ -87,58 +108,79 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 //   - ctx: The context for the registration process.
 //   - serviceConfig: The configuration for the service to be registered.
 //
-// Returns the unique service key, a slice of discovered tool definitions, and
+// Returns the unique service ID, a slice of discovered tool definitions, and
 // an error if the registration fails.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
+	if err := r.validateServiceName(serviceConfig.GetName()); err != nil {
+		return "", nil, nil, fmt.Errorf("invalid service name %q: %w", serviceConfig.GetName(), err)
+	}
+
 	r.mu.Lock()
 	defer r.mu.Unlock()
+
+	strategy := r.globalConfig.GetServiceNameStrategy()
+	if r.isServiceNameRegistered(serviceConfig.GetName()) {
+		switch strategy {
+		case config.GlobalSettings_STRICT:
+			return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+		case config.GlobalSettings_MERGE, config.GlobalSettings_MERGE_HASH, config.GlobalSettings_MERGE_IGNORE:
+			// Allow registration, but the upstream will handle tool/resource conflicts.
+			break
+		default: // Default to MERGE for now
+			break
+		}
+	}
 
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	serviceKey, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false, strategy)
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	if _, ok := r.serviceConfigs[serviceKey]; ok {
-		r.toolManager.ClearToolsForService(serviceKey) // Clean up the just-registered tools
-		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
-	}
-
-	r.serviceConfigs[serviceKey] = serviceConfig
+	r.serviceConfigs[serviceID] = serviceConfig
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
 			authenticator := auth.NewAPIKeyAuthenticator(apiKeyConfig)
-			r.authManager.AddAuthenticator(serviceKey, authenticator)
+			r.authManager.AddAuthenticator(serviceID, authenticator)
 		}
 		if oauth2Config := authConfig.GetOauth2(); oauth2Config != nil {
 			config := &auth.OAuth2Config{
 				IssuerURL:    oauth2Config.GetIssuerUrl(),
 				Audience:     oauth2Config.GetAudience(),
 			}
-			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceKey, config); err != nil {
+			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceID, config); err != nil {
 				return "", nil, nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)
 			}
 		}
 	}
 
-	return serviceKey, discoveredTools, discoveredResources, nil
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
-// GetServiceConfig returns the configuration for a given service key.
+// GetServiceConfig returns the configuration for a given service ID.
 //
 // Parameters:
-//   - serviceKey: The unique identifier for the service.
+//   - serviceID: The unique identifier for the service.
 //
 // Returns the service configuration and a boolean indicating whether the service
 // was found.
-func (r *ServiceRegistry) GetServiceConfig(serviceKey string) (*config.UpstreamServiceConfig, bool) {
+func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	serviceConfig, ok := r.serviceConfigs[serviceKey]
+	serviceConfig, ok := r.serviceConfigs[serviceID]
 	return serviceConfig, ok
+}
+
+func (r *ServiceRegistry) isServiceNameRegistered(name string) bool {
+	for _, cfg := range r.serviceConfigs {
+		if cfg.GetName() == name {
+			return true
+		}
+	}
+	return false
 }

@@ -88,7 +88,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager, nil)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 
@@ -111,9 +111,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		assert.Contains(t, resp.GetMessage(), "registered successfully")
 
 		// Verify that the service info was added to the tool manager
-		serviceKey := resp.GetServiceKey()
-		require.NotEmpty(t, serviceKey)
-		serviceInfo, ok := toolManager.GetServiceInfo(serviceKey)
+		serviceID := resp.GetServiceID()
+		require.NotEmpty(t, serviceID)
+		serviceInfo, ok := toolManager.GetServiceInfo(serviceID)
 		require.True(t, ok)
 		require.NotNil(t, serviceInfo)
 		assert.Equal(t, "testservice", serviceInfo.Name)
@@ -162,12 +162,12 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		serviceKey := resp.GetServiceKey()
+		serviceID := resp.GetServiceID()
 		tools := toolManager.ListTools()
 		// There will be other tools from other tests, so we need to find our tools
 		var addTool tool.Tool
 		for _, t := range tools {
-			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "CalculatorAdd" {
+			if t.Tool().GetServiceId() == serviceID && t.Tool().GetName() == "CalculatorAdd" {
 				addTool = t
 				break
 			}
@@ -221,11 +221,11 @@ paths:
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		serviceKey := resp.GetServiceKey()
+		serviceID := resp.GetServiceID()
 		tools := toolManager.ListTools()
 		var openapiTool tool.Tool
 		for _, t := range tools {
-			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "getUser" {
+			if t.Tool().GetServiceId() == serviceID && t.Tool().GetName() == "getUser" {
 				openapiTool = t
 				break
 			}
@@ -271,11 +271,11 @@ paths:
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		serviceKey := resp.GetServiceKey()
+		serviceID := resp.GetServiceID()
 		tools := toolManager.ListTools()
 		var wsTool tool.Tool
 		for _, t := range tools {
-			if t.Tool().GetServiceId() == serviceKey && t.Tool().GetName() == "test-tool" {
+			if t.Tool().GetServiceId() == serviceID && t.Tool().GetName() == "test-tool" {
 				wsTool = t
 				break
 			}

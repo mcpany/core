@@ -271,6 +271,56 @@ func (x GlobalSettings_LogLevel) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+type GlobalSettings_ServiceNameStrategy int32
+
+const (
+	GlobalSettings_DEFAULT      GlobalSettings_ServiceNameStrategy = 0
+	GlobalSettings_MERGE        GlobalSettings_ServiceNameStrategy = 1
+	GlobalSettings_MERGE_HASH   GlobalSettings_ServiceNameStrategy = 2
+	GlobalSettings_MERGE_IGNORE GlobalSettings_ServiceNameStrategy = 3
+	GlobalSettings_STRICT       GlobalSettings_ServiceNameStrategy = 4
+)
+
+// Enum value maps for GlobalSettings_ServiceNameStrategy.
+var (
+	GlobalSettings_ServiceNameStrategy_name = map[int32]string{
+		0: "DEFAULT",
+		1: "MERGE",
+		2: "MERGE_HASH",
+		3: "MERGE_IGNORE",
+		4: "STRICT",
+	}
+	GlobalSettings_ServiceNameStrategy_value = map[string]int32{
+		"DEFAULT":      0,
+		"MERGE":        1,
+		"MERGE_HASH":   2,
+		"MERGE_IGNORE": 3,
+		"STRICT":       4,
+	}
+)
+
+func (x GlobalSettings_ServiceNameStrategy) Enum() *GlobalSettings_ServiceNameStrategy {
+	p := new(GlobalSettings_ServiceNameStrategy)
+	*p = x
+	return p
+}
+
+func (x GlobalSettings_ServiceNameStrategy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GlobalSettings_ServiceNameStrategy) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_config_proto_enumTypes[5].Descriptor()
+}
+
+func (GlobalSettings_ServiceNameStrategy) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_config_proto_enumTypes[5]
+}
+
+func (x GlobalSettings_ServiceNameStrategy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // Where the API key is located.
 type APIKeyAuth_Location int32
 
@@ -302,11 +352,11 @@ func (x APIKeyAuth_Location) String() string {
 }
 
 func (APIKeyAuth_Location) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[5].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[6].Descriptor()
 }
 
 func (APIKeyAuth_Location) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[5]
+	return &file_proto_config_v1_config_proto_enumTypes[6]
 }
 
 func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
@@ -1601,15 +1651,15 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
-	state                    protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BindAddress   *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
-	xxx_hidden_McpBasepath   *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel      GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpx.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_ProtocVersion *string                 `protobuf:"bytes,4,opt,name=protoc_version,json=protocVersion"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state                          protoimpl.MessageState             `protogen:"opaque.v1"`
+	xxx_hidden_BindAddress         *string                            `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
+	xxx_hidden_McpBasepath         *string                            `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
+	xxx_hidden_LogLevel            GlobalSettings_LogLevel            `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpx.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_ServiceNameStrategy GlobalSettings_ServiceNameStrategy `protobuf:"varint,4,opt,name=service_name_strategy,json=serviceNameStrategy,enum=mcpx.config.v1.GlobalSettings_ServiceNameStrategy"`
+	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
+	XXX_presence                   [1]uint32
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -1666,14 +1716,13 @@ func (x *GlobalSettings) GetLogLevel() GlobalSettings_LogLevel {
 	return GlobalSettings_INFO
 }
 
-func (x *GlobalSettings) GetProtocVersion() string {
+func (x *GlobalSettings) GetServiceNameStrategy() GlobalSettings_ServiceNameStrategy {
 	if x != nil {
-		if x.xxx_hidden_ProtocVersion != nil {
-			return *x.xxx_hidden_ProtocVersion
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_ServiceNameStrategy
 		}
-		return ""
 	}
-	return ""
+	return GlobalSettings_DEFAULT
 }
 
 func (x *GlobalSettings) SetBindAddress(v string) {
@@ -1691,8 +1740,8 @@ func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
-func (x *GlobalSettings) SetProtocVersion(v string) {
-	x.xxx_hidden_ProtocVersion = &v
+func (x *GlobalSettings) SetServiceNameStrategy(v GlobalSettings_ServiceNameStrategy) {
+	x.xxx_hidden_ServiceNameStrategy = v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
 }
 
@@ -1717,7 +1766,7 @@ func (x *GlobalSettings) HasLogLevel() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *GlobalSettings) HasProtocVersion() bool {
+func (x *GlobalSettings) HasServiceNameStrategy() bool {
 	if x == nil {
 		return false
 	}
@@ -1739,9 +1788,9 @@ func (x *GlobalSettings) ClearLogLevel() {
 	x.xxx_hidden_LogLevel = GlobalSettings_INFO
 }
 
-func (x *GlobalSettings) ClearProtocVersion() {
+func (x *GlobalSettings) ClearServiceNameStrategy() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_ProtocVersion = nil
+	x.xxx_hidden_ServiceNameStrategy = GlobalSettings_DEFAULT
 }
 
 type GlobalSettings_builder struct {
@@ -1753,8 +1802,8 @@ type GlobalSettings_builder struct {
 	McpBasepath *string
 	// The logging level for the server.
 	LogLevel *GlobalSettings_LogLevel
-	// The version of protoc to use.
-	ProtocVersion *string
+	// The strategy to use for handling service name conflicts.
+	ServiceNameStrategy *GlobalSettings_ServiceNameStrategy
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1773,9 +1822,9 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
-	if b.ProtocVersion != nil {
+	if b.ServiceNameStrategy != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_ProtocVersion = b.ProtocVersion
+		x.xxx_hidden_ServiceNameStrategy = *b.ServiceNameStrategy
 	}
 	return m0
 }
@@ -8666,17 +8715,25 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11MCPCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
 	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xf9\x01\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\x97\x03\n" +
 	"\x0eGlobalSettings\x12!\n" +
 	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12D\n" +
-	"\tlog_level\x18\x03 \x01(\x0e2'.mcpx.config.v1.GlobalSettings.LogLevelR\blogLevel\x12%\n" +
-	"\x0eprotoc_version\x18\x04 \x01(\tR\rprotocVersion\"4\n" +
+	"\tlog_level\x18\x03 \x01(\x0e2'.mcpx.config.v1.GlobalSettings.LogLevelR\blogLevel\x12f\n" +
+	"\x15service_name_strategy\x18\x04 \x01(\x0e22.mcpx.config.v1.GlobalSettings.ServiceNameStrategyR\x13serviceNameStrategy\"4\n" +
 	"\bLogLevel\x12\b\n" +
 	"\x04INFO\x10\x00\x12\b\n" +
 	"\x04WARN\x10\x01\x12\t\n" +
 	"\x05ERROR\x10\x02\x12\t\n" +
-	"\x05DEBUG\x10\x03\"\xb0\t\n" +
+	"\x05DEBUG\x10\x03\"[\n" +
+	"\x13ServiceNameStrategy\x12\v\n" +
+	"\aDEFAULT\x10\x00\x12\t\n" +
+	"\x05MERGE\x10\x01\x12\x0e\n" +
+	"\n" +
+	"MERGE_HASH\x10\x02\x12\x10\n" +
+	"\fMERGE_IGNORE\x10\x03\x12\n" +
+	"\n" +
+	"\x06STRICT\x10\x04\"\xb0\t\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12M\n" +
@@ -8922,171 +8979,173 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"\x06RANDOM\x10\x02B'Z%github.com/mcpxy/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
 var file_proto_config_v1_config_proto_goTypes = []any{
-	(ParameterType)(0),                  // 0: mcpx.config.v1.ParameterType
-	(LoadBalancingStrategy)(0),          // 1: mcpx.config.v1.LoadBalancingStrategy
-	(HttpCallDefinition_HttpMethod)(0),  // 2: mcpx.config.v1.HttpCallDefinition.HttpMethod
-	(OutputTransformer_OutputFormat)(0), // 3: mcpx.config.v1.OutputTransformer.OutputFormat
-	(GlobalSettings_LogLevel)(0),        // 4: mcpx.config.v1.GlobalSettings.LogLevel
-	(APIKeyAuth_Location)(0),            // 5: mcpx.config.v1.APIKeyAuth.Location
-	(*McpxServerConfig)(nil),            // 6: mcpx.config.v1.McpxServerConfig
-	(*HttpCallDefinition)(nil),          // 7: mcpx.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),     // 8: mcpx.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),        // 9: mcpx.config.v1.WebrtcCallDefinition
-	(*StdioCallDefinition)(nil),         // 10: mcpx.config.v1.StdioCallDefinition
-	(*InputTransformer)(nil),            // 11: mcpx.config.v1.InputTransformer
-	(*OutputTransformer)(nil),           // 12: mcpx.config.v1.OutputTransformer
-	(*GrpcCallDefinition)(nil),          // 13: mcpx.config.v1.GrpcCallDefinition
-	(*OpenAPICallDefinition)(nil),       // 14: mcpx.config.v1.OpenAPICallDefinition
-	(*MCPCallDefinition)(nil),           // 15: mcpx.config.v1.MCPCallDefinition
-	(*GlobalSettings)(nil),              // 16: mcpx.config.v1.GlobalSettings
-	(*UpstreamServiceConfig)(nil),       // 17: mcpx.config.v1.UpstreamServiceConfig
-	(*GrpcUpstreamService)(nil),         // 18: mcpx.config.v1.GrpcUpstreamService
-	(*ProtoDefinition)(nil),             // 19: mcpx.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                   // 20: mcpx.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),             // 21: mcpx.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),             // 22: mcpx.config.v1.ProtoCollection
-	(*HttpUpstreamService)(nil),         // 23: mcpx.config.v1.HttpUpstreamService
-	(*WebsocketUpstreamService)(nil),    // 24: mcpx.config.v1.WebsocketUpstreamService
-	(*WebrtcUpstreamService)(nil),       // 25: mcpx.config.v1.WebrtcUpstreamService
-	(*OpenapiUpstreamService)(nil),      // 26: mcpx.config.v1.OpenapiUpstreamService
-	(*CommandLineUpstreamService)(nil),  // 27: mcpx.config.v1.CommandLineUpstreamService
-	(*McpUpstreamService)(nil),          // 28: mcpx.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),          // 29: mcpx.config.v1.McpStdioConnection
-	(*McpStreamableHttpConnection)(nil), // 30: mcpx.config.v1.McpStreamableHttpConnection
-	(*ToolSchema)(nil),                  // 31: mcpx.config.v1.ToolSchema
-	(*ParameterSchema)(nil),             // 32: mcpx.config.v1.ParameterSchema
-	(*ToolDefinition)(nil),              // 33: mcpx.config.v1.ToolDefinition
-	(*HttpParameterMapping)(nil),        // 34: mcpx.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),   // 35: mcpx.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),      // 36: mcpx.config.v1.WebrtcParameterMapping
-	(*StdioParameterMapping)(nil),       // 37: mcpx.config.v1.StdioParameterMapping
-	(*ConnectionPoolConfig)(nil),        // 38: mcpx.config.v1.ConnectionPoolConfig
-	(*HttpHealthCheck)(nil),             // 39: mcpx.config.v1.HttpHealthCheck
-	(*GrpcHealthCheck)(nil),             // 40: mcpx.config.v1.GrpcHealthCheck
-	(*StdioHealthCheck)(nil),            // 41: mcpx.config.v1.StdioHealthCheck
-	(*RateLimitConfig)(nil),             // 42: mcpx.config.v1.RateLimitConfig
-	(*CacheConfig)(nil),                 // 43: mcpx.config.v1.CacheConfig
-	(*ResilienceConfig)(nil),            // 44: mcpx.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),        // 45: mcpx.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                 // 46: mcpx.config.v1.RetryConfig
-	(*AuthenticationConfig)(nil),        // 47: mcpx.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),                  // 48: mcpx.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),                  // 49: mcpx.config.v1.OAuth2Auth
-	(*UpstreamAuthentication)(nil),      // 50: mcpx.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 51: mcpx.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 52: mcpx.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 53: mcpx.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),          // 54: mcpx.config.v1.UpstreamOAuth2Auth
-	(*TLSConfig)(nil),                   // 55: mcpx.config.v1.TLSConfig
-	nil,                                 // 56: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Value)(nil),              // 57: google.protobuf.Value
-	(*structpb.Struct)(nil),             // 58: google.protobuf.Struct
-	(*durationpb.Duration)(nil),         // 59: google.protobuf.Duration
+	(ParameterType)(0),                      // 0: mcpx.config.v1.ParameterType
+	(LoadBalancingStrategy)(0),              // 1: mcpx.config.v1.LoadBalancingStrategy
+	(HttpCallDefinition_HttpMethod)(0),      // 2: mcpx.config.v1.HttpCallDefinition.HttpMethod
+	(OutputTransformer_OutputFormat)(0),     // 3: mcpx.config.v1.OutputTransformer.OutputFormat
+	(GlobalSettings_LogLevel)(0),            // 4: mcpx.config.v1.GlobalSettings.LogLevel
+	(GlobalSettings_ServiceNameStrategy)(0), // 5: mcpx.config.v1.GlobalSettings.ServiceNameStrategy
+	(APIKeyAuth_Location)(0),                // 6: mcpx.config.v1.APIKeyAuth.Location
+	(*McpxServerConfig)(nil),                // 7: mcpx.config.v1.McpxServerConfig
+	(*HttpCallDefinition)(nil),              // 8: mcpx.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),         // 9: mcpx.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),            // 10: mcpx.config.v1.WebrtcCallDefinition
+	(*StdioCallDefinition)(nil),             // 11: mcpx.config.v1.StdioCallDefinition
+	(*InputTransformer)(nil),                // 12: mcpx.config.v1.InputTransformer
+	(*OutputTransformer)(nil),               // 13: mcpx.config.v1.OutputTransformer
+	(*GrpcCallDefinition)(nil),              // 14: mcpx.config.v1.GrpcCallDefinition
+	(*OpenAPICallDefinition)(nil),           // 15: mcpx.config.v1.OpenAPICallDefinition
+	(*MCPCallDefinition)(nil),               // 16: mcpx.config.v1.MCPCallDefinition
+	(*GlobalSettings)(nil),                  // 17: mcpx.config.v1.GlobalSettings
+	(*UpstreamServiceConfig)(nil),           // 18: mcpx.config.v1.UpstreamServiceConfig
+	(*GrpcUpstreamService)(nil),             // 19: mcpx.config.v1.GrpcUpstreamService
+	(*ProtoDefinition)(nil),                 // 20: mcpx.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                       // 21: mcpx.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),                 // 22: mcpx.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),                 // 23: mcpx.config.v1.ProtoCollection
+	(*HttpUpstreamService)(nil),             // 24: mcpx.config.v1.HttpUpstreamService
+	(*WebsocketUpstreamService)(nil),        // 25: mcpx.config.v1.WebsocketUpstreamService
+	(*WebrtcUpstreamService)(nil),           // 26: mcpx.config.v1.WebrtcUpstreamService
+	(*OpenapiUpstreamService)(nil),          // 27: mcpx.config.v1.OpenapiUpstreamService
+	(*CommandLineUpstreamService)(nil),      // 28: mcpx.config.v1.CommandLineUpstreamService
+	(*McpUpstreamService)(nil),              // 29: mcpx.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),              // 30: mcpx.config.v1.McpStdioConnection
+	(*McpStreamableHttpConnection)(nil),     // 31: mcpx.config.v1.McpStreamableHttpConnection
+	(*ToolSchema)(nil),                      // 32: mcpx.config.v1.ToolSchema
+	(*ParameterSchema)(nil),                 // 33: mcpx.config.v1.ParameterSchema
+	(*ToolDefinition)(nil),                  // 34: mcpx.config.v1.ToolDefinition
+	(*HttpParameterMapping)(nil),            // 35: mcpx.config.v1.HttpParameterMapping
+	(*WebsocketParameterMapping)(nil),       // 36: mcpx.config.v1.WebsocketParameterMapping
+	(*WebrtcParameterMapping)(nil),          // 37: mcpx.config.v1.WebrtcParameterMapping
+	(*StdioParameterMapping)(nil),           // 38: mcpx.config.v1.StdioParameterMapping
+	(*ConnectionPoolConfig)(nil),            // 39: mcpx.config.v1.ConnectionPoolConfig
+	(*HttpHealthCheck)(nil),                 // 40: mcpx.config.v1.HttpHealthCheck
+	(*GrpcHealthCheck)(nil),                 // 41: mcpx.config.v1.GrpcHealthCheck
+	(*StdioHealthCheck)(nil),                // 42: mcpx.config.v1.StdioHealthCheck
+	(*RateLimitConfig)(nil),                 // 43: mcpx.config.v1.RateLimitConfig
+	(*CacheConfig)(nil),                     // 44: mcpx.config.v1.CacheConfig
+	(*ResilienceConfig)(nil),                // 45: mcpx.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),            // 46: mcpx.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                     // 47: mcpx.config.v1.RetryConfig
+	(*AuthenticationConfig)(nil),            // 48: mcpx.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),                      // 49: mcpx.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),                      // 50: mcpx.config.v1.OAuth2Auth
+	(*UpstreamAuthentication)(nil),          // 51: mcpx.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),              // 52: mcpx.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil),         // 53: mcpx.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),               // 54: mcpx.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),              // 55: mcpx.config.v1.UpstreamOAuth2Auth
+	(*TLSConfig)(nil),                       // 56: mcpx.config.v1.TLSConfig
+	nil,                                     // 57: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Value)(nil),                  // 58: google.protobuf.Value
+	(*structpb.Struct)(nil),                 // 59: google.protobuf.Struct
+	(*durationpb.Duration)(nil),             // 60: google.protobuf.Duration
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	16, // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
-	17, // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	31, // 2: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	17, // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
+	18, // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
+	32, // 2: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	2,  // 3: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
-	34, // 4: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
-	11, // 5: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 6: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43, // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	31, // 8: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	35, // 9: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
-	11, // 10: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 11: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 12: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	36, // 13: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
-	11, // 14: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 15: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 16: mcpx.config.v1.StdioCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	37, // 17: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
+	35, // 4: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
+	12, // 5: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	13, // 6: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	44, // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	32, // 8: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	36, // 9: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
+	12, // 10: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	13, // 11: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	32, // 12: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	37, // 13: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
+	12, // 14: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	13, // 15: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	32, // 16: mcpx.config.v1.StdioCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	38, // 17: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
 	3,  // 18: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	56, // 19: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	31, // 20: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	31, // 21: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	11, // 22: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 23: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 24: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	11, // 25: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 26: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	57, // 19: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	32, // 20: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	32, // 21: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	12, // 22: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	13, // 23: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	32, // 24: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	12, // 25: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	13, // 26: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
 	4,  // 27: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	38, // 28: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	50, // 29: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	43, // 30: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
-	42, // 31: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
-	1,  // 32: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
-	44, // 33: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
-	28, // 34: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
-	23, // 35: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	18, // 36: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
-	26, // 37: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
-	27, // 38: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
-	24, // 39: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
-	25, // 40: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
-	47, // 41: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	55, // 42: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	13, // 43: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	40, // 44: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	19, // 45: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
-	22, // 46: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
-	20, // 47: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
-	21, // 48: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
-	7,  // 49: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
-	39, // 50: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55, // 51: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	8,  // 52: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	55, // 53: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	9,  // 54: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	55, // 55: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	39, // 56: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55, // 57: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	14, // 58: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
-	10, // 59: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
-	41, // 60: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
-	43, // 61: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
-	30, // 62: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
-	29, // 63: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
-	33, // 64: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
-	15, // 65: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	55, // 66: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	0,  // 67: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	57, // 68: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	58, // 69: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	58, // 70: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	32, // 71: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 72: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 73: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 74: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	59, // 75: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	59, // 76: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 77: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 78: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 79: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 80: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 81: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 82: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	45, // 83: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	46, // 84: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	59, // 85: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	59, // 86: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	59, // 87: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	48, // 88: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	49, // 89: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,  // 90: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	51, // 91: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	52, // 92: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	53, // 93: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	54, // 94: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
-	95, // [95:95] is the sub-list for method output_type
-	95, // [95:95] is the sub-list for method input_type
-	95, // [95:95] is the sub-list for extension type_name
-	95, // [95:95] is the sub-list for extension extendee
-	0,  // [0:95] is the sub-list for field type_name
+	5,  // 28: mcpx.config.v1.GlobalSettings.service_name_strategy:type_name -> mcpx.config.v1.GlobalSettings.ServiceNameStrategy
+	39, // 29: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
+	51, // 30: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	44, // 31: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
+	43, // 32: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
+	1,  // 33: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
+	45, // 34: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
+	29, // 35: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
+	24, // 36: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
+	19, // 37: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
+	27, // 38: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
+	28, // 39: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
+	25, // 40: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
+	26, // 41: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
+	48, // 42: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
+	56, // 43: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	14, // 44: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
+	41, // 45: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
+	20, // 46: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
+	23, // 47: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
+	21, // 48: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
+	22, // 49: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
+	8,  // 50: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
+	40, // 51: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	56, // 52: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	9,  // 53: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
+	56, // 54: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	10, // 55: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
+	56, // 56: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	40, // 57: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	56, // 58: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	15, // 59: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
+	11, // 60: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
+	42, // 61: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
+	44, // 62: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
+	31, // 63: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
+	30, // 64: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
+	34, // 65: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
+	16, // 66: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
+	56, // 67: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	0,  // 68: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
+	58, // 69: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	59, // 70: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	59, // 71: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	33, // 72: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	33, // 73: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	33, // 74: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	33, // 75: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	60, // 76: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	60, // 77: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	60, // 78: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	60, // 79: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	60, // 80: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	60, // 81: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
+	60, // 82: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
+	60, // 83: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	46, // 84: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	47, // 85: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	60, // 86: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	60, // 87: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	60, // 88: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	49, // 89: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	50, // 90: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	6,  // 91: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	52, // 92: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	53, // 93: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	54, // 94: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	55, // 95: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	96, // [96:96] is the sub-list for method output_type
+	96, // [96:96] is the sub-list for method input_type
+	96, // [96:96] is the sub-list for extension type_name
+	96, // [96:96] is the sub-list for extension extendee
+	0,  // [0:96] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -9133,7 +9192,7 @@ func file_proto_config_v1_config_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
-			NumEnums:      6,
+			NumEnums:      7,
 			NumMessages:   51,
 			NumExtensions: 0,
 			NumServices:   0,

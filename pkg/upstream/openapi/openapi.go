@@ -73,6 +73,7 @@ func (u *OpenAPIUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
@@ -122,7 +123,10 @@ func (u *OpenAPIUpstream) Register(
 		}.Build())
 	}
 
-	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, toolManager, isReload, doc, serviceConfig)
+	numToolsAdded, err := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, isReload, doc, serviceConfig, strategy)
+	if err != nil {
+		return "", nil, nil, err
+	}
 	log.Info("Registered OpenAPI service", "serviceKey", serviceKey, "toolsAdded", numToolsAdded)
 
 	return serviceKey, discoveredTools, nil, nil
@@ -169,7 +173,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceKey string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig, strategy configv1.GlobalSettings_ServiceNameStrategy) (int, error) {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -190,19 +194,23 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 
 	for _, t := range pbTools {
 		toolName := t.GetName()
+		fullToolName := util.GenerateID(serviceID, toolName)
+
+		if toolManager.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				toolName = util.GenerateID(toolName, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				log.Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return 0, fmt.Errorf("tool %q already exists for service %q", toolName, serviceID)
+			}
+		}
 
 		newToolProto := proto.Clone(t).(*pb.Tool)
 		newToolProto.SetName(toolName)
-		newToolProto.SetServiceId(serviceKey)
-
-		if existingTool, exists := toolManager.GetTool(toolName); exists {
-			if isReload {
-				log.Warn("OpenAPI Tool already exists, overwriting during service reload.", "tool_id", toolName, "svc_id", serviceKey)
-			} else {
-				log.Warn("Tool ID already exists from a different service registration. Skipping.", "tool_id", toolName, "svc_key", serviceKey, "existing_svc_id", existingTool.Tool().GetServiceId())
-				continue
-			}
-		}
+		newToolProto.SetServiceId(serviceID)
 
 		methodAndPath := strings.Fields(t.GetUnderlyingMethodFqn())
 		if len(methodAndPath) != 2 {
@@ -252,5 +260,5 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 		log.Info("Registered OpenAPI tool", "tool_id", toolName, "is_reload", isReload)
 	}
 
-	return numToolsForThisService
+	return numToolsForThisService, nil
 }

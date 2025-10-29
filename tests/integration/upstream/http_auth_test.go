@@ -48,8 +48,8 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 			defer cs.Close()
 
 			const echoServiceID = "e2e_http_authed_echo"
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceID, _ := util.GenerateID(echoServiceID)
+			toolName, _ := util.GenerateID(serviceID, "echo")
 			echoMessage := `{"message": "hello world from authed http"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool with correct auth")
@@ -91,8 +91,8 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 			defer cs.Close()
 
 			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
-			wrongServiceKey, _ := util.GenerateID(wrongAuthServiceID)
-			wrongToolName, _ := util.GenerateToolID(wrongServiceKey, "echo")
+			wrongServiceID, _ := util.GenerateID(wrongAuthServiceID)
+			wrongToolName, _ := util.GenerateID(wrongServiceID, "echo")
 			echoMessage := `{"message": "hello world from authed http"}`
 			_, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: wrongToolName, Arguments: json.RawMessage(echoMessage)})
 			require.Error(t, err, "Expected error when calling echo tool with incorrect auth")

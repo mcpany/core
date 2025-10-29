@@ -185,6 +185,7 @@ func (u *MCPUpstream) Register(
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
@@ -207,12 +208,12 @@ func (u *MCPUpstream) Register(
 	var discoveredResources []*configv1.ResourceDefinition
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_StdioConnection_case:
-		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceKey, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceID, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig, strategy)
 		if err != nil {
 			return "", nil, nil, err
 		}
 	case configv1.McpUpstreamService_HttpConnection_case:
-		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceKey, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceID, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig, strategy)
 		if err != nil {
 			return "", nil, nil, err
 		}
@@ -339,6 +340,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if stdio == nil {
 		return nil, nil, fmt.Errorf("stdio connection config is nil")
@@ -410,6 +412,20 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
+		toolName := mcpSDKTool.Name
+		fullToolName := util.GenerateID(serviceID, toolName)
+		if toolManager.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				toolName = util.GenerateID(toolName, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				logging.GetLogger().Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return nil, nil, fmt.Errorf("tool %q already exists for service %q", toolName, serviceID)
+			}
+		}
+
 		callDef, ok := callDefMap[mcpSDKTool.Name]
 		if !ok {
 			callDef = &configv1.MCPCallDefinition{}
@@ -420,6 +436,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
 			continue
 		}
+		pbTool.Name = proto.String(toolName)
 		pbTool.SetServiceId(serviceKey)
 
 		newTool := tool.NewMCPTool(
@@ -491,6 +508,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	strategy configv1.GlobalSettings_ServiceNameStrategy,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
@@ -560,6 +578,19 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
+		toolName := mcpSDKTool.Name
+		fullToolName := util.GenerateID(serviceID, toolName)
+		if toolManager.GetTool(fullToolName) != nil {
+			switch strategy {
+			case configv1.GlobalSettings_MERGE_HASH:
+				toolName = util.GenerateID(toolName, serviceID)
+			case configv1.GlobalSettings_MERGE_IGNORE:
+				logging.GetLogger().Warn("Tool already exists, ignoring", "tool", fullToolName)
+				continue
+			case configv1.GlobalSettings_STRICT, configv1.GlobalSettings_MERGE:
+				return nil, nil, fmt.Errorf("tool %q already exists for service %q", toolName, serviceID)
+			}
+		}
 		callDef, ok := callDefMap[mcpSDKTool.Name]
 		if !ok {
 			callDef = &configv1.MCPCallDefinition{}
@@ -570,6 +601,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
 			continue
 		}
+		pbTool.Name = proto.String(toolName)
 		pbTool.SetServiceId(serviceKey)
 
 		newTool := tool.NewMCPTool(

@@ -35,11 +35,11 @@ func TestUpstreamService_HTTP_Calculator(t *testing.T) {
 		ValidateTool: func(t *testing.T, mcpxyEndpoint string) {
 			serviceID := "e2e_http_calculator"
 			toolName := "add"
-			serviceKey, err := util.GenerateID(serviceID)
+			serviceID, err := util.GenerateID(serviceID)
 			if err != nil {
-				t.Fatalf("Failed to generate service key: %v", err)
+				t.Fatalf("Failed to generate service ID: %v", err)
 			}
-			expectedToolName, err := util.GenerateToolID(serviceKey, toolName)
+			expectedToolName, err := util.GenerateID(serviceID, toolName)
 			if err != nil {
 				t.Fatalf("Failed to generate tool ID: %v", err)
 			}

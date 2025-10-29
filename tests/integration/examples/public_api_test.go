@@ -53,8 +53,8 @@ func TestPublicHttpPost(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, operationID)
 	params := json.RawMessage(`{"message": "hello world"}`)
 
 	// Adding a retry loop to handle intermittent failures from httpbin.org
@@ -120,8 +120,8 @@ func TestPublicWebsocket(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, operationID)
 	params := json.RawMessage(`{"message": "hello from websocket"}`)
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
 	require.NoError(t, err, "Error calling tool '%s'", toolName)
@@ -158,8 +158,8 @@ func TestJsonPlaceholderPost(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, operationID)
 	params := json.RawMessage(`{"title": "foo","body": "bar","userId": 1}`)
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
 	require.NoError(t, err, "Error calling tool '%s'", toolName)
@@ -203,8 +203,8 @@ func TestLanyardWebsocket(t *testing.T) {
 	require.NoError(t, err, "Failed to connect to MCPXY server")
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceID, _ := util.GenerateID(serviceID)
+	toolName, _ := util.GenerateID(serviceID, operationID)
 	// Subscribe to a known Discord user ID for Lanyard
 	params := json.RawMessage(`{"op": 2, "d": {"subscribe_to_id": "138332767946997760"}}`)
 

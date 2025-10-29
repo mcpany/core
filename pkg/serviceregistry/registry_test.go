@@ -40,7 +40,7 @@ type mockUpstream struct {
 	registerFunc func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool, strategy configv1.GlobalSettings_ServiceNameStrategy) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if m.registerFunc != nil {
 		return m.registerFunc()
 	}
@@ -64,7 +64,7 @@ type mockToolManager struct {
 }
 
 func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
-func (m *mockToolManager) ClearToolsForService(serviceKey string)                  {}
+func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
@@ -115,9 +115,9 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	serviceConfig.SetAuthentication(authConfig)
 
 	// Successful registration
-	serviceKey, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
+	serviceID, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
-	assert.Equal(t, "mock-service-key", serviceKey)
+	assert.Equal(t, "mock-service-key", serviceID)
 	assert.Nil(t, tools)
 	assert.Nil(t, resources)
 
@@ -183,7 +183,9 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 		},
 	}
 	tm := &mockToolManager{}
-	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager(), &configv1.GlobalSettings{
+		ServiceNameStrategy: configv1.GlobalSettings_STRICT,
+	})
 
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	serviceConfig1.SetName("test-service")
@@ -196,4 +198,86 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
 	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+}
+
+func TestServiceRegistry_ValidateServiceName(t *testing.T) {
+	registry := &ServiceRegistry{}
+
+	testCases := []struct {
+		name    string
+		valid   bool
+		error   string
+		service string
+	}{
+		{
+			name:    "valid name",
+			valid:   true,
+			service: "valid-service-name",
+		},
+		{
+			name:    "name too long",
+			valid:   false,
+			error:   "service name length exceeds 62 characters",
+			service: "a-very-long-service-name-that-is-definitely-longer-than-62-characters",
+		},
+		{
+			name:    "name with invalid characters",
+			valid:   false,
+			error:   "service name contains invalid characters",
+			service: "invalid-service-name-!",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := registry.validateServiceName(tc.service)
+			if tc.valid {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Equal(t, tc.error, err.Error())
+			}
+		})
+	}
+}
+
+func TestServiceRegistry_RegisterService_Strategies(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					return "test-service", nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service")
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service")
+
+	t.Run("STRICT", func(t *testing.T) {
+		registry := New(f, tm, prm, rm, am, &configv1.GlobalSettings{
+			ServiceNameStrategy: configv1.GlobalSettings_STRICT,
+		})
+		_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+		require.NoError(t, err)
+		_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+		require.Error(t, err)
+	})
+
+	t.Run("MERGE", func(t *testing.T) {
+		registry := New(f, tm, prm, rm, am, &configv1.GlobalSettings{
+			ServiceNameStrategy: configv1.GlobalSettings_MERGE,
+		})
+		_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+		require.NoError(t, err)
+		_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+		require.NoError(t, err)
+	})
 }

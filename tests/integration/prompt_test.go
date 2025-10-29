@@ -83,6 +83,7 @@ func TestPromptIntegration(t *testing.T) {
 		promptManager,
 		resourceManager,
 		authManager,
+		nil,
 	)
 	server, err := mcpserver.NewServer(
 		ctx,

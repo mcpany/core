@@ -54,8 +54,8 @@ func TestUpstreamService_HTTP(t *testing.T) {
 			}
 
 			const echoServiceID = "e2e_http_echo"
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceID, _ := util.GenerateID(echoServiceID)
+			toolName, _ := util.GenerateID(serviceID, "echo")
 			echoMessage := `{"message": "hello world from http"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool")
