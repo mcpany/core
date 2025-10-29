@@ -19,6 +19,7 @@ package integration
 import (
 	"context"
 	"encoding/json"
+	"sync"
 	"testing"
 	"time"
 

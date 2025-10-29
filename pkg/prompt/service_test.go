@@ -71,8 +71,8 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return args.Get(0).([]prompt.Prompt)
 }
 
-func (m *MockPromptManager) OnListChanged(f func()) {
-	m.Called(f)
+func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
+	m.Called(mcpServer)
 }
 
 func TestService_ListPrompts(t *testing.T) {
