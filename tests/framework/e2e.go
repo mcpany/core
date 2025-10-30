@@ -30,7 +30,6 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -55,7 +54,6 @@ type E2ETestCase struct {
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
 	StartMCPXYServer       func(t *testing.T, testName string, extraArgs ...string) *integration.MCPXYTestServerInfo
-	Clock                  clock.Clock
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
@@ -113,9 +111,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
-			if testCase.Clock != nil {
-				mcpxyTestServerInfo = integration.StartInProcessMCPXYServer(t, testCase.Name, testCase.Clock)
-			} else if testCase.StartMCPXYServer != nil {
+			if testCase.StartMCPXYServer != nil {
 				mcpxyTestServerInfo = testCase.StartMCPXYServer(t, testCase.Name)
 			} else if method == FileRegistration {
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
