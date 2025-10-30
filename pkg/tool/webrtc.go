@@ -47,6 +47,7 @@ type WebrtcTool struct {
 	parameters        []*configv1.WebrtcParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	cache             *configv1.CacheConfig
 }
 
 // NewWebrtcTool creates a new WebrtcTool.
@@ -72,12 +73,18 @@ func NewWebrtcTool(
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		cache:             callDefinition.GetCache(),
 	}, nil
 }
 
 // Tool returns the protobuf definition of the WebRTC tool.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the WebRTC tool.
+func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the WebRTC tool. It establishes a new peer

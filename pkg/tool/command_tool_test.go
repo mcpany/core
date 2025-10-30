@@ -32,7 +32,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	toolProto := &v1.Tool{}
 
 	t.Run("successful execution", func(t *testing.T) {
-		cmdTool := tool.NewCommandTool(toolProto, "echo")
+		cmdTool := tool.NewCommandTool(toolProto, "echo", nil)
 		inputData := map[string]interface{}{"args": []string{"hello world"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -54,7 +54,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("command not found", func(t *testing.T) {
-		cmdTool := tool.NewCommandTool(toolProto, "this-command-does-not-exist")
+		cmdTool := tool.NewCommandTool(toolProto, "this-command-does-not-exist", nil)
 		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 		result, err := cmdTool.Execute(context.Background(), req)
 		require.NoError(t, err)
@@ -72,7 +72,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
-		cmdTool := tool.NewCommandTool(toolProto, "sh")
+		cmdTool := tool.NewCommandTool(toolProto, "sh", nil)
 		inputData := map[string]interface{}{
 			"args":   []string{"-c", "echo $MY_VAR"},
 			"MY_VAR": "hello from env",
@@ -97,7 +97,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("non-zero exit code", func(t *testing.T) {
-		cmdTool := tool.NewCommandTool(toolProto, "sh")
+		cmdTool := tool.NewCommandTool(toolProto, "sh", nil)
 		inputData := map[string]interface{}{"args": []string{"-c", "exit 1"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -119,7 +119,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
-		cmdTool := tool.NewCommandTool(toolProto, "echo")
+		cmdTool := tool.NewCommandTool(toolProto, "echo", nil)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 

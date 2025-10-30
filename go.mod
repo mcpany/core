@@ -18,6 +18,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/jhump/protoreflect v1.15.3
 	github.com/modelcontextprotocol/go-sdk v1.0.0
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pion/webrtc/v3 v3.3.6
 	github.com/samber/lo v1.51.0
 	github.com/sourcegraph/jsonrpc2 v0.2.0

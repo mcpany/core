@@ -41,6 +41,7 @@ type WebsocketTool struct {
 	parameters        []*configv1.WebsocketParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	cache             *configv1.CacheConfig
 }
 
 // NewWebsocketTool creates a new WebsocketTool.
@@ -66,12 +67,18 @@ func NewWebsocketTool(
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		cache:             callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the WebSocket tool.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the WebSocket tool.
+func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
