@@ -54,6 +54,31 @@ func TestHealthCheck(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("response body is read and closed", func(t *testing.T) {
+		handlerFinished := make(chan bool)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			// This handler will hang until the client reads the body and closes it.
+			<-r.Context().Done()
+			handlerFinished <- true
+		}))
+		defer server.Close()
+
+		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
+		require.NoError(t, err)
+
+		err = HealthCheck(port)
+		assert.NoError(t, err)
+
+		select {
+		case <-handlerFinished:
+			// The handler finished, which means the client-side transport has
+			// closed the request context, which it only does after the body is closed.
+		case <-time.After(1 * time.Second):
+			t.Fatal("HealthCheck did not read and close the response body in time")
+		}
+	})
+
 	t.Run("failed health check with non-200 status", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
