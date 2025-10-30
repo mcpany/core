@@ -1,4 +1,5 @@
-version: "2"
+build:
+  go: "1.25"
 
 run:
   timeout: 5m
