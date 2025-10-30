@@ -34,11 +34,7 @@ import (
 )
 
 
-import (
-	"github.com/mcpxy/core/pkg/common/clock"
-)
-
-var appRunner app.Runner = app.NewApplication(clock.New())
+var appRunner app.Runner = app.NewApplication()
 
 // newRootCmd creates and configures the main command for the application.
 // It sets up the command-line flags for configuring the server, such as ports,
