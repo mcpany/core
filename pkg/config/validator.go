@@ -17,8 +17,12 @@
 package config
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+
 	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/pkg/validation"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 )
@@ -42,6 +46,17 @@ func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, er
 	serviceNames := make(map[string]bool)
 
 	for _, service := range config.GetUpstreamServices() {
+		sanitizedName, err := util.SanitizeServiceName(service.GetName())
+		if err != nil {
+			log.Warn("Invalid service name, skipping service.", "serviceName", service.GetName(), "error", err)
+			continue
+		}
+		service.SetSanitizedName(sanitizedName)
+
+		hasher := sha256.New()
+		hasher.Write([]byte(service.GetName()))
+		service.SetId(hex.EncodeToString(hasher.Sum(nil)))
+
 		serviceLog := log.With("serviceName", service.GetName())
 		if _, exists := serviceNames[service.GetName()]; exists {
 			return nil, fmt.Errorf("duplicate service name found: %s", service.GetName())

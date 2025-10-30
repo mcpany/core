@@ -53,8 +53,8 @@ http_service:
 			require.NoError(t, err)
 			defer cs.Close()
 
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceKey, _ := util.SanitizeServiceName(echoServiceID)
+			toolName, _ := util.SanitizeToolName(serviceKey, "echo")
 			echoMessage := `{"message": "hello world"}`
 
 			// 1. Initial successful call

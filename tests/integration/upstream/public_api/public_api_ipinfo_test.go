@@ -93,8 +93,8 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 	}
 
-	serviceKey, _ := util.GenerateID(ipInfoServiceID)
-	toolName, _ := util.GenerateToolID(serviceKey, "getIPInfo")
+	serviceKey, _ := util.SanitizeServiceName(ipInfoServiceID)
+	toolName, _ := util.SanitizeToolName(serviceKey, "getIPInfo")
 	ipAddress := `{"ip": "8.8.8.8"}`
 
 	const maxRetries = 3

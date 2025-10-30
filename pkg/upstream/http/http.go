@@ -86,10 +86,7 @@ func (u *HTTPUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
-	if err != nil {
-		return "", nil, nil, err
-	}
+	serviceKey := serviceConfig.GetSanitizedName()
 
 	if isReload {
 		toolManager.ClearToolsForService(serviceKey)

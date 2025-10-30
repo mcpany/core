@@ -25,7 +25,6 @@ import (
 	"github.com/mcpxy/core/pkg/resource"
 	"github.com/mcpxy/core/pkg/tool"
 	"github.com/mcpxy/core/pkg/upstream"
-	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	pb "github.com/mcpxy/core/proto/mcp_router/v1"
@@ -54,10 +53,7 @@ func (u *CommandUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
-	if err != nil {
-		return "", nil, nil, err
-	}
+	serviceKey := serviceConfig.GetSanitizedName()
 
 	commandLineService := serviceConfig.GetCommandLineService()
 	if commandLineService == nil {

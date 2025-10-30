@@ -51,7 +51,7 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 			}
 			t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
 
-			serviceKey, _ := util.GenerateID("e2e_everything_server_streamable")
+			serviceKey, _ := util.SanitizeServiceName("e2e_everything_server_streamable")
 
 			testCases := []struct {
 				name       string
@@ -84,7 +84,7 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 
 			for _, tc := range testCases {
 				t.Run(tc.name, func(t *testing.T) {
-					toolName, _ := util.GenerateToolID(serviceKey, tc.tool)
+					toolName, _ := util.SanitizeToolName(serviceKey, tc.tool)
 					if tc.expectFail {
 						_, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(tc.jsonArgs)})
 						require.Error(t, err, "Expected error when calling nonexistent tool '%s', but got none", toolName)

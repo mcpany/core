@@ -104,7 +104,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service")
+		expectedKey, _ := util.SanitizeServiceName("test-service")
 		assert.Equal(t, expectedKey, serviceKey)
 		assert.Len(t, discoveredTools, 1)
 		p, ok := pool.Get[*client.HttpClientWrapper](pm, serviceKey)
@@ -157,12 +157,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		// Check for sanitized description as name
 		sanitizedName := util.SanitizeOperationID("A test operation")
-		toolID1, _ := util.GenerateToolID(serviceKey, sanitizedName)
+		toolID1, _ := util.SanitizeToolName(serviceKey, sanitizedName)
 		_, ok := tm.GetTool(toolID1)
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		toolID2, _ := util.GenerateToolID(serviceKey, "op_1")
+		toolID2, _ := util.SanitizeToolName(serviceKey, "op_1")
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)
 	})
@@ -232,7 +232,7 @@ func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 		// Simplified check: In a real scenario, you'd parse the name
 		// and check against the tool's actual name and service key.
 		// For this mock, we'll just assume the test provides the full tool ID.
-		toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
+		toolID, _ := util.SanitizeToolName(t.Tool().GetServiceId(), t.Tool().GetName())
 		if toolID == name {
 			return t, true
 		}
@@ -321,10 +321,10 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	_, _, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
-	toolID2, _ := util.GenerateToolID(serviceKey, "op2")
+	toolID2, _ := util.SanitizeToolName(serviceKey, "op2")
 	_, ok := tm.GetTool(toolID2)
 	assert.True(t, ok)
-	toolID1, _ := util.GenerateToolID(serviceKey, "op1")
+	toolID1, _ := util.SanitizeToolName(serviceKey, "op1")
 	_, ok = tm.GetTool(toolID1)
 	assert.False(t, ok)
 }
@@ -408,7 +408,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
-			toolID, _ := util.GenerateToolID(serviceKey, "test-op")
+			toolID, _ := util.SanitizeToolName(serviceKey, "test-op")
 			registeredTool, ok := tm.GetTool(toolID)
 			assert.True(t, ok)
 			assert.NotNil(t, registeredTool)

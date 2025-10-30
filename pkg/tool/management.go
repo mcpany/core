@@ -132,7 +132,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
-	toolID, err := util.GenerateToolID(tool.Tool().GetServiceId(), tool.Tool().GetName())
+	toolID, err := util.SanitizeToolName(tool.Tool().GetServiceId(), tool.Tool().GetName())
 	if err != nil {
 		logging.GetLogger().
 			Error("Failed to generate tool ID", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)

@@ -52,7 +52,7 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	if m.lastErr != nil {
 		return m.lastErr
 	}
-	toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
+	toolID, _ := util.SanitizeToolName(t.Tool().GetServiceId(), t.Tool().GetName())
 	m.tools[toolID] = t
 	return nil
 }
@@ -133,7 +133,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		tools := toolManager.ListTools()
 		assert.Len(t, tools, 1)
 
-		toolID, _ := util.GenerateToolID(serviceKey, "echo")
+		toolID, _ := util.SanitizeToolName(serviceKey, "echo")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok, "tool should be registered")
 	})

@@ -238,7 +238,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service")
+		expectedKey, _ := util.SanitizeServiceName("test-service")
 		assert.Equal(t, expectedKey, serviceKey)
 		require.Len(t, discoveredTools, 1)
 		assert.Equal(t, "test-tool", discoveredTools[0].GetName())
@@ -246,7 +246,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		wg.Wait()
 
 		// Verify registration
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool")
+		toolID, _ := util.SanitizeToolName(serviceKey, "test-tool")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 		_, ok = promptManager.GetPrompt("test-prompt")
@@ -452,14 +452,14 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service-http")
+		expectedKey, _ := util.SanitizeServiceName("test-service-http")
 		assert.Equal(t, expectedKey, serviceKey)
 		require.Len(t, discoveredTools, 1)
 		assert.Equal(t, "test-tool-http", discoveredTools[0].GetName())
 
 		wg.Wait()
 
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool-http")
+		toolID, _ := util.SanitizeToolName(serviceKey, "test-tool-http")
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 	})
@@ -556,7 +556,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "name cannot be empty")
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 }
 

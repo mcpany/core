@@ -88,7 +88,7 @@ func TestToolListFiltering(t *testing.T) {
 	// Add a test tool
 	serviceKey := "test-service"
 	toolName := "test-tool"
-	compositeName, err := util.GenerateToolID(serviceKey, toolName)
+	compositeName, err := util.SanitizeToolName(serviceKey, toolName)
 	require.NoError(t, err)
 
 	testTool := &mockTool{
@@ -151,7 +151,7 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	// Add a test tool
 	serviceKey := "test-service"
 	toolName := "test-tool"
-	compositeName, err := util.GenerateToolID(serviceKey, toolName)
+	compositeName, err := util.SanitizeToolName(serviceKey, toolName)
 	require.NoError(t, err)
 
 	testTool := &mockTool{
@@ -277,7 +277,7 @@ func TestServer_CallTool(t *testing.T) {
 	defer clientSession.Close()
 
 	t.Run("successful tool call", func(t *testing.T) {
-		toolID, _ := util.GenerateToolID("test-service", "success-tool")
+		toolID, _ := util.SanitizeToolName("test-service", "success-tool")
 		result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
 			Name: toolID,
 		})
@@ -292,7 +292,7 @@ func TestServer_CallTool(t *testing.T) {
 	})
 
 	t.Run("tool call with error", func(t *testing.T) {
-		toolID, _ := util.GenerateToolID("test-service", "error-tool")
+		toolID, _ := util.SanitizeToolName("test-service", "error-tool")
 		_, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
 			Name: toolID,
 		})
@@ -304,7 +304,7 @@ func TestServer_CallTool(t *testing.T) {
 		timeoutCtx, cancelTimeout := context.WithTimeout(ctx, 10*time.Millisecond)
 		defer cancelTimeout()
 
-		toolID, _ := util.GenerateToolID("test-service", "success-tool")
+		toolID, _ := util.SanitizeToolName("test-service", "success-tool")
 		_, err := clientSession.CallTool(timeoutCtx, &mcp.CallToolParams{
 			Name: toolID,
 		})

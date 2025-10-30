@@ -104,8 +104,8 @@ func TestCommandUpstream_Register(t *testing.T) {
 			false,
 		)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-command-service")
-		assert.Equal(t, expectedKey, serviceKey)
+		sanitizedName, _ := util.SanitizeServiceName("test-command-service")
+		assert.Equal(t, sanitizedName, serviceKey)
 		assert.Len(t, discoveredTools, 1)
 		assert.Equal(t, "echo", discoveredTools[0].GetName())
 		assert.Len(t, tm.ListTools(), 1)

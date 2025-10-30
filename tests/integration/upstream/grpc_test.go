@@ -59,8 +59,8 @@ func TestUpstreamService_GRPC(t *testing.T) {
 			}
 
 			const calcServiceID = "e2e_grpc_calculator"
-			serviceKey, _ := util.GenerateID(calcServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
+			serviceKey, _ := util.SanitizeServiceName(calcServiceID)
+			toolName, _ := util.SanitizeToolName(serviceKey, "CalculatorAdd")
 			addArgs := `{"a": 10, "b": 20}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 			require.NoError(t, err, "Error calling Add tool")
@@ -160,7 +160,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 			require.NoError(t, err, "Failed to connect to MCPXY server")
 			defer cs.Close()
 
-			serviceKey, err := util.GenerateServiceKey("greeter-service")
+			serviceKey, err := util.SanitizeServiceName("greeter-service")
 			require.NoError(t, err)
 			toolName := fmt.Sprintf("%s%sSayHello", serviceKey, consts.ToolNameServiceSeparator)
 

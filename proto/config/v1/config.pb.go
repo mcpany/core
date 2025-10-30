@@ -1759,15 +1759,14 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
-	state                    protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BindAddress   *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
-	xxx_hidden_McpBasepath   *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel      GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpx.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_ProtocVersion *string                 `protobuf:"bytes,4,opt,name=protoc_version,json=protocVersion"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_BindAddress *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
+	xxx_hidden_McpBasepath *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
+	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpx.config.v1.GlobalSettings_LogLevel"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -1824,34 +1823,19 @@ func (x *GlobalSettings) GetLogLevel() GlobalSettings_LogLevel {
 	return GlobalSettings_INFO
 }
 
-func (x *GlobalSettings) GetProtocVersion() string {
-	if x != nil {
-		if x.xxx_hidden_ProtocVersion != nil {
-			return *x.xxx_hidden_ProtocVersion
-		}
-		return ""
-	}
-	return ""
-}
-
 func (x *GlobalSettings) SetBindAddress(v string) {
 	x.xxx_hidden_BindAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *GlobalSettings) SetMcpBasepath(v string) {
 	x.xxx_hidden_McpBasepath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
-}
-
-func (x *GlobalSettings) SetProtocVersion(v string) {
-	x.xxx_hidden_ProtocVersion = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *GlobalSettings) HasBindAddress() bool {
@@ -1875,13 +1859,6 @@ func (x *GlobalSettings) HasLogLevel() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *GlobalSettings) HasProtocVersion() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
 func (x *GlobalSettings) ClearBindAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_BindAddress = nil
@@ -1897,11 +1874,6 @@ func (x *GlobalSettings) ClearLogLevel() {
 	x.xxx_hidden_LogLevel = GlobalSettings_INFO
 }
 
-func (x *GlobalSettings) ClearProtocVersion() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_ProtocVersion = nil
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1911,8 +1883,6 @@ type GlobalSettings_builder struct {
 	McpBasepath *string
 	// The logging level for the server.
 	LogLevel *GlobalSettings_LogLevel
-	// The version of protoc to use.
-	ProtocVersion *string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1920,20 +1890,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.BindAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_BindAddress = b.BindAddress
 	}
 	if b.McpBasepath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
 		x.xxx_hidden_McpBasepath = b.McpBasepath
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
 		x.xxx_hidden_LogLevel = *b.LogLevel
-	}
-	if b.ProtocVersion != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_ProtocVersion = b.ProtocVersion
 	}
 	return m0
 }
@@ -1945,6 +1911,7 @@ type UpstreamServiceConfig struct {
 	state                             protoimpl.MessageState                `protogen:"opaque.v1"`
 	xxx_hidden_Id                     *string                               `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Name                   *string                               `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_SanitizedName          *string                               `protobuf:"bytes,18,opt,name=sanitized_name,json=sanitizedName"`
 	xxx_hidden_ConnectionPool         *ConnectionPoolConfig                 `protobuf:"bytes,3,opt,name=connection_pool,json=connectionPool"`
 	xxx_hidden_UpstreamAuthentication *UpstreamAuthentication               `protobuf:"bytes,4,opt,name=upstream_authentication,json=upstreamAuthentication"`
 	xxx_hidden_Cache                  *CacheConfig                          `protobuf:"bytes,5,opt,name=cache"`
@@ -2005,6 +1972,16 @@ func (x *UpstreamServiceConfig) GetName() string {
 	return ""
 }
 
+func (x *UpstreamServiceConfig) GetSanitizedName() string {
+	if x != nil {
+		if x.xxx_hidden_SanitizedName != nil {
+			return *x.xxx_hidden_SanitizedName
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
 	if x != nil {
 		return x.xxx_hidden_ConnectionPool
@@ -2035,7 +2012,7 @@ func (x *UpstreamServiceConfig) GetRateLimit() *RateLimitConfig {
 
 func (x *UpstreamServiceConfig) GetLoadBalancingStrategy() LoadBalancingStrategy {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 6) {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 7) {
 			return x.xxx_hidden_LoadBalancingStrategy
 		}
 	}
@@ -2131,12 +2108,17 @@ func (x *UpstreamServiceConfig) GetAuthentication() *AuthenticationConfig {
 
 func (x *UpstreamServiceConfig) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *UpstreamServiceConfig) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+}
+
+func (x *UpstreamServiceConfig) SetSanitizedName(v string) {
+	x.xxx_hidden_SanitizedName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
 }
 
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
@@ -2157,7 +2139,7 @@ func (x *UpstreamServiceConfig) SetRateLimit(v *RateLimitConfig) {
 
 func (x *UpstreamServiceConfig) SetLoadBalancingStrategy(v LoadBalancingStrategy) {
 	x.xxx_hidden_LoadBalancingStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
 }
 
 func (x *UpstreamServiceConfig) SetResilience(v *ResilienceConfig) {
@@ -2222,7 +2204,7 @@ func (x *UpstreamServiceConfig) SetWebrtcService(v *WebrtcUpstreamService) {
 
 func (x *UpstreamServiceConfig) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
 }
 
 func (x *UpstreamServiceConfig) SetAuthentication(v *AuthenticationConfig) {
@@ -2241,6 +2223,13 @@ func (x *UpstreamServiceConfig) HasName() bool {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UpstreamServiceConfig) HasSanitizedName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
@@ -2275,7 +2264,7 @@ func (x *UpstreamServiceConfig) HasLoadBalancingStrategy() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
 func (x *UpstreamServiceConfig) HasResilience() bool {
@@ -2352,7 +2341,7 @@ func (x *UpstreamServiceConfig) HasVersion() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
 func (x *UpstreamServiceConfig) HasAuthentication() bool {
@@ -2372,6 +2361,11 @@ func (x *UpstreamServiceConfig) ClearName() {
 	x.xxx_hidden_Name = nil
 }
 
+func (x *UpstreamServiceConfig) ClearSanitizedName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_SanitizedName = nil
+}
+
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
 	x.xxx_hidden_ConnectionPool = nil
 }
@@ -2389,7 +2383,7 @@ func (x *UpstreamServiceConfig) ClearRateLimit() {
 }
 
 func (x *UpstreamServiceConfig) ClearLoadBalancingStrategy() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
 	x.xxx_hidden_LoadBalancingStrategy = LoadBalancingStrategy_ROUND_ROBIN
 }
 
@@ -2444,7 +2438,7 @@ func (x *UpstreamServiceConfig) ClearWebrtcService() {
 }
 
 func (x *UpstreamServiceConfig) ClearVersion() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
 	x.xxx_hidden_Version = nil
 }
 
@@ -2488,10 +2482,12 @@ func (x *UpstreamServiceConfig) WhichServiceConfig() case_UpstreamServiceConfig_
 type UpstreamServiceConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// A UUID to uniquely identify this upstream service configuration, used for bindings.
+	// A SHA256 hash of the service name to uniquely identify this upstream service configuration.
 	Id *string
 	// A unique name for the upstream service. Used for identification, logging, and metrics.
 	Name *string
+	// A sanitized version of the name, suitable for use in contexts that have restrictions on characters (e.g. prometheus labels).
+	SanitizedName *string
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
 	// Authentication configuration for mcpx to use when connecting to the upstream service.
@@ -2526,19 +2522,23 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_Name = b.Name
+	}
+	if b.SanitizedName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
+		x.xxx_hidden_SanitizedName = b.SanitizedName
 	}
 	x.xxx_hidden_ConnectionPool = b.ConnectionPool
 	x.xxx_hidden_UpstreamAuthentication = b.UpstreamAuthentication
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_RateLimit = b.RateLimit
 	if b.LoadBalancingStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
 		x.xxx_hidden_LoadBalancingStrategy = *b.LoadBalancingStrategy
 	}
 	x.xxx_hidden_Resilience = b.Resilience
@@ -2564,7 +2564,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebrtcService{b.WebrtcService}
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
 		x.xxx_hidden_Version = b.Version
 	}
 	x.xxx_hidden_Authentication = b.Authentication
@@ -8830,20 +8830,20 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
 	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
 	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xf9\x01\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xd2\x01\n" +
 	"\x0eGlobalSettings\x12!\n" +
 	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12D\n" +
-	"\tlog_level\x18\x03 \x01(\x0e2'.mcpx.config.v1.GlobalSettings.LogLevelR\blogLevel\x12%\n" +
-	"\x0eprotoc_version\x18\x04 \x01(\tR\rprotocVersion\"4\n" +
+	"\tlog_level\x18\x03 \x01(\x0e2'.mcpx.config.v1.GlobalSettings.LogLevelR\blogLevel\"4\n" +
 	"\bLogLevel\x12\b\n" +
 	"\x04INFO\x10\x00\x12\b\n" +
 	"\x04WARN\x10\x01\x12\t\n" +
 	"\x05ERROR\x10\x02\x12\t\n" +
-	"\x05DEBUG\x10\x03\"\xb0\t\n" +
+	"\x05DEBUG\x10\x03\"\xd7\t\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12M\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\x0esanitized_name\x18\x12 \x01(\tR\rsanitizedName\x12M\n" +
 	"\x0fconnection_pool\x18\x03 \x01(\v2$.mcpx.config.v1.ConnectionPoolConfigR\x0econnectionPool\x12_\n" +
 	"\x17upstream_authentication\x18\x04 \x01(\v2&.mcpx.config.v1.UpstreamAuthenticationR\x16upstreamAuthentication\x121\n" +
 	"\x05cache\x18\x05 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12>\n" +

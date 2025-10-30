@@ -187,10 +187,7 @@ func (u *MCPUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
-	if err != nil {
-		return "", nil, nil, err
-	}
+	serviceKey := serviceConfig.GetSanitizedName()
 
 	mcpService := serviceConfig.GetMcpService()
 	if mcpService == nil {
@@ -205,6 +202,7 @@ func (u *MCPUpstream) Register(
 
 	var discoveredTools []*configv1.ToolDefinition
 	var discoveredResources []*configv1.ResourceDefinition
+	var err error
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_StdioConnection_case:
 		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceKey, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)

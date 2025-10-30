@@ -44,8 +44,8 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 			defer cs.Close()
 
 			const calcServiceID = "e2e_grpc_authed_calculator"
-			serviceKey, _ := util.GenerateID(calcServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
+			serviceKey, _ := util.SanitizeServiceName(calcServiceID)
+			toolName, _ := util.SanitizeToolName(serviceKey, "CalculatorAdd")
 			addArgs := `{"a": 10, "b": 20}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 			require.NoError(t, err, "Error calling Add tool with correct auth")

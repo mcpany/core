@@ -36,75 +36,45 @@ const (
 
 var (
 	// nonWordChars is a regular expression that matches any character that is not a word character.
-	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
+	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9-]+`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
 
-// GenerateID creates a unique and consistently formatted identifier from a given name.
-// The format is <sanitized_prefix>_<hash>, with a maximum length of 62 characters.
-// The <sanitized_prefix> is the first 53 characters of the original name, with all non-word characters [^\w] removed.
-// The <hash> is the first 8 characters of the SHA256 hash of the original name.
-func GenerateID(name string) (string, error) {
-	if name == "" {
-		return "", fmt.Errorf("name cannot be empty")
+func sanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
+	var sanitizedIDs []string
+	for _, id := range ids {
+		if id == "" {
+			return "", fmt.Errorf("id cannot be empty")
+		}
+
+		sanitizedID := nonWordChars.ReplaceAllString(id, "")
+		appendHash := alwaysAppendHash || len(sanitizedID) > maxSanitizedPrefixLength || nonWordChars.MatchString(id)
+
+		if len(sanitizedID) > maxSanitizedPrefixLength {
+			sanitizedID = sanitizedID[:maxSanitizedPrefixLength]
+		}
+
+		if appendHash {
+			h := sha256.New()
+			h.Write([]byte(id))
+			hash := hex.EncodeToString(h.Sum(nil))[:hashLength]
+			sanitizedID = fmt.Sprintf("%s_%s", sanitizedID, hash)
+		}
+		sanitizedIDs = append(sanitizedIDs, sanitizedID)
 	}
-
-	// Create the hash
-	h := sha256.New()
-	h.Write([]byte(name))
-	hash := hex.EncodeToString(h.Sum(nil))[:hashLength]
-
-	// Sanitize and create the prefix
-	sanitizedPrefix := nonWordChars.ReplaceAllString(name, "")
-	if len(sanitizedPrefix) > maxSanitizedPrefixLength {
-		sanitizedPrefix = sanitizedPrefix[:maxSanitizedPrefixLength]
-	}
-
-	return fmt.Sprintf("%s_%s", sanitizedPrefix, hash), nil
+	return strings.Join(sanitizedIDs, "."), nil
 }
 
-// GenerateToolID creates a fully qualified tool ID by combining a service key
-// and a tool name. If the service key is empty, the tool name is returned as is.
-//
-// serviceKey is the unique identifier for the service.
-// toolName is the name of the tool within the service.
-// It returns the fully qualified tool ID or an error if the tool name is
-// invalid.
-func GenerateToolID(serviceKey, toolName string) (string, error) {
-	if toolName == "" {
-		return "", fmt.Errorf("tool name cannot be empty")
-	}
-
-	// If the tool name is already fully qualified, return it as is.
-	if s, _, _ := ParseToolName(toolName); s != "" {
-		return toolName, nil
-	}
-
-	if serviceKey != "" {
-		return serviceKey + consts.ToolNameServiceSeparator + toolName, nil
-	}
-
-	return toolName, nil
+// SanitizeServiceName sanitizes a service name.
+func SanitizeServiceName(name string) (string, error) {
+	return sanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
 
-// GenerateServiceKey generates a unique and consistently formatted key for a service.
-// It uses the GenerateID function to ensure the key is valid and unique.
-//
-// serviceID is the identifier for the service.
-// It returns the generated service key or an error if the service ID is empty.
-func GenerateServiceKey(serviceID string) (string, error) {
-	return GenerateID(serviceID)
-}
-
-// GenerateToolName generates a unique and consistently formatted name for a tool.
-// It uses the GenerateID function to ensure the name is valid and unique.
-//
-// toolName is the name of the tool.
-// It returns the generated tool name or an error if the tool name is empty.
-func GenerateToolName(toolName string) (string, error) {
-	return GenerateID(toolName)
+// SanitizeToolName sanitizes a tool name.
+func SanitizeToolName(serviceName, toolName string) (string, error) {
+	return sanitizeID([]string{serviceName, toolName}, false, maxSanitizedPrefixLength, hashLength)
 }
 
 // GenerateUUID creates a new version 4 UUID and returns it as a string.

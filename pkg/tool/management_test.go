@@ -81,7 +81,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 	err := tm.AddTool(mockTool)
 	assert.NoError(t, err)
 
-	toolID, _ := util.GenerateToolID("test-service", "test-tool")
+	toolID, _ := util.SanitizeToolName("test-service", "test-tool")
 	retrievedTool, ok := tm.GetTool(toolID)
 	assert.True(t, ok, "Tool should be found")
 	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
@@ -151,7 +151,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetServiceId("exec-service")
 	toolProto.SetName("exec-tool")
-	toolID, _ := util.GenerateToolID("exec-service", "exec-tool")
+	toolID, _ := util.SanitizeToolName("exec-service", "exec-tool")
 	expectedResult := "success"
 	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
 
@@ -232,7 +232,7 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			toolID, _ := util.GenerateToolID("concurrent-service", fmt.Sprintf("tool-%d", i))
+			toolID, _ := util.SanitizeToolName("concurrent-service", fmt.Sprintf("tool-%d", i))
 			_, ok := tm.GetTool(toolID)
 			assert.True(t, ok)
 		}(i)

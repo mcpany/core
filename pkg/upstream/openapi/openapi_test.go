@@ -118,7 +118,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		}.Build()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "name cannot be empty")
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 
 	t.Run("nil openapi service config", func(t *testing.T) {
@@ -126,8 +126,8 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 			Name:           proto.String("test-service"),
 			OpenapiService: nil,
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+		sanitizedServiceName, _ := util.SanitizeServiceName("test-service")
+		mockToolManager.On("AddServiceInfo", sanitizedServiceName, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "openapi service config is nil")
@@ -140,8 +140,8 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 				OpenapiSpec: proto.String(""),
 			}.Build(),
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+		sanitizedServiceName, _ := util.SanitizeServiceName("test-service")
+		mockToolManager.On("AddServiceInfo", sanitizedServiceName, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
@@ -154,8 +154,8 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 				OpenapiSpec: proto.String("invalid spec"),
 			}.Build(),
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
-		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+		sanitizedServiceName, _ := util.SanitizeServiceName("test-service")
+		mockToolManager.On("AddServiceInfo", sanitizedServiceName, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
@@ -250,7 +250,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	expectedKey, _ := util.GenerateID("test-service")
+	expectedKey, _ := util.SanitizeServiceName("test-service")
 	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Twice()
 	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 	mockToolManager.On("AddTool", mock.Anything).Return(nil)
@@ -304,7 +304,7 @@ paths:
 		}.Build(),
 	}.Build()
 
-	expectedKey, _ := util.GenerateID("test-service")
+	expectedKey, _ := util.SanitizeServiceName("test-service")
 	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return()
 	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 

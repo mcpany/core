@@ -174,8 +174,8 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 			defer cs.Close()
 
 			const echoServiceID = "e2e_http_oauth2_echo"
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceKey, _ := util.SanitizeServiceName(echoServiceID)
+			toolName, _ := util.SanitizeToolName(serviceKey, "echo")
 			echoMessage := `{"message": "hello world from oauth2 protected upstream"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool with correct auth")
@@ -227,8 +227,8 @@ func TestUpstreamService_MCPXY_WithOAuth2(t *testing.T) {
 			defer cs.Close()
 
 			const echoServiceID = "e2e_http_echo"
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceKey, _ := util.SanitizeServiceName(echoServiceID)
+			toolName, _ := util.SanitizeToolName(serviceKey, "echo")
 			echoMessage := `{"message": "hello world from oauth2 protected mcpxy"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool with correct auth")

@@ -104,8 +104,8 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	require.NoError(t, err)
 	defer cs.Close()
 
-	serviceKey, _ := util.GenerateID(serviceID)
-	toolName, _ := util.GenerateToolID(serviceKey, operationID)
+	serviceKey, _ := util.SanitizeServiceName(serviceID)
+	toolName, _ := util.SanitizeToolName(serviceKey, operationID)
 	toolArgs := `{"year": 2024, "countryCode": "US"}`
 
 	const maxRetries = 3
