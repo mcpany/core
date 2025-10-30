@@ -95,7 +95,7 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
-		serviceKey, discoveredTools, _, err := u.Register(
+		serviceID, discoveredTools, _, err := u.Register(
 			context.Background(),
 			serviceConfig,
 			tm,
@@ -104,8 +104,8 @@ func TestCommandUpstream_Register(t *testing.T) {
 			false,
 		)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-command-service")
-		assert.Equal(t, expectedKey, serviceKey)
+		expectedKey, _ := util.SanitizeServiceName("test-command-service")
+		assert.Equal(t, expectedKey, serviceID)
 		assert.Len(t, discoveredTools, 1)
 		assert.Equal(t, "echo", discoveredTools[0].GetName())
 		assert.Len(t, tm.ListTools(), 1)

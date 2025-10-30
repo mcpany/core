@@ -63,7 +63,7 @@ type ToolManagerInterface interface {
 	// AddServiceInfo registers metadata for a service.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	// ClearToolsForService removes all tools associated with a specific service.
-	ClearToolsForService(serviceKey string)
+	ClearToolsForService(serviceID string)
 }
 
 // Tool is the fundamental interface for any executable tool in the system.
@@ -126,7 +126,7 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 type GRPCTool struct {
 	tool           *v1.Tool
 	poolManager    *pool.Manager
-	serviceKey     string
+	serviceID     string
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
@@ -136,13 +136,13 @@ type GRPCTool struct {
 //
 // tool is the protobuf definition of the tool.
 // poolManager is used to get a gRPC client from the connection pool.
-// serviceKey identifies the specific gRPC service connection pool.
+// serviceID identifies the specific gRPC service connection pool.
 // method is the protobuf descriptor for the gRPC method to be called.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
 		poolManager:    poolManager,
-		serviceKey:     serviceKey,
+		serviceID:     serviceID,
 		method:         method,
 		requestMessage: dynamicpb.NewMessage(method.Input()),
 		cache:          callDefinition.GetCache(),
@@ -163,9 +163,9 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceKey)
+	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		return nil, fmt.Errorf("no grpc pool found for service: %s", t.serviceKey)
+		return nil, fmt.Errorf("no grpc pool found for service: %s", t.serviceID)
 	}
 
 	grpcClient, err := grpcPool.Get(ctx)
@@ -210,7 +210,7 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 type HTTPTool struct {
 	tool              *v1.Tool
 	poolManager       *pool.Manager
-	serviceKey        string
+	serviceID        string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.HttpParameterMapping
 	inputTransformer  *configv1.InputTransformer
@@ -222,15 +222,15 @@ type HTTPTool struct {
 //
 // tool is the protobuf definition of the tool.
 // poolManager is used to get an HTTP client from the connection pool.
-// serviceKey identifies the specific HTTP service connection pool.
+// serviceID identifies the specific HTTP service connection pool.
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
-func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition) *HTTPTool {
+func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition) *HTTPTool {
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
-		serviceKey:        serviceKey,
+		serviceID:        serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
@@ -253,9 +253,9 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceKey)
+	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceKey)
+		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceID)
 	}
 
 	httpClient, err := httpPool.Get(ctx)

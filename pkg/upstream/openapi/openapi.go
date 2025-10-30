@@ -75,10 +75,20 @@ func (u *OpenAPIUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+
+	// Calculate SHA256 for the ID
+	h := sha256.New()
+	h.Write([]byte(serviceConfig.GetName()))
+	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+
+	// Sanitize the service name
+	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
+	serviceConfig.SetSanitizedName(sanitizedName)
+
+	serviceID := sanitizedName // for internal use
 
 	openapiService := serviceConfig.GetOpenapiService()
 	if openapiService == nil {
@@ -89,11 +99,11 @@ func (u *OpenAPIUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceKey, info)
+	toolManager.AddServiceInfo(serviceID, info)
 
 	specContent := openapiService.GetOpenapiSpec()
 	if specContent == "" {
-		return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceKey)
+		return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceID)
 	}
 
 	hash := sha256.Sum256([]byte(specContent))
@@ -107,13 +117,13 @@ func (u *OpenAPIUpstream) Register(
 		var err error
 		_, doc, err = parseOpenAPISpec(ctx, []byte(specContent))
 		if err != nil {
-			return "", nil, nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceKey, err)
+			return "", nil, nil, fmt.Errorf("failed to parse OpenAPI spec for service '%s' from content: %w", serviceID, err)
 		}
 		u.openapiCache.Set(cacheKey, doc, ttlcache.DefaultTTL)
 	}
 
 	mcpOps := extractMcpOperationsFromOpenAPI(doc)
-	pbTools := convertMcpOperationsToTools(mcpOps, doc, serviceKey)
+	pbTools := convertMcpOperationsToTools(mcpOps, doc, serviceID)
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(mcpOps))
 	for _, op := range mcpOps {
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
@@ -122,20 +132,20 @@ func (u *OpenAPIUpstream) Register(
 		}.Build())
 	}
 
-	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, toolManager, isReload, doc, serviceConfig)
-	log.Info("Registered OpenAPI service", "serviceKey", serviceKey, "toolsAdded", numToolsAdded)
+	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, isReload, doc, serviceConfig)
+	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
-	return serviceKey, discoveredTools, nil, nil
+	return serviceID, discoveredTools, nil, nil
 }
 
 // getHTTPClient retrieves or creates an HTTP client for a given service. It
 // ensures that each service has its own dedicated client, which can be
 // configured with specific transports or timeouts.
-func (u *OpenAPIUpstream) getHTTPClient(serviceKey string) *http.Client {
+func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	if client, ok := u.httpClients[serviceKey]; ok {
+	if client, ok := u.httpClients[serviceID]; ok {
 		return client
 	}
 
@@ -150,7 +160,7 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceKey string) *http.Client {
 		Timeout:   30 * time.Second,
 	}
 
-	u.httpClients[serviceKey] = client
+	u.httpClients[serviceID] = client
 	return client
 }
 
@@ -169,16 +179,16 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceKey string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
-	httpClient := u.getHTTPClient(serviceKey)
+	httpClient := u.getHTTPClient(serviceID)
 	httpC := &httpClientImpl{client: httpClient}
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		log.Error("Failed to create authenticator for OpenAPI upstream", "serviceKey", serviceKey, "error", err)
+		log.Error("Failed to create authenticator for OpenAPI upstream", "serviceID", serviceID, "error", err)
 	}
 
 	openapiService := serviceConfig.GetOpenapiService()
@@ -193,13 +203,13 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 
 		newToolProto := proto.Clone(t).(*pb.Tool)
 		newToolProto.SetName(toolName)
-		newToolProto.SetServiceId(serviceKey)
+		newToolProto.SetServiceId(serviceID)
 
 		if existingTool, exists := toolManager.GetTool(toolName); exists {
 			if isReload {
-				log.Warn("OpenAPI Tool already exists, overwriting during service reload.", "tool_id", toolName, "svc_id", serviceKey)
+				log.Warn("OpenAPI Tool already exists, overwriting during service reload.", "tool_id", toolName, "svc_id", serviceID)
 			} else {
-				log.Warn("Tool ID already exists from a different service registration. Skipping.", "tool_id", toolName, "svc_key", serviceKey, "existing_svc_id", existingTool.Tool().GetServiceId())
+				log.Warn("Tool ID already exists from a different service registration. Skipping.", "tool_id", toolName, "svc_key", serviceID, "existing_svc_id", existingTool.Tool().GetServiceId())
 				continue
 			}
 		}

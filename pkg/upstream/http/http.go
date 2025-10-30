@@ -18,6 +18,8 @@ package http
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -86,13 +88,23 @@ func (u *HTTPUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+
+	// Calculate SHA256 for the ID
+	h := sha256.New()
+	h.Write([]byte(serviceConfig.GetName()))
+	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+
+	// Sanitize the service name
+	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
+	serviceConfig.SetSanitizedName(sanitizedName)
+
+	serviceID := sanitizedName // for internal use
 
 	if isReload {
-		toolManager.ClearToolsForService(serviceKey)
+		toolManager.ClearToolsForService(serviceID)
 	}
 
 	httpService := serviceConfig.GetHttpService()
@@ -119,28 +131,28 @@ func (u *HTTPUpstream) Register(
 
 	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout, serviceConfig)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceID, err)
 	}
-	u.poolManager.Register(serviceKey, httpPool)
+	u.poolManager.Register(serviceID, httpPool)
 
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	log.Debug("Registering HTTP service", "serviceKey", serviceKey, "info", info)
-	toolManager.AddServiceInfo(serviceKey, info)
+	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
+	toolManager.AddServiceInfo(serviceID, info)
 
 	address := httpService.GetAddress()
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
-	log.Info("Registered HTTP service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil, nil
+	return serviceID, discoveredTools, nil, nil
 }
 
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetCalls()))
 	httpService := serviceConfig.GetHttpService()
@@ -148,7 +160,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		log.Error("Failed to create authenticator, proceeding without authentication", "serviceKey", serviceKey, "error", err)
+		log.Error("Failed to create authenticator, proceeding without authentication", "serviceID", serviceID, "error", err)
 		authenticator = nil
 	}
 
@@ -212,7 +224,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
 			Description:         proto.String(schema.GetDescription()),
-			ServiceId:           proto.String(serviceKey),
+			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			Annotations: pb.ToolAnnotations_builder{
 				Title:           proto.String(schema.GetTitle()),
@@ -226,7 +238,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceKe
 
 		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
 
-		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceKey, authenticator, httpDef)
+		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef)
 		if err := toolManager.AddTool(httpTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue

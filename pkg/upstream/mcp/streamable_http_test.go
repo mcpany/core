@@ -236,17 +236,18 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
-		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		serviceID, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service")
-		assert.Equal(t, expectedKey, serviceKey)
+		expectedKey, _ := util.SanitizeServiceName("test-service")
+		assert.Equal(t, expectedKey, serviceID)
 		require.Len(t, discoveredTools, 1)
 		assert.Equal(t, "test-tool", discoveredTools[0].GetName())
 
 		wg.Wait()
 
 		// Verify registration
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool")
+		sanitizedToolName, _ := util.SanitizeToolName("test-tool")
+		toolID := serviceID + "." + sanitizedToolName
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 		_, ok = promptManager.GetPrompt("test-prompt")
@@ -450,16 +451,17 @@ func TestMCPUpstream_Register(t *testing.T) {
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
 
-		serviceKey, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		serviceID, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service-http")
-		assert.Equal(t, expectedKey, serviceKey)
+		expectedKey, _ := util.SanitizeServiceName("test-service-http")
+		assert.Equal(t, expectedKey, serviceID)
 		require.Len(t, discoveredTools, 1)
 		assert.Equal(t, "test-tool-http", discoveredTools[0].GetName())
 
 		wg.Wait()
 
-		toolID, _ := util.GenerateToolID(serviceKey, "test-tool-http")
+		sanitizedToolName, _ := util.SanitizeToolName("test-tool-http")
+		toolID := serviceID + "." + sanitizedToolName
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok)
 	})
@@ -556,7 +558,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "name cannot be empty")
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 }
 
@@ -671,7 +673,7 @@ func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
 type mockToolManager struct{}
 
 func (m *mockToolManager) AddTool(t tool.Tool) error                          { return nil }
-func (m *mockToolManager) AddServiceInfo(serviceKey string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
 func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)           { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                               { return nil }
 func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -681,7 +683,7 @@ func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
 func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
-func (m *mockToolManager) ClearToolsForService(serviceKey string) {}
+func (m *mockToolManager) ClearToolsForService(serviceID string) {}
 
 type mockPromptManager struct{}
 

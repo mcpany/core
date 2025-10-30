@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
 	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
@@ -54,8 +53,9 @@ func TestUpstreamService_HTTP(t *testing.T) {
 			}
 
 			const echoServiceID = "e2e_http_echo"
-			serviceKey, _ := util.GenerateID(echoServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "echo")
+			serviceID, _ := util.SanitizeServiceName(echoServiceID)
+			sanitizedToolName, _ := util.SanitizeToolName("echo")
+			toolName := serviceID + "." + sanitizedToolName
 			echoMessage := `{"message": "hello world from http"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool")
@@ -98,7 +98,9 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 			require.NoError(t, err, "Failed to connect to MCPXY server")
 			defer cs.Close()
 
-			toolName := "ip-info-service_a4c2a749" + consts.ToolNameServiceSeparator + "get_time_by_ip"
+			serviceID, _ := util.SanitizeServiceName("ip-info-service")
+			sanitizedToolName, _ := util.SanitizeToolName("get_time_by_ip")
+			toolName := serviceID + "." + sanitizedToolName
 			// Wait for the tool to be available
 			require.Eventually(t, func() bool {
 				result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
