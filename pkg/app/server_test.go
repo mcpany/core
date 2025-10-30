@@ -30,6 +30,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/mcpserver"
 	"github.com/spf13/afero"
@@ -122,7 +123,7 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
-	app := NewApplication()
+	app := NewApplication(clock.New())
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports by passing "0"
@@ -146,7 +147,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := NewApplication()
+	app := NewApplication(clock.New())
 	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
@@ -161,7 +162,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := NewApplication()
+	app := NewApplication(clock.New())
 	// This should not panic
 	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
 	require.NoError(t, err)
@@ -193,7 +194,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	app := NewApplication()
+	app := NewApplication(clock.New())
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "0", "", nil, 5*time.Second)
@@ -204,7 +205,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 }
 
 func TestRun_ServerStartupErrors(t *testing.T) {
-	app := NewApplication()
+	app := NewApplication(clock.New())
 
 	t.Run("nil_fs_fail", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)

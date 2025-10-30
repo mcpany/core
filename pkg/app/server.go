@@ -26,6 +26,7 @@ import (
 
 	"github.com/mcpxy/core/pkg/auth"
 	"github.com/mcpxy/core/pkg/bus"
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/config"
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/mcpserver"
@@ -70,6 +71,7 @@ type Runner interface {
 // method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	clock            clock.Clock
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -77,9 +79,10 @@ type Application struct {
 // mode runner, making it ready to be configured and started.
 //
 // Returns a new instance of the Application, ready to be run.
-func NewApplication() *Application {
+func NewApplication(clock clock.Clock) *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
+		clock:            clock,
 	}
 }
 
@@ -160,6 +163,25 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
+	cachingMiddleware := middleware.NewCachingMiddleware(mcpSrv, a.clock)
+	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.CallToolRequest); ok {
+				executionReq := &tool.ExecutionRequest{
+					ToolName:   r.Params.Name,
+					ToolInputs: r.Params.Arguments,
+				}
+				result, err := cachingMiddleware.Execute(ctx, executionReq, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+					return next(ctx, method, r)
+				})
+				if err != nil {
+					return nil, err
+				}
+				return result.(*mcp.CallToolResult), nil
+			}
+			return next(ctx, method, req)
+		}
+	})
 	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
 	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
 
