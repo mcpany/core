@@ -180,4 +180,21 @@ func TestCachingMiddleware(t *testing.T) {
 		assert.Equal(t, "new result", result)
 		assert.True(t, nextCalled)
 	})
+
+	t.Run("cache key consistency", func(t *testing.T) {
+		req1 := &tool.ExecutionRequest{
+			ToolName:   "test-tool",
+			ToolInputs: json.RawMessage(`{"a":"1", "b":"2"}`),
+		}
+		req2 := &tool.ExecutionRequest{
+			ToolName:   "test-tool",
+			ToolInputs: json.RawMessage(`{"b":"2", "a":"1"}`),
+		}
+
+		cachingMiddleware := middleware.NewCachingMiddleware(nil, clock.New())
+		key1 := cachingMiddleware.GetCacheKey(req1)
+		key2 := cachingMiddleware.GetCacheKey(req2)
+
+		assert.Equal(t, key1, key2, "Cache keys should be equal")
+	})
 }

@@ -17,8 +17,11 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/mcpxy/core/pkg/common/clock"
@@ -61,7 +64,7 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return next(ctx, req)
 	}
 
-	cacheKey := m.getCacheKey(req)
+	cacheKey := m.GetCacheKey(req)
 	if cached, found := m.cache.Get(cacheKey); found {
 		if entry, ok := cached.(cacheEntry); ok {
 			if m.clock.Now().Before(entry.expiresAt) {
@@ -96,6 +99,24 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 	return serviceInfo.Config.GetCache()
 }
 
-func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
-	return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+func (m *CachingMiddleware) GetCacheKey(req *tool.ExecutionRequest) string {
+	var inputs map[string]interface{}
+	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		// Fallback to non-deterministic key on unmarshal error
+		return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+	}
+
+	keys := make([]string, 0, len(inputs))
+	for k := range inputs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	buf.WriteString(req.ToolName)
+	for _, k := range keys {
+		buf.WriteString(fmt.Sprintf(":%s=%v", k, inputs[k]))
+	}
+
+	return buf.String()
 }
