@@ -102,12 +102,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
-		expectedKey, _ := util.GenerateID("test-service")
-		assert.Equal(t, expectedKey, serviceKey)
+		expectedKey, _ := util.SanitizeServiceName("test-service")
+		assert.Equal(t, expectedKey, serviceID)
 		assert.Len(t, discoveredTools, 1)
-		p, ok := pool.Get[*client.HttpClientWrapper](pm, serviceKey)
+		p, ok := pool.Get[*client.HttpClientWrapper](pm, serviceID)
 		assert.True(t, ok)
 		assert.NotNil(t, p)
 	})
@@ -137,6 +137,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
@@ -148,7 +149,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		require.Len(t, discoveredTools, 2)
 
@@ -157,12 +158,14 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		// Check for sanitized description as name
 		sanitizedName := util.SanitizeOperationID("A test operation")
-		toolID1, _ := util.GenerateToolID(serviceKey, sanitizedName)
+		sanitizedName, _ = util.SanitizeToolName(sanitizedName)
+		toolID1 := serviceID + "." + sanitizedName
 		_, ok := tm.GetTool(toolID1)
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		toolID2, _ := util.GenerateToolID(serviceKey, "op_1")
+		sanitizedName2, _ := util.SanitizeToolName("op_1")
+		toolID2 := serviceID + "." + sanitizedName2
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)
 	})
@@ -211,62 +214,6 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	})
 }
 
-// mockToolManager to simulate errors
-type mockToolManager struct {
-	tool.ToolManagerInterface
-	addError    error
-	addedTools  []tool.Tool
-	failOnClear bool
-}
-
-func (m *mockToolManager) AddTool(t tool.Tool) error {
-	if m.addError != nil {
-		return m.addError
-	}
-	m.addedTools = append(m.addedTools, t)
-	return nil
-}
-
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
-	for _, t := range m.addedTools {
-		// Simplified check: In a real scenario, you'd parse the name
-		// and check against the tool's actual name and service key.
-		// For this mock, we'll just assume the test provides the full tool ID.
-		toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
-		if toolID == name {
-			return t, true
-		}
-	}
-	return nil, false
-}
-
-func (m *mockToolManager) ListTools() []tool.Tool {
-	return m.addedTools
-}
-
-func (m *mockToolManager) ClearToolsForService(serviceKey string) {
-	if m.failOnClear {
-		// To test error handling if clearing was to fail, although the
-		// current implementation does not return an error.
-		return
-	}
-	var remainingTools []tool.Tool
-	for _, t := range m.addedTools {
-		if t.Tool().GetServiceId() != serviceKey {
-			remainingTools = append(remainingTools, t)
-		}
-	}
-	m.addedTools = remainingTools
-}
-
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return nil, false
-}
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return nil, errors.New("not implemented")
-}
 
 func newMockToolManager() *mockToolManager {
 	return &mockToolManager{
@@ -305,7 +252,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON1), serviceConfig1))
 
-	serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 
@@ -321,10 +268,12 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	_, _, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
-	toolID2, _ := util.GenerateToolID(serviceKey, "op2")
+	sanitizedToolName, _ := util.SanitizeToolName("op2")
+	toolID2 := serviceID + "." + sanitizedToolName
 	_, ok := tm.GetTool(toolID2)
 	assert.True(t, ok)
-	toolID1, _ := util.GenerateToolID(serviceKey, "op1")
+	sanitizedToolName, _ = util.SanitizeToolName("op1")
+	toolID1 := serviceID + "." + sanitizedToolName
 	_, ok = tm.GetTool(toolID1)
 	assert.False(t, ok)
 }
@@ -341,6 +290,64 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
+}
+
+// mockToolManager to simulate errors
+type mockToolManager struct {
+	tool.ToolManagerInterface
+	addError    error
+	addedTools  []tool.Tool
+	failOnClear bool
+}
+
+func (m *mockToolManager) AddTool(t tool.Tool) error {
+	if m.addError != nil {
+		return m.addError
+	}
+	m.addedTools = append(m.addedTools, t)
+	return nil
+}
+
+func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
+	for _, t := range m.addedTools {
+		// Simplified check: In a real scenario, you'd parse the name
+		// and check against the tool's actual name and service key.
+		// For this mock, we'll just assume the test provides the full tool ID.
+		sanitizedToolName, _ := util.SanitizeToolName(t.Tool().GetName())
+		toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
+		if toolID == name {
+			return t, true
+		}
+	}
+	return nil, false
+}
+
+func (m *mockToolManager) ListTools() []tool.Tool {
+	return m.addedTools
+}
+
+func (m *mockToolManager) ClearToolsForService(serviceID string) {
+	if m.failOnClear {
+		// To test error handling if clearing was to fail, although the
+		// current implementation does not return an error.
+		return
+	}
+	var remainingTools []tool.Tool
+	for _, t := range m.addedTools {
+		if t.Tool().GetServiceId() != serviceID {
+			remainingTools = append(remainingTools, t)
+		}
+	}
+	m.addedTools = remainingTools
+}
+
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return nil, false
+}
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, errors.New("not implemented")
 }
 
 func TestHTTPUpstream_URLConstruction(t *testing.T) {
@@ -405,10 +412,11 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			serviceConfig := &configv1.UpstreamServiceConfig{}
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-			serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
-			toolID, _ := util.GenerateToolID(serviceKey, "test-op")
+			sanitizedToolName, _ := util.SanitizeToolName("test-op")
+			toolID := serviceID + "." + sanitizedToolName
 			registeredTool, ok := tm.GetTool(toolID)
 			assert.True(t, ok)
 			assert.NotNil(t, registeredTool)

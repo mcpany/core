@@ -55,16 +55,16 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return args.Get(0).([]tool.Tool)
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceKey string) {
-	m.Called(serviceKey)
+func (m *MockToolManager) ClearToolsForService(serviceID string) {
+	m.Called(serviceID)
 }
 
-func (m *MockToolManager) AddServiceInfo(serviceKey string, info *tool.ServiceInfo) {
-	m.Called(serviceKey, info)
+func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.Called(serviceID, info)
 }
 
-func (m *MockToolManager) GetServiceInfo(serviceKey string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceKey)
+func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
 	}
@@ -118,7 +118,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		}.Build()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "name cannot be empty")
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 
 	t.Run("nil openapi service config", func(t *testing.T) {
@@ -126,7 +126,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 			Name:           proto.String("test-service"),
 			OpenapiService: nil,
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
+		expectedKey, _ := util.SanitizeServiceName("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
@@ -140,7 +140,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 				OpenapiSpec: proto.String(""),
 			}.Build(),
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
+		expectedKey, _ := util.SanitizeServiceName("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
@@ -154,7 +154,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 				OpenapiSpec: proto.String("invalid spec"),
 			}.Build(),
 		}.Build()
-		expectedKey, _ := util.GenerateID("test-service")
+		expectedKey, _ := util.SanitizeServiceName("test-service")
 		mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
 		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 		assert.Error(t, err)
@@ -165,7 +165,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 	ctx := context.Background()
 	u := NewOpenAPIUpstream().(*OpenAPIUpstream)
-	serviceKey := "test-service"
+	serviceID := "test-service"
 	doc := &openapi3.T{}
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		OpenapiService: &configv1.OpenapiUpstreamService{},
@@ -180,7 +180,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 				UnderlyingMethodFqn: proto.String("invalid"),
 			}.Build(),
 		}
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -194,7 +194,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 			}.Build(),
 		}
 		doc.Paths = openapi3.NewPaths()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -211,7 +211,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		doc.Paths.Set("/test", &openapi3.PathItem{
 			Get: &openapi3.Operation{},
 		})
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -230,7 +230,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		})
 
 		mockToolManager.On("AddTool", mock.Anything).Return(fmt.Errorf("failed to add tool")).Once()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceKey, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 		mockToolManager.AssertExpectations(t)
 	})
@@ -250,7 +250,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	expectedKey, _ := util.GenerateID("test-service")
+	expectedKey, _ := util.SanitizeServiceName("test-service")
 	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Twice()
 	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 	mockToolManager.On("AddTool", mock.Anything).Return(nil)
@@ -304,7 +304,7 @@ paths:
 		}.Build(),
 	}.Build()
 
-	expectedKey, _ := util.GenerateID("test-service")
+	expectedKey, _ := util.SanitizeServiceName("test-service")
 	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return()
 	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
 

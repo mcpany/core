@@ -187,7 +187,7 @@ func (u *MCPUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -201,18 +201,18 @@ func (u *MCPUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceKey, info)
+	toolManager.AddServiceInfo(serviceID, info)
 
 	var discoveredTools []*configv1.ToolDefinition
 	var discoveredResources []*configv1.ResourceDefinition
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_StdioConnection_case:
-		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceKey, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStdio(ctx, serviceID, mcpService.GetStdioConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
 		if err != nil {
 			return "", nil, nil, err
 		}
 	case configv1.McpUpstreamService_HttpConnection_case:
-		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceKey, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromStreamableHTTP(ctx, serviceID, mcpService.GetHttpConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
 		if err != nil {
 			return "", nil, nil, err
 		}
@@ -220,8 +220,8 @@ func (u *MCPUpstream) Register(
 		return "", nil, nil, fmt.Errorf("MCPService definition requires either stdio_connection or http_connection")
 	}
 
-	log.Info("Registered MCP service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
-	return serviceKey, discoveredTools, discoveredResources, nil
+	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
 // mcpConnection holds the necessary information to connect to a downstream MCP
@@ -332,7 +332,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 // capabilities, and registers them.
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
-	serviceKey string,
+	serviceID string,
 	stdio *configv1.McpStdioConnection,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
@@ -420,7 +420,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
 			continue
 		}
-		pbTool.SetServiceId(serviceKey)
+		pbTool.SetServiceId(serviceID)
 
 		newTool := tool.NewMCPTool(
 			pbTool,
@@ -446,7 +446,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
 			promptManager.AddPrompt(&mcpPrompt{
 				mcpPrompt: mcpSDKPrompt,
-				service:   serviceKey,
+				service:   serviceID,
 				mcpConnection: &mcpConnection{
 					client:      mcpSdkClient,
 					stdioConfig: stdio,
@@ -467,7 +467,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	for _, mcpSDKResource := range listResourcesResult.Resources {
 		resourceManager.AddResource(&mcpResource{
 			mcpResource: mcpSDKResource,
-			service:     serviceKey,
+			service:     serviceID,
 			mcpConnection: &mcpConnection{
 				client:      mcpSdkClient,
 				stdioConfig: stdio,
@@ -484,7 +484,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 // the service's capabilities, and registers them.
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
-	serviceKey string,
+	serviceID string,
 	httpConnection *configv1.McpStreamableHttpConnection,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
@@ -570,7 +570,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
 			continue
 		}
-		pbTool.SetServiceId(serviceKey)
+		pbTool.SetServiceId(serviceID)
 
 		newTool := tool.NewMCPTool(
 			pbTool,
@@ -595,7 +595,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
 			promptManager.AddPrompt(&mcpPrompt{
 				mcpPrompt: mcpSDKPrompt,
-				service:   serviceKey,
+				service:   serviceID,
 				mcpConnection: &mcpConnection{
 					client:      mcpSdkClient,
 					httpAddress: httpAddress,
@@ -616,7 +616,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	for _, mcpSDKResource := range listResourcesResult.Resources {
 		resourceManager.AddResource(&mcpResource{
 			mcpResource: mcpSDKResource,
-			service:     serviceKey,
+			service:     serviceID,
 			mcpConnection: &mcpConnection{
 				client:      mcpSdkClient,
 				httpAddress: httpAddress,

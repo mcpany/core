@@ -28,8 +28,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/consts"
-
 	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/tests/framework"
 	"github.com/mcpxy/core/tests/integration"
@@ -59,8 +57,9 @@ func TestUpstreamService_GRPC(t *testing.T) {
 			}
 
 			const weatherServiceID = "e2e_grpc_weather"
-			serviceKey, _ := util.GenerateID(weatherServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "GetWeather")
+			serviceID, _ := util.SanitizeServiceName(weatherServiceID)
+			sanitizedToolName, _ := util.SanitizeToolName("GetWeather")
+			toolName := serviceID + "." + sanitizedToolName
 			addArgs := `{"location": "london"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
 			require.NoError(t, err, "Error calling GetWeather tool")
@@ -160,9 +159,11 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 			require.NoError(t, err, "Failed to connect to MCPXY server")
 			defer cs.Close()
 
-			serviceKey, err := util.GenerateServiceKey("greeter-service")
+			serviceID, err := util.SanitizeServiceName("greeter-service")
 			require.NoError(t, err)
-			toolName := fmt.Sprintf("%s%sSayHello", serviceKey, consts.ToolNameServiceSeparator)
+			sanitizedToolName, err := util.SanitizeToolName("SayHello")
+			require.NoError(t, err)
+			toolName := fmt.Sprintf("%s.%s", serviceID, sanitizedToolName)
 
 			// Wait for the tool to be available
 			require.Eventually(t, func() bool {

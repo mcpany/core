@@ -36,17 +36,17 @@ import (
 
 func TestNewWebsocketTool(t *testing.T) {
 	pm := pool.NewManager()
-	serviceKey := "test-service"
+	serviceID := "test-service"
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
-	toolProto.SetServiceId(serviceKey)
+	toolProto.SetServiceId(serviceID)
 	callDef := &configv1.WebsocketCallDefinition{}
 
-	wsTool := NewWebsocketTool(toolProto, pm, serviceKey, nil, callDef)
+	wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
 	require.NotNil(t, wsTool)
 	assert.Equal(t, toolProto, wsTool.Tool())
 	assert.Equal(t, pm, wsTool.poolManager)
-	assert.Equal(t, serviceKey, wsTool.serviceKey)
+	assert.Equal(t, serviceID, wsTool.serviceID)
 }
 
 var upgrader = websocket.Upgrader{}
