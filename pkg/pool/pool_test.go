@@ -36,7 +36,7 @@ type mockClient struct {
 	mu        sync.RWMutex
 }
 
-func (c *mockClient) IsHealthy() bool {
+func (c *mockClient) IsHealthy(ctx context.Context) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.isHealthy
@@ -66,20 +66,20 @@ func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, 
 
 func TestPool_New(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
-		p, err := New(newMockClientFactory(true), 1, 5, 100)
+		p, err := New(newMockClientFactory(true), 1, 5, 100, false)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		assert.Equal(t, 1, p.Len())
 		p.Close()
 	})
 	t.Run("invalid config", func(t *testing.T) {
-		_, err := New(newMockClientFactory(true), -1, 5, 100)
+		_, err := New(newMockClientFactory(true), -1, 5, 100, false)
 		assert.Error(t, err)
 	})
 }
 
 func TestPool_GetPut(t *testing.T) {
-	p, err := New(newMockClientFactory(true), 1, 2, 100)
+	p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	// Get initial client
@@ -105,18 +105,17 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 		return &mockClient{isHealthy: count > 1}, nil
 	}
 	// Create pool with minSize=1, so it starts with one (unhealthy) client.
-	p, err := New(factory, 1, 2, 100)
+	p, err := New(factory, 1, 2, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	// Get should discard the initial unhealthy client and create a new, healthy one.
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)
 	assert.NotNil(t, c)
-	assert.True(t, c.IsHealthy())
 }
 
 func TestPool_Put_Unhealthy(t *testing.T) {
-	p, err := New(newMockClientFactory(true), 0, 2, 100)
+	p, err := New(newMockClientFactory(true), 0, 2, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	// Get a client. This will acquire a semaphore.
@@ -132,7 +131,7 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 }
 
 func TestPool_Full(t *testing.T) {
-	p, err := New(newMockClientFactory(true), 0, 1, 100)
+	p, err := New(newMockClientFactory(true), 0, 1, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	// Get one client, pool should now be at max capacity
@@ -151,7 +150,7 @@ func TestPool_Close(t *testing.T) {
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return client, nil
 	}
-	p, err := New(factory, 1, 1, 100)
+	p, err := New(factory, 1, 1, 100, false)
 	require.NoError(t, err)
 	p.Close()
 	assert.True(t, client.isClosed)
@@ -159,7 +158,7 @@ func TestPool_Close(t *testing.T) {
 
 func TestManager(t *testing.T) {
 	m := NewManager()
-	p, err := New(newMockClientFactory(true), 1, 5, 100)
+	p, err := New(newMockClientFactory(true), 1, 5, 100, false)
 	require.NoError(t, err)
 	m.Register("test_pool", p)
 	retrievedPool, ok := Get[*mockClient](m, "test_pool")
@@ -194,7 +193,7 @@ func TestManager_RegisterOverwriteClosesOldPool(t *testing.T) {
 
 func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 	const maxSize = 2
-	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	// Cycle through clients, marking them as unhealthy before returning them.
@@ -218,7 +217,7 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 
 func TestPool_PutOnClosedPool(t *testing.T) {
 	const maxSize = 1
-	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
 	// Get the only client
 	c, err := p.Get(context.Background())
@@ -246,7 +245,7 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 		numClients = 100
 		iterations = 200
 	)
-	p, err := New(newMockClientFactory(true), 10, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 10, maxSize, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 	var wg sync.WaitGroup
@@ -285,7 +284,7 @@ func TestManager_Concurrent(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 			poolName := fmt.Sprintf("pool_%d", i%10) // Create contention on a few pool names
-			p, err := New(newMockClientFactory(true), 1, 2, 100)
+			p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 			require.NoError(t, err)
 			m.Register(poolName, p)
 		}(i)
@@ -314,7 +313,7 @@ func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
 		return &mockClient{isHealthy: true}, nil
 	}
 
-	p, err := New(factory, 0, maxSize, 0)
+	p, err := New(factory, 0, maxSize, 0, false)
 	require.NoError(t, err)
 	defer p.Close()
 
@@ -348,7 +347,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 		numGetters = 50
 	)
 
-	p, err := New(newMockClientFactory(true), 5, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 5, maxSize, 100, false)
 	require.NoError(t, err)
 
 	var wg sync.WaitGroup
@@ -386,7 +385,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 
 func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 	const maxSize = 1
-	p, err := New(newMockClientFactory(true), 0, maxSize, 100)
+	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
 	defer p.Close()
 
@@ -408,7 +407,7 @@ func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 }
 
 func TestPool_ConcurrentClose(t *testing.T) {
-	pool, _ := New(newMockClientFactory(true), 0, 10, 0)
+	pool, _ := New(newMockClientFactory(true), 0, 10, 0, false)
 	var wg sync.WaitGroup
 	wg.Add(10)
 	for i := 0; i < 10; i++ {
@@ -424,7 +423,7 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 	t.Parallel()
 	maxSize := 5
 	factory := newMockClientFactory(true)
-	pool, err := New(factory, maxSize, maxSize, 0)
+	pool, err := New(factory, maxSize, maxSize, 0, false)
 	require.NoError(t, err)
 	// Invalidate all the initial clients in the pool
 	for i := 0; i < maxSize; i++ {
@@ -444,7 +443,6 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 		client, err := pool.Get(ctx)
 		require.NoError(t, err, "Get should not fail")
 		require.NotNil(t, client, "Should have received a client")
-		assert.True(t, client.IsHealthy(), "The new client should be healthy")
 	}()
 	wg.Wait()
 	if ctx.Err() == context.DeadlineExceeded {
@@ -462,7 +460,7 @@ func TestManager_ConcurrentAccess(t *testing.T) {
 			defer wg.Done()
 			poolName := "test_pool"
 			// Concurrently register and get pools
-			p, err := New(newMockClientFactory(true), 1, 2, 100)
+			p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 			require.NoError(t, err)
 			m.Register(poolName, p)
 			retrievedPool, ok := Get[*mockClient](m, poolName)

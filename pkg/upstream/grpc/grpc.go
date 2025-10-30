@@ -94,32 +94,30 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, fmt.Errorf("grpc service config is nil")
 	}
 
-	address := grpcService.GetAddress()
-
 	upstreamAuthenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator for gRPC service %s: %w", serviceKey, err)
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
-	grpcPool, err := NewGrpcPool(0, 10, 300, address, nil, grpcCreds)
+	grpcPool, err := NewGrpcPool(0, 10, 300, nil, grpcCreds, serviceConfig, false)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", address, err)
+		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", serviceConfig.GetName(), err)
 	}
 	u.poolManager.Register(serviceKey, grpcPool)
 
 	var fds *descriptorpb.FileDescriptorSet
 	if grpcService.GetUseReflection() {
-		item := u.reflectionCache.Get(address)
+		item := u.reflectionCache.Get(grpcService.GetAddress())
 		if item != nil {
 			fds = item.Value()
 		} else {
 			var err error
-			fds, err = protobufparser.ParseProtoByReflection(ctx, address)
+			fds, err = protobufparser.ParseProtoByReflection(ctx, grpcService.GetAddress())
 			if err != nil {
-				return "", nil, nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, address, err)
+				return "", nil, nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, grpcService.GetAddress(), err)
 			}
-			u.reflectionCache.Set(address, fds, ttlcache.DefaultTTL)
+			u.reflectionCache.Set(grpcService.GetAddress(), fds, ttlcache.DefaultTTL)
 		}
 	} else {
 		var err error
