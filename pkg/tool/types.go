@@ -75,6 +75,8 @@ type Tool interface {
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+	// GetCacheConfig returns the cache configuration for the tool.
+	GetCacheConfig() *configv1.CacheConfig
 }
 
 // ServiceInfo holds metadata about a registered upstream service, including its
@@ -100,6 +102,24 @@ type ServiceRegistry interface {
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
+// ToolExecutionFunc represents the next middleware in the chain.
+type ToolExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
+
+type contextKey string
+
+const toolContextKey = contextKey("tool")
+
+// NewContextWithTool creates a new context with the given tool.
+func NewContextWithTool(ctx context.Context, t Tool) context.Context {
+	return context.WithValue(ctx, toolContextKey, t)
+}
+
+// GetFromContext retrieves a tool from the context.
+func GetFromContext(ctx context.Context) (Tool, bool) {
+	t, ok := ctx.Value(toolContextKey).(Tool)
+	return t, ok
+}
+
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
@@ -109,6 +129,7 @@ type GRPCTool struct {
 	serviceKey     string
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
+	cache          *configv1.CacheConfig
 }
 
 // NewGRPCTool creates a new GRPCTool.
@@ -117,19 +138,25 @@ type GRPCTool struct {
 // poolManager is used to get a gRPC client from the connection pool.
 // serviceKey identifies the specific gRPC service connection pool.
 // method is the protobuf descriptor for the gRPC method to be called.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, method protoreflect.MethodDescriptor) *GRPCTool {
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
 		poolManager:    poolManager,
 		serviceKey:     serviceKey,
 		method:         method,
 		requestMessage: dynamicpb.NewMessage(method.Input()),
+		cache:          callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the gRPC tool.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the gRPC tool.
+func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
@@ -188,6 +215,7 @@ type HTTPTool struct {
 	parameters        []*configv1.HttpParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	cache             *configv1.CacheConfig
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -207,12 +235,18 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceKey string, au
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		cache:             callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the HTTP tool.
+func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
@@ -359,6 +393,7 @@ type MCPTool struct {
 	client            client.MCPClient
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	cache             *configv1.CacheConfig
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -372,12 +407,18 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		client:            client,
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		cache:             callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the MCP tool.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the MCP tool.
+func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the MCP tool. It forwards the tool call,
@@ -478,6 +519,7 @@ type OpenAPITool struct {
 	authenticator     auth.UpstreamAuthenticator
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	cache             *configv1.CacheConfig
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -499,12 +541,18 @@ func NewOpenAPITool(tool *v1.Tool, client client.HttpClient, parameterDefs map[s
 		authenticator:     authenticator,
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		cache:             callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the OpenAPI tool.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the OpenAPI tool.
+func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the OpenAPI tool. It constructs an HTTP
@@ -624,22 +672,29 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 type CommandTool struct {
 	tool    *v1.Tool
 	command string
+	cache   *configv1.CacheConfig
 }
 
 // NewCommandTool creates a new CommandTool.
 //
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
-func NewCommandTool(tool *v1.Tool, command string) *CommandTool {
+func NewCommandTool(tool *v1.Tool, command string, callDefinition *configv1.StdioCallDefinition) *CommandTool {
 	return &CommandTool{
 		tool:    tool,
 		command: command,
+		cache:   callDefinition.GetCache(),
 	}
 }
 
 // Tool returns the protobuf definition of the command-line tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the command-line tool.
+func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
+	return t.cache
 }
 
 // Execute handles the execution of the command-line tool. It constructs a command

@@ -23,6 +23,7 @@ import (
 	"testing"
 
 	"github.com/mcpxy/core/pkg/util"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -43,6 +44,14 @@ func (m *MockTool) Tool() *v1.Tool {
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	args := m.Called(ctx, req)
 	return args.Get(0), args.Error(1)
+}
+
+func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil
+	}
+	return args.Get(0).(*configv1.CacheConfig)
 }
 
 func (m *MockTool) Close() error {
@@ -67,6 +76,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 	toolProto.SetServiceId("test-service")
 	toolProto.SetName("test-tool")
 	mockTool.On("Tool").Return(toolProto)
+	mockTool.On("GetCacheConfig").Return(nil)
 
 	err := tm.AddTool(mockTool)
 	assert.NoError(t, err)
@@ -84,12 +94,14 @@ func TestToolManager_ListTools(t *testing.T) {
 	toolProto1.SetServiceId("test-service")
 	toolProto1.SetName("test-tool-1")
 	mockTool1.On("Tool").Return(toolProto1)
+	mockTool1.On("GetCacheConfig").Return(nil)
 
 	mockTool2 := new(MockTool)
 	toolProto2 := &v1.Tool{}
 	toolProto2.SetServiceId("test-service")
 	toolProto2.SetName("test-tool-2")
 	mockTool2.On("Tool").Return(toolProto2)
+	mockTool2.On("GetCacheConfig").Return(nil)
 
 	_ = tm.AddTool(mockTool1)
 	_ = tm.AddTool(mockTool2)
@@ -105,18 +117,21 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 	toolProto1.SetServiceId("service-a")
 	toolProto1.SetName("tool-1")
 	mockTool1.On("Tool").Return(toolProto1)
+	mockTool1.On("GetCacheConfig").Return(nil)
 
 	mockTool2 := new(MockTool)
 	toolProto2 := &v1.Tool{}
 	toolProto2.SetServiceId("service-b")
 	toolProto2.SetName("tool-2")
 	mockTool2.On("Tool").Return(toolProto2)
+	mockTool2.On("GetCacheConfig").Return(nil)
 
 	mockTool3 := new(MockTool)
 	toolProto3 := &v1.Tool{}
 	toolProto3.SetServiceId("service-a")
 	toolProto3.SetName("tool-3")
 	mockTool3.On("Tool").Return(toolProto3)
+	mockTool3.On("GetCacheConfig").Return(nil)
 
 	_ = tm.AddTool(mockTool1)
 	_ = tm.AddTool(mockTool2)
@@ -205,6 +220,7 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 			toolProto.SetServiceId("concurrent-service")
 			toolProto.SetName(fmt.Sprintf("tool-%d", i))
 			mockTool.On("Tool").Return(toolProto)
+			mockTool.On("GetCacheConfig").Return(nil)
 			err := tm.AddTool(mockTool)
 			assert.NoError(t, err)
 		}(i)

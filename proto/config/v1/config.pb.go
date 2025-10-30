@@ -641,6 +641,7 @@ type WebsocketCallDefinition struct {
 	xxx_hidden_Parameters        *[]*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
+	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -700,6 +701,13 @@ func (x *WebsocketCallDefinition) GetOutputTransformer() *OutputTransformer {
 	return nil
 }
 
+func (x *WebsocketCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *WebsocketCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
@@ -714,6 +722,10 @@ func (x *WebsocketCallDefinition) SetInputTransformer(v *InputTransformer) {
 
 func (x *WebsocketCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 	x.xxx_hidden_OutputTransformer = v
+}
+
+func (x *WebsocketCallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *WebsocketCallDefinition) HasSchema() bool {
@@ -737,6 +749,13 @@ func (x *WebsocketCallDefinition) HasOutputTransformer() bool {
 	return x.xxx_hidden_OutputTransformer != nil
 }
 
+func (x *WebsocketCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *WebsocketCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
@@ -747,6 +766,10 @@ func (x *WebsocketCallDefinition) ClearInputTransformer() {
 
 func (x *WebsocketCallDefinition) ClearOutputTransformer() {
 	x.xxx_hidden_OutputTransformer = nil
+}
+
+func (x *WebsocketCallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
 }
 
 type WebsocketCallDefinition_builder struct {
@@ -760,6 +783,8 @@ type WebsocketCallDefinition_builder struct {
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
@@ -770,6 +795,7 @@ func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -780,6 +806,7 @@ type WebrtcCallDefinition struct {
 	xxx_hidden_Parameters        *[]*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer          `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer         `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
+	xxx_hidden_Cache             *CacheConfig               `protobuf:"bytes,6,opt,name=cache"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -839,6 +866,13 @@ func (x *WebrtcCallDefinition) GetOutputTransformer() *OutputTransformer {
 	return nil
 }
 
+func (x *WebrtcCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *WebrtcCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
@@ -853,6 +887,10 @@ func (x *WebrtcCallDefinition) SetInputTransformer(v *InputTransformer) {
 
 func (x *WebrtcCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 	x.xxx_hidden_OutputTransformer = v
+}
+
+func (x *WebrtcCallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *WebrtcCallDefinition) HasSchema() bool {
@@ -876,6 +914,13 @@ func (x *WebrtcCallDefinition) HasOutputTransformer() bool {
 	return x.xxx_hidden_OutputTransformer != nil
 }
 
+func (x *WebrtcCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *WebrtcCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
@@ -886,6 +931,10 @@ func (x *WebrtcCallDefinition) ClearInputTransformer() {
 
 func (x *WebrtcCallDefinition) ClearOutputTransformer() {
 	x.xxx_hidden_OutputTransformer = nil
+}
+
+func (x *WebrtcCallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
 }
 
 type WebrtcCallDefinition_builder struct {
@@ -899,6 +948,8 @@ type WebrtcCallDefinition_builder struct {
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
@@ -909,6 +960,7 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -917,6 +969,7 @@ type StdioCallDefinition struct {
 	state                 protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Schema     *ToolSchema               `protobuf:"bytes,1,opt,name=schema"`
 	xxx_hidden_Parameters *[]*StdioParameterMapping `protobuf:"bytes,2,rep,name=parameters"`
+	xxx_hidden_Cache      *CacheConfig              `protobuf:"bytes,3,opt,name=cache"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -962,12 +1015,23 @@ func (x *StdioCallDefinition) GetParameters() []*StdioParameterMapping {
 	return nil
 }
 
+func (x *StdioCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *StdioCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
 
 func (x *StdioCallDefinition) SetParameters(v []*StdioParameterMapping) {
 	x.xxx_hidden_Parameters = &v
+}
+
+func (x *StdioCallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *StdioCallDefinition) HasSchema() bool {
@@ -977,8 +1041,19 @@ func (x *StdioCallDefinition) HasSchema() bool {
 	return x.xxx_hidden_Schema != nil
 }
 
+func (x *StdioCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *StdioCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
+}
+
+func (x *StdioCallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
 }
 
 type StdioCallDefinition_builder struct {
@@ -988,6 +1063,8 @@ type StdioCallDefinition_builder struct {
 	Schema *ToolSchema
 	// Defines the parameters for the stdio command.
 	Parameters []*StdioParameterMapping
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 StdioCallDefinition_builder) Build() *StdioCallDefinition {
@@ -996,6 +1073,7 @@ func (b0 StdioCallDefinition_builder) Build() *StdioCallDefinition {
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
 	x.xxx_hidden_Parameters = &b.Parameters
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -1220,6 +1298,7 @@ type GrpcCallDefinition struct {
 	xxx_hidden_Schema      *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
 	xxx_hidden_Service     *string                `protobuf:"bytes,2,opt,name=service"`
 	xxx_hidden_Method      *string                `protobuf:"bytes,3,opt,name=method"`
+	xxx_hidden_Cache       *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -1278,18 +1357,29 @@ func (x *GrpcCallDefinition) GetMethod() string {
 	return ""
 }
 
+func (x *GrpcCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *GrpcCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
 
 func (x *GrpcCallDefinition) SetService(v string) {
 	x.xxx_hidden_Service = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *GrpcCallDefinition) SetMethod(v string) {
 	x.xxx_hidden_Method = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *GrpcCallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *GrpcCallDefinition) HasSchema() bool {
@@ -1313,6 +1403,13 @@ func (x *GrpcCallDefinition) HasMethod() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
+func (x *GrpcCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *GrpcCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
@@ -1327,6 +1424,10 @@ func (x *GrpcCallDefinition) ClearMethod() {
 	x.xxx_hidden_Method = nil
 }
 
+func (x *GrpcCallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
+}
+
 type GrpcCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1336,6 +1437,10 @@ type GrpcCallDefinition_builder struct {
 	Service *string
 	// The name of the gRPC method to call.
 	Method *string
+	// Note: For gRPC, parameter mapping is typically done by matching field names
+	// between the MCP input schema and the gRPC request message.
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
@@ -1344,13 +1449,14 @@ func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
 	if b.Service != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
 		x.xxx_hidden_Service = b.Service
 	}
 	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_Method = b.Method
 	}
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -1361,6 +1467,7 @@ type OpenAPICallDefinition struct {
 	xxx_hidden_Schema            *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
 	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,2,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,3,opt,name=output_transformer,json=outputTransformer"`
+	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -1411,6 +1518,13 @@ func (x *OpenAPICallDefinition) GetOutputTransformer() *OutputTransformer {
 	return nil
 }
 
+func (x *OpenAPICallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *OpenAPICallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
@@ -1421,6 +1535,10 @@ func (x *OpenAPICallDefinition) SetInputTransformer(v *InputTransformer) {
 
 func (x *OpenAPICallDefinition) SetOutputTransformer(v *OutputTransformer) {
 	x.xxx_hidden_OutputTransformer = v
+}
+
+func (x *OpenAPICallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *OpenAPICallDefinition) HasSchema() bool {
@@ -1444,6 +1562,13 @@ func (x *OpenAPICallDefinition) HasOutputTransformer() bool {
 	return x.xxx_hidden_OutputTransformer != nil
 }
 
+func (x *OpenAPICallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *OpenAPICallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
@@ -1456,6 +1581,10 @@ func (x *OpenAPICallDefinition) ClearOutputTransformer() {
 	x.xxx_hidden_OutputTransformer = nil
 }
 
+func (x *OpenAPICallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
+}
+
 type OpenAPICallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1465,6 +1594,8 @@ type OpenAPICallDefinition_builder struct {
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
@@ -1474,6 +1605,7 @@ func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
 	x.xxx_hidden_Schema = b.Schema
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -1483,6 +1615,7 @@ type MCPCallDefinition struct {
 	xxx_hidden_Schema            *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
 	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,2,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,3,opt,name=output_transformer,json=outputTransformer"`
+	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -1533,6 +1666,13 @@ func (x *MCPCallDefinition) GetOutputTransformer() *OutputTransformer {
 	return nil
 }
 
+func (x *MCPCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_Cache
+	}
+	return nil
+}
+
 func (x *MCPCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
@@ -1543,6 +1683,10 @@ func (x *MCPCallDefinition) SetInputTransformer(v *InputTransformer) {
 
 func (x *MCPCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 	x.xxx_hidden_OutputTransformer = v
+}
+
+func (x *MCPCallDefinition) SetCache(v *CacheConfig) {
+	x.xxx_hidden_Cache = v
 }
 
 func (x *MCPCallDefinition) HasSchema() bool {
@@ -1566,6 +1710,13 @@ func (x *MCPCallDefinition) HasOutputTransformer() bool {
 	return x.xxx_hidden_OutputTransformer != nil
 }
 
+func (x *MCPCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Cache != nil
+}
+
 func (x *MCPCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
@@ -1578,6 +1729,10 @@ func (x *MCPCallDefinition) ClearOutputTransformer() {
 	x.xxx_hidden_OutputTransformer = nil
 }
 
+func (x *MCPCallDefinition) ClearCache() {
+	x.xxx_hidden_Cache = nil
+}
+
 type MCPCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1587,6 +1742,8 @@ type MCPCallDefinition_builder struct {
 	InputTransformer *InputTransformer
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
 }
 
 func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
@@ -1596,6 +1753,7 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 	x.xxx_hidden_Schema = b.Schema
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
 	return m0
 }
 
@@ -8622,26 +8780,29 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xb9\x02\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xec\x02\n" +
 	"\x17WebsocketCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12I\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2).mcpx.config.v1.WebsocketParameterMappingR\n" +
 	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xb3\x02\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xe6\x02\n" +
 	"\x14WebrtcCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12F\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2&.mcpx.config.v1.WebrtcParameterMappingR\n" +
 	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\x90\x01\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xc3\x01\n" +
 	"\x13StdioCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12E\n" +
 	"\n" +
 	"parameters\x18\x02 \x03(\v2%.mcpx.config.v1.StdioParameterMappingR\n" +
-	"parameters\".\n" +
+	"parameters\x121\n" +
+	"\x05cache\x18\x03 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
 	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcb\x02\n" +
 	"\x11OutputTransformer\x12F\n" +
@@ -8654,19 +8815,22 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\fOutputFormat\x12\b\n" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
-	"\x04TEXT\x10\x02\"z\n" +
+	"\x04TEXT\x10\x02\"\xad\x01\n" +
 	"\x12GrpcCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12\x18\n" +
 	"\aservice\x18\x02 \x01(\tR\aservice\x12\x16\n" +
-	"\x06method\x18\x03 \x01(\tR\x06method\"\xec\x01\n" +
+	"\x06method\x18\x03 \x01(\tR\x06method\x121\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x9f\x02\n" +
 	"\x15OpenAPICallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
 	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xe8\x01\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x9b\x02\n" +
 	"\x11MCPCallDefinition\x122\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
 	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\"\xf9\x01\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xf9\x01\n" +
 	"\x0eGlobalSettings\x12!\n" +
 	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12D\n" +
@@ -8987,106 +9151,112 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*durationpb.Duration)(nil),         // 59: google.protobuf.Duration
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	16, // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
-	17, // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	31, // 2: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	2,  // 3: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
-	34, // 4: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
-	11, // 5: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 6: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43, // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	31, // 8: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	35, // 9: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
-	11, // 10: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 11: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 12: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	36, // 13: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
-	11, // 14: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 15: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 16: mcpx.config.v1.StdioCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	37, // 17: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
-	3,  // 18: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	56, // 19: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	31, // 20: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	31, // 21: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	11, // 22: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 23: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	31, // 24: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	11, // 25: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	12, // 26: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	4,  // 27: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	38, // 28: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	50, // 29: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	43, // 30: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
-	42, // 31: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
-	1,  // 32: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
-	44, // 33: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
-	28, // 34: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
-	23, // 35: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	18, // 36: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
-	26, // 37: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
-	27, // 38: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
-	24, // 39: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
-	25, // 40: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
-	47, // 41: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	55, // 42: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	13, // 43: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	40, // 44: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	19, // 45: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
-	22, // 46: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
-	20, // 47: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
-	21, // 48: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
-	7,  // 49: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
-	39, // 50: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55, // 51: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	8,  // 52: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	55, // 53: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	9,  // 54: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	55, // 55: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	39, // 56: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55, // 57: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	14, // 58: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
-	10, // 59: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
-	41, // 60: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
-	43, // 61: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
-	30, // 62: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
-	29, // 63: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
-	33, // 64: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
-	15, // 65: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	55, // 66: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	0,  // 67: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	57, // 68: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	58, // 69: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	58, // 70: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	32, // 71: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 72: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 73: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32, // 74: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	59, // 75: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	59, // 76: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 77: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 78: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 79: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 80: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
-	59, // 81: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59, // 82: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	45, // 83: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	46, // 84: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	59, // 85: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	59, // 86: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	59, // 87: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	48, // 88: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	49, // 89: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,  // 90: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	51, // 91: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	52, // 92: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	53, // 93: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	54, // 94: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
-	95, // [95:95] is the sub-list for method output_type
-	95, // [95:95] is the sub-list for method input_type
-	95, // [95:95] is the sub-list for extension type_name
-	95, // [95:95] is the sub-list for extension extendee
-	0,  // [0:95] is the sub-list for field type_name
+	16,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
+	17,  // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
+	31,  // 2: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	2,   // 3: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
+	34,  // 4: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
+	11,  // 5: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	12,  // 6: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	43,  // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 8: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	35,  // 9: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
+	11,  // 10: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	12,  // 11: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	43,  // 12: mcpx.config.v1.WebsocketCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 13: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	36,  // 14: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
+	11,  // 15: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	12,  // 16: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	43,  // 17: mcpx.config.v1.WebrtcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 18: mcpx.config.v1.StdioCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	37,  // 19: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
+	43,  // 20: mcpx.config.v1.StdioCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	3,   // 21: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
+	56,  // 22: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	31,  // 23: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	43,  // 24: mcpx.config.v1.GrpcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 25: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	11,  // 26: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	12,  // 27: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	43,  // 28: mcpx.config.v1.OpenAPICallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 29: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	11,  // 30: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
+	12,  // 31: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
+	43,  // 32: mcpx.config.v1.MCPCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	4,   // 33: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
+	38,  // 34: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
+	50,  // 35: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	43,  // 36: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
+	42,  // 37: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
+	1,   // 38: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
+	44,  // 39: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
+	28,  // 40: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
+	23,  // 41: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
+	18,  // 42: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
+	26,  // 43: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
+	27,  // 44: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
+	24,  // 45: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
+	25,  // 46: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
+	47,  // 47: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
+	55,  // 48: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	13,  // 49: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
+	40,  // 50: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
+	19,  // 51: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
+	22,  // 52: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
+	20,  // 53: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
+	21,  // 54: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
+	7,   // 55: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
+	39,  // 56: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	55,  // 57: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	8,   // 58: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
+	55,  // 59: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	9,   // 60: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
+	55,  // 61: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	39,  // 62: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
+	55,  // 63: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	14,  // 64: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
+	10,  // 65: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
+	41,  // 66: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
+	43,  // 67: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
+	30,  // 68: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
+	29,  // 69: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
+	33,  // 70: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
+	15,  // 71: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
+	55,  // 72: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	0,   // 73: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
+	57,  // 74: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	58,  // 75: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	58,  // 76: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	32,  // 77: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 78: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 79: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 80: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	59,  // 81: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	59,  // 82: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	59,  // 83: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	59,  // 84: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	59,  // 85: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	59,  // 86: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
+	59,  // 87: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
+	59,  // 88: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	45,  // 89: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	46,  // 90: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	59,  // 91: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	59,  // 92: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	59,  // 93: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	48,  // 94: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	49,  // 95: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	5,   // 96: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	51,  // 97: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	52,  // 98: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	53,  // 99: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	54,  // 100: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	101, // [101:101] is the sub-list for method output_type
+	101, // [101:101] is the sub-list for method input_type
+	101, // [101:101] is the sub-list for extension type_name
+	101, // [101:101] is the sub-list for extension extendee
+	0,   // [0:101] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
