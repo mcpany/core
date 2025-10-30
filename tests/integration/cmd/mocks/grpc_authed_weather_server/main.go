@@ -31,7 +31,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	calculatorv1 "github.com/mcpxy/core/proto/examples/calculator/v1"
+	weatherV1 "github.com/mcpxy/core/proto/examples/weather/v1"
 )
 
 const (
@@ -40,23 +40,24 @@ const (
 )
 
 type server struct {
-	calculatorv1.UnimplementedCalculatorServiceServer
+	weatherV1.UnimplementedWeatherServiceServer
 }
 
-func (s *server) Add(ctx context.Context, req *calculatorv1.AddRequest) (*calculatorv1.AddResponse, error) {
-	log.Printf("INFO grpc_authed_calculator_server: Add called a=%d b=%d", req.GetA(), req.GetB())
-	result := req.GetA() + req.GetB()
-	return calculatorv1.AddResponse_builder{
-		Result: &result,
-	}.Build(), nil
+var weatherData = map[string]string{
+	"new york": "Sunny, 25°C",
+	"london":   "Cloudy, 15°C",
+	"tokyo":    "Rainy, 20°C",
 }
 
-func (s *server) Subtract(ctx context.Context, req *calculatorv1.SubtractRequest) (*calculatorv1.SubtractResponse, error) {
-	log.Printf("INFO grpc_authed_calculator_server: Subtract called a=%d b=%d", req.GetA(), req.GetB())
-	result := req.GetA() - req.GetB()
-	return calculatorv1.SubtractResponse_builder{
-		Result: &result,
-	}.Build(), nil
+func (s *server) GetWeather(ctx context.Context, req *weatherV1.GetWeatherRequest) (*weatherV1.GetWeatherResponse, error) {
+	log.Printf("INFO grpc_authed_weather_server: GetWeather called location=%s", req.GetLocation())
+	weather, ok := weatherData[req.GetLocation()]
+	if !ok {
+		return nil, fmt.Errorf("location not found")
+	}
+	response := &weatherV1.GetWeatherResponse{}
+	response.SetWeather(weather)
+	return response, nil
 }
 
 func authInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -100,10 +101,10 @@ func main() {
 		grpc.Creds(insecure.NewCredentials()),
 		grpc.UnaryInterceptor(authInterceptor),
 	)
-	calculatorv1.RegisterCalculatorServiceServer(s, &server{})
+	weatherV1.RegisterWeatherServiceServer(s, &server{})
 	reflection.Register(s)
 
-	log.Printf("INFO grpc_authed_calculator_server: Listening on port port=%d", *port)
+	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", *port)
 	fmt.Println("GRPC_SERVER_READY") // Signal that the server is ready
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

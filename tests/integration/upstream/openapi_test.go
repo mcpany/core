@@ -36,17 +36,17 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 	}
 
 	testCase := &framework.E2ETestCase{
-		Name:                "OpenAPI Calculator Server",
+		Name:                "OpenAPI Weather Server",
 		UpstreamServiceType: "openapi",
-		BuildUpstream:       framework.BuildOpenAPIServer,
-		RegisterUpstream:    framework.RegisterOpenAPIService,
+		BuildUpstream:       framework.BuildOpenAPIWeatherServer,
+		RegisterUpstream:    framework.RegisterOpenAPIWeatherService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			framework.VerifyMCPClient(t, mcpxyEndpoint)
 			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
 			defer gemini.RemoveMCP("mcpxy-server")
-			output, err := gemini.Run(apiKey, "what is the result of 10 + 5")
+			output, err := gemini.Run(apiKey, "what is the weather in london")
 			require.NoError(t, err)
-			require.Contains(t, output, "15")
+			require.Contains(t, output, "Cloudy, 15°C")
 		},
 	}
 
