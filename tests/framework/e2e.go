@@ -30,6 +30,7 @@ import (
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -49,10 +50,12 @@ type E2ETestCase struct {
 	BuildUpstream          func(t *testing.T) *integration.ManagedProcess
 	RegisterUpstream       func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
 	ValidateTool           func(t *testing.T, mcpxyEndpoint string)
+	ValidateMiddlewares    func(t *testing.T, mcpxyEndpoint string, upstreamEndpoint string)
 	InvokeAIClient         func(t *testing.T, mcpxyEndpoint string)
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
 	StartMCPXYServer       func(t *testing.T, testName string, extraArgs ...string) *integration.MCPXYTestServerInfo
+	Clock                  clock.Clock
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
@@ -110,7 +113,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
-			if testCase.StartMCPXYServer != nil {
+			if testCase.Clock != nil {
+				mcpxyTestServerInfo = integration.StartInProcessMCPXYServer(t, testCase.Name, testCase.Clock)
+			} else if testCase.StartMCPXYServer != nil {
 				mcpxyTestServerInfo = testCase.StartMCPXYServer(t, testCase.Name)
 			} else if method == FileRegistration {
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
@@ -152,6 +157,13 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				t.Logf("INFO: Validating registered tool...")
 				testCase.ValidateTool(t, mcpxyTestServerInfo.HTTPEndpoint)
 				t.Logf("INFO: Tool validated.")
+			}
+
+			// --- 5. Validate Middlewares ---
+			if testCase.ValidateMiddlewares != nil {
+				t.Logf("INFO: Validating middlewares...")
+				testCase.ValidateMiddlewares(t, mcpxyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
+				t.Logf("INFO: Middlewares validated.")
 			}
 
 			// --- 5. Invoke AI Client ---

@@ -40,6 +40,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
+
+	"github.com/mcpxy/core/pkg/app"
+	"github.com/mcpxy/core/pkg/common/clock"
+	"github.com/spf13/afero"
 )
 
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
@@ -551,6 +555,77 @@ func StartMCPXYServerWithConfig(t *testing.T, testName, configContent string) *M
 }
 
 func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
+	return StartMCPXYServerWithClock(t, testName, clock.New(), extraArgs...)
+}
+
+func StartInProcessMCPXYServer(t *testing.T, testName string, clock clock.Clock) *MCPXYTestServerInfo {
+	t.Helper()
+
+	_, err := GetProjectRoot()
+	require.NoError(t, err, "Failed to get project root")
+
+	jsonrpcPort := FindFreePort(t)
+	grpcRegPort := FindFreePort(t)
+	for grpcRegPort == jsonrpcPort {
+		grpcRegPort = FindFreePort(t)
+	}
+
+	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
+	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
+	mcpRequestURL := jsonrpcEndpoint + "/mcp"
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go func() {
+		appRunner := app.NewApplication(clock)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf("%d", jsonrpcPort), fmt.Sprintf("%d", grpcRegPort), []string{}, 5*time.Second)
+		require.NoError(t, err)
+	}()
+
+	var grpcRegConn *grpc.ClientConn
+	require.Eventually(t, func() bool {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		var errDial error
+		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if errDial != nil {
+			t.Logf("MCPXY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
+			return false
+		}
+		state := grpcRegConn.GetState()
+		if state == connectivity.Ready || state == connectivity.Idle {
+			t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
+			return true
+		}
+		if !grpcRegConn.WaitForStateChange(ctx, state) {
+			t.Logf("MCPXY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
+			grpcRegConn.Close()
+			return false
+		}
+		t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s", grpcRegEndpoint)
+		return true
+	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY gRPC registration endpoint at %s did not become healthy in time", grpcRegEndpoint)
+
+	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
+
+	return &MCPXYTestServerInfo{
+		JSONRPCEndpoint:          jsonrpcEndpoint,
+		HTTPEndpoint:             mcpRequestURL,
+		GrpcRegistrationEndpoint: grpcRegEndpoint,
+		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
+		GRPCRegConn:              grpcRegConn,
+		RegistrationClient:       registrationClient,
+		CleanupFunc: func() {
+			cancel()
+			if grpcRegConn != nil {
+				grpcRegConn.Close()
+			}
+		},
+		T: t,
+	}
+}
+
+func StartMCPXYServerWithClock(t *testing.T, testName string, clock clock.Clock, extraArgs ...string) *MCPXYTestServerInfo {
 	t.Helper()
 
 	root, err := GetProjectRoot()

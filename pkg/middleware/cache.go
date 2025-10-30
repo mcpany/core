@@ -21,23 +21,31 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/tool"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/patrickmn/go-cache"
 )
+
+type cacheEntry struct {
+	data      any
+	expiresAt time.Time
+}
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
 	cache       *cache.Cache
 	toolManager tool.ToolManagerInterface
+	clock       clock.Clock
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddleware {
+func NewCachingMiddleware(toolManager tool.ToolManagerInterface, clock clock.Clock) *CachingMiddleware {
 	return &CachingMiddleware{
 		cache:       cache.New(5*time.Minute, 10*time.Minute),
 		toolManager: toolManager,
+		clock:       clock,
 	}
 }
 
@@ -54,8 +62,12 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	}
 
 	cacheKey := m.getCacheKey(req)
-	if cachedResult, found := m.cache.Get(cacheKey); found {
-		return cachedResult, nil
+	if cached, found := m.cache.Get(cacheKey); found {
+		if entry, ok := cached.(cacheEntry); ok {
+			if m.clock.Now().Before(entry.expiresAt) {
+				return entry.data, nil
+			}
+		}
 	}
 
 	result, err := next(ctx, req)
@@ -63,7 +75,11 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return nil, err
 	}
 
-	m.cache.Set(cacheKey, result, cacheConfig.GetTtl().AsDuration())
+	entry := cacheEntry{
+		data:      result,
+		expiresAt: m.clock.Now().Add(cacheConfig.GetTtl().AsDuration()),
+	}
+	m.cache.Set(cacheKey, entry, cache.NoExpiration)
 	return result, nil
 }
 

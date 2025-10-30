@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/middleware"
 	"github.com/mcpxy/core/pkg/tool"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
@@ -66,7 +67,7 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 func TestCachingMiddleware(t *testing.T) {
 	t.Run("cache hit", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, clock.New())
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -100,7 +101,7 @@ func TestCachingMiddleware(t *testing.T) {
 
 	t.Run("cache miss", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, clock.New())
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -131,7 +132,8 @@ func TestCachingMiddleware(t *testing.T) {
 
 	t.Run("cache override", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+		fakeClock := clock.NewFake(time.Now())
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, fakeClock)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -165,7 +167,7 @@ func TestCachingMiddleware(t *testing.T) {
 		})
 
 		// Wait for the call-level cache to expire
-		time.Sleep(6 * time.Second)
+		fakeClock.Advance(6 * time.Second)
 
 		nextCalled := false
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
