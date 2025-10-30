@@ -52,7 +52,8 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	if m.lastErr != nil {
 		return m.lastErr
 	}
-	toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
+	sanitizedToolName, _ := util.SanitizeToolName(t.Tool().GetName())
+	toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
 	m.tools[toolID] = t
 	return nil
 }
@@ -74,11 +75,11 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceKey string) {
+func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
-		if t.Tool().GetServiceId() == serviceKey {
+		if t.Tool().GetServiceId() == serviceID {
 			delete(m.tools, name)
 		}
 	}
@@ -127,13 +128,14 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service")
 		serviceConfig.SetWebrtcService(webrtcService)
 
-		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		tools := toolManager.ListTools()
 		assert.Len(t, tools, 1)
 
-		toolID, _ := util.GenerateToolID(serviceKey, "echo")
+		sanitizedToolName, _ := util.SanitizeToolName("echo")
+		toolID := serviceID + "." + sanitizedToolName
 		_, ok := toolManager.GetTool(toolID)
 		assert.True(t, ok, "tool should be registered")
 	})

@@ -54,7 +54,7 @@ func TestNewWebrtcTool(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, wt)
 	assert.Equal(t, toolDef, wt.Tool())
-	assert.Equal(t, "service-key", wt.serviceKey)
+	assert.Equal(t, "service-key", wt.serviceID)
 }
 
 func TestWebrtcTool_Close(t *testing.T) {

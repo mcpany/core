@@ -44,8 +44,9 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 			defer cs.Close()
 
 			const weatherServiceID = "e2e_grpc_authed_weather"
-			serviceKey, _ := util.GenerateID(weatherServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "GetWeather")
+			serviceID, _ := util.SanitizeServiceName(weatherServiceID)
+			sanitizedToolName, _ := util.SanitizeToolName("GetWeather")
+			toolName := serviceID + "." + sanitizedToolName
 			weatherArgs := `{"location": "london"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(weatherArgs)})
 			require.NoError(t, err, "Error calling GetWeather tool with correct auth")

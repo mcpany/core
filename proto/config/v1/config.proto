@@ -167,8 +167,6 @@ message GlobalSettings {
   string mcp_basepath = 2;
   // The logging level for the server.
   LogLevel log_level = 3;
-  // The version of protoc to use.
-  string protoc_version = 4;
 }
 
 
@@ -180,10 +178,17 @@ message GlobalSettings {
 // that mcpx will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 message UpstreamServiceConfig {
-  // A UUID to uniquely identify this upstream service configuration, used for bindings.
+  // The full SHA256 hash of the service name, used as a unique identifier.
+  // This ensures that for the same service name, the ID is always the same.
   string id = 1;
-  // A unique name for the upstream service. Used for identification, logging, and metrics.
+  // The original user-provided name for the upstream service.
+  // This name is used for identification, logging, and metrics.
   string name = 2;
+  // A sanitized version of the service name, conforming to identifier rules.
+  // @inject_tag: yaml:"-"
+  //
+  // This field is managed internally and should not be set by the user.
+  string sanitized_name = 18;
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 3;
   // Authentication configuration for mcpx to use when connecting to the upstream service.

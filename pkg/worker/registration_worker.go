@@ -64,10 +64,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			requestCtx = context.Background()
 		}
 
-		serviceKey, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
+		serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 		res := &bus.ServiceRegistrationResult{
-			ServiceKey:         serviceKey,
+			ServiceKey:         serviceID,
 			DiscoveredTools:    discoveredTools,
 			DiscoveredResources: discoveredResources,
 			Error:              err,

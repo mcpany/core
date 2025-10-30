@@ -37,10 +37,11 @@ func TestUpstreamService_HTTP_Everything(t *testing.T) {
 		ValidateTool: func(t *testing.T, mcpxyEndpoint string) {
 			serviceID := "e2e_everything_server_streamable"
 			toolName := "add"
-			serviceKey, err := util.GenerateID(serviceID)
+			serviceID, err := util.SanitizeServiceName(serviceID)
 			require.NoError(t, err)
-			expectedToolName, err := util.GenerateToolID(serviceKey, toolName)
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			require.NoError(t, err)
+			expectedToolName := serviceID + "." + sanitizedToolName
 
 			expectedTool := &mcp.Tool{
 				Name:        expectedToolName,
@@ -57,8 +58,9 @@ func TestUpstreamService_HTTP_Everything(t *testing.T) {
 			require.NoError(t, err)
 			defer cs.Close()
 
-			serviceKey, _ := util.GenerateID("e2e_everything_server_streamable")
-			toolName, _ := util.GenerateToolID(serviceKey, "add")
+			serviceID, _ := util.SanitizeServiceName("e2e_everything_server_streamable")
+			sanitizedToolName, _ := util.SanitizeToolName("add")
+			toolName := serviceID + "." + sanitizedToolName
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{"a": 10, "b": 15}`)})
 			require.NoError(t, err)
 			require.NotNil(t, res)
