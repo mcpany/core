@@ -40,7 +40,6 @@ func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 }
 
 func TestExtractMcpDefinitions(t *testing.T) {
-	t.Skip("Skipping test because it requires a generated protoset file")
 	fds := loadTestFileDescriptorSet(t)
 
 	t.Run("successful extraction", func(t *testing.T) {
