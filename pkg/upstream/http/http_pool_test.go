@@ -18,16 +18,30 @@ package http
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestHttpPool_New(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
-		p, err := NewHttpPool(1, 5, 100, nil)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		configJSON := `{"http_service": {"address": "` + strings.TrimPrefix(server.URL, "http://") + `"}}`
+		config := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+		p, err := NewHttpPool(1, 5, 100, config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		defer p.Close()
@@ -37,20 +51,29 @@ func TestHttpPool_New(t *testing.T) {
 		client, err := p.Get(context.Background())
 		require.NoError(t, err)
 		assert.NotNil(t, client)
-		assert.True(t, client.IsHealthy())
+		assert.True(t, client.IsHealthy(context.Background()))
 
 		p.Put(client)
 		assert.Equal(t, 1, p.Len())
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		_, err := NewHttpPool(5, 1, 10, nil)
+		_, err := NewHttpPool(5, 1, 10, &configv1.UpstreamServiceConfig{})
 		assert.Error(t, err)
 	})
 }
 
 func TestHttpPool_GetPut(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10, nil)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	configJSON := `{"http_service": {"address": "` + strings.TrimPrefix(server.URL, "http://") + `"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	p, err := NewHttpPool(1, 1, 10, config)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -58,7 +81,7 @@ func TestHttpPool_GetPut(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	assert.True(t, client.IsHealthy())
+	assert.True(t, client.IsHealthy(context.Background()))
 
 	p.Put(client)
 
@@ -72,7 +95,7 @@ func TestHttpPool_GetPut(t *testing.T) {
 }
 
 func TestHttpPool_UniqueClients(t *testing.T) {
-	p, err := NewHttpPool(2, 2, 10, nil)
+	p, err := NewHttpPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer p.Close()
@@ -89,7 +112,7 @@ func TestHttpPool_UniqueClients(t *testing.T) {
 }
 
 func TestHttpPool_Close(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10, nil)
+	p, err := NewHttpPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -101,7 +124,7 @@ func TestHttpPool_Close(t *testing.T) {
 }
 
 func TestHttpPool_PoolFull(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 1, nil)
+	p, err := NewHttpPool(1, 1, 1, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 

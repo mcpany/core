@@ -51,7 +51,7 @@ func NewWebsocketPool(maxSize int, idleTimeout time.Duration, address string) (W
 
 	// The generic pool expects idleTimeout as an int (seconds).
 	// We'll use a minSize of 0 for this pool.
-	p, err := pool.New(factory, 0, maxSize, int(idleTimeout.Seconds()))
+	p, err := pool.New(factory, 0, maxSize, int(idleTimeout.Seconds()), false)
 	if err != nil {
 		return nil, err
 	}

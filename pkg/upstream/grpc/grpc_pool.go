@@ -23,6 +23,7 @@ import (
 
 	"github.com/mcpxy/core/pkg/client"
 	"github.com/mcpxy/core/pkg/pool"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -41,9 +42,10 @@ import (
 // It returns a new gRPC client pool or an error if the pool cannot be created.
 func NewGrpcPool(
 	minSize, maxSize, idleTimeout int,
-	address string,
 	dialer func(context.Context, string) (net.Conn, error),
 	creds credentials.PerRPCCredentials,
+	config *configv1.UpstreamServiceConfig,
+	disableHealthCheck bool,
 ) (pool.Pool[*client.GrpcClientWrapper], error) {
 	factory := func(ctx context.Context) (*client.GrpcClientWrapper, error) {
 		opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -53,13 +55,13 @@ func NewGrpcPool(
 		if creds != nil {
 			opts = append(opts, grpc.WithPerRPCCredentials(creds))
 		}
-		addr := strings.TrimPrefix(address, "grpc://")
+		addr := strings.TrimPrefix(config.GetGrpcService().GetAddress(), "grpc://")
 
 		conn, err := grpc.NewClient(addr, opts...)
 		if err != nil {
 			return nil, err
 		}
-		return &client.GrpcClientWrapper{ClientConn: conn}, nil
+		return client.NewGrpcClientWrapper(conn, config), nil
 	}
-	return pool.New(factory, minSize, maxSize, idleTimeout)
+	return pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
 }

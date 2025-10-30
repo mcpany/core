@@ -21,10 +21,12 @@ import (
 	"net"
 	"testing"
 
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func startMockGrpcServer(t *testing.T) *bufconn.Listener {
@@ -47,7 +49,11 @@ func TestGrpcPool_New(t *testing.T) {
 		return lis.Dial()
 	}
 
-	p, err := NewGrpcPool(1, 5, 100, "bufnet", dialer, nil)
+	configJSON := `{"grpc_service": {"address": "bufnet"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)
 	require.NoError(t, err)
 	assert.NotNil(t, p)
 	defer p.Close()
@@ -57,7 +63,7 @@ func TestGrpcPool_New(t *testing.T) {
 	client, err := p.Get(context.Background())
 	require.NoError(t, err)
 	assert.NotNil(t, client)
-	assert.True(t, client.IsHealthy())
+	assert.True(t, client.IsHealthy(context.Background()))
 
 	p.Put(client)
 	assert.Equal(t, 1, p.Len())
