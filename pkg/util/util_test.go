@@ -17,46 +17,75 @@
 package util
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 )
 
-func TestGenerateID(t *testing.T) {
+func TestSanitizeID(t *testing.T) {
 	testCases := []struct {
-		name        string
-		input       string
-		expected    string
-		expectError bool
+		name                     string
+		ids                      []string
+		alwaysAppendHash         bool
+		maxSanitizedPrefixLength int
+		hashLength               int
+		expected                 string
+		expectError              bool
 	}{
 		{
-			name:        "valid id",
-			input:       "test_service",
-			expected:    "test_service_96b74ebc",
-			expectError: false,
+			name:                     "single id, no hash",
+			ids:                      []string{"test"},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "test",
+			expectError:              false,
 		},
 		{
-			name:        "id with special characters",
-			input:       "test-service-1.0",
-			expected:    "test-service-10_57f3fff2",
-			expectError: false,
+			name:                     "single id, with hash",
+			ids:                      []string{"test"},
+			alwaysAppendHash:         true,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "test_9f86d081",
+			expectError:              false,
 		},
 		{
-			name:        "long id",
-			input:       strings.Repeat("a", 100),
-			expected:    fmt.Sprintf("%s_28165978", strings.Repeat("a", 53)),
-			expectError: false,
+			name:                     "multiple ids, no hash",
+			ids:                      []string{"test", "service"},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "test.service",
+			expectError:              false,
+		},
+		{
+			name:                     "multiple ids, with hash",
+			ids:                      []string{"test", "service"},
+			alwaysAppendHash:         true,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "test_9f86d081.service_9df6b026",
+			expectError:              false,
+		},
+		{
+			name:                     "long id, with hash",
+			ids:                      []string{strings.Repeat("a", 20)},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "aaaaaaaaaa_42492da0",
+			expectError:              false,
 		},
 		{
 			name:        "empty id",
-			input:       "",
+			ids:         []string{""},
 			expectError: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := GenerateID(tc.input)
+			actual, err := SanitizeID(tc.ids, tc.alwaysAppendHash, tc.maxSanitizedPrefixLength, tc.hashLength)
 
 			if tc.expectError {
 				if err == nil {
@@ -69,26 +98,93 @@ func TestGenerateID(t *testing.T) {
 				if actual != tc.expected {
 					t.Errorf("Expected %q, but got %q", tc.expected, actual)
 				}
-				if len(actual) > maxGeneratedIDLength {
-					t.Errorf("Generated ID exceeds max length of %d", maxGeneratedIDLength)
+			}
+		})
+	}
+}
+
+func TestSanitizeServiceName(t *testing.T) {
+	testCases := []struct {
+		name        string
+		input       string
+		expected    string
+		expectError bool
+	}{
+		{
+			name:        "valid service name",
+			input:       "test_service",
+			expected:    "test_service",
+			expectError: false,
+		},
+		{
+			name:        "service name with special characters",
+			input:       "test-service-1.0",
+			expected:    "test-service-10_57f3fff2",
+			expectError: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := SanitizeServiceName(tc.input)
+
+			if tc.expectError {
+				if err == nil {
+					t.Errorf("Expected an error, but got none")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+				if actual != tc.expected {
+					t.Errorf("Expected %q, but got %q", tc.expected, actual)
 				}
 			}
 		})
 	}
 }
 
-func TestGenerateServiceKey(t *testing.T) {
-	input := "test_service"
-	expected, _ := GenerateID(input)
-	actual, err := GenerateServiceKey(input)
-
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
+func TestSanitizeToolName(t *testing.T) {
+	testCases := []struct {
+		name        string
+		input       string
+		expected    string
+		expectError bool
+	}{
+		{
+			name:        "valid tool name",
+			input:       "test_tool",
+			expected:    "test_tool",
+			expectError: false,
+		},
+		{
+			name:        "tool name with special characters",
+			input:       "test-tool-1.0",
+			expected:    "test-tool-10_8c924588",
+			expectError: false,
+		},
 	}
-	if actual != expected {
-		t.Errorf("Expected %q, but got %q", expected, actual)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := SanitizeToolName(tc.input)
+
+			if tc.expectError {
+				if err == nil {
+					t.Errorf("Expected an error, but got none")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+				if actual != tc.expected {
+					t.Errorf("Expected %q, but got %q", tc.expected, actual)
+				}
+			}
+		})
 	}
 }
+
 
 func TestSanitizeOperationID(t *testing.T) {
 	testCases := []struct {
@@ -147,18 +243,3 @@ func TestGetDockerCommand(t *testing.T) {
 	})
 }
 
-func TestGenerateToolName(t *testing.T) {
-	t.Run("GenerateToolName", func(t *testing.T) {
-		input := "test_tool"
-		expected, _ := GenerateID(input)
-		actual, err := GenerateToolName(input)
-
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-
-		if actual != expected {
-			t.Errorf("Expected %q, but got %q", expected, actual)
-		}
-	})
-}

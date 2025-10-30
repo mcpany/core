@@ -18,6 +18,8 @@ package websocket
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
@@ -69,10 +71,20 @@ func (u *WebsocketUpstream) Register(
 		return "", nil, nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+
+	// Calculate SHA256 for the ID
+	h := sha256.New()
+	h.Write([]byte(serviceConfig.GetName()))
+	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+
+	// Sanitize the service name
+	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
+	serviceConfig.SetSanitizedName(sanitizedName)
+
+	serviceID := sanitizedName // for internal use
 
 	websocketService := serviceConfig.GetWebsocketService()
 	if websocketService == nil {
@@ -82,26 +94,26 @@ func (u *WebsocketUpstream) Register(
 	address := websocketService.GetAddress()
 	wsPool, err := NewWebsocketPool(10, 300*time.Second, address)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create websocket pool for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create websocket pool for %s: %w", serviceID, err)
 	}
-	u.poolManager.Register(serviceKey, wsPool)
+	u.poolManager.Register(serviceID, wsPool)
 
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceKey, info)
+	toolManager.AddServiceInfo(serviceID, info)
 
-	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceKey, address, serviceConfig, toolManager, isReload)
-	log.Info("Registered Websocket service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
+	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	log.Info("Registered Websocket service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil, nil
+	return serviceID, discoveredTools, nil, nil
 }
 
 // createAndRegisterWebsocketTools iterates through the WebSocket call
 // definitions in the service configuration, creates a new WebsocketTool for each,
 // and registers it with the tool manager.
-func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceKey, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	definitions := websocketService.GetCalls()
@@ -109,7 +121,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		log.Error("Failed to create authenticator, proceeding without authentication", "serviceKey", serviceKey, "error", err)
+		log.Error("Failed to create authenticator, proceeding without authentication", "serviceID", serviceID, "error", err)
 		authenticator = nil
 	}
 
@@ -143,7 +155,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
-			ServiceId:           proto.String(serviceKey),
+			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WS %s", address)),
 			Annotations: pb.ToolAnnotations_builder{
 				Title:           proto.String(schema.GetTitle()),
@@ -155,7 +167,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 			}.Build(),
 		}.Build()
 
-		wsTool := tool.NewWebsocketTool(newToolProto, u.poolManager, serviceKey, authenticator, wsDef)
+		wsTool := tool.NewWebsocketTool(newToolProto, u.poolManager, serviceID, authenticator, wsDef)
 		if err := toolManager.AddTool(wsTool); err != nil {
 			log.Error("Failed to add websocket tool", "error", err)
 			continue

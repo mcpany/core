@@ -64,7 +64,7 @@ type mockToolManager struct {
 }
 
 func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
-func (m *mockToolManager) ClearToolsForService(serviceKey string)                  {}
+func (m *mockToolManager) ClearToolsForService(serviceID string)                  {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
@@ -115,9 +115,9 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	serviceConfig.SetAuthentication(authConfig)
 
 	// Successful registration
-	serviceKey, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
+	serviceID, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
-	assert.Equal(t, "mock-service-key", serviceKey)
+	assert.Equal(t, "mock-service-key", serviceID)
 	assert.Nil(t, tools)
 	assert.Nil(t, resources)
 

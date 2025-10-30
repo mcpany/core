@@ -18,6 +18,8 @@ package grpc
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -84,10 +86,20 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, errors.New("service config is nil")
 	}
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+
+	// Calculate SHA256 for the ID
+	h := sha256.New()
+	h.Write([]byte(serviceConfig.GetName()))
+	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+
+	// Sanitize the service name
+	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
+	serviceConfig.SetSanitizedName(sanitizedName)
+
+	serviceID := sanitizedName // for internal use
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {
@@ -96,7 +108,7 @@ func (u *GRPCUpstream) Register(
 
 	upstreamAuthenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator for gRPC service %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator for gRPC service %s: %w", serviceID, err)
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
@@ -104,7 +116,7 @@ func (u *GRPCUpstream) Register(
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", serviceConfig.GetName(), err)
 	}
-	u.poolManager.Register(serviceKey, grpcPool)
+	u.poolManager.Register(serviceID, grpcPool)
 
 	var fds *descriptorpb.FileDescriptorSet
 	if grpcService.GetUseReflection() {
@@ -115,7 +127,7 @@ func (u *GRPCUpstream) Register(
 			var err error
 			fds, err = protobufparser.ParseProtoByReflection(ctx, grpcService.GetAddress())
 			if err != nil {
-				return "", nil, nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceKey, grpcService.GetAddress(), err)
+				return "", nil, nil, fmt.Errorf("failed to discover service by reflection for %s (target: %s): %w", serviceID, grpcService.GetAddress(), err)
 			}
 			u.reflectionCache.Set(grpcService.GetAddress(), fds, ttlcache.DefaultTTL)
 		}
@@ -123,11 +135,11 @@ func (u *GRPCUpstream) Register(
 		var err error
 		fds, err = protobufparser.ParseProtoFromDefs(ctx, grpcService.GetProtoDefinitions(), grpcService.GetProtoCollection())
 		if err != nil {
-			return "", nil, nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceKey, err)
+			return "", nil, nil, fmt.Errorf("failed to parse proto definitions for %s: %w", serviceID, err)
 		}
 	}
 
-	toolManager.AddServiceInfo(serviceKey, &tool.ServiceInfo{
+	toolManager.AddServiceInfo(serviceID, &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 		Fds:    fds,
@@ -135,23 +147,23 @@ func (u *GRPCUpstream) Register(
 
 	parsedMcpData, err := protobufparser.ExtractMcpDefinitions(fds)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceID, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceKey, parsedMcpData, toolManager, isReload, fds)
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, isReload, fds)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
 
-	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceKey, toolManager, isReload, fds)
+	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, isReload, fds)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceKey, err)
+		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
 
-	log.Info("Registered gRPC service", "serviceKey", serviceKey, "toolsAdded", len(discoveredTools))
+	log.Info("Registered gRPC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
-	return serviceKey, discoveredTools, nil, nil
+	return serviceID, discoveredTools, nil, nil
 }
 
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
@@ -159,7 +171,7 @@ func (u *GRPCUpstream) Register(
 // constructs a GRPCTool and registers it with the tool manager.
 func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	ctx context.Context,
-	serviceKey string,
+	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
 	tm tool.ToolManagerInterface,
 	isReload bool,
@@ -170,9 +182,9 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		return nil, nil
 	}
 
-	_, ok := tm.GetServiceInfo(serviceKey)
+	_, ok := tm.GetServiceInfo(serviceID)
 	if !ok {
-		return nil, fmt.Errorf("service info not found for service: %s", serviceKey)
+		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
 	}
 
 	files, err := protodesc.NewFiles(fds)
@@ -236,7 +248,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 			Name:                proto.String(toolName),
 			DisplayName:         proto.String(toolDef.Name),
 			Description:         proto.String(toolDef.Description),
-			ServiceId:           proto.String(serviceKey),
+			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(string(methodDescriptor.FullName())),
 			RequestTypeFqn:      proto.String(toolDef.RequestType),
 			ResponseTypeFqn:     proto.String(toolDef.ResponseType),
@@ -254,7 +266,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		}.Build()
 
 		clonedTool := proto.Clone(newToolProto).(*pb.Tool)
-		grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceKey, methodDescriptor, nil)
+		grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceID, methodDescriptor, nil)
 		if err := tm.AddTool(grpcTool); err != nil {
 			log.Error("Failed to add gRPC tool", "tool_name", toolName, "error", err)
 			continue
@@ -273,7 +285,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 
 func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	ctx context.Context,
-	serviceKey string,
+	serviceID string,
 	tm tool.ToolManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
@@ -298,7 +310,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 				methodDesc := methods.Get(j)
 
 				// Check if the tool is already registered
-				toolID := fmt.Sprintf("%s.%s", serviceKey, methodDesc.Name())
+				toolID := fmt.Sprintf("%s.%s", serviceID, methodDesc.Name())
 				if _, ok := tm.GetTool(toolID); ok {
 					continue
 				}
@@ -339,7 +351,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 					Name:                proto.String(string(methodDesc.Name())),
 					DisplayName:         proto.String(string(methodDesc.Name())),
 					Description:         proto.String(string(methodDesc.FullName())),
-					ServiceId:           proto.String(serviceKey),
+					ServiceId:           proto.String(serviceID),
 					UnderlyingMethodFqn: proto.String(string(methodDesc.FullName())),
 					RequestTypeFqn:      proto.String(string(methodDesc.Input().FullName())),
 					ResponseTypeFqn:     proto.String(string(methodDesc.Output().FullName())),
@@ -353,7 +365,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 				}.Build()
 
 				clonedTool := proto.Clone(newToolProto).(*pb.Tool)
-				grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceKey, methodDesc, nil)
+				grpcTool := tool.NewGRPCTool(clonedTool, u.poolManager, serviceID, methodDesc, nil)
 				if err := tm.AddTool(grpcTool); err != nil {
 					log.Error("Failed to add gRPC tool", "tool_name", methodDesc.Name(), "error", err)
 					continue

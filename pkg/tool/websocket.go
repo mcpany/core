@@ -36,7 +36,7 @@ import (
 type WebsocketTool struct {
 	tool              *v1.Tool
 	poolManager       *pool.Manager
-	serviceKey        string
+	serviceID        string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.WebsocketParameterMapping
 	inputTransformer  *configv1.InputTransformer
@@ -48,21 +48,21 @@ type WebsocketTool struct {
 //
 // tool is the protobuf definition of the tool.
 // poolManager is used to get a WebSocket client from the connection pool.
-// serviceKey identifies the specific WebSocket service connection pool.
+// serviceID identifies the specific WebSocket service connection pool.
 // authenticator handles adding authentication credentials to the connection request.
 // callDefinition contains the configuration for the WebSocket call, such as
 // parameter mappings and transformers.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
-	serviceKey string,
+	serviceID string,
 	authenticator auth.UpstreamAuthenticator,
 	callDefinition *configv1.WebsocketCallDefinition,
 ) *WebsocketTool {
 	return &WebsocketTool{
 		tool:              tool,
 		poolManager:       poolManager,
-		serviceKey:        serviceKey,
+		serviceID:        serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
@@ -85,9 +85,9 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceKey)
+	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceKey)
+		return nil, fmt.Errorf("no websocket pool found for service: %s", t.serviceID)
 	}
 
 	wrapper, err := wsPool.Get(ctx)

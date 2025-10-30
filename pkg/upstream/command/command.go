@@ -18,6 +18,8 @@ package command
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/mcpxy/core/pkg/logging"
@@ -54,10 +56,20 @@ func (u *CommandUpstream) Register(
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
-	serviceKey, err := util.GenerateServiceKey(serviceConfig.GetName())
+
+	// Calculate SHA256 for the ID
+	h := sha256.New()
+	h.Write([]byte(serviceConfig.GetName()))
+	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+
+	// Sanitize the service name
+	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, err
 	}
+	serviceConfig.SetSanitizedName(sanitizedName)
+
+	serviceID := sanitizedName // for internal use
 
 	commandLineService := serviceConfig.GetCommandLineService()
 	if commandLineService == nil {
@@ -68,11 +80,11 @@ func (u *CommandUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceKey, info)
+	toolManager.AddServiceInfo(serviceID, info)
 
 	discoveredTools, err := u.createAndRegisterCommandTools(
 		ctx,
-		serviceKey,
+		serviceID,
 		commandLineService,
 		toolManager,
 		isReload,
@@ -82,13 +94,13 @@ func (u *CommandUpstream) Register(
 	}
 	log.Info(
 		"Registered command service",
-		"serviceKey",
-		serviceKey,
+		"serviceID",
+		serviceID,
 		"toolsAdded",
 		len(discoveredTools),
 	)
 
-	return serviceKey, discoveredTools, nil, nil
+	return serviceID, discoveredTools, nil, nil
 }
 
 // createAndRegisterCommandTools iterates through the command definitions in the
@@ -96,7 +108,7 @@ func (u *CommandUpstream) Register(
 // with the tool manager.
 func (u *CommandUpstream) createAndRegisterCommandTools(
 	_ context.Context,
-	serviceKey string,
+	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
 	toolManager tool.ToolManagerInterface,
 	_ bool,
@@ -146,7 +158,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			Name:                proto.String(command),
 			DisplayName:         proto.String(command),
 			Description:         proto.String(schema.GetDescription()),
-			ServiceId:           proto.String(serviceKey),
+			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(command),
 			InputSchema:         inputSchema,
 			OutputSchema:        outputSchema,

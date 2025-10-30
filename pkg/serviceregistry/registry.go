@@ -98,47 +98,47 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	serviceKey, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	if _, ok := r.serviceConfigs[serviceKey]; ok {
-		r.toolManager.ClearToolsForService(serviceKey) // Clean up the just-registered tools
+	if _, ok := r.serviceConfigs[serviceID]; ok {
+		r.toolManager.ClearToolsForService(serviceID) // Clean up the just-registered tools
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
-	r.serviceConfigs[serviceKey] = serviceConfig
+	r.serviceConfigs[serviceID] = serviceConfig
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
 			authenticator := auth.NewAPIKeyAuthenticator(apiKeyConfig)
-			r.authManager.AddAuthenticator(serviceKey, authenticator)
+			r.authManager.AddAuthenticator(serviceID, authenticator)
 		}
 		if oauth2Config := authConfig.GetOauth2(); oauth2Config != nil {
 			config := &auth.OAuth2Config{
 				IssuerURL:    oauth2Config.GetIssuerUrl(),
 				Audience:     oauth2Config.GetAudience(),
 			}
-			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceKey, config); err != nil {
+			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceID, config); err != nil {
 				return "", nil, nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)
 			}
 		}
 	}
 
-	return serviceKey, discoveredTools, discoveredResources, nil
+	return serviceID, discoveredTools, discoveredResources, nil
 }
 
 // GetServiceConfig returns the configuration for a given service key.
 //
 // Parameters:
-//   - serviceKey: The unique identifier for the service.
+//   - serviceID: The unique identifier for the service.
 //
 // Returns the service configuration and a boolean indicating whether the service
 // was found.
-func (r *ServiceRegistry) GetServiceConfig(serviceKey string) (*config.UpstreamServiceConfig, bool) {
+func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	serviceConfig, ok := r.serviceConfigs[serviceKey]
+	serviceConfig, ok := r.serviceConfigs[serviceID]
 	return serviceConfig, ok
 }

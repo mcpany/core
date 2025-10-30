@@ -42,7 +42,7 @@ import (
 type WebrtcTool struct {
 	tool              *v1.Tool
 	poolManager       *pool.Manager
-	serviceKey        string
+	serviceID        string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.WebrtcParameterMapping
 	inputTransformer  *configv1.InputTransformer
@@ -54,21 +54,21 @@ type WebrtcTool struct {
 //
 // tool is the protobuf definition of the tool.
 // poolManager is used to get a client from the connection pool.
-// serviceKey identifies the specific service connection pool.
+// serviceID identifies the specific service connection pool.
 // authenticator handles adding authentication credentials to the signaling request.
 // callDefinition contains the configuration for the WebRTC call, such as
 // parameter mappings and transformers.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
-	serviceKey string,
+	serviceID string,
 	authenticator auth.UpstreamAuthenticator,
 	callDefinition *configv1.WebrtcCallDefinition,
 ) (*WebrtcTool, error) {
 	return &WebrtcTool{
 		tool:              tool,
 		poolManager:       poolManager,
-		serviceKey:        serviceKey,
+		serviceID:        serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),

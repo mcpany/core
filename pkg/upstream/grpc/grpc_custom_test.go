@@ -43,12 +43,12 @@ func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceKey string, info *tool.ServiceInfo) {
-	m.serviceInfo[serviceKey] = info
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.serviceInfo[serviceID] = info
 }
 
-func (m *mockToolManager) GetServiceInfo(serviceKey string) (*tool.ServiceInfo, bool) {
-	info, ok := m.serviceInfo[serviceKey]
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	info, ok := m.serviceInfo[serviceID]
 	return info, ok
 }
 
@@ -96,11 +96,11 @@ message TestResponse3 {
 	pm := pool.NewManager()
 	upstream := NewGRPCUpstream(pm)
 
-	serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	// Check if the service info was added
-	_, ok := tm.GetServiceInfo(serviceKey)
+	_, ok := tm.GetServiceInfo(serviceID)
 	assert.True(t, ok, "Service info should be added to the tool manager")
 
 	// Check if the tool was added

@@ -65,7 +65,8 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	if m.lastErr != nil {
 		return m.lastErr
 	}
-	toolID, _ := util.GenerateToolID(t.Tool().GetServiceId(), t.Tool().GetName())
+	sanitizedToolName, _ := util.SanitizeToolName(t.Tool().GetName())
+	toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
 	m.tools[toolID] = t
 	return nil
 }
@@ -87,11 +88,11 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ClearToolsForService(serviceKey string) {
+func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	for name, t := range m.tools {
-		if t.Tool().GetServiceId() == serviceKey {
+		if t.Tool().GetServiceId() == serviceID {
 			delete(m.tools, name)
 		}
 	}
@@ -145,7 +146,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		serviceConfig.SetGrpcService(grpcService)
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "name cannot be empty")
+		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 
 	t.Run("nil grpc service config", func(t *testing.T) {
@@ -302,7 +303,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig.SetGrpcService(grpcService)
 
 		// First call - should populate the cache
-		serviceKey, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
 		// We expect 2 tools from the annotations + 2 from the descriptors, and 1 for reflection
@@ -310,11 +311,11 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
-		serviceKey2, discoveredTools2, _, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
+		serviceID2, discoveredTools2, _, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
 		assert.Len(t, tm2.ListTools(), 5)
-		assert.Equal(t, serviceKey, serviceKey2)
+		assert.Equal(t, serviceID, serviceID2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
 	})
@@ -332,12 +333,13 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig.SetName("calculator-service")
 		serviceConfig.SetGrpcService(grpcService)
 
-		serviceKey, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
 		// Verify the "Add" tool's schema
-		addToolName, err := util.GenerateToolID(serviceKey, "CalculatorAdd")
+		sanitizedToolName, err := util.SanitizeToolName("CalculatorAdd")
 		require.NoError(t, err)
+		addToolName := serviceID + "." + sanitizedToolName
 		addTool, ok := tm.GetTool(addToolName)
 		require.True(t, ok)
 		inputSchema := addTool.Tool().GetAnnotations().GetInputSchema()
@@ -350,8 +352,9 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
 
 		// Verify the "Subtract" tool's schema
-		subtractToolName, err := util.GenerateToolID(serviceKey, "CalculatorSubtract")
+		sanitizedToolName, err = util.SanitizeToolName("CalculatorSubtract")
 		require.NoError(t, err)
+		subtractToolName := serviceID + "." + sanitizedToolName
 		subtractTool, ok := tm.GetTool(subtractToolName)
 		require.True(t, ok)
 		inputSchema = subtractTool.Tool().GetAnnotations().GetInputSchema()
