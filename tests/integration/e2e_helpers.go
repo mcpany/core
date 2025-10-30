@@ -42,6 +42,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/mcpxy/core/pkg/app"
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/spf13/afero"
 )
 
@@ -554,10 +555,10 @@ func StartMCPXYServerWithConfig(t *testing.T, testName, configContent string) *M
 }
 
 func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
-	return StartMCPXYServerWithClock(t, testName, extraArgs...)
+	return StartMCPXYServerWithClock(t, testName, clock.New(), extraArgs...)
 }
 
-func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerInfo {
+func StartInProcessMCPXYServer(t *testing.T, testName string, clock clock.Clock) *MCPXYTestServerInfo {
 	t.Helper()
 
 	_, err := GetProjectRoot()
@@ -576,7 +577,7 @@ func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerIn
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
-		appRunner := app.NewApplication()
+		appRunner := app.NewApplication(clock)
 		err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf("%d", jsonrpcPort), fmt.Sprintf("%d", grpcRegPort), []string{}, 5*time.Second)
 		require.NoError(t, err)
 	}()
@@ -624,7 +625,7 @@ func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerIn
 	}
 }
 
-func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
+func StartMCPXYServerWithClock(t *testing.T, testName string, clock clock.Clock, extraArgs ...string) *MCPXYTestServerInfo {
 	t.Helper()
 
 	root, err := GetProjectRoot()

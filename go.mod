@@ -1,6 +1,6 @@
 module github.com/mcpxy/core
 
-go 1.25
+go 1.24.3
 
 replace github.com/mcpxy/core => ./
 
@@ -9,8 +9,6 @@ require (
 	github.com/antchfx/xpath v1.3.5
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
-	github.com/eko/gocache/lib/v4 v4.2.2
-	github.com/eko/gocache/store/go_cache/v4 v4.2.3
 	github.com/getkin/kin-openapi v0.131.0
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -39,9 +37,7 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bufbuild/protocompile v0.6.0 // indirect
-	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
@@ -91,10 +87,6 @@ require (
 	github.com/pion/turn/v2 v2.1.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_golang v1.19.0 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.52.3 // indirect
-	github.com/prometheus/procfs v0.13.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect

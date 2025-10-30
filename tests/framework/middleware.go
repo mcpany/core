@@ -24,22 +24,25 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpxy/core/pkg/common/clock"
 	apiv1 "github.com/mcpxy/core/proto/api/v1"
 	"github.com/mcpxy/core/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 
 func TestE2ECaching(t *testing.T) {
+	fakeClock := clock.NewFake(time.Now())
 	RunE2ETest(t, &E2ETestCase{
 		Name:                "caching",
 		UpstreamServiceType: "http",
 		BuildUpstream:       BuildCachingServer,
 		RegisterUpstream:    RegisterCachingService,
 		ValidateMiddlewares: func(t *testing.T, mcpxyEndpoint, upstreamEndpoint string) {
-			ValidateCaching(t, mcpxyEndpoint, upstreamEndpoint)
+			ValidateCaching(t, mcpxyEndpoint, upstreamEndpoint, fakeClock)
 		},
 		InvokeAIClient:      func(t *testing.T, mcpxyEndpoint string) {},
 		RegistrationMethods: []RegistrationMethod{GRPCRegistration},
+		Clock:               fakeClock,
 	})
 }
 
@@ -75,7 +78,7 @@ func callTool(t *testing.T, mcpxyEndpoint, toolName string) {
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func ValidateCaching(t *testing.T, mcpxyEndpoint, upstreamEndpoint string) {
+func ValidateCaching(t *testing.T, mcpxyEndpoint, upstreamEndpoint string, fakeClock *clock.FakeClock) {
 	// 1. Reset the upstream server's counter.
 	resp, err := http.Post(fmt.Sprintf("http://%s/reset", upstreamEndpoint), "", nil)
 	require.NoError(t, err)
@@ -94,7 +97,7 @@ func ValidateCaching(t *testing.T, mcpxyEndpoint, upstreamEndpoint string) {
 	require.Equal(t, int64(1), metrics["counter"])
 
 	// 4. Advance the fake clock to expire the cache.
-	time.Sleep(6 * time.Second)
+	fakeClock.Advance(6 * time.Second)
 
 	// 5. Make another request to the tool and check that the upstream service was called.
 	callTool(t, mcpxyEndpoint, "e2e_caching_server.get_data")

@@ -24,28 +24,31 @@ import (
 	"sort"
 	"time"
 
-	"github.com/eko/gocache/lib/v4/cache"
-	"github.com/eko/gocache/lib/v4/store"
-	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/tool"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
-	go_cache "github.com/patrickmn/go-cache"
+	"github.com/patrickmn/go-cache"
 )
+
+type cacheEntry struct {
+	data      any
+	expiresAt time.Time
+}
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache       *cache.Cache[any]
+	cache       *cache.Cache
 	toolManager tool.ToolManagerInterface
+	clock       clock.Clock
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddleware {
-	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
-	cacheManager := cache.New[any](goCacheStore)
+func NewCachingMiddleware(toolManager tool.ToolManagerInterface, clock clock.Clock) *CachingMiddleware {
 	return &CachingMiddleware{
-		cache:       cacheManager,
+		cache:       cache.New(5*time.Minute, 10*time.Minute),
 		toolManager: toolManager,
+		clock:       clock,
 	}
 }
 
@@ -62,8 +65,12 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	}
 
 	cacheKey := m.GetCacheKey(req)
-	if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
-		return cached, nil
+	if cached, found := m.cache.Get(cacheKey); found {
+		if entry, ok := cached.(cacheEntry); ok {
+			if m.clock.Now().Before(entry.expiresAt) {
+				return entry.data, nil
+			}
+		}
 	}
 
 	result, err := next(ctx, req)
@@ -71,7 +78,11 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return nil, err
 	}
 
-	m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration()))
+	entry := cacheEntry{
+		data:      result,
+		expiresAt: m.clock.Now().Add(cacheConfig.GetTtl().AsDuration()),
+	}
+	m.cache.Set(cacheKey, entry, cache.NoExpiration)
 	return result, nil
 }
 
