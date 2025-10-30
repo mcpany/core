@@ -78,7 +78,7 @@ func TestNewGRPCTool(t *testing.T) {
 	toolProto := &v1.Tool{}
 	methodDesc := findMethodDescriptor(t, "CalculatorService", "Add")
 
-	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceKey, methodDesc)
+	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceKey, methodDesc, nil)
 	require.NotNil(t, grpcTool)
 	assert.Equal(t, toolProto, grpcTool.Tool())
 }
@@ -170,7 +170,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
 		inputs := json.RawMessage(`{"a": 10, "b": 20}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
@@ -188,7 +188,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err := grpcTool.Execute(context.Background(), req)
 		assert.Error(t, err)
@@ -211,7 +211,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
 		inputs := json.RawMessage(`{"a": 10, "b": 20}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
@@ -220,7 +220,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 	t.Run("invalid input json", func(t *testing.T) {
 		pm := pool.NewManager()
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
 		inputs := json.RawMessage(`{invalid}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
