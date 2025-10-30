@@ -58,6 +58,8 @@ message WebsocketCallDefinition {
   InputTransformer input_transformer = 4;
   // An optional output transformer to parse the response body.
   OutputTransformer output_transformer = 5;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 6;
 }
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
@@ -70,6 +72,8 @@ message WebrtcCallDefinition {
   InputTransformer input_transformer = 4;
   // An optional output transformer to parse the response body.
   OutputTransformer output_transformer = 5;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 6;
 }
 
 // StdioCallDefinition describes how to map an MCP call to a stdio command.
@@ -78,6 +82,8 @@ message StdioCallDefinition {
   ToolSchema schema = 1;
   // Defines the parameters for the stdio command.
   repeated StdioParameterMapping parameters = 2;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 3;
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -118,6 +124,8 @@ message GrpcCallDefinition {
   string method = 3;
   // Note: For gRPC, parameter mapping is typically done by matching field names
   // between the MCP input schema and the gRPC request message.
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
 }
 
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
@@ -129,6 +137,8 @@ message OpenAPICallDefinition {
   InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
   OutputTransformer output_transformer = 3;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
 }
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
@@ -139,6 +149,8 @@ message MCPCallDefinition {
   InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
   OutputTransformer output_transformer = 3;
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
 }
 
 // GlobalSettings contains server-wide operational parameters.

@@ -40,12 +40,17 @@ type MCPServerProvider interface {
 // ToolManager is a thread-safe manager for registering, retrieving, and
 // executing tools. It also handles the registration of tools with an MCP server,
 // making them available for remote execution.
+type ToolExecutionMiddleware interface {
+	Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error)
+}
+
 type ToolManager struct {
 	tools       sync.Map
 	serviceInfo sync.Map
 	mcpServer   MCPServerProvider
 	bus         *bus.BusProvider
 	mu          sync.RWMutex
+	middlewares []ToolExecutionMiddleware
 }
 
 // NewToolManager creates and returns a new, empty ToolManager.
@@ -53,6 +58,11 @@ func NewToolManager(bus *bus.BusProvider) *ToolManager {
 	return &ToolManager{
 		bus: bus,
 	}
+}
+
+// AddMiddleware adds a middleware to the tool manager.
+func (tm *ToolManager) AddMiddleware(middleware ToolExecutionMiddleware) {
+	tm.middlewares = append(tm.middlewares, middleware)
 }
 
 // SetMCPServer provides the ToolManager with a reference to the MCP server.
@@ -71,11 +81,25 @@ func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
 func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
-	tool, ok := tm.GetTool(req.ToolName)
-	if !ok {
-		return nil, ErrToolNotFound
+	execute := func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		t, ok := tm.GetTool(req.ToolName)
+		if !ok {
+			return nil, ErrToolNotFound
+		}
+		ctx = NewContextWithTool(ctx, t)
+		return t.Execute(ctx, req)
 	}
-	return tool.Execute(ctx, req)
+
+	chain := execute
+	for i := len(tm.middlewares) - 1; i >= 0; i-- {
+		m := tm.middlewares[i]
+		chain = func(next ToolExecutionFunc) ToolExecutionFunc {
+			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
+				return m.Execute(ctx, req, next)
+			}
+		}(chain)
+	}
+	return chain(ctx, req)
 }
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.

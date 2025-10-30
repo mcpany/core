@@ -34,6 +34,7 @@ import (
 	"github.com/mcpxy/core/pkg/upstream/factory"
 	"github.com/mcpxy/core/pkg/util"
 	"github.com/mcpxy/core/pkg/worker"
+	configv1 "github.com/mcpxy/core/proto/config/v1"
 	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -58,6 +59,10 @@ func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
+}
+
+func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
 }
 
 func TestToolListFiltering(t *testing.T) {
@@ -199,6 +204,10 @@ func (m *mockErrorTool) Tool() *v1.Tool {
 
 func (m *mockErrorTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("execution error")
+}
+
+func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
 }
 
 func TestServer_CallTool(t *testing.T) {
