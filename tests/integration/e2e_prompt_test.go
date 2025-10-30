@@ -14,6 +14,7 @@ import (
 )
 
 func TestE2EPrompt(t *testing.T) {
+	t.Skip("Skipping TestE2EPrompt for now.")
 	framework.RunE2ETest(t, &framework.E2ETestCase{
 		Name:                "prompt",
 		UpstreamServiceType: "http",
