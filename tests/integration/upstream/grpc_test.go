@@ -39,10 +39,10 @@ import (
 
 func TestUpstreamService_GRPC(t *testing.T) {
 	testCase := &framework.E2ETestCase{
-		Name:                "gRPC Calculator Server",
+		Name:                "gRPC Weather Server",
 		UpstreamServiceType: "grpc",
-		BuildUpstream:       framework.BuildGRPCServer,
-		RegisterUpstream:    framework.RegisterGRPCService,
+		BuildUpstream:       framework.BuildGRPCWeatherServer,
+		RegisterUpstream:    framework.RegisterGRPCWeatherService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 			defer cancel()
@@ -58,16 +58,16 @@ func TestUpstreamService_GRPC(t *testing.T) {
 				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
 			}
 
-			const calcServiceID = "e2e_grpc_calculator"
-			serviceKey, _ := util.GenerateID(calcServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
-			addArgs := `{"a": 10, "b": 20}`
+			const weatherServiceID = "e2e_grpc_weather"
+			serviceKey, _ := util.GenerateID(weatherServiceID)
+			toolName, _ := util.GenerateToolID(serviceKey, "GetWeather")
+			addArgs := `{"location": "london"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
-			require.NoError(t, err, "Error calling Add tool")
-			require.NotNil(t, res, "Nil response from Add tool")
+			require.NoError(t, err, "Error calling GetWeather tool")
+			require.NotNil(t, res, "Nil response from GetWeather tool")
 			switch content := res.Content[0].(type) {
 			case *mcp.TextContent:
-				require.JSONEq(t, `{"result": 30}`, content.Text, "The sum is incorrect")
+				require.JSONEq(t, `{"weather": "Cloudy, 15°C"}`, content.Text, "The weather is incorrect")
 			default:
 				t.Fatalf("Unexpected content type: %T", content)
 			}

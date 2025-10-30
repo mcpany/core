@@ -30,10 +30,10 @@ import (
 
 func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 	testCase := &framework.E2ETestCase{
-		Name:                "Authenticated gRPC Calculator Server",
+		Name:                "Authenticated gRPC Weather Server",
 		UpstreamServiceType: "grpc",
-		BuildUpstream:       framework.BuildGRPCAuthedServer,
-		RegisterUpstream:    framework.RegisterGRPCAuthedService,
+		BuildUpstream:       framework.BuildGRPCAuthedWeatherServer,
+		RegisterUpstream:    framework.RegisterGRPCAuthedWeatherService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
@@ -43,16 +43,16 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 			require.NoError(t, err)
 			defer cs.Close()
 
-			const calcServiceID = "e2e_grpc_authed_calculator"
-			serviceKey, _ := util.GenerateID(calcServiceID)
-			toolName, _ := util.GenerateToolID(serviceKey, "CalculatorAdd")
-			addArgs := `{"a": 10, "b": 20}`
-			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(addArgs)})
-			require.NoError(t, err, "Error calling Add tool with correct auth")
-			require.NotNil(t, res, "Nil response from Add tool with correct auth")
+			const weatherServiceID = "e2e_grpc_authed_weather"
+			serviceKey, _ := util.GenerateID(weatherServiceID)
+			toolName, _ := util.GenerateToolID(serviceKey, "GetWeather")
+			weatherArgs := `{"location": "london"}`
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(weatherArgs)})
+			require.NoError(t, err, "Error calling GetWeather tool with correct auth")
+			require.NotNil(t, res, "Nil response from GetWeather tool with correct auth")
 			switch content := res.Content[0].(type) {
 			case *mcp.TextContent:
-				require.JSONEq(t, `{"result": 30}`, content.Text, "The sum is incorrect")
+				require.JSONEq(t, `{"weather": "Cloudy, 15°C"}`, content.Text, "The weather is incorrect")
 			default:
 				t.Fatalf("Unexpected content type: %T", content)
 			}

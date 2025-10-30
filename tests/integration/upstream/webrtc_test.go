@@ -36,17 +36,17 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 	}
 
 	testCase := &framework.E2ETestCase{
-		Name:                "WebRTC Echo Server",
+		Name:                "WebRTC Weather Server",
 		UpstreamServiceType: "webrtc",
-		BuildUpstream:       framework.BuildWebrtcServer,
-		RegisterUpstream:    framework.RegisterWebrtcService,
+		BuildUpstream:       framework.BuildWebrtcWeatherServer,
+		RegisterUpstream:    framework.RegisterWebrtcWeatherService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			framework.VerifyMCPClient(t, mcpxyEndpoint)
 			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
 			defer gemini.RemoveMCP("mcpxy-server")
-			output, err := gemini.Run(apiKey, "echo hello world from webrtc")
+			output, err := gemini.Run(apiKey, "what is the weather in london")
 			require.NoError(t, err)
-			require.Contains(t, output, "hello world from webrtc")
+			require.Contains(t, output, "Cloudy, 15°C")
 		},
 	}
 
