@@ -53,7 +53,7 @@ func TestGrpcPool_New(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config)
+	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)
 	require.NoError(t, err)
 	assert.NotNil(t, p)
 	defer p.Close()

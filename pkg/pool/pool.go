@@ -66,11 +66,12 @@ type Pool[T ClosableClient] interface {
 // channel of clients, a factory for creating new clients, and a semaphore for
 // controlling the pool size.
 type poolImpl[T ClosableClient] struct {
-	clients chan T
-	factory func(context.Context) (T, error)
-	sem     *semaphore.Weighted
-	mu      sync.Mutex
-	closed  bool
+	clients            chan T
+	factory            func(context.Context) (T, error)
+	sem                *semaphore.Weighted
+	mu                 sync.Mutex
+	closed             bool
+	disableHealthCheck bool
 }
 
 // New creates a new connection pool with the specified factory and size
@@ -91,6 +92,7 @@ type poolImpl[T ClosableClient] struct {
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	minSize, maxSize, idleTimeout int, // idleTimeout is not used yet
+	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {
 		return nil, fmt.Errorf("maxSize must be positive")
@@ -100,11 +102,29 @@ func New[T ClosableClient](
 	}
 
 	p := &poolImpl[T]{
-		clients: make(chan T, maxSize),
-		factory: factory,
-		sem:     semaphore.NewWeighted(int64(maxSize)),
+		clients:            make(chan T, maxSize),
+		factory:            factory,
+		sem:                semaphore.NewWeighted(int64(maxSize)),
+		disableHealthCheck: disableHealthCheck,
 	}
 
+	// If health checks are disabled, we can pre-fill the pool without checks.
+	if disableHealthCheck {
+		for i := 0; i < minSize; i++ {
+			client, err := factory(context.Background())
+			if err != nil {
+				p.Close()
+				return nil, fmt.Errorf("factory failed to create initial client: %w", err)
+			}
+			p.clients <- client
+		}
+		if !p.sem.TryAcquire(int64(minSize)) {
+			return nil, fmt.Errorf("failed to acquire permits for initial clients")
+		}
+		return p, nil
+	}
+
+	// With health checks enabled, we need to ensure clients are healthy before adding.
 	for i := 0; i < minSize; i++ {
 		client, err := factory(context.Background())
 		if err != nil {
@@ -156,7 +176,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 				return zero, ErrPoolClosed
 			}
-			if client.IsHealthy(ctx) {
+			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
 			lo.Try(client.Close)
@@ -178,7 +198,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 					return zero, ErrPoolClosed
 				}
-				if client.IsHealthy(ctx) {
+				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
 				lo.Try(client.Close)
@@ -210,7 +230,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 				return zero, ErrPoolClosed
 			}
-			if client.IsHealthy(ctx) {
+			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
 			lo.Try(client.Close)
@@ -246,7 +266,7 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 
 	// Use a background context for health checks in Put to avoid blocking.
-	if !client.IsHealthy(context.Background()) {
+	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
 		p.mu.Unlock()
 		lo.Try(client.Close)
 		p.sem.Release(1)

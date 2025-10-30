@@ -45,6 +45,7 @@ func NewGrpcPool(
 	dialer func(context.Context, string) (net.Conn, error),
 	creds credentials.PerRPCCredentials,
 	config *configv1.UpstreamServiceConfig,
+	disableHealthCheck bool,
 ) (pool.Pool[*client.GrpcClientWrapper], error) {
 	factory := func(ctx context.Context) (*client.GrpcClientWrapper, error) {
 		opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -62,5 +63,5 @@ func NewGrpcPool(
 		}
 		return client.NewGrpcClientWrapper(conn, config), nil
 	}
-	return pool.New(factory, minSize, maxSize, idleTimeout)
+	return pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
 }

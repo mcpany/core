@@ -57,6 +57,6 @@ var (
 				config,
 			), nil
 		}
-		return pool.New(factory, minSize, maxSize, idleTimeout)
+		return pool.New(factory, minSize, maxSize, idleTimeout, false)
 	}
 )

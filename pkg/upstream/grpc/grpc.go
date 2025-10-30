@@ -100,7 +100,7 @@ func (u *GRPCUpstream) Register(
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
-	grpcPool, err := NewGrpcPool(0, 10, 300, nil, grpcCreds, serviceConfig)
+	grpcPool, err := NewGrpcPool(0, 10, 300, nil, grpcCreds, serviceConfig, false)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", serviceConfig.GetName(), err)
 	}
