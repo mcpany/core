@@ -31,32 +31,24 @@ const openAPISpec = `
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Calculator API",
+    "title": "Weather API",
     "version": "1.0.0"
   },
   "paths": {
-    "/add": {
-      "post": {
-        "summary": "Add two numbers",
-        "operationId": "add",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "a": {
-                    "type": "integer"
-                  },
-                  "b": {
-                    "type": "integer"
-                  }
-                }
-              }
+    "/weather": {
+      "get": {
+        "summary": "Get weather for a location",
+        "operationId": "getWeather",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -65,8 +57,8 @@ const openAPISpec = `
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "result": {
-                      "type": "integer"
+                    "weather": {
+                      "type": "string"
                     }
                   }
                 }
@@ -79,6 +71,11 @@ const openAPISpec = `
   }
 }
 `
+var weatherData = map[string]string{
+	"new york": "Sunny, 25°C",
+	"london":   "Cloudy, 15°C",
+	"tokyo":    "Rainy, 20°C",
+}
 
 func main() {
 	port := flag.Int("port", 0, "Port to listen on. If 0, a random available port will be chosen and printed to stdout.")
@@ -104,27 +101,24 @@ func main() {
 		_, _ = w.Write([]byte(openAPISpec))
 	})
 
-	mux.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
+	mux.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		var body map[string]int
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+		location := r.URL.Query().Get("location")
+		if location == "" {
+			http.Error(w, "Missing location parameter", http.StatusBadRequest)
 			return
 		}
-		a, aOk := body["a"]
-		b, bOk := body["b"]
-
-		if !aOk || !bOk {
-			http.Error(w, "Invalid input: 'a' and 'b' are required", http.StatusBadRequest)
+		weather, ok := weatherData[location]
+		if !ok {
+			http.Error(w, "Location not found", http.StatusNotFound)
 			return
 		}
 
-		result := a + b
 		w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
-		_ = json.NewEncoder(w).Encode(map[string]int{"result": result})
+		_ = json.NewEncoder(w).Encode(map[string]string{"weather": weather})
 	})
 
 	server := &http.Server{

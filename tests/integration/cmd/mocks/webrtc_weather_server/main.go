@@ -35,27 +35,33 @@ var (
 	mu             sync.Mutex
 )
 
+var weatherData = map[string]string{
+	"new york": "Sunny, 25°C",
+	"london":   "Cloudy, 15°C",
+	"tokyo":    "Rainy, 20°C",
+}
+
 func signalHandler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	slog.Info("webrtc_echo_server: Received signal request")
+	slog.Info("webrtc_weather_server: Received signal request")
 	var offer webrtc.SessionDescription
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		slog.Error("webrtc_echo_server: Failed to read request body", "error", err)
+		slog.Error("webrtc_weather_server: Failed to read request body", "error", err)
 		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
 		return
 	}
 
 	if err := json.Unmarshal(body, &offer); err != nil {
-		slog.Error("webrtc_echo_server: Failed to unmarshal offer", "error", err)
+		slog.Error("webrtc_weather_server: Failed to unmarshal offer", "error", err)
 		http.Error(w, "Failed to unmarshal offer", http.StatusBadRequest)
 		return
 	}
 
 	if err := peerConnection.SetRemoteDescription(offer); err != nil {
-		slog.Error("webrtc_echo_server: Failed to set remote description", "error", err)
+		slog.Error("webrtc_weather_server: Failed to set remote description", "error", err)
 		http.Error(w, "Failed to set remote description", http.StatusInternalServerError)
 		return
 	}
@@ -64,13 +70,13 @@ func signalHandler(w http.ResponseWriter, r *http.Request) {
 
 	answer, err := peerConnection.CreateAnswer(nil)
 	if err != nil {
-		slog.Error("webrtc_echo_server: Failed to create answer", "error", err)
+		slog.Error("webrtc_weather_server: Failed to create answer", "error", err)
 		http.Error(w, "Failed to create answer", http.StatusInternalServerError)
 		return
 	}
 
 	if err := peerConnection.SetLocalDescription(answer); err != nil {
-		slog.Error("webrtc_echo_server: Failed to set local description", "error", err)
+		slog.Error("webrtc_weather_server: Failed to set local description", "error", err)
 		http.Error(w, "Failed to set local description", http.StatusInternalServerError)
 		return
 	}
@@ -79,16 +85,16 @@ func signalHandler(w http.ResponseWriter, r *http.Request) {
 
 	response, err := json.Marshal(peerConnection.LocalDescription())
 	if err != nil {
-		slog.Error("webrtc_echo_server: Failed to marshal answer", "error", err)
+		slog.Error("webrtc_weather_server: Failed to marshal answer", "error", err)
 		http.Error(w, "Failed to marshal answer", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write(response); err != nil {
-		slog.Error("webrtc_echo_server: Failed to write response", "error", err)
+		slog.Error("webrtc_weather_server: Failed to write response", "error", err)
 	}
-	slog.Info("webrtc_echo_server: Sent answer")
+	slog.Info("webrtc_weather_server: Sent answer")
 }
 
 func setupPeerConnection() error {
@@ -106,29 +112,34 @@ func setupPeerConnection() error {
 	}
 
 	peerConnection.OnDataChannel(func(d *webrtc.DataChannel) {
-		slog.Info("webrtc_echo_server: New DataChannel", "label", d.Label(), "id", d.ID())
+		slog.Info("webrtc_weather_server: New DataChannel", "label", d.Label(), "id", d.ID())
 		d.OnOpen(func() {
-			slog.Info("webrtc_echo_server: Data channel opened")
+			slog.Info("webrtc_weather_server: Data channel opened")
 		})
 		d.OnMessage(func(msg webrtc.DataChannelMessage) {
-			slog.Info("webrtc_echo_server: Received message", "message", string(msg.Data))
-			if err := d.SendText(string(msg.Data)); err != nil {
-				slog.Error("webrtc_echo_server: Failed to send message", "error", err)
+			slog.Info("webrtc_weather_server: Received message", "message", string(msg.Data))
+			location := string(msg.Data)
+			weather, ok := weatherData[location]
+			if !ok {
+				weather = "Location not found"
 			}
-			slog.Info("webrtc_echo_server: Echoed message", "message", string(msg.Data))
+			if err := d.SendText(weather); err != nil {
+				slog.Error("webrtc_weather_server: Failed to send message", "error", err)
+			}
+			slog.Info("webrtc_weather_server: Sent weather", "weather", weather)
 		})
 		d.OnClose(func() {
-			slog.Info("webrtc_echo_server: Data channel closed")
+			slog.Info("webrtc_weather_server: Data channel closed")
 		})
 	})
 
 	return nil
 }
 
-// main starts the mock WebRTC echo server.
+// main starts the mock WebRTC weather server.
 func main() {
 	if err := setupPeerConnection(); err != nil {
-		slog.Error("webrtc_echo_server: Failed to setup peer connection", "error", err)
+		slog.Error("webrtc_weather_server: Failed to setup peer connection", "error", err)
 		os.Exit(1)
 	}
 
@@ -138,12 +149,12 @@ func main() {
 	addr := fmt.Sprintf(":%d", *port)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		slog.Error("webrtc_echo_server: Failed to listen on a port", "error", err)
+		slog.Error("webrtc_weather_server: Failed to listen on a port", "error", err)
 		os.Exit(1)
 	}
 
 	actualPort := listener.Addr().(*net.TCPAddr).Port
-	slog.Info("webrtc_echo_server: Listening on port", "port", actualPort)
+	slog.Info("webrtc_weather_server: Listening on port", "port", actualPort)
 
 	if *port == 0 {
 		fmt.Printf("%d\n", actualPort)
@@ -161,9 +172,9 @@ func main() {
 	}
 
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
-		slog.Error("webrtc_echo_server: Server failed", "error", err)
+		slog.Error("webrtc_weather_server: Server failed", "error", err)
 		os.Exit(1)
 	}
 
-	slog.Info("webrtc_echo_server: Server shut down.")
+	slog.Info("webrtc_weather_server: Server shut down.")
 }

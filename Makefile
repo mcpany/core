@@ -289,8 +289,14 @@ EXAMPLE_BIN_DIR := $(CURDIR)/build/examples/bin
 
 # List of example binaries
 .PHONY: build-examples
-build-examples:
+build-examples: build-weather-server
 
+# Target to build the weather server example
+.PHONY: build-weather-server
+build-weather-server:
+	@echo "Building weather server example..."
+	@mkdir -p $(EXAMPLE_BIN_DIR)
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream/http/server/weather_server/weather_server.go
 
 # ==============================================================================
 # Other Commands
@@ -317,7 +323,7 @@ E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
 E2E_BIN_DIR := $(CURDIR)/build/test/bin
 
 # List of mock service directories (which are also their binary names)
-E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_calculator_server grpc_authed_calculator_server openapi_calculator_server websocket_echo_server webrtc_echo_server command-tester prompt-server
+E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server command-tester prompt-server
 
 # Target to build all E2E mock services
 .PHONY: build-e2e-mocks

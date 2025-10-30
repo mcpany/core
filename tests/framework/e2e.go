@@ -162,31 +162,31 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 	}
 }
 
-func BuildGRPCServer(t *testing.T) *integration.ManagedProcess {
+func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_calculator_server", filepath.Join(root, "build/test/bin/grpc_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterGRPCService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-	const serviceID = "e2e_grpc_calculator"
+func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_grpc_weather"
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, nil)
 }
 
-func BuildGRPCAuthedServer(t *testing.T) *integration.ManagedProcess {
+func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_authed_calculator_server", filepath.Join(root, "build/test/bin/grpc_authed_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterGRPCAuthedService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-	const serviceID = "e2e_grpc_authed_calculator"
+func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_grpc_authed_weather"
 	authConfig := configv1.UpstreamAuthentication_builder{
 		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
 			Token: proto.String("test-bearer-token"),
@@ -195,32 +195,33 @@ func RegisterGRPCAuthedService(t *testing.T, registrationClient apiv1.Registrati
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, authConfig)
 }
 
-func BuildWebsocketServer(t *testing.T) *integration.ManagedProcess {
+
+func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "websocket_echo_server", filepath.Join(root, "build/test/bin/websocket_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterWebsocketService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-	const serviceID = "e2e_websocket_echo"
-	integration.RegisterWebsocketService(t, registrationClient, serviceID, upstreamEndpoint, "echo", nil)
+func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_websocket_weather"
+	integration.RegisterWebsocketService(t, registrationClient, serviceID, upstreamEndpoint, "weather", nil)
 }
 
-func BuildWebrtcServer(t *testing.T) *integration.ManagedProcess {
+func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "webrtc_echo_server", filepath.Join(root, "build/test/bin/webrtc_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "build/test/bin/webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterWebrtcService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-	const serviceID = "e2e_webrtc_echo"
-	integration.RegisterWebrtcService(t, registrationClient, serviceID, upstreamEndpoint, "echo", nil)
+func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_webrtc_weather"
+	integration.RegisterWebrtcService(t, registrationClient, serviceID, upstreamEndpoint, "weather", nil)
 }
 
 func BuildStdioServer(t *testing.T) *integration.ManagedProcess {
@@ -255,17 +256,17 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 	)
 }
 
-func BuildOpenAPIServer(t *testing.T) *integration.ManagedProcess {
+func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "openapi_calculator_server", filepath.Join(root, "build/test/bin/openapi_calculator_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "build/test/bin/openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
 
-func RegisterOpenAPIService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-	const serviceID = "e2e_openapi_calculator"
+func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+	const serviceID = "e2e_openapi_weather"
 	openapiSpecEndpoint := fmt.Sprintf("%s/openapi.json", upstreamEndpoint)
 	resp, err := http.Get(openapiSpecEndpoint)
 	require.NoError(t, err, "Failed to fetch OpenAPI spec from server")
