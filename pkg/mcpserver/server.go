@@ -329,3 +329,35 @@ func (s *Server) ResourceManager() resource.ResourceManagerInterface {
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
+
+func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	s.toolManager.AddServiceInfo(serviceID, info)
+}
+
+func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
+	return s.toolManager.GetTool(toolName)
+}
+
+func (s *Server) ListTools() []tool.Tool {
+	return s.toolManager.ListTools()
+}
+
+func (s *Server) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return s.toolManager.ExecuteTool(ctx, req)
+}
+
+func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
+	s.toolManager.SetMCPServer(mcpServer)
+}
+
+func (s *Server) AddTool(t tool.Tool) error {
+	return s.toolManager.AddTool(t)
+}
+
+func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return s.toolManager.GetServiceInfo(serviceID)
+}
+
+func (s *Server) ClearToolsForService(serviceKey string) {
+	s.toolManager.ClearToolsForService(serviceKey)
+}
