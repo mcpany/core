@@ -22,7 +22,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/common/clock"
 	"github.com/mcpxy/core/pkg/middleware"
 	"github.com/mcpxy/core/pkg/tool"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
@@ -67,7 +66,7 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 func TestCachingMiddleware(t *testing.T) {
 	t.Run("cache hit", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, clock.New())
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -85,9 +84,10 @@ func TestCachingMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		// Prime the cache
-		cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		_, err := cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			return "cached result", nil
 		})
+		assert.NoError(t, err)
 
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			t.Fatal("next should not be called")
@@ -101,7 +101,7 @@ func TestCachingMiddleware(t *testing.T) {
 
 	t.Run("cache miss", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, clock.New())
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -132,8 +132,7 @@ func TestCachingMiddleware(t *testing.T) {
 
 	t.Run("cache override", func(t *testing.T) {
 		mockToolManager := &mockToolManager{}
-		fakeClock := clock.NewFake(time.Now())
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager, fakeClock)
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetServiceId("service")
@@ -152,7 +151,7 @@ func TestCachingMiddleware(t *testing.T) {
 		// Call-level cache config
 		callCacheConfig := &configv1.CacheConfig{}
 		callCacheConfig.SetIsEnabled(true)
-		callCacheConfig.SetTtl(durationpb.New(5 * time.Second))
+		callCacheConfig.SetTtl(durationpb.New(2 * time.Second))
 		mockTool.On("GetCacheConfig").Return(callCacheConfig)
 
 		req := &tool.ExecutionRequest{
@@ -162,12 +161,13 @@ func TestCachingMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		// Prime the cache with the call-level TTL
-		cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		_, err := cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			return "cached result", nil
 		})
+		assert.NoError(t, err)
 
 		// Wait for the call-level cache to expire
-		fakeClock.Advance(6 * time.Second)
+		time.Sleep(3 * time.Second)
 
 		nextCalled := false
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

@@ -21,31 +21,26 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mcpxy/core/pkg/common/clock"
+	"github.com/eko/gocache/lib/v4/cache"
+	"github.com/eko/gocache/lib/v4/store"
+	gocache_store "github.com/eko/gocache/store/go_cache/v4"
 	"github.com/mcpxy/core/pkg/tool"
 	configv1 "github.com/mcpxy/core/proto/config/v1"
-	"github.com/patrickmn/go-cache"
+	go_cache "github.com/patrickmn/go-cache"
 )
-
-type cacheEntry struct {
-	data      any
-	expiresAt time.Time
-}
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache       *cache.Cache
+	cache       *cache.Cache[any]
 	toolManager tool.ToolManagerInterface
-	clock       clock.Clock
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ToolManagerInterface, clock clock.Clock) *CachingMiddleware {
+func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddleware {
 	return &CachingMiddleware{
-		cache:       cache.New(5*time.Minute, 10*time.Minute),
+		cache:       cache.New[any](gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))),
 		toolManager: toolManager,
-		clock:       clock,
 	}
 }
 
@@ -62,12 +57,9 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	}
 
 	cacheKey := m.getCacheKey(req)
-	if cached, found := m.cache.Get(cacheKey); found {
-		if entry, ok := cached.(cacheEntry); ok {
-			if m.clock.Now().Before(entry.expiresAt) {
-				return entry.data, nil
-			}
-		}
+	cached, err := m.cache.Get(ctx, cacheKey)
+	if err == nil {
+		return cached, nil
 	}
 
 	result, err := next(ctx, req)
@@ -75,11 +67,11 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return nil, err
 	}
 
-	entry := cacheEntry{
-		data:      result,
-		expiresAt: m.clock.Now().Add(cacheConfig.GetTtl().AsDuration()),
+	err = m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration()))
+	if err != nil {
+		// Log the error, but don't fail the request
 	}
-	m.cache.Set(cacheKey, entry, cache.NoExpiration)
+
 	return result, nil
 }
 

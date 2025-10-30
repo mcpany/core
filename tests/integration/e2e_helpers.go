@@ -577,7 +577,7 @@ func StartInProcessMCPXYServer(t *testing.T, testName string, clock clock.Clock)
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
-		appRunner := app.NewApplication(clock)
+		appRunner := app.NewApplication()
 		err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf("%d", jsonrpcPort), fmt.Sprintf("%d", grpcRegPort), []string{}, 5*time.Second)
 		require.NoError(t, err)
 	}()
