@@ -36,17 +36,17 @@ func TestUpstreamService_Websocket(t *testing.T) {
 	}
 
 	testCase := &framework.E2ETestCase{
-		Name:                "Websocket Echo Server",
+		Name:                "Websocket Weather Server",
 		UpstreamServiceType: "websocket",
-		BuildUpstream:       framework.BuildWebsocketServer,
-		RegisterUpstream:    framework.RegisterWebsocketService,
+		BuildUpstream:       framework.BuildWebsocketWeatherServer,
+		RegisterUpstream:    framework.RegisterWebsocketWeatherService,
 		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
 			framework.VerifyMCPClient(t, mcpxyEndpoint)
 			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
 			defer gemini.RemoveMCP("mcpxy-server")
-			output, err := gemini.Run(apiKey, "echo hello world from websocket")
+			output, err := gemini.Run(apiKey, "what is the weather in london")
 			require.NoError(t, err)
-			require.Contains(t, output, "hello world from websocket")
+			require.Contains(t, output, "Cloudy, 15°C")
 		},
 	}
 
