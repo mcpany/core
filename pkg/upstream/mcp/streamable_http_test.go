@@ -720,7 +720,7 @@ func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
 	assert.Equal(t, "test-resource-http", discoveredResources[0].GetUri())
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-tool-http")
-	toolID := serviceID + "." + sanitizedToolName
+	toolID := serviceID + "/" + sanitizedToolName
 	_, ok := toolManager.GetTool(toolID)
 	assert.True(t, ok)
 
