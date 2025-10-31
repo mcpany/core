@@ -54,3 +54,43 @@ func TestTextTemplate_MissingParameter(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "Hello, !", rendered)
 }
+
+func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
+	templateString := "User: {{user}}, Role: {{role}}, ID: {{id}}"
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	params := map[string]any{
+		"user": "admin",
+		"role": "administrator",
+		"id":   123,
+	}
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+	assert.Equal(t, "User: admin, Role: administrator, ID: 123", rendered)
+}
+
+func TestTextTemplate_CustomDelimiters(t *testing.T) {
+	templateString := "Data: [=data=], Value: [=value=]"
+	tpl, err := NewTemplate(templateString, "[=", "=]")
+	require.NoError(t, err)
+
+	params := map[string]any{
+		"data":  "test-data",
+		"value": 456,
+	}
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+	assert.Equal(t, "Data: test-data, Value: 456", rendered)
+}
+
+func TestTextTemplate_EmptyTemplate(t *testing.T) {
+	templateString := ""
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	params := map[string]any{"key": "value"}
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+	assert.Equal(t, "", rendered)
+}
