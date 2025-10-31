@@ -33,10 +33,27 @@ import (
 	"github.com/mcpxy/core/pkg/logging"
 	"github.com/mcpxy/core/pkg/mcpserver"
 	"github.com/spf13/afero"
+	"sync/atomic"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 )
+
+// connCountingListener is a net.Listener that wraps another net.Listener and
+// counts the number of accepted connections.
+type connCountingListener struct {
+	net.Listener
+	connCount int32
+}
+
+func (l *connCountingListener) Accept() (net.Conn, error) {
+	conn, err := l.Listener.Accept()
+	if err == nil {
+		atomic.AddInt32(&l.connCount, 1)
+	}
+	return conn, err
+}
 
 func TestHealthCheck(t *testing.T) {
 	t.Run("successful health check", func(t *testing.T) {
@@ -78,6 +95,37 @@ func TestHealthCheck(t *testing.T) {
 		err = HealthCheck(fmt.Sprintf("%d", port))
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
+	})
+
+	t.Run("connection is reused", func(t *testing.T) {
+		// Set up a listener that can count the number of connections.
+		rawLis, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		countingLis := &connCountingListener{Listener: rawLis}
+
+		// Configure and start a test server.
+		server := &http.Server{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}),
+		}
+		go func() {
+			_ = server.Serve(countingLis)
+		}()
+		defer server.Close()
+
+		// Get the port from the listener's address.
+		_, port, err := net.SplitHostPort(countingLis.Addr().String())
+		require.NoError(t, err)
+
+		// Perform the health check multiple times.
+		for i := 0; i < 3; i++ {
+			err := HealthCheck(port)
+			require.NoError(t, err, "Health check should succeed on iteration %d", i)
+		}
+
+		// Verify that only one connection was made, proving that keep-alive is working.
+		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
 	})
 }
 
