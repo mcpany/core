@@ -3,7 +3,6 @@
 # Variables
 GO = go
 GO_CMD := $(GO)
-GOTOOLCHAIN ?= go1.25.0+auto
 SERVER_IMAGE_TAG ?= mcpany/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
@@ -128,18 +127,6 @@ prepare:
 	@echo "Installing Go protobuf plugins..."
 	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
 	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
-	@# Install golangci-lint
-	@echo "Checking for golangci-lint..."
-	@if test -f "$(GOLANGCI_LINT_BIN)"; then \
-		echo "golangci-lint is already installed."; \
-	else \
-		echo "Installing golangci-lint..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.5.0; \
-	fi
-	@if ! test -f "$(GOLANGCI_LINT_BIN)"; then \
-		echo "golangci-lint not found at $(GOLANGCI_LINT_BIN) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
-		exit 1; \
-	fi
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -273,15 +260,15 @@ build: gen
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -cover -coverprofile=coverage.out ./...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -cover -coverprofile=coverage.out ./...
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=coverage.out $(shell go list ./... | grep 'tests/integration')
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=coverage.out ./...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s ./...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s ./...
 
 # ==============================================================================
 # Example Binaries Build

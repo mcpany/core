@@ -56,4 +56,4 @@ repos:
     rev: v1.2.0
     hooks:
     -   id: addlicense
-        args: ["-s", "-c", "Author(s) of MCP Any", "."]
+        args: ["-s", "-c", "Author(s) of MCP Any", "-ignore", "**/*.pb.go", "-ignore", "vendor/*", "-ignore", "example/*", "."]
