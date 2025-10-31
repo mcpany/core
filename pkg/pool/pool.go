@@ -19,6 +19,7 @@ package pool
 import (
 	"context"
 	"fmt"
+	"io"
 	"reflect"
 	"sync"
 
@@ -57,7 +58,7 @@ type Pool[T ClosableClient] interface {
 	Put(T)
 	// Close terminates all clients in the pool and prevents new ones from being
 	// created.
-	Close()
+	Close() error
 	// Len returns the number of idle clients currently in the pool.
 	Len() int
 }
@@ -286,11 +287,11 @@ func (p *poolImpl[T]) Put(client T) {
 
 // Close shuts down the pool, closing all idle clients and preventing any new
 // operations. Any subsequent calls to `Get` will return `ErrPoolClosed`.
-func (p *poolImpl[T]) Close() {
+func (p *poolImpl[T]) Close() error {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
-		return
+		return nil
 	}
 	p.closed = true
 	close(p.clients)
@@ -301,6 +302,7 @@ func (p *poolImpl[T]) Close() {
 		lo.Try(client.Close)
 		p.sem.Release(1)
 	}
+	return nil
 }
 
 // Len returns the current number of idle clients in the pool.
@@ -311,7 +313,7 @@ func (p *poolImpl[T]) Len() int {
 // UntypedPool defines a non-generic interface for a pool, allowing for
 // management of pools of different types in a single collection.
 type UntypedPool interface {
-	Close()
+	io.Closer
 	Len() int
 }
 
@@ -345,9 +347,9 @@ func (m *Manager) Register(name string, pool any) {
 	defer m.mu.Unlock()
 
 	if oldPool, ok := m.pools[name]; ok {
-		if p, isPool := oldPool.(UntypedPool); isPool {
-			logging.GetLogger().Info("Closing pool", "name", name)
-			p.Close()
+		if p, isCloser := oldPool.(io.Closer); isCloser {
+			logging.GetLogger().Info("Closing old entry", "name", name)
+			lo.Try(p.Close)
 		}
 	}
 	m.pools[name] = pool
@@ -381,8 +383,8 @@ func (m *Manager) CloseAll() {
 	defer m.mu.Unlock()
 	for name, untypedPool := range m.pools {
 		logging.GetLogger().Info("Closing pool", "name", name)
-		if p, ok := untypedPool.(UntypedPool); ok {
-			p.Close()
+		if p, ok := untypedPool.(io.Closer); ok {
+			lo.Try(p.Close)
 		}
 	}
 }
