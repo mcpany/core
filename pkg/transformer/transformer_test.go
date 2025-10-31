@@ -23,30 +23,77 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTransformer_ParseAndRender(t *testing.T) {
-	// 1. Setup the parser
+func TestTransformer_JSONInput(t *testing.T) {
 	parser := NewTextParser()
-	jsonInput := []byte(`{"data":{"weather":{"description":"clear sky","temperature":25}}}`)
+	jsonInput := []byte(`{
+		"person": {
+			"name": "test",
+			"age": 123,
+			"contacts": [
+				{"type": "email", "value": "test@example.com"},
+				{"type": "phone", "value": "123-456-7890"}
+			]
+		}
+	}`)
 	config := map[string]string{
-		"description": `{.data.weather.description}`,
-		"temperature": `{.data.weather.temperature}`,
+		"name":         `{.person.name}`,
+		"email":        `{.person.contacts[?(@.type=="email")].value}`,
 	}
-
-	// 2. Parse the input
-	parsedResult, err := parser.Parse("json", jsonInput, config)
-	require.NoError(t, err)
-	assert.Equal(t, "clear sky", parsedResult["description"])
-	assert.Equal(t, float64(25), parsedResult["temperature"])
-
-	// 3. Setup the template
-	template, err := NewTemplate("The weather is {{description}} with a temperature of {{temperature}} degrees.", "{{", "}}")
+	parsedData, err := parser.Parse("json", jsonInput, config)
 	require.NoError(t, err)
 
-	// 4. Render the output
-	renderedOutput, err := template.Render(parsedResult)
+	templateString := "Name: {{name}}, Email: {{email}}"
+	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
-	// 5. Assert the final output
-	expectedOutput := "The weather is clear sky with a temperature of 25 degrees."
-	assert.Equal(t, expectedOutput, renderedOutput)
+	rendered, err := tpl.Render(parsedData)
+	require.NoError(t, err)
+	assert.Equal(t, "Name: test, Email: test@example.com", rendered)
+}
+
+func TestTransformer_XMLInput(t *testing.T) {
+	parser := NewTextParser()
+	xmlInput := []byte(`
+		<root xmlns:h="http://www.w3.org/TR/html4/">
+			<h:table>
+				<h:tr>
+					<h:td>Apples</h:td>
+					<h:td>Bananas</h:td>
+				</h:tr>
+			</h:table>
+		</root>
+	`)
+	config := map[string]string{
+		"cell1": `//h:td[1]`,
+		"cell2": `//h:td[2]`,
+	}
+	parsedData, err := parser.Parse("xml", xmlInput, config)
+	require.NoError(t, err)
+
+	templateString := "Cell 1: {{cell1}}, Cell 2: {{cell2}}"
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	rendered, err := tpl.Render(parsedData)
+	require.NoError(t, err)
+	assert.Equal(t, "Cell 1: Apples, Cell 2: Bananas", rendered)
+}
+
+func TestTransformer_TextInput(t *testing.T) {
+	parser := NewTextParser()
+	textInput := []byte(`Event: "user_login", Status: "success", User-ID: "user-123@example.com"`)
+	config := map[string]string{
+		"event":  `Event: "([^"]+)"`,
+		"email":  `User-ID: "([^"]+)"`,
+	}
+	parsedData, err := parser.Parse("text", textInput, config)
+	require.NoError(t, err)
+
+	templateString := "Event: {{event}}, User: {{email}}"
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	rendered, err := tpl.Render(parsedData)
+	require.NoError(t, err)
+	assert.Equal(t, "Event: user_login, User: user-123@example.com", rendered)
 }

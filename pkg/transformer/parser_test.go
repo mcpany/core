@@ -104,6 +104,69 @@ func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 	})
 }
 
+func TestTextParser_ParseJSON_Complex(t *testing.T) {
+	parser := NewTextParser()
+	jsonInput := []byte(`{
+		"person": {
+			"name": "test",
+			"age": 123,
+			"contacts": [
+				{"type": "email", "value": "test@example.com"},
+				{"type": "phone", "value": "123-456-7890"}
+			]
+		}
+	}`)
+	config := map[string]string{
+		"name":         `{.person.name}`,
+		"age":          `{.person.age}`,
+		"email":        `{.person.contacts[?(@.type=="email")].value}`,
+		"firstContact": `{.person.contacts[0].value}`,
+	}
+	result, err := parser.Parse("json", jsonInput, config)
+	require.NoError(t, err)
+	assert.Equal(t, "test", result["name"])
+	assert.Equal(t, float64(123), result["age"])
+	assert.Equal(t, "test@example.com", result["email"])
+	assert.Equal(t, "test@example.com", result["firstContact"])
+}
+
+func TestTextParser_ParseXML_WithNamespaces(t *testing.T) {
+	parser := NewTextParser()
+	xmlInput := []byte(`
+		<root xmlns:h="http://www.w3.org/TR/html4/">
+			<h:table>
+				<h:tr>
+					<h:td>Apples</h:td>
+					<h:td>Bananas</h:td>
+				</h:tr>
+			</h:table>
+		</root>
+	`)
+	config := map[string]string{
+		"cell1": `//h:td[1]`,
+		"cell2": `//h:td[2]`,
+	}
+	result, err := parser.Parse("xml", xmlInput, config)
+	require.NoError(t, err)
+	assert.Equal(t, "Apples", result["cell1"])
+	assert.Equal(t, "Bananas", result["cell2"])
+}
+
+func TestTextParser_ParseText_Complex(t *testing.T) {
+	parser := NewTextParser()
+	textInput := []byte(`Event: "user_login", Status: "success", User-ID: "user-123@example.com"`)
+	config := map[string]string{
+		"event":  `Event: "([^"]+)"`,
+		"status": `Status: "(\w+)"`,
+		"email":  `User-ID: "([^"]+)"`,
+	}
+	result, err := parser.Parse("text", textInput, config)
+	require.NoError(t, err)
+	assert.Equal(t, "user_login", result["event"])
+	assert.Equal(t, "success", result["status"])
+	assert.Equal(t, "user-123@example.com", result["email"])
+}
+
 func TestTextParser_ParseText_ErrorCases(t *testing.T) {
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
