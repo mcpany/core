@@ -33,11 +33,22 @@ import (
 )
 
 func TestNewUpstreamServiceFactory(t *testing.T) {
-	pm := pool.NewManager()
-	f := NewUpstreamServiceFactory(pm)
-	assert.NotNil(t, f)
-	_, ok := f.(*UpstreamServiceFactory)
-	assert.True(t, ok)
+	t.Run("with a valid pool manager", func(t *testing.T) {
+		pm := pool.NewManager()
+		f := NewUpstreamServiceFactory(pm)
+		assert.NotNil(t, f)
+		impl, ok := f.(*UpstreamServiceFactory)
+		assert.True(t, ok)
+		assert.Equal(t, pm, impl.poolManager)
+	})
+
+	t.Run("with a nil pool manager", func(t *testing.T) {
+		f := NewUpstreamServiceFactory(nil)
+		assert.NotNil(t, f)
+		impl, ok := f.(*UpstreamServiceFactory)
+		assert.True(t, ok)
+		assert.Nil(t, impl.poolManager)
+	})
 }
 
 func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
