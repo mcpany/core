@@ -66,7 +66,6 @@ func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 }
 
 func TestPromptIntegration(t *testing.T) {
-	t.Skip("Skipping test because the go-sdk v1.0.0 does not support capabilities, which this test asserts.")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
