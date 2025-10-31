@@ -325,6 +325,32 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	}
 }
 
+func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
+	// Find a free port and occupy it
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	port := l.Addr().(*net.TCPAddr).Port
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
+
+	// Wait for the goroutine to finish. If the bug is present, this will hang.
+	wg.Wait()
+
+	// Check that an error was received.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+	default:
+		t.Fatal("expected an error but got none")
+	}
+}
+
 func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	// This test verifies that the HTTP server's graceful shutdown waits for
 	// the timeout duration when a request hangs.
