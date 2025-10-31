@@ -1,6 +1,8 @@
 module github.com/mcpany/core
 
-go 1.25
+go 1.24.0
+
+toolchain go1.24.3
 
 replace github.com/mcpany/core => ./
 
@@ -9,8 +11,8 @@ require (
 	github.com/antchfx/xpath v1.3.5
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
-	github.com/eko/gocache/lib/v4 v4.2.2
-	github.com/eko/gocache/store/go_cache/v4 v4.2.3
+	github.com/eko/gocache/lib/v4 v4.2.0
+	github.com/eko/gocache/store/go_cache/v4 v4.2.0
 	github.com/getkin/kin-openapi v0.131.0
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -56,6 +58,7 @@ require (
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -114,6 +117,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
