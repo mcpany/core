@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package upstream
+//go:build e2e_public_api
+
+package public_api
 
 import (
 	"context"
@@ -32,46 +34,62 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_IPInfo(t *testing.T) {
-    t.Skip("Skipping flaky test")
+func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for IP Info Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Public Holidays API with Transformation...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
+	// 1. Start MCPANY Server
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register IP Info Server with MCPANY ---
-	const ipInfoServiceID = "e2e_ipinfo"
-	ipInfoServiceEndpoint := "http://ip-api.com"
-	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", ipInfoServiceID, ipInfoServiceEndpoint)
+	// 2. Register Public Holidays Service with MCPANY
+	const serviceID = "e2e_public_holidays"
+	serviceURL := "https://date.nager.at"
+	endpointPath := "/api/v3/PublicHolidays/{{year}}/{{countryCode}}"
+	operationID := "getPublicHolidays"
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
+	outputTransformer := configv1.OutputTransformer_builder{
+		Format: configv1.OutputTransformer_JSON.Enum(),
+		ExtractionRules: map[string]string{
+			"holidayName": "{[0].name}",
+			"holidayDate": "{[0].date}",
+		},
+		Template: proto.String("The first public holiday is {{holidayName}} on {{holidayDate}}."),
+	}.Build()
+
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/json/{{ip}}"),
+		EndpointPath: proto.String(endpointPath),
 		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getIPInfo"),
+			Name: proto.String(operationID),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("ip"),
+					Name: proto.String("year"),
+				}.Build(),
+			}.Build(),
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("countryCode"),
 				}.Build(),
 			}.Build(),
 		},
+		OutputTransformer: outputTransformer,
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
-		Address: proto.String(ipInfoServiceEndpoint),
+		Address: proto.String(serviceURL),
 		Calls:   []*configv1.HttpCallDefinition{httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String(ipInfoServiceID),
+		Name:        proto.String(serviceID),
 		HttpService: httpService,
 	}.Build()
 
@@ -80,64 +98,59 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	}.Build()
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	t.Logf("INFO: '%s' registered.", ipInfoServiceID)
+	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// --- 3. Call Tool via MCPANY ---
+	// 3. Call Tool via MCPANY
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
-	}
-
-	serviceID, _ := util.SanitizeServiceName(ipInfoServiceID)
-	sanitizedToolName, _ := util.SanitizeToolName("getIPInfo")
-	toolName := serviceID + "." + sanitizedToolName
-	ipAddress := `{"ip": "8.8.8.8"}`
+	sanitizedServiceID, _ := util.SanitizeServiceName(serviceID)
+	sanitizedToolName, _ := util.SanitizeToolName(operationID)
+	toolName := sanitizedServiceID + "." + sanitizedToolName
+	toolArgs := `{"year": 2024, "countryCode": "US"}`
 
 	const maxRetries = 3
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(toolArgs)})
 		if err == nil {
 			break // Success
 		}
 
 		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
 		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to ip-api.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			t.Logf("Attempt %d/%d: Call to date.nager.at failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
 
 		// For any other error, fail the test immediately.
-		require.NoError(t, err, "unrecoverable error calling getIPInfo tool")
+		require.NoError(t, err, "unrecoverable error calling getPublicHolidays tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to ip-api.com failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries to date.nager.at failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
-	require.NoError(t, err, "Error calling getIPInfo tool")
-	require.NotNil(t, res, "Nil response from getIPInfo tool")
+	require.NoError(t, err, "Error calling getPublicHolidays tool")
+	require.NotNil(t, res, "Nil response from getPublicHolidays tool")
 
-	// --- 4. Assert Response ---
+	// 4. Assert Response
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var ipInfoResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &ipInfoResponse)
-	require.NoError(t, err, "Failed to unmarshal JSON response")
+	var result struct {
+		Result string `json:"result"`
+	}
+	err = json.Unmarshal([]byte(textContent.Text), &result)
+	require.NoError(t, err, "Failed to unmarshal tool result")
 
-	require.Equal(t, "8.8.8.8", ipInfoResponse["query"], "The query IP does not match")
-	require.Equal(t, "success", ipInfoResponse["status"], "The status is not success")
-	t.Logf("SUCCESS: Received correct IP info for 8.8.8.8: %s", textContent.Text)
+	expectedOutput := "The first public holiday is New Year's Day on 2024-01-01."
+	require.Equal(t, expectedOutput, result.Result)
 
-	t.Log("INFO: E2E Test Scenario for IP Info Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Public Holidays API with Transformation Completed Successfully!")
 }
