@@ -23,7 +23,7 @@
 MCPANY_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 # The path to the mcpany server binary.
-MCPANY_SERVER_BIN="${MCPANY_ROOT_DIR}/bin/server"
+MCPANY_SERVER_BIN="${MCPANY_ROOT_DIR}/build/bin/server"
 
 # The path to the configuration file for this example.
 CONFIG_PATH="./config/"
