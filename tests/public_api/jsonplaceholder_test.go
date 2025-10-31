@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package upstream
+//go:build e2e_public_api
+
+package public_api
 
 import (
 	"context"
