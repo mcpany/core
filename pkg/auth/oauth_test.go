@@ -79,6 +79,23 @@ func TestNewOAuth2Authenticator(t *testing.T) {
 	authenticator, err := NewOAuth2Authenticator(context.Background(), config)
 	require.NoError(t, err)
 	assert.NotNil(t, authenticator)
+
+	t.Run("provider_error", func(t *testing.T) {
+		// Mock OIDC provider that always returns an error
+		errorServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer errorServer.Close()
+
+		errorConfig := &OAuth2Config{
+			IssuerURL: errorServer.URL,
+			Audience:  "test-audience",
+		}
+
+		_, err := NewOAuth2Authenticator(context.Background(), errorConfig)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to create OIDC provider")
+	})
 }
 
 func TestOAuth2Authenticator_Authenticate(t *testing.T) {

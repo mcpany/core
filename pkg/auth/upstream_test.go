@@ -93,6 +93,47 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Nil(t, auth)
 	})
+
+	t.Run("InvalidAPIKey", func(t *testing.T) {
+		config := (&configv1.UpstreamAuthentication_builder{
+			ApiKey: (&configv1.UpstreamAPIKeyAuth_builder{
+				HeaderName: proto.String(""),
+				ApiKey:     proto.String("test-key"),
+			}).Build(),
+		}).Build()
+		_, err := NewUpstreamAuthenticator(config)
+		assert.Error(t, err)
+
+		config = (&configv1.UpstreamAuthentication_builder{
+			ApiKey: (&configv1.UpstreamAPIKeyAuth_builder{
+				HeaderName: proto.String("X-API-Key"),
+				ApiKey:     proto.String(""),
+			}).Build(),
+		}).Build()
+		_, err = NewUpstreamAuthenticator(config)
+		assert.Error(t, err)
+	})
+
+	t.Run("InvalidBearerToken", func(t *testing.T) {
+		config := (&configv1.UpstreamAuthentication_builder{
+			BearerToken: (&configv1.UpstreamBearerTokenAuth_builder{
+				Token: proto.String(""),
+			}).Build(),
+		}).Build()
+		_, err := NewUpstreamAuthenticator(config)
+		assert.Error(t, err)
+	})
+
+	t.Run("InvalidBasicAuth", func(t *testing.T) {
+		config := (&configv1.UpstreamAuthentication_builder{
+			BasicAuth: (&configv1.UpstreamBasicAuth_builder{
+				Username: proto.String(""),
+				Password: proto.String("pass"),
+			}).Build(),
+		}).Build()
+		_, err := NewUpstreamAuthenticator(config)
+		assert.Error(t, err)
+	})
 }
 
 func TestAPIKeyAuth_Authenticate(t *testing.T) {
