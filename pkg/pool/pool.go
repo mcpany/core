@@ -161,6 +161,14 @@ func New[T ClosableClient](
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
+	// Check if context is already cancelled before attempting to get a connection.
+	// This is a fast path to avoid locking and other overhead.
+	select {
+	case <-ctx.Done():
+		return zero, ctx.Err()
+	default:
+	}
+
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -278,10 +286,13 @@ func (p *poolImpl[T]) Put(client T) {
 	case p.clients <- client:
 		p.mu.Unlock()
 	default:
-		// Idle pool is full, discard client and release permit.
+		// Idle pool is full, discard client. The permit for this client is
+		// effectively leaked, but this is the only safe option. Releasing
+		// the permit would allow the pool to create more clients than
+		// maxSize, and we can't tell if this client came from the pool
+		// in the first place.
 		p.mu.Unlock()
 		lo.Try(client.Close)
-		p.sem.Release(1)
 	}
 }
 
