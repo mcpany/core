@@ -308,6 +308,45 @@ func TestUpstreamWorker(t *testing.T) {
 			t.Fatal("timed out waiting for execution result")
 		}
 	})
+
+	t.Run("execution with partial result and error", func(t *testing.T) {
+		bp := bus.NewBusProvider()
+		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		var wg sync.WaitGroup
+		wg.Add(1)
+		expectedErr := errors.New("execution partially failed")
+
+		tm := &mockToolManager{
+			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+				return "partial result", expectedErr
+			},
+		}
+
+		worker := NewUpstreamWorker(bp, tm)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ToolExecutionResult, 1)
+		unsubscribe := resultBus.SubscribeOnce("exec-partial-fail", func(result *bus.ToolExecutionResult) {
+			resultChan <- result
+			wg.Done()
+		})
+		defer unsubscribe()
+
+		req := &bus.ToolExecutionRequest{}
+		req.SetCorrelationID("exec-partial-fail")
+		requestBus.Publish("request", req)
+
+		wg.Wait()
+		select {
+		case result := <-resultChan:
+			assert.Error(t, result.Error)
+			assert.Equal(t, expectedErr, result.Error)
+			assert.JSONEq(t, `"partial result"`, string(result.Result))
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for execution result")
+		}
+	})
 }
 
 func TestServiceRegistrationWorker_Concurrent(t *testing.T) {

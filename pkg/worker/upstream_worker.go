@@ -65,7 +65,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 		})
 
 		var resultBytes json.RawMessage
-		if err == nil {
+		if result != nil {
 			var marshalErr error
 			resultBytes, marshalErr = json.Marshal(result)
 			if marshalErr != nil {
