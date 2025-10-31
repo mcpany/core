@@ -1,7 +1,7 @@
 {
-  "name": "mcp-xy-integration-tests",
+  "name": "mcp-any-integration-tests",
   "version": "1.0.0",
-  "description": "Integration tests for mcp-xy",
+  "description": "Integration tests for mcp-any",
   "dependencies": {
     "@google/gemini-cli": "^0.11.0",
     "@modelcontextprotocol/server-everything": "2025.9.25"

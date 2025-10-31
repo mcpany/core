@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/logging"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/upstream"
-	"github.com/mcpxy/core/pkg/util"
-	"github.com/mcpxy/core/pkg/util/schemaconv"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	pb "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/util/schemaconv"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )

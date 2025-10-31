@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -43,13 +43,13 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 		UpstreamServiceType: "stdio",
 		BuildUpstream:       framework.BuildStdioDockerServer,
 		RegisterUpstream:    framework.RegisterStdioDockerService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := sdk.NewClient(&sdk.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &sdk.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
-			require.NoError(t, err, "Failed to connect to MCPXY server")
+			cs, err := testMCPClient.Connect(ctx, &sdk.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err, "Failed to connect to MCPANY server")
 			defer cs.Close()
 
 			toolName := "e2e-cowsay-server/-/say"

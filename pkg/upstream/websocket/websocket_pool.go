@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpxy/core/pkg/client"
-	"github.com/mcpxy/core/pkg/pool"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/pool"
 )
 
 // WebsocketPool is a type alias for a pool of WebSocket client connections.

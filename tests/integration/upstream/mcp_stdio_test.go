@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/util"
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -34,12 +34,12 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 		UpstreamServiceType: "stdio",
 		BuildUpstream:       framework.BuildStdioServer,
 		RegisterUpstream:    framework.RegisterStdioService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -49,7 +49,7 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to list tools from MCP service: %v", err)
 			}
-			t.Logf("Tools available from MCPXY server: %v", listToolsResult.Tools)
+			t.Logf("Tools available from MCPANY server: %v", listToolsResult.Tools)
 
 			serviceID, _ := util.SanitizeServiceName("e2e_everything_server_stdio")
 
@@ -95,7 +95,7 @@ func TestUpstreamService_MCP_Stdio(t *testing.T) {
 						require.NoError(t, err, "Error calling tool '%s': %v", toolName, err)
 						require.NotNil(t, res, "Nil response from tool '%s'", toolName)
 						require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-						t.Logf("SUCCESS: Call to tool '%s' via MCPXY completed. Result: %s", toolName, res.Content[0])
+						t.Logf("SUCCESS: Call to tool '%s' via MCPANY completed. Result: %s", toolName, res.Content[0])
 					}
 				})
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import (
 	"testing"
 	"time"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -121,7 +121,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 	t.Run("with malformed CA cert", func(t *testing.T) {
 		tempDir := t.TempDir()
 		malformedCertPath := filepath.Join(tempDir, "malformed.pem")
-		err := os.WriteFile(malformedCertPath, []byte("not a cert"), 0600)
+		err := os.WriteFile(malformedCertPath, []byte("not a cert"), 0o600)
 		require.NoError(t, err)
 
 		config := &configv1.TLSConfig{}

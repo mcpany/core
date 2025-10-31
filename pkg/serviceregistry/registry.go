@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/upstream/factory"
-	config "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	config "github.com/mcpany/core/proto/config/v1"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -117,8 +117,8 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		}
 		if oauth2Config := authConfig.GetOauth2(); oauth2Config != nil {
 			config := &auth.OAuth2Config{
-				IssuerURL:    oauth2Config.GetIssuerUrl(),
-				Audience:     oauth2Config.GetAudience(),
+				IssuerURL: oauth2Config.GetIssuerUrl(),
+				Audience:  oauth2Config.GetAudience(),
 			}
 			if err := r.authManager.AddOAuth2Authenticator(ctx, serviceID, config); err != nil {
 				return "", nil, nil, fmt.Errorf("failed to add oauth2 authenticator: %w", err)

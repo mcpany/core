@@ -1,20 +1,20 @@
 # Example: Exposing a WebSocket Service
 
-This example demonstrates how to expose a WebSocket service as a tool through `mcpxy`.
+This example demonstrates how to expose a WebSocket service as a tool through `mcpany`.
 
 ## Overview
 
 This example consists of three main components:
 
 1. **Upstream WebSocket Server**: A simple Go-based WebSocket server (`echo_server/`) that echoes back any message it receives.
-2. **`mcpxy` Configuration**: A YAML file (`config/mcpxy.yaml`) that tells `mcpxy` how to connect to the WebSocket server.
-3. **`mcpxy` Server**: The `mcpxy` instance that acts as a proxy between the AI assistant and the WebSocket server.
+2. **`mcpany` Configuration**: A YAML file (`config/mcpany.yaml`) that tells `mcpany` how to connect to the WebSocket server.
+3. **`mcpany` Server**: The `mcpany` instance that acts as a proxy between the AI assistant and the WebSocket server.
 
 ## Running the Example
 
-### 1. Build the `mcpxy` Binary
+### 1. Build the `mcpany` Binary
 
-Ensure the `mcpxy` binary is built. From the root of the repository, run:
+Ensure the `mcpany` binary is built. From the root of the repository, run:
 
 ```bash
 make build
@@ -30,27 +30,27 @@ go run ./echo_server/main.go
 
 The server will start and listen on port `8082`.
 
-### 3. Run the `mcpxy` Server
+### 3. Run the `mcpany` Server
 
-In another terminal, start the `mcpxy` server using the provided script.
+In another terminal, start the `mcpany` server using the provided script.
 
 ```bash
 ./start.sh
 ```
 
-The `mcpxy` server will start and listen for JSON-RPC requests on port `50050`.
+The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
 
 ## Interacting with the Tool
 
-Once both servers are running, you can connect your AI assistant to `mcpxy`.
+Once both servers are running, you can connect your AI assistant to `mcpany`.
 
 ### Using Gemini CLI
 
-1. **Add `mcpxy` as an MCP Server:**
-   Register the running `mcpxy` process with the Gemini CLI.
+1. **Add `mcpany` as an MCP Server:**
+   Register the running `mcpany` process with the Gemini CLI.
 
    ```bash
-   gemini mcp add mcpxy-websocket-echo --address http://localhost:50050 --command "sleep" "infinity"
+   gemini mcp add mcpany-websocket-echo --address http://localhost:50050 --command "sleep" "infinity"
    ```
 
 2. **List Available Tools:**
@@ -77,4 +77,4 @@ Once both servers are running, you can connect your AI assistant to `mcpxy`.
    }
    ```
 
-This example demonstrates how `mcpxy` can expose real-time, stateful services like WebSockets to AI assistants.
+This example demonstrates how `mcpany` can expose real-time, stateful services like WebSockets to AI assistants.

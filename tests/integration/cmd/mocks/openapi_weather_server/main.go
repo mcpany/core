@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 const openAPISpec = `
@@ -71,6 +71,7 @@ const openAPISpec = `
   }
 }
 `
+
 var weatherData = map[string]string{
 	"new york": "Sunny, 25°C",
 	"london":   "Cloudy, 15°C",

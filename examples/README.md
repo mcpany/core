@@ -1,29 +1,29 @@
-# MCPXY Examples
+# MCPANY Examples
 
-This directory contains examples of how to use MCPXY with different upstream service types. Each example includes:
+This directory contains examples of how to use MCPANY with different upstream service types. Each example includes:
 
 - An upstream service implementation.
-- A configuration file for MCPXY.
-- A shell script to start an MCPXY server configured for the example.
+- A configuration file for MCPANY.
+- A shell script to start an MCPANY server configured for the example.
 - A README file with instructions on how to run the example and interact with it using AI tools like Gemini CLI.
 
-## 1. Build the MCPXY binary
+## 1. Build the MCPANY binary
 
-Before running any of the examples, you need to build the `mcpxy` binary. From the root of the `core` project, run:
+Before running any of the examples, you need to build the `mcpany` binary. From the root of the `core` project, run:
 
 ```bash
 make build
 ```
 
-This will create the `mcpxy` binary in the `build/bin` directory. All example scripts use this path.
+This will create the `mcpany` binary in the `build/bin` directory. All example scripts use this path.
 
 ## 2. Creating a Simple MCP Server (Time, Location, and Weather Example)
 
-This example demonstrates how to expose multiple public APIs as tools through `mcpxy`.
+This example demonstrates how to expose multiple public APIs as tools through `mcpany`.
 
-### Step 1: The `mcpxy` Configuration
+### Step 1: The `mcpany` Configuration
 
-The `mcpxy` configuration file (`upstream/http/config/mcpxy_config.yaml`) tells `mcpxy` how to connect to the upstream public APIs and what tools to expose. Here's what it looks like:
+The `mcpany` configuration file (`upstream/http/config/mcpany_config.yaml`) tells `mcpany` how to connect to the upstream public APIs and what tools to expose. Here's what it looks like:
 
 ```yaml
 global_settings:
@@ -62,15 +62,15 @@ This configuration defines three tools:
 
 ### Step 2: Running the Example
 
-1. **Run the `mcpxy` Server**
+1. **Run the `mcpany` Server**
 
-   In a terminal, start the `mcpxy` server using the provided shell script from the `examples/upstream/http` directory:
+   In a terminal, start the `mcpany` server using the provided shell script from the `examples/upstream/http` directory:
 
    ```bash
    ./start.sh
    ```
 
-   The `mcpxy` server will start and listen for JSON-RPC requests on port `8080`.
+   The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
    _(Note: The local time server is not required for the location and weather tools to function.)_
 
@@ -82,13 +82,13 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 1. **Add the MCP Server to Gemini CLI:**
 
-   Use the `gemini mcp add` command to register the running `mcpxy` server.
+   Use the `gemini mcp add` command to register the running `mcpany` server.
 
    ```bash
-   gemini mcp add mcpxy-http-example --transport http http://localhost:50050
+   gemini mcp add mcpany-http-example --transport http http://localhost:50050
    ```
 
-2. **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpxy` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.
+2. **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpany` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.
 
 3. **Call the `getLocation` Tool:** First, get the location for a given IP address.
 
@@ -109,4 +109,4 @@ This example showcases how an AI can chain tools together to perform a more comp
 
 ## 3. Running Other Examples
 
-Each example has a `start.sh` script that starts the MCPXY server with the correct configuration. The upstream service needs to be started separately. Please refer to the `README.md` file in each example's directory for detailed instructions.
+Each example has a `start.sh` script that starts the MCPANY server with the correct configuration. The upstream service needs to be started separately. Please refer to the `README.md` file in each example's directory for detailed instructions.

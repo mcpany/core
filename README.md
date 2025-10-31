@@ -1,15 +1,15 @@
-# MCP-XY: Model Context Protocol eXtensions
+# MCP Any: Model Context Protocol eXtensions
 
-MCP-XY is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
+MCP Any is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
 ## Architecture
 
-MCP-XY is built on a modular and extensible architecture. The core components are:
+MCP Any is built on a modular and extensible architecture. The core components are:
 
 - **MCP Server**: The main server that implements the [Model Context Protocol](https://modelcontext.protocol.ai/). It handles incoming requests and orchestrates the other components.
 - **Service Registry**: Manages the lifecycle of upstream services. It is responsible for creating and registering services from configuration files or dynamic registration requests.
 - **Tool Manager**: Keeps track of all the tools that are discovered from the upstream services. It provides a unified interface for executing tools, regardless of their underlying implementation.
-- **Upstream Services**: These are the backend services that MCP-XY connects to. Each service type (gRPC, HTTP, etc.) has a corresponding implementation that knows how to interact with the service and expose its capabilities as tools.
+- **Upstream Services**: These are the backend services that MCP Any connects to. Each service type (gRPC, HTTP, etc.) has a corresponding implementation that knows how to interact with the service and expose its capabilities as tools.
 - **Connection Pool**: Manages connections to upstream services to improve performance and resource usage.
 
 ## Key Features
@@ -20,7 +20,7 @@ MCP-XY is built on a modular and extensible architecture. The core components ar
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-  - **MCP-XY Proxy**: Proxy and re-expose tools from another MCP-XY instance.
+  - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
   - **Bearer Tokens**
@@ -30,7 +30,7 @@ MCP-XY is built on a modular and extensible architecture. The core components ar
 
 ## Getting Started
 
-Follow these instructions to get MCP-XY set up and running on your local machine.
+Follow these instructions to get MCP Any set up and running on your local machine.
 
 ### Prerequisites
 
@@ -45,12 +45,12 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/mcpxy/core.git
+   git clone https://github.com/mcpany/core.git
    cd core
    ```
 
 2. **Build the application:**
-   This command will install dependencies, generate code, and build the `mcpxy` binary.
+   This command will install dependencies, generate code, and build the `mcpany` binary.
 
    ```bash
    make build
@@ -60,7 +60,7 @@ Before you begin, ensure you have the following installed:
 
 ### Running the Server
 
-You can run the MCP-XY server directly or by using a `make` command.
+You can run the MCP Any server directly or by using a `make` command.
 
 - **Directly:**
 
@@ -78,7 +78,7 @@ By default, the server will start and listen for JSON-RPC requests on port `5005
 
 ## Configuration
 
-MCP-XY can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format.
+MCP Any can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format.
 
 ### Example Configuration
 
@@ -107,11 +107,11 @@ To run the server with this configuration, use the following command:
 make run ARGS="--config-paths ./config.yaml"
 ```
 
-The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPXY_JSONRPC_PORT=6000`.
+The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPANY_JSONRPC_PORT=6000`.
 
 ### Advanced Configuration
 
-MCP-XY supports a variety of advanced configuration options, including:
+MCP Any supports a variety of advanced configuration options, including:
 
 - **gRPC Services**: Register a gRPC service using reflection.
 
@@ -150,11 +150,11 @@ MCP-XY supports a variety of advanced configuration options, including:
 
 ## Usage
 
-Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpxy` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
+Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
 ## Examples
 
-For hands-on examples of how to use `mcpxy` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
+For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
 
 ### Listing Tools
 
@@ -178,7 +178,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 ## Running with Docker Compose
 
-For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpxy` server along with a sample `http-echo-server` to demonstrate how `mcpxy` connects to other services in a Docker network.
+For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpany` server along with a sample `http-echo-server` to demonstrate how `mcpany` connects to other services in a Docker network.
 
 1. **Start the services:**
 
@@ -186,10 +186,10 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
    docker compose up --build
    ```
 
-   This command will build the Docker images for both the `mcpxy` server and the echo server, and then start them. The `mcpxy` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
+   This command will build the Docker images for both the `mcpany` server and the echo server, and then start them. The `mcpany` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
 
 2. **Test the setup:**
-   Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpxy` JSON-RPC API:
+   Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpany` JSON-RPC API:
 
    ```bash
    curl -X POST -H "Content-Type: application/json" \
@@ -207,7 +207,7 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
 ## Running with Helm
 
-For deployments to Kubernetes, a Helm chart is available in the `helm/mcpxy` directory. See the [Helm chart README](helm/mcpxy/README.md) for detailed instructions.
+For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` directory. See the [Helm chart README](helm/mcpany/README.md) for detailed instructions.
 
 ## Development
 
@@ -231,7 +231,7 @@ view the documentation locally by running a GoDoc server:
 godoc -http=:6060
 ```
 
-Then, navigate to `http://localhost:6060/pkg/github.com/mcpxy/core` in your
+Then, navigate to `http://localhost:6060/pkg/github.com/mcpany/core` in your
 browser.
 
 The `pkg` directory contains the core logic of the application, organized into

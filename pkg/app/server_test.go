@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,22 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"net"
-	"sync"
-	"testing"
-	"time"
-
-	"bytes"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
-
-	"github.com/mcpxy/core/pkg/logging"
-	"github.com/mcpxy/core/pkg/mcpserver"
-	"github.com/spf13/afero"
+	"sync"
 	"sync/atomic"
+	"testing"
+	"time"
+
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/spf13/afero"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -128,7 +127,6 @@ func TestHealthCheck(t *testing.T) {
 		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
 	})
 }
-
 
 func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
@@ -454,7 +452,6 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 		// Expected outcome.
 	}
 }
-
 
 func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	// This test verifies that the gRPC server hangs on graceful shutdown if an

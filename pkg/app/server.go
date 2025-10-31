@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,33 +25,32 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/bus"
-	"github.com/mcpxy/core/pkg/config"
-	"github.com/mcpxy/core/pkg/logging"
-	"github.com/mcpxy/core/pkg/mcpserver"
-	"github.com/mcpxy/core/pkg/middleware"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/serviceregistry"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/upstream/factory"
-	"github.com/mcpxy/core/pkg/worker"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/worker"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	v1 "github.com/mcpxy/core/proto/api/v1"
+	v1 "github.com/mcpany/core/proto/api/v1"
 )
 
-
-// Runner defines the interface for running the MCP-XY application. It abstracts
+// Runner defines the interface for running the MCP Any application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
 // for testing purposes.
 type Runner interface {
-	// Run starts the MCP-XY application with the given context, filesystem, and
+	// Run starts the MCP Any application with the given context, filesystem, and
 	// configuration. It is the primary entry point for the server.
 	//
 	// ctx is the context that controls the application's lifecycle.
@@ -66,7 +65,7 @@ type Runner interface {
 }
 
 // Application is the main application struct, holding the dependencies and
-// logic for the MCP-XY server. It encapsulates the components required to run
+// logic for the MCP Any server. It encapsulates the components required to run
 // the server, such as the stdio mode handler, and provides the main `Run`
 // method that starts the application.
 type Application struct {
@@ -84,7 +83,7 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP-XY server and all its components. It initializes the core
+// Run starts the MCP Any server and all its components. It initializes the core
 // services, loads configurations from the provided paths, starts background
 // workers for handling service registration and upstream service communication,
 // and launches the gRPC and JSON-RPC servers.
@@ -111,7 +110,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		return fmt.Errorf("failed to setup filesystem: %w", err)
 	}
 
-	log.Info("Starting MCP-XY Service...")
+	log.Info("Starting MCP Any Service...")
 
 	// Core components
 	busProvider := bus.NewBusProvider()
@@ -280,7 +279,7 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		fmt.Fprintln(w, "OK")
 	})
 
-	startHTTPServer(ctx, &wg, errChan, "MCP-XY HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
+	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
 	if grpcPort != "" {
 		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, shutdownTimeout, func(s *gogrpc.Server) {

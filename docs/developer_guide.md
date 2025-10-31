@@ -1,6 +1,6 @@
 # 👨‍💻 Developer Guide
 
-This guide is for developers who want to contribute to the MCP-XY. It provides information about the development environment, build process, and other useful tips.
+This guide is for developers who want to contribute to the MCP Any. It provides information about the development environment, build process, and other useful tips.
 
 ## Development Setup
 
@@ -36,30 +36,30 @@ This command will download and install the correct versions of the tools into a 
 
 ## Code Structure Overview
 
-The MCP-XY codebase is organized into several key packages:
+The MCP Any codebase is organized into several key packages:
 
 - **`cmd/server`**: Contains the `main` application entry point and command-line interface setup using Cobra.
 - **`pkg/app`**: Implements the core application logic, orchestrating the different components.
 - **`pkg/service`**: Defines the interfaces and registration logic for different service types (gRPC, HTTP, OpenAPI, etc.).
 - **`pkg/connector`**: Contains the concrete implementations for connecting to and interacting with various upstream services.
-- **`pkg/transformer`**: Handles the conversion of data between the internal MCP-XY format and the format of the upstream services.
+- **`pkg/transformer`**: Handles the conversion of data between the internal MCP Any format and the format of the upstream services.
 - **`proto`**: Contains all the protobuf definitions for the project, including API contracts and configuration structures.
 - **`tests`**: Contains integration and end-to-end tests.
 
 ## Working with Services
 
-MCP-XY allows you to extend its capabilities by registering external services, which are then exposed as "Tools."
+MCP Any allows you to extend its capabilities by registering external services, which are then exposed as "Tools."
 
 ### Registering Services
 
-Services can be registered with MCP-XY in two ways:
+Services can be registered with MCP Any in two ways:
 
-1. **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpxy/v1/registration.proto`) provides an API for registering services at runtime.
+1. **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpany/v1/registration.proto`) provides an API for registering services at runtime.
 2. **Statically via a configuration file**: Services can be defined in a YAML configuration file and loaded when the server starts.
 
 ### Service Configuration
 
-The `UpstreamService` message (`proto/mcpxy/config/v1/config.proto`) is the core configuration for defining a service.
+The `UpstreamService` message (`proto/mcpany/config/v1/config.proto`) is the core configuration for defining a service.
 
 For a comprehensive reference for all configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
@@ -100,7 +100,7 @@ upstreamServices:
 
 #### OpenAPI Service
 
-This example configures a service from an OpenAPI specification. MCP-XY will parse the specification to discover the available tools.
+This example configures a service from an OpenAPI specification. MCP Any will parse the specification to discover the available tools.
 
 ```yaml
 upstreamServices:

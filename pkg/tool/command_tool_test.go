@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/consts"
-	"github.com/mcpxy/core/pkg/tool"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/tool"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@ package factory
 import (
 	"fmt"
 
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/upstream"
-	"github.com/mcpxy/core/pkg/upstream/command"
-	"github.com/mcpxy/core/pkg/upstream/grpc"
-	"github.com/mcpxy/core/pkg/upstream/http"
-	"github.com/mcpxy/core/pkg/upstream/mcp"
-	"github.com/mcpxy/core/pkg/upstream/openapi"
-	"github.com/mcpxy/core/pkg/upstream/webrtc"
-	"github.com/mcpxy/core/pkg/upstream/websocket"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/upstream/command"
+	"github.com/mcpany/core/pkg/upstream/grpc"
+	"github.com/mcpany/core/pkg/upstream/http"
+	"github.com/mcpany/core/pkg/upstream/mcp"
+	"github.com/mcpany/core/pkg/upstream/openapi"
+	"github.com/mcpany/core/pkg/upstream/webrtc"
+	"github.com/mcpany/core/pkg/upstream/websocket"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Factory defines the interface for a factory that creates upstream service

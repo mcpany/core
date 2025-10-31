@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/util"
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -41,19 +41,19 @@ func TestUpstreamService_GRPC(t *testing.T) {
 		UpstreamServiceType: "grpc",
 		BuildUpstream:       framework.BuildGRPCWeatherServer,
 		RegisterUpstream:    framework.RegisterGRPCWeatherService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
 			defer cs.Close()
 
 			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 			require.NoError(t, err)
 			for _, tool := range listToolsResult.Tools {
-				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+				t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 			}
 
 			const weatherServiceID = "e2e_grpc_weather"
@@ -143,7 +143,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
 			return `{"upstream_services": [{"name": "greeter-service", "grpc_service": {"address": "` + strings.TrimPrefix(upstreamEndpoint, "http://") + `", "use_reflection": true}}]}`
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
@@ -153,10 +153,10 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 			)
 			cs, err := testMCPClient.Connect(
 				ctx,
-				&mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint},
+				&mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint},
 				nil,
 			)
-			require.NoError(t, err, "Failed to connect to MCPXY server")
+			require.NoError(t, err, "Failed to connect to MCPANY server")
 			defer cs.Close()
 
 			serviceID, err := util.SanitizeServiceName("greeter-service")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/client"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/tool"
-	calculatorpb "github.com/mcpxy/core/proto/examples/calculator/v1"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/tool"
+	calculatorpb "github.com/mcpany/core/proto/examples/calculator/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"

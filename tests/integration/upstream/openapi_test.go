@@ -1,7 +1,7 @@
 //go:build e2e
 
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpxy/core/tests/framework"
+	"github.com/mcpany/core/tests/framework"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,10 +40,10 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 		UpstreamServiceType: "openapi",
 		BuildUpstream:       framework.BuildOpenAPIWeatherServer,
 		RegisterUpstream:    framework.RegisterOpenAPIWeatherService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
-			framework.VerifyMCPClient(t, mcpxyEndpoint)
-			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
-			defer gemini.RemoveMCP("mcpxy-server")
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			framework.VerifyMCPClient(t, mcpanyEndpoint)
+			gemini.AddMCP("mcpany-server", mcpanyEndpoint)
+			defer gemini.RemoveMCP("mcpany-server")
 			output, err := gemini.Run(apiKey, "what is the weather in london")
 			require.NoError(t, err)
 			require.Contains(t, output, "Cloudy, 15°C")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package appconsts
 const (
 	// Name is the name of the MCP-X server. This is used in help messages and
 	// other user-facing output.
-	Name = "mcpxy"
+	Name = "mcpany"
 )
 
 // Version is the version of the MCP-X server. This is a variable so it can be

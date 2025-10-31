@@ -1,6 +1,6 @@
 # 🏁 Getting Started
 
-This guide provides a step-by-step walkthrough to get the MCP-XY up and running on your local machine. By following these instructions, you'll be able to build the project, run the server, and verify that everything is working correctly.
+This guide provides a step-by-step walkthrough to get the MCP Any up and running on your local machine. By following these instructions, you'll be able to build the project, run the server, and verify that everything is working correctly.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/mcpxy/core.git
+   git clone https://github.com/mcpany/core.git
    cd core
    ```
 
@@ -34,12 +34,12 @@ After building the project, you can run the server application:
 make run
 ```
 
-This will start the MCP-XY server. By default, the server will listen for JSON-RPC requests on port `50050`.
+This will start the MCP Any server. By default, the server will listen for JSON-RPC requests on port `50050`.
 
 You should see log messages indicating that the server has started, for example:
 
 ```
-INFO Starting MCP-XY server locally... service=mcpxy
-INFO Configuration jsonrpc-port=50050 registration-port= grpc-port= stdio=false config-paths=[] service=mcpxy
-INFO Application started service=mcpxy
+INFO Starting MCP Any server locally... service=mcpany
+INFO Configuration jsonrpc-port=50050 registration-port= grpc-port= stdio=false config-paths=[] service=mcpany
+INFO Application started service=mcpany
 ```

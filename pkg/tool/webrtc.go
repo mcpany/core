@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/transformer"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/transformer"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/pion/webrtc/v3"
 )
 
@@ -42,7 +42,7 @@ import (
 type WebrtcTool struct {
 	tool              *v1.Tool
 	poolManager       *pool.Manager
-	serviceID        string
+	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.WebrtcParameterMapping
 	inputTransformer  *configv1.InputTransformer
@@ -68,7 +68,7 @@ func NewWebrtcTool(
 	return &WebrtcTool{
 		tool:              tool,
 		poolManager:       poolManager,
-		serviceID:        serviceID,
+		serviceID:         serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),

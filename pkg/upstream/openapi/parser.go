@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/mcpxy/core/pkg/util"
-	pb "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/util"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -184,7 +184,6 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 		if displayName == "" { // Further fallback
 			displayName = op.Method + " " + op.Path
 		}
-
 
 		// Determine request body schema (e.g. application/json)
 		var bodySchemaRef *openapi3.SchemaRef
