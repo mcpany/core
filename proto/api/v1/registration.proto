@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Author(s) of MCP-XY
+// Copyright (C) 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 edition = "2023";
@@ -8,7 +8,7 @@ package mcpx.api.v1;
 import "proto/config/v1/config.proto";
 import "proto/config/v1/resource.proto";
 
-option go_package = "github.com/mcpxy/core/proto/api/v1";
+option go_package = "github.com/mcpany/core/proto/api/v1";
 
 message RegisterServiceRequest {
     mcpx.config.v1.UpstreamServiceConfig config = 1;

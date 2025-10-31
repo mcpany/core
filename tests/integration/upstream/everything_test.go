@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/util"
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -34,7 +34,7 @@ func TestUpstreamService_HTTP_Everything(t *testing.T) {
 		UpstreamServiceType: "streamablehttp",
 		BuildUpstream:       framework.BuildEverythingServer,
 		RegisterUpstream:    framework.RegisterEverythingService,
-		ValidateTool: func(t *testing.T, mcpxyEndpoint string) {
+		ValidateTool: func(t *testing.T, mcpanyEndpoint string) {
 			serviceID := "e2e_everything_server_streamable"
 			toolName := "add"
 			serviceID, err := util.SanitizeServiceName(serviceID)
@@ -47,14 +47,14 @@ func TestUpstreamService_HTTP_Everything(t *testing.T) {
 				Name:        expectedToolName,
 				Description: "Adds two integers.",
 			}
-			framework.ValidateRegisteredTool(t, mcpxyEndpoint, expectedTool)
+			framework.ValidateRegisteredTool(t, mcpanyEndpoint, expectedTool)
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
 			defer cs.Close()
 

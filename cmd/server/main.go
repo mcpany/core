@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mcpxy/core/pkg/app"
-	"github.com/mcpxy/core/pkg/appconsts"
-	"github.com/mcpxy/core/pkg/logging"
+	"github.com/mcpany/core/pkg/app"
+	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
 
 var appRunner app.Runner = app.NewApplication()
 
@@ -53,7 +52,7 @@ var appRunner app.Runner = app.NewApplication()
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
-		Short: "MCP-XY is a versatile proxy for backend services.",
+		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			jsonrpcPort := viper.GetString("jsonrpc-port")
 			registrationPort := viper.GetString("grpc-port")
@@ -65,7 +64,7 @@ func newRootCmd() *cobra.Command {
 				logLevel = slog.LevelDebug
 			}
 			logging.Init(logLevel, os.Stdout)
-			log := logging.GetLogger().With("service", "mcpxy")
+			log := logging.GetLogger().With("service", "mcpany")
 
 			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-paths", configPaths)
 			if len(configPaths) > 0 {
@@ -90,7 +89,7 @@ func newRootCmd() *cobra.Command {
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
-		Short: "Print the version number of mcpxy",
+		Short: "Print the version number of mcpany",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", appconsts.Name, appconsts.Version)
 			if err != nil {
@@ -113,19 +112,19 @@ func newRootCmd() *cobra.Command {
 
 	cobra.OnInitialize(func() {
 		viper.AutomaticEnv()
-		viper.SetEnvPrefix("MCPXY")
+		viper.SetEnvPrefix("MCPANY")
 	})
 
-	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPXY_JSONRPC_PORT")
+	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
 	if err := viper.BindPFlag("jsonrpc-port", rootCmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
 		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
 	}
 
-	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPXY_GRPC_PORT")
-	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPXY_STDIO")
-	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPXY_CONFIG_PATHS")
-	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPXY_DEBUG")
-	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPXY_SHUTDOWN_TIMEOUT")
+	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
+	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
+	rootCmd.Flags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATHS")
+	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
+	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
 
 	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
@@ -134,7 +133,7 @@ func newRootCmd() *cobra.Command {
 	return rootCmd
 }
 
-// main is the entry point for the MCP-XY server application. It initializes and
+// main is the entry point for the MCP Any server application. It initializes and
 // executes the root command, which is responsible for parsing command-line
 // arguments, loading configuration, and starting the server.
 //

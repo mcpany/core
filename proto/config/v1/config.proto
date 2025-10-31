@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Author(s) of MCP-XY
+// Copyright (C) 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 edition = "2023";
@@ -8,13 +8,13 @@ package mcpx.config.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/mcpxy/core/proto/config/v1";
+option go_package = "github.com/mcpany/core/proto/config/v1";
 
 // ===================================================================
 // Root Server Configuration
 // ===================================================================
 
-// McpxServerConfig is the root configuration for the entire MCPXY server.
+// McpxServerConfig is the root configuration for the entire MCPANY server.
 message McpxServerConfig {
   // Server-wide operational parameters.
   GlobalSettings global_settings = 1;

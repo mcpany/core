@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/mcpxy/core/pkg/consts"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 // SanitizeID sanitizes a slice of strings to create a single valid identifier.
@@ -33,25 +33,27 @@ import (
 // It processes each string in the input slice `ids` to make it conform to a set of rules,
 // ensuring that the resulting identifier is safe and consistent for use in various contexts.
 // The sanitization process involves:
-// 1. Removing any characters that are not alphanumeric, underscore, or hyphen.
-// 2. Truncating the string if it exceeds a specified maximum length.
-// 3. Optionally, appending a hash of the original string to ensure uniqueness,
-//    especially when truncation occurs or when illegal characters are present.
+//  1. Removing any characters that are not alphanumeric, underscore, or hyphen.
+//  2. Truncating the string if it exceeds a specified maximum length.
+//  3. Optionally, appending a hash of the original string to ensure uniqueness,
+//     especially when truncation occurs or when illegal characters are present.
 //
 // After sanitizing each string individually, it joins them with a "." separator to form
 // the final identifier.
 //
 // Parameters:
-//   ids: A slice of strings to be sanitized and joined. Each element of the slice
-//        represents a part of the final identifier.
-//   alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
-//                     sanitized string, regardless of whether it was modified.
-//   maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
-//                             string before a hash is appended.
-//   hashLength: The desired length of the hexadecimal hash to be appended.
+//
+//	ids: A slice of strings to be sanitized and joined. Each element of the slice
+//	     represents a part of the final identifier.
+//	alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
+//	                  sanitized string, regardless of whether it was modified.
+//	maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
+//	                          string before a hash is appended.
+//	hashLength: The desired length of the hexadecimal hash to be appended.
 //
 // Returns:
-//   A single string representing the sanitized and joined identifier.
+//
+//	A single string representing the sanitized and joined identifier.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
 	var sanitizedIDs []string
 	for _, id := range ids {
@@ -118,8 +120,6 @@ var (
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
 )
-
-
 
 // GenerateUUID creates a new version 4 UUID and returns it as a string.
 func GenerateUUID() string {

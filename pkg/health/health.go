@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mcpxy/core/pkg/logging"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/logging"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/client"
-	"github.com/mcpxy/core/pkg/consts"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/transformer"
-	"github.com/mcpxy/core/pkg/util"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/transformer"
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -126,7 +126,7 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 type GRPCTool struct {
 	tool           *v1.Tool
 	poolManager    *pool.Manager
-	serviceID     string
+	serviceID      string
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
@@ -142,7 +142,7 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 	return &GRPCTool{
 		tool:           tool,
 		poolManager:    poolManager,
-		serviceID:     serviceID,
+		serviceID:      serviceID,
 		method:         method,
 		requestMessage: dynamicpb.NewMessage(method.Input()),
 		cache:          callDefinition.GetCache(),
@@ -210,7 +210,7 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 type HTTPTool struct {
 	tool              *v1.Tool
 	poolManager       *pool.Manager
-	serviceID        string
+	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.HttpParameterMapping
 	inputTransformer  *configv1.InputTransformer
@@ -230,7 +230,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
-		serviceID:        serviceID,
+		serviceID:         serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
@@ -323,7 +323,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if contentType != "" {
 		httpReq.Header.Set("Content-Type", contentType)
 	}
-	httpReq.Header.Set("User-Agent", "mcpxy-e2e-test")
+	httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
 	httpReq.Header.Set("Accept", "*/*")
 
 	if t.authenticator != nil {

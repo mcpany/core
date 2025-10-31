@@ -1,27 +1,27 @@
 # 🔌 Integrating with AI Assistants
 
-This guide explains how to connect `mcpxy` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpxy` server. By integrating `mcpxy`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
+This guide explains how to connect `mcpany` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpany` server. By integrating `mcpany`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
 
-There are three primary ways to run `mcpxy` for integration:
+There are three primary ways to run `mcpany` for integration:
 
-1. **As a Local Binary**: Run the `mcpxy` server directly on your machine.
-2. **With Docker Compose**: Run `mcpxy` as a containerized service.
-3. **With Helm**: Deploy `mcpxy` to a Kubernetes cluster.
+1. **As a Local Binary**: Run the `mcpany` server directly on your machine.
+2. **With Docker Compose**: Run `mcpany` as a containerized service.
+3. **With Helm**: Deploy `mcpany` to a Kubernetes cluster.
 
 ---
 
 ## 1. Local Binary Integration
 
-This is the most direct method for running `mcpxy` on your local machine.
+This is the most direct method for running `mcpany` on your local machine.
 
 ### Prerequisites
 
-Before you begin, you need to have the `mcpxy` server binary built and available on your system.
+Before you begin, you need to have the `mcpany` server binary built and available on your system.
 
-1. **Clone the `mcpxy` repository:**
+1. **Clone the `mcpany` repository:**
 
    ```bash
-   git clone https://github.com/mcpxy/core.git
+   git clone https://github.com/mcpany/core.git
    cd core
    ```
 
@@ -36,7 +36,7 @@ Before you begin, you need to have the `mcpxy` server binary built and available
 
 ### AI Client Setup
 
-Most AI clients require you to specify the command to start the `mcpxy` server.
+Most AI clients require you to specify the command to start the `mcpany` server.
 
 #### General JSON Configuration
 
@@ -45,9 +45,9 @@ This generic JSON configuration can be adapted for most clients that support it 
 ```json
 {
   "mcpServers": {
-    "mcpxy": {
+    "mcpany": {
       "command": "./build/bin/server",
-      "args": ["--config-paths", "/path/to/your/mcpxy-config.yaml"]
+      "args": ["--config-paths", "/path/to/your/mcpany-config.yaml"]
     }
   }
 }
@@ -57,21 +57,21 @@ This generic JSON configuration can be adapted for most clients that support it 
 
 #### Gemini CLI
 
-To register `mcpxy` as an extension to the Gemini CLI:
+To register `mcpany` as an extension to the Gemini CLI:
 
 ```bash
 # Add for the current project
-gemini mcp add mcpxy "./build/bin/server"
+gemini mcp add mcpany "./build/bin/server"
 
 # Add with command-line arguments (like a config file)
 # Note the use of '--' to separate the command from its arguments.
-gemini mcp add mcpxy -- "./build/bin/server" --config-paths "/path/to/your/mcpxy-config.yaml"
+gemini mcp add mcpany -- "./build/bin/server" --config-paths "/path/to/your/mcpany-config.yaml"
 ```
 
 #### Claude CLI
 
 ```bash
-claude mcp add mcpxy "./build/bin/server"
+claude mcp add mcpany "./build/bin/server"
 ```
 
 #### Copilot CLI
@@ -82,7 +82,7 @@ Use the interactive prompt (`/mcp add`) and provide the absolute path to the `se
 
 ## 2. Docker Compose Integration
 
-You can run `mcpxy` and its upstream services in a containerized environment using Docker Compose. This is ideal for creating reproducible setups.
+You can run `mcpany` and its upstream services in a containerized environment using Docker Compose. This is ideal for creating reproducible setups.
 
 ### Prerequisites
 
@@ -90,7 +90,7 @@ You can run `mcpxy` and its upstream services in a containerized environment usi
 
 ### Running with Docker Compose
 
-The repository includes a `docker-compose.yml` file that starts `mcpxy` and a sample upstream service.
+The repository includes a `docker-compose.yml` file that starts `mcpany` and a sample upstream service.
 
 1. **Start the services:**
 
@@ -98,16 +98,16 @@ The repository includes a `docker-compose.yml` file that starts `mcpxy` and a sa
    docker compose up --build
    ```
 
-   The `mcpxy` server will be available on `localhost:50050`.
+   The `mcpany` server will be available on `localhost:50050`.
 
 2. **Configure your AI Assistant:**
-   Since `mcpxy` is running as a networked service (not a local process), you need to configure your AI assistant to connect to its TCP port.
+   Since `mcpany` is running as a networked service (not a local process), you need to configure your AI assistant to connect to its TCP port.
 
    For clients like Gemini, you can add it as an HTTP extension:
 
    ```bash
    # The 'mcp' subcommand is for local processes. For networked services, use 'http'.
-   gemini http add mcpxy-docker http://localhost:50050
+   gemini http add mcpany-docker http://localhost:50050
    ```
 
    For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
@@ -116,7 +116,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpxy` and a sa
 
 ## 3. Helm Integration
 
-For production or staging environments, you can deploy `mcpxy` to a Kubernetes cluster using the provided Helm chart.
+For production or staging environments, you can deploy `mcpany` to a Kubernetes cluster using the provided Helm chart.
 
 ### Prerequisites
 
@@ -131,24 +131,24 @@ For production or staging environments, you can deploy `mcpxy` to a Kubernetes c
 
    ```bash
    cd helm/
-   helm install mcpxy . -f values.yaml
+   helm install mcpany . -f values.yaml
    ```
 
-   This will deploy `mcpxy` into your Kubernetes cluster.
+   This will deploy `mcpany` into your Kubernetes cluster.
 
 2. **Expose the Service:**
-   To access `mcpxy` from your local machine, you can use `kubectl port-forward`.
+   To access `mcpany` from your local machine, you can use `kubectl port-forward`.
 
    ```bash
-   # Forward a local port (e.g., 50050) to the mcpxy service in the cluster
-   kubectl port-forward svc/mcpxy 50050:50050
+   # Forward a local port (e.g., 50050) to the mcpany service in the cluster
+   kubectl port-forward svc/mcpany 50050:50050
    ```
 
 3. **Configure your AI Assistant:**
-   With the port forward running, `mcpxy` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
+   With the port forward running, `mcpany` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
 
    ```bash
-   gemini http add mcpxy-k8s http://localhost:50050
+   gemini http add mcpany-k8s http://localhost:50050
    ```
 
-By following these instructions, you can connect `mcpxy` to your favorite AI coding assistant, regardless of how you choose to run it.
+By following these instructions, you can connect `mcpany` to your favorite AI coding assistant, regardless of how you choose to run it.

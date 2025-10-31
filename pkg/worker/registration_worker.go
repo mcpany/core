@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package worker
 import (
 	"context"
 
-	"github.com/mcpxy/core/pkg/bus"
-	"github.com/mcpxy/core/pkg/logging"
-	"github.com/mcpxy/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/serviceregistry"
 )
 
 // ServiceRegistrationWorker is a background worker responsible for handling
@@ -67,10 +67,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 		res := &bus.ServiceRegistrationResult{
-			ServiceKey:         serviceID,
-			DiscoveredTools:    discoveredTools,
+			ServiceKey:          serviceID,
+			DiscoveredTools:     discoveredTools,
 			DiscoveredResources: discoveredResources,
-			Error:              err,
+			Error:               err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		resultBus.Publish(req.CorrelationID(), res)

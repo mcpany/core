@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
-	"github.com/mcpxy/core/pkg/tool"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
 

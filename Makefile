@@ -4,7 +4,7 @@
 GO = go
 GO_CMD := $(GO)
 GOTOOLCHAIN ?= go1.25.0+auto
-SERVER_IMAGE_TAG ?= mcpxy/server:latest
+SERVER_IMAGE_TAG ?= mcpany/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -261,9 +261,9 @@ gen: prepare
 			--descriptor_set_out=$(CURDIR)/build/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpxy/core,default_api_level=API_OPAQUE \
+			--go_opt=module=github.com/mcpany/core,default_api_level=API_OPAQUE \
 			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpxy/core \
+			--go-grpc_opt=module=github.com/mcpany/core \
 			{} +
 	@echo "Protobuf generation complete."
 
@@ -273,15 +273,15 @@ build: gen
 
 test: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -cover -coverprofile=coverage.out ./...
+	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -cover -coverprofile=coverage.out ./...
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=coverage.out $(shell go list ./... | grep 'tests/integration')
+	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=coverage.out $(shell go list ./... | grep 'tests/integration')
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 600s timeout..."
-	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPXY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s ./...
+	@GOTOOLCHAIN=$(GOTOOLCHAIN) GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s ./...
 
 # ==============================================================================
 # Example Binaries Build
@@ -314,7 +314,7 @@ clean:
 	@rm -rf $(CURDIR)/build
 
 run: build
-	@echo "Starting MCP-XY server locally..."
+	@echo "Starting MCP Any server locally..."
 	@$(CURDIR)/build/bin/server
 
 # ==============================================================================
@@ -352,8 +352,8 @@ $(E2E_BIN_DIR):
 .PHONY: build-e2e-timeserver-docker
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifdef HAS_DOCKER
-	@echo "Building E2E time server Docker image (mcpxy-e2e-time-server)..."
-	@$(DOCKER_BUILDX_CMD) build 		--load 		-t mcpxy-e2e-time-server 		-f tests/integration/examples/Dockerfile.timeserver 		$(if $(CACHE_TO),--cache-to=$(CACHE_TO)) 		$(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) 		tests/integration/examples
+	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
+	@$(DOCKER_BUILDX_CMD) build 		--load 		-t mcpany-e2e-time-server 		-f tests/integration/examples/Dockerfile.timeserver 		$(if $(CACHE_TO),--cache-to=$(CACHE_TO)) 		$(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) 		tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
@@ -415,7 +415,7 @@ else
 	@exit 1
 endif
 
-EVERYTHING_IMAGE_TAG ?= mcpxy/everything:latest
+EVERYTHING_IMAGE_TAG ?= mcpany/everything:latest
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."

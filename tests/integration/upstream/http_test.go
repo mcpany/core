@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package upstream
 import (
 	"context"
 	"encoding/json"
-	"testing"
-
-	"github.com/mcpxy/core/pkg/util"
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
+
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -37,19 +37,19 @@ func TestUpstreamService_HTTP(t *testing.T) {
 		UpstreamServiceType: "http",
 		BuildUpstream:       framework.BuildHTTPEchoServer,
 		RegisterUpstream:    framework.RegisterHTTPEchoService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
 			defer cs.Close()
 
 			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 			require.NoError(t, err)
 			for _, tool := range listToolsResult.Tools {
-				t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+				t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 			}
 
 			const echoServiceID = "e2e_http_echo"
@@ -84,18 +84,18 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 			return &integration.ManagedProcess{}
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-			configPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpxy_config.yaml")
+			configPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpany_config.yaml")
 			content, err := os.ReadFile(configPath)
 			require.NoError(t, err)
 			return string(content)
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
-			require.NoError(t, err, "Failed to connect to MCPXY server")
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err, "Failed to connect to MCPANY server")
 			defer cs.Close()
 
 			serviceID, _ := util.SanitizeServiceName("ip-info-service")

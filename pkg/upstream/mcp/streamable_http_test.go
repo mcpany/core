@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/util"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -672,10 +672,10 @@ func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
 
 type mockToolManager struct{}
 
-func (m *mockToolManager) AddTool(t tool.Tool) error                          { return nil }
+func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)           { return nil, false }
-func (m *mockToolManager) ListTools() []tool.Tool                               { return nil }
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)               { return nil, false }
+func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
@@ -687,20 +687,20 @@ func (m *mockToolManager) ClearToolsForService(serviceID string) {}
 
 type mockPromptManager struct{}
 
-func (m *mockPromptManager) AddPrompt(p prompt.Prompt)                 {}
-func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) { return nil, false }
-func (m *mockPromptManager) RemovePrompt(name string)                    {}
-func (m *mockPromptManager) ListPrompts() []prompt.Prompt                { return nil }
+func (m *mockPromptManager) AddPrompt(p prompt.Prompt)                       {}
+func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool)     { return nil, false }
+func (m *mockPromptManager) RemovePrompt(name string)                        {}
+func (m *mockPromptManager) ListPrompts() []prompt.Prompt                    { return nil }
 func (m *mockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {}
 
 type mockResourceManager struct{}
 
-func (m *mockResourceManager) AddResource(r resource.Resource)                   {}
-func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool)    { return nil, false }
-func (m *mockResourceManager) RemoveResource(uri string)                         {}
-func (m *mockResourceManager) ListResources() []resource.Resource                { return nil }
-func (m *mockResourceManager) OnListChanged(func())                              {}
-func (m *mockResourceManager) Subscribe(ctx context.Context, uri string) error { return nil }
+func (m *mockResourceManager) AddResource(r resource.Resource)                  {}
+func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) { return nil, false }
+func (m *mockResourceManager) RemoveResource(uri string)                        {}
+func (m *mockResourceManager) ListResources() []resource.Resource               { return nil }
+func (m *mockResourceManager) OnListChanged(func())                             {}
+func (m *mockResourceManager) Subscribe(ctx context.Context, uri string) error  { return nil }
 
 func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
 	u := NewMCPUpstream()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"context"
 	"encoding/json"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Message defines the interface that all messages exchanged on the event bus must
@@ -68,10 +68,10 @@ type ServiceRegistrationRequest struct {
 // discovered, or an error if the registration failed.
 type ServiceRegistrationResult struct {
 	BaseMessage
-	ServiceKey         string
-	DiscoveredTools    []*configv1.ToolDefinition
+	ServiceKey          string
+	DiscoveredTools     []*configv1.ToolDefinition
 	DiscoveredResources []*configv1.ResourceDefinition
-	Error              error
+	Error               error
 }
 
 // ToolExecutionRequest is a message sent to the bus to request the execution of
