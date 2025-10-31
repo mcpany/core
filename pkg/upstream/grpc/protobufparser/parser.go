@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package protobufparser
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -30,12 +33,9 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"os"
-	"path/filepath"
-	"regexp"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
@@ -184,7 +184,7 @@ func processProtoCollection(
 			}
 
 			destPath := filepath.Join(tempDir, relPath)
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+			if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
 				return fmt.Errorf("failed to create directory for proto file: %w", err)
 			}
 
@@ -192,7 +192,7 @@ func processProtoCollection(
 			if err != nil {
 				return fmt.Errorf("failed to read proto file %s: %w", path, err)
 			}
-			if err := os.WriteFile(destPath, content, 0644); err != nil {
+			if err := os.WriteFile(destPath, content, 0o644); err != nil {
 				return fmt.Errorf("failed to write proto file to temp dir: %w", err)
 			}
 			protoFiles = append(protoFiles, destPath)
@@ -226,7 +226,7 @@ func processProtoCollection(
 
 func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, error) {
 	filePath := filepath.Join(tempDir, protoFile.GetFileName())
-	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(filePath), 0o755); err != nil {
 		return "", fmt.Errorf("failed to create directory for proto file: %w", err)
 	}
 
@@ -245,7 +245,7 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 		return "", fmt.Errorf("proto file definition for '%s' has neither content nor a path", protoFile.GetFileName())
 	}
 
-	if err := os.WriteFile(filePath, content, 0644); err != nil {
+	if err := os.WriteFile(filePath, content, 0o644); err != nil {
 		return "", fmt.Errorf("failed to write proto file: %w", err)
 	}
 	return filePath, nil

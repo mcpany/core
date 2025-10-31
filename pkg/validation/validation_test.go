@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"strings"
 	"testing"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,7 +52,7 @@ func TestIsValidURL(t *testing.T) {
 		{"just scheme http", "http:", false},
 		{"just scheme https with slashes", "https://", false}, // common web scheme, requires host
 		{"missing scheme", "example.com", false},
-		{"missing host for http", "http://", false},    // common web scheme, requires host
+		{"missing host for http", "http://", false}, // common web scheme, requires host
 		{"http scheme with empty authority", "http:///", false},
 		{"http scheme with empty authority and path", "http:///path", false},
 		{"http scheme with port but no host", "http://:8080", false},

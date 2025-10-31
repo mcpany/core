@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/pool"
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/upstream"
-	"github.com/mcpxy/core/pkg/upstream/factory"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -64,7 +64,7 @@ type mockToolManager struct {
 }
 
 func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
-func (m *mockToolManager) ClearToolsForService(serviceID string)                  {}
+func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}

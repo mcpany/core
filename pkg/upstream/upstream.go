@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package upstream
 import (
 	"context"
 
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/tool"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Upstream defines the standard interface for all backend service integrations.

@@ -1,6 +1,7 @@
 //go:build e2e
+
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpxy/core/tests/framework"
+	"github.com/mcpany/core/tests/framework"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,9 +40,9 @@ func TestGeminiCLIE2E_Everything(t *testing.T) {
 		UpstreamServiceType: "streamablehttp",
 		BuildUpstream:       framework.BuildEverythingServer,
 		RegisterUpstream:    framework.RegisterEverythingService,
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
-			gemini.AddMCP("mcpxy-server", mcpxyEndpoint)
-			defer gemini.RemoveMCP("mcpxy-server")
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			gemini.AddMCP("mcpany-server", mcpanyEndpoint)
+			defer gemini.RemoveMCP("mcpany-server")
 			output, err := gemini.Run(apiKey, "what is the result of 10 + 5")
 			require.NoError(t, err)
 			require.Contains(t, output, "15")

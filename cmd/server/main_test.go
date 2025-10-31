@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
-	called                bool
-	capturedStdio         bool
-	capturedJsonrpcPort   string
-	capturedGrpcPort      string
-	capturedConfigPaths   []string
+	called                  bool
+	capturedStdio           bool
+	capturedJsonrpcPort     string
+	capturedGrpcPort        string
+	capturedConfigPaths     []string
 	capturedShutdownTimeout time.Duration
 }
 

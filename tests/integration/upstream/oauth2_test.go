@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/util"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/mcpxy/core/pkg/util"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -72,10 +72,10 @@ func newMockOAuth2Server(t *testing.T) *mockOAuth2Server {
 func (s *mockOAuth2Server) handleWellKnown(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(map[string]interface{}{
-		"issuer":                 s.issuer,
-		"token_endpoint":         s.URL + oauth2TestTokenPath,
-		"jwks_uri":               s.URL + oauth2TestJWKSPath,
-		"grant_types_supported":  []string{"client_credentials"},
+		"issuer":                                s.issuer,
+		"token_endpoint":                        s.URL + oauth2TestTokenPath,
+		"jwks_uri":                              s.URL + oauth2TestJWKSPath,
+		"grant_types_supported":                 []string{"client_credentials"},
 		"token_endpoint_auth_methods_supported": []string{"client_secret_basic"},
 	})
 	if err != nil {
@@ -129,7 +129,7 @@ func (s *mockOAuth2Server) handleJWKS(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func buildMCPXYAuthedServer(t *testing.T, issuer, audience string) *integration.MCPXYTestServerInfo {
+func buildMCPANYAuthedServer(t *testing.T, issuer, audience string) *integration.MCPANYTestServerInfo {
 	t.Helper()
 
 	config := fmt.Sprintf(`
@@ -138,7 +138,7 @@ auth:
     issuer: %s
     audience: [%s]
 `, issuer, audience)
-	return integration.StartMCPXYServerWithConfig(t, "mcpxy_oauth2_test", config)
+	return integration.StartMCPANYServerWithConfig(t, "mcpany_oauth2_test", config)
 }
 
 func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
@@ -164,12 +164,12 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 			}.Build()
 			integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
 			defer cs.Close()
 
@@ -193,19 +193,19 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_MCPXY_WithOAuth2(t *testing.T) {
+func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
 	oauth2Server := newMockOAuth2Server(t)
 	defer oauth2Server.Close()
 
 	testCase := &framework.E2ETestCase{
-		Name:                "MCPXY with OAuth2 Authentication",
+		Name:                "MCPANY with OAuth2 Authentication",
 		UpstreamServiceType: "http",
 		BuildUpstream:       framework.BuildHTTPEchoServer,
 		RegisterUpstream:    framework.RegisterHTTPEchoService,
-		StartMCPXYServer: func(t *testing.T, testName string, extraArgs ...string) *integration.MCPXYTestServerInfo {
-			return buildMCPXYAuthedServer(t, oauth2Server.issuer, "test-audience")
+		StartMCPANYServer: func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo {
+			return buildMCPANYAuthedServer(t, oauth2Server.issuer, "test-audience")
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
@@ -223,7 +223,7 @@ func TestUpstreamService_MCPXY_WithOAuth2(t *testing.T) {
 			}
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint, HTTPClient: httpClient}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint, HTTPClient: httpClient}, nil)
 			require.NoError(t, err)
 			defer cs.Close()
 
@@ -231,7 +231,7 @@ func TestUpstreamService_MCPXY_WithOAuth2(t *testing.T) {
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)
 			sanitizedToolName, _ := util.SanitizeToolName("echo")
 			toolName := serviceID + "." + sanitizedToolName
-			echoMessage := `{"message": "hello world from oauth2 protected mcpxy"}`
+			echoMessage := `{"message": "hello world from oauth2 protected mcpany"}`
 			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 			require.NoError(t, err, "Error calling echo tool with correct auth")
 			require.NotNil(t, res, "Nil response from echo tool with correct auth")

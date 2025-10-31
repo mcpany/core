@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"encoding/json"
 	"testing"
 	"time"
 
+	"github.com/go-jose/go-jose/v4"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/go-jose/go-jose/v4"
 )
 
 // newTestKey creates a new RSA private key for signing JWTs.
@@ -38,7 +38,6 @@ func newTestKey(t *testing.T) *rsa.PrivateKey {
 	require.NoError(t, err)
 	return privateKey
 }
-
 
 // newIDToken creates a new JWT ID token with the specified claims.
 func newIDToken(t *testing.T, privateKey *rsa.PrivateKey, claims jwt.MapClaims) string {

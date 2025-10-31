@@ -1,10 +1,26 @@
-# This Docker Compose file provides an example setup for running the MCP-XY server
+# Copyright 2025 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This Docker Compose file provides an example setup for running the MCP Any server
 # along with a sample upstream service (http-echo-server) to demonstrate how they
 # can be connected within a Docker environment.
 
 services:
-  # The MCP-XY server itself.
-  mcpxy-server:
+  # The MCP Any server itself.
+  mcpany-server:
     build:
       context: .
       dockerfile: docker/Dockerfile.server
@@ -15,26 +31,26 @@ services:
       - "50051:50051"
     volumes:
       # Mounts the Docker-specific config file into the container.
-      # This allows mcpxy-server to discover and connect to the http-echo-server.
-      - ./docker/config.docker.yaml:/etc/mcpxy/config.yaml
+      # This allows mcpany-server to discover and connect to the http-echo-server.
+      - ./docker/config.docker.yaml:/etc/mcpany/config.yaml
     entrypoint:
       # Tells the server to load the configuration from the mounted path.
       - "/app/server"
       - "--config-paths"
-      - "/etc/mcpxy/config.yaml"
+      - "/etc/mcpany/config.yaml"
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
       interval: 5s
       timeout: 2s
       retries: 5
     depends_on:
-      # Ensures that the http-echo-server is started before mcpxy-server.
+      # Ensures that the http-echo-server is started before mcpany-server.
       http-echo-server:
         condition: service_healthy
     networks:
-      - mcpxy-net
+      - mcpany-net
 
-  # A sample upstream HTTP service that mcpxy-server will connect to.
+  # A sample upstream HTTP service that mcpany-server will connect to.
   http-echo-server:
     build:
       context: .
@@ -47,8 +63,8 @@ services:
       timeout: 2s
       retries: 5
     networks:
-      - mcpxy-net
+      - mcpany-net
 
 networks:
-  mcpxy-net:
+  mcpany-net:
     driver: bridge

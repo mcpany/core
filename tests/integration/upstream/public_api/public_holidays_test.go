@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/pkg/util"
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/pkg/util"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -39,16 +39,16 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Public Holidays API with Transformation...")
 	t.Parallel()
 
-	// 1. Start MCPXY Server
-	mcpxTestServerInfo := integration.StartMCPXYServer(t, "E2EPublicHolidaysTest")
+	// 1. Start MCPANY Server
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// 2. Register Public Holidays Service with MCPXY
+	// 2. Register Public Holidays Service with MCPANY
 	const serviceID = "e2e_public_holidays"
 	serviceURL := "https://date.nager.at"
 	endpointPath := "/api/v3/PublicHolidays/{{year}}/{{countryCode}}"
 	operationID := "getPublicHolidays"
-	t.Logf("INFO: Registering '%s' with MCPXY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	outputTransformer := configv1.OutputTransformer_builder{
@@ -98,7 +98,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
 	t.Logf("INFO: '%s' registered.", serviceID)
 
-	// 3. Call Tool via MCPXY
+	// 3. Call Tool via MCPANY
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/mcpxy/core/pkg/util"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	v1 "github.com/mcpxy/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

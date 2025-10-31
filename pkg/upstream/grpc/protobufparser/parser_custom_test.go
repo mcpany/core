@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -52,7 +52,7 @@ message TestResponse {
 }
 `
 		protoFilePath := filepath.Join(tempDir, "test.proto")
-		err = os.WriteFile(protoFilePath, []byte(protoContent), 0644)
+		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
 		require.NoError(t, err)
 
 		// Create a ProtoCollection
@@ -125,7 +125,7 @@ func TestProcessProtoCollection(t *testing.T) {
 
 	protoContent := `syntax = "proto3"; package test; message Test {}`
 	protoFilePath := filepath.Join(tempDir, "test.proto")
-	err = os.WriteFile(protoFilePath, []byte(protoContent), 0644)
+	err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
 	require.NoError(t, err)
 
 	collection := &configv1.ProtoCollection{}
@@ -160,7 +160,7 @@ func TestWriteProtoFile(t *testing.T) {
 	t.Run("from_path", func(t *testing.T) {
 		protoContent := `syntax = "proto3"; package test; message Test {}`
 		protoFilePath := filepath.Join(tempDir, "source.proto")
-		err = os.WriteFile(protoFilePath, []byte(protoContent), 0644)
+		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
 		require.NoError(t, err)
 
 		protoFile := &configv1.ProtoFile{}

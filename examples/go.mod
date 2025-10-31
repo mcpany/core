@@ -1,4 +1,4 @@
-module github.com/mcpxy/core/examples
+module github.com/mcpany/core/examples
 
 go 1.24.3
 
@@ -40,4 +40,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/mcpxy/core => ../
+replace github.com/mcpany/core => ../
