@@ -169,12 +169,32 @@ func TestManager(t *testing.T) {
 	m.CloseAll()
 }
 
+type mockCloser struct {
+	closed bool
+}
+
+func (m *mockCloser) Close() error {
+	m.closed = true
+	return nil
+}
+
+func TestManager_RegisterOverwriteClosesOldPoolWithCloser(t *testing.T) {
+	m := NewManager()
+	closer1 := &mockCloser{}
+	closer2 := &mockCloser{}
+	m.Register("test_closer", closer1)
+	m.Register("test_closer", closer2)
+	assert.True(t, closer1.closed, "Expected old closer to be closed upon re-registration")
+	assert.False(t, closer2.closed, "Expected new closer to not be closed")
+}
+
 type simpleMockPool struct {
 	closed bool
 }
 
-func (p *simpleMockPool) Close() {
+func (p *simpleMockPool) Close() error {
 	p.closed = true
+	return nil
 }
 
 func (p *simpleMockPool) Len() int {
