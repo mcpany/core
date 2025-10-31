@@ -84,7 +84,7 @@ func TestLoggingMiddleware(t *testing.T) {
 				&mcp.TextContent{Text: `{"status": "ok"}`},
 			},
 		}
-		expectedErr := errors.New("some error")
+		expectedErr := (error)(nil)
 
 		// Mock handler that will be wrapped by the middleware
 		mockHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -124,5 +124,24 @@ func TestLoggingMiddleware(t *testing.T) {
 
 		_, err := wrappedHandler(context.Background(), "test.method", &mcp.InitializeRequest{})
 		assert.NoError(t, err, "The wrapped handler should execute without errors even with a nil logger")
+	})
+
+	t.Run("ErrorInHandler", func(t *testing.T) {
+		mh.buf.Reset()
+		expectedErr := errors.New("handler error")
+
+		mockHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			return nil, expectedErr
+		}
+
+		loggingMiddleware := LoggingMiddleware(logger)
+		wrappedHandler := loggingMiddleware(mockHandler)
+
+		_, err := wrappedHandler(context.Background(), "test.method", &mcp.InitializeRequest{})
+		assert.Equal(t, expectedErr, err)
+
+		logOutput := mh.String()
+		require.True(t, strings.Contains(logOutput, "Request failed"), "Log should contain 'Request failed'")
+		require.True(t, strings.Contains(logOutput, "error=\"handler error\""), "Log should contain the error message")
 	})
 }

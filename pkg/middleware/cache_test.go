@@ -178,4 +178,124 @@ func TestCachingMiddleware(t *testing.T) {
 		assert.Equal(t, "new result", result)
 		assert.True(t, nextCalled)
 	})
+
+	t.Run("cache disabled", func(t *testing.T) {
+		mockToolManager := &mockToolManager{}
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("service")
+		mockTool := &mockTool{toolProto: toolProto}
+
+		cacheConfig := &configv1.CacheConfig{}
+		cacheConfig.SetIsEnabled(false) // Cache is disabled
+		mockTool.On("GetCacheConfig").Return(cacheConfig)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"input":"value"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		nextCalled := false
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return "new result", nil
+		}
+
+		result, err := cachingMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, "new result", result)
+		assert.True(t, nextCalled, "next should be called when cache is disabled")
+	})
+
+	t.Run("no tool in context", func(t *testing.T) {
+		mockToolManager := &mockToolManager{}
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"input":"value"}`),
+		}
+		ctx := context.Background() // No tool in context
+
+		nextCalled := false
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return "new result", nil
+		}
+
+		result, err := cachingMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, "new result", result)
+		assert.True(t, nextCalled, "next should be called when no tool is in context")
+	})
+
+	t.Run("next returns error", func(t *testing.T) {
+		mockToolManager := &mockToolManager{}
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("service")
+		mockTool := &mockTool{toolProto: toolProto}
+
+		cacheConfig := &configv1.CacheConfig{}
+		cacheConfig.SetIsEnabled(true)
+		cacheConfig.SetTtl(durationpb.New(10 * time.Second))
+		mockTool.On("GetCacheConfig").Return(cacheConfig)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"input":"value"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		nextCalled := 0
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			nextCalled++
+			if nextCalled == 1 {
+				return nil, assert.AnError
+			}
+			return "new result", nil
+		}
+
+		// First call, next returns an error
+		_, err := cachingMiddleware.Execute(ctx, req, next)
+		assert.ErrorIs(t, err, assert.AnError)
+
+		// Second call, should not hit cache
+		result, err := cachingMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, "new result", result)
+		assert.Equal(t, 2, nextCalled, "next should be called twice")
+	})
+
+	t.Run("service info not found", func(t *testing.T) {
+		mockToolManager := &mockToolManager{}
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("service")
+		mockTool := &mockTool{toolProto: toolProto}
+
+		mockTool.On("GetCacheConfig").Return(nil)
+		mockToolManager.On("GetServiceInfo", "service").Return((*tool.ServiceInfo)(nil), false)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"input":"value"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		nextCalled := false
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return "new result", nil
+		}
+
+		result, err := cachingMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, "new result", result)
+		assert.True(t, nextCalled, "next should be called when service info is not found")
+	})
 }
