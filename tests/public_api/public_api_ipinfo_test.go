@@ -35,7 +35,6 @@ import (
 )
 
 func TestUpstreamService_IPInfo(t *testing.T) {
-    t.Skip("Skipping flaky test")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
