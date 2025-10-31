@@ -19,6 +19,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"sync"
@@ -238,6 +239,12 @@ func HealthCheck(port string) error {
 		return fmt.Errorf("health check failed: %w", err)
 	}
 	defer resp.Body.Close()
+
+	// We must read the body and close it to ensure the underlying connection can be reused.
+	_, err = io.Copy(io.Discard, resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
