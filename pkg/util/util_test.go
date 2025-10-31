@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,7 +184,6 @@ func TestSanitizeToolName(t *testing.T) {
 		})
 	}
 }
-
 
 func TestSanitizeOperationID(t *testing.T) {
 	testCases := []struct {

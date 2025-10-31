@@ -1,3 +1,19 @@
+// Copyright 2025 Author(s) of MCP Any
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package integration_test
 
 import (
@@ -6,9 +22,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/tests/integration"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,13 +55,13 @@ func RegisterPromptService(t *testing.T, registrationClient apiv1.RegistrationSe
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
 }
 
-func InvokeAIWithPrompt(t *testing.T, mcpxyEndpoint string) {
+func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
 	gemini := framework.NewGeminiCLI(t)
 	gemini.Install()
 
 	// Configure the MCP server with the Gemini CLI
-	serverName := "mcpxy_e2e_prompt_test"
-	gemini.AddMCP(serverName, mcpxyEndpoint)
+	serverName := "mcpany_e2e_prompt_test"
+	gemini.AddMCP(serverName, mcpanyEndpoint)
 	defer gemini.RemoveMCP(serverName)
 
 	// Run a prompt and validate the output

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -38,8 +38,8 @@ import (
 type RegistrationMethod string
 
 const (
-	FileRegistration   RegistrationMethod = "file"
-	GRPCRegistration   RegistrationMethod = "grpc"
+	FileRegistration    RegistrationMethod = "file"
+	GRPCRegistration    RegistrationMethod = "grpc"
 	JSONRPCRegistration RegistrationMethod = "jsonrpc"
 )
 
@@ -48,22 +48,22 @@ type E2ETestCase struct {
 	UpstreamServiceType    string
 	BuildUpstream          func(t *testing.T) *integration.ManagedProcess
 	RegisterUpstream       func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
-	ValidateTool           func(t *testing.T, mcpxyEndpoint string)
-	ValidateMiddlewares    func(t *testing.T, mcpxyEndpoint string, upstreamEndpoint string)
-	InvokeAIClient         func(t *testing.T, mcpxyEndpoint string)
+	ValidateTool           func(t *testing.T, mcpanyEndpoint string)
+	ValidateMiddlewares    func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
+	InvokeAIClient         func(t *testing.T, mcpanyEndpoint string)
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
-	StartMCPXYServer       func(t *testing.T, testName string, extraArgs ...string) *integration.MCPXYTestServerInfo
+	StartMCPANYServer      func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
 }
 
-func ValidateRegisteredTool(t *testing.T, mcpxyEndpoint string, expectedTool *mcp.Tool) {
+func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
 
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: mcpxyEndpoint,
+		Endpoint: mcpanyEndpoint,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -110,21 +110,21 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				}
 			}
 
-			var mcpxyTestServerInfo *integration.MCPXYTestServerInfo
-			if testCase.StartMCPXYServer != nil {
-				mcpxyTestServerInfo = testCase.StartMCPXYServer(t, testCase.Name)
+			var mcpanyTestServerInfo *integration.MCPANYTestServerInfo
+			if testCase.StartMCPANYServer != nil {
+				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name)
 			} else if method == FileRegistration {
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
-				mcpxyTestServerInfo = integration.StartMCPXYServerWithConfig(t, testCase.Name, configContent)
+				mcpanyTestServerInfo = integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
 			} else {
-				mcpxyTestServerInfo = integration.StartMCPXYServer(t, testCase.Name)
+				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
 			}
-			defer mcpxyTestServerInfo.CleanupFunc()
+			defer mcpanyTestServerInfo.CleanupFunc()
 
 			// Add a small delay to ensure the server is ready to accept registrations
 			time.Sleep(1 * time.Second)
 
-			// --- 3. Register Upstream Service with MCPXY ---
+			// --- 3. Register Upstream Service with MCPANY ---
 			var upstreamEndpoint string
 			if testCase.UpstreamServiceType == "stdio" {
 				upstreamEndpoint = ""
@@ -141,29 +141,29 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			} else {
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
 			}
-			t.Logf("INFO: Registering upstream service with MCPXY at endpoint %s...", upstreamEndpoint)
+			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
 			if method == GRPCRegistration {
-				testCase.RegisterUpstream(t, mcpxyTestServerInfo.RegistrationClient, upstreamEndpoint)
+				testCase.RegisterUpstream(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
 			}
-			//TODO: JSONRPC registration
+			// TODO: JSONRPC registration
 			t.Logf("INFO: Upstream service registered.")
 
 			// --- 4. Validate Registered Tool ---
 			if testCase.ValidateTool != nil {
 				t.Logf("INFO: Validating registered tool...")
-				testCase.ValidateTool(t, mcpxyTestServerInfo.HTTPEndpoint)
+				testCase.ValidateTool(t, mcpanyTestServerInfo.HTTPEndpoint)
 				t.Logf("INFO: Tool validated.")
 			}
 
 			// --- 5. Validate Middlewares ---
 			if testCase.ValidateMiddlewares != nil {
 				t.Logf("INFO: Validating middlewares...")
-				testCase.ValidateMiddlewares(t, mcpxyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
+				testCase.ValidateMiddlewares(t, mcpanyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
 				t.Logf("INFO: Middlewares validated.")
 			}
 
 			// --- 5. Invoke AI Client ---
-			testCase.InvokeAIClient(t, mcpxyTestServerInfo.HTTPEndpoint)
+			testCase.InvokeAIClient(t, mcpanyTestServerInfo.HTTPEndpoint)
 
 			t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
 		})
@@ -202,7 +202,6 @@ func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.Reg
 	}.Build()
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, authConfig)
 }
-
 
 func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
@@ -356,18 +355,18 @@ func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.Regist
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)
 }
 
-func VerifyMCPClient(t *testing.T, mcpxyEndpoint string) {
+func VerifyMCPClient(t *testing.T, mcpanyEndpoint string) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
 	for _, tool := range listToolsResult.Tools {
-		t.Logf("Discovered tool from MCPXY: %s", tool.Name)
+		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 	}
 }

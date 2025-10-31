@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,15 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
-	mcpopt "github.com/mcpxy/core/proto/mcp_options/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
 )
 
 // mockReflectionServer is a mock implementation of the gRPC reflection server.
 type mockReflectionServer struct {
 	reflectpb.UnimplementedServerReflectionServer
 	streamReady chan struct{}
-	stream *mockReflectionServerStream
+	stream      *mockReflectionServerStream
 }
 
 func (s *mockReflectionServer) ServerReflectionInfo(stream reflectpb.ServerReflection_ServerReflectionInfoServer) error {
@@ -59,7 +59,7 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 	t.Run("error on non-existent file path", func(t *testing.T) {
 		protoDef := configv1.ProtoDefinition_builder{
 			ProtoFile: configv1.ProtoFile_builder{
-				FileName:    proto.String("nonexistent.proto"),
+				FileName: proto.String("nonexistent.proto"),
 				FilePath: proto.String("/path/to/nonexistent.proto"),
 			}.Build(),
 		}.Build()
@@ -84,14 +84,14 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 		defer os.RemoveAll(tempDir)
 
 		// Create a file in the root
-		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0644)
+		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0o644)
 		require.NoError(t, err)
 
 		// Create a file in a subdirectory
 		subDir := filepath.Join(tempDir, "subdir")
-		err = os.Mkdir(subDir, 0755)
+		err = os.Mkdir(subDir, 0o755)
 		require.NoError(t, err)
-		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0644)
+		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0o644)
 		require.NoError(t, err)
 
 		protoCollection := configv1.ProtoCollection_builder{
@@ -181,7 +181,7 @@ func TestExtractMcpDefinitions_Extended(t *testing.T) {
 						{Name: proto.String("ToolRequest")},
 						{Name: proto.String("ToolResponse")},
 						{
-							Name: proto.String("ResourceMsg"),
+							Name:    proto.String("ResourceMsg"),
 							Options: &descriptorpb.MessageOptions{},
 						},
 					},

@@ -1,8 +1,8 @@
-module github.com/mcpxy/core
+module github.com/mcpany/core
 
 go 1.25
 
-replace github.com/mcpxy/core => ./
+replace github.com/mcpany/core => ./
 
 require (
 	github.com/antchfx/xmlquery v1.4.4
@@ -128,4 +128,4 @@ require (
 
 replace github.comcom/gorilla/websocket => github.com/gorilla/websocket v1.5.0
 
-replace github.comcom/mcpxy/core/pkg/client => /app/pkg/client
+replace github.comcom/mcpany/core/pkg/client => /app/pkg/client

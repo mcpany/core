@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,6 @@ type AudioContent struct {
 
 // ResourceContent represents a reference to a server-side resource.
 type ResourceContent struct {
-	Type     string         `json:"type"`
+	Type     string        `json:"type"`
 	Resource *mcp.Resource `json:"resource"`
 }

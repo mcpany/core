@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package grpc
 import (
 	"context"
 	"testing"
-	"github.com/mcpxy/core/pkg/tool"
-	"github.com/mcpxy/core/pkg/pool"
+
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -79,12 +80,12 @@ message TestResponse3 {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		GrpcService: configv1.GrpcUpstreamService_builder{
-			Address:      proto.String("localhost:50051"),
+			Address:       proto.String("localhost:50051"),
 			UseReflection: proto.Bool(false),
 			ProtoDefinitions: []*configv1.ProtoDefinition{
 				configv1.ProtoDefinition_builder{
 					ProtoFile: configv1.ProtoFile_builder{
-						FileName: proto.String("test3.proto"),
+						FileName:    proto.String("test3.proto"),
 						FileContent: proto.String(protoContent),
 					}.Build(),
 				}.Build(),

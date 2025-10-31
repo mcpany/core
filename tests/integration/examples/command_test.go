@@ -1,3 +1,19 @@
+// Copyright 2025 Author(s) of MCP Any
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
 //go:build e2e
 
 package examples
@@ -13,9 +29,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpxy/core/tests/framework"
-	"github.com/mcpxy/core/pkg/consts"
-	"github.com/mcpxy/core/tests/integration"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -56,13 +72,13 @@ upstream_services:
 			require.NoError(t, err)
 			return configPath
 		},
-		InvokeAIClient: func(t *testing.T, mcpxyEndpoint string) {
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxyEndpoint}, nil)
-			require.NoError(t, err, "Failed to connect to MCPXY server")
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err, "Failed to connect to MCPANY server")
 			defer cs.Close()
 
 			toolName := ""
@@ -91,49 +107,49 @@ upstream_services:
 				textContent, ok := res.Content[0].(*mcp.TextContent)
 				require.True(t, ok, "Expected content to be of type TextContent")
 
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &result)
-		require.NoError(t, err, "Failed to unmarshal tool output")
+				var result map[string]interface{}
+				err = json.Unmarshal([]byte(textContent.Text), &result)
+				require.NoError(t, err, "Failed to unmarshal tool output")
 
-		assert.Equal(t, "hello", result["stdout"])
-		assert.Equal(t, "", result["stderr"])
+				assert.Equal(t, "hello", result["stdout"])
+				assert.Equal(t, "", result["stderr"])
 				assert.Equal(t, consts.CommandStatusSuccess, result["status"])
-		assert.Equal(t, float64(0), result["return_code"])
+				assert.Equal(t, float64(0), result["return_code"])
 			})
 
 			t.Run("error", func(t *testing.T) {
 				params := json.RawMessage(`{"args": ["--stderr", "error", "--exit-code", "1"]}`)
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-		require.NoError(t, err, "Error calling tool '%s'", toolName)
-		require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-		require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-		textContent, ok := res.Content[0].(*mcp.TextContent)
-		require.True(t, ok, "Expected content to be of type TextContent")
+				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
+				require.NoError(t, err, "Error calling tool '%s'", toolName)
+				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+				textContent, ok := res.Content[0].(*mcp.TextContent)
+				require.True(t, ok, "Expected content to be of type TextContent")
 
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &result)
-		require.NoError(t, err, "Failed to unmarshal tool output")
+				var result map[string]interface{}
+				err = json.Unmarshal([]byte(textContent.Text), &result)
+				require.NoError(t, err, "Failed to unmarshal tool output")
 
-		assert.Equal(t, "", result["stdout"])
-		assert.Equal(t, "error", result["stderr"])
+				assert.Equal(t, "", result["stdout"])
+				assert.Equal(t, "error", result["stderr"])
 				assert.Equal(t, consts.CommandStatusError, result["status"])
-		assert.Equal(t, float64(1), result["return_code"])
+				assert.Equal(t, float64(1), result["return_code"])
 			})
 
 			t.Run("timeout", func(t *testing.T) {
-		params := json.RawMessage(`{"args": ["--sleep", "2s"]}`)
+				params := json.RawMessage(`{"args": ["--sleep", "2s"]}`)
 				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 				defer cancel()
-		res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-		require.NoError(t, err, "Error calling tool '%s'", toolName)
-		require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-		require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-		textContent, ok := res.Content[0].(*mcp.TextContent)
-		require.True(t, ok, "Expected content to be of type TextContent")
+				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
+				require.NoError(t, err, "Error calling tool '%s'", toolName)
+				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
+				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
+				textContent, ok := res.Content[0].(*mcp.TextContent)
+				require.True(t, ok, "Expected content to be of type TextContent")
 
-		var result map[string]interface{}
-		err = json.Unmarshal([]byte(textContent.Text), &result)
-		require.NoError(t, err, "Failed to unmarshal tool output")
+				var result map[string]interface{}
+				err = json.Unmarshal([]byte(textContent.Text), &result)
+				require.NoError(t, err, "Failed to unmarshal tool output")
 
 				assert.Equal(t, consts.CommandStatusTimeout, result["status"])
 			})

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	apiv1 "github.com/mcpxy/core/proto/api/v1"
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -41,21 +41,21 @@ import (
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 
-	"github.com/mcpxy/core/pkg/app"
+	"github.com/mcpany/core/pkg/app"
 	"github.com/spf13/afero"
 )
 
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
-	mcpxyConfig := configv1.McpxServerConfig_builder{
+	mcpanyConfig := configv1.McpxServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
 	}.Build()
 
-	data, err := yaml.Marshal(mcpxyConfig)
+	data, err := yaml.Marshal(mcpanyConfig)
 	require.NoError(t, err)
 
-	tempFile, err := os.CreateTemp(t.TempDir(), "mcpxy-config-*.yaml")
+	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
 	require.NoError(t, err)
 
 	_, err = tempFile.Write(data)
@@ -96,13 +96,13 @@ func ProjectRoot(t *testing.T) string {
 }
 
 const (
-	McpxyServerStartupTimeout = 30 * time.Second
-	ServiceStartupTimeout     = 15 * time.Second
-	TestWaitTimeShort         = 60 * time.Second
-	TestWaitTimeMedium        = 240 * time.Second
-	TestWaitTimeLong          = 5 * time.Minute
-	RetryInterval             = 250 * time.Millisecond
-	localHeaderMcpSessionID   = "Mcp-Session-Id"
+	McpAnyServerStartupTimeout = 30 * time.Second
+	ServiceStartupTimeout      = 15 * time.Second
+	TestWaitTimeShort          = 60 * time.Second
+	TestWaitTimeMedium         = 240 * time.Second
+	TestWaitTimeLong           = 5 * time.Minute
+	RetryInterval              = 250 * time.Millisecond
+	localHeaderMcpSessionID    = "Mcp-Session-Id"
 )
 
 // getDockerCommand returns the command and base arguments for running Docker,
@@ -465,8 +465,8 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, args ..
 	return cleanupFunc
 }
 
-// --- MCPXY Server Helper (External Process) ---
-type MCPXYTestServerInfo struct {
+// --- MCPANY Server Helper (External Process) ---
+type MCPANYTestServerInfo struct {
 	Process                  *ManagedProcess
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
@@ -542,22 +542,22 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	}
 }
 
-func StartMCPXYServerWithConfig(t *testing.T, testName, configContent string) *MCPXYTestServerInfo {
+func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo {
 	t.Helper()
-	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpxy-config-*.json")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.json")
 	require.NoError(t, err)
 	_, err = tmpFile.WriteString(configContent)
 	require.NoError(t, err)
 	err = tmpFile.Close()
 	require.NoError(t, err)
-	return StartMCPXYServer(t, testName, "--config-paths", tmpFile.Name())
+	return StartMCPANYServer(t, testName, "--config-paths", tmpFile.Name())
 }
 
-func StartMCPXYServer(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
-	return StartMCPXYServerWithClock(t, testName, extraArgs...)
+func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
+	return StartMCPANYServerWithClock(t, testName, extraArgs...)
 }
 
-func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerInfo {
+func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	_, err := GetProjectRoot()
@@ -588,26 +588,26 @@ func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerIn
 		var errDial error
 		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if errDial != nil {
-			t.Logf("MCPXY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
+			t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
 			return false
 		}
 		state := grpcRegConn.GetState()
 		if state == connectivity.Ready || state == connectivity.Idle {
-			t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
+			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
 			return true
 		}
 		if !grpcRegConn.WaitForStateChange(ctx, state) {
-			t.Logf("MCPXY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
+			t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
 			grpcRegConn.Close()
 			return false
 		}
-		t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s", grpcRegEndpoint)
+		t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
 		return true
-	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY gRPC registration endpoint at %s did not become healthy in time", grpcRegEndpoint)
+	}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC registration endpoint at %s did not become healthy in time", grpcRegEndpoint)
 
 	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
 
-	return &MCPXYTestServerInfo{
+	return &MCPANYTestServerInfo{
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
@@ -624,14 +624,14 @@ func StartInProcessMCPXYServer(t *testing.T, testName string) *MCPXYTestServerIn
 	}
 }
 
-func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPXYTestServerInfo {
+func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpxyBinary := filepath.Join(root, "build/bin/server")
+	mcpanyBinary := filepath.Join(root, "build/bin/server")
 
-	t.Logf("Using MCPXY binary from: %s", mcpxyBinary)
+	t.Logf("Using MCPANY binary from: %s", mcpanyBinary)
 
 	jsonrpcPort := FindFreePort(t)
 	grpcRegPort := FindFreePort(t)
@@ -644,20 +644,20 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 		"--grpc-port", fmt.Sprintf("%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPXY_LOG_LEVEL=debug"}
+	env := []string{"MCPANY_LOG_LEVEL=debug"}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
 
-	absMcpxyBinaryPath, err := filepath.Abs(mcpxyBinary)
-	require.NoError(t, err, "Failed to get absolute path for MCPXY binary: %s", mcpxyBinary)
-	_, err = os.Stat(absMcpxyBinaryPath)
-	require.NoError(t, err, "MCPXY binary not found at %s. Run 'make build'.", absMcpxyBinaryPath)
+	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)
+	require.NoError(t, err, "Failed to get absolute path for MCPANY binary: %s", mcpanyBinary)
+	_, err = os.Stat(absMcpAnyBinaryPath)
+	require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
 
-	mcpProcess := NewManagedProcess(t, "MCPXYServer-"+testName, absMcpxyBinaryPath, args, env)
+	mcpProcess := NewManagedProcess(t, "MCPANYServer-"+testName, absMcpAnyBinaryPath, args, env)
 	mcpProcess.cmd.Dir = root
 	err = mcpProcess.Start()
-	require.NoError(t, err, "Failed to start MCPXY server. Stderr: %s", mcpProcess.StderrString())
+	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
@@ -665,7 +665,7 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
 	httpClient := &http.Client{Timeout: 2 * time.Second}
 
-	t.Logf("MCPXY server health check target URL: %s", mcpRequestURL)
+	t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 
 	var grpcRegConn *grpc.ClientConn
 	require.Eventually(t, func() bool {
@@ -674,22 +674,22 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 		var errDial error
 		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if errDial != nil {
-			t.Logf("MCPXY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
+			t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
 			return false
 		}
 		state := grpcRegConn.GetState()
 		if state == connectivity.Ready || state == connectivity.Idle {
-			t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
+			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
 			return true
 		}
 		if !grpcRegConn.WaitForStateChange(ctx, state) {
-			t.Logf("MCPXY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
+			t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
 			grpcRegConn.Close()
 			return false
 		}
-		t.Logf("Successfully connected to MCPXY gRPC registration endpoint at %s", grpcRegEndpoint)
+		t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
 		return true
-	}, McpxyServerStartupTimeout, RetryInterval, "MCPXY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
+	}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
 
 	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
 
@@ -703,7 +703,7 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 	}
 
 	if isStdio {
-		mcpProcess.WaitForText(t, "MCPXY server is ready", McpxyServerStartupTimeout)
+		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout)
 	} else {
 		// Wait for the HTTP/JSON-RPC endpoint to be ready
 		require.Eventually(t, func() bool {
@@ -717,19 +717,19 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 			}
 			resp, err := httpClient.Do(req)
 			if err != nil {
-				t.Logf("MCPXY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
+				t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
 				return false
 			}
 			defer resp.Body.Close()
 			// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
-			t.Logf("MCPXY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
+			t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
 			return true
-		}, McpxyServerStartupTimeout, RetryInterval, "MCPXY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
 	}
 
-	t.Logf("MCPXY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
+	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
 
-	return &MCPXYTestServerInfo{
+	return &MCPANYTestServerInfo{
 		Process:                  mcpProcess,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
@@ -738,7 +738,7 @@ func StartMCPXYServerWithClock(t *testing.T, testName string, extraArgs ...strin
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		CleanupFunc: func() {
-			t.Logf("Cleaning up MCPXYTestServerInfo for %s...", testName)
+			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
 				grpcRegConn.Close()
 			}

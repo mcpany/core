@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ func TestVersionCmdExitCode(t *testing.T) {
 // This function is not available in the test package, so it's copied here.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:   "mcpxy",
-		Short: "MCP-XY is a versatile proxy for backend services.",
+		Use:   "mcpany",
+		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},
@@ -57,9 +57,9 @@ func newRootCmd() *cobra.Command {
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
-		Short: "Print the version number of mcpxy",
+		Short: "Print the version number of mcpany",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", "mcpxy", "dev")
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", "mcpany", "dev")
 			if err != nil {
 				return fmt.Errorf("failed to print version: %w", err)
 			}

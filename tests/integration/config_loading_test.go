@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,9 +57,9 @@ func TestConfigLoading(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("MCPXY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
+			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
-			mcpx := StartMCPXYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
+			mcpx := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
 			defer mcpx.CleanupFunc()
 
 			// Use a client with no timeout for the streaming SSE connection

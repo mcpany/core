@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"testing"
 
-	configv1 "github.com/mcpxy/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -117,7 +117,6 @@ upstream_services:
 - id: "service-2"
   name: "second-service"
 `), 0o644)
-
 
 	afero.WriteFile(fs, "configs/invalid.txt", []byte("invalid content"), 0o644)
 	afero.WriteFile(fs, "malformed.yaml", []byte("bad-yaml:"), 0o644)

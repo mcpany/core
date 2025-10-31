@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP-XY
+ * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mcpxy/core/pkg/appconsts"
-	"github.com/mcpxy/core/pkg/auth"
-	"github.com/mcpxy/core/pkg/bus"
-	"github.com/mcpxy/core/pkg/consts"
-	"github.com/mcpxy/core/pkg/logging"
-	"github.com/mcpxy/core/pkg/prompt"
-	"github.com/mcpxy/core/pkg/resource"
-	"github.com/mcpxy/core/pkg/serviceregistry"
-	"github.com/mcpxy/core/pkg/tool"
+	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
