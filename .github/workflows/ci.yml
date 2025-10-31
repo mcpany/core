@@ -158,6 +158,11 @@ jobs:
     - name: test everything
       run: |
         make test CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
   e2e:
     runs-on: ubuntu-latest
     env:
