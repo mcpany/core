@@ -106,8 +106,14 @@ func NewAuthManager() *AuthManager {
 // Parameters:
 //   - serviceID: The unique identifier for the service.
 //   - authenticator: The authenticator to be associated with the service.
-func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenticator) {
+//
+// Returns an error if the provided authenticator is `nil`.
+func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
+	if authenticator == nil {
+		return fmt.Errorf("authenticator for service %s is nil", serviceID)
+	}
 	am.authenticators[serviceID] = authenticator
+	return nil
 }
 
 // Authenticate authenticates a request for a specific service. It looks up the
@@ -166,6 +172,5 @@ func (am *AuthManager) AddOAuth2Authenticator(ctx context.Context, serviceID str
 	if err != nil {
 		return fmt.Errorf("failed to create OAuth2 authenticator for service %s: %w", serviceID, err)
 	}
-	am.AddAuthenticator(serviceID, authenticator)
-	return nil
+	return am.AddAuthenticator(serviceID, authenticator)
 }
