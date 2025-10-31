@@ -77,8 +77,9 @@ func (m *mockWebsocketPool) Put(c *client.WebsocketClientWrapper) {
 	}
 }
 
-func (m *mockWebsocketPool) Close() {
+func (m *mockWebsocketPool) Close() error {
 	// No-op for mock
+	return nil
 }
 
 func (m *mockWebsocketPool) Len() int {
@@ -114,19 +115,20 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				c.Close()
 			},
 		}
-		pm.Register("ws-test", mockPool)
+		serviceID := "ws-test-success"
+		pm.Register(serviceID, mockPool)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("echo")
-		toolProto.SetServiceId("ws-test")
+		toolProto.SetServiceId(serviceID)
 		toolProto.SetUnderlyingMethodFqn("WS " + wsURL)
 
 		callDef := &configv1.WebsocketCallDefinition{}
-		wsTool := NewWebsocketTool(toolProto, pm, "ws-test", nil, callDef)
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
 
 		inputs := json.RawMessage(`{"message": "hello"}`)
 		req := &ExecutionRequest{
-			ToolName:   "ws-test/-/echo",
+			ToolName:   serviceID + "/-/echo",
 			ToolInputs: inputs,
 		}
 
@@ -164,11 +166,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				c.Close()
 			},
 		}
-		pm.Register("ws-transform-test", mockPool)
+		serviceID := "ws-transform-test"
+		pm.Register(serviceID, mockPool)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("transform")
-		toolProto.SetServiceId("ws-transform-test")
+		toolProto.SetServiceId(serviceID)
 
 		callDef := &configv1.WebsocketCallDefinition{}
 		inputTransformer := &configv1.InputTransformer{}
@@ -180,11 +183,11 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			"final_output": "{.response_data}",
 		})
 		callDef.SetOutputTransformer(outputTransformer)
-		wsTool := NewWebsocketTool(toolProto, pm, "ws-transform-test", nil, callDef)
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
 
 		inputs := json.RawMessage(`{"message": "hello"}`)
 		req := &ExecutionRequest{
-			ToolName:   "ws-transform-test/-/transform",
+			ToolName:   serviceID + "/-/transform",
 			ToolInputs: inputs,
 		}
 
@@ -200,12 +203,13 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				return nil, errors.New("pool error")
 			},
 		}
-		pm.Register("ws-pool-error", mockPool)
+		serviceID := "ws-pool-error"
+		pm.Register(serviceID, mockPool)
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("error")
 		callDef := &configv1.WebsocketCallDefinition{}
-		wsTool := NewWebsocketTool(toolProto, pm, "ws-pool-error", nil, callDef)
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
 
 		req := &ExecutionRequest{}
 		_, err := wsTool.Execute(context.Background(), req)
@@ -235,12 +239,13 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				return &client.WebsocketClientWrapper{}, nil
 			},
 		}
-		pm.Register("ws-bad-input", mockPool)
+		serviceID := "ws-bad-input"
+		pm.Register(serviceID, mockPool)
 		toolProto := &v1.Tool{}
 		wsTool := NewWebsocketTool(
 			toolProto,
 			pm,
-			"ws-bad-input",
+			serviceID,
 			nil,
 			&configv1.WebsocketCallDefinition{},
 		)
@@ -261,13 +266,14 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				return &client.WebsocketClientWrapper{}, nil
 			},
 		}
-		pm.Register("test", mockPool)
+		serviceID := "ws-template-error"
+		pm.Register(serviceID, mockPool)
 
 		callDef := &configv1.WebsocketCallDefinition{}
 		it := &configv1.InputTransformer{}
 		it.SetTemplate(`{{.invalid`) // Invalid template
 		callDef.SetInputTransformer(it)
-		wsTool := NewWebsocketTool(&v1.Tool{}, pm, "test", nil, callDef)
+		wsTool := NewWebsocketTool(&v1.Tool{}, pm, serviceID, nil, callDef)
 
 		req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err := wsTool.Execute(context.Background(), req)
@@ -302,11 +308,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) { /* no-op, already closed */ },
 		}
-		pm.Register("ws-write-error", mockPool)
+		serviceID := "ws-write-error"
+		pm.Register(serviceID, mockPool)
 		wsTool := NewWebsocketTool(
 			&v1.Tool{},
 			pm,
-			"ws-write-error",
+			serviceID,
 			nil,
 			&configv1.WebsocketCallDefinition{},
 		)
@@ -348,11 +355,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
 		}
-		pm.Register("ws-read-error", mockPool)
+		serviceID := "ws-read-error"
+		pm.Register(serviceID, mockPool)
 		wsTool := NewWebsocketTool(
 			&v1.Tool{},
 			pm,
-			"ws-read-error",
+			serviceID,
 			nil,
 			&configv1.WebsocketCallDefinition{},
 		)
@@ -387,11 +395,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) { return wrapper, nil },
 			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
 		}
-		pm.Register("ws-non-json", mockPool)
+		serviceID := "ws-non-json"
+		pm.Register(serviceID, mockPool)
 		wsTool := NewWebsocketTool(
 			&v1.Tool{},
 			pm,
-			"ws-non-json",
+			serviceID,
 			nil,
 			&configv1.WebsocketCallDefinition{},
 		)
