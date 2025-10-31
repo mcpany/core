@@ -120,9 +120,7 @@ func TestUpstreamService_WorldTimeAPI(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling worldtimeapi tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to worldtimeapi.org failed with transient errors. Last error: %v", maxRetries, err)
-	}
+	require.NoError(t, err, "all retries to worldtimeapi.org failed with transient errors")
 
 	require.NoError(t, err, "Error calling worldtimeapi tool")
 	require.NotNil(t, res, "Nil response from worldtimeapi tool")

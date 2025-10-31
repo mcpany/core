@@ -131,9 +131,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getPublicHolidays tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to date.nager.at failed with transient errors. Last error: %v", maxRetries, err)
-	}
+	require.NoError(t, err, "all retries to date.nager.at failed with transient errors")
 
 	require.NoError(t, err, "Error calling getPublicHolidays tool")
 	require.NotNil(t, res, "Nil response from getPublicHolidays tool")
