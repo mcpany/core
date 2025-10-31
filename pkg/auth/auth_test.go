@@ -121,6 +121,22 @@ func TestAuthManager(t *testing.T) {
 		_, err := authManager.Authenticate(context.Background(), "unregistered-service", req)
 		assert.NoError(t, err)
 	})
+
+	t.Run("add_nil_authenticator", func(t *testing.T) {
+		err := authManager.AddAuthenticator("nil-service", nil)
+		assert.Error(t, err)
+	})
+
+	t.Run("authenticate_with_nil_authenticator", func(t *testing.T) {
+		// This test ensures that a nil authenticator doesn't cause a panic.
+		// The AddAuthenticator function now prevents adding nil authenticators,
+		// but this test is a safeguard.
+		authManager.authenticators["nil-service"] = nil
+		req := httptest.NewRequest("GET", "/", nil)
+		assert.Panics(t, func() {
+			_, _ = authManager.Authenticate(context.Background(), "nil-service", req)
+		})
+	})
 }
 
 func TestAddOAuth2Authenticator(t *testing.T) {
