@@ -260,18 +260,20 @@ build: gen
 
 test: test-fast e2e test-public-api
 
+COVERAGE_FILE ?= coverage.out
+
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) ./...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=coverage.out $(shell go list ./... | grep -v /tests/public_api)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api)
 
 .PHONY: test-public-api
 test-public-api: build
 	@echo "Running public API E2E Go tests with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=coverage.out ./tests/public_api/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 
 # ==============================================================================
 # Example Binaries Build
