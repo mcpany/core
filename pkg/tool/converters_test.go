@@ -222,3 +222,90 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertProtoToMCPTool(t *testing.T) {
+	t.Parallel()
+
+	// Helper to create a structpb.Struct from a map
+	mustNewStruct := func(m map[string]any) *structpb.Struct {
+		s, err := structpb.NewStruct(m)
+		if err != nil {
+			t.Fatalf("Failed to create struct: %v", err)
+		}
+		return s
+	}
+
+	protoTool := pb.Tool_builder{
+		ServiceId:   proto.String("test-service"),
+		Name:        proto.String("test-tool"),
+		Description: proto.String("A tool for testing"),
+		DisplayName: proto.String("Test Tool"),
+		Annotations: pb.ToolAnnotations_builder{
+			Title:           proto.String("Test Tool"),
+			ReadOnlyHint:    proto.Bool(true),
+			DestructiveHint: proto.Bool(true),
+			IdempotentHint:  proto.Bool(true),
+			OpenWorldHint:   proto.Bool(true),
+			InputSchema: mustNewStruct(map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"arg1": map[string]any{
+						"type":        "string",
+						"description": "Argument 1",
+					},
+				},
+			}),
+			OutputSchema: mustNewStruct(map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"result": map[string]any{
+						"type":        "string",
+						"description": "The result",
+					},
+				},
+			}),
+		}.Build(),
+	}.Build()
+
+	mcpTool, err := ConvertProtoToMCPTool(protoTool)
+	if err != nil {
+		t.Fatalf("ConvertProtoToMCPTool() failed: %v", err)
+	}
+
+	destructiveHint := true
+	openWorldHint := true
+	expectedTool := &mcp.Tool{
+		Name:        "test-service.test-tool",
+		Description: "A tool for testing",
+		Title:       "Test Tool",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Test Tool",
+			ReadOnlyHint:    true,
+			DestructiveHint: &destructiveHint,
+			IdempotentHint:  true,
+			OpenWorldHint:   &openWorldHint,
+		},
+		InputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"arg1": map[string]any{
+					"type":        "string",
+					"description": "Argument 1",
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"result": map[string]any{
+					"type":        "string",
+					"description": "The result",
+				},
+			},
+		},
+	}
+
+	if diff := cmp.Diff(expectedTool, mcpTool, protocmp.Transform()); diff != "" {
+		t.Errorf("ConvertProtoToMCPTool() returned diff (-want +got):\n%s", diff)
+	}
+}

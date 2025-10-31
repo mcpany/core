@@ -44,10 +44,8 @@ func TestHttpClientWrapper(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	client := &HttpClientWrapper{
-		Client: &http.Client{},
-		config: config,
-	}
+	client := NewHttpClientWrapper(&http.Client{}, config)
+	assert.NotNil(t, client)
 
 	t.Run("IsHealthy", func(t *testing.T) {
 		assert.True(t, client.IsHealthy(context.Background()))
@@ -78,10 +76,8 @@ func TestGrpcClientWrapper(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	wrapper := &GrpcClientWrapper{
-		ClientConn: conn,
-		config:     config,
-	}
+	wrapper := NewGrpcClientWrapper(conn, config)
+	assert.NotNil(t, wrapper)
 
 	t.Run("IsHealthy_Initially", func(t *testing.T) {
 		// Wait for the connection to be ready or idle. This is a more robust check.
@@ -102,6 +98,32 @@ func TestGrpcClientWrapper(t *testing.T) {
 		}, time.Second, 10*time.Millisecond, "gRPC client state should be Shutdown")
 
 		assert.False(t, wrapper.IsHealthy(context.Background()))
+	})
+
+	t.Run("IsHealthy_Bufnet", func(t *testing.T) {
+		// Set up a new dummy gRPC server to avoid using the closed connection from the previous test
+		lis, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		server := grpc.NewServer()
+		go func() {
+			_ = server.Serve(lis)
+		}()
+		defer server.Stop()
+
+		conn, err := grpc.NewClient(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		require.NoError(t, err)
+		defer conn.Close()
+
+		configJSON := `{"grpc_service": {"address": "bufnet"}}`
+		config := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+		wrapper := NewGrpcClientWrapper(conn, config)
+		require.Eventually(t, func() bool {
+			state := wrapper.GetState()
+			return state == connectivity.Ready || state == connectivity.Idle
+		}, time.Second*5, 10*time.Millisecond, "gRPC client should connect")
+		assert.True(t, wrapper.IsHealthy(context.Background()))
 	})
 }
 
