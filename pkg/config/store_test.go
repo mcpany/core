@@ -35,6 +35,42 @@ func TestNewEngine(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unsupported config file extension")
 	})
+
+	t.Run("JSONExtension", func(t *testing.T) {
+		engine, err := NewEngine("config.json")
+		assert.NoError(t, err)
+		assert.IsType(t, &jsonEngine{}, engine)
+	})
+}
+
+func TestJsonEngine_Unmarshal(t *testing.T) {
+	engine := &jsonEngine{}
+
+	t.Run("ValidJSON", func(t *testing.T) {
+		validJSON := []byte(`{
+			"global_settings": {
+				"bind_address": "0.0.0.0:8080",
+				"log_level": "INFO"
+			}
+		}`)
+		cfg := &configv1.McpxServerConfig{}
+		err := engine.Unmarshal(validJSON, cfg)
+		require.NoError(t, err)
+		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
+		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
+	})
+
+	t.Run("InvalidJSON", func(t *testing.T) {
+		invalidJSON := []byte(`{
+			"global_settings": {
+				"bind_address": "0.0.0.0:8080",
+				"log_level": "INFO",
+			}
+		}`)
+		cfg := &configv1.McpxServerConfig{}
+		err := engine.Unmarshal(invalidJSON, cfg)
+		assert.Error(t, err)
+	})
 }
 
 func TestYamlEngine_Unmarshal(t *testing.T) {
