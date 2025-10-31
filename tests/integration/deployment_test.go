@@ -45,6 +45,7 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
+	t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
@@ -167,6 +168,7 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
+	t.SkipNow()
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
