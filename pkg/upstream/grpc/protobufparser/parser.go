@@ -297,7 +297,7 @@ func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.F
 // connection. It is a lower-level function that allows for more control over
 // the connection lifecycle, which is useful in testing or scenarios where a
 // connection is already established.
-func parseProtoWithExistingConnection(ctx context.Context, conn grpc.ClientConnInterface) (*descriptorpb.FileDescriptorSet, error) {
+func parseProtoWithExistingConnection(ctx context.Context, conn *grpc.ClientConn) (*descriptorpb.FileDescriptorSet, error) {
 	// 2. Create a reflection client
 	reflectionClient := reflectpb.NewServerReflectionClient(conn)
 	// The reflection stream should be valid for the lifetime of the queries.
