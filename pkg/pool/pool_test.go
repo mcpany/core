@@ -325,6 +325,105 @@ func TestManager_Concurrent(t *testing.T) {
 	m.CloseAll()
 }
 
+func TestPool_New_FactoryError(t *testing.T) {
+	factory := func(ctx context.Context) (*mockClient, error) {
+		return nil, fmt.Errorf("factory error")
+	}
+	_, err := New(factory, 1, 1, 0, false)
+	assert.Error(t, err)
+}
+
+func TestPool_Get_FactoryError(t *testing.T) {
+	var callCount int32
+	factory := func(ctx context.Context) (*mockClient, error) {
+		if atomic.AddInt32(&callCount, 1) > 1 {
+			return nil, fmt.Errorf("factory error")
+		}
+		return &mockClient{isHealthy: true}, nil
+	}
+
+	p, err := New(factory, 1, 2, 0, false)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Get the first client, which should succeed.
+	c1, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, c1)
+
+	// Try to get a second client. This should call the factory and fail.
+	_, err = p.Get(context.Background())
+	assert.Error(t, err)
+}
+
+func TestPool_DisableHealthCheck(t *testing.T) {
+	factory := newMockClientFactory(false) // Creates unhealthy clients
+	p, err := New(factory, 1, 1, 0, true)  // disableHealthCheck = true
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Get a client. Since health checks are disabled, it should return the unhealthy one.
+	c, err := p.Get(context.Background())
+	require.NoError(t, err)
+	assert.NotNil(t, c)
+	assert.False(t, c.IsHealthy(context.Background()))
+
+	// Put it back and get it again, should be the same one.
+	p.Put(c)
+	c2, err := p.Get(context.Background())
+	require.NoError(t, err)
+	assert.Same(t, c, c2)
+}
+
+func TestPool_GetWithAlreadyCanceledContext(t *testing.T) {
+	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
+	require.NoError(t, err)
+	defer p.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err = p.Get(ctx)
+	assert.ErrorIs(t, err, context.Canceled)
+}
+
+func TestPool_PutToFullPool(t *testing.T) {
+	p, err := New(newMockClientFactory(true), 1, 1, 0, false)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// The pool is now full with one idle client.
+	require.Equal(t, 1, p.Len())
+
+	// Create an extra client and try to put it in the full pool.
+	extraClient := &mockClient{isHealthy: true}
+	p.Put(extraClient)
+
+	// The extra client should be closed, and the pool size should not increase.
+	assert.True(t, extraClient.isClosed)
+	assert.Equal(t, 1, p.Len())
+}
+
+type anotherMockClient struct {
+	mockClient
+}
+
+func TestManager_Get_TypeSafety(t *testing.T) {
+	m := NewManager()
+	p, err := New(newMockClientFactory(true), 1, 1, 0, false)
+	require.NoError(t, err)
+
+	m.Register("test_pool", p)
+
+	// Correct type, should succeed.
+	_, ok := Get[*mockClient](m, "test_pool")
+	assert.True(t, ok)
+
+	// Incorrect type, should fail.
+	_, ok = Get[*anotherMockClient](m, "test_pool")
+	assert.False(t, ok)
+}
+
 func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
 	const maxSize = 2
 	var factoryCallCount int32
