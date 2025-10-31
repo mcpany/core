@@ -5,7 +5,7 @@
 
 # MCP Any: Convert Anything to MCP Server
 
-Why developing multiple MCP servers for each API when you can just have one to adapt to all? 
+Why developing multiple MCP servers for each API when you can just have one to adapt to all?
 
 MCP Any is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
