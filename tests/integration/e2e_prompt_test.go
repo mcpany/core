@@ -6,7 +6,7 @@
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
-// Unless required by applicable law or agreed to in writing, software
+// Unless required by applicable law of or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
@@ -20,17 +20,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/tests/framework"
 	"github.com/mcpany/core/tests/integration"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestE2EPrompt(t *testing.T) {
-	t.Skip("Skipping TestE2EPrompt for now.")
 	framework.RunE2ETest(t, &framework.E2ETestCase{
 		Name:                "prompt",
 		UpstreamServiceType: "http",
@@ -65,10 +65,22 @@ func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
 	defer gemini.RemoveMCP(serverName)
 
 	// Run a prompt and validate the output
-	prompt := fmt.Sprintf("@%s hello", serverName)
-	output, err := gemini.Run(os.Getenv("GEMINI_API_KEY"), prompt)
-	require.NoError(t, err, "gemini-cli failed to run")
+	prompt := fmt.Sprintf("@%s hello_prompt_e2e", serverName)
 
-	assert.Contains(t, output, "Hello, world!", "The output should contain 'Hello, world!'")
-	t.Skip("Skipping test because it requires gemini CLI tool")
+	var output string
+	var err error
+
+	// The gemini CLI output is not always deterministic, so we retry a few times.
+	require.Eventually(t, func() bool {
+		output, err = gemini.Run(os.Getenv("GEMINI_API_KEY"), prompt)
+		if err != nil {
+			t.Logf("gemini.Run failed during retry: %v", err)
+			return false
+		}
+		if !strings.Contains(output, "Hello, world!") {
+			t.Logf("gemini.Run output did not contain 'Hello, world!'. Output: %s", output)
+			return false
+		}
+		return true
+	}, 30*time.Second, 5*time.Second, "failed to get expected output from gemini after multiple retries")
 }

@@ -37,7 +37,7 @@ func main() {
 
 	// 2. Add a prompt
 	prompt := &mcp.Prompt{
-		Name:        "hello",
+		Name:        "hello_prompt_e2e",
 		Description: "A simple hello world prompt",
 	}
 	server.AddPrompt(prompt, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
