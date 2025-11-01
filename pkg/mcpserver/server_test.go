@@ -68,7 +68,9 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -136,7 +138,9 @@ func TestToolListFiltering(t *testing.T) {
 func TestToolListFilteringServiceId(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -215,7 +219,9 @@ func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -338,7 +344,9 @@ func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 func TestServer_Prompts(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -413,7 +421,9 @@ func (r *testResource) Subscribe(ctx context.Context) error {
 func TestServer_Resources(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -467,7 +477,9 @@ func TestServer_Resources(t *testing.T) {
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()

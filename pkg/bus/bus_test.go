@@ -24,6 +24,7 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -75,19 +76,38 @@ func TestDefaultBus(t *testing.T) {
 }
 
 func TestBusProvider(t *testing.T) {
-	provider := NewBusProvider()
+	t.Run("InMemory", func(t *testing.T) {
+		busConfig := &configv1.MessageBus{}
+		busConfig.SetInMemory(&configv1.InMemoryBus{})
+		provider := NewBusProvider(busConfig)
 
-	bus1 := GetBus[string](provider, "strings")
-	bus2 := GetBus[int](provider, "ints")
-	bus3 := GetBus[string](provider, "strings")
+		bus1 := GetBus[string](provider, "strings")
+		bus2 := GetBus[int](provider, "ints")
+		bus3 := GetBus[string](provider, "strings")
 
-	assert.NotNil(t, bus1)
-	assert.NotNil(t, bus2)
-	assert.Same(t, bus1, bus3)
+		assert.NotNil(t, bus1)
+		assert.NotNil(t, bus2)
+		assert.Same(t, bus1, bus3)
+		assert.IsType(t, &DefaultBus[string]{}, bus1)
+	})
+
+	t.Run("Redis", func(t *testing.T) {
+		busConfig := &configv1.MessageBus{}
+		redisBusConfig := &configv1.RedisBus{}
+		redisBusConfig.SetAddress("localhost:6379")
+		busConfig.SetRedis(redisBusConfig)
+		provider := NewBusProvider(busConfig)
+
+		bus1 := GetBus[string](provider, "strings")
+		assert.NotNil(t, bus1)
+		assert.IsType(t, &RedisBus[string]{}, bus1)
+	})
 }
 
 func TestIntegration(t *testing.T) {
-	provider := NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	provider := NewBusProvider(busConfig)
 
 	// Simulate a tool execution request/response
 	reqBus := GetBus[*ToolExecutionRequest](provider, "tool_requests")
@@ -132,7 +152,9 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestBusProvider_Concurrent(t *testing.T) {
-	provider := NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	provider := NewBusProvider(busConfig)
 	numGoroutines := 100
 	var wg sync.WaitGroup
 	wg.Add(numGoroutines)

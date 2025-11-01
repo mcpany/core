@@ -79,7 +79,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	defer cancel()
 
 	// Setup bus and worker
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 
 	// Setup components
 	poolManager := pool.NewManager()
@@ -292,7 +294,9 @@ paths:
 
 func TestRegistrationServer_Unimplemented(t *testing.T) {
 	ctx := context.Background()
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	registrationServer, err := NewRegistrationServer(busProvider)
 	require.NoError(t, err)
 

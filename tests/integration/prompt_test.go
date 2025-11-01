@@ -32,6 +32,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -70,7 +71,9 @@ func TestPromptIntegration(t *testing.T) {
 	defer cancel()
 
 	// Server setup
-	busProvider := bus.NewBusProvider()
+	busConfig := &configv1.MessageBus{}
+	busConfig.SetInMemory(&configv1.InMemoryBus{})
+	busProvider := bus.NewBusProvider(busConfig)
 	poolManager := pool.NewManager()
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()

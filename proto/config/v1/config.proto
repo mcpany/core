@@ -167,6 +167,25 @@ message GlobalSettings {
   string mcp_basepath = 2;
   // The logging level for the server.
   LogLevel log_level = 3;
+  // Configuration for the message bus.
+  MessageBus message_bus = 4;
+}
+
+// MessageBus defines the configuration for the event bus.
+message MessageBus {
+  oneof bus_type {
+    InMemoryBus in_memory = 1;
+    RedisBus redis = 2;
+  }
+}
+
+// InMemoryBus is a placeholder for the in-memory bus configuration.
+message InMemoryBus {}
+
+// RedisBus defines the configuration for the Redis-based event bus.
+message RedisBus {
+  // The address of the Redis server.
+  string address = 1;
 }
 
 

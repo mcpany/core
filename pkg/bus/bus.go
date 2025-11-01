@@ -20,7 +20,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/mcpany/core/pkg/logging"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 const (
@@ -196,38 +198,51 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 }
 
 // BusProvider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
-//
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
+// instances. It supports different bus implementations, such as in-memory and
+// Redis-based, and ensures that for any given topic, there is only one bus
+// instance. It also manages the lifecycle of any underlying connections, such
+// as a Redis client.
 type BusProvider struct {
-	buses map[string]any
-	mu    sync.RWMutex
+	buses       map[string]any
+	mu          sync.RWMutex
+	redisClient *redis.Client
 }
 
-// NewBusProvider creates and returns a new BusProvider, which is used to manage
-// multiple topic-based bus instances.
-func NewBusProvider() *BusProvider {
-	return &BusProvider{
+// NewBusProvider creates and returns a new BusProvider. It takes the message
+// bus configuration and initializes the appropriate bus implementation. If the
+// configuration is nil or specifies an in-memory bus, it defaults to the
+// in-memory implementation.
+func NewBusProvider(config *configv1.MessageBus) *BusProvider {
+	p := &BusProvider{
 		buses: make(map[string]any),
 	}
+
+	// If a config is provided and it specifies Redis, initialize the Redis client.
+	if config != nil {
+		if redisConfig := config.GetRedis(); redisConfig != nil {
+			p.redisClient = redis.NewClient(&redis.Options{
+				Addr: redisConfig.GetAddress(),
+			})
+		}
+	}
+
+	return p
 }
 
-// GetBus retrieves or creates a bus for a specific topic and message type. If a
-// bus for the given topic already exists, it is returned; otherwise, a new one
-// is created and stored for future use.
-//
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
-//
-// Parameters:
-//   - p: The BusProvider instance.
-//   - topic: The name of the topic for which to get the bus.
-//
-// Returns a Bus instance for the specified message type and topic.
+// Close gracefully shuts down the BusProvider, closing any active connections
+// such as the Redis client.
+func (p *BusProvider) Close() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if p.redisClient != nil {
+		return p.redisClient.Close()
+	}
+	return nil
+}
+
+// GetBus retrieves or creates a bus for a specific topic and message type. The
+// implementation of the bus depends on the BusProvider's configuration.
 func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -236,7 +251,15 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 		return bus.(Bus[T])
 	}
 
-	bus := New[T]()
+	var bus Bus[T]
+	// Use the Redis bus if a client has been configured. Otherwise, default to
+	// the in-memory bus.
+	if p.redisClient != nil {
+		bus = NewRedisBus[T](p.redisClient)
+	} else {
+		bus = New[T]()
+	}
+
 	p.buses[topic] = bus
 	return bus
 }
