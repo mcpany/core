@@ -1,3 +1,5 @@
+//go:build e2e
+
 // Copyright 2025 Author(s) of MCP Any
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
