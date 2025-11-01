@@ -36,6 +36,8 @@ type ServiceRegistryInterface interface {
 	// configuration. It returns the generated service key, a list of any tools
 	// discovered during registration, and an error if the registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
+	UnregisterService(ctx context.Context, serviceName string) error
+	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -141,4 +143,31 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	defer r.mu.RUnlock()
 	serviceConfig, ok := r.serviceConfigs[serviceID]
 	return serviceConfig, ok
+}
+
+// UnregisterService removes a service from the registry.
+func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, ok := r.serviceConfigs[serviceName]; !ok {
+		return fmt.Errorf("service %q not found", serviceName)
+	}
+
+	delete(r.serviceConfigs, serviceName)
+	r.toolManager.ClearToolsForService(serviceName)
+	r.authManager.RemoveAuthenticator(serviceName)
+	return nil
+}
+
+// GetAllServices returns a list of all registered services.
+func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
+	for _, service := range r.serviceConfigs {
+		services = append(services, service)
+	}
+	return services, nil
 }

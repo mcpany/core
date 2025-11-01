@@ -27,6 +27,13 @@ service RegistrationService {
     rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse);
     rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse);
     rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse);
+    rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+}
+
+message ListServicesRequest {}
+
+message ListServicesResponse {
+    repeated mcpx.config.v1.UpstreamServiceConfig services = 1;
 }
 
 message InitiateOAuth2FlowRequest {

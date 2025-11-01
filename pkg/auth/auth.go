@@ -151,6 +151,11 @@ func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) 
 	return authenticator, ok
 }
 
+// RemoveAuthenticator removes the authenticator for a given service ID.
+func (am *AuthManager) RemoveAuthenticator(serviceID string) {
+	delete(am.authenticators, serviceID)
+}
+
 // AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for a
 // given service ID. It initializes the authenticator using the provided OAuth2
 // configuration.
