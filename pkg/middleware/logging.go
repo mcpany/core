@@ -46,7 +46,11 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 			start := time.Now()
 			log.Info("Request received", "method", method)
 			result, err := next(ctx, method, req)
-			log.Info("Request completed", "method", method, "duration", time.Since(start))
+			if err != nil {
+				log.Error("Request failed", "method", method, "duration", time.Since(start), "error", err)
+			} else {
+				log.Info("Request completed", "method", method, "duration", time.Since(start))
+			}
 			return result, err
 		}
 	}

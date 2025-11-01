@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Test](https://github.com/mcpany/core/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mcpany/core/actions/workflows/ci.yml)
 [![GoDoc](https://godoc.org/github.com/mcpany/core?status.png)](https://pkg.go.dev/github.com/mcpany/core)
 [![GoReportCard](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
@@ -27,7 +28,7 @@ MCP Any is built on a modular and extensible architecture. The core components a
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-  - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
+- **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
   - **Bearer Tokens**
@@ -82,6 +83,24 @@ You can run the MCP Any server directly or by using a `make` command.
   ```
 
 By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
+
+### Running with Docker
+
+You can also run the server using Docker. The official image is available on GitHub Container Registry.
+
+1. **Pull the latest image:**
+
+   ```bash
+   docker pull ghcr.io/mcpany/core:latest
+   ```
+
+2. **Run the server:**
+
+   ```bash
+   docker run --rm -p 50050:50050 -p 50051:50051 ghcr.io/mcpany/core:latest
+   ```
+
+   This will start the server and expose the JSON-RPC and gRPC ports to your local machine.
 
 ## Configuration
 
@@ -220,13 +239,14 @@ For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` di
 
 The following commands are available for development:
 
-- `make help`: Show this help message.
 - `make run`: Run the main server application.
 - `make build`: Build the main server application.
-- `make test`: Run all tests.
-- `make check`: Run all checks (lint, vet, etc.).
-- `make proto-gen`: Generate protobuf files.
-- `make docker-build`: Build the docker image for the server.
+- `make test`: Run all tests (unit, integration, and e2e).
+- `make test-fast`: Run unit and integration tests (excluding e2e).
+- `make e2e`: Run end-to-end tests.
+- `make lint`: Run all linter checks.
+- `make gen`: Generate protobuf files from `.proto` definitions.
+- `make build-docker`: Build the Docker image for the server.
 - `make clean`: Clean up build artifacts.
 
 ## Code Documentation

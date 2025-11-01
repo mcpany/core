@@ -3,7 +3,7 @@
 # Variables
 GO = go
 GO_CMD := $(GO)
-SERVER_IMAGE_TAG ?= mcpany/server:latest
+SERVER_IMAGE_TAGS ?= mcpany/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -260,18 +260,20 @@ build: gen
 
 test: test-fast e2e test-public-api
 
+COVERAGE_FILE ?= coverage.out
+
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.out ./...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) ./...
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=coverage.out $(shell go list ./... | grep -v /tests/public_api)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api)
 
 .PHONY: test-public-api
 test-public-api: build
 	@echo "Running public API E2E Go tests with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=coverage.out ./tests/public_api/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 
 # ==============================================================================
 # Example Binaries Build
@@ -366,7 +368,7 @@ ifdef HAS_DOCKER
 				*) PLATFORMS=linux/amd64 ;; \
 			esac; \
 		fi; \
-		echo "Building server Docker image ($(SERVER_IMAGE_TAG)) for platforms: $${PLATFORMS}"; \
+		echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
 		CACHE_ARGS=""; \
 		if [ -n "$(CACHE_TO)" ]; then \
 			CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
@@ -374,7 +376,8 @@ ifdef HAS_DOCKER
 		if [ -n "$(CACHE_FROM)" ]; then \
 			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
 		fi; \
-		CMD_ARGS="--platform $${PLATFORMS} -t $(SERVER_IMAGE_TAG) -f docker/Dockerfile.server ."; \
+		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/^/-t /' -e 's/ / -t /g'); \
+		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server ."; \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
 			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push; \
