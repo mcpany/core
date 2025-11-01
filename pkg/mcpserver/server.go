@@ -142,7 +142,7 @@ func NewServer(
 	s.server = mcpServer
 
 	s.toolManager.SetMCPServer(s)
-	s.promptManager.SetMCPServer(s)
+	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
 
 	// TODO: Re-enable notifications when the go-sdk supports them
 	// s.resourceManager.OnListChanged(func() {

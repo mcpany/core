@@ -99,7 +99,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
     - uses: actions/checkout@v5
@@ -319,10 +318,12 @@ jobs:
     steps:
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
-          files: coverage-test/coverage-test.out,coverage-e2e/coverage-e2e.out,coverage-public-api/coverage-public-api.out
+          files: coverage/coverage-test/coverage-test.out,coverage/coverage-e2e/coverage-e2e.out,coverage/coverage-public-api/coverage-public-api.out
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
