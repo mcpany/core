@@ -64,11 +64,9 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	defer cancel()
 
 	t.Run("successful registration", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -106,11 +104,9 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	})
 
 	t.Run("registration failure", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -149,11 +145,9 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	})
 
 	t.Run("uses request context", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -211,11 +205,9 @@ func TestUpstreamWorker(t *testing.T) {
 	defer cancel()
 
 	t.Run("successful execution", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -253,11 +245,9 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("execution failure", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -296,11 +286,9 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("result marshaling failure", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -340,11 +328,9 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("execution with partial result and error", func(t *testing.T) {
-		globalSettings := &configv1.GlobalSettings{}
-		messageBus := &bus_pb.MessageBus{}
-		messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		bp, err := bus.NewBusProvider(globalSettings)
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -388,11 +374,9 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	bp, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	bp, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -437,11 +421,9 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	bp, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	bp, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 	resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)

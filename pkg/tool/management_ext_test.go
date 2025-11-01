@@ -22,7 +22,6 @@ import (
 
 	"github.com/mcpany/core/pkg/bus"
 	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -56,11 +55,9 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 }
 
 func TestToolManager_AddToolWithMCPServer_InvalidToolName(t *testing.T) {
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	b, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	b, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	tm := NewToolManager(b)
 

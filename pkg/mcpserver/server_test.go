@@ -69,11 +69,9 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
@@ -142,11 +140,9 @@ func TestToolListFiltering(t *testing.T) {
 func TestToolListFilteringServiceId(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
@@ -226,11 +222,9 @@ func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
@@ -354,11 +348,9 @@ func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 func TestServer_Prompts(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
@@ -434,11 +426,9 @@ func (r *testResource) Subscribe(ctx context.Context) error {
 func TestServer_Resources(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
@@ -493,11 +483,9 @@ func TestServer_Resources(t *testing.T) {
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()

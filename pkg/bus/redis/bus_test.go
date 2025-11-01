@@ -23,14 +23,16 @@ import (
 	"testing"
 	"time"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/go-redis/redismock/v9"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestRedisBus_Publish(t *testing.T) {
 	client, mock := redismock.NewClientMock()
-	bus := New[string](client)
+	bus := NewWithClient[string](client)
 
 	msg, _ := json.Marshal("hello")
 	mock.ExpectPublish("test", msg).SetVal(1)
@@ -40,14 +42,18 @@ func TestRedisBus_Publish(t *testing.T) {
 }
 
 func TestRedisBus_Subscribe(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address: proto.String("localhost:6379"),
+	}.Build()
+
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: redisBus.GetAddress(),
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
 	}
 
-	bus := New[string](client)
+	bus := New[string](redisBus)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
