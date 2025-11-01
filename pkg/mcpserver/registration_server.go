@@ -38,8 +38,6 @@ type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus *bus.BusProvider
 }
-
-// NewRegistrationServer creates a new RegistrationServer with the provided
 // event bus.
 //
 // The bus is used for communicating with the service registration workers,
@@ -158,4 +156,36 @@ func (s *RegistrationServer) RegisterTools(ctx context.Context, req *v1.Register
 // for the status of a service.
 func (s *RegistrationServer) GetServiceStatus(ctx context.Context, req *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
+}
+
+func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {}
+
+func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
+	correlationID := uuid.New().String()
+	resultChan := make(chan *bus.ServiceListResult, 1)
+
+	resultBus := bus.GetBus[*bus.ServiceListResult](s.bus, "service_list_results")
+	unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceListResult) {
+		resultChan <- result
+	})
+	defer unsubscribe()
+
+	requestBus := bus.GetBus[*bus.ServiceListRequest](s.bus, "service_list_requests")
+	listReq := &bus.ServiceListRequest{}
+	listReq.SetCorrelationID(correlationID)
+	requestBus.Publish("request", listReq)
+
+	select {
+	case result := <-resultChan:
+		if result.Error != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list services: %v", result.Error)
+		}
+		resp := &v1.ListServicesResponse{}
+		resp.SetServices(result.Services)
+		return resp, nil
+	case <-ctx.Done():
+		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service list")
+	case <-time.After(30 * time.Second):
+		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service list result")
+	}
 }

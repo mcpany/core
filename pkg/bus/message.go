@@ -92,3 +92,17 @@ type ToolExecutionResult struct {
 	Result json.RawMessage
 	Error  error
 }
+
+// ServiceListRequest is a message sent to the bus to request a list of all
+// registered services.
+type ServiceListRequest struct {
+	BaseMessage
+}
+
+// ServiceListResult is a message published in response to a
+// ServiceListRequest. It contains a list of all registered services.
+type ServiceListResult struct {
+	BaseMessage
+	Services []*configv1.UpstreamServiceConfig
+	Error    error
+}
