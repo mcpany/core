@@ -19,9 +19,12 @@ package mcp
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"log/slog"
 	"testing"
 
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/stretchr/testify/assert"
 )
@@ -54,7 +57,11 @@ func (m *mockReadWriteCloser) Close() error {
 func TestDockerConn_ReadWrite(t *testing.T) {
 	ctx := context.Background()
 	rwc := &mockReadWriteCloser{}
-	conn := &dockerConn{rwc: rwc}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
 
 	// Test Write
 	testMsg := &jsonrpc.Request{
@@ -71,4 +78,59 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 	// Test Close
 	err = conn.Close()
 	assert.NoError(t, err)
+}
+
+func TestDockerTransport_Connect_Integration(t *testing.T) {
+	if !util.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping integration test.")
+	}
+
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("alpine:latest")
+	stdioConfig.SetCommand("printf")
+	stdioConfig.SetArgs([]string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`})
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	conn, err := transport.Connect(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, conn)
+
+	msg, err := conn.Read(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, msg)
+
+	resp, ok := msg.(*jsonrpc.Response)
+	assert.True(t, ok)
+	assert.Equal(t, "1", resp.ID.Raw())
+	assert.Equal(t, json.RawMessage(`"hello"`), resp.Result)
+
+	err = conn.Close()
+	assert.NoError(t, err)
+}
+
+func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
+	if !util.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping integration test.")
+	}
+
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("this-image-does-not-exist-ever:latest")
+	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+}
+
+func TestDockerTransport_Connect_NoImage(t *testing.T) {
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "container_image must be specified")
 }
