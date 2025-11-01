@@ -50,9 +50,9 @@ func TestTextTemplate_MissingParameter(t *testing.T) {
 	require.NoError(t, err)
 
 	params := map[string]any{}
-	rendered, err := tpl.Render(params)
-	require.NoError(t, err)
-	assert.Equal(t, "Hello, !", rendered)
+	_, err = tpl.Render(params)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "missing key")
 }
 
 func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
