@@ -119,7 +119,7 @@ func TestDockerCompose(t *testing.T) {
 			return false
 		}
 
-		mcpxyReady := false
+		mcpanyReady := false
 		echoReady := false
 		for _, s := range services {
 			name, okName := s["Name"].(string)
@@ -127,17 +127,17 @@ func TestDockerCompose(t *testing.T) {
 			if !okName || !okHealth {
 				continue
 			}
-			if strings.Contains(name, "mcpxy-server") && health == "healthy" {
-				mcpxyReady = true
+			if strings.Contains(name, "mcpany-server") && health == "healthy" {
+				mcpanyReady = true
 			}
 			if strings.Contains(name, "http-echo-server") && health == "healthy" {
 				echoReady = true
 			}
 		}
-		return mcpxyReady && echoReady
+		return mcpanyReady && echoReady
 	}, 2*time.Minute, 5*time.Second, "Docker services did not become healthy in time")
 
-	// Make a request to the echo tool via mcpxy
+	// Make a request to the echo tool via mcpany
 	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
 	req, err := http.NewRequest("POST", "http://localhost:50050", bytes.NewBufferString(payload))
 	require.NoError(t, err)
@@ -152,7 +152,7 @@ func TestDockerCompose(t *testing.T) {
 			return false
 		}
 		return resp.StatusCode == http.StatusOK
-	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpxy")
+	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpany")
 
 	defer resp.Body.Close()
 	var result map[string]interface{}
@@ -174,7 +174,7 @@ func TestHelmChart(t *testing.T) {
 	}
 	t.Parallel()
 
-	helmChartPath := filepath.Join(integration.ProjectRoot(t), "helm", "mcpxy")
+	helmChartPath := filepath.Join(integration.ProjectRoot(t), "helm", "mcpany")
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
@@ -183,7 +183,7 @@ func TestHelmChart(t *testing.T) {
 	require.NoError(t, err, "helm lint should not fail: %s", string(lintOutput))
 
 	// 2. Template the chart to ensure it renders correctly
-	templateCmd := exec.Command("helm", "template", "mcpxy-release", ".")
+	templateCmd := exec.Command("helm", "template", "mcpany-release", ".")
 	templateCmd.Dir = helmChartPath
 	templateOutput, err := templateCmd.CombinedOutput()
 	require.NoError(t, err, "helm template should not fail: %s", string(templateOutput))
@@ -191,7 +191,7 @@ func TestHelmChart(t *testing.T) {
 	// 3. Check for expected resources in the output
 	outputStr := string(templateOutput)
 	require.Contains(t, outputStr, "kind: Service", "Rendered template should contain a Service")
-	require.Contains(t, outputStr, "name: mcpxy-release", "Rendered template should contain the release name")
+	require.Contains(t, outputStr, "name: mcpany-release", "Rendered template should contain the release name")
 	require.Contains(t, outputStr, "kind: Deployment", "Rendered template should contain a Deployment")
-	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpxy", "Rendered template should contain the app name label")
+	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpany", "Rendered template should contain the app name label")
 }
