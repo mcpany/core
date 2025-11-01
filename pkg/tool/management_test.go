@@ -208,6 +208,20 @@ func (s *MockMCPToolServer) AddTool(tool *mcp.Tool, handler mcp.ToolHandler) {
 	s.tools[tool.Name] = handler
 }
 
+func (s *MockMCPToolServer) HasTool(name string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	_, ok := s.tools[name]
+	return ok
+}
+
+func (s *MockMCPToolServer) GetToolHandler(name string) (mcp.ToolHandler, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	handler, ok := s.tools[name]
+	return handler, ok
+}
+
 func TestToolManager_ConcurrentAccess(t *testing.T) {
 	tm := NewToolManager(nil)
 	var wg sync.WaitGroup

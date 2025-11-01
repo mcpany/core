@@ -348,7 +348,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{"some_key": 123}`)}
 		_, err := httpTool.Execute(context.Background(), req)
-		require.NoError(t, err) // fasttemplate does not error on missing nested fields, it renders empty string
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "missing key")
 	})
 
 	t.Run("output_transformation_parse_error", func(t *testing.T) {
