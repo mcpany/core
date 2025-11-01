@@ -1,0 +1,20 @@
+edition = "2023";
+
+package bus;
+
+option go_package = "github.com/mcpany/core/proto/bus";
+
+message MessageBus {
+  oneof bus_type {
+    InMemoryBus in_memory = 1;
+    RedisBus redis = 2;
+  }
+}
+
+message InMemoryBus {}
+
+message RedisBus {
+  string address = 1;
+  int32 db = 2;
+  string password = 3;
+}
