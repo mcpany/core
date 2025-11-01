@@ -24,7 +24,9 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestDefaultBus(t *testing.T) {
@@ -74,8 +76,16 @@ func TestDefaultBus(t *testing.T) {
 	})
 }
 
+func newMessageBusConfig(t *testing.T, json string) *configv1.MessageBusConfig {
+	var cfg configv1.MessageBusConfig
+	if err := protojson.Unmarshal([]byte(json), &cfg); err != nil {
+		t.Fatalf("Failed to unmarshal MessageBusConfig: %v", err)
+	}
+	return &cfg
+}
+
 func TestBusProvider(t *testing.T) {
-	provider := NewBusProvider()
+	provider := NewBusProvider(newMessageBusConfig(t, `{"in_memory":{}}`))
 
 	bus1 := GetBus[string](provider, "strings")
 	bus2 := GetBus[int](provider, "ints")
@@ -87,7 +97,7 @@ func TestBusProvider(t *testing.T) {
 }
 
 func TestIntegration(t *testing.T) {
-	provider := NewBusProvider()
+	provider := NewBusProvider(newMessageBusConfig(t, `{"in_memory":{}}`))
 
 	// Simulate a tool execution request/response
 	reqBus := GetBus[*ToolExecutionRequest](provider, "tool_requests")
@@ -132,7 +142,7 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestBusProvider_Concurrent(t *testing.T) {
-	provider := NewBusProvider()
+	provider := NewBusProvider(newMessageBusConfig(t, `{"in_memory":{}}`))
 	numGoroutines := 100
 	var wg sync.WaitGroup
 	wg.Add(numGoroutines)

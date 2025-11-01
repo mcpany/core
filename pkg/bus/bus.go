@@ -20,7 +20,10 @@ import (
 	"sync"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/redis/go-redis/v9"
 )
 
 const (
@@ -28,38 +31,6 @@ const (
 	// accept a message before dropping it.
 	defaultPublishTimeout = 1 * time.Second
 )
-
-// Bus defines the interface for a generic, type-safe event bus that facilitates
-// communication between different parts of the application. The type parameter T
-// specifies the type of message that the bus will handle.
-type Bus[T any] interface {
-	// Publish sends a message to all subscribers of a given topic. The message
-	// is sent to each subscriber's channel, and the handler is invoked by a
-	// dedicated goroutine for that subscriber.
-	//
-	// topic is the topic to publish the message to.
-	// msg is the message to be sent.
-	Publish(topic string, msg T)
-
-	// Subscribe registers a handler function for a given topic. It starts a
-	// dedicated goroutine for the subscription to process messages from a
-	// channel.
-	//
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler.
-	Subscribe(topic string, handler func(T)) (unsubscribe func())
-
-	// SubscribeOnce registers a handler function that will be invoked only once
-	// for a given topic. After the handler is called, the subscription is
-	// automatically removed.
-	//
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler
-	// before it has been invoked.
-	SubscribeOnce(topic string, handler func(T)) (unsubscribe func())
-}
 
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
 // It uses channels to deliver messages to subscribers, with each subscriber
@@ -204,15 +175,26 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 type BusProvider struct {
-	buses map[string]any
-	mu    sync.RWMutex
+	buses       map[string]any
+	mu          sync.RWMutex
+	config      *configv1.MessageBusConfig
+	redisClient *redis.Client
 }
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
 // multiple topic-based bus instances.
-func NewBusProvider() *BusProvider {
+func NewBusProvider(config *configv1.MessageBusConfig) *BusProvider {
+	var redisClient *redis.Client
+	if redisConfig := config.GetRedis(); redisConfig != nil {
+		redisClient = redis.NewClient(&redis.Options{
+			Addr: redisConfig.GetAddress(),
+		})
+	}
+
 	return &BusProvider{
-		buses: make(map[string]any),
+		buses:       make(map[string]any),
+		config:      config,
+		redisClient: redisClient,
 	}
 }
 
@@ -236,7 +218,12 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 		return bus.(Bus[T])
 	}
 
-	bus := New[T]()
+	var bus Bus[T]
+	if p.config != nil && p.config.GetRedis() != nil {
+		bus = NewRedisBus[T](p.redisClient)
+	} else { // In-memory is the default
+		bus = New[T]()
+	}
 	p.buses[topic] = bus
 	return bus
 }
