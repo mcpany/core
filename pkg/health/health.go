@@ -59,21 +59,22 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	var check health.Check
 	serviceName := uc.GetName()
 
-	if c := uc.GetHttpService(); c != nil {
-		check = httpCheck(serviceName, c)
-	} else if c := uc.GetGrpcService(); c != nil {
-		check = grpcCheck(serviceName, c)
-	} else if c := uc.GetOpenapiService(); c != nil {
-		check = httpCheck(serviceName, c)
-	} else if c := uc.GetCommandLineService(); c != nil {
-		check = commandLineCheck(serviceName, c)
-	} else if c := uc.GetWebsocketService(); c != nil {
-		check = connectionCheck(serviceName, c.GetAddress())
-	} else if c := uc.GetWebrtcService(); c != nil {
-		check = connectionCheck(serviceName, c.GetAddress())
-	} else if c := uc.GetMcpService(); c != nil {
-		check = mcpCheck(serviceName, c)
-	} else {
+	switch uc.WhichServiceConfig() {
+	case configv1.UpstreamServiceConfig_HttpService_case:
+		check = httpCheck(serviceName, uc.GetHttpService())
+	case configv1.UpstreamServiceConfig_GrpcService_case:
+		check = grpcCheck(serviceName, uc.GetGrpcService())
+	case configv1.UpstreamServiceConfig_OpenapiService_case:
+		check = httpCheck(serviceName, uc.GetOpenapiService())
+	case configv1.UpstreamServiceConfig_CommandLineService_case:
+		check = commandLineCheck(serviceName, uc.GetCommandLineService())
+	case configv1.UpstreamServiceConfig_WebsocketService_case:
+		check = connectionCheck(serviceName, uc.GetWebsocketService().GetAddress())
+	case configv1.UpstreamServiceConfig_WebrtcService_case:
+		check = connectionCheck(serviceName, uc.GetWebrtcService().GetAddress())
+	case configv1.UpstreamServiceConfig_McpService_case:
+		check = mcpCheck(serviceName, uc.GetMcpService())
+	default:
 		return nil
 	}
 
