@@ -80,11 +80,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	defer cancel()
 
 	// Setup bus and worker
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 
 	// Setup components
@@ -298,11 +296,9 @@ paths:
 
 func TestRegistrationServer_Unimplemented(t *testing.T) {
 	ctx := context.Background()
-	globalSettings := &configv1.GlobalSettings{}
-	messageBus := &bus_pb.MessageBus{}
-	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	busProvider, err := bus.NewBusProvider(globalSettings)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	registrationServer, err := NewRegistrationServer(busProvider)
 	require.NoError(t, err)
