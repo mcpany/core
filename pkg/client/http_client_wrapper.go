@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -20,7 +20,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/mcpany/core/pkg/health"
+	"github.com/alexliesenfeld/health"
+	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -43,7 +44,11 @@ func NewHttpClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
 func (w *HttpClientWrapper) IsHealthy(ctx context.Context) bool {
-	return health.Check(ctx, w.config)
+	checker := healthChecker.NewChecker(w.config)
+	if checker == nil {
+		return true // No health check configured, assume healthy.
+	}
+	return checker.Check(ctx).Status == health.StatusUp
 }
 
 // Close is a no-op for the `*http.Client` wrapper. The underlying transport

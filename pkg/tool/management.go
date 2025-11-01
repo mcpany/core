@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	xsync "github.com/puzpuzpuz/xsync/v4"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
@@ -45,8 +46,8 @@ type ToolExecutionMiddleware interface {
 }
 
 type ToolManager struct {
-	tools       sync.Map
-	serviceInfo sync.Map
+	tools       *xsync.Map[string, Tool]
+	serviceInfo *xsync.Map[string, *ServiceInfo]
 	mcpServer   MCPServerProvider
 	bus         *bus.BusProvider
 	mu          sync.RWMutex
@@ -56,7 +57,9 @@ type ToolManager struct {
 // NewToolManager creates and returns a new, empty ToolManager.
 func NewToolManager(bus *bus.BusProvider) *ToolManager {
 	return &ToolManager{
-		bus: bus,
+		bus:         bus,
+		tools:       xsync.NewMap[string, Tool](),
+		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
 	}
 }
 
@@ -119,7 +122,7 @@ func (tm *ToolManager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	if !ok {
 		return nil, false
 	}
-	return info.(*ServiceInfo), true
+	return info, true
 }
 
 // AddTool registers a new tool with the manager. It generates a unique tool ID
@@ -246,15 +249,15 @@ func (tm *ToolManager) GetTool(toolName string) (Tool, bool) {
 	if !ok {
 		return nil, false
 	}
-	return tool.(Tool), true
+	return tool, true
 }
 
 // ListTools returns a slice containing all the tools currently registered with
 // the manager.
 func (tm *ToolManager) ListTools() []Tool {
 	var tools []Tool
-	tm.tools.Range(func(key, value interface{}) bool {
-		tools = append(tools, value.(Tool))
+	tm.tools.Range(func(key string, value Tool) bool {
+		tools = append(tools, value)
 		return true
 	})
 	return tools
@@ -272,9 +275,8 @@ func (tm *ToolManager) ClearToolsForService(serviceID string) {
 	log := logging.GetLogger().With("serviceID", serviceID)
 	log.Debug("Clearing existing tools for serviceID before reload/overwrite.")
 	deletedCount := 0
-	tm.tools.Range(func(key, value interface{}) bool {
-		tool := value.(Tool)
-		if tool.Tool().GetServiceId() == serviceID {
+	tm.tools.Range(func(key string, value Tool) bool {
+		if value.Tool().GetServiceId() == serviceID {
 			tm.tools.Delete(key)
 			deletedCount++
 		}

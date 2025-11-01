@@ -22,6 +22,7 @@ import (
 	"net/http"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
 // Authenticator defines the interface for authentication strategies. Each
@@ -87,7 +88,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 // This allows for different authentication strategies to be used for different
 // services.
 type AuthManager struct {
-	authenticators map[string]Authenticator
+	authenticators *xsync.Map[string, Authenticator]
 }
 
 // NewAuthManager creates and initializes a new AuthManager with an empty
@@ -95,7 +96,7 @@ type AuthManager struct {
 // authenticators for various services.
 func NewAuthManager() *AuthManager {
 	return &AuthManager{
-		authenticators: make(map[string]Authenticator),
+		authenticators: xsync.NewMap[string, Authenticator](),
 	}
 }
 
@@ -112,7 +113,7 @@ func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenti
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
 	}
-	am.authenticators[serviceID] = authenticator
+	am.authenticators.Store(serviceID, authenticator)
 	return nil
 }
 
@@ -131,7 +132,7 @@ func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenti
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
 func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
-	if authenticator, ok := am.authenticators[serviceID]; ok {
+	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}
 	// If no authenticator is configured for the service, we'll allow the request to proceed.
@@ -147,8 +148,12 @@ func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *ht
 // Returns the authenticator and a boolean indicating whether an authenticator
 // was found.
 func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) {
-	authenticator, ok := am.authenticators[serviceID]
-	return authenticator, ok
+	return am.authenticators.Load(serviceID)
+}
+
+// RemoveAuthenticator removes the authenticator for a given service ID.
+func (am *AuthManager) RemoveAuthenticator(serviceID string) {
+	am.authenticators.Delete(serviceID)
 }
 
 // AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for a

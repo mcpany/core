@@ -221,6 +221,9 @@ message UpstreamServiceConfig {
 
   // Authentication configuration for securing access to the MCPx service (incoming requests).
   AuthenticationConfig authentication = 15;
+
+  // If true, this upstream service is disabled.
+  bool disable = 19;
 }
 
 // --- Upstream Service Types ---

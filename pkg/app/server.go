@@ -159,6 +159,10 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 			// Publish registration requests to the bus for each service
 			registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
 			for _, serviceConfig := range cfg.GetUpstreamServices() {
+				if serviceConfig.GetDisable() {
+					log.Info("Skipping disabled service", "service", serviceConfig.GetName())
+					continue
+				}
 				log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
 				regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 				// We don't need a correlation ID since we are not waiting for a response here

@@ -17,38 +17,47 @@
 package integration
 
 import (
-	"bufio"
 	"context"
-	"encoding/json"
-	"net/http"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
+	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestConfigLoading(t *testing.T) {
 	testCases := []struct {
-		name             string
-		configFile       string
-		expectedToolName string
+		name               string
+		configFile         string
+		expectedToolName   string
+		toolShouldBeLoaded bool
 	}{
 		{
-			name:             "json config",
-			configFile:       "testdata/config.json",
-			expectedToolName: "http-echo-from-json/-/echo",
+			name:               "json config",
+			configFile:         "testdata/config.json",
+			expectedToolName:   "http-echo-from-json",
+			toolShouldBeLoaded: true,
 		},
 		{
-			name:             "yaml config",
-			configFile:       "testdata/config.yaml",
-			expectedToolName: "http-echo-from-yaml/-/echo",
+			name:               "yaml config",
+			configFile:         "testdata/config.yaml",
+			expectedToolName:   "http-echo-from-yaml",
+			toolShouldBeLoaded: true,
 		},
 		{
-			name:             "textproto config",
-			configFile:       "testdata/config.textproto",
-			expectedToolName: "http-echo-from-textproto/-/echo",
+			name:               "textproto config",
+			configFile:         "testdata/config.textproto",
+			expectedToolName:   "http-echo-from-textproto",
+			toolShouldBeLoaded: true,
+		},
+		{
+			name:               "disabled config",
+			configFile:         "testdata/disabled_config.yaml",
+			expectedToolName:   "disabled-service",
+			toolShouldBeLoaded: false,
 		},
 	}
 
@@ -62,57 +71,25 @@ func TestConfigLoading(t *testing.T) {
 			mcpx := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
 			defer mcpx.CleanupFunc()
 
-			// Use a client with no timeout for the streaming SSE connection
-			sseClient := &http.Client{}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-			defer cancel()
-
-			req, err := http.NewRequestWithContext(ctx, "POST", mcpx.HTTPEndpoint, strings.NewReader(`{"jsonrpc":"2.0","method":"tools/list","id":1}`))
+			conn, err := grpc.Dial(mcpx.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
-			req.Header.Set("Content-Type", "application/json")
-			// Explicitly request SSE stream
-			req.Header.Set("Accept", "text/event-stream")
+			defer conn.Close()
 
-			resp, err := sseClient.Do(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
+			client := v1.NewRegistrationServiceClient(conn)
 
-			toolFoundChan := make(chan bool, 1)
-			go func() {
-				defer close(toolFoundChan)
-				scanner := bufio.NewScanner(resp.Body)
-				for scanner.Scan() {
-					line := scanner.Text()
-					if strings.HasPrefix(line, "data:") {
-						data := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
-						var rpcResp struct {
-							Result struct {
-								Tools []struct {
-									Name string `json:"name"`
-								} `json:"tools"`
-							} `json:"result"`
-						}
-						if json.Unmarshal([]byte(data), &rpcResp) == nil {
-							for _, tool := range rpcResp.Result.Tools {
-								if tool.Name == tc.expectedToolName {
-									toolFoundChan <- true
-									return
-								}
-							}
-						}
+			require.Eventually(t, func() bool {
+				resp, err := client.ListServices(context.Background(), &v1.ListServicesRequest{})
+				require.NoError(t, err)
+
+				var serviceFound bool
+				for _, service := range resp.GetServices() {
+					if service.GetName() == tc.expectedToolName {
+						serviceFound = true
+						break
 					}
 				}
-			}()
-
-			select {
-			case <-toolFoundChan:
-				// Test passed
-				return
-			case <-ctx.Done():
-				t.Logf("mcpx server stderr:\n%s", mcpx.Process.StderrString())
-				t.Fatalf("timed out waiting for tool %s in SSE stream", tc.expectedToolName)
-			}
+				return serviceFound == tc.toolShouldBeLoaded
+			}, 10*time.Second, 500*time.Millisecond, "service loading status mismatch")
 		})
 	}
 }

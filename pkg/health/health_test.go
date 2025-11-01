@@ -24,6 +24,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -58,16 +59,12 @@ func newMockGRPCHealthServer(status grpc_health_v1.HealthCheckResponse_ServingSt
 	return s, lis
 }
 
-func TestCheck(t *testing.T) {
+func TestNewChecker(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("NilConfig", func(t *testing.T) {
-		assert.False(t, Check(ctx, nil), "Check with nil config should return false")
+		assert.Nil(t, NewChecker(nil), "NewChecker with nil config should return nil")
 	})
-}
-
-func TestCheckHTTPHealth(t *testing.T) {
-	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -78,19 +75,20 @@ func TestCheckHTTPHealth(t *testing.T) {
 		serverURL := server.URL
 		serverAddr := server.Listener.Addr().String()
 
-		healthCheck := configv1.HttpHealthCheck_builder{
-			Url:          &serverURL,
-			ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
-		}.Build()
-		httpService := configv1.HttpUpstreamService_builder{
-			Address:     &serverAddr,
-			HealthCheck: healthCheck,
-		}.Build()
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			HttpService: httpService,
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.True(t, Check(ctx, upstreamConfig), "HTTP health check should be successful")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
 
 	t.Run("UnexpectedStatusCode", func(t *testing.T) {
@@ -102,33 +100,41 @@ func TestCheckHTTPHealth(t *testing.T) {
 		serverURL := server.URL
 		serverAddr := server.Listener.Addr().String()
 
-		healthCheck := configv1.HttpHealthCheck_builder{
-			Url:          &serverURL,
-			ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
-		}.Build()
-		httpService := configv1.HttpUpstreamService_builder{
-			Address:     &serverAddr,
-			HealthCheck: healthCheck,
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.False(t, checkHTTPHealth(ctx, httpService), "HTTP health check should fail with unexpected status code")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 
 	t.Run("ServerUnreachable", func(t *testing.T) {
 		unreachableURL := "http://localhost:12345"
 		unreachableAddr := "localhost:12345"
 
-		healthCheck := configv1.HttpHealthCheck_builder{
-			Url:          &unreachableURL,
-			ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
-			Timeout:      durationpb.New(10 * time.Millisecond),
-		}.Build()
-		httpService := configv1.HttpUpstreamService_builder{
-			Address:     &unreachableAddr,
-			HealthCheck: healthCheck,
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &unreachableAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &unreachableURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+					Timeout:      durationpb.New(10 * time.Millisecond),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.False(t, checkHTTPHealth(ctx, httpService), "HTTP health check should fail for unreachable server")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 }
 
@@ -139,63 +145,67 @@ func TestCheckGRPCHealth(t *testing.T) {
 		server, lis := newMockGRPCHealthServer(grpc_health_v1.HealthCheckResponse_SERVING)
 		defer server.Stop()
 
-		serviceName := "test-service"
-		healthCheck := configv1.GrpcHealthCheck_builder{
-			Service: &serviceName,
-		}.Build()
-		grpcService := configv1.GrpcUpstreamService_builder{
-			Address:     lo.ToPtr(lis.Addr().String()),
-			HealthCheck: healthCheck,
-		}.Build()
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			GrpcService: grpcService,
+			Name: lo.ToPtr("test-service"),
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: lo.ToPtr(lis.Addr().String()),
+				HealthCheck: configv1.GrpcHealthCheck_builder{
+					Service: lo.ToPtr("test-service"),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.True(t, Check(ctx, upstreamConfig), "gRPC health check should be successful for SERVING status")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
 
 	t.Run("NotServing", func(t *testing.T) {
 		server, lis := newMockGRPCHealthServer(grpc_health_v1.HealthCheckResponse_NOT_SERVING)
 		defer server.Stop()
 
-		serviceName := "test-service"
-		healthCheck := configv1.GrpcHealthCheck_builder{
-			Service: &serviceName,
-		}.Build()
-		grpcService := configv1.GrpcUpstreamService_builder{
-			Address:     lo.ToPtr(lis.Addr().String()),
-			HealthCheck: healthCheck,
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: lo.ToPtr(lis.Addr().String()),
+				HealthCheck: configv1.GrpcHealthCheck_builder{
+					Service: lo.ToPtr("test-service"),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.False(t, checkGRPCHealth(ctx, grpcService), "gRPC health check should fail for NOT_SERVING status")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 
 	t.Run("ServerUnreachable", func(t *testing.T) {
-		serviceName := "test-service"
-		healthCheck := configv1.GrpcHealthCheck_builder{
-			Service: &serviceName,
-		}.Build()
-		grpcService := configv1.GrpcUpstreamService_builder{
-			Address:     lo.ToPtr("localhost:12345"),
-			HealthCheck: healthCheck,
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: lo.ToPtr("localhost:12345"),
+				HealthCheck: configv1.GrpcHealthCheck_builder{
+					Service: lo.ToPtr("test-service"),
+				}.Build(),
+			}.Build(),
 		}.Build()
 
-		assert.False(t, checkGRPCHealth(ctx, grpcService), "gRPC health check should fail for unreachable server")
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 }
 
 func TestCheckConnection(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("ConnectionSuccess", func(t *testing.T) {
 		lis, err := net.Listen("tcp", "localhost:0")
 		assert.NoError(t, err)
 		defer lis.Close()
-		assert.True(t, checkConnection(ctx, lis.Addr().String()), "checkConnection should succeed for a listening port")
+		assert.NoError(t, checkConnection(lis.Addr().String()), "checkConnection should succeed for a listening port")
 	})
 
 	t.Run("ConnectionFailure", func(t *testing.T) {
-		assert.False(t, checkConnection(ctx, "localhost:12345"), "checkConnection should fail for a non-listening port")
+		assert.Error(t, checkConnection("localhost:12345"), "checkConnection should fail for a non-listening port")
 	})
 }
 
@@ -211,59 +221,67 @@ func TestCheckVariousServices(t *testing.T) {
 	testCases := []struct {
 		name   string
 		config *configv1.UpstreamServiceConfig
-		want   bool
+		want   health.AvailabilityStatus
 	}{
 		{
 			name: "OpenAPI Service",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name:           lo.ToPtr("openapi-service"),
 				OpenapiService: configv1.OpenapiUpstreamService_builder{Address: &addr}.Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 		{
 			name: "WebSocket Service",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name:             lo.ToPtr("websocket-service"),
 				WebsocketService: configv1.WebsocketUpstreamService_builder{Address: &addr}.Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 		{
 			name: "WebRTC Service",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name:          lo.ToPtr("webrtc-service"),
 				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: &addr}.Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 		{
 			name: "MCP Service HTTP",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("mcp-http-service"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{HttpAddress: &addr}.Build(),
 				}.Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 		{
 			name: "MCP Service Stdio",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("mcp-stdio-service"),
 				McpService: configv1.McpUpstreamService_builder{
 					StdioConnection: configv1.McpStdioConnection_builder{Command: lo.ToPtr("echo")}.Build(),
 				}.Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 		{
 			name: "Command Line Service",
 			config: configv1.UpstreamServiceConfig_builder{
+				Name:               lo.ToPtr("cmd-service"),
 				CommandLineService: (&configv1.CommandLineUpstreamService_builder{}).Build(),
 			}.Build(),
-			want: true,
+			want: health.StatusUp,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.want, Check(ctx, tc.config))
+			checker := NewChecker(tc.config)
+			assert.NotNil(t, checker)
+			assert.Equal(t, tc.want, checker.Check(ctx).Status)
 		})
 	}
 }
