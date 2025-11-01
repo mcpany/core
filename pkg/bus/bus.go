@@ -189,8 +189,10 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 	var unsub func()
 
 	unsub = b.Subscribe(topic, func(msg T) {
-		handler(msg)
-		once.Do(unsub)
+		once.Do(func() {
+			handler(msg)
+			go unsub()
+		})
 	})
 	return unsub
 }
