@@ -148,6 +148,27 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 		if err != nil {
 			return fmt.Errorf("failed to convert proto tool to mcp tool: %w", err)
 		}
+
+		if tool.Tool().GetInputSchema() != nil {
+			b, err := tool.Tool().GetInputSchema().MarshalJSON()
+			if err != nil {
+				return fmt.Errorf("failed to marshal input schema: %w", err)
+			}
+			if err := json.Unmarshal(b, &mcpTool.InputSchema); err != nil {
+				return fmt.Errorf("failed to unmarshal input schema: %w", err)
+			}
+		}
+
+		if tool.Tool().GetOutputSchema() != nil {
+			b, err := tool.Tool().GetOutputSchema().MarshalJSON()
+			if err != nil {
+				return fmt.Errorf("failed to marshal output schema: %w", err)
+			}
+			if err := json.Unmarshal(b, &mcpTool.OutputSchema); err != nil {
+				return fmt.Errorf("failed to unmarshal output schema: %w", err)
+			}
+		}
+
 		log.Info(
 			"Registering tool with MCP server",
 			"toolName",

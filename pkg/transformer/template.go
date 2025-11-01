@@ -18,6 +18,7 @@ package transformer
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/valyala/fasttemplate"
 )
@@ -26,6 +27,9 @@ import (
 // for rendering strings with dynamic data.
 type TextTemplate struct {
 	template *fasttemplate.Template
+	raw      string
+	startTag string
+	endTag   string
 }
 
 // NewTemplate parses a template string and creates a new TextTemplate.
@@ -37,7 +41,12 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	if err != nil {
 		return nil, err
 	}
-	return &TextTemplate{template: tpl}, nil
+	return &TextTemplate{
+		template: tpl,
+		raw:      templateString,
+		startTag: startTag,
+		endTag:   endTag,
+	}, nil
 }
 
 // Render executes the template with the provided parameters and returns the
@@ -47,10 +56,36 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // template.
 // It returns the rendered string or an error if the template execution fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
+	tags := extractTags(t.raw, t.startTag, t.endTag)
+	for _, tag := range tags {
+		if _, ok := params[tag]; !ok {
+			return "", fmt.Errorf("missing key: %s", tag)
+		}
+	}
+
 	newParams := make(map[string]any, len(params))
 	for k, v := range params {
 		newParams[k] = fmt.Sprintf("%v", v)
 	}
 	s := t.template.ExecuteString(newParams)
 	return s, nil
+}
+
+func extractTags(template, startTag, endTag string) []string {
+	var tags []string
+	start := 0
+	for {
+		start = strings.Index(template, startTag)
+		if start == -1 {
+			break
+		}
+		template = template[start+len(startTag):]
+		end := strings.Index(template, endTag)
+		if end == -1 {
+			break
+		}
+		tags = append(tags, template[:end])
+		template = template[end+len(endTag):]
+	}
+	return tags
 }
