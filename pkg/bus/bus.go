@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the a
  * limitations under the License.
  */
 
@@ -22,10 +22,42 @@ import (
 
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/redis"
-	"github.com/mcpany/core/pkg/busiface"
 	"github.com/mcpany/core/proto/bus"
+	config "github.com/mcpany/core/proto/config/v1"
 	redisclient "github.com/redis/go-redis/v9"
 )
+
+// Bus defines the interface for a generic, type-safe event bus that facilitates
+// communication between different parts of the application. The type parameter T
+// specifies the type of message that the bus will handle.
+type Bus[T any] interface {
+	// Publish sends a message to all subscribers of a given topic. The message
+	// is sent to each subscriber's channel, and the handler is invoked by a
+	// dedicated goroutine for that subscriber.
+	//
+	// topic is the topic to publish the message to.
+	// msg is the message to be sent.
+	Publish(topic string, msg T) error
+
+	// Subscribe registers a handler function for a given topic. It starts a
+	// dedicated goroutine for the subscription to process messages from a
+	// channel.
+	//
+	// topic is the topic to subscribe to.
+	// handler is the function to be called with the message.
+	// It returns a function that can be called to unsubscribe the handler.
+	Subscribe(topic string, handler func(T)) (unsubscribe func())
+
+	// SubscribeOnce registers a handler function that will be invoked only once
+	// for a given topic. After the handler is called, the subscription is
+	// automatically removed.
+	//
+	// topic is the topic to subscribe to.
+	// handler is the function to be called with the message.
+	// It returns a function that can be called to unsubscribe the handler
+	// before it has been invoked.
+	SubscribeOnce(topic string, handler func(T)) (unsubscribe func())
+}
 
 // BusProvider is a thread-safe container for managing multiple, type-safe bus
 // instances, with each bus being dedicated to a specific topic. It ensures that
@@ -44,23 +76,23 @@ type BusProvider struct {
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
 // multiple topic-based bus instances.
-func NewBusProvider(config *bus.MessageBus) (*BusProvider, error) {
+func NewBusProvider(config *config.GlobalSettings) (*BusProvider, error) {
 	provider := &BusProvider{
 		buses:  make(map[string]any),
-		config: config,
+		config: config.GetMessageBus(),
 	}
 
-	switch config.WhichBusType() {
-	case bus.MessageBus_InMemory_case:
-	case bus.MessageBus_Redis_case:
-		redisConfig := config.GetRedis()
+	if provider.config.GetInMemory() != nil {
+		// In-memory bus requires no additional setup
+	} else if provider.config.GetRedis() != nil {
+		redisConfig := config.GetMessageBus().GetRedis()
 		client := redisclient.NewClient(&redisclient.Options{
 			Addr:     redisConfig.GetAddress(),
 			Password: redisConfig.GetPassword(),
 			DB:       int(redisConfig.GetDb()),
 		})
 		provider.redisClient = client
-	default:
+	} else {
 		return nil, fmt.Errorf("unknown bus type")
 	}
 
@@ -79,19 +111,18 @@ func NewBusProvider(config *bus.MessageBus) (*BusProvider, error) {
 //   - topic: The name of the topic for which to get the bus.
 //
 // Returns a Bus instance for the specified message type and topic.
-func GetBus[T any](p *BusProvider, topic string) busiface.Bus[T] {
+func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
 	if bus, ok := p.buses[topic]; ok {
-		return bus.(busiface.Bus[T])
+		return bus.(Bus[T])
 	}
 
-	var newBus busiface.Bus[T]
-	switch p.config.WhichBusType() {
-	case bus.MessageBus_InMemory_case:
+	var newBus Bus[T]
+	if p.config.GetInMemory() != nil {
 		newBus = memory.New[T]()
-	case bus.MessageBus_Redis_case:
+	} else if p.config.GetRedis() != nil {
 		newBus = redis.New[T](p.redisClient)
 	}
 

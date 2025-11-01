@@ -20,7 +20,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/busiface"
 	"github.com/mcpany/core/pkg/logging"
 )
 
@@ -165,4 +164,3 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 	return unsub
 }
 
-var _ busiface.Bus[any] = (*DefaultBus[any])(nil)

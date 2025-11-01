@@ -180,11 +180,11 @@ type isMessageBus_BusType interface {
 }
 
 type messageBus_InMemory struct {
-	InMemory *InMemoryBus `protobuf:"bytes,1,opt,name=in_memory,json=inMemory,proto3,oneof"`
+	InMemory *InMemoryBus `protobuf:"bytes,1,opt,name=in_memory,json=inMemory,oneof"`
 }
 
 type messageBus_Redis struct {
-	Redis *RedisBus `protobuf:"bytes,2,opt,name=redis,proto3,oneof"`
+	Redis *RedisBus `protobuf:"bytes,2,opt,name=redis,oneof"`
 }
 
 func (*messageBus_InMemory) isMessageBus_BusType() {}
@@ -235,12 +235,14 @@ func (b0 InMemoryBus_builder) Build() *InMemoryBus {
 }
 
 type RedisBus struct {
-	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Address  string                 `protobuf:"bytes,1,opt,name=address,proto3"`
-	xxx_hidden_Db       int32                  `protobuf:"varint,2,opt,name=db,proto3"`
-	xxx_hidden_Password string                 `protobuf:"bytes,3,opt,name=password,proto3"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_Db          int32                  `protobuf:"varint,2,opt,name=db"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,3,opt,name=password"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RedisBus) Reset() {
@@ -270,7 +272,10 @@ func (x *RedisBus) ProtoReflect() protoreflect.Message {
 
 func (x *RedisBus) GetAddress() string {
 	if x != nil {
-		return x.xxx_hidden_Address
+		if x.xxx_hidden_Address != nil {
+			return *x.xxx_hidden_Address
+		}
+		return ""
 	}
 	return ""
 }
@@ -284,38 +289,89 @@ func (x *RedisBus) GetDb() int32 {
 
 func (x *RedisBus) GetPassword() string {
 	if x != nil {
-		return x.xxx_hidden_Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *RedisBus) SetAddress(v string) {
-	x.xxx_hidden_Address = v
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *RedisBus) SetDb(v int32) {
 	x.xxx_hidden_Db = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *RedisBus) SetPassword(v string) {
-	x.xxx_hidden_Password = v
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *RedisBus) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RedisBus) HasDb() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *RedisBus) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *RedisBus) ClearAddress() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Address = nil
+}
+
+func (x *RedisBus) ClearDb() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Db = 0
+}
+
+func (x *RedisBus) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Password = nil
 }
 
 type RedisBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Address  string
-	Db       int32
-	Password string
+	Address  *string
+	Db       *int32
+	Password *string
 }
 
 func (b0 RedisBus_builder) Build() *RedisBus {
 	m0 := &RedisBus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Address = b.Address
-	x.xxx_hidden_Db = b.Db
-	x.xxx_hidden_Password = b.Password
+	if b.Address != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Address = b.Address
+	}
+	if b.Db != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Db = *b.Db
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Password = b.Password
+	}
 	return m0
 }
 
@@ -334,7 +390,7 @@ const file_proto_bus_bus_proto_rawDesc = "" +
 	"\bRedisBus\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x0e\n" +
 	"\x02db\x18\x02 \x01(\x05R\x02db\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpasswordB\"Z github.com/mcpany/core/proto/busb\x06proto3"
+	"\bpassword\x18\x03 \x01(\tR\bpasswordB\"Z github.com/mcpany/core/proto/busb\beditionsp\xe8\a"
 
 var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_bus_bus_proto_goTypes = []any{
