@@ -319,12 +319,10 @@ jobs:
     steps:
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v4
-        with:
-          path: coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
-          files: coverage/coverage-test/coverage-test.out,coverage/coverage-e2e/coverage-e2e.out,coverage/coverage-public-api/coverage-public-api.out
+          files: coverage-test/coverage-test.out,coverage-e2e/coverage-e2e.out,coverage-public-api/coverage-public-api.out
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
