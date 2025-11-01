@@ -3,7 +3,7 @@
 # Variables
 GO = go
 GO_CMD := $(GO)
-SERVER_IMAGE_TAG ?= mcpany/server:latest
+SERVER_IMAGE_TAGS ?= mcpany/server:latest
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -368,7 +368,7 @@ ifdef HAS_DOCKER
 				*) PLATFORMS=linux/amd64 ;; \
 			esac; \
 		fi; \
-		echo "Building server Docker image ($(SERVER_IMAGE_TAG)) for platforms: $${PLATFORMS}"; \
+		echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
 		CACHE_ARGS=""; \
 		if [ -n "$(CACHE_TO)" ]; then \
 			CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
@@ -376,7 +376,8 @@ ifdef HAS_DOCKER
 		if [ -n "$(CACHE_FROM)" ]; then \
 			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
 		fi; \
-		CMD_ARGS="--platform $${PLATFORMS} -t $(SERVER_IMAGE_TAG) -f docker/Dockerfile.server ."; \
+		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/^/-t /' -e 's/ / -t /g'); \
+		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server ."; \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
 			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push; \

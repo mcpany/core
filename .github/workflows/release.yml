@@ -127,4 +127,5 @@ jobs:
           CACHE_TO: type=gha,mode=max,scope=release-cache-${{ steps.date.outputs.week }}
           CACHE_FROM: type=gha,scope=release-cache-${{ steps.date.outputs.week }}
         run: |
-          make build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 SERVER_IMAGE_TAG=ghcr.io/${{ github.repository }}:${{ github.run_number }}
+          TAGS="ghcr.io/${{ github.repository }}:${{ github.run_number }} ghcr.io/${{ github.repository }}:latest"
+          make build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 SERVER_IMAGE_TAGS="$$TAGS"
