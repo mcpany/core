@@ -117,14 +117,9 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		cli:         cli,
 	}
 	return &dockerConn{
-		rwc: &dockerReadWriteCloser{
-			Reader:      stdoutReader,
-			WriteCloser: hijackedResp.Conn,
-			containerID: resp.ID,
-			cli:         cli,
-		},
-		decoder: json.NewDecoder(stdoutReader),
-		encoder: json.NewEncoder(hijackedResp.Conn),
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
 	}, nil
 }
 
