@@ -17,20 +17,21 @@
 package integration_test
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/tests/framework"
 	"github.com/mcpany/core/tests/integration"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestE2EPrompt(t *testing.T) {
-	t.Skip("Skipping TestE2EPrompt for now.")
 	framework.RunE2ETest(t, &framework.E2ETestCase{
 		Name:                "prompt",
 		UpstreamServiceType: "http",
@@ -56,19 +57,37 @@ func RegisterPromptService(t *testing.T, registrationClient apiv1.RegistrationSe
 }
 
 func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
-	gemini := framework.NewGeminiCLI(t)
-	gemini.Install()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	// Configure the MCP server with the Gemini CLI
-	serverName := "mcpany_e2e_prompt_test"
-	gemini.AddMCP(serverName, mcpanyEndpoint)
-	defer gemini.RemoveMCP(serverName)
+	// Client setup
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	transport := &mcp.StreamableClientTransport{
+		Endpoint: mcpanyEndpoint,
+	}
 
-	// Run a prompt and validate the output
-	prompt := fmt.Sprintf("@%s hello", serverName)
-	output, err := gemini.Run(os.Getenv("GEMINI_API_KEY"), prompt)
-	require.NoError(t, err, "gemini-cli failed to run")
+	// Connect server and client
+	clientSession, err := client.Connect(ctx, transport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
 
-	assert.Contains(t, output, "Hello, world!", "The output should contain 'Hello, world!'")
-	t.Skip("Skipping test because it requires gemini CLI tool")
+	// Test prompts/list
+	listResult, err := clientSession.ListPrompts(ctx, &mcp.ListPromptsParams{})
+	require.NoError(t, err)
+	require.Len(t, listResult.Prompts, 1)
+	assert.Equal(t, "hello", listResult.Prompts[0].Name)
+	assert.Equal(t, "", listResult.Prompts[0].Title)
+
+	// Test prompts/get
+	getResult, err := clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
+		Name: "hello",
+		Arguments: map[string]string{
+			"name": "World",
+		},
+	})
+	require.NoError(t, err)
+	require.Len(t, getResult.Messages, 1)
+	textContent, ok := getResult.Messages[0].Content.(*mcp.TextContent)
+	require.True(t, ok)
+	assert.Equal(t, "Hello, world!", textContent.Text)
 }
