@@ -32,6 +32,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
 	v1 "github.com/mcpany/core/proto/api/v1"
+	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/examples/calculator/v1"
 	"github.com/stretchr/testify/assert"
@@ -79,7 +80,12 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	defer cancel()
 
 	// Setup bus and worker
-	busProvider := bus.NewBusProvider()
+	globalSettings := &configv1.GlobalSettings{}
+	messageBus := &bus_pb.MessageBus{}
+	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+	busProvider, err := bus.NewBusProvider(globalSettings)
+	require.NoError(t, err)
 
 	// Setup components
 	poolManager := pool.NewManager()
@@ -292,7 +298,12 @@ paths:
 
 func TestRegistrationServer_Unimplemented(t *testing.T) {
 	ctx := context.Background()
-	busProvider := bus.NewBusProvider()
+	globalSettings := &configv1.GlobalSettings{}
+	messageBus := &bus_pb.MessageBus{}
+	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+	busProvider, err := bus.NewBusProvider(globalSettings)
+	require.NoError(t, err)
 	registrationServer, err := NewRegistrationServer(busProvider)
 	require.NoError(t, err)
 

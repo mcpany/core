@@ -44,6 +44,8 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	v1 "github.com/mcpany/core/proto/api/v1"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -113,7 +115,15 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	log.Info("Starting MCP Any Service...")
 
 	// Core components
-	busProvider := bus.NewBusProvider()
+	globalSettings := &config_v1.GlobalSettings{}
+	messageBus := &bus_pb.MessageBus{}
+	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+
+	busProvider, err := bus.NewBusProvider(globalSettings)
+	if err != nil {
+		return fmt.Errorf("failed to create bus provider: %w", err)
+	}
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	toolManager := tool.NewToolManager(busProvider)

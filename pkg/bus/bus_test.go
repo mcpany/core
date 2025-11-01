@@ -21,17 +21,21 @@ import (
 	"encoding/json"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/proto/bus"
+	config "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBusProvider(t *testing.T) {
 	t.Run("InMemory", func(t *testing.T) {
-		config := &bus.MessageBus{}
-		config.SetInMemory(&bus.InMemoryBus{})
-		provider, err := NewBusProvider(config)
+		globalSettings := &config.GlobalSettings{}
+		messageBus := &bus.MessageBus{}
+		messageBus.SetInMemory(&bus.InMemoryBus{})
+		globalSettings.SetMessageBus(messageBus)
+		provider, err := NewBusProvider(globalSettings)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -51,12 +55,14 @@ func TestBusProvider(t *testing.T) {
 			t.Skip("Redis is not available")
 		}
 
-		config := &bus.MessageBus{}
+		globalSettings := &config.GlobalSettings{}
+		messageBus := &bus.MessageBus{}
 		redisBus := &bus.RedisBus{}
 		redisBus.SetAddress("localhost:6379")
-		config.SetRedis(redisBus)
+		messageBus.SetRedis(redisBus)
+		globalSettings.SetMessageBus(messageBus)
 
-		provider, err := NewBusProvider(config)
+		provider, err := NewBusProvider(globalSettings)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -70,9 +76,11 @@ func TestBusProvider(t *testing.T) {
 }
 
 func TestIntegration(t *testing.T) {
-	config := &bus.MessageBus{}
-	config.SetInMemory(&bus.InMemoryBus{})
-	provider, err := NewBusProvider(config)
+	globalSettings := &config.GlobalSettings{}
+	messageBus := &bus.MessageBus{}
+	messageBus.SetInMemory(&bus.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+	provider, err := NewBusProvider(globalSettings)
 	assert.NoError(t, err)
 
 	// Simulate a tool execution request/response
@@ -118,9 +126,11 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestBusProvider_Concurrent(t *testing.T) {
-	config := &bus.MessageBus{}
-	config.SetInMemory(&bus.InMemoryBus{})
-	provider, err := NewBusProvider(config)
+	globalSettings := &config.GlobalSettings{}
+	messageBus := &bus.MessageBus{}
+	messageBus.SetInMemory(&bus.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+	provider, err := NewBusProvider(globalSettings)
 	assert.NoError(t, err)
 
 	numGoroutines := 100
@@ -139,4 +149,126 @@ func TestBusProvider_Concurrent(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+func TestRedisBus_SubscribeOnce(t *testing.T) {
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	if _, err := client.Ping(context.Background()).Result(); err != nil {
+		t.Skip("Redis is not available")
+	}
+
+	globalSettings := &config.GlobalSettings{}
+	messageBus := &bus.MessageBus{}
+	redisBus := &bus.RedisBus{}
+	redisBus.SetAddress("localhost:6379")
+	messageBus.SetRedis(redisBus)
+	globalSettings.SetMessageBus(messageBus)
+
+	provider, err := NewBusProvider(globalSettings)
+	assert.NoError(t, err)
+
+	bus := GetBus[string](provider, "test-topic")
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	var receivedMessages []string
+	bus.SubscribeOnce("test-message", func(msg string) {
+		receivedMessages = append(receivedMessages, msg)
+		wg.Done()
+	})
+
+	bus.Publish("test-message", "hello")
+	bus.Publish("test-message", "world")
+
+	wg.Wait()
+
+	assert.Len(t, receivedMessages, 1)
+	assert.Equal(t, "hello", receivedMessages[0])
+}
+
+func TestRedisBus_Unsubscribe(t *testing.T) {
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	if _, err := client.Ping(context.Background()).Result(); err != nil {
+		t.Skip("Redis is not available")
+	}
+
+	globalSettings := &config.GlobalSettings{}
+	messageBus := &bus.MessageBus{}
+	redisBus := &bus.RedisBus{}
+	redisBus.SetAddress("localhost:6379")
+	messageBus.SetRedis(redisBus)
+	globalSettings.SetMessageBus(messageBus)
+
+	provider, err := NewBusProvider(globalSettings)
+	assert.NoError(t, err)
+
+	bus := GetBus[string](provider, "test-topic")
+
+	var receivedMessages []string
+	unsubscribe := bus.Subscribe("test-message", func(msg string) {
+		receivedMessages = append(receivedMessages, msg)
+	})
+
+	bus.Publish("test-message", "hello")
+	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
+
+	unsubscribe()
+
+	bus.Publish("test-message", "world")
+	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
+
+	assert.Len(t, receivedMessages, 1)
+	assert.Equal(t, "hello", receivedMessages[0])
+}
+
+func TestRedisBus_Concurrent(t *testing.T) {
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	if _, err := client.Ping(context.Background()).Result(); err != nil {
+		t.Skip("Redis is not available")
+	}
+
+	globalSettings := &config.GlobalSettings{}
+	messageBus := &bus.MessageBus{}
+	redisBus := &bus.RedisBus{}
+	redisBus.SetAddress("localhost:6379")
+	messageBus.SetRedis(redisBus)
+	globalSettings.SetMessageBus(messageBus)
+
+	provider, err := NewBusProvider(globalSettings)
+	assert.NoError(t, err)
+
+	bus := GetBus[string](provider, "test-topic")
+
+	numSubscribers := 10
+	numMessages := 100
+	var wg sync.WaitGroup
+	wg.Add(numSubscribers * numMessages)
+
+	var receivedMessages [][]string
+	for i := 0; i < numSubscribers; i++ {
+		receivedMessages = append(receivedMessages, []string{})
+		go func(i int) {
+			bus.Subscribe("test-message", func(msg string) {
+				receivedMessages[i] = append(receivedMessages[i], msg)
+				wg.Done()
+			})
+		}(i)
+	}
+
+	for i := 0; i < numMessages; i++ {
+		bus.Publish("test-message", "hello")
+	}
+
+	wg.Wait()
+
+	for i := 0; i < numSubscribers; i++ {
+		assert.Len(t, receivedMessages[i], numMessages)
+	}
 }

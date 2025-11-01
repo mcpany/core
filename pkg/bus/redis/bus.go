@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/mcpany/core/pkg/busiface"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/redis/go-redis/v9"
 )
@@ -99,4 +98,3 @@ func (b *RedisBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe 
 	return unsub
 }
 
-var _ busiface.Bus[any] = (*RedisBus[any])(nil)
