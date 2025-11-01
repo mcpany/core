@@ -82,3 +82,7 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}
 }
+
+func GenerateServiceID(serviceName string) string {
+	return fmt.Sprintf("service/%s", serviceName)
+}

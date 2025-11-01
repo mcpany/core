@@ -1921,6 +1921,7 @@ type UpstreamServiceConfig struct {
 	xxx_hidden_ServiceConfig          isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
 	xxx_hidden_Version                *string                               `protobuf:"bytes,14,opt,name=version"`
 	xxx_hidden_Authentication         *AuthenticationConfig                 `protobuf:"bytes,15,opt,name=authentication"`
+	xxx_hidden_Disable                bool                                  `protobuf:"varint,19,opt,name=disable"`
 	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
 	XXX_presence                      [1]uint32
 	unknownFields                     protoimpl.UnknownFields
@@ -2106,19 +2107,26 @@ func (x *UpstreamServiceConfig) GetAuthentication() *AuthenticationConfig {
 	return nil
 }
 
+func (x *UpstreamServiceConfig) GetDisable() bool {
+	if x != nil {
+		return x.xxx_hidden_Disable
+	}
+	return false
+}
+
 func (x *UpstreamServiceConfig) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
 }
 
 func (x *UpstreamServiceConfig) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
 }
 
 func (x *UpstreamServiceConfig) SetSanitizedName(v string) {
 	x.xxx_hidden_SanitizedName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 13)
 }
 
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
@@ -2139,7 +2147,7 @@ func (x *UpstreamServiceConfig) SetRateLimit(v *RateLimitConfig) {
 
 func (x *UpstreamServiceConfig) SetLoadBalancingStrategy(v LoadBalancingStrategy) {
 	x.xxx_hidden_LoadBalancingStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 13)
 }
 
 func (x *UpstreamServiceConfig) SetResilience(v *ResilienceConfig) {
@@ -2204,11 +2212,16 @@ func (x *UpstreamServiceConfig) SetWebrtcService(v *WebrtcUpstreamService) {
 
 func (x *UpstreamServiceConfig) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
 }
 
 func (x *UpstreamServiceConfig) SetAuthentication(v *AuthenticationConfig) {
 	x.xxx_hidden_Authentication = v
+}
+
+func (x *UpstreamServiceConfig) SetDisable(v bool) {
+	x.xxx_hidden_Disable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 13)
 }
 
 func (x *UpstreamServiceConfig) HasId() bool {
@@ -2351,6 +2364,13 @@ func (x *UpstreamServiceConfig) HasAuthentication() bool {
 	return x.xxx_hidden_Authentication != nil
 }
 
+func (x *UpstreamServiceConfig) HasDisable() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 12)
+}
+
 func (x *UpstreamServiceConfig) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -2446,6 +2466,11 @@ func (x *UpstreamServiceConfig) ClearAuthentication() {
 	x.xxx_hidden_Authentication = nil
 }
 
+func (x *UpstreamServiceConfig) ClearDisable() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 12)
+	x.xxx_hidden_Disable = false
+}
+
 const UpstreamServiceConfig_ServiceConfig_not_set_case case_UpstreamServiceConfig_ServiceConfig = 0
 const UpstreamServiceConfig_McpService_case case_UpstreamServiceConfig_ServiceConfig = 9
 const UpstreamServiceConfig_HttpService_case case_UpstreamServiceConfig_ServiceConfig = 10
@@ -2520,6 +2545,8 @@ type UpstreamServiceConfig_builder struct {
 	Version *string
 	// Authentication configuration for securing access to the MCPx service (incoming requests).
 	Authentication *AuthenticationConfig
+	// If true, this upstream service is disabled.
+	Disable *bool
 }
 
 func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
@@ -2527,15 +2554,15 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.SanitizedName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 13)
 		x.xxx_hidden_SanitizedName = b.SanitizedName
 	}
 	x.xxx_hidden_ConnectionPool = b.ConnectionPool
@@ -2543,7 +2570,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_RateLimit = b.RateLimit
 	if b.LoadBalancingStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 13)
 		x.xxx_hidden_LoadBalancingStrategy = *b.LoadBalancingStrategy
 	}
 	x.xxx_hidden_Resilience = b.Resilience
@@ -2569,10 +2596,14 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebrtcService{b.WebrtcService}
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
 		x.xxx_hidden_Version = b.Version
 	}
 	x.xxx_hidden_Authentication = b.Authentication
+	if b.Disable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 13)
+		x.xxx_hidden_Disable = *b.Disable
+	}
 	return m0
 }
 
@@ -8844,7 +8875,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04INFO\x10\x00\x12\b\n" +
 	"\x04WARN\x10\x01\x12\t\n" +
 	"\x05ERROR\x10\x02\x12\t\n" +
-	"\x05DEBUG\x10\x03\"\xd7\t\n" +
+	"\x05DEBUG\x10\x03\"\xf1\t\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
@@ -8868,7 +8899,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11websocket_service\x18\x10 \x01(\v2(.mcpx.config.v1.WebsocketUpstreamServiceH\x00R\x10websocketService\x12N\n" +
 	"\x0ewebrtc_service\x18\x11 \x01(\v2%.mcpx.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12\x18\n" +
 	"\aversion\x18\x0e \x01(\tR\aversion\x12L\n" +
-	"\x0eauthentication\x18\x0f \x01(\v2$.mcpx.config.v1.AuthenticationConfigR\x0eauthenticationB\x10\n" +
+	"\x0eauthentication\x18\x0f \x01(\v2$.mcpx.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
+	"\adisable\x18\x13 \x01(\bR\adisableB\x10\n" +
 	"\x0eservice_config\"\xa8\x03\n" +
 	"\x13GrpcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
