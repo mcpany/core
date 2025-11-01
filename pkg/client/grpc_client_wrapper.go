@@ -25,19 +25,27 @@ import (
 	"google.golang.org/grpc/connectivity"
 )
 
-// GrpcClientWrapper wraps a `*grpc.ClientConn` to adapt it to the
+// Conn is an interface that represents a gRPC client connection.
+// It is used to allow for mocking of the gRPC client in tests.
+type Conn interface {
+	grpc.ClientConnInterface
+	Close() error
+	GetState() connectivity.State
+}
+
+// GrpcClientWrapper wraps a `Conn` to adapt it to the
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
 type GrpcClientWrapper struct {
-	*grpc.ClientConn
+	Conn
 	config *configv1.UpstreamServiceConfig
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
-func NewGrpcClientWrapper(conn *grpc.ClientConn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
+func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
-		ClientConn: conn,
-		config:     config,
+		Conn:   conn,
+		config: config,
 	}
 }
 
@@ -58,5 +66,5 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Close terminates the underlying gRPC connection, releasing any associated
 // resources.
 func (w *GrpcClientWrapper) Close() error {
-	return w.ClientConn.Close()
+	return w.Conn.Close()
 }

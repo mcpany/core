@@ -160,7 +160,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 			},
 		}
 		conn := setupGrpcTest(t, server)
-		wrapper := &client.GrpcClientWrapper{ClientConn: conn}
+		wrapper := client.NewGrpcClientWrapper(conn, nil)
 
 		pm := pool.NewManager()
 		mockPool := &mockGrpcPool{
@@ -201,7 +201,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 			},
 		}
 		conn := setupGrpcTest(t, server)
-		wrapper := &client.GrpcClientWrapper{ClientConn: conn}
+		wrapper := client.NewGrpcClientWrapper(conn, nil)
 
 		pm := pool.NewManager()
 		mockPool := &mockGrpcPool{
