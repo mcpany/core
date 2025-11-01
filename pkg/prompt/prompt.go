@@ -41,11 +41,32 @@ type Prompt interface {
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
+// mcpServer is an interface that abstracts the mcp.Server for testing.
+type mcpServer interface {
+	AddPrompt(prompt *mcp.Prompt, handler mcp.PromptHandler)
+	RemovePrompts(names ...string)
+}
+
 // MCPServerProvider defines an interface for components that can provide an
 // instance of an *mcp.Server. This is used to decouple the PromptManager from the
 // concrete server implementation.
 type MCPServerProvider interface {
-	Server() *mcp.Server
+	Server() mcpServer
+}
+
+// mcpServerProvider is a concrete implementation of the MCPServerProvider
+// interface that wraps an *mcp.Server.
+type mcpServerProvider struct {
+	server *mcp.Server
+}
+
+// NewMCPServerProvider creates a new MCPServerProvider.
+func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
+	return &mcpServerProvider{server: server}
+}
+
+func (p *mcpServerProvider) Server() mcpServer {
+	return p.server
 }
 
 // PromptManagerInterface defines the interface for managing a collection of
