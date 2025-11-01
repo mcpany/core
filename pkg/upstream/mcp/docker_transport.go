@@ -110,6 +110,12 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		}
 	}()
 
+	rwc := &dockerReadWriteCloser{
+		Reader:      stdoutReader,
+		WriteCloser: hijackedResp.Conn,
+		containerID: resp.ID,
+		cli:         cli,
+	}
 	return &dockerConn{
 		rwc: &dockerReadWriteCloser{
 			Reader:      stdoutReader,
@@ -131,7 +137,7 @@ type dockerConn struct {
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
-func (c *dockerConn) Read(ctx context.Context) (jsonrpc.Message, error) {
+func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
 		return nil, err

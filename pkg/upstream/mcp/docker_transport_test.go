@@ -88,8 +88,8 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	ctx := context.Background()
 	stdioConfig := &configv1.McpStdioConnection{}
 	stdioConfig.SetContainerImage("alpine:latest")
-	stdioConfig.SetCommand("echo")
-	stdioConfig.SetArgs([]string{`{"jsonrpc": "2.0", "id": 1, "result": "hello"}`})
+	stdioConfig.SetCommand("printf")
+	stdioConfig.SetArgs([]string{`'{"jsonrpc": "2.0", "id": 1, "result": "hello"}'`})
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	conn, err := transport.Connect(ctx)
