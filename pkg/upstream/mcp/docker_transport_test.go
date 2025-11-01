@@ -57,7 +57,11 @@ func (m *mockReadWriteCloser) Close() error {
 func TestDockerConn_ReadWrite(t *testing.T) {
 	ctx := context.Background()
 	rwc := &mockReadWriteCloser{}
-	conn := &dockerConn{rwc: rwc}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
 
 	// Test Write
 	testMsg := &jsonrpc.Request{
