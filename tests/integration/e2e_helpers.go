@@ -473,7 +473,6 @@ type MCPANYTestServerInfo struct {
 	Process                  *ManagedProcess
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
-	GRPCReg                  string
 	GrpcRegistrationEndpoint string
 	SessionID                string
 	HTTPClient               *http.Client
@@ -614,7 +613,6 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 	return &MCPANYTestServerInfo{
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
-		GRPCReg:                  grpcRegEndpoint,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
 		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
 		GRPCRegConn:              grpcRegConn,
@@ -738,7 +736,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		Process:                  mcpProcess,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
-		GRPCReg:                  grpcRegEndpoint,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,

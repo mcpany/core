@@ -71,7 +71,7 @@ func TestConfigLoading(t *testing.T) {
 			mcpx := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-paths", absConfigFile)
 			defer mcpx.CleanupFunc()
 
-			conn, err := grpc.Dial(mcpx.GRPCReg, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := grpc.Dial(mcpx.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
 			defer conn.Close()
 
