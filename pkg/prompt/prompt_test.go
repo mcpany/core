@@ -26,6 +26,48 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// mockMCPServer is a mock implementation of the mcp.Server for testing.
+type mockMCPServer struct {
+	prompts               map[string]mcp.PromptHandler
+	addPromptCalls        []*mcp.Prompt
+	removePromptsCalls    []string
+	removePromptsEmbedded []string
+}
+
+func newMockMCPServer() *mockMCPServer {
+	return &mockMCPServer{
+		prompts: make(map[string]mcp.PromptHandler),
+	}
+}
+
+func (s *mockMCPServer) AddPrompt(prompt *mcp.Prompt, handler mcp.PromptHandler) {
+	s.prompts[prompt.Name] = handler
+	s.addPromptCalls = append(s.addPromptCalls, prompt)
+}
+
+func (s *mockMCPServer) RemovePrompts(names ...string) {
+	for _, name := range names {
+		delete(s.prompts, name)
+		s.removePromptsCalls = append(s.removePromptsCalls, name)
+	}
+}
+
+// mockMCPServerProvider is a mock implementation of the MCPServerProvider
+// interface for testing.
+type mockMCPServerProvider struct {
+	server *mockMCPServer
+}
+
+func newMockMCPServerProvider() *mockMCPServerProvider {
+	return &mockMCPServerProvider{
+		server: newMockMCPServer(),
+	}
+}
+
+func (p *mockMCPServerProvider) Server() mcpServer {
+	return p.server
+}
+
 // mockPrompt is a mock implementation of the Prompt interface for testing.
 type mockPrompt struct {
 	name    string
@@ -82,4 +124,44 @@ func TestPromptManager_AddGetListRemovePrompt(t *testing.T) {
 	_, ok = pm.GetPrompt("prompt1")
 	assert.False(t, ok)
 	assert.Len(t, pm.ListPrompts(), 1)
+}
+
+func TestPromptManager_SetMCPServer(t *testing.T) {
+	pm := NewPromptManager()
+	mockProvider := newMockMCPServerProvider()
+	pm.SetMCPServer(mockProvider)
+	assert.Equal(t, mockProvider, pm.mcpServer)
+}
+
+func TestPromptManager_AddPromptWithMCPServer(t *testing.T) {
+	pm := NewPromptManager()
+	mockProvider := newMockMCPServerProvider()
+	pm.SetMCPServer(mockProvider)
+
+	prompt := &mockPrompt{name: "prompt1", service: "service1"}
+	pm.AddPrompt(prompt)
+
+	assert.Len(t, mockProvider.server.addPromptCalls, 1)
+	assert.Equal(t, prompt.Prompt(), mockProvider.server.addPromptCalls[0])
+
+	// Verify that the handler calls the prompt's Get method
+	req := &mcp.GetPromptRequest{}
+	req.Params = &mcp.GetPromptParams{
+		Arguments: map[string]string{},
+	}
+	_, err := mockProvider.server.prompts["prompt1"](context.Background(), req)
+	assert.NoError(t, err)
+}
+
+func TestPromptManager_RemovePromptWithMCPServer(t *testing.T) {
+	pm := NewPromptManager()
+	mockProvider := newMockMCPServerProvider()
+	pm.SetMCPServer(mockProvider)
+
+	prompt := &mockPrompt{name: "prompt1", service: "service1"}
+	pm.AddPrompt(prompt)
+	pm.RemovePrompt("prompt1")
+
+	assert.Len(t, mockProvider.server.removePromptsCalls, 1)
+	assert.Equal(t, "prompt1", mockProvider.server.removePromptsCalls[0])
 }
