@@ -22,6 +22,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -35,7 +36,16 @@ type RedisBus[T any] struct {
 }
 
 // New creates a new RedisBus.
-func New[T any](client *redis.Client) *RedisBus[T] {
+func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
+	return NewWithClient[T](redis.NewClient(&redis.Options{
+		Addr:     redisConfig.GetAddress(),
+		Password: redisConfig.GetPassword(),
+		DB:       int(redisConfig.GetDb()),
+	}))
+}
+
+// NewWithClient creates a new RedisBus with an existing Redis client.
+func NewWithClient[T any](client *redis.Client) *RedisBus[T] {
 	return &RedisBus[T]{
 		client:  client,
 		ctx:     context.Background(),

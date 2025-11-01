@@ -24,18 +24,15 @@ import (
 	"time"
 
 	"github.com/mcpany/core/proto/bus"
-	config "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBusProvider(t *testing.T) {
 	t.Run("InMemory", func(t *testing.T) {
-		globalSettings := &config.GlobalSettings{}
-		messageBus := &bus.MessageBus{}
-		messageBus.SetInMemory(&bus.InMemoryBus{})
-		globalSettings.SetMessageBus(messageBus)
-		provider, err := NewBusProvider(globalSettings)
+		messageBus := bus.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
+		provider, err := NewBusProvider(messageBus)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -55,14 +52,12 @@ func TestBusProvider(t *testing.T) {
 			t.Skip("Redis is not available")
 		}
 
-		globalSettings := &config.GlobalSettings{}
-		messageBus := &bus.MessageBus{}
-		redisBus := &bus.RedisBus{}
+		messageBus := bus.MessageBus_builder{}.Build()
+		redisBus := bus.RedisBus_builder{}.Build()
 		redisBus.SetAddress("localhost:6379")
 		messageBus.SetRedis(redisBus)
-		globalSettings.SetMessageBus(messageBus)
 
-		provider, err := NewBusProvider(globalSettings)
+		provider, err := NewBusProvider(messageBus)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -76,11 +71,9 @@ func TestBusProvider(t *testing.T) {
 }
 
 func TestIntegration(t *testing.T) {
-	globalSettings := &config.GlobalSettings{}
-	messageBus := &bus.MessageBus{}
-	messageBus.SetInMemory(&bus.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	provider, err := NewBusProvider(globalSettings)
+	messageBus := bus.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
+	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
 	// Simulate a tool execution request/response
@@ -126,11 +119,9 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestBusProvider_Concurrent(t *testing.T) {
-	globalSettings := &config.GlobalSettings{}
-	messageBus := &bus.MessageBus{}
-	messageBus.SetInMemory(&bus.InMemoryBus{})
-	globalSettings.SetMessageBus(messageBus)
-	provider, err := NewBusProvider(globalSettings)
+	messageBus := bus.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
+	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
 	numGoroutines := 100
@@ -159,14 +150,12 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 		t.Skip("Redis is not available")
 	}
 
-	globalSettings := &config.GlobalSettings{}
-	messageBus := &bus.MessageBus{}
-	redisBus := &bus.RedisBus{}
+	messageBus := bus.MessageBus_builder{}.Build()
+	redisBus := bus.RedisBus_builder{}.Build()
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
-	globalSettings.SetMessageBus(messageBus)
 
-	provider, err := NewBusProvider(globalSettings)
+	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")
@@ -197,14 +186,12 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 		t.Skip("Redis is not available")
 	}
 
-	globalSettings := &config.GlobalSettings{}
-	messageBus := &bus.MessageBus{}
-	redisBus := &bus.RedisBus{}
+	messageBus := bus.MessageBus_builder{}.Build()
+	redisBus := bus.RedisBus_builder{}.Build()
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
-	globalSettings.SetMessageBus(messageBus)
 
-	provider, err := NewBusProvider(globalSettings)
+	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")
@@ -234,14 +221,12 @@ func TestRedisBus_Concurrent(t *testing.T) {
 		t.Skip("Redis is not available")
 	}
 
-	globalSettings := &config.GlobalSettings{}
-	messageBus := &bus.MessageBus{}
-	redisBus := &bus.RedisBus{}
+	messageBus := bus.MessageBus_builder{}.Build()
+	redisBus := bus.RedisBus_builder{}.Build()
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
-	globalSettings.SetMessageBus(messageBus)
 
-	provider, err := NewBusProvider(globalSettings)
+	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")

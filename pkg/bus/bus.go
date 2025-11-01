@@ -23,8 +23,6 @@ import (
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
-	config "github.com/mcpany/core/proto/config/v1"
-	redisclient "github.com/redis/go-redis/v9"
 )
 
 // Bus defines the interface for a generic, type-safe event bus that facilitates
@@ -68,30 +66,31 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 type BusProvider struct {
-	buses       map[string]any
-	mu          sync.RWMutex
-	config      *bus.MessageBus
-	redisClient *redisclient.Client
+	buses  map[string]any
+	mu     sync.RWMutex
+	config *bus.MessageBus
 }
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
 // multiple topic-based bus instances.
-func NewBusProvider(config *config.GlobalSettings) (*BusProvider, error) {
+func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 	provider := &BusProvider{
 		buses:  make(map[string]any),
-		config: config.GetMessageBus(),
+		config: messageBus,
+	}
+
+	if provider.config == nil {
+		provider.config = &bus.MessageBus{}
+	}
+
+	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil {
+		provider.config.SetInMemory(&bus.InMemoryBus{})
 	}
 
 	if provider.config.GetInMemory() != nil {
 		// In-memory bus requires no additional setup
 	} else if provider.config.GetRedis() != nil {
-		redisConfig := config.GetMessageBus().GetRedis()
-		client := redisclient.NewClient(&redisclient.Options{
-			Addr:     redisConfig.GetAddress(),
-			Password: redisConfig.GetPassword(),
-			DB:       int(redisConfig.GetDb()),
-		})
-		provider.redisClient = client
+		// Redis client is now created within the RedisBus
 	} else {
 		return nil, fmt.Errorf("unknown bus type")
 	}
@@ -123,7 +122,7 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	if p.config.GetInMemory() != nil {
 		newBus = memory.New[T]()
 	} else if p.config.GetRedis() != nil {
-		newBus = redis.New[T](p.redisClient)
+		newBus = redis.New[T](p.config.GetRedis())
 	}
 
 	p.buses[topic] = newBus
