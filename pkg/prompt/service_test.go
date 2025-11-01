@@ -19,6 +19,7 @@ package prompt_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/pkg/prompt"
@@ -47,6 +48,17 @@ func (m *MockPrompt) Get(
 ) (*mcp.GetPromptResult, error) {
 	calledArgs := m.Called(ctx, args)
 	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
+}
+
+type MockErrorPrompt struct {
+	MockPrompt
+}
+
+func (m *MockErrorPrompt) Get(
+	ctx context.Context,
+	args json.RawMessage,
+) (*mcp.GetPromptResult, error) {
+	return nil, fmt.Errorf("error from Get")
 }
 
 type MockPromptManager struct {
@@ -156,4 +168,25 @@ func TestService_GetPrompt_NotFound(t *testing.T) {
 
 	assert.ErrorIs(t, err, prompt.ErrPromptNotFound)
 	mockPromptManager.AssertExpectations(t)
+}
+
+func TestService_GetPrompt_GetError(t *testing.T) {
+	mockPromptManager := new(MockPromptManager)
+	service := prompt.NewService(mockPromptManager)
+
+	mockPrompt := new(MockErrorPrompt)
+	rawArgs := json.RawMessage(`{"key":"value"}`)
+	mockPromptManager.On("GetPrompt", "test_prompt").Return(mockPrompt, true)
+	mockPrompt.On("Get", context.Background(), rawArgs).Return(nil, fmt.Errorf("error from Get"))
+
+	_, err := service.GetPrompt(context.Background(), &mcp.GetPromptRequest{
+		Params: &mcp.GetPromptParams{
+			Name: "test_prompt",
+			Arguments: map[string]string{
+				"key": "value",
+			},
+		},
+	})
+
+	assert.Error(t, err)
 }
