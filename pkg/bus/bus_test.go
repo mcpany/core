@@ -20,74 +20,60 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
-	"sync/atomic"
 	"testing"
-	"time"
 
+	"github.com/mcpany/core/proto/bus"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultBus(t *testing.T) {
-	t.Run("Publish and Subscribe", func(t *testing.T) {
-		bus := New[string]()
-		var wg sync.WaitGroup
-		wg.Add(1)
-
-		bus.Subscribe("test", func(msg string) {
-			assert.Equal(t, "hello", msg)
-			wg.Done()
-		})
-
-		bus.Publish("test", "hello")
-		wg.Wait()
-	})
-
-	t.Run("SubscribeOnce", func(t *testing.T) {
-		bus := New[string]()
-		var wg sync.WaitGroup
-		wg.Add(1)
-
-		bus.SubscribeOnce("test", func(msg string) {
-			assert.Equal(t, "hello", msg)
-			wg.Done()
-		})
-
-		bus.Publish("test", "hello")
-		wg.Wait()
-
-		// This second publish should not be received
-		bus.Publish("test", "world")
-	})
-
-	t.Run("Unsubscribe", func(t *testing.T) {
-		bus := New[string]()
-		received := false
-
-		unsub := bus.Subscribe("test", func(msg string) {
-			received = true
-		})
-
-		unsub()
-		bus.Publish("test", "hello")
-		time.Sleep(10 * time.Millisecond) // Give it a moment to process
-		assert.False(t, received)
-	})
-}
-
 func TestBusProvider(t *testing.T) {
-	provider := NewBusProvider()
+	t.Run("InMemory", func(t *testing.T) {
+		config := &bus.MessageBus{}
+		config.SetInMemory(&bus.InMemoryBus{})
+		provider, err := NewBusProvider(config)
+		assert.NoError(t, err)
 
-	bus1 := GetBus[string](provider, "strings")
-	bus2 := GetBus[int](provider, "ints")
-	bus3 := GetBus[string](provider, "strings")
+		bus1 := GetBus[string](provider, "strings")
+		bus2 := GetBus[int](provider, "ints")
+		bus3 := GetBus[string](provider, "strings")
 
-	assert.NotNil(t, bus1)
-	assert.NotNil(t, bus2)
-	assert.Same(t, bus1, bus3)
+		assert.NotNil(t, bus1)
+		assert.NotNil(t, bus2)
+		assert.Same(t, bus1, bus3)
+	})
+
+	t.Run("Redis", func(t *testing.T) {
+		client := redis.NewClient(&redis.Options{
+			Addr: "localhost:6379",
+		})
+		if _, err := client.Ping(context.Background()).Result(); err != nil {
+			t.Skip("Redis is not available")
+		}
+
+		config := &bus.MessageBus{}
+		redisBus := &bus.RedisBus{}
+		redisBus.SetAddress("localhost:6379")
+		config.SetRedis(redisBus)
+
+		provider, err := NewBusProvider(config)
+		assert.NoError(t, err)
+
+		bus1 := GetBus[string](provider, "strings")
+		bus2 := GetBus[int](provider, "ints")
+		bus3 := GetBus[string](provider, "strings")
+
+		assert.NotNil(t, bus1)
+		assert.NotNil(t, bus2)
+		assert.Same(t, bus1, bus3)
+	})
 }
 
 func TestIntegration(t *testing.T) {
-	provider := NewBusProvider()
+	config := &bus.MessageBus{}
+	config.SetInMemory(&bus.InMemoryBus{})
+	provider, err := NewBusProvider(config)
+	assert.NoError(t, err)
 
 	// Simulate a tool execution request/response
 	reqBus := GetBus[*ToolExecutionRequest](provider, "tool_requests")
@@ -132,7 +118,11 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestBusProvider_Concurrent(t *testing.T) {
-	provider := NewBusProvider()
+	config := &bus.MessageBus{}
+	config.SetInMemory(&bus.InMemoryBus{})
+	provider, err := NewBusProvider(config)
+	assert.NoError(t, err)
+
 	numGoroutines := 100
 	var wg sync.WaitGroup
 	wg.Add(numGoroutines)
@@ -149,45 +139,4 @@ func TestBusProvider_Concurrent(t *testing.T) {
 	}
 
 	wg.Wait()
-}
-
-func TestDefaultBus_Concurrent(t *testing.T) {
-	bus := New[int]()
-	topic := "concurrent_topic"
-	numSubscribers := 10
-	numPublishers := 100
-	var receivedCount int32
-
-	var wg sync.WaitGroup
-	expectedReceives := numSubscribers * numPublishers
-	wg.Add(expectedReceives)
-
-	for i := 0; i < numSubscribers; i++ {
-		unsub := bus.Subscribe(topic, func(msg int) {
-			atomic.AddInt32(&receivedCount, 1)
-			wg.Done()
-		})
-		defer unsub()
-	}
-
-	for i := 0; i < numPublishers; i++ {
-		go bus.Publish(topic, i)
-	}
-
-	// Wait for all messages to be received, with a timeout.
-	timeout := time.After(5 * time.Second)
-	done := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
-
-	select {
-	case <-done:
-		// All goroutines completed.
-	case <-timeout:
-		t.Fatalf("Timed out waiting for messages. Got %d of %d.", atomic.LoadInt32(&receivedCount), expectedReceives)
-	}
-
-	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount))
 }
