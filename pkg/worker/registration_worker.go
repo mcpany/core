@@ -64,6 +64,17 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			requestCtx = context.Background()
 		}
 
+		if req.Config.GetDisable() {
+			log.Info("Unregistering disabled service", "service", req.Config.GetName())
+			err := w.serviceRegistry.UnregisterService(requestCtx, req.Config.GetName())
+			res := &bus.ServiceRegistrationResult{
+				Error: err,
+			}
+			res.SetCorrelationID(req.CorrelationID())
+			resultBus.Publish(req.CorrelationID(), res)
+			return
+		}
+
 		serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 		res := &bus.ServiceRegistrationResult{
@@ -76,9 +87,24 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		resultBus.Publish(req.CorrelationID(), res)
 	})
 
+	listRequestBus := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
+	listResultBus := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
+
+	listUnsubscribe := listRequestBus.Subscribe("request", func(req *bus.ServiceListRequest) {
+		log.Info("Received service list request", "correlationID", req.CorrelationID())
+		services, err := w.serviceRegistry.GetAllServices()
+		res := &bus.ServiceListResult{
+			Services: services,
+			Error:    err,
+		}
+		res.SetCorrelationID(req.CorrelationID())
+		listResultBus.Publish(req.CorrelationID(), res)
+	})
+
 	go func() {
 		<-ctx.Done()
 		log.Info("Service registration worker stopping")
 		unsubscribe()
+		listUnsubscribe()
 	}()
 }

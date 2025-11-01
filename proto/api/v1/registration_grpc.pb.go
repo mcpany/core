@@ -27,6 +27,7 @@ const (
 	RegistrationService_InitiateOAuth2Flow_FullMethodName = "/mcpx.api.v1.RegistrationService/InitiateOAuth2Flow"
 	RegistrationService_RegisterTools_FullMethodName      = "/mcpx.api.v1.RegistrationService/RegisterTools"
 	RegistrationService_GetServiceStatus_FullMethodName   = "/mcpx.api.v1.RegistrationService/GetServiceStatus"
+	RegistrationService_ListServices_FullMethodName       = "/mcpx.api.v1.RegistrationService/ListServices"
 )
 
 // RegistrationServiceClient is the client API for RegistrationService service.
@@ -38,6 +39,7 @@ type RegistrationServiceClient interface {
 	InitiateOAuth2Flow(ctx context.Context, in *InitiateOAuth2FlowRequest, opts ...grpc.CallOption) (*InitiateOAuth2FlowResponse, error)
 	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
 	GetServiceStatus(ctx context.Context, in *GetServiceStatusRequest, opts ...grpc.CallOption) (*GetServiceStatusResponse, error)
+	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 }
 
 type registrationServiceClient struct {
@@ -98,6 +100,16 @@ func (c *registrationServiceClient) GetServiceStatus(ctx context.Context, in *Ge
 	return out, nil
 }
 
+func (c *registrationServiceClient) ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListServicesResponse)
+	err := c.cc.Invoke(ctx, RegistrationService_ListServices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RegistrationServiceServer is the server API for RegistrationService service.
 // All implementations must embed UnimplementedRegistrationServiceServer
 // for forward compatibility.
@@ -107,6 +119,7 @@ type RegistrationServiceServer interface {
 	InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error)
 	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
 	GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error)
+	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
 
@@ -131,6 +144,9 @@ func (UnimplementedRegistrationServiceServer) RegisterTools(context.Context, *Re
 }
 func (UnimplementedRegistrationServiceServer) GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
+}
+func (UnimplementedRegistrationServiceServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
 }
 func (UnimplementedRegistrationServiceServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 func (UnimplementedRegistrationServiceServer) testEmbeddedByValue()                             {}
@@ -243,6 +259,24 @@ func _RegistrationService_GetServiceStatus_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RegistrationService_ListServices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).ListServices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_ListServices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).ListServices(ctx, req.(*ListServicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RegistrationService_ServiceDesc is the grpc.ServiceDesc for RegistrationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -269,6 +303,10 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetServiceStatus",
 			Handler:    _RegistrationService_GetServiceStatus_Handler,
+		},
+		{
+			MethodName: "ListServices",
+			Handler:    _RegistrationService_ListServices_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
