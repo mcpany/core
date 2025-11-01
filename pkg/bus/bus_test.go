@@ -83,7 +83,7 @@ func TestIntegration(t *testing.T) {
 	wg.Add(1)
 
 	// Worker subscribing to requests
-	reqBus.Subscribe("request", func(req *ToolExecutionRequest) {
+	reqBus.Subscribe(context.Background(), "request", func(req *ToolExecutionRequest) {
 		assert.Equal(t, "test-tool", req.ToolName)
 		resultData, err := json.Marshal(map[string]any{"status": "ok"})
 		assert.NoError(t, err)
@@ -91,11 +91,11 @@ func TestIntegration(t *testing.T) {
 			BaseMessage: BaseMessage{CID: req.CorrelationID()},
 			Result:      resultData,
 		}
-		resBus.Publish(req.CorrelationID(), res)
+		resBus.Publish(context.Background(), req.CorrelationID(), res)
 	})
 
 	// Client subscribing to results
-	resBus.SubscribeOnce("test-correlation-id", func(res *ToolExecutionResult) {
+	resBus.SubscribeOnce(context.Background(), "test-correlation-id", func(res *ToolExecutionResult) {
 		assert.Equal(t, "test-correlation-id", res.CorrelationID())
 		expectedResultData, err := json.Marshal(map[string]any{"status": "ok"})
 		assert.NoError(t, err)
@@ -112,7 +112,7 @@ func TestIntegration(t *testing.T) {
 		ToolName:    "test-tool",
 		ToolInputs:  inputData,
 	}
-	reqBus.Publish("request", req)
+	reqBus.Publish(context.Background(), "request", req)
 
 	wg.Wait()
 }

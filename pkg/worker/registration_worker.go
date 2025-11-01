@@ -56,7 +56,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
 
-	unsubscribe := requestBus.Subscribe("request", func(req *bus.ServiceRegistrationRequest) {
+	unsubscribe := requestBus.Subscribe(context.Background(), "request", func(req *bus.ServiceRegistrationRequest) {
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
 
 		requestCtx := req.Context
@@ -73,7 +73,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			Error:               err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		resultBus.Publish(req.CorrelationID(), res)
+		resultBus.Publish(context.Background(), req.CorrelationID(), res)
 	})
 
 	go func() {

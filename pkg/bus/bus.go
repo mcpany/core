@@ -24,7 +24,6 @@ import (
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/pkg/busiface"
 	"github.com/mcpany/core/proto/bus"
-	redisclient "github.com/redis/go-redis/v9"
 )
 
 // BusProvider is a thread-safe container for managing multiple, type-safe bus
@@ -36,10 +35,9 @@ import (
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 type BusProvider struct {
-	buses       map[string]any
-	mu          sync.RWMutex
-	config      *bus.MessageBus
-	redisClient *redisclient.Client
+	buses  map[string]any
+	mu     sync.RWMutex
+	config *bus.MessageBus
 }
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
@@ -51,15 +49,7 @@ func NewBusProvider(config *bus.MessageBus) (*BusProvider, error) {
 	}
 
 	switch config.WhichBusType() {
-	case bus.MessageBus_InMemory_case:
-	case bus.MessageBus_Redis_case:
-		redisConfig := config.GetRedis()
-		client := redisclient.NewClient(&redisclient.Options{
-			Addr:     redisConfig.GetAddress(),
-			Password: redisConfig.GetPassword(),
-			DB:       int(redisConfig.GetDb()),
-		})
-		provider.redisClient = client
+	case bus.MessageBus_InMemory_case, bus.MessageBus_Redis_case:
 	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
@@ -92,7 +82,7 @@ func GetBus[T any](p *BusProvider, topic string) busiface.Bus[T] {
 	case bus.MessageBus_InMemory_case:
 		newBus = memory.New[T]()
 	case bus.MessageBus_Redis_case:
-		newBus = redis.New[T](p.redisClient)
+		newBus = redis.New[T](p.config.GetRedis())
 	}
 
 	p.buses[topic] = newBus

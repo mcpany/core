@@ -185,6 +185,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 
 			resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
 			unsubscribe := resultBus.SubscribeOnce(
+				context.Background(),
 				correlationID,
 				func(result *bus.ToolExecutionResult) {
 					resultChan <- result
@@ -199,7 +200,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 				ToolInputs: req.Params.Arguments,
 			}
 			execReq.SetCorrelationID(correlationID)
-			requestBus.Publish("request", execReq)
+			requestBus.Publish(context.Background(), "request", execReq)
 
 			select {
 			case result := <-resultChan:

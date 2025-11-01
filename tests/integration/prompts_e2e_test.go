@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	busproto "github.com/mcpany/core/proto/bus"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -77,7 +78,12 @@ func TestPromptsEndToEnd(t *testing.T) {
 	defer cancel()
 
 	// Server setup
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	poolManager := pool.NewManager()
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()

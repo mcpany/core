@@ -7,6 +7,7 @@ package mcpx.config.v1;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
+import "proto/bus/bus.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -167,6 +168,8 @@ message GlobalSettings {
   string mcp_basepath = 2;
   // The logging level for the server.
   LogLevel log_level = 3;
+  // The message bus configuration.
+  bus.MessageBus message_bus = 4;
 }
 
 

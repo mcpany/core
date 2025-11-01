@@ -23,42 +23,46 @@ import (
 
 	"github.com/mcpany/core/pkg/busiface"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 )
 
 // RedisBus is a Redis-backed implementation of the Bus interface.
 type RedisBus[T any] struct {
 	client *redis.Client
-	ctx    context.Context
 	mu     sync.RWMutex
 	// We need to keep track of pubsub clients to close them
 	pubsubs map[string]*redis.PubSub
 }
 
 // New creates a new RedisBus.
-func New[T any](client *redis.Client) *RedisBus[T] {
+func New[T any](config *bus.RedisBus) *RedisBus[T] {
+	client := redis.NewClient(&redis.Options{
+		Addr:     config.GetAddress(),
+		Password: config.GetPassword(),
+		DB:       int(config.GetDb()),
+	})
 	return &RedisBus[T]{
 		client:  client,
-		ctx:     context.Background(),
 		pubsubs: make(map[string]*redis.PubSub),
 	}
 }
 
 // Publish publishes a message to a Redis channel.
-func (b *RedisBus[T]) Publish(topic string, msg T) error {
+func (b *RedisBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
-	return b.client.Publish(b.ctx, topic, payload).Err()
+	return b.client.Publish(ctx, topic, payload).Err()
 }
 
 // Subscribe subscribes to a Redis channel.
-func (b *RedisBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe func()) {
+func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
-	pubsub := b.client.Subscribe(b.ctx, topic)
+	pubsub := b.client.Subscribe(ctx, topic)
 	b.pubsubs[topic] = pubsub
 
 	go func() {
@@ -86,11 +90,11 @@ func (b *RedisBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe func
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
-func (b *RedisBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe func()) {
+func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()
 
-	unsub = b.Subscribe(topic, func(msg T) {
+	unsub = b.Subscribe(ctx, topic, func(msg T) {
 		once.Do(func() {
 			handler(msg)
 			unsub()

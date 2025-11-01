@@ -34,6 +34,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
+	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -68,7 +69,12 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -136,7 +142,12 @@ func TestToolListFiltering(t *testing.T) {
 func TestToolListFilteringServiceId(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -215,7 +226,12 @@ func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -338,7 +354,12 @@ func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 func TestServer_Prompts(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -413,7 +434,12 @@ func (r *testResource) Subscribe(ctx context.Context) error {
 func TestServer_Resources(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
@@ -467,7 +493,12 @@ func TestServer_Resources(t *testing.T) {
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
-	busProvider := bus.NewBusProvider()
+	busProvider, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()

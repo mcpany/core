@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
+	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -63,7 +64,12 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	defer cancel()
 
 	t.Run("successful registration", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		var wg sync.WaitGroup
@@ -79,7 +85,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "test", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -87,7 +93,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -100,7 +106,12 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	})
 
 	t.Run("registration failure", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		var wg sync.WaitGroup
@@ -117,7 +128,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test-fail", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "test-fail", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -125,7 +136,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -138,7 +149,12 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	})
 
 	t.Run("uses request context", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		var wg sync.WaitGroup
@@ -164,7 +180,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		workerCancel()
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test-req-ctx", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -177,7 +193,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			Config:  &configv1.UpstreamServiceConfig{},
 		}
 		req.SetCorrelationID("test-req-ctx")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -195,7 +211,12 @@ func TestUpstreamWorker(t *testing.T) {
 	defer cancel()
 
 	t.Run("successful execution", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
@@ -211,7 +232,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-test", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "exec-test", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -219,7 +240,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -232,7 +253,12 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("execution failure", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
@@ -249,7 +275,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-fail", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "exec-fail", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -257,7 +283,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -270,7 +296,12 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("result marshaling failure", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
@@ -287,7 +318,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("marshal-fail-test", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "marshal-fail-test", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -295,7 +326,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("marshal-fail-test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -309,7 +340,12 @@ func TestUpstreamWorker(t *testing.T) {
 	})
 
 	t.Run("execution with partial result and error", func(t *testing.T) {
-		bp := bus.NewBusProvider()
+		bp, err := bus.NewBusProvider(
+			busproto.MessageBus_builder{
+				InMemory: busproto.InMemoryBus_builder{}.Build(),
+			}.Build(),
+		)
+		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 		var wg sync.WaitGroup
@@ -326,7 +362,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-partial-fail", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(context.Background(), "exec-partial-fail", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -334,7 +370,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-partial-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(context.Background(), "request", req)
 
 		wg.Wait()
 		select {
@@ -352,7 +388,12 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	bp := bus.NewBusProvider()
+	bp, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 
@@ -372,12 +413,12 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 			req.SetCorrelationID(correlationID)
 
 			resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceRegistrationResult) {
+			unsubscribe := resultBus.SubscribeOnce(context.Background(), correlationID, func(result *bus.ServiceRegistrationResult) {
 				resultChan <- result
 			})
 			defer unsubscribe()
 
-			requestBus.Publish("request", req)
+			requestBus.Publish(context.Background(), "request", req)
 
 			select {
 			case result := <-resultChan:
@@ -396,7 +437,12 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	bp := bus.NewBusProvider()
+	bp, err := bus.NewBusProvider(
+		busproto.MessageBus_builder{
+			InMemory: busproto.InMemoryBus_builder{}.Build(),
+		}.Build(),
+	)
+	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 	resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
 
@@ -416,12 +462,12 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 			req.SetCorrelationID(correlationID)
 
 			resultChan := make(chan *bus.ToolExecutionResult, 1)
-			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
+			unsubscribe := resultBus.SubscribeOnce(context.Background(), correlationID, func(result *bus.ToolExecutionResult) {
 				resultChan <- result
 			})
 			defer unsubscribe()
 
-			requestBus.Publish("request", req)
+			requestBus.Publish(context.Background(), "request", req)
 
 			select {
 			case result := <-resultChan:

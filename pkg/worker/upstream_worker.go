@@ -57,7 +57,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	requestBus := bus.GetBus[*bus.ToolExecutionRequest](w.bus, bus.ToolExecutionRequestTopic)
 	resultBus := bus.GetBus[*bus.ToolExecutionResult](w.bus, bus.ToolExecutionResultTopic)
 
-	unsubscribe := requestBus.Subscribe("request", func(req *bus.ToolExecutionRequest) {
+	unsubscribe := requestBus.Subscribe(context.Background(), "request", func(req *bus.ToolExecutionRequest) {
 		log.Info("Received tool execution request", "tool", req.ToolName, "correlationID", req.CorrelationID())
 		result, err := w.toolManager.ExecuteTool(req.Context, &tool.ExecutionRequest{
 			ToolName:   req.ToolName,
@@ -79,7 +79,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 			Error:  err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		resultBus.Publish(req.CorrelationID(), res)
+		resultBus.Publish(context.Background(), req.CorrelationID(), res)
 	})
 
 	go func() {

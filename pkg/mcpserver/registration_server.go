@@ -85,7 +85,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
-	unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceRegistrationResult) {
+	unsubscribe := resultBus.SubscribeOnce(context.Background(), correlationID, func(result *bus.ServiceRegistrationResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
@@ -95,7 +95,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		Config: req.GetConfig(),
 	}
 	regReq.SetCorrelationID(correlationID)
-	requestBus.Publish("request", regReq)
+	requestBus.Publish(context.Background(), "request", regReq)
 
 	// Wait for the result, respecting the context's deadline
 	select {

@@ -155,6 +155,9 @@ func TestRun_ServerMode(t *testing.T) {
 
 	// Create a dummy config file
 	configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
 upstream_services:
   - name: "test-http-service"
     http_service:
@@ -201,7 +204,12 @@ func TestRun_ConfigLoadError(t *testing.T) {
 func TestRun_EmptyConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
@@ -225,10 +233,17 @@ func TestRun_StdioMode(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
+	err = app.Run(ctx, fs, true, "0", "0", []string{"/config.yaml"}, 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -236,16 +251,23 @@ func TestRun_StdioMode(t *testing.T) {
 
 func TestRun_NoGrpcServer(t *testing.T) {
 	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "0", "", nil, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "0", "", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
-	err := <-errChan
+	err = <-errChan
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
@@ -269,11 +291,18 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
+		configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
+`
+		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "0", nil, 5*time.Second)
+		err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "0", []string{"/config.yaml"}, 5*time.Second)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
@@ -286,11 +315,18 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
+		configContent := `
+global_settings:
+  message_bus:
+    in_memory: {}
+`
+		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, "0", fmt.Sprintf("%d", port), nil, 5*time.Second)
+		err = app.Run(ctx, fs, false, "0", fmt.Sprintf("%d", port), []string{"/config.yaml"}, 5*time.Second)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
