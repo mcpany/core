@@ -21,9 +21,12 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/bus"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -53,7 +56,12 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 }
 
 func TestToolManager_AddToolWithMCPServer_InvalidToolName(t *testing.T) {
-	b := bus.NewBusProvider()
+	globalSettings := &configv1.GlobalSettings{}
+	messageBus := &bus_pb.MessageBus{}
+	messageBus.SetInMemory(&bus_pb.InMemoryBus{})
+	globalSettings.SetMessageBus(messageBus)
+	b, err := bus.NewBusProvider(globalSettings)
+	require.NoError(t, err)
 	tm := NewToolManager(b)
 
 	toolProto := v1.Tool_builder{
@@ -70,6 +78,6 @@ func TestToolManager_AddToolWithMCPServer_InvalidToolName(t *testing.T) {
 
 	tm.SetMCPServer(mockProvider)
 
-	err := tm.AddTool(mockTool)
+	err = tm.AddTool(mockTool)
 	assert.Error(t, err, "Should return an error for an invalid tool name")
 }
