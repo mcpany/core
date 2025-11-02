@@ -77,3 +77,48 @@ func TestDockerClient_Singleton(t *testing.T) {
 	// Check that the initialization function was called only once
 	assert.Equal(t, 1, initializationCount, "The Docker client should be initialized only once")
 }
+
+func TestCloseDockerClient(t *testing.T) {
+	// Restore the original init function and reset the singleton after the test
+	originalInit := initDockerClient
+	defer func() {
+		initDockerClient = originalInit
+		once = sync.Once{}
+		if dockerClient != nil {
+			dockerClient.Close()
+			dockerClient = nil
+		}
+	}()
+
+	// Ensure the client is initialized
+	isDockerSocketAccessibleDefault()
+	assert.NotNil(t, dockerClient, "Docker client should be initialized")
+
+	// Close the client
+	CloseDockerClient()
+}
+
+func TestInitDockerClient_Error(t *testing.T) {
+	// Restore the original init function and reset the singleton after the test
+	originalInit := initDockerClient
+	defer func() {
+		initDockerClient = originalInit
+		once = sync.Once{}
+		if dockerClient != nil {
+			dockerClient.Close()
+			dockerClient = nil
+		}
+	}()
+
+	// Replace the init function with a mock that always fails
+	initDockerClient = func() {
+		dockerClient = nil
+	}
+
+	// Call the function that uses the client
+	accessible := isDockerSocketAccessibleDefault()
+
+	// Check that the client is nil and the function returns false
+	assert.Nil(t, dockerClient, "Docker client should be nil after a failed initialization")
+	assert.False(t, accessible, "isDockerSocketAccessibleDefault should return false when initialization fails")
+}

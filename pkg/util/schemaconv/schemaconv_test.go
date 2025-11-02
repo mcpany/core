@@ -59,6 +59,7 @@ func TestConfigSchemaToProtoProperties(t *testing.T) {
 	params := []*mockConfigParameter{
 		{schema: configv1.ParameterSchema_builder{Name: proto.String("param1"), Description: proto.String("a string param"), Type: &stringType}.Build()},
 		{schema: configv1.ParameterSchema_builder{Name: proto.String("param2"), Description: proto.String("an int param"), Type: &intType}.Build()},
+		{schema: nil},
 	}
 
 	properties, err := ConfigSchemaToProtoProperties(params)
@@ -81,28 +82,45 @@ func TestConfigSchemaToProtoProperties(t *testing.T) {
 }
 
 func TestMcpFieldsToProtoProperties(t *testing.T) {
-	params := []*mockMcpFieldParameter{
-		{name: "field1", description: "a string field", typ: "TYPE_STRING"},
-		{name: "field2", description: "an int field", typ: "TYPE_INT32"},
+	testCases := []struct {
+		name         string
+		typ          string
+		expectedType string
+	}{
+		{"string field", "TYPE_STRING", "string"},
+		{"int field", "TYPE_INT32", "integer"},
+		{"double field", "TYPE_DOUBLE", "number"},
+		{"float field", "TYPE_FLOAT", "number"},
+		{"int64 field", "TYPE_INT64", "integer"},
+		{"uint32 field", "TYPE_UINT32", "integer"},
+		{"uint64 field", "TYPE_UINT64", "integer"},
+		{"sint32 field", "TYPE_SINT32", "integer"},
+		{"sint64 field", "TYPE_SINT64", "integer"},
+		{"fixed32 field", "TYPE_FIXED32", "integer"},
+		{"fixed64 field", "TYPE_FIXED64", "integer"},
+		{"sfixed32 field", "TYPE_SFIXED32", "integer"},
+		{"sfixed64 field", "TYPE_SFIXED64", "integer"},
+		{"bool field", "TYPE_BOOL", "boolean"},
 	}
 
-	properties, err := McpFieldsToProtoProperties(params)
-	require.NoError(t, err)
-	assert.Len(t, properties.Fields, 2)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			params := []*mockMcpFieldParameter{
+				{name: "field1", description: tc.name, typ: tc.typ},
+			}
 
-	field1, ok := properties.Fields["field1"]
-	require.True(t, ok)
-	s1 := field1.GetStructValue()
-	require.NotNil(t, s1)
-	assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
-	assert.Equal(t, "a string field", s1.Fields["description"].GetStringValue())
+			properties, err := McpFieldsToProtoProperties(params)
+			require.NoError(t, err)
+			assert.Len(t, properties.Fields, 1)
 
-	field2, ok := properties.Fields["field2"]
-	require.True(t, ok)
-	s2 := field2.GetStructValue()
-	require.NotNil(t, s2)
-	assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
-	assert.Equal(t, "an int field", s2.Fields["description"].GetStringValue())
+			field, ok := properties.Fields["field1"]
+			require.True(t, ok)
+			s := field.GetStructValue()
+			require.NotNil(t, s)
+			assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
+			assert.Equal(t, tc.name, s.Fields["description"].GetStringValue())
+		})
+	}
 }
 
 // mockFieldDescriptor is a mock implementation of protoreflect.FieldDescriptor for testing.
