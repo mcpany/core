@@ -17,6 +17,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -31,12 +32,12 @@ func TestDefaultBus(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		bus.Subscribe("test", func(msg string) {
+		bus.Subscribe(context.Background(), "test", func(msg string) {
 			assert.Equal(t, "hello", msg)
 			wg.Done()
 		})
 
-		bus.Publish("test", "hello")
+		bus.Publish(context.Background(), "test", "hello")
 		wg.Wait()
 	})
 
@@ -45,28 +46,28 @@ func TestDefaultBus(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		bus.SubscribeOnce("test", func(msg string) {
+		bus.SubscribeOnce(context.Background(), "test", func(msg string) {
 			assert.Equal(t, "hello", msg)
 			wg.Done()
 		})
 
-		bus.Publish("test", "hello")
+		bus.Publish(context.Background(), "test", "hello")
 		wg.Wait()
 
 		// This second publish should not be received
-		bus.Publish("test", "world")
+		bus.Publish(context.Background(), "test", "world")
 	})
 
 	t.Run("Unsubscribe", func(t *testing.T) {
 		bus := New[string]()
 		received := false
 
-		unsub := bus.Subscribe("test", func(msg string) {
+		unsub := bus.Subscribe(context.Background(), "test", func(msg string) {
 			received = true
 		})
 
 		unsub()
-		bus.Publish("test", "hello")
+		bus.Publish(context.Background(), "test", "hello")
 		time.Sleep(10 * time.Millisecond) // Give it a moment to process
 		assert.False(t, received)
 	})
@@ -84,7 +85,7 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	wg.Add(expectedReceives)
 
 	for i := 0; i < numSubscribers; i++ {
-		unsub := bus.Subscribe(topic, func(msg int) {
+		unsub := bus.Subscribe(context.Background(), topic, func(msg int) {
 			atomic.AddInt32(&receivedCount, 1)
 			wg.Done()
 		})
@@ -92,7 +93,7 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	}
 
 	for i := 0; i < numPublishers; i++ {
-		go bus.Publish(topic, i)
+		go bus.Publish(context.Background(), topic, i)
 	}
 
 	// Wait for all messages to be received, with a timeout.
