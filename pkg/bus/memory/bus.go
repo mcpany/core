@@ -17,6 +17,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -63,7 +64,7 @@ func New[T any]() *DefaultBus[T] {
 // Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
-func (b *DefaultBus[T]) Publish(topic string, msg T) error {
+func (b *DefaultBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 
@@ -98,7 +99,7 @@ func (b *DefaultBus[T]) Publish(topic string, msg T) error {
 // Returns an `unsubscribe` function that can be called to remove the
 // subscription. When called, it removes the subscriber from the bus and closes
 // its channel, terminating the associated goroutine.
-func (b *DefaultBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe func()) {
+func (b *DefaultBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
@@ -153,11 +154,11 @@ func (b *DefaultBus[T]) Subscribe(topic string, handler func(T)) (unsubscribe fu
 //
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
-func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe func()) {
+func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()
 
-	unsub = b.Subscribe(topic, func(msg T) {
+	unsub = b.Subscribe(ctx, topic, func(msg T) {
 		handler(msg)
 		once.Do(unsub)
 	})

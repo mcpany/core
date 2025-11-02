@@ -83,7 +83,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "test", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -91,7 +91,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -124,7 +124,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test-fail", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "test-fail", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -132,7 +132,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -174,7 +174,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		workerCancel()
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("test-req-ctx", func(result *bus.ServiceRegistrationResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -187,7 +187,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			Config:  &configv1.UpstreamServiceConfig{},
 		}
 		req.SetCorrelationID("test-req-ctx")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -224,7 +224,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-test", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "exec-test", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -232,7 +232,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -265,7 +265,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-fail", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "exec-fail", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -273,7 +273,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -306,7 +306,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("marshal-fail-test", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "marshal-fail-test", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -314,7 +314,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("marshal-fail-test")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -348,7 +348,7 @@ func TestUpstreamWorker(t *testing.T) {
 		worker.Start(ctx)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
-		unsubscribe := resultBus.SubscribeOnce("exec-partial-fail", func(result *bus.ToolExecutionResult) {
+		unsubscribe := resultBus.SubscribeOnce(ctx, "exec-partial-fail", func(result *bus.ToolExecutionResult) {
 			resultChan <- result
 			wg.Done()
 		})
@@ -356,7 +356,7 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-partial-fail")
-		requestBus.Publish("request", req)
+		requestBus.Publish(ctx, "request", req)
 
 		wg.Wait()
 		select {
@@ -397,12 +397,12 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 			req.SetCorrelationID(correlationID)
 
 			resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceRegistrationResult) {
+			unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceRegistrationResult) {
 				resultChan <- result
 			})
 			defer unsubscribe()
 
-			requestBus.Publish("request", req)
+			requestBus.Publish(ctx, "request", req)
 
 			select {
 			case result := <-resultChan:
@@ -444,12 +444,12 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 			req.SetCorrelationID(correlationID)
 
 			resultChan := make(chan *bus.ToolExecutionResult, 1)
-			unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ToolExecutionResult) {
+			unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ToolExecutionResult) {
 				resultChan <- result
 			})
 			defer unsubscribe()
 
-			requestBus.Publish("request", req)
+			requestBus.Publish(ctx, "request", req)
 
 			select {
 			case result := <-resultChan:
