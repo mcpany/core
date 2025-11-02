@@ -6690,7 +6690,7 @@ type ContainerEnvironment struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_Image       *string                `protobuf:"bytes,2,opt,name=image"`
-	xxx_hidden_Mounts      map[string]string      `protobuf:"bytes,3,rep,name=mounts" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Volumes     map[string]string      `protobuf:"bytes,3,rep,name=volumes" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -6742,9 +6742,9 @@ func (x *ContainerEnvironment) GetImage() string {
 	return ""
 }
 
-func (x *ContainerEnvironment) GetMounts() map[string]string {
+func (x *ContainerEnvironment) GetVolumes() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_Mounts
+		return x.xxx_hidden_Volumes
 	}
 	return nil
 }
@@ -6759,8 +6759,8 @@ func (x *ContainerEnvironment) SetImage(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
-func (x *ContainerEnvironment) SetMounts(v map[string]string) {
-	x.xxx_hidden_Mounts = v
+func (x *ContainerEnvironment) SetVolumes(v map[string]string) {
+	x.xxx_hidden_Volumes = v
 }
 
 func (x *ContainerEnvironment) HasName() bool {
@@ -6794,8 +6794,9 @@ type ContainerEnvironment_builder struct {
 	Name *string
 	// The image to use for the container.
 	Image *string
-	// The mounts to use for the container.
-	Mounts map[string]string
+	// The volumes to mount into the container. The key is the destination path
+	// inside the container, and the value is the source path on the host.
+	Volumes map[string]string
 }
 
 func (b0 ContainerEnvironment_builder) Build() *ContainerEnvironment {
@@ -6810,7 +6811,7 @@ func (b0 ContainerEnvironment_builder) Build() *ContainerEnvironment {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
 		x.xxx_hidden_Image = b.Image
 	}
-	x.xxx_hidden_Mounts = b.Mounts
+	x.xxx_hidden_Volumes = b.Volumes
 	return m0
 }
 
@@ -9244,12 +9245,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06prompt\x18\x02 \x01(\tR\x06prompt\x12<\n" +
 	"\x1aexpected_response_contains\x18\x03 \x01(\tR\x18expectedResponseContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc5\x01\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc9\x01\n" +
 	"\x14ContainerEnvironment\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05image\x18\x02 \x01(\tR\x05image\x12H\n" +
-	"\x06mounts\x18\x03 \x03(\v20.mcpx.config.v1.ContainerEnvironment.MountsEntryR\x06mounts\x1a9\n" +
-	"\vMountsEntry\x12\x10\n" +
+	"\x05image\x18\x02 \x01(\tR\x05image\x12K\n" +
+	"\avolumes\x18\x03 \x03(\v21.mcpx.config.v1.ContainerEnvironment.VolumesEntryR\avolumes\x1a:\n" +
+	"\fVolumesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
 	"\x0fRateLimitConfig\x12\x1d\n" +
@@ -9404,7 +9405,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamOAuth2Auth)(nil),          // 55: mcpx.config.v1.UpstreamOAuth2Auth
 	(*TLSConfig)(nil),                   // 56: mcpx.config.v1.TLSConfig
 	nil,                                 // 57: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	nil,                                 // 58: mcpx.config.v1.ContainerEnvironment.MountsEntry
+	nil,                                 // 58: mcpx.config.v1.ContainerEnvironment.VolumesEntry
 	(*bus.MessageBus)(nil),              // 59: bus.MessageBus
 	(*durationpb.Duration)(nil),         // 60: google.protobuf.Duration
 	(*structpb.Value)(nil),              // 61: google.protobuf.Value
@@ -9502,7 +9503,7 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	60,  // 88: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
 	60,  // 89: mcpx.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
 	60,  // 90: mcpx.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
-	58,  // 91: mcpx.config.v1.ContainerEnvironment.mounts:type_name -> mcpx.config.v1.ContainerEnvironment.MountsEntry
+	58,  // 91: mcpx.config.v1.ContainerEnvironment.volumes:type_name -> mcpx.config.v1.ContainerEnvironment.VolumesEntry
 	60,  // 92: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
 	46,  // 93: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
 	47,  // 94: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig

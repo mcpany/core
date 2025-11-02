@@ -535,8 +535,9 @@ message ContainerEnvironment {
   string name = 1;
   // The image to use for the container.
   string image = 2;
-  // The mounts to use for the container.
-  map<string, string> mounts = 3;
+  // The volumes to mount into the container. The key is the destination path
+  // inside the container, and the value is the source path on the host.
+  map<string, string> volumes = 3;
 }
 
 // Defines strategies for load balancing across multiple service endpoints.

@@ -32,9 +32,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
+// ExecuteResult contains the output streams of an executed command.
+type ExecuteResult struct {
+	Stdout   io.ReadCloser
+	Stderr   io.ReadCloser
+	Combined io.ReadCloser
+}
+
 // Executor is an interface for executing commands.
 type Executor interface {
-	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr []byte, exitCode int, err error)
+	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (ExecuteResult, int, error)
 }
 
 // NewExecutor creates a new command executor.
@@ -47,14 +54,14 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 
 type localExecutor struct{}
 
-func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) ([]byte, []byte, int, error) {
+func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (ExecuteResult, int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
 
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	var stdout, stderr, combined bytes.Buffer
+	cmd.Stdout = io.MultiWriter(&stdout, &combined)
+	cmd.Stderr = io.MultiWriter(&stderr, &combined)
 
 	err := cmd.Run()
 	exitCode := 0
@@ -62,11 +69,15 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			exitCode = exitErr.ExitCode()
 		} else {
-			exitCode = -1 // Indicates an error other than a non-zero exit code
+			exitCode = -1
 		}
 	}
 
-	return stdout.Bytes(), stderr.Bytes(), exitCode, err
+	return ExecuteResult{
+		Stdout:   io.NopCloser(&stdout),
+		Stderr:   io.NopCloser(&stderr),
+		Combined: io.NopCloser(&combined),
+	}, exitCode, err
 }
 
 type dockerExecutor struct {
@@ -77,11 +88,11 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	return &dockerExecutor{containerEnv: containerEnv}
 }
 
-func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) ([]byte, []byte, int, error) {
+func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (ExecuteResult, int, error) {
 	log := logging.GetLogger()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return nil, nil, -1, fmt.Errorf("failed to create docker client: %w", err)
+		return ExecuteResult{}, -1, fmt.Errorf("failed to create docker client: %w", err)
 	}
 
 	img := e.containerEnv.GetImage()
@@ -102,8 +113,8 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	}
 
 	hostConfig := &container.HostConfig{}
-	if e.containerEnv.GetMounts() != nil {
-		for src, dest := range e.containerEnv.GetMounts() {
+	if e.containerEnv.GetVolumes() != nil {
+		for dest, src := range e.containerEnv.GetVolumes() {
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
 				Source: src,
@@ -114,7 +125,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 
 	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, e.containerEnv.GetName())
 	if err != nil {
-		return nil, nil, -1, fmt.Errorf("failed to create container: %w", err)
+		return ExecuteResult{}, -1, fmt.Errorf("failed to create container: %w", err)
 	}
 	defer func() {
 		if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
@@ -123,30 +134,41 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	}()
 
 	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		return nil, nil, -1, fmt.Errorf("failed to start container: %w", err)
+		return ExecuteResult{}, -1, fmt.Errorf("failed to start container: %w", err)
 	}
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	var status container.WaitResponse
 	select {
 	case err := <-errCh:
 		if err != nil {
-			return nil, nil, -1, fmt.Errorf("error waiting for container: %w", err)
+			return ExecuteResult{}, -1, fmt.Errorf("error waiting for container: %w", err)
 		}
-	case status := <-statusCh:
-		out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true})
-		if err != nil {
-			return nil, nil, int(status.StatusCode), fmt.Errorf("failed to get container logs: %w", err)
-		}
-		defer out.Close()
-
-		var stdout, stderr bytes.Buffer
-		_, err = stdcopy.StdCopy(&stdout, &stderr, out)
-		if err != nil {
-			return nil, nil, int(status.StatusCode), fmt.Errorf("failed to demultiplex docker stream: %w", err)
-		}
-		return stdout.Bytes(), stderr.Bytes(), int(status.StatusCode), nil
+	case status = <-statusCh:
 	case <-ctx.Done():
-		return nil, nil, -1, ctx.Err()
+		return ExecuteResult{}, -1, ctx.Err()
 	}
-	return nil, nil, -1, fmt.Errorf("unexpected error in docker execution")
+
+	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true})
+	if err != nil {
+		return ExecuteResult{}, int(status.StatusCode), fmt.Errorf("failed to get container logs: %w", err)
+	}
+	defer out.Close()
+
+	var stdout, stderr, combined bytes.Buffer
+	_, err = stdcopy.StdCopy(io.MultiWriter(&stdout, &combined), io.MultiWriter(&stderr, &combined), out)
+	if err != nil {
+		return ExecuteResult{}, int(status.StatusCode), fmt.Errorf("failed to demultiplex docker stream: %w", err)
+	}
+
+	var retErr error
+	if status.StatusCode != 0 {
+		retErr = fmt.Errorf("container exited with non-zero status code: %d", status.StatusCode)
+	}
+
+	return ExecuteResult{
+		Stdout:   io.NopCloser(&stdout),
+		Stderr:   io.NopCloser(&stderr),
+		Combined: io.NopCloser(&combined),
+	}, int(status.StatusCode), retErr
 }
