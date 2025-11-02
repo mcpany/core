@@ -17,11 +17,15 @@
 global_settings:
   bind_address: "0.0.0.0:8080"
 upstream_services:
-- name: hello-service
-  mcp_service:
-    stdio_connection:
-      command: "build/venv/bin/python"
-      args:
-        - "-u"
-        - "examples/upstream/command/server/main.py"
-        - "--mcp-stdio"
+  - name: datetime-service
+    command_line_service:
+      command: "date"
+      calls:
+        - schema:
+            name: get_current_date
+            description: "Get the current date"
+        - schema:
+            name: get_current_date_iso
+            description: "Get the current date in ISO format"
+          args:
+            - "-I"
