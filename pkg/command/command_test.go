@@ -24,6 +24,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/docker/docker/client"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,6 +40,20 @@ func (w *muWriter) Write(p []byte) (int, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	return w.w.Write(p)
+}
+
+func canConnectToDocker(t *testing.T) bool {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		t.Logf("could not create docker client: %v", err)
+		return false
+	}
+	_, err = cli.Ping(context.Background())
+	if err != nil {
+		t.Logf("could not ping docker daemon: %v", err)
+		return false
+	}
+	return true
 }
 
 func TestLocalExecutor(t *testing.T) {
@@ -76,6 +91,9 @@ func TestLocalExecutor(t *testing.T) {
 }
 
 func TestDockerExecutor(t *testing.T) {
+	if !canConnectToDocker(t) {
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -149,6 +167,9 @@ func TestDockerExecutor(t *testing.T) {
 }
 
 func TestCombinedOutput(t *testing.T) {
+	if !canConnectToDocker(t) {
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := NewExecutor(containerEnv)
