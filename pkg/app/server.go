@@ -343,9 +343,9 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			ConnState: func(conn net.Conn, state http.ConnState) {
 				switch state {
 				case http.StateNew:
-					metrics.IncrActiveConnections("http")
+					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
 				case http.StateClosed:
-					metrics.DecrActiveConnections("http")
+					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
 				}
 			},
 		}
