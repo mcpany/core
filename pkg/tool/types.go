@@ -526,7 +526,7 @@ type OpenAPITool struct {
 //
 // tool is the protobuf definition of the tool.
 // client is the HTTP client used to make the request.
-// parameterDefs maps parameter names to their location (e.g., "path", "query").
+// parameterDefs maps parameter names.
 // method is the HTTP method for the operation.
 // url is the URL template for the endpoint.
 // authenticator handles adding authentication credentials to the request.

@@ -11,12 +11,6 @@ If you are new to `mcpany`, we recommend starting here.
 - **[Introduction](introduction.md)**: What is `mcpany` and why should you use it?
 - **[Getting Started Guide](getting_started.md)**: A step-by-step tutorial to get `mcpany` up and running.
 
-## 🧠 Core Concepts
-
-Understand the foundational principles and design of `mcpany`.
-
-- **[Architecture](architecture.md)**: A deep dive into the internal architecture of the `mcpany` server.
-
 ## 🔌 Integrations
 
 Learn how to connect `mcpany` with your favorite AI assistants and other tools.
@@ -28,12 +22,6 @@ Learn how to connect `mcpany` with your favorite AI assistants and other tools.
 Explore practical examples of how to use `mcpany` with different types of backend services.
 
 - **[Examples Overview](examples.md)**: A guide to the included examples, from simple HTTP servers to complex gRPC services.
-
-## 💻 Development
-
-For those who want to contribute to the `mcpany` project.
-
-- **[Developer Guide](developer_guide.md)**: Instructions on how to set up your development environment, run tests, and contribute code.
 
 ## 📚 Reference
 

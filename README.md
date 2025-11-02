@@ -124,7 +124,6 @@ upstreamServices:
           parameterMappings:
             - inputParameterName: "userId"
               targetParameterName: "userId"
-              location: "PATH"
 ```
 
 To run the server with this configuration, use the following command:
