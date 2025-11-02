@@ -71,8 +71,8 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 		defer close(exitCodeChan)
 
 		err := cmd.Wait()
-		stdoutPipe.Close()
-		stderrPipe.Close()
+		_ = stdoutPipe.Close()
+		_ = stderrPipe.Close()
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				exitCodeChan <- exitErr.ExitCode()
