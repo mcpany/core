@@ -27,7 +27,7 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/tool"
-	calculatorpb "github.com/mcpany/core/proto/examples/calculator/v1"
+	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -76,34 +76,32 @@ func TestNewGRPCTool(t *testing.T) {
 	pm := pool.NewManager()
 	serviceID := "test-service"
 	toolProto := &v1.Tool{}
-	methodDesc := findMethodDescriptor(t, "CalculatorService", "Add")
+	methodDesc := findMethodDescriptor(t, "WeatherService", "GetWeather")
 
 	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceID, methodDesc, nil)
 	require.NotNil(t, grpcTool)
 	assert.Equal(t, toolProto, grpcTool.Tool())
 }
 
-// mockCalculatorServer is a mock implementation of the CalculatorServiceServer for testing.
-type mockCalculatorServer struct {
-	calculatorpb.UnimplementedCalculatorServiceServer
-	addFunc func(ctx context.Context, req *calculatorpb.AddRequest) (*calculatorpb.AddResponse, error)
+// mockWeatherServer is a mock implementation of the WeatherServiceServer for testing.
+type mockWeatherServer struct {
+	weatherpb.UnimplementedWeatherServiceServer
+	getWeatherFunc func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error)
 }
 
-func (s *mockCalculatorServer) Add(ctx context.Context, req *calculatorpb.AddRequest) (*calculatorpb.AddResponse, error) {
-	if s.addFunc != nil {
-		return s.addFunc(ctx, req)
+func (s *mockWeatherServer) GetWeather(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
+	if s.getWeatherFunc != nil {
+		return s.getWeatherFunc(ctx, req)
 	}
-	res := &calculatorpb.AddResponse{}
-	res.SetResult(req.GetA() + req.GetB())
-	return res, nil
+	return weatherpb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
 // setupGrpcTest sets up a mock gRPC server and returns a client connection to it.
-func setupGrpcTest(t *testing.T, srv calculatorpb.CalculatorServiceServer) *grpc.ClientConn {
+func setupGrpcTest(t *testing.T, srv weatherpb.WeatherServiceServer) *grpc.ClientConn {
 	t.Helper()
 	lis := bufconn.Listen(1024 * 1024)
 	s := grpc.NewServer()
-	calculatorpb.RegisterCalculatorServiceServer(s, srv)
+	weatherpb.RegisterWeatherServiceServer(s, srv)
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			t.Logf("Server exited with error: %v", err)
@@ -145,18 +143,15 @@ func (m *mockGrpcPool) Put(c *client.GrpcClientWrapper) {
 }
 
 func TestGRPCTool_Execute(t *testing.T) {
-	methodDesc := findMethodDescriptor(t, "CalculatorService", "Add")
+	methodDesc := findMethodDescriptor(t, "WeatherService", "GetWeather")
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn(string(methodDesc.FullName()))
 
 	t.Run("successful execution", func(t *testing.T) {
-		server := &mockCalculatorServer{
-			addFunc: func(ctx context.Context, req *calculatorpb.AddRequest) (*calculatorpb.AddResponse, error) {
-				assert.Equal(t, int32(10), req.GetA())
-				assert.Equal(t, int32(20), req.GetB())
-				res := &calculatorpb.AddResponse{}
-				res.SetResult(30)
-				return res, nil
+		server := &mockWeatherServer{
+			getWeatherFunc: func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
+				assert.Equal(t, "London", req.GetLocation())
+				return weatherpb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 			},
 		}
 		conn := setupGrpcTest(t, server)
@@ -171,12 +166,12 @@ func TestGRPCTool_Execute(t *testing.T) {
 		pm.Register("grpc-test", mockPool)
 
 		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
-		inputs := json.RawMessage(`{"a": 10, "b": 20}`)
+		inputs := json.RawMessage(`{"location": "London"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
 		result, err := grpcTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		assert.Equal(t, map[string]any{"result": float64(30)}, result) // JSON unmarshals numbers to float64
+		assert.Equal(t, map[string]any{"weather": "sunny"}, result)
 	})
 
 	t.Run("pool get error", func(t *testing.T) {
@@ -195,8 +190,8 @@ func TestGRPCTool_Execute(t *testing.T) {
 	})
 
 	t.Run("invoke error", func(t *testing.T) {
-		server := &mockCalculatorServer{
-			addFunc: func(ctx context.Context, req *calculatorpb.AddRequest) (*calculatorpb.AddResponse, error) {
+		server := &mockWeatherServer{
+			getWeatherFunc: func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
 				return nil, errors.New("invoke error")
 			},
 		}
@@ -212,7 +207,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		pm.Register("grpc-test", mockPool)
 
 		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
-		inputs := json.RawMessage(`{"a": 10, "b": 20}`)
+		inputs := json.RawMessage(`{"location": "London"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
 		assert.Error(t, err)

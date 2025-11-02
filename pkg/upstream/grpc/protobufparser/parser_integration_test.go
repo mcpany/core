@@ -26,23 +26,15 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	v1 "github.com/mcpany/core/proto/examples/calculator/v1"
+	v1 "github.com/mcpany/core/proto/examples/weather/v1"
 )
 
-type mockCalculatorServer struct {
-	v1.UnimplementedCalculatorServiceServer
+type mockWeatherServer struct {
+	v1.UnimplementedWeatherServiceServer
 }
 
-func (s *mockCalculatorServer) Add(ctx context.Context, req *v1.AddRequest) (*v1.AddResponse, error) {
-	resp := &v1.AddResponse{}
-	resp.SetResult(req.GetA() + req.GetB())
-	return resp, nil
-}
-
-func (s *mockCalculatorServer) Subtract(ctx context.Context, req *v1.SubtractRequest) (*v1.SubtractResponse, error) {
-	resp := &v1.SubtractResponse{}
-	resp.SetResult(req.GetA() - req.GetB())
-	return resp, nil
+func (s *mockWeatherServer) GetWeather(ctx context.Context, req *v1.GetWeatherRequest) (*v1.GetWeatherResponse, error) {
+	return v1.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
 func setupMockGRPCServer(t *testing.T) (string, func()) {
@@ -51,7 +43,7 @@ func setupMockGRPCServer(t *testing.T) (string, func()) {
 	require.NoError(t, err)
 
 	server := grpc.NewServer()
-	v1.RegisterCalculatorServiceServer(server, &mockCalculatorServer{})
+	v1.RegisterWeatherServiceServer(server, &mockWeatherServer{})
 	reflection.Register(server)
 
 	go func() {
@@ -78,15 +70,15 @@ func TestParseProtoByReflection_Integration(t *testing.T) {
 		assert.NotNil(t, fds)
 		assert.NotEmpty(t, fds.File, "Expected to find at least one file descriptor")
 
-		// Verify that the calculator proto is found
-		var foundCalculatorProto bool
+		// Verify that the weather proto is found
+		var foundWeatherProto bool
 		for _, f := range fds.File {
-			if f.GetName() == "proto/examples/calculator/v1/calculator.proto" {
-				foundCalculatorProto = true
+			if f.GetName() == "proto/examples/weather/v1/weather.proto" {
+				foundWeatherProto = true
 				break
 			}
 		}
-		assert.True(t, foundCalculatorProto, "Calculator service proto should be discovered")
+		assert.True(t, foundWeatherProto, "Weather service proto should be discovered")
 	})
 
 	t.Run("connection failure", func(t *testing.T) {
