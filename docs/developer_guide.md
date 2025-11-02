@@ -73,7 +73,7 @@ This example configures a gRPC service and uses gRPC reflection to automatically
 
 ```yaml
 upstreamServices:
-  - name: "grpc_calculator"
+  - name: "grpc_weather"
     grpcService:
       address: "localhost:50051"
       useReflection: true

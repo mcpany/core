@@ -51,30 +51,30 @@ func TestExtractMcpDefinitions(t *testing.T) {
 		assert.NotEmpty(t, parsedData.Tools)
 
 		// Find a specific tool to inspect
-		var addTool *McpTool
+		var getWeatherTool *McpTool
 		for i, tool := range parsedData.Tools {
-			if tool.Name == "CalculatorAdd" {
-				addTool = &parsedData.Tools[i]
+			if tool.Name == "GetWeather" {
+				getWeatherTool = &parsedData.Tools[i]
 				break
 			}
 		}
 
-		require.NotNil(t, addTool, "Tool 'CalculatorAdd' should be found")
-		assert.Equal(t, "Adds two integers.", addTool.Description)
-		assert.Equal(t, "CalculatorService", addTool.ServiceName)
-		assert.Equal(t, "Add", addTool.MethodName)
-		assert.Equal(t, "/examples.calculator.v1.CalculatorService/Add", addTool.FullMethodName)
-		assert.Equal(t, "examples.calculator.v1.AddRequest", addTool.RequestType)
-		assert.Equal(t, "examples.calculator.v1.AddResponse", addTool.ResponseType)
-		assert.False(t, addTool.IdempotentHint)
-		assert.False(t, addTool.DestructiveHint)
+		require.NotNil(t, getWeatherTool, "Tool 'GetWeather' should be found")
+		assert.Equal(t, "", getWeatherTool.Description)
+		assert.Equal(t, "WeatherService", getWeatherTool.ServiceName)
+		assert.Equal(t, "GetWeather", getWeatherTool.MethodName)
+		assert.Equal(t, "/examples.weather.v1.WeatherService/GetWeather", getWeatherTool.FullMethodName)
+		assert.Equal(t, "examples.weather.v1.GetWeatherRequest", getWeatherTool.RequestType)
+		assert.Equal(t, "examples.weather.v1.GetWeatherResponse", getWeatherTool.ResponseType)
+		assert.False(t, getWeatherTool.IdempotentHint)
+		assert.False(t, getWeatherTool.DestructiveHint)
 
 		// Check request fields
-		require.Len(t, addTool.RequestFields, 2)
-		assert.Equal(t, "a", addTool.RequestFields[0].Name)
-		assert.Equal(t, "", addTool.RequestFields[0].Description)
-		assert.Equal(t, "int32", addTool.RequestFields[0].Type)
-		assert.False(t, addTool.RequestFields[0].IsRepeated)
+		require.Len(t, getWeatherTool.RequestFields, 1)
+		assert.Equal(t, "location", getWeatherTool.RequestFields[0].Name)
+		assert.Equal(t, "", getWeatherTool.RequestFields[0].Description)
+		assert.Equal(t, "string", getWeatherTool.RequestFields[0].Type)
+		assert.False(t, getWeatherTool.RequestFields[0].IsRepeated)
 	})
 
 	t.Run("nil fds", func(t *testing.T) {

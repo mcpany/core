@@ -34,7 +34,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/examples/calculator/v1"
+	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -252,18 +252,12 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 }
 
 // Mock gRPC server for testing
-type mockCalculatorServer struct {
-	pb.UnimplementedCalculatorServiceServer
+type mockWeatherServer struct {
+	pb.UnimplementedWeatherServiceServer
 }
 
-func (s *mockCalculatorServer) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) {
-	result := in.GetA() + in.GetB()
-	return pb.AddResponse_builder{Result: &result}.Build(), nil
-}
-
-func (s *mockCalculatorServer) Subtract(ctx context.Context, in *pb.SubtractRequest) (*pb.SubtractResponse, error) {
-	result := in.GetA() - in.GetB()
-	return pb.SubtractResponse_builder{Result: &result}.Build(), nil
+func (s *mockWeatherServer) GetWeather(ctx context.Context, in *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
+	return pb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
 func startMockServer(t *testing.T) (*grpc.Server, string) {
@@ -272,7 +266,7 @@ func startMockServer(t *testing.T) (*grpc.Server, string) {
 		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterCalculatorServiceServer(s, &mockCalculatorServer{})
+	pb.RegisterWeatherServiceServer(s, &mockWeatherServer{})
 	reflection.Register(s)
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -299,22 +293,21 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		grpcService.SetUseReflection(true)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("calculator-service")
+		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
 
 		// First call - should populate the cache
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
-		// We expect 2 tools from the annotations + 2 from the descriptors, and 1 for reflection
-		assert.Len(t, tm.ListTools(), 5)
+		assert.Len(t, tm.ListTools(), 2) // 1 for GetWeather, 1 for reflection
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
 		serviceID2, discoveredTools2, _, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
-		assert.Len(t, tm2.ListTools(), 5)
+		assert.Len(t, tm2.ListTools(), 2)
 		assert.Equal(t, serviceID, serviceID2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
@@ -330,41 +323,24 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		grpcService.SetUseReflection(true)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("calculator-service")
+		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 
-		// Verify the "Add" tool's schema
-		sanitizedToolName, err := util.SanitizeToolName("CalculatorAdd")
+		// Verify the "GetWeather" tool's schema
+		sanitizedToolName, err := util.SanitizeToolName("GetWeather")
 		require.NoError(t, err)
-		addToolName := serviceID + "." + sanitizedToolName
-		addTool, ok := tm.GetTool(addToolName)
+		getWeatherToolName := serviceID + "." + sanitizedToolName
+		getWeatherTool, ok := tm.GetTool(getWeatherToolName)
 		require.True(t, ok)
-		inputSchema := addTool.Tool().GetAnnotations().GetInputSchema()
+		inputSchema := getWeatherTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
 		assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
 		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
-		require.Contains(t, properties, "a")
-		require.Contains(t, properties, "b")
-		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
-		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
-
-		// Verify the "Subtract" tool's schema
-		sanitizedToolName, err = util.SanitizeToolName("CalculatorSubtract")
-		require.NoError(t, err)
-		subtractToolName := serviceID + "." + sanitizedToolName
-		subtractTool, ok := tm.GetTool(subtractToolName)
-		require.True(t, ok)
-		inputSchema = subtractTool.Tool().GetAnnotations().GetInputSchema()
-		require.NotNil(t, inputSchema)
-		assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
-		properties = inputSchema.GetFields()["properties"].GetStructValue().GetFields()
-		require.Contains(t, properties, "a")
-		require.Contains(t, properties, "b")
-		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
-		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
+		require.Contains(t, properties, "location")
+		assert.Equal(t, "string", properties["location"].GetStructValue().GetFields()["type"].GetStringValue())
 	})
 }
 
@@ -391,14 +367,14 @@ func TestFindMethodDescriptor(t *testing.T) {
 
 	t.Run("descriptor is not a service", func(t *testing.T) {
 		// Use a message type instead of a service type
-		_, err := findMethodDescriptor(files, "calculator.v1.AddRequest/Method")
+		_, err := findMethodDescriptor(files, "examples.weather.v1.GetWeatherRequest/Method")
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "could not find descriptor for service 'calculator.v1.AddRequest'")
+		assert.Contains(t, err.Error(), "is not a service descriptor")
 	})
 
 	t.Run("method not found", func(t *testing.T) {
-		_, err := findMethodDescriptor(files, "calculator.v1.CalculatorService/NonExistentMethod")
+		_, err := findMethodDescriptor(files, "examples.weather.v1.WeatherService/NonExistentMethod")
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "could not find descriptor for service 'calculator.v1.CalculatorService'")
+		assert.Contains(t, err.Error(), "method 'NonExistentMethod' not found in service")
 	})
 }
