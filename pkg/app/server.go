@@ -169,7 +169,11 @@ func (a *Application) Run(
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
-		inProcessWorker := worker.New(busProvider)
+		workerCfg := &worker.Config{
+			MaxWorkers:   10,
+			MaxQueueSize: 100,
+		}
+		inProcessWorker := worker.New(busProvider, workerCfg)
 		inProcessWorker.Start(ctx)
 		defer inProcessWorker.Stop()
 	}
