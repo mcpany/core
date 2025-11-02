@@ -753,10 +753,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	go func() {
 		defer wg.Done()
+		if closer, ok := stdout.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
 		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
+		if closer, ok := stderr.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
 		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 

@@ -19,15 +19,16 @@ package command
 import (
 	"context"
 	"io"
+	"net"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"sync"
 )
 
 type muWriter struct {
@@ -41,18 +42,44 @@ func (w *muWriter) Write(p []byte) (int, error) {
 	return w.w.Write(p)
 }
 
+var dockerIsAvailable = dockerAvailable()
+
+func dockerAvailable() bool {
+	conn, err := net.DialTimeout("unix", "/var/run/docker.sock", 1*time.Second)
+	if err != nil {
+		return false
+	}
+	conn.Close()
+	return true
+}
+
 func TestLocalExecutor(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var stdoutBytes, stderrBytes []byte
+		var stdoutErr, stderrErr error
+
+		go func() {
+			defer wg.Done()
+			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+		}()
+
+		go func() {
+			defer wg.Done()
+			stderrBytes, stderrErr = io.ReadAll(stderr)
+		}()
+
+		wg.Wait()
+
+		require.NoError(t, stdoutErr)
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
-		stderrBytes, err := io.ReadAll(stderr)
-		require.NoError(t, err)
+		require.NoError(t, stderrErr)
 		assert.Empty(t, string(stderrBytes))
 
 		exitCode := <-exitCodeChan
@@ -76,6 +103,9 @@ func TestLocalExecutor(t *testing.T) {
 }
 
 func TestDockerExecutor(t *testing.T) {
+	if !dockerIsAvailable {
+		t.Skip("Skipping Docker tests because Docker is not available.")
+	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -149,6 +179,9 @@ func TestDockerExecutor(t *testing.T) {
 }
 
 func TestCombinedOutput(t *testing.T) {
+	if !dockerIsAvailable {
+		t.Skip("Skipping Docker tests because Docker is not available.")
+	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := NewExecutor(containerEnv)

@@ -224,7 +224,6 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
 For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` directory. See the [Helm chart README](helm/mcpany/README.md) for detailed instructions.
 
-
 ## Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
