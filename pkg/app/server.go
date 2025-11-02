@@ -169,7 +169,7 @@ func (a *Application) Run(
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
-		inProcessWorker := worker.New(busProvider)
+		inProcessWorker := worker.New(busProvider, cfg)
 		inProcessWorker.Start(ctx)
 		defer inProcessWorker.Stop()
 	}

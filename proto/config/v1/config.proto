@@ -172,6 +172,14 @@ message GlobalSettings {
   LogLevel log_level = 3;
   // The message bus configuration.
   bus.MessageBus message_bus = 4;
+  // The worker pool configuration.
+  WorkerPool worker_pool = 5;
+}
+
+// WorkerPool contains settings for the worker pool.
+message WorkerPool {
+  // The number of workers in the pool.
+  int32 pool_size = 1;
 }
 
 

@@ -24,6 +24,7 @@ import (
 	"github.com/alitto/pond/v2"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Worker is responsible for processing jobs from the bus.
@@ -35,10 +36,15 @@ type Worker struct {
 }
 
 // New creates a new Worker.
-func New(busProvider *bus.BusProvider) *Worker {
+func New(busProvider *bus.BusProvider, cfg *configv1.McpxServerConfig) *Worker {
+	poolSize := 10
+	if cfg.GetGlobalSettings().GetWorkerPool().GetPoolSize() > 0 {
+		poolSize = int(cfg.GetGlobalSettings().GetWorkerPool().GetPoolSize())
+	}
+
 	return &Worker{
 		busProvider: busProvider,
-		pond:        pond.NewPool(10, pond.WithQueueSize(100)),
+		pond:        pond.NewPool(poolSize, pond.WithQueueSize(100)),
 	}
 }
 
