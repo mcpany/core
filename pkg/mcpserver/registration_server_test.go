@@ -34,7 +34,7 @@ import (
 	v1 "github.com/mcpany/core/proto/api/v1"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/examples/calculator/v1"
+	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -45,18 +45,12 @@ import (
 )
 
 // Mock gRPC server for testing
-type mockCalculatorServer struct {
-	pb.UnimplementedCalculatorServiceServer
+type mockWeatherServer struct {
+	pb.UnimplementedWeatherServiceServer
 }
 
-func (s *mockCalculatorServer) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) {
-	result := in.GetA() + in.GetB()
-	return pb.AddResponse_builder{Result: &result}.Build(), nil
-}
-
-func (s *mockCalculatorServer) Subtract(ctx context.Context, in *pb.SubtractRequest) (*pb.SubtractResponse, error) {
-	result := in.GetA() - in.GetB()
-	return pb.SubtractResponse_builder{Result: &result}.Build(), nil
+func (s *mockWeatherServer) GetWeather(ctx context.Context, in *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
+	return pb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 
 func startMockServer(t *testing.T) (*grpc.Server, string) {
@@ -65,7 +59,7 @@ func startMockServer(t *testing.T) (*grpc.Server, string) {
 		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterCalculatorServiceServer(s, &mockCalculatorServer{})
+	pb.RegisterWeatherServiceServer(s, &mockWeatherServer{})
 	reflection.Register(s)
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -147,7 +141,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		server, addr := startMockServer(t)
 		defer server.Stop()
 
-		serviceName := "calculator-service"
+		serviceName := "weather-service"
 		useReflection := true
 		grpcService := configv1.GrpcUpstreamService_builder{
 			Address:       &addr,
@@ -169,23 +163,21 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		serviceID := resp.GetServiceKey()
 		tools := toolManager.ListTools()
 		// There will be other tools from other tests, so we need to find our tools
-		var addTool tool.Tool
+		var getWeatherTool tool.Tool
 		for _, t := range tools {
-			if t.Tool().GetServiceId() == serviceID && t.Tool().GetName() == "CalculatorAdd" {
-				addTool = t
+			if t.Tool().GetServiceId() == serviceID && t.Tool().GetName() == "GetWeather" {
+				getWeatherTool = t
 				break
 			}
 		}
-		require.NotNil(t, addTool)
+		require.NotNil(t, getWeatherTool)
 
-		inputSchema := addTool.Tool().GetAnnotations().GetInputSchema()
+		inputSchema := getWeatherTool.Tool().GetAnnotations().GetInputSchema()
 		require.NotNil(t, inputSchema)
 		assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
 		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
-		require.Contains(t, properties, "a")
-		require.Contains(t, properties, "b")
-		assert.Equal(t, "integer", properties["a"].GetStructValue().GetFields()["type"].GetStringValue())
-		assert.Equal(t, "integer", properties["b"].GetStructValue().GetFields()["type"].GetStringValue())
+		require.Contains(t, properties, "location")
+		assert.Equal(t, "string", properties["location"].GetStructValue().GetFields()["type"].GetStringValue())
 	})
 
 	t.Run("openapi service with input schema", func(t *testing.T) {
