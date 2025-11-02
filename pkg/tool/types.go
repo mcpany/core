@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -741,23 +742,42 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	startTime := time.Now()
-	stdout, stderr, exitCode, err := executor.Execute(ctx, t.command, args, t.service.GetWorkingDirectory(), env)
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.command, args, t.service.GetWorkingDirectory(), env)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute command: %w", err)
+	}
+
+	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+	}()
+	go func() {
+		defer wg.Done()
+		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+	}()
+
+	wg.Wait()
+	exitCode := <-exitCodeChan
 	endTime := time.Now()
 
 	status := consts.CommandStatusSuccess
 	if ctx.Err() == context.DeadlineExceeded {
 		status = consts.CommandStatusTimeout
 		exitCode = -1 // Override exit code on timeout
-	} else if err != nil {
+	} else if exitCode != 0 {
 		status = consts.CommandStatusError
 	}
 
 	result := map[string]interface{}{
 		"command":         t.command,
 		"args":            args,
-		"stdout":          string(stdout),
-		"stderr":          string(stderr),
-		"combined_output": string(stdout) + string(stderr),
+		"stdout":          stdoutBuf.String(),
+		"stderr":          stderrBuf.String(),
+		"combined_output": combinedBuf.String(),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
