@@ -30,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -290,6 +291,7 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
+	mux.Handle("/metrics", metrics.Handler())
 
 	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
@@ -338,6 +340,14 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
+			ConnState: func(conn net.Conn, state http.ConnState) {
+				switch state {
+				case http.StateNew:
+					metrics.IncrActiveConnections("http")
+				case http.StateClosed:
+					metrics.DecrActiveConnections("http")
+				}
+			},
 		}
 
 		shutdownComplete := make(chan struct{})
@@ -383,7 +393,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		}
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
-		grpcServer := gogrpc.NewServer()
+		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
