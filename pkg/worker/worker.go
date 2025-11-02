@@ -26,6 +26,12 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 )
 
+// Config holds the configuration for the worker.
+type Config struct {
+	MaxWorkers   int
+	MaxQueueSize int
+}
+
 // Worker is responsible for processing jobs from the bus.
 type Worker struct {
 	busProvider *bus.BusProvider
@@ -35,10 +41,13 @@ type Worker struct {
 }
 
 // New creates a new Worker.
-func New(busProvider *bus.BusProvider) *Worker {
+func New(busProvider *bus.BusProvider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
-		pond:        pond.NewPool(10, pond.WithQueueSize(100)),
+		pond: pond.NewPool(
+			cfg.MaxWorkers,
+			pond.WithQueueSize(cfg.MaxQueueSize),
+		),
 	}
 }
 
