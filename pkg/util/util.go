@@ -99,6 +99,14 @@ func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
 
+// SanitizeToolName sanitizes the given tool name.
+// It ensures that the name is a valid identifier by removing disallowed characters
+// and appending a hash if the name is too long or contains illegal characters.
+// This function calls SanitizeID with alwaysAppendHash set to false.
+func SanitizeToolName(name string) (string, error) {
+	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
+}
+
 const (
 	maxSanitizedPrefixLength = 53
 	hashLength               = 8
