@@ -19,7 +19,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -38,108 +37,116 @@ import (
 // It returns the validated configuration, which may have invalid services
 // removed, and an error if a fundamental validation issue occurs.
 func Validate(config *configv1.McpxServerConfig) (*configv1.McpxServerConfig, error) {
-	log := logging.GetLogger().With("component", "configValidator")
+	if err := validateGlobalSettings(config.GetGlobalSettings()); err != nil {
+		return nil, fmt.Errorf("invalid global settings: %w", err)
+	}
+
 	validServices := []*configv1.UpstreamServiceConfig{}
 	serviceNames := make(map[string]bool)
 
 	for _, service := range config.GetUpstreamServices() {
-		serviceLog := log.With("serviceName", service.GetName())
 		if _, exists := serviceNames[service.GetName()]; exists {
 			return nil, fmt.Errorf("duplicate service name found: %s", service.GetName())
 		}
 		serviceNames[service.GetName()] = true
-		isValidService := true
 
-		if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
-			serviceLog.Warn("Service has no service_config. Skipping service.")
-			continue
-		}
-
-		if httpService := service.GetHttpService(); httpService != nil {
-			if httpService.GetAddress() == "" {
-				serviceLog.Warn("HTTP service has empty target_address. Skipping service.")
-				isValidService = false
-			} else if !validation.IsValidURL(httpService.GetAddress()) {
-				serviceLog.Warn("Invalid HTTP target_address. Skipping service.", "address", httpService.GetAddress())
-				isValidService = false
-			}
-		} else if websocketService := service.GetWebsocketService(); websocketService != nil {
-			if websocketService.GetAddress() == "" {
-				serviceLog.Warn("Websocket service has empty target_address. Skipping service.")
-				isValidService = false
-			} else if !validation.IsValidURL(websocketService.GetAddress()) {
-				serviceLog.Warn("Invalid Websocket target_address. Skipping service.", "address", websocketService.GetAddress())
-				isValidService = false
-			}
-		} else if grpcService := service.GetGrpcService(); grpcService != nil {
-			if grpcService.GetAddress() == "" {
-				serviceLog.Warn("gRPC service has empty target_address. Skipping service.")
-				isValidService = false
-			}
-		} else if openapiService := service.GetOpenapiService(); openapiService != nil {
-			if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-				serviceLog.Warn("Invalid TargetAddress for OpenAPI service. This default target will be ignored if spec contains servers.", "address", openapiService.GetAddress())
-			}
-		} else if mcpService := service.GetMcpService(); mcpService != nil {
-			switch mcpService.WhichConnectionType() {
-			case configv1.McpUpstreamService_HttpConnection_case:
-				httpConn := mcpService.GetHttpConnection()
-				if httpConn.GetHttpAddress() == "" {
-					serviceLog.Warn("MCP service with http_connection has empty http_address. Skipping service.")
-					isValidService = false
-				} else if !validation.IsValidURL(httpConn.GetHttpAddress()) {
-					serviceLog.Warn("MCP service with http_connection has invalid http_address. Skipping service.", "address", httpConn.GetHttpAddress())
-					isValidService = false
-				}
-			case configv1.McpUpstreamService_StdioConnection_case:
-				stdioConn := mcpService.GetStdioConnection()
-				if len(stdioConn.GetCommand()) == 0 {
-					serviceLog.Warn("MCP service with stdio_connection has empty command. Skipping service.")
-					isValidService = false
-				}
-			default:
-				serviceLog.Warn("MCP service has no connection_type. Skipping service.")
-				isValidService = false
-			}
-		} else {
-			serviceLog.Warn("Unknown service type. Skipping service.")
-			isValidService = false
-		}
-
-		if !isValidService {
-			continue
-		}
-
-		if service.GetCache() != nil {
-			cacheLog := serviceLog.With("cache", "enabled")
-			if service.GetCache().GetTtl() != nil && service.GetCache().GetTtl().GetSeconds() < 0 {
-				cacheLog.Warn("Invalid cache timeout. Cache will be disabled.", "timeout", service.GetCache().GetTtl().AsDuration())
-				val := false
-				service.GetCache().SetIsEnabled(val)
-			}
-		}
-
-		if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
-			authLog := serviceLog.With("component", "authValidator")
-			if apiKey := authConfig.GetApiKey(); apiKey != nil {
-				if apiKey.GetHeaderName() == "" {
-					authLog.Warn("API key 'header_name' is empty. Authentication may fail.")
-				}
-				if apiKey.GetApiKey() == "" {
-					authLog.Warn("API key 'api_key' is empty. Authentication will fail.")
-				}
-			} else if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-				if bearerToken.GetToken() == "" {
-					authLog.Warn("Bearer token 'token' is empty. Authentication will fail.")
-				}
-			} else if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
-				if basicAuth.GetUsername() == "" {
-					authLog.Warn("Basic auth 'username' is empty. Authentication may fail.")
-				}
-			}
+		if err := validateUpstreamServiceConfig(service); err != nil {
+			return nil, fmt.Errorf("invalid upstream service config for service %s: %w", service.GetName(), err)
 		}
 		validServices = append(validServices, service)
 	}
 	config.SetUpstreamServices(validServices)
 	return config, nil
+}
+
+func validateUpstreamServiceConfig(service *configv1.UpstreamServiceConfig) error {
+	if service.GetName() == "" {
+		return fmt.Errorf("service name is empty")
+	}
+
+	if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
+		return fmt.Errorf("service has no service_config")
+	}
+
+	if httpService := service.GetHttpService(); httpService != nil {
+		if httpService.GetAddress() == "" {
+			return fmt.Errorf("http service has empty target_address")
+		}
+		if !validation.IsValidURL(httpService.GetAddress()) {
+			return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+		}
+	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
+		if websocketService.GetAddress() == "" {
+			return fmt.Errorf("websocket service has empty target_address")
+		}
+		if !validation.IsValidURL(websocketService.GetAddress()) {
+			return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
+		}
+	} else if grpcService := service.GetGrpcService(); grpcService != nil {
+		if grpcService.GetAddress() == "" {
+			return fmt.Errorf("grpc service has empty target_address")
+		}
+	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
+		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
+			return fmt.Errorf("invalid target_address for openapi service: %s", openapiService.GetAddress())
+		}
+	} else if mcpService := service.GetMcpService(); mcpService != nil {
+		switch mcpService.WhichConnectionType() {
+		case configv1.McpUpstreamService_HttpConnection_case:
+			httpConn := mcpService.GetHttpConnection()
+			if httpConn.GetHttpAddress() == "" {
+				return fmt.Errorf("mcp service with http_connection has empty http_address")
+			}
+			if !validation.IsValidURL(httpConn.GetHttpAddress()) {
+				return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
+			}
+		case configv1.McpUpstreamService_StdioConnection_case:
+			stdioConn := mcpService.GetStdioConnection()
+			if len(stdioConn.GetCommand()) == 0 {
+				return fmt.Errorf("mcp service with stdio_connection has empty command")
+			}
+		default:
+			return fmt.Errorf("mcp service has no connection_type")
+		}
+	}
+
+	if service.GetCache() != nil {
+		if service.GetCache().GetTtl() != nil && service.GetCache().GetTtl().GetSeconds() < 0 {
+			return fmt.Errorf("invalid cache timeout: %v", service.GetCache().GetTtl().AsDuration())
+		}
+	}
+
+	if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
+		if apiKey := authConfig.GetApiKey(); apiKey != nil {
+			if apiKey.GetHeaderName() == "" {
+				return fmt.Errorf("api key 'header_name' is empty")
+			}
+			if apiKey.GetApiKey() == "" {
+				return fmt.Errorf("api key 'api_key' is empty")
+			}
+		} else if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
+			if bearerToken.GetToken() == "" {
+				return fmt.Errorf("bearer token 'token' is empty")
+			}
+		} else if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
+			if basicAuth.GetUsername() == "" {
+				return fmt.Errorf("basic auth 'username' is empty")
+			}
+		}
+	}
+
+	return nil
+}
+
+func validateGlobalSettings(settings *configv1.GlobalSettings) error {
+	if settings == nil {
+		return nil
+	}
+	if settings.GetBindAddress() == "" {
+		return fmt.Errorf("bind_address is empty")
+	}
+	if _, ok := configv1.GlobalSettings_LogLevel_name[int32(settings.GetLogLevel())]; !ok {
+		return fmt.Errorf("invalid log_level: %v", settings.GetLogLevel())
+	}
+	return nil
 }

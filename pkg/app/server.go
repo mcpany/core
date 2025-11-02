@@ -136,6 +136,9 @@ func (a *Application) Run(
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
+		if _, err := config.Validate(cfg); err != nil {
+			return fmt.Errorf("invalid configuration: %w", err)
+		}
 	} else {
 		cfg = &config_v1.McpxServerConfig{}
 	}

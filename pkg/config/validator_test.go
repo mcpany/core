@@ -61,7 +61,7 @@ func TestValidate(t *testing.T) {
 				},
 			}).Build(),
 			expectedCount: 0,
-			expectError:   false,
+			expectError:   true,
 		},
 		{
 			name: "invalid http service - invalid url",
@@ -76,7 +76,7 @@ func TestValidate(t *testing.T) {
 				},
 			}).Build(),
 			expectedCount: 0,
-			expectError:   false,
+			expectError:   true,
 		},
 		{
 			name: "valid http service",
@@ -156,7 +156,7 @@ func TestValidate(t *testing.T) {
 				},
 			}).Build(),
 			expectedCount: 0,
-			expectError:   false,
+			expectError:   true,
 		},
 		{
 			name: "invalid openapi service - invalid address",
@@ -170,8 +170,8 @@ func TestValidate(t *testing.T) {
 					}).Build(),
 				},
 			}).Build(),
-			expectedCount: 1,
-			expectError:   false,
+			expectedCount: 0,
+			expectError:   true,
 		},
 		{
 			name: "invalid mcp service - no connection",
@@ -184,7 +184,7 @@ func TestValidate(t *testing.T) {
 				},
 			}).Build(),
 			expectedCount: 0,
-			expectError:   false,
+			expectError:   true,
 		},
 		{
 			name: "invalid mcp service - empty stdio command",
@@ -201,7 +201,17 @@ func TestValidate(t *testing.T) {
 				},
 			}).Build(),
 			expectedCount: 0,
-			expectError:   false,
+			expectError:   true,
+		},
+		{
+			name: "invalid global settings - empty bind address",
+			config: (&configv1.McpxServerConfig_builder{
+				GlobalSettings: (&configv1.GlobalSettings_builder{
+					BindAddress: proto.String(""),
+				}).Build(),
+			}).Build(),
+			expectedCount: 0,
+			expectError:   true,
 		},
 	}
 

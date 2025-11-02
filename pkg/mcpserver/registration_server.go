@@ -23,8 +23,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -77,6 +79,13 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 	if req.GetConfig().GetName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "config.name is required")
+	}
+
+	// Validate the service configuration
+	if _, err := config.Validate(&configv1.McpxServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{req.GetConfig()},
+	}); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid config: %v", err)
 	}
 
 	correlationID := uuid.New().String()
