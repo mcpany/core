@@ -42,8 +42,8 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) co
 func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	switch s.(type) {
 	case *stats.ConnBegin:
-		IncrActiveConnections("grpc")
+		IncrCounter([]string{"grpc", "connections", "opened", "total"}, 1)
 	case *stats.ConnEnd:
-		DecrActiveConnections("grpc")
+		IncrCounter([]string{"grpc", "connections", "closed", "total"}, 1)
 	}
 }

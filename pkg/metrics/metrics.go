@@ -22,19 +22,7 @@ import (
 
 	"github.com/armon/go-metrics"
 	"github.com/armon/go-metrics/prometheus"
-	prom "github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-)
-
-var (
-	activeConnectionsGauge = promauto.NewGaugeVec(
-		prom.GaugeOpts{
-			Name: "mcp_any_active_connections",
-			Help: "The number of active connections.",
-		},
-		[]string{"type"},
-	)
 )
 
 // Initialize prepares the metrics system with a Prometheus sink.
@@ -72,16 +60,6 @@ func SetGauge(name string, val float32, labels ...string) {
 // IncrCounter increments a counter.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
-}
-
-// IncrActiveConnections increments the active connections gauge.
-func IncrActiveConnections(connType string) {
-	activeConnectionsGauge.WithLabelValues(connType).Inc()
-}
-
-// DecrActiveConnections decrements the active connections gauge.
-func DecrActiveConnections(connType string) {
-	activeConnectionsGauge.WithLabelValues(connType).Dec()
 }
 
 // MeasureSince measures the time since a given start time and records it.
