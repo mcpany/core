@@ -19,8 +19,10 @@ package command
 import (
 	"context"
 	"io"
+	"net"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,7 +30,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"sync"
 )
 
 type muWriter struct {
@@ -62,12 +63,27 @@ func TestLocalExecutor(t *testing.T) {
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var stdoutBytes, stderrBytes []byte
+		var stdoutErr, stderrErr error
+
+		go func() {
+			defer wg.Done()
+			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+		}()
+
+		go func() {
+			defer wg.Done()
+			stderrBytes, stderrErr = io.ReadAll(stderr)
+		}()
+
+		wg.Wait()
+
+		require.NoError(t, stdoutErr)
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
-		stderrBytes, err := io.ReadAll(stderr)
-		require.NoError(t, err)
+		require.NoError(t, stderrErr)
 		assert.Empty(t, string(stderrBytes))
 
 		exitCode := <-exitCodeChan

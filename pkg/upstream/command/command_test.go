@@ -49,7 +49,11 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	if m.addError != nil {
 		return m.addError
 	}
-	m.tools[t.Tool().GetName()] = t
+	sanitizedToolName, err := util.SanitizeToolName(t.Tool().GetName())
+	if err != nil {
+		return err
+	}
+	m.tools[t.Tool().GetServiceId()+"."+sanitizedToolName] = t
 	return nil
 }
 
