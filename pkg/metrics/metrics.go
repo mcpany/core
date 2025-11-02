@@ -18,6 +18,7 @@ package metrics
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/armon/go-metrics"
@@ -25,28 +26,43 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+var (
+	globalMetrics *metrics.Metrics
+	initOnce      sync.Once
+)
+
 // Initialize prepares the metrics system with a Prometheus sink.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
-var GlobalMetrics *metrics.Metrics
-
 func Initialize() {
-	// Create a Prometheus sink
-	sink, err := prometheus.NewPrometheusSink()
-	if err != nil {
-		panic(err)
-	}
+	initOnce.Do(func() {
+		// Create a Prometheus sink
+		sink, err := prometheus.NewPrometheusSink()
+		if err != nil {
+			panic(err)
+		}
 
-	// Create a metrics configuration
-	conf := metrics.DefaultConfig("mcpany")
-	conf.EnableHostname = false
+		// Create a metrics configuration
+		conf := metrics.DefaultConfig("mcpany")
+		conf.EnableHostname = false
 
-	// Initialize the metrics system
-	m, err := metrics.New(conf, sink)
-	if err != nil {
-		panic(err)
-	}
-	GlobalMetrics = m
+		// Initialize the metrics system
+		m, err := metrics.New(conf, sink)
+		if err != nil {
+			panic(err)
+		}
+		globalMetrics = m
+	})
+}
+
+// GetGlobalMetrics returns the global metrics instance.
+func GetGlobalMetrics() *metrics.Metrics {
+	return globalMetrics
+}
+
+// SetGlobalMetrics sets the global metrics instance. This is intended for testing purposes only.
+func SetGlobalMetrics(m *metrics.Metrics) {
+	globalMetrics = m
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.
@@ -59,17 +75,17 @@ func Handler(h http.Handler) http.Handler {
 
 // SetGauge sets the value of a gauge.
 func SetGauge(name string, val float32, labels ...string) {
-	GlobalMetrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
+	globalMetrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
 		{Name: "service_name", Value: labels[0]},
 	})
 }
 
 // IncrCounter increments a counter.
 func IncrCounter(name []string, val float32) {
-	GlobalMetrics.IncrCounter(name, val)
+	globalMetrics.IncrCounter(name, val)
 }
 
 // MeasureSince measures the time since a given start time and records it.
 func MeasureSince(name []string, start time.Time) {
-	GlobalMetrics.MeasureSince(name, start)
+	globalMetrics.MeasureSince(name, start)
 }

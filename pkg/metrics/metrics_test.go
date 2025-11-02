@@ -67,10 +67,10 @@ func TestHandler(t *testing.T) {
 func TestSetGauge(t *testing.T) {
 	// Initialize the metrics system
 	m, handler := newTestMetrics(t)
-	originalMetrics := GlobalMetrics
-	GlobalMetrics = m
+	originalMetrics := GetGlobalMetrics()
+	SetGlobalMetrics(m)
 	defer func() {
-		GlobalMetrics = originalMetrics
+		SetGlobalMetrics(originalMetrics)
 	}()
 
 	// Set a gauge
@@ -104,10 +104,10 @@ func TestSetGauge(t *testing.T) {
 
 func TestIncrCounter(t *testing.T) {
 	m, handler := newTestMetrics(t)
-	originalMetrics := GlobalMetrics
-	GlobalMetrics = m
+	originalMetrics := GetGlobalMetrics()
+	SetGlobalMetrics(m)
 	defer func() {
-		GlobalMetrics = originalMetrics
+		SetGlobalMetrics(originalMetrics)
 	}()
 	// Increment a counter
 	IncrCounter([]string{"test_counter"}, 1)
@@ -124,10 +124,10 @@ func TestIncrCounter(t *testing.T) {
 
 func TestMeasureSince(t *testing.T) {
 	m, handler := newTestMetrics(t)
-	originalMetrics := GlobalMetrics
-	GlobalMetrics = m
+	originalMetrics := GetGlobalMetrics()
+	SetGlobalMetrics(m)
 	defer func() {
-		GlobalMetrics = originalMetrics
+		SetGlobalMetrics(originalMetrics)
 	}()
 	// Record a measurement
 	start := time.Now()
