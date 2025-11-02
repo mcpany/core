@@ -27,7 +27,19 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"sync"
 )
+
+type muWriter struct {
+	w  io.Writer
+	mu *sync.Mutex
+}
+
+func (w *muWriter) Write(p []byte) (int, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.w.Write(p)
+}
 
 func TestLocalExecutor(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
@@ -144,13 +156,17 @@ func TestCombinedOutput(t *testing.T) {
 	require.NoError(t, err)
 
 	var combined strings.Builder
+	var mu sync.Mutex
 	r, w := io.Pipe()
+
 	go func() {
 		defer w.Close()
-		io.Copy(io.MultiWriter(&combined, w), stdout)
+		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
+		io.Copy(writer, stdout)
 	}()
 	go func() {
-		io.Copy(io.MultiWriter(&combined, w), stderr)
+		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
+		io.Copy(writer, stderr)
 	}()
 
 	_, err = io.ReadAll(r)
