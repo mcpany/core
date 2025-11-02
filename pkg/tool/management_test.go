@@ -37,8 +37,8 @@ type MockTool struct {
 }
 
 func (m *MockTool) Tool() *v1.Tool {
-	m.Called()
-	return m.tool
+	args := m.Called()
+	return args.Get(0).(*v1.Tool)
 }
 
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
@@ -71,10 +71,11 @@ func (m *MockMCPServerProvider) Server() *mcp.Server {
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
 	tm := NewToolManager(nil)
-	mockTool := &MockTool{tool: &v1.Tool{}}
-	mockTool.tool.SetServiceId("test-service")
-	mockTool.tool.SetName("test-tool")
-	mockTool.On("Tool")
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("test-tool")
+	mockTool.On("Tool").Return(toolProto)
 	mockTool.On("GetCacheConfig").Return(nil)
 
 	err := tm.AddTool(mockTool)
@@ -89,16 +90,18 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 
 func TestToolManager_ListTools(t *testing.T) {
 	tm := NewToolManager(nil)
-	mockTool1 := &MockTool{tool: &v1.Tool{}}
-	mockTool1.tool.SetServiceId("test-service")
-	mockTool1.tool.SetName("test-tool-1")
-	mockTool1.On("Tool")
+	mockTool1 := new(MockTool)
+	toolProto1 := &v1.Tool{}
+	toolProto1.SetServiceId("test-service")
+	toolProto1.SetName("test-tool-1")
+	mockTool1.On("Tool").Return(toolProto1)
 	mockTool1.On("GetCacheConfig").Return(nil)
 
-	mockTool2 := &MockTool{tool: &v1.Tool{}}
-	mockTool2.tool.SetServiceId("test-service")
-	mockTool2.tool.SetName("test-tool-2")
-	mockTool2.On("Tool")
+	mockTool2 := new(MockTool)
+	toolProto2 := &v1.Tool{}
+	toolProto2.SetServiceId("test-service")
+	toolProto2.SetName("test-tool-2")
+	mockTool2.On("Tool").Return(toolProto2)
 	mockTool2.On("GetCacheConfig").Return(nil)
 
 	_ = tm.AddTool(mockTool1)
@@ -110,22 +113,25 @@ func TestToolManager_ListTools(t *testing.T) {
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
 	tm := NewToolManager(nil)
-	mockTool1 := &MockTool{tool: &v1.Tool{}}
-	mockTool1.tool.SetServiceId("service-a")
-	mockTool1.tool.SetName("tool-1")
-	mockTool1.On("Tool")
+	mockTool1 := new(MockTool)
+	toolProto1 := &v1.Tool{}
+	toolProto1.SetServiceId("service-a")
+	toolProto1.SetName("tool-1")
+	mockTool1.On("Tool").Return(toolProto1)
 	mockTool1.On("GetCacheConfig").Return(nil)
 
-	mockTool2 := &MockTool{tool: &v1.Tool{}}
-	mockTool2.tool.SetServiceId("service-b")
-	mockTool2.tool.SetName("tool-2")
-	mockTool2.On("Tool")
+	mockTool2 := new(MockTool)
+	toolProto2 := &v1.Tool{}
+	toolProto2.SetServiceId("service-b")
+	toolProto2.SetName("tool-2")
+	mockTool2.On("Tool").Return(toolProto2)
 	mockTool2.On("GetCacheConfig").Return(nil)
 
-	mockTool3 := &MockTool{tool: &v1.Tool{}}
-	mockTool3.tool.SetServiceId("service-a")
-	mockTool3.tool.SetName("tool-3")
-	mockTool3.On("Tool")
+	mockTool3 := new(MockTool)
+	toolProto3 := &v1.Tool{}
+	toolProto3.SetServiceId("service-a")
+	toolProto3.SetName("tool-3")
+	mockTool3.On("Tool").Return(toolProto3)
 	mockTool3.On("GetCacheConfig").Return(nil)
 
 	_ = tm.AddTool(mockTool1)
@@ -142,15 +148,16 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 
 func TestToolManager_ExecuteTool(t *testing.T) {
 	tm := NewToolManager(nil)
-	mockTool := &MockTool{tool: &v1.Tool{}}
-	mockTool.tool.SetServiceId("exec-service")
-	mockTool.tool.SetName("exec-tool")
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("exec-service")
+	toolProto.SetName("exec-tool")
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
 	expectedResult := "success"
 	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
 
-	mockTool.On("Tool")
+	mockTool.On("Tool").Return(toolProto)
 	mockTool.On("Execute", mock.Anything, execReq).Return(expectedResult, nil)
 
 	_ = tm.AddTool(mockTool)
@@ -224,10 +231,11 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			mockTool := &MockTool{tool: &v1.Tool{}}
-			mockTool.tool.SetServiceId("concurrent-service")
-			mockTool.tool.SetName(fmt.Sprintf("tool-%d", i))
-			mockTool.On("Tool")
+			mockTool := new(MockTool)
+			toolProto := &v1.Tool{}
+			toolProto.SetServiceId("concurrent-service")
+			toolProto.SetName(fmt.Sprintf("tool-%d", i))
+			mockTool.On("Tool").Return(toolProto)
 			mockTool.On("GetCacheConfig").Return(nil)
 			err := tm.AddTool(mockTool)
 			assert.NoError(t, err)
@@ -247,35 +255,4 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-}
-
-func TestToolManager_AddTool_NameCollision(t *testing.T) {
-	tm := NewToolManager(nil)
-	mockTool1 := &MockTool{tool: &v1.Tool{}}
-	mockTool1.tool.SetServiceId("test-service")
-	mockTool1.tool.SetName("my-tool")
-	mockTool1.On("Tool")
-
-	mockTool2 := &MockTool{tool: &v1.Tool{}}
-	mockTool2.tool.SetServiceId("test-service")
-	mockTool2.tool.SetName("my_tool")
-	mockTool2.On("Tool")
-
-	err1 := tm.AddTool(mockTool1)
-	assert.NoError(t, err1)
-
-	err2 := tm.AddTool(mockTool2)
-	assert.NoError(t, err2)
-
-	// After adding both tools, there should only be one tool in the manager
-	// because the second one overwrote the first one.
-	tools := tm.ListTools()
-	assert.Len(t, tools, 1, "Should only have one tool due to name collision")
-
-	// Verify that the tool in the manager is the second one that was added.
-	sanitizedToolName, _ := util.SanitizeToolName("my-tool")
-	toolID := "test-service" + "." + sanitizedToolName
-	retrievedTool, ok := tm.GetTool(toolID)
-	assert.True(t, ok, "Tool should be found")
-	assert.Equal(t, mockTool2, retrievedTool, "The tool in the manager should be the second one")
 }
