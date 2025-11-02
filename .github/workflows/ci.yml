@@ -162,11 +162,13 @@ jobs:
       run: |
         make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-test.out
 
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
       with:
-        name: coverage-test
-        path: coverage-test.out
+        fail_ci_if_error: false
+        files: coverage-test.out
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -234,11 +236,13 @@ jobs:
     - name: test everything
       run: |
         make e2e CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-e2e.out
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
       with:
-        name: coverage-e2e
-        path: coverage-e2e.out
+        fail_ci_if_error: false
+        files: coverage-e2e.out
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
   e2e-public-api:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -306,24 +310,11 @@ jobs:
     - name: test public api
       run: |
         make test-public-api CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-public-api.out
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
       with:
-        name: coverage-public-api
-        path: coverage-public-api.out
+        fail_ci_if_error: false
+        files: coverage-public-api.out
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
 
-  codecov-upload:
-    runs-on: ubuntu-latest
-    needs: [test, e2e, e2e-public-api]
-    steps:
-      - name: Download all coverage artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: coverage
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage/coverage-test/coverage-test.out,coverage/coverage-e2e/coverage-e2e.out,coverage/coverage-public-api/coverage-public-api.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
