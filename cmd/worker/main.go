@@ -42,7 +42,11 @@ func main() {
 		panic(err)
 	}
 
-	worker := worker.New(busProvider)
+	workerCfg := &worker.Config{
+		MaxWorkers:   10,
+		MaxQueueSize: 100,
+	}
+	worker := worker.New(busProvider, workerCfg)
 	worker.Start(context.Background())
 
 	// Wait for a signal to exit

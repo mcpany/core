@@ -19,7 +19,6 @@ package command
 import (
 	"context"
 	"io"
-	"net"
 	"os"
 	"strings"
 	"sync"
