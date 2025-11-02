@@ -21,9 +21,7 @@ package examples
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -42,33 +40,26 @@ func TestCommandExample(t *testing.T) {
 		Name:                "Command Example",
 		UpstreamServiceType: "command",
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			root, err := integration.GetProjectRoot()
-			require.NoError(t, err)
-
-			buildCmd := exec.Command("make", "build-e2e-mocks")
-			buildCmd.Dir = root
-			err = buildCmd.Run()
-			require.NoError(t, err, "Failed to build command-tester binary")
-
 			return &integration.ManagedProcess{}
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-			root, err := integration.GetProjectRoot()
-			require.NoError(t, err)
-
-			commandTesterPath := filepath.Join(root, "build/test/bin/command-tester")
-			configContent := fmt.Sprintf(`
+			configContent := `
 upstream_services:
-- name: command-service
+- name: datetime-service
   command_line_service:
-    command: "%s"
+    command: "date"
     calls:
     - schema:
-        name: "test-command"
-        description: "A test command"
-`, commandTesterPath)
+        name: "get_current_date"
+        description: "Get the current date"
+    - schema:
+        name: "get_current_date_iso"
+        description: "Get the current date in ISO format"
+      args:
+        - "-I"
+`
 			configPath := filepath.Join(t.TempDir(), "config.yaml")
-			err = os.WriteFile(configPath, []byte(configContent), 0644)
+			err := os.WriteFile(configPath, []byte(configContent), 0644)
 			require.NoError(t, err)
 			return configPath
 		},
@@ -81,7 +72,7 @@ upstream_services:
 			require.NoError(t, err, "Failed to connect to MCPANY server")
 			defer cs.Close()
 
-			toolName := ""
+			var dateToolName, dateIsoToolName string
 			require.Eventually(t, func() bool {
 				result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 				if err != nil {
@@ -89,70 +80,189 @@ upstream_services:
 					return false
 				}
 				for _, tool := range result.Tools {
-					if strings.HasPrefix(tool.Name, "command-service") {
-						toolName = tool.Name
-						return true
+					if strings.HasSuffix(tool.Name, "get_current_date") {
+						dateToolName = tool.Name
+					}
+					if strings.HasSuffix(tool.Name, "get_current_date_iso") {
+						dateIsoToolName = tool.Name
 					}
 				}
-				t.Logf("Tool not yet available")
-				return false
+				return dateToolName != "" && dateIsoToolName != ""
+			}, integration.TestWaitTimeMedium, 1*time.Second, "Tools did not become available in time")
+
+			t.Run("get_current_date", func(t *testing.T) {
+				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: dateToolName})
+				require.NoError(t, err, "Error calling tool '%s'", dateToolName)
+				require.NotNil(t, res, "Nil response from tool '%s'", dateToolName)
+				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", dateToolName)
+				textContent, ok := res.Content[0].(*mcp.TextContent)
+				require.True(t, ok, "Expected content to be of type TextContent")
+
+				var result map[string]interface{}
+				err = json.Unmarshal([]byte(textContent.Text), &result)
+				require.NoError(t, err, "Failed to unmarshal tool output")
+
+				assert.NotEmpty(t, result["stdout"])
+				assert.Equal(t, consts.CommandStatusSuccess, result["status"])
+				assert.Equal(t, 0, result["return_code"])
+			})
+
+			t.Run("get_current_date_iso", func(t *testing.T) {
+				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: dateIsoToolName})
+				require.NoError(t, err, "Error calling tool '%s'", dateIsoToolName)
+				require.NotNil(t, res, "Nil response from tool '%s'", dateIsoToolName)
+				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", dateIsoToolName)
+				textContent, ok := res.Content[0].(*mcp.TextContent)
+				require.True(t, ok, "Expected content to be of type TextContent")
+
+				var result map[string]interface{}
+				err = json.Unmarshal([]byte(textContent.Text), &result)
+				require.NoError(t, err, "Failed to unmarshal tool output")
+
+				assert.NotEmpty(t, result["stdout"])
+				_, err = time.Parse("2006-01-02\n", result["stdout"].(string))
+				assert.NoError(t, err, "stdout is not in the expected format")
+				assert.Equal(t, consts.CommandStatusSuccess, result["status"])
+				assert.Equal(t, 0, result["return_code"])
+			})
+		},
+	}
+
+	framework.RunE2ETest(t, testCase)
+}
+
+func TestCommandExampleWithTimeout(t *testing.T) {
+	testCase := &framework.E2ETestCase{
+		Name:                "Command Example with Timeout",
+		UpstreamServiceType: "command",
+		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
+			return &integration.ManagedProcess{}
+		},
+		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+			configContent := `
+upstream_services:
+- name: sleep-service
+  command_line_service:
+    command: "sleep"
+    timeout: 1s
+    calls:
+    - schema:
+        name: "sleep"
+        description: "Sleep for a given duration"
+      args:
+        - "2"
+`
+			configPath := filepath.Join(t.TempDir(), "config.yaml")
+			err := os.WriteFile(configPath, []byte(configContent), 0644)
+			require.NoError(t, err)
+			return configPath
+		},
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
+
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err, "Failed to connect to MCPANY server")
+			defer cs.Close()
+
+			var sleepToolName string
+			require.Eventually(t, func() bool {
+				result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+				if err != nil {
+					t.Logf("Failed to list tools: %v", err)
+					return false
+				}
+				for _, tool := range result.Tools {
+					if strings.HasSuffix(tool.Name, "sleep") {
+						sleepToolName = tool.Name
+					}
+				}
+				return sleepToolName != ""
 			}, integration.TestWaitTimeMedium, 1*time.Second, "Tool did not become available in time")
 
-			t.Run("success", func(t *testing.T) {
-				params := json.RawMessage(`{"args": ["--stdout", "hello", "--exit-code", "0"]}`)
-				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-				require.NoError(t, err, "Error calling tool '%s'", toolName)
-				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-				textContent, ok := res.Content[0].(*mcp.TextContent)
-				require.True(t, ok, "Expected content to be of type TextContent")
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: sleepToolName})
+			require.NoError(t, err, "Error calling tool '%s'", sleepToolName)
+			require.NotNil(t, res, "Nil response from tool '%s'", sleepToolName)
+			require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", sleepToolName)
+			textContent, ok := res.Content[0].(*mcp.TextContent)
+			require.True(t, ok, "Expected content to be of type TextContent")
 
-				var result map[string]interface{}
-				err = json.Unmarshal([]byte(textContent.Text), &result)
-				require.NoError(t, err, "Failed to unmarshal tool output")
+			var result map[string]interface{}
+			err = json.Unmarshal([]byte(textContent.Text), &result)
+			require.NoError(t, err, "Failed to unmarshal tool output")
 
-				assert.Equal(t, "hello", result["stdout"])
-				assert.Equal(t, "", result["stderr"])
-				assert.Equal(t, consts.CommandStatusSuccess, result["status"])
-				assert.Equal(t, float64(0), result["return_code"])
-			})
+			assert.Equal(t, consts.CommandStatusTimeout, result["status"])
+			assert.Equal(t, -1, result["return_code"])
+		},
+	}
 
-			t.Run("error", func(t *testing.T) {
-				params := json.RawMessage(`{"args": ["--stderr", "error", "--exit-code", "1"]}`)
-				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-				require.NoError(t, err, "Error calling tool '%s'", toolName)
-				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-				textContent, ok := res.Content[0].(*mcp.TextContent)
-				require.True(t, ok, "Expected content to be of type TextContent")
+	framework.RunE2ETest(t, testCase)
+}
 
-				var result map[string]interface{}
-				err = json.Unmarshal([]byte(textContent.Text), &result)
-				require.NoError(t, err, "Failed to unmarshal tool output")
+func TestCommandExampleWithContainer(t *testing.T) {
+	testCase := &framework.E2ETestCase{
+		Name:                "Command Example with Container",
+		UpstreamServiceType: "command",
+		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
+			return &integration.ManagedProcess{}
+		},
+		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+			configContent := `
+upstream_services:
+- name: datetime-service
+  command_line_service:
+    command: "date"
+    container_environment:
+      image: "alpine:latest"
+    calls:
+    - schema:
+        name: "get_current_date"
+        description: "Get the current date"
+`
+			configPath := filepath.Join(t.TempDir(), "config.yaml")
+			err := os.WriteFile(configPath, []byte(configContent), 0644)
+			require.NoError(t, err)
+			return configPath
+		},
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
 
-				assert.Equal(t, "", result["stdout"])
-				assert.Equal(t, "error", result["stderr"])
-				assert.Equal(t, consts.CommandStatusError, result["status"])
-				assert.Equal(t, float64(1), result["return_code"])
-			})
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err, "Failed to connect to MCPANY server")
+			defer cs.Close()
 
-			t.Run("timeout", func(t *testing.T) {
-				params := json.RawMessage(`{"args": ["--sleep", "2s"]}`)
-				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-				defer cancel()
-				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: params})
-				require.NoError(t, err, "Error calling tool '%s'", toolName)
-				require.NotNil(t, res, "Nil response from tool '%s'", toolName)
-				require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", toolName)
-				textContent, ok := res.Content[0].(*mcp.TextContent)
-				require.True(t, ok, "Expected content to be of type TextContent")
+			var dateToolName string
+			require.Eventually(t, func() bool {
+				result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+				if err != nil {
+					t.Logf("Failed to list tools: %v", err)
+					return false
+				}
+				for _, tool := range result.Tools {
+					if strings.HasSuffix(tool.Name, "get_current_date") {
+						dateToolName = tool.Name
+					}
+				}
+				return dateToolName != ""
+			}, integration.TestWaitTimeMedium, 1*time.Second, "Tool did not become available in time")
 
-				var result map[string]interface{}
-				err = json.Unmarshal([]byte(textContent.Text), &result)
-				require.NoError(t, err, "Failed to unmarshal tool output")
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: dateToolName})
+			require.NoError(t, err, "Error calling tool '%s'", dateToolName)
+			require.NotNil(t, res, "Nil response from tool '%s'", dateToolName)
+			require.Len(t, res.Content, 1, "Expected exactly one content item from tool '%s'", dateToolName)
+			textContent, ok := res.Content[0].(*mcp.TextContent)
+			require.True(t, ok, "Expected content to be of type TextContent")
 
-				assert.Equal(t, consts.CommandStatusTimeout, result["status"])
-			})
+			var result map[string]interface{}
+			err = json.Unmarshal([]byte(textContent.Text), &result)
+			require.NoError(t, err, "Failed to unmarshal tool output")
+
+			assert.NotEmpty(t, result["stdout"])
+			assert.Equal(t, consts.CommandStatusSuccess, result["status"])
+			assert.Equal(t, 0, result["return_code"])
 		},
 	}
 
