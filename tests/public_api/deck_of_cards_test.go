@@ -34,38 +34,38 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_CatFacts(t *testing.T) {
+func TestUpstreamService_DeckOfCards(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Deck of Cards Server...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EDeckOfCardsServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Cat Facts Server with MCPANY ---
-	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
-	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
+	// --- 2. Register Deck of Cards Server with MCPANY ---
+	const deckOfCardsServiceID = "e2e_deckofcards"
+	deckOfCardsServiceEndpoint := "https://deckofcardsapi.com"
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", deckOfCardsServiceID, deckOfCardsServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/fact"),
+		EndpointPath: proto.String("/api/deck/new/shuffle/?deck_count=1"),
 		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getCatFact"),
+			Name: proto.String("shuffleDeck"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
-		Address: proto.String(catFactsServiceEndpoint),
+		Address: proto.String(deckOfCardsServiceEndpoint),
 		Calls:   []*configv1.HttpCallDefinition{httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String(catFactsServiceID),
+		Name:        proto.String(deckOfCardsServiceID),
 		HttpService: httpService,
 	}.Build()
 
@@ -74,7 +74,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	}.Build()
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	t.Logf("INFO: '%s' registered.", catFactsServiceID)
+	t.Logf("INFO: '%s' registered.", deckOfCardsServiceID)
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
@@ -88,8 +88,8 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 	}
 
-	serviceID, _ := util.SanitizeServiceName(catFactsServiceID)
-	sanitizedToolName, _ := util.SanitizeToolName("getCatFact")
+	serviceID, _ := util.SanitizeServiceName(deckOfCardsServiceID)
+	sanitizedToolName, _ := util.SanitizeToolName("shuffleDeck")
 	toolName := serviceID + "." + sanitizedToolName
 
 	const maxRetries = 3
@@ -102,33 +102,35 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 		}
 
 		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			t.Logf("Attempt %d/%d: Call to deckofcardsapi.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
 
-		require.NoError(t, err, "unrecoverable error calling getCatFact tool")
+		require.NoError(t, err, "unrecoverable error calling shuffleDeck tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries to deckofcardsapi.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
-	require.NoError(t, err, "Error calling getCatFact tool")
-	require.NotNil(t, res, "Nil response from getCatFact tool")
+	require.NoError(t, err, "Error calling shuffleDeck tool")
+	require.NotNil(t, res, "Nil response from shuffleDeck tool")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var catFactResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &catFactResponse)
+	var deckOfCardsResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &deckOfCardsResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, catFactResponse["fact"], "The fact should not be empty")
-	require.NotEmpty(t, catFactResponse["length"], "The length should not be empty")
-	t.Logf("SUCCESS: Received a cat fact: %s", textContent.Text)
+	require.Equal(t, true, deckOfCardsResponse["success"], "The success should be true")
+	require.NotEmpty(t, deckOfCardsResponse["deck_id"], "The deck_id should not be empty")
+	require.Equal(t, true, deckOfCardsResponse["shuffled"], "The shuffled should be true")
+	require.NotEmpty(t, deckOfCardsResponse["remaining"], "The remaining should not be empty")
+	t.Logf("SUCCESS: Received a shuffled deck: %s", textContent.Text)
 
-	t.Log("INFO: E2E Test Scenario for Cat Facts Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Deck of Cards Server Completed Successfully!")
 }

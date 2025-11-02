@@ -18,9 +18,11 @@ package worker
 
 import (
 	"context"
+	"time"
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/serviceregistry"
 )
 
@@ -57,6 +59,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
 
 	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ServiceRegistrationRequest) {
+		start := time.Now()
+		metrics.IncrCounter([]string{"worker", "registration", "request", "total"}, 1)
+		defer metrics.MeasureSince([]string{"worker", "registration", "request", "latency"}, start)
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
 
 		requestCtx := req.Context
@@ -82,6 +87,11 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			DiscoveredTools:     discoveredTools,
 			DiscoveredResources: discoveredResources,
 			Error:               err,
+		}
+		if err != nil {
+			metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
+		} else {
+			metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		resultBus.Publish(ctx, req.CorrelationID(), res)

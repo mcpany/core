@@ -112,6 +112,14 @@ func (u *HTTPUpstream) Register(
 		return "", nil, nil, fmt.Errorf("http service config is nil")
 	}
 
+	address := httpService.GetAddress()
+	if address == "" {
+		return "", nil, nil, fmt.Errorf("http service address is required")
+	}
+	if _, err := url.ParseRequestURI(address); err != nil {
+		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
+	}
+
 	poolConfig := serviceConfig.GetConnectionPool()
 	maxConnections := 10
 	maxIdleConnections := 0
@@ -142,7 +150,7 @@ func (u *HTTPUpstream) Register(
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
 	toolManager.AddServiceInfo(serviceID, info)
 
-	address := httpService.GetAddress()
+	address = httpService.GetAddress()
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 

@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -34,38 +34,38 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_CatFacts(t *testing.T) {
+func TestUpstreamService_Agify(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EAgifyServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Cat Facts Server with MCPANY ---
-	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
-	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
+	// --- 2. Register Agify Server with MCPANY ---
+	const agifyServiceID = "e2e_agify"
+	agifyServiceEndpoint := "https://api.agify.io"
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", agifyServiceID, agifyServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/fact"),
+		EndpointPath: proto.String("/?name=michael"),
 		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getCatFact"),
+			Name: proto.String("getAge"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
-		Address: proto.String(catFactsServiceEndpoint),
+		Address: proto.String(agifyServiceEndpoint),
 		Calls:   []*configv1.HttpCallDefinition{httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String(catFactsServiceID),
+		Name:        proto.String(agifyServiceID),
 		HttpService: httpService,
 	}.Build()
 
@@ -74,7 +74,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	}.Build()
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	t.Logf("INFO: '%s' registered.", catFactsServiceID)
+	t.Logf("INFO: '%s' registered.", agifyServiceID)
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
@@ -88,47 +88,53 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 	}
 
-	serviceID, _ := util.SanitizeServiceName(catFactsServiceID)
-	sanitizedToolName, _ := util.SanitizeToolName("getCatFact")
+	serviceID, _ := util.SanitizeServiceName(agifyServiceID)
+	sanitizedToolName, _ := util.SanitizeToolName("getAge")
 	toolName := serviceID + "." + sanitizedToolName
+	name := `{"name": "michael"}`
+
+	// --- Log the generated URL ---
+	url := agifyServiceEndpoint + "/?name=michael"
+	t.Logf("Generated URL: %s", url)
 
 	const maxRetries = 3
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)} )
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
 		if err == nil {
 			break // Success
 		}
 
 		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			t.Logf("Attempt %d/%d: Call to api.agify.io failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
 
-		require.NoError(t, err, "unrecoverable error calling getCatFact tool")
+		require.NoError(t, err, "unrecoverable error calling getAge tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries to api.agify.io failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
-	require.NoError(t, err, "Error calling getCatFact tool")
-	require.NotNil(t, res, "Nil response from getCatFact tool")
+	require.NoError(t, err, "Error calling getAge tool")
+	require.NotNil(t, res, "Nil response from getAge tool")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var catFactResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &catFactResponse)
+	var agifyResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &agifyResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, catFactResponse["fact"], "The fact should not be empty")
-	require.NotEmpty(t, catFactResponse["length"], "The length should not be empty")
-	t.Logf("SUCCESS: Received a cat fact: %s", textContent.Text)
+	require.Equal(t, "michael", agifyResponse["name"], "The name does not match")
+	require.NotEmpty(t, agifyResponse["age"], "The age should not be empty")
+	require.NotEmpty(t, agifyResponse["count"], "The count should not be empty")
+	t.Logf("SUCCESS: Received correct age for michael: %s", textContent.Text)
 
-	t.Log("INFO: E2E Test Scenario for Cat Facts Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Agify Server Completed Successfully!")
 }
