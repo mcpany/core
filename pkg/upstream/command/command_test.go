@@ -87,12 +87,12 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		cmdService.SetCommand("/bin/echo")
-		callDef := configv1.StdioCallDefinition_builder{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 		}.Build()
-		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
+		cmdService.SetCalls([]*configv1.CommandLineCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
 		serviceID, discoveredTools, _, err := u.Register(
@@ -158,12 +158,12 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-add-tool-error")
 		cmdService := &configv1.CommandLineUpstreamService{}
-		callDef := configv1.StdioCallDefinition_builder{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Schema: configv1.ToolSchema_builder{
 				Name: proto.String("ls"),
 			}.Build(),
 		}.Build()
-		cmdService.SetCalls([]*configv1.StdioCallDefinition{callDef})
+		cmdService.SetCalls([]*configv1.CommandLineCallDefinition{callDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
 		_, discoveredTools, _, err := u.Register(
