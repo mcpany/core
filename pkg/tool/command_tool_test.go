@@ -30,7 +30,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func newCommandTool(command string) tool.Tool {
+func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
+	if callDef == nil {
+		callDef = &configv1.CommandLineCallDefinition{}
+	}
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("sh"),
 	}).Build()
@@ -65,7 +68,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("command not found", func(t *testing.T) {
-		cmdTool := newCommandTool("this-command-does-not-exist")
+		cmdTool := newCommandTool("this-command-does-not-exist", nil)
 		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 		_, err := cmdTool.Execute(context.Background(), req)
 		require.Error(t, err)
@@ -85,7 +88,7 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "sh", resultMap["command"])
+		assert.Equal(t, "/usr/bin/env", resultMap["command"])
 		assert.Equal(t, "hello from env\n", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
 		assert.Equal(t, "hello from env\n", resultMap["combined_output"])
@@ -104,7 +107,7 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "sh", resultMap["command"])
+		assert.Equal(t, "/usr/bin/env", resultMap["command"])
 		assert.Equal(t, "", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
 		assert.Equal(t, "", resultMap["combined_output"])
@@ -122,4 +125,12 @@ func TestCommandTool_Execute(t *testing.T) {
 		_, err := cmdTool.Execute(context.Background(), req)
 		assert.Error(t, err)
 	})
+}
+
+func TestCommandTool_GetCacheConfig(t *testing.T) {
+	cacheConfig := &configv1.CacheConfig{}
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	cmdTool := newCommandTool("echo", callDef)
+	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
 }
