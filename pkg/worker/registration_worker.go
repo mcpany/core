@@ -56,7 +56,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
 
-	unsubscribe := requestBus.Subscribe("request", func(req *bus.ServiceRegistrationRequest) {
+	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ServiceRegistrationRequest) {
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
 
 		requestCtx := req.Context
@@ -71,7 +71,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				Error: err,
 			}
 			res.SetCorrelationID(req.CorrelationID())
-			resultBus.Publish(req.CorrelationID(), res)
+			resultBus.Publish(ctx, req.CorrelationID(), res)
 			return
 		}
 
@@ -84,13 +84,13 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			Error:               err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		resultBus.Publish(req.CorrelationID(), res)
+		resultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
 	listRequestBus := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
 	listResultBus := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
 
-	listUnsubscribe := listRequestBus.Subscribe("request", func(req *bus.ServiceListRequest) {
+	listUnsubscribe := listRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceListRequest) {
 		log.Info("Received service list request", "correlationID", req.CorrelationID())
 		services, err := w.serviceRegistry.GetAllServices()
 		res := &bus.ServiceListResult{
@@ -98,7 +98,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			Error:    err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		listResultBus.Publish(req.CorrelationID(), res)
+		listResultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
 	go func() {

@@ -36,7 +36,7 @@ func TestRedisBus_Publish(t *testing.T) {
 
 	msg, _ := json.Marshal("hello")
 	mock.ExpectPublish("test", msg).SetVal(1)
-	err := bus.Publish("test", "hello")
+	err := bus.Publish(context.Background(), "test", "hello")
 	assert.NoError(t, err)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
@@ -58,7 +58,7 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.Subscribe("test", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), "test", func(msg string) {
 		assert.Equal(t, "hello", msg)
 		wg.Done()
 	})
@@ -67,7 +67,7 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	// Give the subscriber a moment to connect
 	time.Sleep(100 * time.Millisecond)
 
-	err := bus.Publish("test", "hello")
+	err := bus.Publish(context.Background(), "test", "hello")
 	assert.NoError(t, err)
 
 	wg.Wait()

@@ -83,7 +83,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
-	unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceRegistrationResult) {
+	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceRegistrationResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
@@ -93,7 +93,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		Config: req.GetConfig(),
 	}
 	regReq.SetCorrelationID(correlationID)
-	requestBus.Publish("request", regReq)
+	requestBus.Publish(ctx, "request", regReq)
 
 	// Wait for the result, respecting the context's deadline
 	select {
@@ -165,7 +165,7 @@ func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServi
 	resultChan := make(chan *bus.ServiceListResult, 1)
 
 	resultBus := bus.GetBus[*bus.ServiceListResult](s.bus, "service_list_results")
-	unsubscribe := resultBus.SubscribeOnce(correlationID, func(result *bus.ServiceListResult) {
+	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceListResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
@@ -173,7 +173,7 @@ func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServi
 	requestBus := bus.GetBus[*bus.ServiceListRequest](s.bus, "service_list_requests")
 	listReq := &bus.ServiceListRequest{}
 	listReq.SetCorrelationID(correlationID)
-	requestBus.Publish("request", listReq)
+	requestBus.Publish(ctx, "request", listReq)
 
 	select {
 	case result := <-resultChan:
