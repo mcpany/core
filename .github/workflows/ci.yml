@@ -317,4 +317,3 @@ jobs:
         files: coverage-public-api.out
         token: ${{ secrets.CODECOV_TOKEN }}
         verbose: true
-
