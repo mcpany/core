@@ -55,20 +55,20 @@ func Initialize() {
 	})
 }
 
-// GetGlobalMetrics returns the global metrics instance.
-func GetGlobalMetrics() *metrics.Metrics {
+// GlobalMetrics returns the global metrics instance.
+func GlobalMetrics() *metrics.Metrics {
 	return globalMetrics
 }
 
-// SetGlobalMetrics sets the global metrics instance. This is intended for testing purposes only.
-func SetGlobalMetrics(m *metrics.Metrics) {
+// setGlobalMetrics sets the global metrics instance. This is intended for testing purposes only.
+func setGlobalMetrics(m *metrics.Metrics) {
 	globalMetrics = m
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.
-func Handler(h http.Handler) http.Handler {
-	if h != nil {
-		return h
+func Handler(h ...http.Handler) http.Handler {
+	if len(h) > 0 && h[0] != nil {
+		return h[0]
 	}
 	return promhttp.Handler()
 }

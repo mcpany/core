@@ -53,12 +53,12 @@ func TestInitialize(t *testing.T) {
 	Initialize()
 
 	// Verify that the handler is not nil
-	assert.NotNil(t, Handler(nil))
+	assert.NotNil(t, Handler())
 }
 
 func TestHandler(t *testing.T) {
 	// Get the handler
-	handler := Handler(nil)
+	handler := Handler()
 
 	// Verify that the handler is not nil
 	assert.NotNil(t, handler)
@@ -67,10 +67,10 @@ func TestHandler(t *testing.T) {
 func TestSetGauge(t *testing.T) {
 	// Initialize the metrics system
 	m, handler := newTestMetrics(t)
-	originalMetrics := GetGlobalMetrics()
-	SetGlobalMetrics(m)
+	originalMetrics := GlobalMetrics()
+	setGlobalMetrics(m)
 	defer func() {
-		SetGlobalMetrics(originalMetrics)
+		setGlobalMetrics(originalMetrics)
 	}()
 
 	// Set a gauge
@@ -104,10 +104,10 @@ func TestSetGauge(t *testing.T) {
 
 func TestIncrCounter(t *testing.T) {
 	m, handler := newTestMetrics(t)
-	originalMetrics := GetGlobalMetrics()
-	SetGlobalMetrics(m)
+	originalMetrics := GlobalMetrics()
+	setGlobalMetrics(m)
 	defer func() {
-		SetGlobalMetrics(originalMetrics)
+		setGlobalMetrics(originalMetrics)
 	}()
 	// Increment a counter
 	IncrCounter([]string{"test_counter"}, 1)
@@ -124,10 +124,10 @@ func TestIncrCounter(t *testing.T) {
 
 func TestMeasureSince(t *testing.T) {
 	m, handler := newTestMetrics(t)
-	originalMetrics := GetGlobalMetrics()
-	SetGlobalMetrics(m)
+	originalMetrics := GlobalMetrics()
+	setGlobalMetrics(m)
 	defer func() {
-		SetGlobalMetrics(originalMetrics)
+		setGlobalMetrics(originalMetrics)
 	}()
 	// Record a measurement
 	start := time.Now()

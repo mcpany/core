@@ -47,10 +47,10 @@ func TestGrpcStatsHandler_HandleConn(t *testing.T) {
 	// Initialize a new metrics instance for this test
 	m, handler := newTestMetrics(t)
 	// Temporarily replace the global metrics instance
-	originalMetrics := GetGlobalMetrics()
-	SetGlobalMetrics(m)
+	originalMetrics := GlobalMetrics()
+	setGlobalMetrics(m)
 	defer func() {
-		SetGlobalMetrics(originalMetrics)
+		setGlobalMetrics(originalMetrics)
 	}()
 
 	statsHandler := &GrpcStatsHandler{}
