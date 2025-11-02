@@ -10,16 +10,6 @@ Why developing multiple MCP servers for each API when you can just have one to a
 
 MCP Any is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
-## Architecture
-
-MCP Any is built on a modular and extensible architecture. The core components are:
-
-- **MCP Server**: The main server that implements the [Model Context Protocol](https://modelcontext.protocol.ai/). It handles incoming requests and orchestrates the other components.
-- **Service Registry**: Manages the lifecycle of upstream services. It is responsible for creating and registering services from configuration files or dynamic registration requests.
-- **Tool Manager**: Keeps track of all the tools that are discovered from the upstream services. It provides a unified interface for executing tools, regardless of their underlying implementation.
-- **Upstream Services**: These are the backend services that MCP Any connects to. Each service type (gRPC, HTTP, etc.) has a corresponding implementation that knows how to interact with the service and expose its capabilities as tools.
-- **Connection Pool**: Manages connections to upstream services to improve performance and resource usage.
-
 ## Key Features
 
 - **Dynamic Tool Registration**: Automatically discover and register tools from various backend services, either through a dynamic gRPC API or a static configuration file.
@@ -124,7 +114,6 @@ upstreamServices:
           parameterMappings:
             - inputParameterName: "userId"
               targetParameterName: "userId"
-              location: "PATH"
 ```
 
 To run the server with this configuration, use the following command:
@@ -235,58 +224,6 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
 For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` directory. See the [Helm chart README](helm/mcpany/README.md) for detailed instructions.
 
-## Development
-
-The following commands are available for development:
-
-- `make run`: Run the main server application.
-- `make build`: Build the main server application.
-- `make test`: Run all tests (unit, integration, and e2e).
-- `make test-fast`: Run unit and integration tests (excluding e2e).
-- `make e2e`: Run end-to-end tests.
-- `make lint`: Run all linter checks.
-- `make gen`: Generate protobuf files from `.proto` definitions.
-- `make build-docker`: Build the Docker image for the server.
-- `make clean`: Clean up build artifacts.
-
-## Code Documentation
-
-The Go code in this repository is fully documented with GoDoc comments. You can
-view the documentation locally by running a GoDoc server:
-
-```bash
-godoc -http=:6060
-```
-
-Then, navigate to `http://localhost:6060/pkg/github.com/mcpany/core` in your
-browser.
-
-The `pkg` directory contains the core logic of the application, organized into
-the following subpackages:
-
-- **`app`**: The main application entry point and server lifecycle management.
-- **`auth`**: Authentication strategies for both incoming requests and
-  connections to upstream services.
-- **`bus`**: A type-safe, topic-based event bus for inter-component
-  communication.
-- **`client`**: Interfaces and wrappers for gRPC and HTTP clients.
-- **`config`**: Configuration loading, parsing, and validation.
-- **`consts`**: Application-wide constants.
-- **`logging`**: The global logger initialization and access.
-- **`mcpserver`**: The core MCP server implementation, including request routing
-  and handling.
-- **`middleware`**: MCP middleware for handling concerns like logging, CORS, and
-  authentication.
-- **`pool`**: A generic connection pool for managing upstream client
-  connections.
-- **`serviceregistry`**: The service registry for managing the lifecycle of
-  upstream services.
-- **`tool`**: Tool management and execution.
-- **`upstream`**: Implementations for various upstream service types (gRPC,
-  HTTP, etc.).
-
-For more detailed information on each package and its components, please refer
-to the GoDoc comments in the source code.
 
 ## Contributing
 
