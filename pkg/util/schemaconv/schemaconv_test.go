@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	calculatorv1 "github.com/mcpany/core/proto/examples/calculator/v1"
+	weatherv1 "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -161,30 +161,24 @@ func (m *mockMethodDescriptor) Output() protoreflect.MessageDescriptor {
 
 func TestMethodDescriptorToProtoProperties(t *testing.T) {
 	t.Run("with real proto", func(t *testing.T) {
-		fileDesc := calculatorv1.File_proto_examples_calculator_v1_calculator_proto
+		fileDesc := weatherv1.File_proto_examples_weather_v1_weather_proto
 		require.NotNil(t, fileDesc)
 
-		serviceDesc := fileDesc.Services().ByName("CalculatorService")
+		serviceDesc := fileDesc.Services().ByName("WeatherService")
 		require.NotNil(t, serviceDesc)
 
-		methodDesc := serviceDesc.Methods().ByName("Add")
+		methodDesc := serviceDesc.Methods().ByName("GetWeather")
 		require.NotNil(t, methodDesc)
 
 		properties, err := MethodDescriptorToProtoProperties(methodDesc)
 		require.NoError(t, err)
-		require.Len(t, properties.Fields, 2)
+		require.Len(t, properties.Fields, 1)
 
-		aField, ok := properties.Fields["a"]
+		locationField, ok := properties.Fields["location"]
 		require.True(t, ok)
-		s1 := aField.GetStructValue()
+		s1 := locationField.GetStructValue()
 		require.NotNil(t, s1)
-		assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
-
-		bField, ok := properties.Fields["b"]
-		require.True(t, ok)
-		s2 := bField.GetStructValue()
-		require.NotNil(t, s2)
-		assert.Equal(t, "integer", s2.Fields["type"].GetStringValue())
+		assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
 	})
 
 	t.Run("with mocks", func(t *testing.T) {
@@ -228,24 +222,24 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 
 func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
 	t.Run("with real proto", func(t *testing.T) {
-		fileDesc := calculatorv1.File_proto_examples_calculator_v1_calculator_proto
+		fileDesc := weatherv1.File_proto_examples_weather_v1_weather_proto
 		require.NotNil(t, fileDesc)
 
-		serviceDesc := fileDesc.Services().ByName("CalculatorService")
+		serviceDesc := fileDesc.Services().ByName("WeatherService")
 		require.NotNil(t, serviceDesc)
 
-		methodDesc := serviceDesc.Methods().ByName("Add")
+		methodDesc := serviceDesc.Methods().ByName("GetWeather")
 		require.NotNil(t, methodDesc)
 
 		properties, err := MethodOutputDescriptorToProtoProperties(methodDesc)
 		require.NoError(t, err)
 		require.Len(t, properties.Fields, 1)
 
-		resultField, ok := properties.Fields["result"]
+		weatherField, ok := properties.Fields["weather"]
 		require.True(t, ok)
-		s1 := resultField.GetStructValue()
+		s1 := weatherField.GetStructValue()
 		require.NotNil(t, s1)
-		assert.Equal(t, "integer", s1.Fields["type"].GetStringValue())
+		assert.Equal(t, "string", s1.Fields["type"].GetStringValue())
 	})
 
 	t.Run("with mocks", func(t *testing.T) {
