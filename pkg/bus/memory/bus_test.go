@@ -44,18 +44,23 @@ func TestDefaultBus(t *testing.T) {
 	t.Run("SubscribeOnce", func(t *testing.T) {
 		bus := New[string]()
 		var wg sync.WaitGroup
+		var callCount int32
 		wg.Add(1)
 
 		bus.SubscribeOnce(context.Background(), "test", func(msg string) {
+			atomic.AddInt32(&callCount, 1)
 			assert.Equal(t, "hello", msg)
 			wg.Done()
 		})
 
 		bus.Publish(context.Background(), "test", "hello")
+		// This second publish should not be received by the handler
+		bus.Publish(context.Background(), "test", "world")
 		wg.Wait()
 
-		// This second publish should not be received
-		bus.Publish(context.Background(), "test", "world")
+		// Allow some time for any extra messages to be processed
+		time.Sleep(10 * time.Millisecond)
+		assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "handler should only be called once")
 	})
 
 	t.Run("Unsubscribe", func(t *testing.T) {
