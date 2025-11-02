@@ -503,3 +503,94 @@ func TestServer_Getters(t *testing.T) {
 	assert.NotNil(t, server.ResourceManager())
 	assert.NotNil(t, server.ServiceRegistry())
 }
+
+type mockToolManager struct {
+	tool.ToolManager
+	addServiceInfoCalled       bool
+	getToolCalled              bool
+	listToolsCalled            bool
+	executeToolCalled          bool
+	setMCPServerCalled         bool
+	addToolCalled              bool
+	getServiceInfoCalled       bool
+	clearToolsForServiceCalled bool
+}
+
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.addServiceInfoCalled = true
+}
+
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+	m.getToolCalled = true
+	return &mockTool{}, true
+}
+
+func (m *mockToolManager) ListTools() []tool.Tool {
+	m.listToolsCalled = true
+	return []tool.Tool{}
+}
+
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	m.executeToolCalled = true
+	return nil, nil
+}
+
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+	m.setMCPServerCalled = true
+}
+
+func (m *mockToolManager) AddTool(t tool.Tool) error {
+	m.addToolCalled = true
+	return nil
+}
+
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	m.getServiceInfoCalled = true
+	return &tool.ServiceInfo{}, true
+}
+
+func (m *mockToolManager) ClearToolsForService(serviceKey string) {
+	m.clearToolsForServiceCalled = true
+}
+
+func TestServer_ToolManagerDelegation(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	mockToolManager := &mockToolManager{}
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	server.AddServiceInfo("test-service", &tool.ServiceInfo{})
+	assert.True(t, mockToolManager.addServiceInfoCalled)
+
+	_, _ = server.GetTool("test-tool")
+	assert.True(t, mockToolManager.getToolCalled)
+
+	_ = server.ListTools()
+	assert.True(t, mockToolManager.listToolsCalled)
+
+	_, _ = server.ExecuteTool(ctx, &tool.ExecutionRequest{})
+	assert.True(t, mockToolManager.executeToolCalled)
+
+	server.SetMCPServer(nil)
+	assert.True(t, mockToolManager.setMCPServerCalled)
+
+	_ = server.AddTool(&mockTool{})
+	assert.True(t, mockToolManager.addToolCalled)
+
+	_, _ = server.GetServiceInfo("test-service")
+	assert.True(t, mockToolManager.getServiceInfoCalled)
+
+	server.ClearToolsForService("test-service")
+	assert.True(t, mockToolManager.clearToolsForServiceCalled)
+}
