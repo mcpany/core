@@ -165,7 +165,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 			log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 			// We don't need a correlation ID since we are not waiting for a response here
-			registrationBus.Publish("request", regReq)
+			registrationBus.Publish(ctx, "request", regReq)
 		}
 	} else {
 		log.Info("No services found in config, skipping service registration.")

@@ -17,6 +17,7 @@
 package bus
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mcpany/core/pkg/bus/memory"
@@ -33,28 +34,31 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
+	// ctx is the context for the publish operation.
 	// topic is the topic to publish the message to.
 	// msg is the message to be sent.
-	Publish(topic string, msg T) error
+	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
+	// ctx is the context for the subscribe operation.
 	// topic is the topic to subscribe to.
 	// handler is the function to be called with the message.
 	// It returns a function that can be called to unsubscribe the handler.
-	Subscribe(topic string, handler func(T)) (unsubscribe func())
+	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
+	// ctx is the context for the subscribe operation.
 	// topic is the topic to subscribe to.
 	// handler is the function to be called with the message.
 	// It returns a function that can be called to unsubscribe the handler
 	// before it has been invoked.
-	SubscribeOnce(topic string, handler func(T)) (unsubscribe func())
+	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
 // BusProvider is a thread-safe container for managing multiple, type-safe bus
