@@ -18,11 +18,11 @@ package bus
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
+	"github.com/puzpuzpuz/xsync/v4"
 )
 
 // Bus defines the interface for a generic, type-safe event bus that facilitates
@@ -66,8 +66,7 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 type BusProvider struct {
-	buses  map[string]any
-	mu     sync.RWMutex
+	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
 }
 
@@ -75,7 +74,7 @@ type BusProvider struct {
 // multiple topic-based bus instances.
 func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 	provider := &BusProvider{
-		buses:  make(map[string]any),
+		buses:  xsync.NewMap[string, any](),
 		config: messageBus,
 	}
 
@@ -111,10 +110,7 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 //
 // Returns a Bus instance for the specified message type and topic.
 func GetBus[T any](p *BusProvider, topic string) Bus[T] {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	if bus, ok := p.buses[topic]; ok {
+	if bus, ok := p.buses.Load(topic); ok {
 		return bus.(Bus[T])
 	}
 
@@ -125,6 +121,6 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 		newBus = redis.New[T](p.config.GetRedis())
 	}
 
-	p.buses[topic] = newBus
-	return newBus
+	bus, _ := p.buses.LoadOrStore(topic, newBus)
+	return bus.(Bus[T])
 }
