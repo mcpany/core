@@ -28,6 +28,8 @@ import (
 // Initialize prepares the metrics system with a Prometheus sink.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
+var GlobalMetrics *metrics.Metrics
+
 func Initialize() {
 	// Create a Prometheus sink
 	sink, err := prometheus.NewPrometheusSink()
@@ -40,29 +42,34 @@ func Initialize() {
 	conf.EnableHostname = false
 
 	// Initialize the metrics system
-	if _, err := metrics.NewGlobal(conf, sink); err != nil {
+	m, err := metrics.New(conf, sink)
+	if err != nil {
 		panic(err)
 	}
+	GlobalMetrics = m
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.
-func Handler() http.Handler {
+func Handler(h http.Handler) http.Handler {
+	if h != nil {
+		return h
+	}
 	return promhttp.Handler()
 }
 
 // SetGauge sets the value of a gauge.
 func SetGauge(name string, val float32, labels ...string) {
-	metrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
+	GlobalMetrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
 		{Name: "service_name", Value: labels[0]},
 	})
 }
 
 // IncrCounter increments a counter.
 func IncrCounter(name []string, val float32) {
-	metrics.IncrCounter(name, val)
+	GlobalMetrics.IncrCounter(name, val)
 }
 
 // MeasureSince measures the time since a given start time and records it.
 func MeasureSince(name []string, start time.Time) {
-	metrics.MeasureSince(name, start)
+	GlobalMetrics.MeasureSince(name, start)
 }
