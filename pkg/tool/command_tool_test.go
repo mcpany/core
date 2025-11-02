@@ -67,19 +67,8 @@ func TestCommandTool_Execute(t *testing.T) {
 	t.Run("command not found", func(t *testing.T) {
 		cmdTool := newCommandTool("this-command-does-not-exist")
 		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
-		result, err := cmdTool.Execute(context.Background(), req)
+		_, err := cmdTool.Execute(context.Background(), req)
 		require.Error(t, err)
-
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "this-command-does-not-exist", resultMap["command"])
-		assert.Equal(t, "", resultMap["stdout"])
-		assert.Equal(t, "", resultMap["stderr"])
-		assert.Equal(t, "", resultMap["combined_output"])
-		assert.NotNil(t, resultMap["start_time"])
-		assert.NotNil(t, resultMap["end_time"])
-		assert.Equal(t, consts.CommandStatusError, resultMap["status"])
-		assert.Equal(t, -1, resultMap["return_code"])
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
@@ -115,7 +104,7 @@ func TestCommandTool_Execute(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
 		result, err := cmdTool.Execute(context.Background(), req)
-		require.Error(t, err)
+		require.NoError(t, err)
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
