@@ -161,7 +161,7 @@ func TestSanitizeToolName(t *testing.T) {
 		{
 			name:        "tool name with special characters",
 			input:       "test-tool-1.0",
-			expected:    "test-tool-10_8c924588",
+			expected:    "test_tool_1_0",
 			expectError: false,
 		},
 	}
