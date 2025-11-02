@@ -346,6 +346,14 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
+			ConnState: func(conn net.Conn, state http.ConnState) {
+				switch state {
+				case http.StateNew:
+					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
+				case http.StateClosed:
+					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
+				}
+			},
 		}
 
 		shutdownComplete := make(chan struct{})
