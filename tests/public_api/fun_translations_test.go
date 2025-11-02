@@ -52,11 +52,11 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/translate/yoda.json?text={{text}}"),
+		EndpointPath: proto.String("/translate/yoda.json"),
 		Schema: configv1.ToolSchema_builder{
 			Name: proto.String("translateToYoda"),
 		}.Build(),
-		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
