@@ -163,4 +163,3 @@ func (b *DefaultBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscrib
 	})
 	return unsub
 }
-

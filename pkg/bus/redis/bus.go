@@ -107,4 +107,3 @@ func (b *RedisBus[T]) SubscribeOnce(topic string, handler func(T)) (unsubscribe 
 	})
 	return unsub
 }
-
