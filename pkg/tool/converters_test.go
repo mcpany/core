@@ -275,7 +275,7 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 	destructiveHint := true
 	openWorldHint := true
 	expectedTool := &mcp.Tool{
-		Name:        "test-service.test-tool",
+		Name:        "test-service.test_tool",
 		Description: "A tool for testing",
 		Title:       "Test Tool",
 		Annotations: &mcp.ToolAnnotations{
