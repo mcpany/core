@@ -91,6 +91,30 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // connection, negotiates the session via an HTTP signaling server, sends the
 // tool inputs over the data channel, and waits for a response.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	var inputs map[string]any
+	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	var message []byte
+	var err error
+	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create input template: %w", err)
+		}
+		rendered, err := tpl.Render(inputs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to render input template: %w", err)
+		}
+		message = []byte(rendered)
+	} else {
+		message, err = json.Marshal(inputs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal inputs to json: %w", err)
+		}
+	}
+
 	address := strings.TrimPrefix(t.tool.GetUnderlyingMethodFqn(), "WEBRTC ")
 
 	config := webrtc.Configuration{
@@ -116,34 +140,6 @@ func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, e
 	}
 
 	dc.OnOpen(func() {
-		var inputs map[string]any
-		if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
-			fmt.Printf("failed to unmarshal tool inputs: %v\n", err)
-			return
-		}
-
-		var message []byte
-		var err error
-		if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
-			if err != nil {
-				fmt.Printf("failed to create input template: %v\n", err)
-				return
-			}
-			rendered, err := tpl.Render(inputs)
-			if err != nil {
-				fmt.Printf("failed to render input template: %v\n", err)
-				return
-			}
-			message = []byte(rendered)
-		} else {
-			message, err = json.Marshal(inputs)
-			if err != nil {
-				fmt.Printf("failed to marshal inputs to json: %v\n", err)
-				return
-			}
-		}
-
 		if err := dc.SendText(string(message)); err != nil {
 			fmt.Printf("failed to send message over webrtc data channel: %v\n", err)
 		}
