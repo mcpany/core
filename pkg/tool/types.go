@@ -25,12 +25,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
@@ -670,20 +670,22 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
 type CommandTool struct {
-	tool    *v1.Tool
-	command string
-	cache   *configv1.CacheConfig
+	tool           *v1.Tool
+	command        string
+	service        *configv1.CommandLineUpstreamService
+	callDefinition *configv1.CommandLineCallDefinition
 }
 
 // NewCommandTool creates a new CommandTool.
 //
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
-func NewCommandTool(tool *v1.Tool, command string, callDefinition *configv1.StdioCallDefinition) *CommandTool {
+func NewCommandTool(tool *v1.Tool, service *configv1.CommandLineUpstreamService, callDefinition *configv1.CommandLineCallDefinition) *CommandTool {
 	return &CommandTool{
-		tool:    tool,
-		command: command,
-		cache:   callDefinition.GetCache(),
+		tool:           tool,
+		command:        service.GetCommand(),
+		service:        service,
+		callDefinition: callDefinition,
 	}
 }
 
@@ -694,7 +696,7 @@ func (t *CommandTool) Tool() *v1.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
-	return t.cache
+	return t.callDefinition.GetCache()
 }
 
 // Execute handles the execution of the command-line tool. It constructs a command
@@ -706,7 +708,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	var args []string
+	args := t.callDefinition.GetArgs()
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			if argsList, ok := argsVal.([]interface{}); ok {
@@ -720,30 +722,32 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			} else {
 				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
+			delete(inputs, "args")
 		}
 	}
 
-	cmd := exec.CommandContext(ctx, t.command, args...)
+	timeout := t.service.GetTimeout()
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
+		defer cancel()
+	}
+
+	executor := command.NewExecutor(t.service.GetContainerEnvironment())
+
 	env := os.Environ()
 	for key, value := range inputs {
-		if key != "args" {
-			env = append(env, fmt.Sprintf("%s=%v", key, value))
-		}
+		env = append(env, fmt.Sprintf("%s=%v", key, value))
 	}
-	cmd.Env = env
-
-	var stdout, stderr bytes.Buffer
-	var combinedOutput bytes.Buffer
-	cmd.Stdout = io.MultiWriter(&stdout, &combinedOutput)
-	cmd.Stderr = io.MultiWriter(&stderr, &combinedOutput)
 
 	startTime := time.Now()
-	err := cmd.Run()
+	stdout, stderr, exitCode, err := executor.Execute(ctx, t.command, args, t.service.GetWorkingDirectory(), env)
 	endTime := time.Now()
 
 	status := consts.CommandStatusSuccess
 	if ctx.Err() == context.DeadlineExceeded {
 		status = consts.CommandStatusTimeout
+		exitCode = -1 // Override exit code on timeout
 	} else if err != nil {
 		status = consts.CommandStatusError
 	}
@@ -751,13 +755,17 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	result := map[string]interface{}{
 		"command":         t.command,
 		"args":            args,
-		"stdout":          stdout.String(),
-		"stderr":          stderr.String(),
-		"combined_output": combinedOutput.String(),
+		"stdout":          string(stdout),
+		"stderr":          string(stderr),
+		"combined_output": string(stdout) + string(stderr),
 		"start_time":      startTime,
 		"end_time":        endTime,
-		"return_code":     cmd.ProcessState.ExitCode(),
+		"return_code":     exitCode,
 		"status":          status,
+	}
+
+	if err != nil {
+		return result, err
 	}
 
 	return result, nil

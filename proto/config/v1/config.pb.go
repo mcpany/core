@@ -965,30 +965,31 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 	return m0
 }
 
-// StdioCallDefinition describes how to map an MCP call to a stdio command.
-type StdioCallDefinition struct {
-	state                 protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_Schema     *ToolSchema               `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Parameters *[]*StdioParameterMapping `protobuf:"bytes,2,rep,name=parameters"`
-	xxx_hidden_Cache      *CacheConfig              `protobuf:"bytes,3,opt,name=cache"`
+// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
+type CommandLineCallDefinition struct {
+	state                 protoimpl.MessageState          `protogen:"opaque.v1"`
+	xxx_hidden_Schema     *ToolSchema                     `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Parameters *[]*CommandLineParameterMapping `protobuf:"bytes,2,rep,name=parameters"`
+	xxx_hidden_Cache      *CacheConfig                    `protobuf:"bytes,3,opt,name=cache"`
+	xxx_hidden_Args       []string                        `protobuf:"bytes,4,rep,name=args"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
 
-func (x *StdioCallDefinition) Reset() {
-	*x = StdioCallDefinition{}
+func (x *CommandLineCallDefinition) Reset() {
+	*x = CommandLineCallDefinition{}
 	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StdioCallDefinition) String() string {
+func (x *CommandLineCallDefinition) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StdioCallDefinition) ProtoMessage() {}
+func (*CommandLineCallDefinition) ProtoMessage() {}
 
-func (x *StdioCallDefinition) ProtoReflect() protoreflect.Message {
+func (x *CommandLineCallDefinition) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1000,14 +1001,14 @@ func (x *StdioCallDefinition) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *StdioCallDefinition) GetSchema() *ToolSchema {
+func (x *CommandLineCallDefinition) GetSchema() *ToolSchema {
 	if x != nil {
 		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
-func (x *StdioCallDefinition) GetParameters() []*StdioParameterMapping {
+func (x *CommandLineCallDefinition) GetParameters() []*CommandLineParameterMapping {
 	if x != nil {
 		if x.xxx_hidden_Parameters != nil {
 			return *x.xxx_hidden_Parameters
@@ -1016,65 +1017,79 @@ func (x *StdioCallDefinition) GetParameters() []*StdioParameterMapping {
 	return nil
 }
 
-func (x *StdioCallDefinition) GetCache() *CacheConfig {
+func (x *CommandLineCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
 		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
-func (x *StdioCallDefinition) SetSchema(v *ToolSchema) {
+func (x *CommandLineCallDefinition) GetArgs() []string {
+	if x != nil {
+		return x.xxx_hidden_Args
+	}
+	return nil
+}
+
+func (x *CommandLineCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
 
-func (x *StdioCallDefinition) SetParameters(v []*StdioParameterMapping) {
+func (x *CommandLineCallDefinition) SetParameters(v []*CommandLineParameterMapping) {
 	x.xxx_hidden_Parameters = &v
 }
 
-func (x *StdioCallDefinition) SetCache(v *CacheConfig) {
+func (x *CommandLineCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
 }
 
-func (x *StdioCallDefinition) HasSchema() bool {
+func (x *CommandLineCallDefinition) SetArgs(v []string) {
+	x.xxx_hidden_Args = v
+}
+
+func (x *CommandLineCallDefinition) HasSchema() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Schema != nil
 }
 
-func (x *StdioCallDefinition) HasCache() bool {
+func (x *CommandLineCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Cache != nil
 }
 
-func (x *StdioCallDefinition) ClearSchema() {
+func (x *CommandLineCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
-func (x *StdioCallDefinition) ClearCache() {
+func (x *CommandLineCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
-type StdioCallDefinition_builder struct {
+type CommandLineCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Common tool schema.
 	Schema *ToolSchema
 	// Defines the parameters for the stdio command.
-	Parameters []*StdioParameterMapping
+	Parameters []*CommandLineParameterMapping
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The arguments to pass to the command.
+	Args []string
 }
 
-func (b0 StdioCallDefinition_builder) Build() *StdioCallDefinition {
-	m0 := &StdioCallDefinition{}
+func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
+	m0 := &CommandLineCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_Args = b.Args
 	return m0
 }
 
@@ -4152,17 +4167,18 @@ func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
 type CommandLineUpstreamService struct {
-	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Command          *string                 `protobuf:"bytes,1,opt,name=command"`
-	xxx_hidden_Args             []string                `protobuf:"bytes,2,rep,name=args"`
-	xxx_hidden_WorkingDirectory *string                 `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
-	xxx_hidden_Calls            *[]*StdioCallDefinition `protobuf:"bytes,4,rep,name=calls"`
-	xxx_hidden_HealthCheck      *StdioHealthCheck       `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
-	xxx_hidden_Cache            *CacheConfig            `protobuf:"bytes,6,opt,name=cache"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state                           protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_Command              *string                       `protobuf:"bytes,1,opt,name=command"`
+	xxx_hidden_WorkingDirectory     *string                       `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
+	xxx_hidden_Calls                *[]*CommandLineCallDefinition `protobuf:"bytes,4,rep,name=calls"`
+	xxx_hidden_HealthCheck          *CommandLineHealthCheck       `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_Cache                *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
+	xxx_hidden_ContainerEnvironment *ContainerEnvironment         `protobuf:"bytes,7,opt,name=container_environment,json=containerEnvironment"`
+	xxx_hidden_Timeout              *durationpb.Duration          `protobuf:"bytes,8,opt,name=timeout"`
+	XXX_raceDetectHookData          protoimpl.RaceDetectHookData
+	XXX_presence                    [1]uint32
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *CommandLineUpstreamService) Reset() {
@@ -4200,13 +4216,6 @@ func (x *CommandLineUpstreamService) GetCommand() string {
 	return ""
 }
 
-func (x *CommandLineUpstreamService) GetArgs() []string {
-	if x != nil {
-		return x.xxx_hidden_Args
-	}
-	return nil
-}
-
 func (x *CommandLineUpstreamService) GetWorkingDirectory() string {
 	if x != nil {
 		if x.xxx_hidden_WorkingDirectory != nil {
@@ -4217,7 +4226,7 @@ func (x *CommandLineUpstreamService) GetWorkingDirectory() string {
 	return ""
 }
 
-func (x *CommandLineUpstreamService) GetCalls() []*StdioCallDefinition {
+func (x *CommandLineUpstreamService) GetCalls() []*CommandLineCallDefinition {
 	if x != nil {
 		if x.xxx_hidden_Calls != nil {
 			return *x.xxx_hidden_Calls
@@ -4226,7 +4235,7 @@ func (x *CommandLineUpstreamService) GetCalls() []*StdioCallDefinition {
 	return nil
 }
 
-func (x *CommandLineUpstreamService) GetHealthCheck() *StdioHealthCheck {
+func (x *CommandLineUpstreamService) GetHealthCheck() *CommandLineHealthCheck {
 	if x != nil {
 		return x.xxx_hidden_HealthCheck
 	}
@@ -4240,30 +4249,48 @@ func (x *CommandLineUpstreamService) GetCache() *CacheConfig {
 	return nil
 }
 
-func (x *CommandLineUpstreamService) SetCommand(v string) {
-	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+func (x *CommandLineUpstreamService) GetContainerEnvironment() *ContainerEnvironment {
+	if x != nil {
+		return x.xxx_hidden_ContainerEnvironment
+	}
+	return nil
 }
 
-func (x *CommandLineUpstreamService) SetArgs(v []string) {
-	x.xxx_hidden_Args = v
+func (x *CommandLineUpstreamService) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.xxx_hidden_Timeout
+	}
+	return nil
+}
+
+func (x *CommandLineUpstreamService) SetCommand(v string) {
+	x.xxx_hidden_Command = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
 	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
-func (x *CommandLineUpstreamService) SetCalls(v []*StdioCallDefinition) {
+func (x *CommandLineUpstreamService) SetCalls(v []*CommandLineCallDefinition) {
 	x.xxx_hidden_Calls = &v
 }
 
-func (x *CommandLineUpstreamService) SetHealthCheck(v *StdioHealthCheck) {
+func (x *CommandLineUpstreamService) SetHealthCheck(v *CommandLineHealthCheck) {
 	x.xxx_hidden_HealthCheck = v
 }
 
 func (x *CommandLineUpstreamService) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *CommandLineUpstreamService) SetContainerEnvironment(v *ContainerEnvironment) {
+	x.xxx_hidden_ContainerEnvironment = v
+}
+
+func (x *CommandLineUpstreamService) SetTimeout(v *durationpb.Duration) {
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *CommandLineUpstreamService) HasCommand() bool {
@@ -4277,7 +4304,7 @@ func (x *CommandLineUpstreamService) HasWorkingDirectory() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *CommandLineUpstreamService) HasHealthCheck() bool {
@@ -4294,13 +4321,27 @@ func (x *CommandLineUpstreamService) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *CommandLineUpstreamService) HasContainerEnvironment() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ContainerEnvironment != nil
+}
+
+func (x *CommandLineUpstreamService) HasTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Timeout != nil
+}
+
 func (x *CommandLineUpstreamService) ClearCommand() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Command = nil
 }
 
 func (x *CommandLineUpstreamService) ClearWorkingDirectory() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_WorkingDirectory = nil
 }
 
@@ -4312,20 +4353,31 @@ func (x *CommandLineUpstreamService) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *CommandLineUpstreamService) ClearContainerEnvironment() {
+	x.xxx_hidden_ContainerEnvironment = nil
+}
+
+func (x *CommandLineUpstreamService) ClearTimeout() {
+	x.xxx_hidden_Timeout = nil
+}
+
 type CommandLineUpstreamService_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The command and arguments to execute the service.
+	// The command to execute the service.
 	Command *string
-	Args    []string
 	// The working directory for the command.
 	WorkingDirectory *string
-	// Manually defined mappings from MCP tools to stdio commands.
-	Calls []*StdioCallDefinition
+	// Manually defined mappings from MCP tools to command line commands.
+	Calls []*CommandLineCallDefinition
 	// Health check configuration.
-	HealthCheck *StdioHealthCheck
+	HealthCheck *CommandLineHealthCheck
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// Container environment to run the command in.
+	ContainerEnvironment *ContainerEnvironment
+	// Timeout for the command execution.
+	Timeout *durationpb.Duration
 }
 
 func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService {
@@ -4333,17 +4385,18 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Command = b.Command
 	}
-	x.xxx_hidden_Args = b.Args
 	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
 		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
 	}
 	x.xxx_hidden_Calls = &b.Calls
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_ContainerEnvironment = b.ContainerEnvironment
+	x.xxx_hidden_Timeout = b.Timeout
 	return m0
 }
 
@@ -5766,28 +5819,28 @@ func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
 	return m0
 }
 
-// StdioParameterMapping defines how to pass an input parameter to a stdio process.
-type StdioParameterMapping struct {
+// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
+type CommandLineParameterMapping struct {
 	state             protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
 
-func (x *StdioParameterMapping) Reset() {
-	*x = StdioParameterMapping{}
+func (x *CommandLineParameterMapping) Reset() {
+	*x = CommandLineParameterMapping{}
 	mi := &file_proto_config_v1_config_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StdioParameterMapping) String() string {
+func (x *CommandLineParameterMapping) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StdioParameterMapping) ProtoMessage() {}
+func (*CommandLineParameterMapping) ProtoMessage() {}
 
-func (x *StdioParameterMapping) ProtoReflect() protoreflect.Message {
+func (x *CommandLineParameterMapping) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_config_v1_config_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5799,37 +5852,37 @@ func (x *StdioParameterMapping) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *StdioParameterMapping) GetSchema() *ParameterSchema {
+func (x *CommandLineParameterMapping) GetSchema() *ParameterSchema {
 	if x != nil {
 		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
-func (x *StdioParameterMapping) SetSchema(v *ParameterSchema) {
+func (x *CommandLineParameterMapping) SetSchema(v *ParameterSchema) {
 	x.xxx_hidden_Schema = v
 }
 
-func (x *StdioParameterMapping) HasSchema() bool {
+func (x *CommandLineParameterMapping) HasSchema() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Schema != nil
 }
 
-func (x *StdioParameterMapping) ClearSchema() {
+func (x *CommandLineParameterMapping) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
-type StdioParameterMapping_builder struct {
+type CommandLineParameterMapping_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The schema for the parameter.
 	Schema *ParameterSchema
 }
 
-func (b0 StdioParameterMapping_builder) Build() *StdioParameterMapping {
-	m0 := &StdioParameterMapping{}
+func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMapping {
+	m0 := &CommandLineParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
@@ -6432,8 +6485,8 @@ func (b0 GrpcHealthCheck_builder) Build() *GrpcHealthCheck {
 	return m0
 }
 
-// Defines a health check for a stdio-based service.
-type StdioHealthCheck struct {
+// Defines a health check for a command line-based service.
+type CommandLineHealthCheck struct {
 	state                               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Method                   *string                `protobuf:"bytes,1,opt,name=method"`
 	xxx_hidden_Prompt                   *string                `protobuf:"bytes,2,opt,name=prompt"`
@@ -6446,20 +6499,20 @@ type StdioHealthCheck struct {
 	sizeCache                           protoimpl.SizeCache
 }
 
-func (x *StdioHealthCheck) Reset() {
-	*x = StdioHealthCheck{}
+func (x *CommandLineHealthCheck) Reset() {
+	*x = CommandLineHealthCheck{}
 	mi := &file_proto_config_v1_config_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StdioHealthCheck) String() string {
+func (x *CommandLineHealthCheck) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StdioHealthCheck) ProtoMessage() {}
+func (*CommandLineHealthCheck) ProtoMessage() {}
 
-func (x *StdioHealthCheck) ProtoReflect() protoreflect.Message {
+func (x *CommandLineHealthCheck) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_config_v1_config_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -6471,7 +6524,7 @@ func (x *StdioHealthCheck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *StdioHealthCheck) GetMethod() string {
+func (x *CommandLineHealthCheck) GetMethod() string {
 	if x != nil {
 		if x.xxx_hidden_Method != nil {
 			return *x.xxx_hidden_Method
@@ -6481,7 +6534,7 @@ func (x *StdioHealthCheck) GetMethod() string {
 	return ""
 }
 
-func (x *StdioHealthCheck) GetPrompt() string {
+func (x *CommandLineHealthCheck) GetPrompt() string {
 	if x != nil {
 		if x.xxx_hidden_Prompt != nil {
 			return *x.xxx_hidden_Prompt
@@ -6491,7 +6544,7 @@ func (x *StdioHealthCheck) GetPrompt() string {
 	return ""
 }
 
-func (x *StdioHealthCheck) GetExpectedResponseContains() string {
+func (x *CommandLineHealthCheck) GetExpectedResponseContains() string {
 	if x != nil {
 		if x.xxx_hidden_ExpectedResponseContains != nil {
 			return *x.xxx_hidden_ExpectedResponseContains
@@ -6501,105 +6554,105 @@ func (x *StdioHealthCheck) GetExpectedResponseContains() string {
 	return ""
 }
 
-func (x *StdioHealthCheck) GetInterval() *durationpb.Duration {
+func (x *CommandLineHealthCheck) GetInterval() *durationpb.Duration {
 	if x != nil {
 		return x.xxx_hidden_Interval
 	}
 	return nil
 }
 
-func (x *StdioHealthCheck) GetTimeout() *durationpb.Duration {
+func (x *CommandLineHealthCheck) GetTimeout() *durationpb.Duration {
 	if x != nil {
 		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
-func (x *StdioHealthCheck) SetMethod(v string) {
+func (x *CommandLineHealthCheck) SetMethod(v string) {
 	x.xxx_hidden_Method = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
-func (x *StdioHealthCheck) SetPrompt(v string) {
+func (x *CommandLineHealthCheck) SetPrompt(v string) {
 	x.xxx_hidden_Prompt = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *StdioHealthCheck) SetExpectedResponseContains(v string) {
+func (x *CommandLineHealthCheck) SetExpectedResponseContains(v string) {
 	x.xxx_hidden_ExpectedResponseContains = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
-func (x *StdioHealthCheck) SetInterval(v *durationpb.Duration) {
+func (x *CommandLineHealthCheck) SetInterval(v *durationpb.Duration) {
 	x.xxx_hidden_Interval = v
 }
 
-func (x *StdioHealthCheck) SetTimeout(v *durationpb.Duration) {
+func (x *CommandLineHealthCheck) SetTimeout(v *durationpb.Duration) {
 	x.xxx_hidden_Timeout = v
 }
 
-func (x *StdioHealthCheck) HasMethod() bool {
+func (x *CommandLineHealthCheck) HasMethod() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *StdioHealthCheck) HasPrompt() bool {
+func (x *CommandLineHealthCheck) HasPrompt() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *StdioHealthCheck) HasExpectedResponseContains() bool {
+func (x *CommandLineHealthCheck) HasExpectedResponseContains() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *StdioHealthCheck) HasInterval() bool {
+func (x *CommandLineHealthCheck) HasInterval() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Interval != nil
 }
 
-func (x *StdioHealthCheck) HasTimeout() bool {
+func (x *CommandLineHealthCheck) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Timeout != nil
 }
 
-func (x *StdioHealthCheck) ClearMethod() {
+func (x *CommandLineHealthCheck) ClearMethod() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Method = nil
 }
 
-func (x *StdioHealthCheck) ClearPrompt() {
+func (x *CommandLineHealthCheck) ClearPrompt() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Prompt = nil
 }
 
-func (x *StdioHealthCheck) ClearExpectedResponseContains() {
+func (x *CommandLineHealthCheck) ClearExpectedResponseContains() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_ExpectedResponseContains = nil
 }
 
-func (x *StdioHealthCheck) ClearInterval() {
+func (x *CommandLineHealthCheck) ClearInterval() {
 	x.xxx_hidden_Interval = nil
 }
 
-func (x *StdioHealthCheck) ClearTimeout() {
+func (x *CommandLineHealthCheck) ClearTimeout() {
 	x.xxx_hidden_Timeout = nil
 }
 
-type StdioHealthCheck_builder struct {
+type CommandLineHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The method or command to send to the stdio service for the health check.
+	// The method or command to send to the command line service for the health check.
 	Method *string
 	// The input/prompt to send to the service.
 	Prompt *string
@@ -6611,8 +6664,8 @@ type StdioHealthCheck_builder struct {
 	Timeout *durationpb.Duration
 }
 
-func (b0 StdioHealthCheck_builder) Build() *StdioHealthCheck {
-	m0 := &StdioHealthCheck{}
+func (b0 CommandLineHealthCheck_builder) Build() *CommandLineHealthCheck {
+	m0 := &CommandLineHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Method != nil {
@@ -6632,6 +6685,135 @@ func (b0 StdioHealthCheck_builder) Build() *StdioHealthCheck {
 	return m0
 }
 
+// Defines the container environment for running a command.
+type ContainerEnvironment struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Image       *string                `protobuf:"bytes,2,opt,name=image"`
+	xxx_hidden_Mounts      map[string]string      `protobuf:"bytes,3,rep,name=mounts" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ContainerEnvironment) Reset() {
+	*x = ContainerEnvironment{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContainerEnvironment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContainerEnvironment) ProtoMessage() {}
+
+func (x *ContainerEnvironment) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ContainerEnvironment) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ContainerEnvironment) GetImage() string {
+	if x != nil {
+		if x.xxx_hidden_Image != nil {
+			return *x.xxx_hidden_Image
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ContainerEnvironment) GetMounts() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Mounts
+	}
+	return nil
+}
+
+func (x *ContainerEnvironment) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *ContainerEnvironment) SetImage(v string) {
+	x.xxx_hidden_Image = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ContainerEnvironment) SetMounts(v map[string]string) {
+	x.xxx_hidden_Mounts = v
+}
+
+func (x *ContainerEnvironment) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ContainerEnvironment) HasImage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ContainerEnvironment) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *ContainerEnvironment) ClearImage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Image = nil
+}
+
+type ContainerEnvironment_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The name of the container.
+	Name *string
+	// The image to use for the container.
+	Image *string
+	// The mounts to use for the container.
+	Mounts map[string]string
+}
+
+func (b0 ContainerEnvironment_builder) Build() *ContainerEnvironment {
+	m0 := &ContainerEnvironment{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Image != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Image = b.Image
+	}
+	x.xxx_hidden_Mounts = b.Mounts
+	return m0
+}
+
 // Configuration for rate limiting requests to the upstream service.
 type RateLimitConfig struct {
 	state                        protoimpl.MessageState `protogen:"opaque.v1"`
@@ -6646,7 +6828,7 @@ type RateLimitConfig struct {
 
 func (x *RateLimitConfig) Reset() {
 	*x = RateLimitConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	mi := &file_proto_config_v1_config_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6658,7 +6840,7 @@ func (x *RateLimitConfig) String() string {
 func (*RateLimitConfig) ProtoMessage() {}
 
 func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	mi := &file_proto_config_v1_config_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6785,7 +6967,7 @@ type CacheConfig struct {
 
 func (x *CacheConfig) Reset() {
 	*x = CacheConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[37]
+	mi := &file_proto_config_v1_config_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6797,7 +6979,7 @@ func (x *CacheConfig) String() string {
 func (*CacheConfig) ProtoMessage() {}
 
 func (x *CacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[37]
+	mi := &file_proto_config_v1_config_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6919,7 +7101,7 @@ type ResilienceConfig struct {
 
 func (x *ResilienceConfig) Reset() {
 	*x = ResilienceConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[38]
+	mi := &file_proto_config_v1_config_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6931,7 +7113,7 @@ func (x *ResilienceConfig) String() string {
 func (*ResilienceConfig) ProtoMessage() {}
 
 func (x *ResilienceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[38]
+	mi := &file_proto_config_v1_config_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7019,7 +7201,7 @@ type CircuitBreakerConfig struct {
 
 func (x *CircuitBreakerConfig) Reset() {
 	*x = CircuitBreakerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[39]
+	mi := &file_proto_config_v1_config_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7031,7 +7213,7 @@ func (x *CircuitBreakerConfig) String() string {
 func (*CircuitBreakerConfig) ProtoMessage() {}
 
 func (x *CircuitBreakerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[39]
+	mi := &file_proto_config_v1_config_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7183,7 +7365,7 @@ type RetryConfig struct {
 
 func (x *RetryConfig) Reset() {
 	*x = RetryConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[40]
+	mi := &file_proto_config_v1_config_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7195,7 +7377,7 @@ func (x *RetryConfig) String() string {
 func (*RetryConfig) ProtoMessage() {}
 
 func (x *RetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[40]
+	mi := &file_proto_config_v1_config_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7308,7 +7490,7 @@ type AuthenticationConfig struct {
 
 func (x *AuthenticationConfig) Reset() {
 	*x = AuthenticationConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[41]
+	mi := &file_proto_config_v1_config_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7320,7 +7502,7 @@ func (x *AuthenticationConfig) String() string {
 func (*AuthenticationConfig) ProtoMessage() {}
 
 func (x *AuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[41]
+	mi := &file_proto_config_v1_config_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7447,7 +7629,7 @@ func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
 type case_AuthenticationConfig_AuthMethod protoreflect.FieldNumber
 
 func (x case_AuthenticationConfig_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[41].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[42].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -7484,7 +7666,7 @@ type APIKeyAuth struct {
 
 func (x *APIKeyAuth) Reset() {
 	*x = APIKeyAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[42]
+	mi := &file_proto_config_v1_config_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7496,7 +7678,7 @@ func (x *APIKeyAuth) String() string {
 func (*APIKeyAuth) ProtoMessage() {}
 
 func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[42]
+	mi := &file_proto_config_v1_config_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7632,7 +7814,7 @@ type OAuth2Auth struct {
 
 func (x *OAuth2Auth) Reset() {
 	*x = OAuth2Auth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[43]
+	mi := &file_proto_config_v1_config_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7644,7 +7826,7 @@ func (x *OAuth2Auth) String() string {
 func (*OAuth2Auth) ProtoMessage() {}
 
 func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[43]
+	mi := &file_proto_config_v1_config_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7842,7 +8024,7 @@ type UpstreamAuthentication struct {
 
 func (x *UpstreamAuthentication) Reset() {
 	*x = UpstreamAuthentication{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[44]
+	mi := &file_proto_config_v1_config_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7854,7 +8036,7 @@ func (x *UpstreamAuthentication) String() string {
 func (*UpstreamAuthentication) ProtoMessage() {}
 
 func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[44]
+	mi := &file_proto_config_v1_config_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8086,7 +8268,7 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 type case_UpstreamAuthentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_UpstreamAuthentication_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[44].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[45].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -8134,7 +8316,7 @@ type UpstreamAPIKeyAuth struct {
 
 func (x *UpstreamAPIKeyAuth) Reset() {
 	*x = UpstreamAPIKeyAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[45]
+	mi := &file_proto_config_v1_config_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8146,7 +8328,7 @@ func (x *UpstreamAPIKeyAuth) String() string {
 func (*UpstreamAPIKeyAuth) ProtoMessage() {}
 
 func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[45]
+	mi := &file_proto_config_v1_config_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8247,7 +8429,7 @@ type UpstreamBearerTokenAuth struct {
 
 func (x *UpstreamBearerTokenAuth) Reset() {
 	*x = UpstreamBearerTokenAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[46]
+	mi := &file_proto_config_v1_config_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8259,7 +8441,7 @@ func (x *UpstreamBearerTokenAuth) String() string {
 func (*UpstreamBearerTokenAuth) ProtoMessage() {}
 
 func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[46]
+	mi := &file_proto_config_v1_config_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8328,7 +8510,7 @@ type UpstreamBasicAuth struct {
 
 func (x *UpstreamBasicAuth) Reset() {
 	*x = UpstreamBasicAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[47]
+	mi := &file_proto_config_v1_config_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8340,7 +8522,7 @@ func (x *UpstreamBasicAuth) String() string {
 func (*UpstreamBasicAuth) ProtoMessage() {}
 
 func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[47]
+	mi := &file_proto_config_v1_config_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8442,7 +8624,7 @@ type UpstreamOAuth2Auth struct {
 
 func (x *UpstreamOAuth2Auth) Reset() {
 	*x = UpstreamOAuth2Auth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	mi := &file_proto_config_v1_config_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8454,7 +8636,7 @@ func (x *UpstreamOAuth2Auth) String() string {
 func (*UpstreamOAuth2Auth) ProtoMessage() {}
 
 func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	mi := &file_proto_config_v1_config_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8621,7 +8803,7 @@ type TLSConfig struct {
 
 func (x *TLSConfig) Reset() {
 	*x = TLSConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
+	mi := &file_proto_config_v1_config_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8633,7 +8815,7 @@ func (x *TLSConfig) String() string {
 func (*TLSConfig) ProtoMessage() {}
 
 func (x *TLSConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
+	mi := &file_proto_config_v1_config_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8859,13 +9041,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"parameters\x12M\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
 	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xc3\x01\n" +
-	"\x13StdioCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12E\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xe3\x01\n" +
+	"\x19CommandLineCallDefinition\x122\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12K\n" +
 	"\n" +
-	"parameters\x18\x02 \x03(\v2%.mcpx.config.v1.StdioParameterMappingR\n" +
+	"parameters\x18\x02 \x03(\v2+.mcpx.config.v1.CommandLineParameterMappingR\n" +
 	"parameters\x121\n" +
-	"\x05cache\x18\x03 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\".\n" +
+	"\x05cache\x18\x03 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12\x12\n" +
+	"\x04args\x18\x04 \x03(\tR\x04args\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
 	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcb\x02\n" +
 	"\x11OutputTransformer\x12F\n" +
@@ -8982,14 +9165,15 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\fhealth_check\x18\x03 \x01(\v2\x1f.mcpx.config.v1.HttpHealthCheckR\vhealthCheck\x128\n" +
 	"\n" +
 	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x12;\n" +
-	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\"\xaa\x02\n" +
+	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\"\xb2\x03\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
-	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
-	"\x04args\x18\x02 \x03(\tR\x04args\x12+\n" +
-	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x129\n" +
-	"\x05calls\x18\x04 \x03(\v2#.mcpx.config.v1.StdioCallDefinitionR\x05calls\x12C\n" +
-	"\fhealth_check\x18\x05 \x01(\v2 .mcpx.config.v1.StdioHealthCheckR\vhealthCheck\x121\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xef\x02\n" +
+	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
+	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12?\n" +
+	"\x05calls\x18\x04 \x03(\v2).mcpx.config.v1.CommandLineCallDefinitionR\x05calls\x12I\n" +
+	"\fhealth_check\x18\x05 \x01(\v2&.mcpx.config.v1.CommandLineHealthCheckR\vhealthCheck\x121\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12Y\n" +
+	"\x15container_environment\x18\a \x01(\v2$.mcpx.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
+	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xef\x02\n" +
 	"\x12McpUpstreamService\x12V\n" +
 	"\x0fhttp_connection\x18\x01 \x01(\v2+.mcpx.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12O\n" +
 	"\x10stdio_connection\x18\x02 \x01(\v2\".mcpx.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12.\n" +
@@ -9034,8 +9218,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x19WebsocketParameterMapping\x127\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"Q\n" +
 	"\x16WebrtcParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"P\n" +
-	"\x15StdioParameterMapping\x127\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"V\n" +
+	"\x1bCommandLineParameterMapping\x127\n" +
 	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"\xaf\x01\n" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
@@ -9054,13 +9238,20 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11expected_response\x18\x04 \x01(\tR\x10expectedResponse\x12\x1a\n" +
 	"\binsecure\x18\x05 \x01(\bR\binsecure\x125\n" +
 	"\binterval\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\a \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xec\x01\n" +
-	"\x10StdioHealthCheck\x12\x16\n" +
+	"\atimeout\x18\a \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xf2\x01\n" +
+	"\x16CommandLineHealthCheck\x12\x16\n" +
 	"\x06method\x18\x01 \x01(\tR\x06method\x12\x16\n" +
 	"\x06prompt\x18\x02 \x01(\tR\x06prompt\x12<\n" +
 	"\x1aexpected_response_contains\x18\x03 \x01(\tR\x18expectedResponseContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"v\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc5\x01\n" +
+	"\x14ContainerEnvironment\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x05image\x18\x02 \x01(\tR\x05image\x12H\n" +
+	"\x06mounts\x18\x03 \x03(\v20.mcpx.config.v1.ContainerEnvironment.MountsEntryR\x06mounts\x1a9\n" +
+	"\vMountsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
 	"\x0fRateLimitConfig\x12\x1d\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12.\n" +
@@ -9153,7 +9344,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06RANDOM\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpx.config.v1.ParameterType
 	(LoadBalancingStrategy)(0),          // 1: mcpx.config.v1.LoadBalancingStrategy
@@ -9165,7 +9356,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*HttpCallDefinition)(nil),          // 7: mcpx.config.v1.HttpCallDefinition
 	(*WebsocketCallDefinition)(nil),     // 8: mcpx.config.v1.WebsocketCallDefinition
 	(*WebrtcCallDefinition)(nil),        // 9: mcpx.config.v1.WebrtcCallDefinition
-	(*StdioCallDefinition)(nil),         // 10: mcpx.config.v1.StdioCallDefinition
+	(*CommandLineCallDefinition)(nil),   // 10: mcpx.config.v1.CommandLineCallDefinition
 	(*InputTransformer)(nil),            // 11: mcpx.config.v1.InputTransformer
 	(*OutputTransformer)(nil),           // 12: mcpx.config.v1.OutputTransformer
 	(*GrpcCallDefinition)(nil),          // 13: mcpx.config.v1.GrpcCallDefinition
@@ -9192,30 +9383,32 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*HttpParameterMapping)(nil),        // 34: mcpx.config.v1.HttpParameterMapping
 	(*WebsocketParameterMapping)(nil),   // 35: mcpx.config.v1.WebsocketParameterMapping
 	(*WebrtcParameterMapping)(nil),      // 36: mcpx.config.v1.WebrtcParameterMapping
-	(*StdioParameterMapping)(nil),       // 37: mcpx.config.v1.StdioParameterMapping
+	(*CommandLineParameterMapping)(nil), // 37: mcpx.config.v1.CommandLineParameterMapping
 	(*ConnectionPoolConfig)(nil),        // 38: mcpx.config.v1.ConnectionPoolConfig
 	(*HttpHealthCheck)(nil),             // 39: mcpx.config.v1.HttpHealthCheck
 	(*GrpcHealthCheck)(nil),             // 40: mcpx.config.v1.GrpcHealthCheck
-	(*StdioHealthCheck)(nil),            // 41: mcpx.config.v1.StdioHealthCheck
-	(*RateLimitConfig)(nil),             // 42: mcpx.config.v1.RateLimitConfig
-	(*CacheConfig)(nil),                 // 43: mcpx.config.v1.CacheConfig
-	(*ResilienceConfig)(nil),            // 44: mcpx.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),        // 45: mcpx.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                 // 46: mcpx.config.v1.RetryConfig
-	(*AuthenticationConfig)(nil),        // 47: mcpx.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),                  // 48: mcpx.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),                  // 49: mcpx.config.v1.OAuth2Auth
-	(*UpstreamAuthentication)(nil),      // 50: mcpx.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 51: mcpx.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 52: mcpx.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 53: mcpx.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),          // 54: mcpx.config.v1.UpstreamOAuth2Auth
-	(*TLSConfig)(nil),                   // 55: mcpx.config.v1.TLSConfig
-	nil,                                 // 56: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*bus.MessageBus)(nil),              // 57: bus.MessageBus
-	(*structpb.Value)(nil),              // 58: google.protobuf.Value
-	(*structpb.Struct)(nil),             // 59: google.protobuf.Struct
+	(*CommandLineHealthCheck)(nil),      // 41: mcpx.config.v1.CommandLineHealthCheck
+	(*ContainerEnvironment)(nil),        // 42: mcpx.config.v1.ContainerEnvironment
+	(*RateLimitConfig)(nil),             // 43: mcpx.config.v1.RateLimitConfig
+	(*CacheConfig)(nil),                 // 44: mcpx.config.v1.CacheConfig
+	(*ResilienceConfig)(nil),            // 45: mcpx.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),        // 46: mcpx.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                 // 47: mcpx.config.v1.RetryConfig
+	(*AuthenticationConfig)(nil),        // 48: mcpx.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),                  // 49: mcpx.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),                  // 50: mcpx.config.v1.OAuth2Auth
+	(*UpstreamAuthentication)(nil),      // 51: mcpx.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),          // 52: mcpx.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil),     // 53: mcpx.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),           // 54: mcpx.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),          // 55: mcpx.config.v1.UpstreamOAuth2Auth
+	(*TLSConfig)(nil),                   // 56: mcpx.config.v1.TLSConfig
+	nil,                                 // 57: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	nil,                                 // 58: mcpx.config.v1.ContainerEnvironment.MountsEntry
+	(*bus.MessageBus)(nil),              // 59: bus.MessageBus
 	(*durationpb.Duration)(nil),         // 60: google.protobuf.Duration
+	(*structpb.Value)(nil),              // 61: google.protobuf.Value
+	(*structpb.Struct)(nil),             // 62: google.protobuf.Struct
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	16,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
@@ -9225,40 +9418,40 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	34,  // 4: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
 	11,  // 5: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
 	12,  // 6: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43,  // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 7: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	31,  // 8: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	35,  // 9: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
 	11,  // 10: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
 	12,  // 11: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43,  // 12: mcpx.config.v1.WebsocketCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 12: mcpx.config.v1.WebsocketCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	31,  // 13: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	36,  // 14: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
 	11,  // 15: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
 	12,  // 16: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43,  // 17: mcpx.config.v1.WebrtcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	31,  // 18: mcpx.config.v1.StdioCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	37,  // 19: mcpx.config.v1.StdioCallDefinition.parameters:type_name -> mcpx.config.v1.StdioParameterMapping
-	43,  // 20: mcpx.config.v1.StdioCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 17: mcpx.config.v1.WebrtcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	31,  // 18: mcpx.config.v1.CommandLineCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
+	37,  // 19: mcpx.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpx.config.v1.CommandLineParameterMapping
+	44,  // 20: mcpx.config.v1.CommandLineCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	3,   // 21: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	56,  // 22: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	57,  // 22: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
 	31,  // 23: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	43,  // 24: mcpx.config.v1.GrpcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 24: mcpx.config.v1.GrpcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	31,  // 25: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	11,  // 26: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
 	12,  // 27: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43,  // 28: mcpx.config.v1.OpenAPICallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 28: mcpx.config.v1.OpenAPICallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	31,  // 29: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	11,  // 30: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
 	12,  // 31: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	43,  // 32: mcpx.config.v1.MCPCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
+	44,  // 32: mcpx.config.v1.MCPCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	4,   // 33: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	57,  // 34: mcpx.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	59,  // 34: mcpx.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	38,  // 35: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	50,  // 36: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	43,  // 37: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
-	42,  // 38: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
+	51,  // 36: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	44,  // 37: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
+	43,  // 38: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
 	1,   // 39: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
-	44,  // 40: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
+	45,  // 40: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
 	28,  // 41: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
 	23,  // 42: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
 	18,  // 43: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
@@ -9266,8 +9459,8 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	27,  // 45: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
 	24,  // 46: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
 	25,  // 47: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
-	47,  // 48: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	55,  // 49: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	48,  // 48: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
+	56,  // 49: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	13,  // 50: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
 	40,  // 51: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
 	19,  // 52: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
@@ -9276,55 +9469,58 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	21,  // 55: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
 	7,   // 56: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
 	39,  // 57: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55,  // 58: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	56,  // 58: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	8,   // 59: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	55,  // 60: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	56,  // 60: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	9,   // 61: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	55,  // 62: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	56,  // 62: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	39,  // 63: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	55,  // 64: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	56,  // 64: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	14,  // 65: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
-	10,  // 66: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.StdioCallDefinition
-	41,  // 67: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.StdioHealthCheck
-	43,  // 68: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
-	30,  // 69: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
-	29,  // 70: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
-	33,  // 71: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
-	15,  // 72: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	55,  // 73: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	0,   // 74: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	58,  // 75: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	59,  // 76: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	59,  // 77: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	32,  // 78: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32,  // 79: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32,  // 80: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	32,  // 81: mcpx.config.v1.StdioParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	60,  // 82: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	60,  // 83: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	60,  // 84: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	60,  // 85: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	60,  // 86: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	60,  // 87: mcpx.config.v1.StdioHealthCheck.interval:type_name -> google.protobuf.Duration
-	60,  // 88: mcpx.config.v1.StdioHealthCheck.timeout:type_name -> google.protobuf.Duration
-	60,  // 89: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	45,  // 90: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	46,  // 91: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	60,  // 92: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	60,  // 93: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	60,  // 94: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	48,  // 95: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	49,  // 96: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,   // 97: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	51,  // 98: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	52,  // 99: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	53,  // 100: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	54,  // 101: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
-	102, // [102:102] is the sub-list for method output_type
-	102, // [102:102] is the sub-list for method input_type
-	102, // [102:102] is the sub-list for extension type_name
-	102, // [102:102] is the sub-list for extension extendee
-	0,   // [0:102] is the sub-list for field type_name
+	10,  // 66: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.CommandLineCallDefinition
+	41,  // 67: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.CommandLineHealthCheck
+	44,  // 68: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
+	42,  // 69: mcpx.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpx.config.v1.ContainerEnvironment
+	60,  // 70: mcpx.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	30,  // 71: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
+	29,  // 72: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
+	33,  // 73: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
+	15,  // 74: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
+	56,  // 75: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	0,   // 76: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
+	61,  // 77: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	62,  // 78: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	62,  // 79: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	32,  // 80: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 81: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 82: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	32,  // 83: mcpx.config.v1.CommandLineParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
+	60,  // 84: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	60,  // 85: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	60,  // 86: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	60,  // 87: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	60,  // 88: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	60,  // 89: mcpx.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	60,  // 90: mcpx.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	58,  // 91: mcpx.config.v1.ContainerEnvironment.mounts:type_name -> mcpx.config.v1.ContainerEnvironment.MountsEntry
+	60,  // 92: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	46,  // 93: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	47,  // 94: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	60,  // 95: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	60,  // 96: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	60,  // 97: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	49,  // 98: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	50,  // 99: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	5,   // 100: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	52,  // 101: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	53,  // 102: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	54,  // 103: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	55,  // 104: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	105, // [105:105] is the sub-list for method output_type
+	105, // [105:105] is the sub-list for method input_type
+	105, // [105:105] is the sub-list for extension type_name
+	105, // [105:105] is the sub-list for extension extendee
+	0,   // [0:105] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -9356,11 +9552,11 @@ func file_proto_config_v1_config_proto_init() {
 		(*mcpUpstreamService_HttpConnection)(nil),
 		(*mcpUpstreamService_StdioConnection)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[41].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[42].OneofWrappers = []any{
 		(*authenticationConfig_ApiKey)(nil),
 		(*authenticationConfig_Oauth2)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[44].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[45].OneofWrappers = []any{
 		(*upstreamAuthentication_ApiKey)(nil),
 		(*upstreamAuthentication_BearerToken)(nil),
 		(*upstreamAuthentication_BasicAuth)(nil),
@@ -9372,7 +9568,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   51,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

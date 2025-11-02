@@ -125,6 +125,23 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			log.Error("Failed to convert config schema to proto properties", "error", err)
 			continue
 		}
+
+		if inputProperties.Fields == nil {
+			inputProperties.Fields = make(map[string]*structpb.Value)
+		}
+
+		inputProperties.Fields["args"] = structpb.NewStructValue(&structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":        structpb.NewStringValue("array"),
+				"description": structpb.NewStringValue("Additional arguments for the command"),
+				"items": structpb.NewStructValue(&structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type": structpb.NewStringValue("string"),
+					},
+				}),
+			},
+		})
+
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
 				"type":       structpb.NewStringValue("object"),
@@ -164,7 +181,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			OutputSchema:        outputSchema,
 		}.Build()
 
-		newTool := tool.NewCommandTool(newToolProto, commandLineService.GetCommand(), toolDef)
+		newTool := tool.NewCommandTool(newToolProto, commandLineService, toolDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			return nil, err

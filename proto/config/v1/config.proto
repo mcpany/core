@@ -77,14 +77,16 @@ message WebrtcCallDefinition {
   CacheConfig cache = 6;
 }
 
-// StdioCallDefinition describes how to map an MCP call to a stdio command.
-message StdioCallDefinition {
+// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
+message CommandLineCallDefinition {
   // Common tool schema.
   ToolSchema schema = 1;
   // Defines the parameters for the stdio command.
-  repeated StdioParameterMapping parameters = 2;
+  repeated CommandLineParameterMapping parameters = 2;
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 3;
+  // The arguments to pass to the command.
+  repeated string args = 4;
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -322,17 +324,20 @@ message OpenapiUpstreamService {
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
 message CommandLineUpstreamService {
-  // The command and arguments to execute the service.
+  // The command to execute the service.
   string command = 1;
-  repeated string args = 2;
   // The working directory for the command.
   string working_directory = 3;
-  // Manually defined mappings from MCP tools to stdio commands.
-  repeated StdioCallDefinition calls = 4;
+  // Manually defined mappings from MCP tools to command line commands.
+  repeated CommandLineCallDefinition calls = 4;
   // Health check configuration.
-  StdioHealthCheck health_check = 5;
+  CommandLineHealthCheck health_check = 5;
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 6;
+  // Container environment to run the command in.
+  ContainerEnvironment container_environment = 7;
+  // Timeout for the command execution.
+  google.protobuf.Duration timeout = 8;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
@@ -459,8 +464,8 @@ message WebrtcParameterMapping {
   ParameterSchema schema = 1;
 }
 
-// StdioParameterMapping defines how to pass an input parameter to a stdio process.
-message StdioParameterMapping {
+// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
+message CommandLineParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
 }
@@ -510,9 +515,9 @@ message GrpcHealthCheck {
   google.protobuf.Duration timeout = 7;
 }
 
-// Defines a health check for a stdio-based service.
-message StdioHealthCheck {
-  // The method or command to send to the stdio service for the health check.
+// Defines a health check for a command line-based service.
+message CommandLineHealthCheck {
+  // The method or command to send to the command line service for the health check.
   string method = 1;
   // The input/prompt to send to the service.
   string prompt = 2;
@@ -522,6 +527,16 @@ message StdioHealthCheck {
   google.protobuf.Duration interval = 4;
   // The timeout for each health check attempt.
   google.protobuf.Duration timeout = 5;
+}
+
+// Defines the container environment for running a command.
+message ContainerEnvironment {
+  // The name of the container.
+  string name = 1;
+  // The image to use for the container.
+  string image = 2;
+  // The mounts to use for the container.
+  map<string, string> mounts = 3;
 }
 
 // Defines strategies for load balancing across multiple service endpoints.
