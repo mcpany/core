@@ -21,6 +21,7 @@ import (
 	"log"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -98,7 +99,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		serviceName := "testservice"
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName(serviceName)
-		config.SetHttpService(&configv1.HttpUpstreamService{})
+		httpService := &configv1.HttpUpstreamService{}
+		httpService.SetAddress("http://localhost:8080")
+		config.SetHttpService(httpService)
 
 		req := &v1.RegisterServiceRequest{}
 		req.SetConfig(config)
@@ -284,6 +287,96 @@ paths:
 		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
 		require.Contains(t, properties, "param1")
 	})
+
+	t.Run("registration failure", func(t *testing.T) {
+		serviceName := "failing-service"
+		config := &configv1.UpstreamServiceConfig{}
+		config.SetName(serviceName)
+		// This address is invalid and will cause the registration to fail
+		httpService := &configv1.HttpUpstreamService{}
+		httpService.SetAddress("http://invalid-url:port")
+		config.SetHttpService(httpService)
+
+		req := &v1.RegisterServiceRequest{}
+		req.SetConfig(config)
+
+		_, err := registrationServer.RegisterService(ctx, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Internal, st.Code())
+		assert.Contains(t, st.Message(), "failed to register service")
+	})
+}
+
+func TestListServices(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Setup bus and worker
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+
+	// Setup components
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	registrationWorker.Start(ctx)
+
+	// Setup server
+	registrationServer, err := NewRegistrationServer(busProvider)
+	require.NoError(t, err)
+
+	// Register a service to be listed
+	serviceName := "test-service-for-listing"
+	config := &configv1.UpstreamServiceConfig{}
+	config.SetName(serviceName)
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost:8080")
+	config.SetHttpService(httpService)
+	req := &v1.RegisterServiceRequest{}
+	req.SetConfig(config)
+	_, err = registrationServer.RegisterService(ctx, req)
+	require.NoError(t, err)
+
+	// Now, list the services
+	listReq := &v1.ListServicesRequest{}
+	resp, err := registrationServer.ListServices(ctx, listReq)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+
+	// Check that the registered service is in the list
+	found := false
+	for _, serviceInfo := range resp.GetServices() {
+		if serviceInfo.GetName() == serviceName {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "the newly registered service should be in the list")
+
+	t.Run("list services with bus error", func(t *testing.T) {
+		// To simulate a bus error, we'll use a new bus provider that isn't properly configured
+		// for the worker to publish results to.
+		errorBusProvider, err := bus.NewBusProvider(bus_pb.MessageBus_builder{}.Build())
+		require.NoError(t, err)
+
+		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider)
+		require.NoError(t, err)
+
+		_, err = errorRegistrationServer.ListServices(ctx, &v1.ListServicesRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.DeadlineExceeded, st.Code())
+	})
 }
 
 func TestRegistrationServer_Unimplemented(t *testing.T) {
@@ -325,5 +418,47 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 		st, ok := status.FromError(err)
 		require.True(t, ok)
 		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
+	t.Run("mustEmbedUnimplementedRegistrationServiceServer", func(t *testing.T) {
+		s := &RegistrationServer{}
+		assert.NotPanics(t, s.mustEmbedUnimplementedRegistrationServiceServer)
+	})
+}
+
+func TestNewRegistrationServer_NilBus(t *testing.T) {
+	_, err := NewRegistrationServer(nil)
+	assert.Error(t, err)
+}
+
+func TestRegistrationServer_Timeouts(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	defer cancel()
+
+	// Setup bus without a worker to simulate a timeout
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+
+	registrationServer, err := NewRegistrationServer(busProvider)
+	require.NoError(t, err)
+
+	t.Run("RegisterService timeout", func(t *testing.T) {
+		req := &v1.RegisterServiceRequest{}
+		req.SetConfig((&configv1.UpstreamServiceConfig_builder{Name: proto.String("timeout-test")}).Build())
+		_, err := registrationServer.RegisterService(ctx, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.DeadlineExceeded, st.Code())
+	})
+
+	t.Run("ListServices timeout", func(t *testing.T) {
+		_, err := registrationServer.ListServices(ctx, &v1.ListServicesRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.DeadlineExceeded, st.Code())
 	})
 }
