@@ -23,9 +23,12 @@ import (
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
+	"time"
+
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -158,7 +161,13 @@ func NewServer(
 			req mcp.Request,
 		) (mcp.Result, error) {
 			if handler, ok := s.router.GetHandler(method); ok {
-				return handler(ctx, req)
+				metrics.IncrCounter([]string{"mcp", "request", method}, 1)
+				defer metrics.MeasureSince([]string{"mcp", "request", method, "latency"}, time.Now())
+				result, err := handler(ctx, req)
+				if err != nil {
+					metrics.IncrCounter([]string{"mcp", "request", method, "error"}, 1)
+				}
+				return result, err
 			}
 			return next(ctx, method, req)
 		}

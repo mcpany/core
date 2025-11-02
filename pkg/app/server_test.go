@@ -32,6 +32,7 @@ import (
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/spf13/afero"
 
 	"github.com/stretchr/testify/assert"
@@ -149,6 +150,7 @@ func TestSetup(t *testing.T) {
 }
 
 func TestRun_ServerMode(t *testing.T) {
+	metrics.TestOnlyReset()
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -184,6 +186,7 @@ upstream_services:
 }
 
 func TestRun_ConfigLoadError(t *testing.T) {
+	metrics.TestOnlyReset()
 	fs := afero.NewMemMapFs()
 	// Create a malformed config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
@@ -199,6 +202,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 }
 
 func TestRun_EmptyConfig(t *testing.T) {
+	metrics.TestOnlyReset()
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
@@ -214,6 +218,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 }
 
 func TestRun_StdioMode(t *testing.T) {
+	metrics.TestOnlyReset()
 	var stdioModeCalled bool
 	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
 		stdioModeCalled = true
@@ -235,6 +240,7 @@ func TestRun_StdioMode(t *testing.T) {
 }
 
 func TestRun_NoGrpcServer(t *testing.T) {
+	metrics.TestOnlyReset()
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -253,6 +259,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	app := NewApplication()
 
 	t.Run("nil_fs_fail", func(t *testing.T) {
+		metrics.TestOnlyReset()
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 		defer cancel()
 
@@ -262,6 +269,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 
 	t.Run("http_server_fail", func(t *testing.T) {
+		metrics.TestOnlyReset()
 		// Find a free port and occupy it
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
@@ -279,6 +287,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 
 	t.Run("grpc_server_fail", func(t *testing.T) {
+		metrics.TestOnlyReset()
 		// Find a free port and occupy it
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)

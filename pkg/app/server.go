@@ -30,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -112,6 +113,11 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	}
 
 	log.Info("Starting MCP Any Service...")
+
+	metricsHandler, err := metrics.Init()
+	if err != nil {
+		return fmt.Errorf("failed to initialize metrics: %w", err)
+	}
 
 	// Load initial services from config files
 	var cfg *config_v1.McpxServerConfig
@@ -198,7 +204,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
+	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout, metricsHandler)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -247,6 +253,7 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 func HealthCheck(port string) error {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
 	if err != nil {
+		metrics.IncrCounter([]string{"health", "check", "error"}, 1)
 		return fmt.Errorf("health check failed: %w", err)
 	}
 	defer resp.Body.Close()
@@ -258,9 +265,11 @@ func HealthCheck(port string) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		metrics.IncrCounter([]string{"health", "check", "failed"}, 1)
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
+	metrics.IncrCounter([]string{"health", "check", "success"}, 1)
 	fmt.Println("Health check successful: server is running and healthy.")
 	return nil
 }
@@ -276,7 +285,7 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
+func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration, metricsHandler http.Handler) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -285,8 +294,10 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 	}, nil)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", httpHandler)
+	mux.Handle("/", middleware.MetricsMiddleware(httpHandler))
+	mux.Handle("/metrics", metricsHandler)
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		metrics.IncrCounter([]string{"http", "healthz", "requests"}, 1)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
@@ -383,7 +394,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		}
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
-		grpcServer := gogrpc.NewServer()
+		grpcServer := gogrpc.NewServer(gogrpc.UnaryInterceptor(middleware.GRPCMetricsInterceptor))
 		register(grpcServer)
 		reflection.Register(grpcServer)
 

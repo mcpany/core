@@ -63,22 +63,29 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager) Factory {
 // It returns a new upstream service instance or an error if the service type is
 // unknown.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+	var u upstream.Upstream
+	var err error
 	switch config.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_GrpcService_case:
-		return grpc.NewGRPCUpstream(f.poolManager), nil
+		u, err = grpc.NewGRPCUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		return http.NewHTTPUpstream(f.poolManager), nil
+		u, err = http.NewHTTPUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		return openapi.NewOpenAPIUpstream(), nil
+		u, err = openapi.NewOpenAPIUpstream(), nil
 	case configv1.UpstreamServiceConfig_McpService_case:
-		return mcp.NewMCPUpstream(), nil
+		u, err = mcp.NewMCPUpstream(), nil
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
-		return command.NewCommandUpstream(), nil
+		u, err = command.NewCommandUpstream(), nil
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		return websocket.NewWebsocketUpstream(f.poolManager), nil
+		u, err = websocket.NewWebsocketUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		return webrtc.NewWebrtcUpstream(f.poolManager), nil
+		u, err = webrtc.NewWebrtcUpstream(f.poolManager), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}
+
+	if err != nil {
+		return nil, err
+	}
+	return upstream.NewMetricsUpstream(u, config.GetName()), nil
 }
