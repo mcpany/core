@@ -39,13 +39,12 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
+	v1 "github.com/mcpany/core/proto/api/v1"
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	v1 "github.com/mcpany/core/proto/api/v1"
-	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -63,7 +62,14 @@ type Runner interface {
 	// configPaths is a slice of paths to configuration files.
 	//
 	// It returns an error if the application fails to start or run.
-	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error
+	Run(
+		ctx context.Context,
+		fs afero.Fs,
+		stdio bool,
+		jsonrpcPort, grpcPort string,
+		configPaths []string,
+		shutdownTimeout time.Duration,
+	) error
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -105,7 +111,14 @@ func NewApplication() *Application {
 //     forcing termination.
 //
 // Returns an error if any part of the startup or execution fails.
-func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (a *Application) Run(
+	ctx context.Context,
+	fs afero.Fs,
+	stdio bool,
+	jsonrpcPort, grpcPort string,
+	configPaths []string,
+	shutdownTimeout time.Duration,
+) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
@@ -127,7 +140,8 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		cfg = &config_v1.McpxServerConfig{}
 	}
 
-	busProvider, err := bus.NewBusProvider(cfg.GetGlobalSettings().GetMessageBus())
+	busConfig := cfg.GetGlobalSettings().GetMessageBus()
+	busProvider, err := bus.NewBusProvider(busConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
@@ -137,7 +151,13 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
@@ -147,8 +167,23 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	upstreamWorker.Start(ctx)
 	registrationWorker.Start(ctx)
 
+	// If we're using an in-memory bus, start the in-process worker
+	if busConfig == nil || busConfig.GetInMemory() != nil {
+		inProcessWorker := worker.New(busProvider)
+		inProcessWorker.Start(ctx)
+		defer inProcessWorker.Stop()
+	}
+
 	// Initialize servers with the message bus
-	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
@@ -157,13 +192,20 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
-		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
+		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](
+			busProvider,
+			"service_registration_requests",
+		)
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
-			log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
+			log.Info(
+				"Queueing service for registration from config",
+				"service",
+				serviceConfig.GetName(),
+			)
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 			// We don't need a correlation ID since we are not waiting for a response here
 			registrationBus.Publish(ctx, "request", regReq)
@@ -181,9 +223,13 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
-				result, err := cachingMiddleware.Execute(ctx, executionReq, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-					return next(ctx, method, r)
-				})
+				result, err := cachingMiddleware.Execute(
+					ctx,
+					executionReq,
+					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, r)
+					},
+				)
 				if err != nil {
 					return nil, err
 				}
@@ -211,7 +257,9 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 func setup(fs afero.Fs) (afero.Fs, error) {
 	log := logging.GetLogger()
 	if fs == nil {
-		log.Error("setup called with nil afero.Fs. This is not allowed; an explicit afero.Fs must be provided.")
+		log.Error(
+			"setup called with nil afero.Fs. This is not allowed; an explicit afero.Fs must be provided.",
+		)
 		return nil, fmt.Errorf("filesystem not provided")
 	}
 	return fs, nil
@@ -277,7 +325,13 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
+func (a *Application) runServerMode(
+	ctx context.Context,
+	mcpSrv *mcpserver.Server,
+	bus *bus.BusProvider,
+	jsonrpcPort, grpcPort string,
+	shutdownTimeout time.Duration,
+) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -296,14 +350,22 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
 	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, shutdownTimeout, func(s *gogrpc.Server) {
-			registrationServer, err := mcpserver.NewRegistrationServer(bus)
-			if err != nil {
-				errChan <- fmt.Errorf("failed to create API server: %w", err)
-				return
-			}
-			v1.RegisterRegistrationServiceServer(s, registrationServer)
-		})
+		startGrpcServer(
+			ctx,
+			&wg,
+			errChan,
+			"Registration",
+			":"+grpcPort,
+			shutdownTimeout,
+			func(s *gogrpc.Server) {
+				registrationServer, err := mcpserver.NewRegistrationServer(bus)
+				if err != nil {
+					errChan <- fmt.Errorf("failed to create API server: %w", err)
+					return
+				}
+				v1.RegisterRegistrationServiceServer(s, registrationServer)
+			},
+		)
 	}
 
 	select {
@@ -329,7 +391,14 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 // name is a descriptive name for the server, used in logging.
 // addr is the address and port on which the server will listen.
 // handler is the HTTP handler for processing requests.
-func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler, shutdownTimeout time.Duration) {
+func startHTTPServer(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	errChan chan<- error,
+	name, addr string,
+	handler http.Handler,
+	shutdownTimeout time.Duration,
+) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -382,7 +451,14 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 // name is a descriptive name for the server, used in logging.
 // port is the port on which the server will listen.
 // register is a function that registers the gRPC services with the server.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, shutdownTimeout time.Duration, register func(*gogrpc.Server)) {
+func startGrpcServer(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	errChan chan<- error,
+	name, port string,
+	shutdownTimeout time.Duration,
+	register func(*gogrpc.Server),
+) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
