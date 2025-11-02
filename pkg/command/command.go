@@ -69,10 +69,10 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
-		defer stdoutPipe.Close()
-		defer stderrPipe.Close()
 
 		err := cmd.Wait()
+		stdoutPipe.Close()
+		stderrPipe.Close()
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				exitCodeChan <- exitErr.ExitCode()
