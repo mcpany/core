@@ -19,11 +19,9 @@ package worker
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 )
 
@@ -60,9 +58,6 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	resultBus := bus.GetBus[*bus.ToolExecutionResult](w.bus, bus.ToolExecutionResultTopic)
 
 	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ToolExecutionRequest) {
-		start := time.Now()
-		metrics.IncrCounter([]string{"worker", "upstream", "request", "total"}, 1)
-		defer metrics.MeasureSince([]string{"worker", "upstream", "request", "latency"}, start)
 		log.Info("Received tool execution request", "tool", req.ToolName, "correlationID", req.CorrelationID())
 		result, err := w.toolManager.ExecuteTool(req.Context, &tool.ExecutionRequest{
 			ToolName:   req.ToolName,
@@ -82,11 +77,6 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 		res := &bus.ToolExecutionResult{
 			Result: resultBytes,
 			Error:  err,
-		}
-		if err != nil {
-			metrics.IncrCounter([]string{"worker", "upstream", "request", "error"}, 1)
-		} else {
-			metrics.IncrCounter([]string{"worker", "upstream", "request", "success"}, 1)
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		resultBus.Publish(ctx, req.CorrelationID(), res)

@@ -25,16 +25,23 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
-const (
-	healthStatusGauge = "mcp_any_health_check_status"
+var (
+	healthStatusGauge = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "mcp_any_health_check_status",
+			Help: "The status of the health check for a given service. 1 is healthy, 0 is unhealthy.",
+		},
+		[]string{"service_name"},
+	)
 )
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
@@ -73,11 +80,11 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 	opts := []health.CheckerOption{
 		health.WithStatusListener(func(ctx context.Context, state health.CheckerState) {
-			status := float32(0.0)
+			status := 0.0
 			if state.Status == health.StatusUp {
 				status = 1.0
 			}
-			metrics.SetGauge(healthStatusGauge, status, serviceName)
+			healthStatusGauge.WithLabelValues(serviceName).Set(status)
 			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 		}),
 		// Using synchronous checks for now to simplify the implementation and ensure

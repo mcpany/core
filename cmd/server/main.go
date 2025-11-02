@@ -28,7 +28,6 @@ import (
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -65,7 +64,6 @@ func newRootCmd() *cobra.Command {
 				logLevel = slog.LevelDebug
 			}
 			logging.Init(logLevel, os.Stdout)
-			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
 			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-paths", configPaths)

@@ -33,7 +33,6 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
@@ -165,10 +164,8 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("no grpc pool found for service: %s", t.serviceID)
 	}
 
@@ -192,10 +189,8 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	methodName := fqn[lastDot+1:]
 	grpcMethodName := fmt.Sprintf("/%s/%s", serviceName, methodName)
 	if err := grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage); err != nil {
-		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
 	}
-	metrics.IncrCounter([]string{"grpc", "request", "success"}, 1)
 
 	responseJSON, err := protojson.Marshal(responseMessage)
 	if err != nil {
@@ -259,10 +254,8 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceID)
 	}
 
@@ -350,11 +343,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
-		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to execute http request: %w", err)
 	}
 	defer resp.Body.Close()
-	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {

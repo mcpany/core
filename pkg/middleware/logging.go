@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -45,16 +44,11 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			start := time.Now()
-			metrics.IncrCounter([]string{"middleware", "request", "total"}, 1)
-			defer metrics.MeasureSince([]string{"middleware", "request", "latency"}, start)
-
 			log.Info("Request received", "method", method)
 			result, err := next(ctx, method, req)
 			if err != nil {
-				metrics.IncrCounter([]string{"middleware", "request", "error"}, 1)
 				log.Error("Request failed", "method", method, "duration", time.Since(start), "error", err)
 			} else {
-				metrics.IncrCounter([]string{"middleware", "request", "success"}, 1)
 				log.Info("Request completed", "method", method, "duration", time.Since(start))
 			}
 			return result, err

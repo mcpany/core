@@ -24,17 +24,17 @@ import (
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/worker"
-	"github.com/mcpany/core/proto/bus"
+	buspb "github.com/mcpany/core/proto/bus"
 )
 
 func main() {
-	busConfig := &bus.MessageBus{}
+	busConfig := &buspb.MessageBus{}
 	if redisAddr := os.Getenv("REDIS_ADDR"); redisAddr != "" {
-		redisBus := &bus.RedisBus{}
+		redisBus := &buspb.RedisBus{}
 		redisBus.SetAddress(redisAddr)
 		busConfig.SetRedis(redisBus)
 	} else {
-		busConfig.SetInMemory(&bus.InMemoryBus{})
+		busConfig.SetInMemory(&buspb.InMemoryBus{})
 	}
 
 	busProvider, err := bus.NewBusProvider(busConfig)

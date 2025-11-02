@@ -21,7 +21,7 @@ import (
 	"sync"
 
 	"al.essio.dev/pkg/shellescape"
-	"github.com/alitto/pond"
+	"github.com/alitto/pond/v2"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 )
@@ -29,7 +29,7 @@ import (
 // Worker is responsible for processing jobs from the bus.
 type Worker struct {
 	busProvider *bus.BusProvider
-	pond        *pond.WorkerPool
+	pond        pond.Pool
 	stopFuncs   []func()
 	mu          sync.Mutex
 }
@@ -38,7 +38,7 @@ type Worker struct {
 func New(busProvider *bus.BusProvider) *Worker {
 	return &Worker{
 		busProvider: busProvider,
-		pond:        pond.New(10, 100), // Default configuration
+		pond:        pond.NewPool(10, pond.WithQueueSize(100)),
 	}
 }
 

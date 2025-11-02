@@ -30,7 +30,6 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -127,7 +126,8 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		cfg = &config_v1.McpxServerConfig{}
 	}
 
-	busProvider, err := bus.NewBusProvider(cfg.GetGlobalSettings().GetMessageBus())
+	busConfig := cfg.GetGlobalSettings().GetMessageBus()
+	busProvider, err := bus.NewBusProvider(busConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
@@ -147,6 +147,13 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	upstreamWorker.Start(ctx)
 	registrationWorker.Start(ctx)
 
+	// If we're using an in-memory bus, start the in-process worker
+	if busConfig == nil || busConfig.GetInMemory() != nil {
+		inProcessWorker := worker.New(busProvider)
+		inProcessWorker.Start(ctx)
+		defer inProcessWorker.Stop()
+	}
+
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
 	if err != nil {
@@ -157,7 +164,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
-		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
+		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, bus.ServiceRegistrationRequestTopic)
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
@@ -277,7 +284,7 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
+func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, busProvider *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -291,13 +298,12 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
-	mux.Handle("/metrics", metrics.Handler())
 
 	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
 
 	if grpcPort != "" {
 		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, shutdownTimeout, func(s *gogrpc.Server) {
-			registrationServer, err := mcpserver.NewRegistrationServer(bus)
+			registrationServer, err := mcpserver.NewRegistrationServer(busProvider)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to create API server: %w", err)
 				return
@@ -339,14 +345,6 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			Handler: handler,
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
-			},
-			ConnState: func(conn net.Conn, state http.ConnState) {
-				switch state {
-				case http.StateNew:
-					metrics.IncrActiveConnections("http")
-				case http.StateClosed:
-					metrics.DecrActiveConnections("http")
-				}
 			},
 		}
 
@@ -393,7 +391,7 @@ func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 		}
 
 		serverLog := logging.GetLogger().With("server", name, "port", port)
-		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+		grpcServer := gogrpc.NewServer()
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
