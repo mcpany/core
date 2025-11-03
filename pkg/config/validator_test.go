@@ -232,6 +232,40 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+func TestValidateGlobalSettings_Validation(t *testing.T) {
+	tests := []struct {
+		name          string
+		globalConfig  *configv1.GlobalSettings
+		expectedError bool
+	}{
+		{
+			name: "valid global settings",
+			globalConfig: (&configv1.GlobalSettings_builder{
+				BindAddress: proto.String(":8081"),
+			}).Build(),
+			expectedError: false,
+		},
+		{
+			name: "invalid bind address",
+			globalConfig: (&configv1.GlobalSettings_builder{
+				BindAddress: proto.String(""),
+			}).Build(),
+			expectedError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateGlobalSettings(tt.globalConfig)
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestValidateOrError(t *testing.T) {
 	tests := []struct {
 		name        string

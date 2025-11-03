@@ -115,10 +115,6 @@ func TestUpstreamService_Agify(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getAge tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.agify.io failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getAge tool")
 	require.NotNil(t, res, "Nil response from getAge tool")
 

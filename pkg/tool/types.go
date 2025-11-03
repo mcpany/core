@@ -293,11 +293,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	for _, param := range t.parameters {
 		schema := param.GetSchema()
 		if val, ok := inputs[schema.GetName()]; ok {
-			placeholder := "{{" + schema.GetName() + "}}"
-			if strings.Contains(url, placeholder) {
-				url = strings.ReplaceAll(url, placeholder, fmt.Sprintf("%v", val))
-				delete(inputs, schema.GetName())
-			}
+			url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
+			delete(inputs, schema.GetName())
 		}
 	}
 
@@ -724,7 +721,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	args := t.callDefinition.GetArgs()
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			if argsList, ok := argsVal.([]interface{}); ok {
+			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						args = append(args, argStr)

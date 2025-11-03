@@ -118,10 +118,6 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling searchCocktail tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to thecocktaildb.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling searchCocktail tool")
 	require.NotNil(t, res, "Nil response from searchCocktail tool")
 
@@ -136,12 +132,6 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theCocktailDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	if _, ok := theCocktailDBResponse["drinks"].(string); ok {
-		t.Skip("Skipping test, no drinks found in response")
-	}
-	if theCocktailDBResponse["drinks"] == nil {
-		t.Skip("Skipping test, no drinks found in response")
-	}
 	drinks, ok := theCocktailDBResponse["drinks"].([]interface{})
 	require.True(t, ok, "The drinks should be an array")
 	require.True(t, len(drinks) > 0, "The response should contain at least one drink")

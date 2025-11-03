@@ -34,6 +34,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// TestUpstreamService_UniversitiesList tests the Universities List API.
+// This test is known to be flaky due to the unreliability of the external API.
 func TestUpstreamService_UniversitiesList(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

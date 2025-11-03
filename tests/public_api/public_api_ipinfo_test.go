@@ -120,10 +120,6 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getIPInfo tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to ip-api.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getIPInfo tool")
 	require.NotNil(t, res, "Nil response from getIPInfo tool")
 

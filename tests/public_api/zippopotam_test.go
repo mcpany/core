@@ -118,10 +118,6 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getZipcode tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.zippopotam.us failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getZipcode tool")
 	require.NotNil(t, res, "Nil response from getZipcode tool")
 

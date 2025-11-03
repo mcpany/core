@@ -110,10 +110,6 @@ func TestUpstreamService_Bored(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getActivity tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to boredapi.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getActivity tool")
 	require.NotNil(t, res, "Nil response from getActivity tool")
 
@@ -133,9 +129,6 @@ func TestUpstreamService_Bored(t *testing.T) {
 	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
 	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
 	require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty")
-	if err != nil {
-		t.Skipf("Skipping test due to transient error from boredapi.com: %v", err)
-	}
 	t.Logf("SUCCESS: Received an activity: %s", textContent.Text)
 
 	t.Log("INFO: E2E Test Scenario for Bored Server Completed Successfully!")

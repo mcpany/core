@@ -111,10 +111,6 @@ func TestUpstreamService_Nationalize(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getNationality tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.nationalize.io failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getNationality tool")
 	require.NotNil(t, res, "Nil response from getNationality tool")
 

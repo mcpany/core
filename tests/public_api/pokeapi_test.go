@@ -118,10 +118,6 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getPokemon tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getPokemon tool")
 	require.NotNil(t, res, "Nil response from getPokemon tool")
 

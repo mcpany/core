@@ -110,10 +110,6 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getCatFact tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getCatFact tool")
 	require.NotNil(t, res, "Nil response from getCatFact tool")
 

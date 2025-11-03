@@ -110,10 +110,6 @@ func TestUpstreamService_OpenBreweryDB(t *testing.T) {
 		require.NoError(t, err, "unrecoverable error calling getBreweries tool")
 	}
 
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.openbrewerydb.org failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
 	require.NoError(t, err, "Error calling getBreweries tool")
 	require.NotNil(t, res, "Nil response from getBreweries tool")
 
