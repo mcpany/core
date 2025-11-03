@@ -52,6 +52,8 @@ const (
 	// NotificationResourcesListChanged is the standard MCP notification for when the
 	// resources list has changed.
 	NotificationResourcesListChanged = "notifications/resources/list_changed"
+	// DefaultBindPort is the default port for the server to bind to.
+	DefaultBindPort = 8070
 )
 
 const (
@@ -61,9 +63,4 @@ const (
 	CommandStatusError = "ERROR"
 	// CommandStatusTimeout represents the status for a command that timed out.
 	CommandStatusTimeout = "TIMEOUT"
-)
-
-const (
-	// DefaultBindPort is the default port for the bind address.
-	DefaultBindPort = 8070
 )
