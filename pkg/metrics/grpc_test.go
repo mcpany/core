@@ -2,7 +2,7 @@
  * Copyright 2025 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with a.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -18,6 +18,10 @@ package metrics
 
 import (
 	"context"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"google.golang.org/grpc/stats"
@@ -41,5 +45,30 @@ func TestGrpcStatsHandler(t *testing.T) {
 	// Test TagConn
 	if ctx := h.TagConn(context.Background(), &stats.ConnTagInfo{}); ctx == nil {
 		t.Error("TagConn returned a nil context")
+	}
+
+	// Create a test server
+	ts := httptest.NewServer(Handler())
+	defer ts.Close()
+
+	// Make a request to the /metrics endpoint
+	resp, err := http.Get(ts.URL + "/metrics")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Check the response body for the expected metrics
+	if !strings.Contains(string(body), "mcpany_grpc_connections_opened_total 1") {
+		t.Errorf("Expected metric mcpany_grpc_connections_opened_total not found in response body")
+	}
+	if !strings.Contains(string(body), "mcpany_grpc_connections_closed_total 1") {
+		t.Errorf("Expected metric mcpany_grpc_connections_closed_total not found in response body")
 	}
 }
