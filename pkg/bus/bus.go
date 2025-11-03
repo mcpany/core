@@ -19,6 +19,7 @@ package bus
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/nats"
@@ -71,8 +72,10 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 type BusProvider struct {
-	buses  *xsync.Map[string, any]
-	config *bus.MessageBus
+	buses    *xsync.Map[string, any]
+	config   *bus.MessageBus
+	natsCM   *nats.ConnectionManager
+	closer   io.Closer
 }
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
@@ -95,13 +98,25 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		// In-memory bus requires no additional setup
 	} else if provider.config.GetRedis() != nil {
 		// Redis client is now created within the RedisBus
-	} else if provider.config.GetNats() != nil {
-		// NATS client is now created within the NatsBus
+	} else if natsConfig := provider.config.GetNats(); natsConfig != nil {
+		natsCM, err := nats.NewConnectionManager(natsConfig)
+		if err != nil {
+			return nil, err
+		}
+		provider.natsCM = natsCM
+		provider.closer = natsCM
 	} else {
 		return nil, fmt.Errorf("unknown bus type")
 	}
 
 	return provider, nil
+}
+
+func (p *BusProvider) Close() error {
+	if p.closer != nil {
+		return p.closer.Close()
+	}
+	return nil
 }
 
 // GetBus retrieves or creates a bus for a specific topic and message type. If a
@@ -127,11 +142,7 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	} else if p.config.GetRedis() != nil {
 		newBus = redis.New[T](p.config.GetRedis())
 	} else if p.config.GetNats() != nil {
-		var err error
-		newBus, err = nats.New[T](p.config.GetNats())
-		if err != nil {
-			panic(err)
-		}
+		newBus = nats.New[T](p.natsCM)
 	}
 
 	bus, _ := p.buses.LoadOrStore(topic, newBus)

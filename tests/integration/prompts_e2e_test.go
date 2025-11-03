@@ -79,9 +79,12 @@ func TestPromptsEndToEnd(t *testing.T) {
 
 	// Server setup
 	messageBus := bus_pb.MessageBus_builder{}.Build()
-	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	messageBus.SetNats(bus_pb.NatsBus_builder{}.Build())
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
+	defer func() {
+		require.NoError(t, busProvider.Close())
+	}()
 	poolManager := pool.NewManager()
 	toolManager := tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()

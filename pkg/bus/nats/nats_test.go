@@ -25,12 +25,13 @@ import (
 	"github.com/mcpany/core/proto/bus"
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNatsBus(t *testing.T) {
 	// Start a NATS server for testing
 	s, err := server.NewServer(&server.Options{Port: -1})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	go s.Start()
 	defer s.Shutdown()
 	if !s.ReadyForConnections(4 * time.Second) {
@@ -40,8 +41,10 @@ func TestNatsBus(t *testing.T) {
 	// Create a new NATS bus
 	natsBusConfig := &bus.NatsBus{}
 	natsBusConfig.SetServerUrl(s.ClientURL())
-	bus, err := New[string](natsBusConfig)
-	assert.NoError(t, err)
+	cm, err := NewConnectionManager(natsBusConfig)
+	require.NoError(t, err)
+	defer cm.Close()
+	bus := New[string](cm)
 
 	// Test Publish and Subscribe
 	var receivedMsg string
