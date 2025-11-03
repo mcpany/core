@@ -19,6 +19,7 @@ package nats
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"sync"
 	"time"
 
@@ -46,7 +47,8 @@ func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
 		}
 		go s.Start()
 		if !s.ReadyForConnections(4 * time.Second) {
-			return nil, err
+			s.Shutdown()
+			return nil, errors.New("nats server failed to start")
 		}
 		config.SetServerUrl(s.ClientURL())
 	}
