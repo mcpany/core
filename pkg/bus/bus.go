@@ -18,6 +18,7 @@ package bus
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/nats"
