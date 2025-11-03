@@ -222,7 +222,7 @@ func TestValidate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			validationErrors := Validate(tt.config)
+			validationErrors := Validate(tt.config, Server)
 			assert.Len(t, validationErrors, tt.expectedErrorCount)
 			if tt.expectedErrorCount > 0 {
 				require.NotEmpty(t, validationErrors)
@@ -236,27 +236,46 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 	tests := []struct {
 		name          string
 		globalConfig  *configv1.GlobalSettings
+		binaryType    BinaryType
 		expectedError bool
 	}{
 		{
 			name: "valid global settings",
 			globalConfig: (&configv1.GlobalSettings_builder{
-				BindAddress: proto.String(":8081"),
+				BindAddress: proto.String("localhost:8081"),
 			}).Build(),
+			binaryType:    Server,
 			expectedError: false,
 		},
 		{
-			name: "invalid bind address",
+			name: "empty bind address for server",
 			globalConfig: (&configv1.GlobalSettings_builder{
 				BindAddress: proto.String(""),
 			}).Build(),
+			binaryType:    Server,
+			expectedError: false,
+		},
+		{
+			name: "invalid bind address for server",
+			globalConfig: (&configv1.GlobalSettings_builder{
+				BindAddress: proto.String("invalid"),
+			}).Build(),
+			binaryType:    Server,
 			expectedError: true,
+		},
+		{
+			name: "empty bind address for worker",
+			globalConfig: (&configv1.GlobalSettings_builder{
+				BindAddress: proto.String(""),
+			}).Build(),
+			binaryType:    Worker,
+			expectedError: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateGlobalSettings(tt.globalConfig)
+			err := validateGlobalSettings(tt.globalConfig, tt.binaryType)
 			if tt.expectedError {
 				assert.Error(t, err)
 			} else {

@@ -89,6 +89,31 @@ func TestIsValidURL(t *testing.T) {
 	}
 }
 
+func TestIsValidBindAddress(t *testing.T) {
+	tests := []struct {
+		name    string
+		address string
+		wantErr bool
+	}{
+		{"valid", "localhost:8080", false},
+		{"no port", "localhost", true},
+		{"no host", ":8080", false},
+		{"empty", "", true},
+		{"just colon", ":", false},
+		{"multiple colons", "localhost:8080:8080", true},
+		{"ipv6", "[::1]:8080", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := IsValidBindAddress(tt.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsValidBindAddress() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestValidateHTTPServiceDefinition(t *testing.T) {
 	methodPost := configv1.HttpCallDefinition_HTTP_METHOD_POST
 	methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET

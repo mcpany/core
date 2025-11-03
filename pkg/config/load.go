@@ -35,7 +35,7 @@ import (
 //
 // Returns a validated `McpxServerConfig` or an error if loading or validation
 // fails.
-func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
+func LoadServices(store Store, binaryType string) (*configv1.McpxServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
 	fileConfig, err := store.Load()
@@ -48,7 +48,14 @@ func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 		fileConfig = &configv1.McpxServerConfig{}
 	}
 
-	if validationErrors := Validate(fileConfig); len(validationErrors) > 0 {
+	var bt BinaryType
+	if binaryType == "server" {
+		bt = Server
+	} else if binaryType == "worker" {
+		bt = Worker
+	}
+
+	if validationErrors := Validate(fileConfig, bt); len(validationErrors) > 0 {
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
 		}

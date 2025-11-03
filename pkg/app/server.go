@@ -132,7 +132,7 @@ func (a *Application) Run(
 	if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
-		cfg, err = config.LoadServices(store)
+		cfg, err = config.LoadServices(store, "server")
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
@@ -249,7 +249,12 @@ func (a *Application) Run(
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
+	bindAddress := jsonrpcPort
+	if cfg.GetGlobalSettings().GetBindAddress() != "" {
+		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -333,7 +338,7 @@ func (a *Application) runServerMode(
 	ctx context.Context,
 	mcpSrv *mcpserver.Server,
 	bus *bus.BusProvider,
-	jsonrpcPort, grpcPort string,
+	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 ) error {
 	errChan := make(chan error, 2)
@@ -351,7 +356,11 @@ func (a *Application) runServerMode(
 	})
 	mux.Handle("/metrics", metrics.Handler())
 
-	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
+	if bindAddress == "" {
+		bindAddress = fmt.Sprintf("localhost:%d", 8070)
+	}
+
+	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
 
 	if grpcPort != "" {
 		startGrpcServer(
@@ -359,7 +368,7 @@ func (a *Application) runServerMode(
 			&wg,
 			errChan,
 			"Registration",
-			":"+grpcPort,
+			grpcPort,
 			shutdownTimeout,
 			func(s *gogrpc.Server) {
 				registrationServer, err := mcpserver.NewRegistrationServer(bus)
