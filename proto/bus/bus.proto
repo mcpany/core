@@ -24,10 +24,15 @@ message MessageBus {
   oneof bus_type {
     InMemoryBus in_memory = 1;
     RedisBus redis = 2;
+    NatsBus nats = 3;
   }
 }
 
 message InMemoryBus {}
+
+message NatsBus {
+  string server_url = 1;
+}
 
 message RedisBus {
   string address = 1;
