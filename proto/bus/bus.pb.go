@@ -86,6 +86,15 @@ func (x *MessageBus) GetRedis() *RedisBus {
 	return nil
 }
 
+func (x *MessageBus) GetNats() *NatsBus {
+	if x != nil {
+		if x, ok := x.xxx_hidden_BusType.(*messageBus_Nats); ok {
+			return x.Nats
+		}
+	}
+	return nil
+}
+
 func (x *MessageBus) SetInMemory(v *InMemoryBus) {
 	if v == nil {
 		x.xxx_hidden_BusType = nil
@@ -100,6 +109,14 @@ func (x *MessageBus) SetRedis(v *RedisBus) {
 		return
 	}
 	x.xxx_hidden_BusType = &messageBus_Redis{v}
+}
+
+func (x *MessageBus) SetNats(v *NatsBus) {
+	if v == nil {
+		x.xxx_hidden_BusType = nil
+		return
+	}
+	x.xxx_hidden_BusType = &messageBus_Nats{v}
 }
 
 func (x *MessageBus) HasBusType() bool {
@@ -125,6 +142,14 @@ func (x *MessageBus) HasRedis() bool {
 	return ok
 }
 
+func (x *MessageBus) HasNats() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_BusType.(*messageBus_Nats)
+	return ok
+}
+
 func (x *MessageBus) ClearBusType() {
 	x.xxx_hidden_BusType = nil
 }
@@ -141,9 +166,16 @@ func (x *MessageBus) ClearRedis() {
 	}
 }
 
+func (x *MessageBus) ClearNats() {
+	if _, ok := x.xxx_hidden_BusType.(*messageBus_Nats); ok {
+		x.xxx_hidden_BusType = nil
+	}
+}
+
 const MessageBus_BusType_not_set_case case_MessageBus_BusType = 0
 const MessageBus_InMemory_case case_MessageBus_BusType = 1
 const MessageBus_Redis_case case_MessageBus_BusType = 2
+const MessageBus_Nats_case case_MessageBus_BusType = 3
 
 func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 	if x == nil {
@@ -154,6 +186,8 @@ func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 		return MessageBus_InMemory_case
 	case *messageBus_Redis:
 		return MessageBus_Redis_case
+	case *messageBus_Nats:
+		return MessageBus_Nats_case
 	default:
 		return MessageBus_BusType_not_set_case
 	}
@@ -165,6 +199,7 @@ type MessageBus_builder struct {
 	// Fields of oneof xxx_hidden_BusType:
 	InMemory *InMemoryBus
 	Redis    *RedisBus
+	Nats     *NatsBus
 	// -- end of xxx_hidden_BusType
 }
 
@@ -177,6 +212,9 @@ func (b0 MessageBus_builder) Build() *MessageBus {
 	}
 	if b.Redis != nil {
 		x.xxx_hidden_BusType = &messageBus_Redis{b.Redis}
+	}
+	if b.Nats != nil {
+		x.xxx_hidden_BusType = &messageBus_Nats{b.Nats}
 	}
 	return m0
 }
@@ -203,9 +241,15 @@ type messageBus_Redis struct {
 	Redis *RedisBus `protobuf:"bytes,2,opt,name=redis,oneof"`
 }
 
+type messageBus_Nats struct {
+	Nats *NatsBus `protobuf:"bytes,3,opt,name=nats,oneof"`
+}
+
 func (*messageBus_InMemory) isMessageBus_BusType() {}
 
 func (*messageBus_Redis) isMessageBus_BusType() {}
+
+func (*messageBus_Nats) isMessageBus_BusType() {}
 
 type InMemoryBus struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
@@ -250,6 +294,84 @@ func (b0 InMemoryBus_builder) Build() *InMemoryBus {
 	return m0
 }
 
+type NatsBus struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServerUrl   *string                `protobuf:"bytes,1,opt,name=server_url,json=serverUrl"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *NatsBus) Reset() {
+	*x = NatsBus{}
+	mi := &file_proto_bus_bus_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NatsBus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NatsBus) ProtoMessage() {}
+
+func (x *NatsBus) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bus_bus_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *NatsBus) GetServerUrl() string {
+	if x != nil {
+		if x.xxx_hidden_ServerUrl != nil {
+			return *x.xxx_hidden_ServerUrl
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *NatsBus) SetServerUrl(v string) {
+	x.xxx_hidden_ServerUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *NatsBus) HasServerUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *NatsBus) ClearServerUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServerUrl = nil
+}
+
+type NatsBus_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ServerUrl *string
+}
+
+func (b0 NatsBus_builder) Build() *NatsBus {
+	m0 := &NatsBus{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ServerUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ServerUrl = b.ServerUrl
+	}
+	return m0
+}
+
 type RedisBus struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
@@ -263,7 +385,7 @@ type RedisBus struct {
 
 func (x *RedisBus) Reset() {
 	*x = RedisBus{}
-	mi := &file_proto_bus_bus_proto_msgTypes[2]
+	mi := &file_proto_bus_bus_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +397,7 @@ func (x *RedisBus) String() string {
 func (*RedisBus) ProtoMessage() {}
 
 func (x *RedisBus) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bus_bus_proto_msgTypes[2]
+	mi := &file_proto_bus_bus_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,33 +517,39 @@ var File_proto_bus_bus_proto protoreflect.FileDescriptor
 
 const file_proto_bus_bus_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/bus/bus.proto\x12\x03bus\"p\n" +
+	"\x13proto/bus/bus.proto\x12\x03bus\"\x94\x01\n" +
 	"\n" +
 	"MessageBus\x12/\n" +
 	"\tin_memory\x18\x01 \x01(\v2\x10.bus.InMemoryBusH\x00R\binMemory\x12%\n" +
-	"\x05redis\x18\x02 \x01(\v2\r.bus.RedisBusH\x00R\x05redisB\n" +
+	"\x05redis\x18\x02 \x01(\v2\r.bus.RedisBusH\x00R\x05redis\x12\"\n" +
+	"\x04nats\x18\x03 \x01(\v2\f.bus.NatsBusH\x00R\x04natsB\n" +
 	"\n" +
 	"\bbus_type\"\r\n" +
-	"\vInMemoryBus\"P\n" +
+	"\vInMemoryBus\"(\n" +
+	"\aNatsBus\x12\x1d\n" +
+	"\n" +
+	"server_url\x18\x01 \x01(\tR\tserverUrl\"P\n" +
 	"\bRedisBus\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x0e\n" +
 	"\x02db\x18\x02 \x01(\x05R\x02db\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpasswordB\"Z github.com/mcpany/core/proto/busb\beditionsp\xe8\a"
 
-var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_bus_bus_proto_goTypes = []any{
 	(*MessageBus)(nil),  // 0: bus.MessageBus
 	(*InMemoryBus)(nil), // 1: bus.InMemoryBus
-	(*RedisBus)(nil),    // 2: bus.RedisBus
+	(*NatsBus)(nil),     // 2: bus.NatsBus
+	(*RedisBus)(nil),    // 3: bus.RedisBus
 }
 var file_proto_bus_bus_proto_depIdxs = []int32{
 	1, // 0: bus.MessageBus.in_memory:type_name -> bus.InMemoryBus
-	2, // 1: bus.MessageBus.redis:type_name -> bus.RedisBus
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: bus.MessageBus.redis:type_name -> bus.RedisBus
+	2, // 2: bus.MessageBus.nats:type_name -> bus.NatsBus
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_bus_bus_proto_init() }
@@ -432,6 +560,7 @@ func file_proto_bus_bus_proto_init() {
 	file_proto_bus_bus_proto_msgTypes[0].OneofWrappers = []any{
 		(*messageBus_InMemory)(nil),
 		(*messageBus_Redis)(nil),
+		(*messageBus_Nats)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -439,7 +568,7 @@ func file_proto_bus_bus_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_bus_bus_proto_rawDesc), len(file_proto_bus_bus_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
