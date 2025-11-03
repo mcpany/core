@@ -35,6 +35,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -59,6 +60,32 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 	require.NoError(t, err)
 
 	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
+	require.NoError(t, err)
+
+	_, err = tempFile.Write(data)
+	require.NoError(t, err)
+
+	err = tempFile.Close()
+	require.NoError(t, err)
+
+	return tempFile.Name()
+}
+
+func CreateTempNatsConfigFile(t *testing.T) string {
+	t.Helper()
+
+	mcpanyConfig := configv1.McpxServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
+			MessageBus: bus.MessageBus_builder{
+				Nats: bus.NatsBus_builder{}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	data, err := yaml.Marshal(mcpanyConfig)
+	require.NoError(t, err)
+
+	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-nats-config-*.yaml")
 	require.NoError(t, err)
 
 	_, err = tempFile.Write(data)

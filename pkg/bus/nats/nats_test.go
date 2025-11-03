@@ -42,6 +42,7 @@ func TestNatsBus(t *testing.T) {
 	natsBusConfig.SetServerUrl(s.ClientURL())
 	bus, err := New[string](natsBusConfig)
 	assert.NoError(t, err)
+	defer bus.Close()
 
 	// Test Publish and Subscribe
 	var receivedMsg string
@@ -85,4 +86,30 @@ func TestNatsBus(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 	assert.Equal(t, "", receivedOnceMsg)
+}
+
+func TestNatsBus_EmbeddedServer(t *testing.T) {
+	// Create a new NATS bus with an empty server URL
+	natsBusConfig := &bus.NatsBus{}
+	bus, err := New[string](natsBusConfig)
+	assert.NoError(t, err)
+	defer bus.Close()
+
+	// Test Publish and Subscribe
+	var receivedMsg string
+	var mu sync.Mutex
+	unsubscribe := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		mu.Lock()
+		defer mu.Unlock()
+		receivedMsg = msg
+	})
+	defer unsubscribe()
+
+	err = bus.Publish(context.Background(), "test-topic", "hello")
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond)
+	mu.Lock()
+	assert.Equal(t, "hello", receivedMsg)
+	mu.Unlock()
 }

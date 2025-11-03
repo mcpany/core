@@ -20,8 +20,10 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/mcpany/core/proto/bus"
+	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 )
 
@@ -29,11 +31,25 @@ import (
 type NatsBus[T any] struct {
 	nc     *nats.Conn
 	config *bus.NatsBus
+	s      *server.Server
 	mu     sync.Mutex
 }
 
 // New creates a new NATS bus.
 func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
+	var s *server.Server
+	if config.GetServerUrl() == "" {
+		var err error
+		s, err = server.NewServer(&server.Options{Port: -1})
+		if err != nil {
+			return nil, err
+		}
+		go s.Start()
+		if !s.ReadyForConnections(4 * time.Second) {
+			return nil, err
+		}
+		config.SetServerUrl(s.ClientURL())
+	}
 	nc, err := nats.Connect(config.GetServerUrl())
 	if err != nil {
 		return nil, err
@@ -41,7 +57,15 @@ func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
 	return &NatsBus[T]{
 		nc:     nc,
 		config: config,
+		s:      s,
 	}, nil
+}
+
+// Close closes the NATS bus.
+func (b *NatsBus[T]) Close() {
+	if b.s != nil {
+		b.s.Shutdown()
+	}
 }
 
 // Publish sends a message to a NATS topic.
