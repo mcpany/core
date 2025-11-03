@@ -28,7 +28,8 @@ import (
 
 type mockToolManager struct {
 	tool.ToolManagerInterface
-	tools map[string]tool.Tool
+	tools       map[string]tool.Tool
+	AddToolFunc func(tool tool.Tool) error
 }
 
 func newMockToolManager() *mockToolManager {
@@ -36,7 +37,11 @@ func newMockToolManager() *mockToolManager {
 		tools: make(map[string]tool.Tool),
 	}
 }
+
 func (m *mockToolManager) AddTool(t tool.Tool) error {
+	if m.AddToolFunc != nil {
+		return m.AddToolFunc(t)
+	}
 	m.tools[t.Tool().GetName()] = t
 	return nil
 }

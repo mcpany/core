@@ -98,6 +98,7 @@ func (m *mockClientSession) Close() error {
 	return nil
 }
 
+
 func TestMCPPrompt_Get(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -146,6 +147,20 @@ func TestMCPPrompt_Get(t *testing.T) {
 	assert.Equal(t, "test-description", result.Description)
 
 	wg.Wait()
+}
+
+func TestMCPResource_Subscribe(t *testing.T) {
+	r := &mcpResource{}
+	err := r.Subscribe(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "not yet implemented")
+}
+
+func TestMCPPrompt_Get_UnmarshalError(t *testing.T) {
+	p := &mcpPrompt{}
+	args := json.RawMessage(`invalid json`)
+	_, err := p.Get(context.Background(), args)
+	assert.Error(t, err)
 }
 
 func TestMCPResource_Read(t *testing.T) {
@@ -255,6 +270,46 @@ func TestMCPUpstream_Register(t *testing.T) {
 		assert.True(t, ok)
 		_, ok = resourceManager.GetResource("test-resource")
 		assert.True(t, ok)
+	})
+
+	t.Run("tool manager add tool error", func(t *testing.T) {
+		toolManager := &mockToolManager{
+			AddToolFunc: func(tool tool.Tool) error {
+				return fmt.Errorf("add tool failed")
+			},
+		}
+		promptManager := prompt.NewPromptManager()
+		resourceManager := resource.NewResourceManager()
+		upstream := NewMCPUpstream()
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		mockCS := &mockClientSession{
+			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool"}}}, nil
+			},
+		}
+
+		originalConnect := connectForTesting
+		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+			defer wg.Done()
+			return mockCS, nil
+		}
+		defer func() { connectForTesting = originalConnect }()
+
+		config := &configv1.UpstreamServiceConfig{}
+		config.SetName("test-service")
+		mcpService := &configv1.McpUpstreamService{}
+		stdioConnection := &configv1.McpStdioConnection{}
+		stdioConnection.SetCommand("echo")
+		mcpService.SetStdioConnection(stdioConnection)
+		config.SetMcpService(mcpService)
+
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		wg.Wait()
 	})
 
 	t.Run("successful registration with stdio and setup commands", func(t *testing.T) {
@@ -847,4 +902,72 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 
 	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
+}
+
+func TestSetters(t *testing.T) {
+	SetNewClientImplForTesting(nil)
+	SetNewClientForTesting(nil)
+	SetConnectForTesting(nil)
+}
+
+func TestMCPPrompt_Service(t *testing.T) {
+	p := &mcpPrompt{service: "test-service"}
+	assert.Equal(t, "test-service", p.Service())
+}
+
+func TestMCPResource_Service(t *testing.T) {
+	r := &mcpResource{service: "test-service"}
+	assert.Equal(t, "test-service", r.Service())
+}
+
+func TestAuthenticatedRoundTripper_RoundTrip_Error(t *testing.T) {
+	rt := &authenticatedRoundTripper{
+		authenticator: &mockAuthenticator{
+			AuthenticateFunc: func(req *http.Request) error {
+				return fmt.Errorf("auth error")
+			},
+		},
+	}
+	req, _ := http.NewRequest("GET", "http://localhost", nil)
+	_, err := rt.RoundTrip(req)
+	assert.Error(t, err)
+}
+
+func TestMCPConnection_CallTool(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	mockCS := &mockClientSession{
+		callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			assert.Equal(t, "test-tool", params.Name)
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "test-output"},
+				},
+			}, nil
+		},
+	}
+
+	conn := &mcpConnection{
+		httpAddress: server.URL + "/mcp",
+		httpClient:  server.Client(),
+		client:      mcp.NewClient(&mcp.Implementation{Name: "test"}, nil),
+	}
+
+	originalConnect := connectForTesting
+	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		defer wg.Done()
+		return mockCS, nil
+	}
+	defer func() { connectForTesting = originalConnect }()
+
+	_, err := conn.CallTool(context.Background(), &mcp.CallToolParams{Name: "test-tool"})
+	assert.NoError(t, err)
+
+	wg.Wait()
 }

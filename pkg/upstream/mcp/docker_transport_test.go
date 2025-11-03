@@ -39,6 +39,13 @@ func TestSlogWriter(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Contains(t, buf.String(), testMessage)
+
+	testMultiLineMessage := "Hello\nworld!"
+	_, err = writer.Write([]byte(testMultiLineMessage))
+	assert.NoError(t, err)
+
+	assert.Contains(t, buf.String(), "Hello")
+	assert.Contains(t, buf.String(), "world!")
 }
 
 func TestDockerConn_SessionID(t *testing.T) {
@@ -48,6 +55,14 @@ func TestDockerConn_SessionID(t *testing.T) {
 
 type mockReadWriteCloser struct {
 	bytes.Buffer
+	writeErr bool
+}
+
+func (m *mockReadWriteCloser) Write(p []byte) (n int, err error) {
+	if m.writeErr {
+		return 0, assert.AnError
+	}
+	return m.Buffer.Write(p)
 }
 
 func (m *mockReadWriteCloser) Close() error {
@@ -80,8 +95,70 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestDockerConn_Read_Error(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	rwc.WriteString("invalid json")
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+
+	_, err := conn.Read(ctx)
+	assert.Error(t, err)
+}
+
+func TestDockerConn_Write_Error(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{writeErr: true}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+
+	err := conn.Write(ctx, &jsonrpc.Request{Method: "test"})
+	assert.Error(t, err)
+}
+
+func TestDockerConn_Read_UnmarshalError(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	// Malformed JSON to trigger a decoding error
+	rwc.WriteString(`{"method": "test", "params": invalid}` + "\n")
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+
+	_, err := conn.Read(ctx)
+	assert.Error(t, err)
+}
+
+func TestDockerReadWriteCloser_Close(t *testing.T) {
+	// This test is an integration test and requires a running docker daemon.
+	if !util.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping integration test.")
+	}
+
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("alpine:latest")
+	stdioConfig.SetCommand("echo")
+	stdioConfig.SetArgs([]string{"hello"})
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	conn, err := transport.Connect(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, conn)
+
+	err = conn.Close()
+	assert.NoError(t, err)
+}
+
 func TestDockerTransport_Connect_Integration(t *testing.T) {
-	t.Skip("Skipping integration test")
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
@@ -119,6 +196,22 @@ func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 	stdioConfig := &configv1.McpStdioConnection{}
 	stdioConfig.SetContainerImage("this-image-does-not-exist-ever:latest")
 	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+}
+
+func TestDockerTransport_Connect_CreateContainerError(t *testing.T) {
+	if !util.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping integration test.")
+	}
+
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("alpine:latest")
+	// This command will cause an error during container creation
+	stdioConfig.SetCommand("non-existent-command")
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	_, err := transport.Connect(ctx)

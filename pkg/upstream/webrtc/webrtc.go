@@ -128,6 +128,29 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			}
 		}
 
+		validParameters := true
+		for _, param := range wrtcDef.GetParameters() {
+			schema := param.GetSchema()
+			if schema == nil {
+				log.Error("Parameter schema is nil", "tool", toolNamePart)
+				validParameters = false
+				break
+			}
+			if schema.GetName() == "" {
+				log.Error("Parameter name is empty", "tool", toolNamePart)
+				validParameters = false
+				break
+			}
+			if _, ok := configv1.ParameterType_name[int32(schema.GetType())]; !ok {
+				log.Error("Invalid parameter type", "tool", toolNamePart, "type", schema.GetType())
+				validParameters = false
+				break
+			}
+		}
+		if !validParameters {
+			continue
+		}
+
 		properties, err := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert schema to properties", "error", err)

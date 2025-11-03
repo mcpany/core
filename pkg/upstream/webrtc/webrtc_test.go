@@ -194,4 +194,171 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		require.NoError(t, err)
 		assert.Empty(t, discoveredTools)
 	})
+
+	t.Run("empty schema name", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		var promptManager prompt.PromptManagerInterface
+		var resourceManager resource.ResourceManagerInterface
+
+		upstream := NewWebrtcUpstream(poolManager)
+
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Description: proto.String("Echoes a message"),
+			}.Build(),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-service")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		assert.Len(t, tools, 1)
+
+		sanitizedToolName := util.SanitizeOperationID("Echoes a message")
+		toolID := serviceID + "." + sanitizedToolName
+		_, ok := toolManager.GetTool(toolID)
+		assert.True(t, ok, "tool should be registered")
+	})
+
+	t.Run("empty schema name and description", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		var promptManager prompt.PromptManagerInterface
+		var resourceManager resource.ResourceManagerInterface
+
+		upstream := NewWebrtcUpstream(poolManager)
+
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{}.Build(),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-service")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		assert.Len(t, tools, 1)
+
+		sanitizedToolName, _ := util.SanitizeToolName("op0")
+		toolID := serviceID + "." + sanitizedToolName
+		_, ok := toolManager.GetTool(toolID)
+		assert.True(t, ok, "tool should be registered")
+	})
+
+	t.Run("invalid parameters", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		var promptManager prompt.PromptManagerInterface
+		var resourceManager resource.ResourceManagerInterface
+
+		upstream := NewWebrtcUpstream(poolManager)
+
+		invalidType := configv1.ParameterType(100)
+		param := configv1.WebrtcParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Type: &invalidType,
+			}.Build(),
+		}.Build()
+
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("echo"),
+			}.Build(),
+			Parameters: []*configv1.WebrtcParameterMapping{param},
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-service")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		assert.Len(t, tools, 0)
+	})
+
+	t.Run("nil parameter schema", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		var promptManager prompt.PromptManagerInterface
+		var resourceManager resource.ResourceManagerInterface
+
+		upstream := NewWebrtcUpstream(poolManager)
+
+		param := configv1.WebrtcParameterMapping_builder{
+			Schema: nil,
+		}.Build()
+
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("echo"),
+			}.Build(),
+			Parameters: []*configv1.WebrtcParameterMapping{param},
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-service")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		assert.Len(t, tools, 0)
+	})
+
+	t.Run("nil authenticator", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		var promptManager prompt.PromptManagerInterface
+		var resourceManager resource.ResourceManagerInterface
+
+		upstream := NewWebrtcUpstream(poolManager)
+
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("echo"),
+			}.Build(),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-service")
+		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig.SetUpstreamAuthentication(nil)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		assert.Len(t, tools, 1)
+	})
 }
