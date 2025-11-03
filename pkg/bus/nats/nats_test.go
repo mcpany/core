@@ -40,8 +40,10 @@ func TestNatsBus(t *testing.T) {
 	// Create a new NATS bus
 	natsBusConfig := &bus.NatsBus{}
 	natsBusConfig.SetServerUrl(s.ClientURL())
-	bus, err := New[string](natsBusConfig)
+	conn, err := NewNatsConnection(natsBusConfig)
 	assert.NoError(t, err)
+	defer conn.Shutdown()
+	bus := New[string](conn.GetClient())
 
 	// Test Publish and Subscribe
 	var receivedMsg string
