@@ -48,13 +48,15 @@ func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 		fileConfig = &configv1.McpxServerConfig{}
 	}
 
-	validatedConfig, err := Validate(fileConfig)
-	if err != nil {
-		return nil, fmt.Errorf("config validation failed: %w", err)
+	if validationErrors := Validate(fileConfig); len(validationErrors) > 0 {
+		for _, e := range validationErrors {
+			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+		}
+		return nil, fmt.Errorf("config validation failed")
 	}
 
-	if len(validatedConfig.GetUpstreamServices()) > 0 {
-		log.Info("Successfully processed config file", "valid_services", len(validatedConfig.GetUpstreamServices()))
+	if len(fileConfig.GetUpstreamServices()) > 0 {
+		log.Info("Successfully processed config file", "services", len(fileConfig.GetUpstreamServices()))
 	}
-	return validatedConfig, nil
+	return fileConfig, nil
 }
