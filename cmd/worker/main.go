@@ -43,6 +43,11 @@ func setup() (*worker.Worker, error) {
 	// Validate the bus configuration
 	globalSettings := &configv1.GlobalSettings{}
 	globalSettings.SetMessageBus(busConfig)
+
+	// HACK: The worker doesn't have a bind address, but the config validation
+	// requires one. Set a dummy value to pass validation.
+	globalSettings.SetBindAddress("localhost:0")
+
 	cfgToValidate := &configv1.McpxServerConfig{}
 	cfgToValidate.SetGlobalSettings(globalSettings)
 
