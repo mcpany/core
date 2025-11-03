@@ -48,7 +48,7 @@ func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 		fileConfig = &configv1.McpxServerConfig{}
 	}
 
-	if validationErrors := Validate(fileConfig); len(validationErrors) > 0 {
+	if validationErrors := Validate(fileConfig, Server); len(validationErrors) > 0 {
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
 		}
