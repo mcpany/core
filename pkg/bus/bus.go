@@ -87,17 +87,18 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		provider.config = &bus.MessageBus{}
 	}
 
-	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil && provider.config.GetNats() == nil {
+	if !provider.config.HasBusType() {
 		provider.config.SetInMemory(&bus.InMemoryBus{})
 	}
 
-	if provider.config.GetInMemory() != nil {
+	switch provider.config.WhichBusType() {
+	case bus.MessageBus_InMemory_case:
 		// In-memory bus requires no additional setup
-	} else if provider.config.GetRedis() != nil {
+	case bus.MessageBus_Redis_case:
 		// Redis client is now created within the RedisBus
-	} else if provider.config.GetNats() != nil {
+	case bus.MessageBus_Nats_case:
 		// NATS client is now created within the NatsBus
-	} else {
+	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
 
@@ -122,11 +123,12 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	}
 
 	var newBus Bus[T]
-	if p.config.GetInMemory() != nil {
+	switch p.config.WhichBusType() {
+	case bus.MessageBus_InMemory_case:
 		newBus = memory.New[T]()
-	} else if p.config.GetRedis() != nil {
+	case bus.MessageBus_Redis_case:
 		newBus = redis.New[T](p.config.GetRedis())
-	} else if p.config.GetNats() != nil {
+	case bus.MessageBus_Nats_case:
 		var err error
 		newBus, err = nats.New[T](p.config.GetNats())
 		if err != nil {

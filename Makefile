@@ -59,6 +59,7 @@ PRE_COMMIT_VERSION := 4.3.0
 PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
+NATS_SERVER_BIN := $(TOOL_INSTALL_DIR)/nats-server
 
 # Helm installation variables
 HELM_VERSION ?= v3.19.0
@@ -244,6 +245,20 @@ prepare:
 			echo "ShellCheck installed successfully."; \
 		else \
 			echo "ShellCheck installation failed."; \
+			exit 1; \
+		fi; \
+	fi
+	@# Install nats-server
+	@echo "Checking for nats-server..."
+	@if test -f "$(NATS_SERVER_BIN)"; then \
+		echo "nats-server is already installed."; \
+	else \
+		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
+		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
+		if test -f "$(NATS_SERVER_BIN)"; then \
+			echo "nats-server installed successfully."; \
+		else \
+			echo "nats-server installation failed."; \
 			exit 1; \
 		fi; \
 	fi
