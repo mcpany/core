@@ -153,6 +153,10 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
+	if tool.Tool().GetServiceId() == "" {
+		return fmt.Errorf("tool service ID cannot be empty")
+	}
+
 	sanitizedToolName, err := util.SanitizeToolName(tool.Tool().GetName())
 	if err != nil {
 		logging.GetLogger().
