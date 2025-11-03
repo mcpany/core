@@ -164,13 +164,7 @@ upstream_services: {
     }
 }
 `,
-			expectedCount: 1, // Service should be loaded, but cache disabled
-			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "service-with-invalid-cache", s.GetName())
-				require.NotNil(t, s.GetCache())
-				assert.False(t, s.GetCache().GetIsEnabled(), "Cache should be disabled due to invalid TTL")
-			},
+			expectLoadError: true,
 		},
 		{
 			name: "duplicate service names",
