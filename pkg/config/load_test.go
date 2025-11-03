@@ -191,7 +191,7 @@ upstream_services: {
 			filePath := createTempConfigFile(t, tt.textprotoContent)
 			fs := afero.NewOsFs()
 			fileStore := NewFileStore(fs, []string{filePath})
-			cfg, err := LoadServices(fileStore)
+			cfg, err := LoadServices(fileStore, "server")
 
 			if tt.expectLoadError {
 				assert.Error(t, err)

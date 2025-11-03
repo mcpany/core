@@ -248,7 +248,7 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name: "invalid bind address",
+			name: "empty bind address for server",
 			globalConfig: (&configv1.GlobalSettings_builder{
 				BindAddress: proto.String(""),
 			}).Build(),
@@ -256,7 +256,15 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name: "worker with no bind address",
+			name: "invalid bind address for server",
+			globalConfig: (&configv1.GlobalSettings_builder{
+				BindAddress: proto.String("invalid"),
+			}).Build(),
+			binaryType:    Server,
+			expectedError: true,
+		},
+		{
+			name: "empty bind address for worker",
 			globalConfig: (&configv1.GlobalSettings_builder{
 				BindAddress: proto.String(""),
 			}).Build(),

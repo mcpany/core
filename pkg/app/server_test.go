@@ -174,7 +174,7 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -193,7 +193,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
 }
@@ -209,7 +209,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic
-	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -228,7 +228,7 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
+	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -242,7 +242,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "0", "", nil, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
 	}()
 
 	err := <-errChan
