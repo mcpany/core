@@ -1,0 +1,10 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="256" height="256" fill="white"/>
+<path d="M112 80L128 48L144 80H112Z" fill="#D55E00"/>
+<path d="M192 128L224 112L192 96V128Z" fill="#009E73"/>
+<path d="M192 176L224 192L192 208V176Z" fill="#0072B2"/>
+<path d="M112 176L128 208L144 176H112Z" fill="#CC79A7"/>
+<path d="M64 128L32 112L64 96V128Z" fill="#56B4E9"/>
+<path d="M64 176L32 192L64 208V176Z" fill="#E69F00"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M128 96L160 112V144L128 160L96 144V112L128 96ZM128 106.667L106.667 117.333V138.667L128 149.333L149.333 138.667V117.333L128 106.667Z" fill="#F0E442"/>
+</svg>
