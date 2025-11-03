@@ -22,6 +22,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -249,9 +250,14 @@ func (a *Application) Run(
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	bindAddress := jsonrpcPort
+	var bindAddress string
 	if cfg.GetGlobalSettings().GetBindAddress() != "" {
 		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
+	} else if jsonrpcPort != "" {
+		bindAddress = jsonrpcPort
+		if !strings.Contains(bindAddress, ":") {
+			bindAddress = "localhost:" + bindAddress
+		}
 	}
 
 	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
@@ -292,18 +298,18 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
 //
-// The function constructs the health check URL from the provided port and sends
-// an HTTP GET request. It expects a 200 OK status code for a successful health
-// check.
+// The function constructs the health check URL from the provided address and
+// sends an HTTP GET request. It expects a 200 OK status code for a successful
+// health check.
 //
 // Parameters:
-//   - port: The port on which the server is running.
+//   - addr: The address (host:port) on which the server is running.
 //
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-func HealthCheck(port string) error {
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
+func HealthCheck(addr string) error {
+	resp, err := http.Get(fmt.Sprintf("http://%s/healthz", addr))
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
