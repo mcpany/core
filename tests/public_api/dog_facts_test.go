@@ -35,7 +35,6 @@ import (
 )
 
 func TestUpstreamService_DogFacts(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 

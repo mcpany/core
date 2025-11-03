@@ -32,29 +32,29 @@ import (
 
 func newCommandTool(command string) tool.Tool {
 	service := (&configv1.CommandLineUpstreamService_builder{
-		Command: proto.String(command),
+		Command: proto.String("sh"),
+	}).Build()
+	callDef := (&configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", command},
 	}).Build()
 	return tool.NewCommandTool(
 		&v1.Tool{},
 		service,
-		&configv1.CommandLineCallDefinition{},
+		callDef,
 	)
 }
 
 func TestCommandTool_Execute(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
-		cmdTool := newCommandTool("echo")
-		inputData := map[string]interface{}{"args": []string{"hello world"}}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+		cmdTool := newCommandTool("echo hello world")
+		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 
 		result, err := cmdTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "echo", resultMap["command"])
+		assert.Equal(t, "sh", resultMap["command"])
 		assert.Equal(t, "hello world\n", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
 		assert.Equal(t, "hello world\n", resultMap["combined_output"])
@@ -72,9 +72,8 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
-		cmdTool := newCommandTool("sh")
+		cmdTool := newCommandTool("echo $MY_VAR")
 		inputData := map[string]interface{}{
-			"args":   []string{"-c", "echo $MY_VAR"},
 			"MY_VAR": "hello from env",
 		}
 		inputs, err := json.Marshal(inputData)
@@ -97,11 +96,8 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("non-zero exit code", func(t *testing.T) {
-		cmdTool := newCommandTool("sh")
-		inputData := map[string]interface{}{"args": []string{"-c", "exit 1"}}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+		cmdTool := newCommandTool("exit 1")
+		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 
 		result, err := cmdTool.Execute(context.Background(), req)
 		require.NoError(t, err)
@@ -120,7 +116,7 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
 		cmdTool := newCommandTool("echo")
-		inputs := json.RawMessage(`{"args": "not-an-array"}`)
+		inputs := json.RawMessage(`not-a-json-object`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
 		_, err := cmdTool.Execute(context.Background(), req)

@@ -793,8 +793,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		"status":          status,
 	}
 
-	if err != nil {
-		return result, err
+	if exitCode == 127 {
+		return result, fmt.Errorf("command not found")
 	}
 
 	return result, nil
