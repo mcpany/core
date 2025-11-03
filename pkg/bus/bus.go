@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/mcpany/core/pkg/bus/memory"
+	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/puzpuzpuz/xsync/v4"
@@ -86,7 +87,7 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		provider.config = &bus.MessageBus{}
 	}
 
-	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil {
+	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil && provider.config.GetNats() == nil {
 		provider.config.SetInMemory(&bus.InMemoryBus{})
 	}
 
@@ -94,6 +95,8 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		// In-memory bus requires no additional setup
 	} else if provider.config.GetRedis() != nil {
 		// Redis client is now created within the RedisBus
+	} else if provider.config.GetNats() != nil {
+		// NATS client is now created within the NatsBus
 	} else {
 		return nil, fmt.Errorf("unknown bus type")
 	}
@@ -123,6 +126,12 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 		newBus = memory.New[T]()
 	} else if p.config.GetRedis() != nil {
 		newBus = redis.New[T](p.config.GetRedis())
+	} else if p.config.GetNats() != nil {
+		var err error
+		newBus, err = nats.New[T](p.config.GetNats())
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	bus, _ := p.buses.LoadOrStore(topic, newBus)
