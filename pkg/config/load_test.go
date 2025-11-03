@@ -184,6 +184,24 @@ upstream_services: {
 `,
 			expectLoadError: true,
 		},
+		{
+			name: "detailed error for duplicate service names",
+			textprotoContent: `
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v1"
+	}
+}
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v2"
+	}
+}
+`,
+			expectLoadError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -195,6 +213,9 @@ upstream_services: {
 
 			if tt.expectLoadError {
 				assert.Error(t, err)
+				if tt.name == "detailed error for duplicate service names" {
+					assert.Contains(t, err.Error(), "service 'duplicate-name': duplicate service name found")
+				}
 				return
 			}
 			require.NoError(t, err)
