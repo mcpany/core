@@ -34,55 +34,45 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_LibreTranslate(t *testing.T) {
+func TestUpstreamService_FunTranslations(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for LibreTranslate Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Fun Translations Server...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2ELibreTranslateServerTest")
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EFunTranslationsServerTest")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register LibreTranslate Server with MCPANY ---
-	const libreTranslateServiceID = "e2e_libretranslate"
-	libreTranslateServiceEndpoint := "https://translate.terraprint.co"
-	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", libreTranslateServiceID, libreTranslateServiceEndpoint)
+	// --- 2. Register Fun Translations Server with MCPANY ---
+	const funTranslationsServiceID = "e2e_funtranslations"
+	funTranslationsServiceEndpoint := "https://api.funtranslations.com"
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", funTranslationsServiceID, funTranslationsServiceEndpoint)
 	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
-		EndpointPath: proto.String("/translate"),
+		EndpointPath: proto.String("/translate/yoda.json"),
 		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("translate"),
+			Name: proto.String("translateToYoda"),
 		}.Build(),
 		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("q"),
-				}.Build(),
-			}.Build(),
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("source"),
-				}.Build(),
-			}.Build(),
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("target"),
+					Name: proto.String("text"),
 				}.Build(),
 			}.Build(),
 		},
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
-		Address: proto.String(libreTranslateServiceEndpoint),
+		Address: proto.String(funTranslationsServiceEndpoint),
 		Calls:   []*configv1.HttpCallDefinition{httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String(libreTranslateServiceID),
+		Name:        proto.String(funTranslationsServiceID),
 		HttpService: httpService,
 	}.Build()
 
@@ -91,7 +81,7 @@ func TestUpstreamService_LibreTranslate(t *testing.T) {
 	}.Build()
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	t.Logf("INFO: '%s' registered.", libreTranslateServiceID)
+	t.Logf("INFO: '%s' registered.", funTranslationsServiceID)
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
@@ -105,48 +95,52 @@ func TestUpstreamService_LibreTranslate(t *testing.T) {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 	}
 
-	serviceID, _ := util.SanitizeServiceName(libreTranslateServiceID)
-	sanitizedToolName, _ := util.SanitizeToolName("translate")
+	serviceID, _ := util.SanitizeServiceName(funTranslationsServiceID)
+	sanitizedToolName, _ := util.SanitizeToolName("translateToYoda")
 	toolName := serviceID + "." + sanitizedToolName
-	args := `{"q": "Hello, how are you?", "source": "en", "target": "es"}`
+	text := `{"text": "Hello, how are you?"}`
 
 	const maxRetries = 3
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(args)})
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
 		if err == nil {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "502 Bad Gateway") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "429") {
-			t.Logf("Attempt %d/%d: Call to libretranslate.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+			t.Logf("Attempt %d/%d: Call to api.funtranslations.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue
 		}
+		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
+			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+		}
 
-		require.NoError(t, err, "unrecoverable error calling translate tool")
+		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to libretranslate.com failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries to api.funtranslations.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
-	require.NoError(t, err, "Error calling translate tool")
-	require.NotNil(t, res, "Nil response from translate tool")
+	require.NoError(t, err, "Error calling translateToYoda tool")
+	require.NotNil(t, res, "Nil response from translateToYoda tool")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var libreTranslateResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &libreTranslateResponse)
+	var funTranslationsResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, libreTranslateResponse["translatedText"], "The translated text should not be empty")
+	contents := funTranslationsResponse["contents"].(map[string]interface{})
+	require.NotEmpty(t, contents["translated"], "The translated text should not be empty")
 
 	t.Logf("SUCCESS: Received correct translation: %s", textContent.Text)
 
-	t.Log("INFO: E2E Test Scenario for LibreTranslate Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Fun Translations Server Completed Successfully!")
 }

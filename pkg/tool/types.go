@@ -293,8 +293,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	for _, param := range t.parameters {
 		schema := param.GetSchema()
 		if val, ok := inputs[schema.GetName()]; ok {
-			url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
-			delete(inputs, schema.GetName())
+			placeholder := "{{" + schema.GetName() + "}}"
+			if strings.Contains(url, placeholder) {
+				url = strings.ReplaceAll(url, placeholder, fmt.Sprintf("%v", val))
+				delete(inputs, schema.GetName())
+			}
 		}
 	}
 
@@ -799,8 +802,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		"status":          status,
 	}
 
-	if exitCode == 127 {
-		return result, fmt.Errorf("command not found")
+	if err != nil {
+		return result, err
 	}
 
 	return result, nil
