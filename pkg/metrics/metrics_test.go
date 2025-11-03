@@ -36,6 +36,9 @@ func TestMetrics(t *testing.T) {
 	// Test SetGauge
 	SetGauge("test_gauge", 1.0, "test_service")
 
+	// Test IncrCounter
+	IncrCounter([]string{"test_counter"}, 1.0)
+
 	// Test MeasureSince
 	MeasureSince([]string{"test_measurement"}, time.Now())
 }
