@@ -2,6 +2,7 @@
 # **/*.pb.go
 coverage-*.out
 coverage.out
+coverage.html
 
 # Build artifacts
 /build/
