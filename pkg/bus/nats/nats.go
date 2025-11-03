@@ -20,28 +20,69 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/mcpany/core/proto/bus"
+	s "github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 )
 
-// NatsBus is a message bus implementation using NATS.
-type NatsBus[T any] struct {
-	nc     *nats.Conn
-	config *bus.NatsBus
-	mu     sync.Mutex
+// NatsConnection manages the connection to a NATS server.
+type NatsConnection struct {
+	nc *nats.Conn
+	ns *s.Server
 }
 
-// New creates a new NATS bus.
-func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
-	nc, err := nats.Connect(config.GetServerUrl())
+// NewNatsConnection creates a new NATS connection.
+func NewNatsConnection(config *bus.NatsBus) (*NatsConnection, error) {
+	serverURL := config.GetServerUrl()
+	var ns *s.Server
+	if serverURL == "" {
+		var err error
+		ns, err = s.NewServer(&s.Options{Port: -1})
+		if err != nil {
+			return nil, err
+		}
+		go ns.Start()
+		if !ns.ReadyForConnections(4 * time.Second) {
+			return nil, err
+		}
+		serverURL = ns.ClientURL()
+	}
+
+	nc, err := nats.Connect(serverURL)
 	if err != nil {
 		return nil, err
 	}
-	return &NatsBus[T]{
-		nc:     nc,
-		config: config,
+	return &NatsConnection{
+		nc: nc,
+		ns: ns,
 	}, nil
+}
+
+// Shutdown shuts down the NATS server if it was started by the bus.
+func (c *NatsConnection) Shutdown() {
+	if c.ns != nil {
+		c.ns.Shutdown()
+	}
+}
+
+// GetClient returns the NATS client.
+func (c *NatsConnection) GetClient() *nats.Conn {
+	return c.nc
+}
+
+// NatsBus is a message bus implementation using NATS.
+type NatsBus[T any] struct {
+	nc *nats.Conn
+	mu sync.Mutex
+}
+
+// New creates a new NATS bus.
+func New[T any](nc *nats.Conn) *NatsBus[T] {
+	return &NatsBus[T]{
+		nc: nc,
+	}
 }
 
 // Publish sends a message to a NATS topic.
