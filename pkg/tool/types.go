@@ -721,7 +721,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	args := t.callDefinition.GetArgs()
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			if argsList, ok := argsVal.([]interface{}); ok {
+			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						args = append(args, argStr)
