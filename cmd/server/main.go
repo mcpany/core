@@ -74,14 +74,32 @@ func newRootCmd() *cobra.Command {
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config paths", "paths", configPaths)
 			}
+
+			osFs := afero.NewOsFs()
+			bindAddress := jsonrpcPort
+
+			// If the jsonrpc-port flag is not explicitly set, we'll check the config file.
+			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
+				store := config.NewFileStore(osFs, configPaths)
+				cfg, err := config.LoadServices(store, "server")
+				if err != nil {
+					return fmt.Errorf("failed to load services from config: %w", err)
+				}
+				if cfg.GetGlobalSettings().GetBindAddress() != "" {
+					bindAddress = cfg.GetGlobalSettings().GetBindAddress()
+				}
+			}
+
+			if !strings.Contains(bindAddress, ":") {
+				bindAddress = "localhost:" + bindAddress
+			}
+
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()
 
-			osFs := afero.NewOsFs()
-
 			shutdownTimeout := viper.GetDuration("shutdown-timeout")
 
-			if err := appRunner.Run(ctx, osFs, stdio, jsonrpcPort, registrationPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, registrationPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

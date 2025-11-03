@@ -22,7 +22,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -250,14 +249,9 @@ func (a *Application) Run(
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	var bindAddress string
+	bindAddress := jsonrpcPort
 	if cfg.GetGlobalSettings().GetBindAddress() != "" {
 		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-	} else if jsonrpcPort != "" {
-		bindAddress = jsonrpcPort
-		if !strings.Contains(bindAddress, ":") {
-			bindAddress = "localhost:" + bindAddress
-		}
 	}
 
 	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
