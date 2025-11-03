@@ -28,20 +28,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBusProvider_GetBus_InMemory(t *testing.T) {
-	messageBus := &bus.MessageBus{}
-	messageBus.SetInMemory(&bus.InMemoryBus{})
-	provider, err := NewBusProvider(messageBus)
-	assert.NoError(t, err)
-
-	bus1 := GetBus[string](provider, "test_topic")
-	bus2 := GetBus[string](provider, "test_topic")
-	bus3 := GetBus[int](provider, "another_topic")
-
-	assert.NotNil(t, bus1)
-	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
-	assert.NotSame(t, bus1, bus3, "Expected different bus instances for different topics")
-}
 
 func TestBusProvider_GetBus_Redis(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
@@ -91,8 +77,18 @@ func TestBusProvider_GetBus_Nats(t *testing.T) {
 }
 
 func TestBusProvider_GetBus_Concurrent(t *testing.T) {
+	s, err := server.NewServer(&server.Options{Port: -1})
+	assert.NoError(t, err)
+	go s.Start()
+	defer s.Shutdown()
+	if !s.ReadyForConnections(4 * time.Second) {
+		t.Fatalf("NATS server failed to start")
+	}
+
 	messageBus := &bus.MessageBus{}
-	messageBus.SetInMemory(&bus.InMemoryBus{})
+	natsBus := &bus.NatsBus{}
+	natsBus.SetServerUrl(s.ClientURL())
+	messageBus.SetNats(natsBus)
 	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
 
@@ -123,5 +119,5 @@ func TestBusProvider_DefaultBus(t *testing.T) {
 	provider, err := NewBusProvider(nil)
 	assert.NoError(t, err)
 	assert.NotNil(t, provider.config)
-	assert.NotNil(t, provider.config.GetInMemory())
+	assert.NotNil(t, provider.config.GetNats())
 }

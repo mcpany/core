@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
@@ -72,7 +71,14 @@ type Bus[T any] interface {
 // instances themselves.
 type BusProvider struct {
 	buses  *xsync.Map[string, any]
+	natsConn *nats.NatsConnection
 	config *bus.MessageBus
+}
+
+func (p *BusProvider) Shutdown() {
+	if p.natsConn != nil {
+		p.natsConn.Shutdown()
+	}
 }
 
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
@@ -87,13 +93,11 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		provider.config = &bus.MessageBus{}
 	}
 
-	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil && provider.config.GetNats() == nil {
-		provider.config.SetInMemory(&bus.InMemoryBus{})
+	if provider.config.GetRedis() == nil && provider.config.GetNats() == nil {
+		provider.config.SetNats(&bus.NatsBus{})
 	}
 
-	if provider.config.GetInMemory() != nil {
-		// In-memory bus requires no additional setup
-	} else if provider.config.GetRedis() != nil {
+	if provider.config.GetRedis() != nil {
 		// Redis client is now created within the RedisBus
 	} else if provider.config.GetNats() != nil {
 		// NATS client is now created within the NatsBus
@@ -122,16 +126,17 @@ func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	}
 
 	var newBus Bus[T]
-	if p.config.GetInMemory() != nil {
-		newBus = memory.New[T]()
-	} else if p.config.GetRedis() != nil {
+	if p.config.GetRedis() != nil {
 		newBus = redis.New[T](p.config.GetRedis())
 	} else if p.config.GetNats() != nil {
-		var err error
-		newBus, err = nats.New[T](p.config.GetNats())
-		if err != nil {
-			panic(err)
+		if p.natsConn == nil {
+			var err error
+			p.natsConn, err = nats.NewNatsConnection(p.config.GetNats())
+			if err != nil {
+				panic(err)
+			}
 		}
+		newBus = nats.New[T](p.natsConn.GetClient())
 	}
 
 	bus, _ := p.buses.LoadOrStore(topic, newBus)
