@@ -20,8 +20,10 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/proto/bus"
+	"github.com/nats-io/nats-server/v2/server"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
@@ -53,6 +55,30 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 	redisBus := &bus.RedisBus{}
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
+
+	provider, err := NewBusProvider(messageBus)
+	assert.NoError(t, err)
+
+	bus1 := GetBus[string](provider, "test_topic")
+	bus2 := GetBus[string](provider, "test_topic")
+
+	assert.NotNil(t, bus1)
+	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
+}
+
+func TestBusProvider_GetBus_Nats(t *testing.T) {
+	s, err := server.NewServer(&server.Options{Port: -1})
+	assert.NoError(t, err)
+	go s.Start()
+	defer s.Shutdown()
+	if !s.ReadyForConnections(4 * time.Second) {
+		t.Fatalf("NATS server failed to start")
+	}
+
+	messageBus := &bus.MessageBus{}
+	natsBus := &bus.NatsBus{}
+	natsBus.SetServerUrl(s.ClientURL())
+	messageBus.SetNats(natsBus)
 
 	provider, err := NewBusProvider(messageBus)
 	assert.NoError(t, err)
