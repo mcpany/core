@@ -195,3 +195,32 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		assert.Empty(t, discoveredTools)
 	})
 }
+
+func TestWebrtcUpstream_Register_ToolNameGeneration(t *testing.T) {
+	toolManager := NewMockToolManager()
+	poolManager := pool.NewManager()
+	var promptManager prompt.PromptManagerInterface
+	var resourceManager resource.ResourceManagerInterface
+	upstream := NewWebrtcUpstream(poolManager)
+
+	callDef := configv1.WebrtcCallDefinition_builder{
+		Schema: configv1.ToolSchema_builder{
+			Description: proto.String("A test description"),
+		}.Build(),
+	}.Build()
+
+	webrtcService := &configv1.WebrtcUpstreamService{}
+	webrtcService.SetAddress("http://localhost:8080/signal")
+	webrtcService.SetCalls([]*configv1.WebrtcCallDefinition{callDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-webrtc-service-tool-name-generation")
+	serviceConfig.SetWebrtcService(webrtcService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	tools := toolManager.ListTools()
+	assert.Len(t, tools, 1)
+	assert.Equal(t, util.SanitizeOperationID("A test description"), tools[0].Tool().GetName())
+}
