@@ -304,8 +304,8 @@ paths:
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
-		assert.Equal(t, codes.Internal, st.Code())
-		assert.Contains(t, st.Message(), "failed to register service")
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+		assert.Contains(t, st.Message(), "invalid config")
 	})
 }
 
@@ -445,8 +445,14 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("RegisterService timeout", func(t *testing.T) {
+		httpSvc := &configv1.HttpUpstreamService{}
+		httpSvc.SetAddress("http://localhost:8080")
+		cfg := &configv1.UpstreamServiceConfig{}
+		cfg.SetName("timeout-test")
+		cfg.SetHttpService(httpSvc)
+
 		req := &v1.RegisterServiceRequest{}
-		req.SetConfig((&configv1.UpstreamServiceConfig_builder{Name: proto.String("timeout-test")}).Build())
+		req.SetConfig(cfg)
 		_, err := registrationServer.RegisterService(ctx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
