@@ -718,7 +718,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	args := t.callDefinition.GetArgs()
+	args := []string{}
+	if t.callDefinition.GetArgs() != nil {
+		args = append(args, t.callDefinition.GetArgs()...)
+	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			if argsList, ok := argsVal.([]any); ok {
