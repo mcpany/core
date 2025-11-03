@@ -501,6 +501,7 @@ type MCPANYTestServerInfo struct {
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
 	GrpcRegistrationEndpoint string
+	NatsURL                  string
 	SessionID                string
 	HTTPClient               *http.Client
 	GRPCRegConn              *grpc.ClientConn
@@ -654,6 +655,24 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 	}
 }
 
+func StartNatsServer(t *testing.T) (string, func()) {
+	t.Helper()
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+	natsServerBin := filepath.Join(root, "build/env/bin/nats-server")
+	_, err = os.Stat(natsServerBin)
+	require.NoError(t, err, "nats-server binary not found at %s. Run 'make prepare'.", natsServerBin)
+	natsPort := FindFreePort(t)
+	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
+	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
+	err = cmd.Start()
+	require.NoError(t, err)
+	cleanup := func() {
+		cmd.Process.Kill()
+	}
+	return natsURL, cleanup
+}
+
 func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -669,12 +688,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		grpcRegPort = FindFreePort(t)
 	}
 
+	natsURL, natsCleanup := StartNatsServer(t)
+
 	args := []string{
 		"--jsonrpc-port", fmt.Sprintf("localhost:%d", jsonrpcPort),
 		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug"}
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
@@ -767,12 +788,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
+		NatsURL:                  natsURL,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
 				grpcRegConn.Close()
 			}
 			mcpProcess.Stop()
+			natsCleanup()
 		},
 		T: t,
 	}
