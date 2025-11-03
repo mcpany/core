@@ -643,8 +643,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 	}
 
 	args := []string{
-		"--jsonrpc-port", fmt.Sprintf("%d", jsonrpcPort),
-		"--grpc-port", fmt.Sprintf("%d", grpcRegPort),
+		"--jsonrpc-port", fmt.Sprintf("localhost:%d", jsonrpcPort),
+		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug"}
