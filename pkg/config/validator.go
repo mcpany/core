@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
