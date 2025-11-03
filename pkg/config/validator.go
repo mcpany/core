@@ -82,6 +82,9 @@ func Validate(config *configv1.McpxServerConfig) []ValidationError {
 }
 
 func validateGlobalSettings(gs *configv1.GlobalSettings) error {
+	if gs.GetBindAddress() == "" {
+		return fmt.Errorf("bind_address is empty")
+	}
 	if bus := gs.GetMessageBus(); bus != nil {
 		if redis := bus.GetRedis(); redis != nil {
 			if redis.GetAddress() == "" {
