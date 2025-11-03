@@ -18,6 +18,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -56,10 +57,12 @@ func LoadServices(store Store, binaryType string) (*configv1.McpxServerConfig, e
 	}
 
 	if validationErrors := Validate(fileConfig, bt); len(validationErrors) > 0 {
+		var errorMessages []string
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
 		}
-		return nil, fmt.Errorf("config validation failed")
+		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {
