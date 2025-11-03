@@ -17,7 +17,6 @@
 package tool
 
 import (
-	"context"
 	"testing"
 
 	"github.com/mcpany/core/pkg/util"
