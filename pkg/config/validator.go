@@ -19,9 +19,20 @@ package config
 import (
 	"fmt"
 
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+)
+
+// BinaryType defines the type of the binary being validated.
+type BinaryType int
+
+const (
+	// Server represents the server binary.
+	Server BinaryType = iota
+	// Worker represents the worker binary.
+	Worker
 )
 
 // ValidationError encapsulates a validation error for a specific service.
@@ -47,12 +58,12 @@ func (e *ValidationError) Error() string {
 //
 // It returns a slice of ValidationErrors, which will be empty if the
 // configuration is valid.
-func Validate(config *configv1.McpxServerConfig) []ValidationError {
+func Validate(config *configv1.McpxServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
 
 	if gs := config.GetGlobalSettings(); gs != nil {
-		if err := validateGlobalSettings(gs); err != nil {
+		if err := validateGlobalSettings(gs, binaryType); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: "global_settings",
 				Err:         err,
@@ -81,10 +92,17 @@ func Validate(config *configv1.McpxServerConfig) []ValidationError {
 	return validationErrors
 }
 
-func validateGlobalSettings(gs *configv1.GlobalSettings) error {
-	if gs.GetBindAddress() == "" {
-		return fmt.Errorf("bind_address is empty")
+func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
+	if binaryType == Server {
+		if gs.GetBindAddress() == "" {
+			gs.SetBindAddress(fmt.Sprintf("localhost:%d", consts.DefaultBindPort))
+		} else {
+			if err := validation.IsValidBindAddress(gs.GetBindAddress()); err != nil {
+				return fmt.Errorf("invalid bind_address: %w", err)
+			}
+		}
 	}
+
 	if bus := gs.GetMessageBus(); bus != nil {
 		if redis := bus.GetRedis(); redis != nil {
 			if redis.GetAddress() == "" {

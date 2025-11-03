@@ -2,6 +2,7 @@
 # **/*.pb.go
 coverage-*.out
 coverage.out
+coverage.html
 
 # Build artifacts
 /build/
@@ -19,3 +20,4 @@ node_modules/
 
 # Python cache
 __pycache__/
+coverage.html
