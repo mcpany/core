@@ -20,3 +20,4 @@ node_modules/
 
 # Python cache
 __pycache__/
+coverage.html
