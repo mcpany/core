@@ -18,7 +18,6 @@ package bus
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/redis"
@@ -88,14 +87,6 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 
 	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil {
 		provider.config.SetInMemory(&bus.InMemoryBus{})
-	}
-
-	if provider.config.GetInMemory() != nil {
-		// In-memory bus requires no additional setup
-	} else if provider.config.GetRedis() != nil {
-		// Redis client is now created within the RedisBus
-	} else {
-		return nil, fmt.Errorf("unknown bus type")
 	}
 
 	return provider, nil
