@@ -17,7 +17,11 @@
 package metrics
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -36,6 +40,31 @@ func TestMetrics(t *testing.T) {
 	// Test SetGauge
 	SetGauge("test_gauge", 1.0, "test_service")
 
+	// Test IncrCounter
+	IncrCounter([]string{"test_counter"}, 1.0)
+
 	// Test MeasureSince
 	MeasureSince([]string{"test_measurement"}, time.Now())
+
+	// Create a test server
+	ts := httptest.NewServer(Handler())
+	defer ts.Close()
+
+	// Make a request to the /metrics endpoint
+	resp, err := http.Get(ts.URL + "/metrics")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Check the response body for the expected metrics
+	if !strings.Contains(string(body), "mcpany_test_counter 1") {
+		t.Errorf("Expected metric mcpany_test_counter not found in response body")
+	}
 }

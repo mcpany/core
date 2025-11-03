@@ -51,16 +51,11 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	cmd.Dir = workingDir
 	cmd.Env = env
 
-	stdoutPipe, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("failed to create stdout pipe: %w", err)
-	}
+	stdoutReader, stdoutWriter := io.Pipe()
+	stderrReader, stderrWriter := io.Pipe()
 
-	stderrPipe, err := cmd.StderrPipe()
-	if err != nil {
-		stdoutPipe.Close()
-		return nil, nil, nil, fmt.Errorf("failed to create stderr pipe: %w", err)
-	}
+	cmd.Stdout = stdoutWriter
+	cmd.Stderr = stderrWriter
 
 	if err := cmd.Start(); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
@@ -69,10 +64,10 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
+		defer stdoutWriter.Close()
+		defer stderrWriter.Close()
 
 		err := cmd.Wait()
-		_ = stdoutPipe.Close()
-		_ = stderrPipe.Close()
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				exitCodeChan <- exitErr.ExitCode()
@@ -85,7 +80,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 		}
 	}()
 
-	return stdoutPipe, stderrPipe, exitCodeChan, nil
+	return stdoutReader, stderrReader, exitCodeChan, nil
 }
 
 type dockerExecutor struct {
