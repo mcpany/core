@@ -162,6 +162,9 @@ func newRootCmd() *cobra.Command {
 	if err := viper.BindPFlag("jsonrpc-port", rootCmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
 		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
 	}
+	if err := viper.BindPFlag("config-paths", rootCmd.PersistentFlags().Lookup("config-paths")); err != nil {
+		fmt.Printf("Error binding config-paths flag: %v\n", err)
+	}
 
 	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")

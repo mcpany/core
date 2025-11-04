@@ -105,7 +105,7 @@ func TestRootCmd(t *testing.T) {
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
+	assert.Equal(t, "localhost:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-paths should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
