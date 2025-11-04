@@ -46,6 +46,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/mcpany/core/pkg/app"
+	"github.com/nats-io/nats-server/v2/server"
 	"github.com/spf13/afero"
 )
 
@@ -669,12 +670,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		grpcRegPort = FindFreePort(t)
 	}
 
+	natsURL, natsCleanup := StartGoNatsServer(t)
+
 	args := []string{
 		"--jsonrpc-port", fmt.Sprintf("localhost:%d", jsonrpcPort),
 		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug"}
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
@@ -773,9 +776,24 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 				grpcRegConn.Close()
 			}
 			mcpProcess.Stop()
+			natsCleanup()
 		},
 		T: t,
 	}
+}
+
+func StartGoNatsServer(t *testing.T) (string, func()) {
+	t.Helper()
+	opts := &server.Options{
+		Port: FindFreePort(t),
+	}
+	ns, err := server.NewServer(opts)
+	require.NoError(t, err)
+	go ns.Start()
+	if !ns.ReadyForConnections(4 * time.Second) {
+		t.Fatal("NATS server not ready for connection")
+	}
+	return ns.ClientURL(), ns.Shutdown
 }
 
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
