@@ -55,6 +55,32 @@ func (l *connCountingListener) Accept() (net.Conn, error) {
 }
 
 func TestHealthCheck(t *testing.T) {
+	t.Run("health check against specific IP address", func(t *testing.T) {
+		// This test is designed to fail if 'localhost' resolves to an IP
+		// address that the server is not listening on. For example, on an
+		// IPv6-enabled system, 'localhost' might resolve to '::1', but our
+		// test server below is explicitly listening on the IPv4 loopback
+		// '127.0.0.1'. The HealthCheck function, as written, assumes
+		// 'localhost', which makes it fragile.
+
+		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		// Forcing the server to listen on the IPv4 loopback address.
+		l, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		server.Listener = l
+		server.Start()
+		defer server.Close()
+
+		addr := server.Listener.Addr().String()
+
+		// This call should now succeed because we are providing the exact
+		// address of the listener.
+		err = HealthCheck(addr)
+		assert.NoError(t, err, "HealthCheck should succeed when given the correct IP")
+	})
+
 	t.Run("successful health check", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/healthz", r.URL.Path)
@@ -63,10 +89,8 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		// Extract port from server URL
-		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
-		require.NoError(t, err)
-
-		err = HealthCheck(port)
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(addr)
 		assert.NoError(t, err)
 	})
 
@@ -76,10 +100,8 @@ func TestHealthCheck(t *testing.T) {
 		}))
 		defer server.Close()
 
-		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
-		require.NoError(t, err)
-
-		err = HealthCheck(port)
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(addr)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed with status code: 500")
 	})
@@ -88,10 +110,10 @@ func TestHealthCheck(t *testing.T) {
 		// Find a free port, then close it, to ensure it's not listening
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
-		port := l.Addr().(*net.TCPAddr).Port
+		addr := l.Addr().String()
 		l.Close()
 
-		err = HealthCheck(fmt.Sprintf("%d", port))
+		err = HealthCheck(addr)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
@@ -113,13 +135,11 @@ func TestHealthCheck(t *testing.T) {
 		}()
 		defer server.Close()
 
-		// Get the port from the listener's address.
-		_, port, err := net.SplitHostPort(countingLis.Addr().String())
-		require.NoError(t, err)
+		addr := countingLis.Addr().String()
 
 		// Perform the health check multiple times.
 		for i := 0; i < 3; i++ {
-			err := HealthCheck(port)
+			err := HealthCheck(addr)
 			require.NoError(t, err, "Health check should succeed on iteration %d", i)
 		}
 
