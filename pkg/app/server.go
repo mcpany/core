@@ -22,6 +22,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -359,10 +360,16 @@ func (a *Application) runServerMode(
 	if bindAddress == "" {
 		bindAddress = fmt.Sprintf("localhost:%d", 8070)
 	}
+	if !strings.Contains(bindAddress, ":") {
+		bindAddress = ":" + bindAddress
+	}
 
 	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
 
 	if grpcPort != "" {
+		if !strings.Contains(grpcPort, ":") {
+			grpcPort = ":" + grpcPort
+		}
 		startGrpcServer(
 			ctx,
 			&wg,
