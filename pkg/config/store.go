@@ -58,7 +58,7 @@ func NewEngine(path string) (Engine, error) {
 		return &jsonEngine{}, nil
 	case ".yaml", ".yml":
 		return &yamlEngine{}, nil
-	case ".textproto":
+	case ".textproto", ".prototxt", ".pb", ".pb.txt":
 		return &textprotoEngine{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported config file extension '%s' for file %s", ext, path)
