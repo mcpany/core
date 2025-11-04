@@ -146,10 +146,11 @@ func newRootCmd() *cobra.Command {
 					addr = "localhost:" + addr
 				}
 			}
-
-			return app.HealthCheck(addr)
+			timeout, _ := cmd.Flags().GetDuration("timeout")
+			return app.HealthCheck(addr, timeout)
 		},
 	}
+	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
 	cobra.OnInitialize(func() {
