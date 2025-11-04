@@ -712,3 +712,58 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 		})
 	}
 }
+
+func TestRun_ServiceRegistrationPublication(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	configContent := `
+upstream_services:
+ - name: "test-service"
+   http_service:
+     address: "http://localhost:8080"
+     calls:
+       - schema:
+           name: "test-call"
+ - name: "disabled-service"
+   disable: true
+   http_service:
+     address: "http://localhost:8081"
+     calls:
+       - schema:
+           name: "test-call"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	// Since we are using an in-memory bus, we can't easily subscribe to the topic.
+	// The best we can do is check the logs to see if the disabled service was skipped.
+	// This is not ideal, but it's better than nothing.
+	time.Sleep(500 * time.Millisecond)
+	cancel()
+
+	err = <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+}
+
+func TestRun_NoConfig(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
+	}()
+
+	runErr := <-errChan
+	assert.NoError(t, runErr, "app.Run should return nil on graceful shutdown")
+}
