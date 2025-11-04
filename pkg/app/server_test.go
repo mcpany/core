@@ -77,8 +77,20 @@ func TestHealthCheck(t *testing.T) {
 
 		// This call should now succeed because we are providing the exact
 		// address of the listener.
-		err = HealthCheck(addr)
+		err = HealthCheck(addr, 5*time.Second)
 		assert.NoError(t, err, "HealthCheck should succeed when given the correct IP")
+	})
+
+	t.Run("health check timeout", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(100 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(addr, 50*time.Millisecond)
+		assert.Error(t, err, "HealthCheck should time out and return an error")
 	})
 
 	t.Run("successful health check", func(t *testing.T) {
@@ -90,7 +102,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Extract port from server URL
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(addr)
+		err := HealthCheck(addr, 5*time.Second)
 		assert.NoError(t, err)
 	})
 
@@ -101,7 +113,7 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(addr)
+		err := HealthCheck(addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed with status code: 500")
 	})
@@ -113,7 +125,7 @@ func TestHealthCheck(t *testing.T) {
 		addr := l.Addr().String()
 		l.Close()
 
-		err = HealthCheck(addr)
+		err = HealthCheck(addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
@@ -139,7 +151,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Perform the health check multiple times.
 		for i := 0; i < 3; i++ {
-			err := HealthCheck(addr)
+			err := HealthCheck(addr, 5*time.Second)
 			require.NoError(t, err, "Health check should succeed on iteration %d", i)
 		}
 
