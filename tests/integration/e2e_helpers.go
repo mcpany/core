@@ -600,6 +600,9 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 		grpcRegPort = FindFreePort(t)
 	}
 
+	jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
+	grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
+
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
@@ -608,9 +611,11 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 
 	go func() {
 		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf("%d", jsonrpcPort), fmt.Sprintf("%d", grpcRegPort), []string{}, 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, 5*time.Second)
 		require.NoError(t, err)
 	}()
+
+	WaitForHTTPHealth(t, fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort), McpAnyServerStartupTimeout)
 
 	var grpcRegConn *grpc.ClientConn
 	require.Eventually(t, func() bool {
@@ -667,6 +672,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
 	err = cmd.Start()
 	require.NoError(t, err)
+	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
 	cleanup := func() {
 		cmd.Process.Kill()
 	}
