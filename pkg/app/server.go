@@ -303,8 +303,11 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-func HealthCheck(addr string) error {
-	resp, err := http.Get(fmt.Sprintf("http://%s/healthz", addr))
+func HealthCheck(addr string, timeout time.Duration) error {
+	client := &http.Client{
+		Timeout: timeout,
+	}
+	resp, err := client.Get(fmt.Sprintf("http://%s/healthz", addr))
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
