@@ -15,6 +15,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+go mod tidy
 
 # This script starts the mcpany server and configures it to expose the
 # tools defined in the ./config/mcpany.yaml file.

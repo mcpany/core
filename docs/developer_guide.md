@@ -54,12 +54,12 @@ MCP Any allows you to extend its capabilities by registering external services, 
 
 Services can be registered with MCP Any in two ways:
 
-1. **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/mcpany/v1/registration.proto`) provides an API for registering services at runtime.
+1. **Dynamically via the gRPC Registration API**: The `RegistrationService` (`proto/api/v1/registration.proto`) provides an API for registering services at runtime.
 2. **Statically via a configuration file**: Services can be defined in a YAML configuration file and loaded when the server starts.
 
 ### Service Configuration
 
-The `UpstreamService` message (`proto/mcpany/config/v1/config.proto`) is the core configuration for defining a service.
+The `UpstreamService` message (`proto/config/v1/config.proto`) is the core configuration for defining a service.
 
 For a comprehensive reference for all configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
