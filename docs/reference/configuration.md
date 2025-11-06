@@ -1,17 +1,17 @@
-# MCP-X Configuration Reference
+# MCP Any Configuration Reference
 
 > **Disclaimer:** This document is a reference for all the configuration options available in the `proto/config/v1/config.proto` file. While these settings are defined in the configuration schema, not all of them have been fully implemented in the server logic. Please refer to the project's roadmap for the current implementation status of each feature.
 
-This document provides a comprehensive reference for configuring the MCP-X server. The configuration is defined in the `McpxServerConfig` protobuf message and can be provided to the server in YAML or JSON format.
+This document provides a comprehensive reference for configuring the MCP Any server. The configuration is defined in the `McpAnyServerConfig` protobuf message and can be provided to the server in YAML or JSON format.
 
-## Root Server Configuration (`McpxServerConfig`)
+## Root Server Configuration (`McpAnyServerConfig`)
 
-The `McpxServerConfig` is the top-level configuration object for the entire MCP-X server.
+The `McpAnyServerConfig` is the top-level configuration object for the entire MCP Any server.
 
 | Field               | Type                             | Description                                                                                                                        |
 | ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                |
-| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP-X will proxy to. Each service has its own specific configuration and policies. |
+| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
 
 ### `GlobalSettings`
 

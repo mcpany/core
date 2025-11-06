@@ -1,8 +1,8 @@
-# MCP-X Architecture
+# MCP Any Architecture
 
 ## Introduction
 
-MCP-X (Model Context Protocol eXtensions) is a versatile server designed to dynamically register and expose capabilities from various backend services as standardized "Tools." These tools can then be listed and executed through a unified interface. It supports a wide range of service types, including gRPC, RESTful APIs (via OpenAPI), generic HTTP services, and command-line tools that communicate over standard I/O.
+MCP Any (Model Context Protocol Anything) is a versatile server designed to dynamically register and expose capabilities from various backend services as standardized "Tools." These tools can then be listed and executed through a unified interface. It supports a wide range of service types, including gRPC, RESTful APIs (via OpenAPI), generic HTTP services, and command-line tools that communicate over standard I/O.
 
 ## System Diagram
 
@@ -14,14 +14,14 @@ graph TD
 
     subgraph Service Registration
         Admin -->|Dynamic Registration| RegistrationApi[Registration API (gRPC)]
-        ConfigFile[YAML/JSON Config] -->|Static Registration| McpxServer[MCP-X Server]
+        ConfigFile[YAML/JSON Config] -->|Static Registration| McpAnyServer[MCP Any Server]
     end
 
-    subgraph "MCP-X Server"
-        McpxServer --> McpRouterApi
-        McpxServer --> RegistrationApi
-        McpxServer --> ToolIndex[Tool Index]
-        McpxServer --> UpstreamClients[Upstream Clients]
+    subgraph "MCP Any Server"
+        McpAnyServer --> McpRouterApi
+        McpAnyServer --> RegistrationApi
+        McpAnyServer --> ToolIndex[Tool Index]
+        McpAnyServer --> UpstreamClients[Upstream Clients]
     end
 
     subgraph Upstream Services
@@ -37,29 +37,29 @@ graph TD
     style StdioService fill:#d4edda
 ```
 
-The diagram above illustrates the two main workflows in MCP-X:
+The diagram above illustrates the two main workflows in MCP Any:
 
-1. **Service Registration**: Services can be registered with the MCP-X server either dynamically via the gRPC-based `Registration API` or statically by defining them in a configuration file that is loaded at startup.
-2. **Tool Execution**: Clients interact with the `MCP Router API` to list and execute the tools that have been made available by the registered services. The MCP-X server then dispatches these calls to the appropriate upstream service.
+1. **Service Registration**: Services can be registered with the MCP Any server either dynamically via the gRPC-based `Registration API` or statically by defining them in a configuration file that is loaded at startup.
+2. **Tool Execution**: Clients interact with the `MCP Router API` to list and execute the tools that have been made available by the registered services. The MCP Any server then dispatches these calls to the appropriate upstream service.
 
 ## Core Concepts
 
 ### 1. Upstream Services
 
-An "upstream service" is a backend service that MCP-X can connect to and expose as a set of tools. MCP-X supports several types of upstream services, each with its own configuration:
+An "upstream service" is a backend service that MCP Any can connect to and expose as a set of tools. MCP Any supports several types of upstream services, each with its own configuration:
 
 - **gRPC (`GrpcUpstreamService`)**: Exposes a gRPC service as a set of tools. Can use `.proto` files or gRPC reflection to discover services and methods.
 - **OpenAPI (`OpenapiUpstreamService`)**: Exposes a RESTful API as a set of tools by ingesting an OpenAPI (Swagger) specification.
 - **HTTP (`HttpUpstreamService`)**: Exposes any HTTP endpoint as a tool.
 - **Stdio (`StdioUpstreamService`)**: Wraps any command-line tool that communicates over standard I/O.
-- **MCP-X Proxy (`McpUpstreamService`)**: Proxies and re-exposes tools from another MCP-X instance.
+- **MCP Any Proxy (`McpUpstreamService`)**: Proxies and re-exposes tools from another MCP Any instance.
 
 ### 2. Service Configuration (`proto/config/v1/config.proto`)
 
-The `McpxServerConfig` message is the root configuration for the entire MCP-X server. It contains:
+The `McpAnyServerConfig` message is the root configuration for the entire MCP Any server. It contains:
 
 - **`global_settings`**: Server-wide operational parameters, such as the bind address and log level.
-- **`upstream_services`**: A list of all configured upstream services that MCP-X can proxy to. Each service has its own specific configuration (e.g., `GrpcUpstreamService`, `OpenapiUpstreamService`).
+- **`upstream_services`**: A list of all configured upstream services that MCP Any can proxy to. Each service has its own specific configuration (e.g., `GrpcUpstreamService`, `OpenapiUpstreamService`).
 - **`frontend_services`**: A list of all defined public-facing frontend services.
 - **`service_bindings`**: A list of bindings that link a frontend service to a specific upstream service.
 
@@ -74,25 +74,25 @@ A `ToolDefinition` represents a single capability or "tool" offered by a service
 
 ## Components
 
-### 1. MCP-X Server (`cmd/server`)
+### 1. MCP Any Server (`cmd/server`)
 
-The `cmd/server` package contains the main application logic for the MCP-X server. It is responsible for:
+The `cmd/server` package contains the main application logic for the MCP Any server. It is responsible for:
 
-- **Loading Configuration**: Reading the `McpxServerConfig` from a file or other source.
+- **Loading Configuration**: Reading the `McpAnyServerConfig` from a file or other source.
 - **Service Registration**: Registering all the upstream services defined in the configuration.
 - **Tool Indexing**: Creating and maintaining an index of all available tools.
 - **API Server**: Exposing the MCP Router API and the Registration API.
 
 ### 2. Parsers
 
-MCP-X uses a set of parsers to discover tools from different types of upstream services:
+MCP Any uses a set of parsers to discover tools from different types of upstream services:
 
 - **`pkg/grpc/protobufparser`**: Parses `.proto` files and uses gRPC reflection to discover gRPC services and methods.
 - **`pkg/openapi/parser`**: Parses OpenAPI specifications to discover RESTful API endpoints.
 
 ### 3. API Services
 
-MCP-X exposes two main API services:
+MCP Any exposes two main API services:
 
 - **`McpRouter` (`proto/mcp_router/v1/mcp_router.proto`)**: Allows clients to list and execute tools.
 - **`RegistrationService` (`proto/api/v1/registration.proto`)**: Allows backend services to be registered dynamically.
@@ -100,11 +100,11 @@ MCP-X exposes two main API services:
 ## Tool Execution Flow
 
 1. A user requests to execute a tool by its name, providing the necessary inputs.
-2. The MCP-X server looks up the `ToolDefinition` from its index.
+2. The MCP Any server looks up the `ToolDefinition` from its index.
 3. The server identifies the upstream service that provides the tool.
 4. The server dispatches the request to the appropriate client logic for the upstream service type (gRPC, HTTP, etc.).
 5. The client logic sends the request to the backend service.
-6. The response from the backend service is returned to the user through the MCP-X server.
+6. The response from the backend service is returned to the user through the MCP Any server.
 
 ## Key Design Goals
 

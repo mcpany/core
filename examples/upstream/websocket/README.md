@@ -2,6 +2,9 @@
 
 This example demonstrates how to expose a WebSocket service as a tool through `mcpany`.
 
+> [!NOTE]
+> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
+
 ## Overview
 
 This example consists of three main components:
