@@ -2,6 +2,9 @@
 
 This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `mcpany`. This allows an AI assistant to interact with a Kubernetes cluster.
 
+> [!NOTE]
+> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
+
 ## Overview
 
 This example consists of two main components:
