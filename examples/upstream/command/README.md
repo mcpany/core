@@ -1,14 +1,16 @@
 # Example: Wrapping a Command-Line Tool
 
-This example demonstrates how to wrap a simple shell script and expose it as a tool through `mcpany`. This powerful feature allows you to integrate any command-line tool into your AI assistant's workflow.
+This example demonstrates how to wrap the `date` command-line tool and expose its functionality as tools through `mcpany`. This powerful feature allows you to integrate any command-line tool into your AI assistant's workflow.
+
+> [!NOTE]
+> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
 
 ## Overview
 
-This example consists of three main components:
+This example consists of two main components:
 
-1. **Upstream Script**: A simple shell script (`server/hello.sh`) that prints a greeting.
-2. **`mcpany` Configuration**: A YAML file (`config/mcpany.yaml`) that tells `mcpany` how to execute the script.
-3. **`mcpany` Server**: The `mcpany` instance that runs the script and returns its output.
+1. **`mcpany` Configuration**: A YAML file (`config/mcpxy_config.yaml`) that defines how to translate `mcpany` tool calls into `date` commands.
+2. **`mcpany` Server**: The `mcpany` instance that executes the `date` commands.
 
 ## Running the Example
 
@@ -20,15 +22,7 @@ First, ensure the `mcpany` binary is built. From the root of the repository, run
 make build
 ```
 
-### 2. Make the Script Executable
-
-The shell script must be executable. From this directory (`examples/upstream/command`), run:
-
-```bash
-chmod +x ./server/hello.sh
-```
-
-### 3. Run the `mcpany` Server
+### 2. Run the `mcpany` Server
 
 Start the `mcpany` server using the provided shell script.
 
@@ -36,7 +30,7 @@ Start the `mcpany` server using the provided shell script.
 ./start.sh
 ```
 
-The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
+The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
@@ -48,7 +42,7 @@ Once the server is running, you can connect your AI assistant to `mcpany`.
    Register the running `mcpany` process with the Gemini CLI.
 
    ```bash
-   gemini mcp add mcpany-command-hello --address http://localhost:50050 --command "sleep" "infinity"
+   gemini mcp add mcpany-command-date --address http://localhost:8080 --command "sleep" "infinity"
    ```
 
 2. **List Available Tools:**
@@ -58,19 +52,15 @@ Once the server is running, you can connect your AI assistant to `mcpany`.
    gemini list tools
    ```
 
-   You should see the `command-hello-world/-/hello` tool in the list.
+   You should see the `datetime-service.get_current_date` and `datetime-service.get_current_date_iso` tools in the list.
 
-3. **Call the Tool:**
-   Call the tool to execute the script.
+3. **Call a Tool:**
+   Call the `get_current_date` tool to get the current date.
 
    ```bash
-   gemini call tool command-hello-world/-/hello
+   gemini call tool datetime-service.get_current_date
    ```
 
-   You should see the output of the script:
-
-   ```
-   Hello, World!
-   ```
+   You should receive a JSON response containing the current date.
 
 This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.
