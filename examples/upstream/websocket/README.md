@@ -2,9 +2,6 @@
 
 This example demonstrates how to expose a WebSocket service as a tool through `mcpany`.
 
-> [!NOTE]
-> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
-
 ## Overview
 
 This example consists of three main components:
@@ -28,55 +25,44 @@ make build
 In a separate terminal, start the upstream WebSocket server. From this directory (`examples/upstream/websocket`), run:
 
 ```bash
-go run ./echo_server/main.go
+go run ./echo_server/server/main.go
 ```
 
 The server will start and listen on port `8082`.
 
 ### 3. Run the `mcpany` Server
 
-In another terminal, start the `mcpany` server using the provided script.
+In another terminal, start the `mcpany` server using the provided script. Note that this example is configured to run the `mcpany` server on port `8081` to avoid conflicts with other examples.
 
 ```bash
-./start.sh
+./start_mcpany.sh
 ```
-
-The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
 
 ## Interacting with the Tool
 
-Once both servers are running, you can connect your AI assistant to `mcpany`.
+Once both servers are running, you can interact with the tool using `curl`.
 
-### Using Gemini CLI
+### Using `curl`
 
-1. **Add `mcpany` as an MCP Server:**
-   Register the running `mcpany` process with the Gemini CLI.
+1. **Initialize a session:**
+   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
 
    ```bash
-   gemini mcp add mcpany-websocket-echo --address http://localhost:50050 --command "sleep" "infinity"
+   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8081 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
    ```
 
-2. **List Available Tools:**
-   Ask Gemini to list the tools.
+2. **Call the tool:**
+   Now, you can call the `echo` tool by sending a `tools/call` request with the session ID you received in the previous step.
 
    ```bash
-   gemini list tools
-   ```
-
-   You should see the `websocket-echo-server/-/echo` tool in the list.
-
-3. **Call the Tool:**
-   Call the `echo` tool with a message.
-
-   ```bash
-   gemini call tool websocket-echo-server/-/echo '{"message": "Hello, WebSocket!"}'
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "echo-service.echo", "arguments": {"message": "Hello, WebSocket!"}}, "id": 2}' http://localhost:8081
    ```
 
    You should receive a JSON response echoing your message:
 
    ```json
    {
-     "response": "Hello, WebSocket!"
+     "message": "Hello, WebSocket!"
    }
    ```
 
