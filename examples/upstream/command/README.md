@@ -2,9 +2,6 @@
 
 This example demonstrates how to wrap the `date` command-line tool and expose its functionality as tools through `mcpany`. This powerful feature allows you to integrate any command-line tool into your AI assistant's workflow.
 
-> [!NOTE]
-> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
-
 ## Overview
 
 This example consists of two main components:
@@ -34,33 +31,28 @@ The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can connect your AI assistant to `mcpany`.
+Once the server is running, you can interact with the tools using `curl`.
 
-### Using Gemini CLI
+### Using `curl`
 
-1. **Add `mcpany` as an MCP Server:**
-   Register the running `mcpany` process with the Gemini CLI.
-
-   ```bash
-   gemini mcp add mcpany-command-date --address http://localhost:8080 --command "sleep" "infinity"
-   ```
-
-2. **List Available Tools:**
-   Ask Gemini to list the tools.
+1. **Initialize a session:**
+   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
 
    ```bash
-   gemini list tools
+   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8080 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
    ```
 
-   You should see the `datetime-service.get_current_date` and `datetime-service.get_current_date_iso` tools in the list.
-
-3. **Call a Tool:**
-   Call the `get_current_date` tool to get the current date.
+2. **Call a tool:**
+   Now, you can call the `get_current_date` tool by sending a `tools/call` request with the session ID you received in the previous step.
 
    ```bash
-   gemini call tool datetime-service.get_current_date
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "datetime-service.get_current_date", "arguments": {}}, "id": 2}' http://localhost:8080
    ```
 
-   You should receive a JSON response containing the current date.
+   You can also call the `get_current_date_iso` tool to get the date in ISO 8601 format:
+
+   ```bash
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "datetime-service.get_current_date_iso", "arguments": {}}, "id": 3}' http://localhost:8080
+   ```
 
 This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.
