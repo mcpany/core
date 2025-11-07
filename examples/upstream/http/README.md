@@ -2,9 +2,6 @@
 
 This example demonstrates how to expose a public API as a tool through `mcpany`.
 
-> [!NOTE]
-> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
-
 ## Overview
 
 This example consists of two main components:
@@ -34,28 +31,22 @@ The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can connect your AI assistant to `mcpany`.
+Once the server is running, you can interact with the tool using `curl`.
 
-### Using Gemini CLI
+### Using `curl`
 
-1. **Add `mcpany` as an MCP Server:**
-   Use the `gemini mcp add` command to register the running `mcpany` process. Note that the `start.sh` script must be running in another terminal.
+1. **Initialize a session:**
+   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
 
    ```bash
-   gemini mcp add --transport http mcpany-server http://localhost:8080
+   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8080 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
    ```
 
-   Confirm the addition is successful:
+2. **Call the tool:**
+   Now, you can call the `get_time_by_ip` tool by sending a `tools/call` request with the session ID you received in the previous step.
 
    ```bash
-   gemini mcp list
-   ```
-
-2. **Call the Tools:**
-   Now, you can ask Gemini for the current time for a specific IP address.
-
-   ```bash
-   gemini call tool ip-info-service.get_time_by_ip '{"ip": "8.8.8.8"}'
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "ip-info-service.get_time_by_ip", "arguments": {"ip": "8.8.8.8"}}, "id": 2}' http://localhost:8080
    ```
 
 This example showcases how `mcpany` can make any HTTP API available to an AI assistant with minimal configuration.
