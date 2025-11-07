@@ -2,9 +2,6 @@
 
 This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `mcpany`. This allows an AI assistant to interact with a Kubernetes cluster.
 
-> [!NOTE]
-> The examples in this directory are currently not functional. They are being updated to reflect the latest changes in the `mcpany` server.
-
 ## Overview
 
 This example consists of two main components:
@@ -16,6 +13,9 @@ This example consists of two main components:
 
 - A running Kubernetes cluster.
 - `kubectl` installed and configured to connect to your cluster.
+
+> [!IMPORTANT]
+> This example will not work without `kubectl` installed and configured.
 
 ## Running the Example
 
@@ -39,33 +39,28 @@ The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can connect your AI assistant to `mcpany`.
+Once the server is running, you can interact with the tools using `curl`.
 
-### Using Gemini CLI
+### Using `curl`
 
-1. **Add `mcpany` as an MCP Server:**
-   Register the running `mcpany` process with the Gemini CLI.
-
-   ```bash
-   gemini mcp add mcpany-kubectl --address http://localhost:50050 --command "sleep" "infinity"
-   ```
-
-2. **List Available Tools:**
-   Ask Gemini to list the tools.
+1. **Initialize a session:**
+   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
 
    ```bash
-   gemini list tools
+   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:50050 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
    ```
 
-   You should see tools like `kubectl/-/get-pods` and `kubectl/-/get-deployments`.
-
-3. **Call a Tool:**
-   Call the `get-pods` tool to list the pods in the `default` namespace.
+2. **Call a tool:**
+   Now, you can call the `get-pods` tool by sending a `tools/call` request with the session ID you received in the previous step.
 
    ```bash
-   gemini call tool kubectl/-/get-pods '{"namespace": "default"}'
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "kubectl.get-pods", "arguments": {"namespace": "default"}}, "id": 2}' http://localhost:50050
    ```
 
-   You should receive a JSON response containing the list of pods.
+   You can also call the `get-deployments` tool:
+
+   ```bash
+   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "kubectl.get-deployments", "arguments": {"namespace": "default"}}, "id": 3}' http://localhost:50050
+   ```
 
 This example showcases how `mcpany` can be used to create powerful integrations with existing command-line tools, enabling AI assistants to perform complex tasks like managing a Kubernetes cluster.
