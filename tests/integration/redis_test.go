@@ -31,7 +31,7 @@ func TestRedisBus_ExternalServer(t *testing.T) {
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available, skipping test")
 	}
-	redisURL, redisCleanup := StartRedisContainer(t)
+	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
 	configContent := fmt.Sprintf(`
@@ -39,7 +39,7 @@ global_settings:
   message_bus:
     redis:
       address: "%s"
-`, redisURL)
+`, redisAddr)
 	serverInfo := StartMCPANYServerWithConfig(t, "redis-test", configContent)
 	defer serverInfo.CleanupFunc()
 
