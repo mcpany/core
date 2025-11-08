@@ -7,7 +7,7 @@ This example demonstrates how to expose a WebSocket service as a tool through `m
 This example consists of three main components:
 
 1. **Upstream WebSocket Server**: A simple Go-based WebSocket server (`echo_server/`) that echoes back any message it receives.
-2. **`mcpany` Configuration**: A YAML file (`config/mcpany.yaml`) that tells `mcpany` how to connect to the WebSocket server.
+2. **`mcpany` Configuration**: A YAML file (`config/mcpxy_config.yaml`) that tells `mcpany` how to connect to the WebSocket server.
 3. **`mcpany` Server**: The `mcpany` instance that acts as a proxy between the AI assistant and the WebSocket server.
 
 ## Running the Example
@@ -66,4 +66,6 @@ Once both servers are running, you can interact with the tool using `curl`.
    }
    ```
 
-This example demonstrates how `mcpany` can expose real-time, stateful services like WebSockets to AI assistants.
+## Test Client
+
+This example also includes a test client in `client.go` that demonstrates how to interact with the `mcpany` server programmatically using the Go SDK. You can run it with `go run ./client/main.go`.

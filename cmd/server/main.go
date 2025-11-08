@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -66,7 +67,20 @@ func newRootCmd() *cobra.Command {
 			if viper.GetBool("debug") {
 				logLevel = slog.LevelDebug
 			}
-			logging.Init(logLevel, os.Stdout)
+
+			var logOutput io.Writer = os.Stdout
+			if logfile := viper.GetString("logfile"); logfile != "" {
+				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+				if err != nil {
+					return fmt.Errorf("failed to open logfile: %w", err)
+				}
+				defer f.Close()
+				logOutput = f
+			} else if stdio {
+				logOutput = io.Discard // Disable logging in stdio mode to keep the channel clean for JSON-RPC
+			}
+			logging.Init(logLevel, logOutput)
+
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
@@ -171,6 +185,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
 	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
+	rootCmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 
 	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
