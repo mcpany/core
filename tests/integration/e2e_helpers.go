@@ -679,6 +679,38 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	return natsURL, cleanup
 }
 
+// StartRedisContainer starts a Redis container for testing.
+func StartRedisContainer(t *testing.T) (redisURL string, cleanupFunc func()) {
+	t.Helper()
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+
+	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
+	redisPort := FindFreePort(t)
+	redisURL = fmt.Sprintf("redis://127.0.0.1:%d", redisPort)
+
+	dockerArgs := []string{
+		"-p", fmt.Sprintf("%d:6379", redisPort),
+	}
+
+	cleanup := StartDockerContainer(t, "redis:7-alpine", containerName, dockerArgs...)
+
+	// Wait for Redis to be ready
+	require.Eventually(t, func() bool {
+		// Use redis-cli to ping the server
+		dockerExe, dockerBaseArgs := getDockerCommand()
+		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping")
+		cmd := exec.Command(dockerExe, pingArgs...)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
+			return false
+		}
+		return strings.Contains(string(output), "PONG")
+	}, 15*time.Second, 500*time.Millisecond, "Redis container did not become ready in time")
+
+	return redisURL, cleanup
+}
+
 func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
