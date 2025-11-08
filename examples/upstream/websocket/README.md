@@ -40,23 +40,15 @@ In another terminal, start the `mcpany` server using the provided script. Note t
 
 ## Interacting with the Tool
 
-Once both servers are running, you can interact with the tool using `curl`.
+Once both servers are running, you can interact with the tool using the `gemini` CLI.
 
-### Using `curl`
+### Using the `gemini` CLI
 
-1. **Initialize a session:**
-   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
+Now, you can call the `echo` tool by sending a `tools/call` request.
 
-   ```bash
-   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8081 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
-   ```
-
-2. **Call the tool:**
-   Now, you can call the `echo` tool by sending a `tools/call` request with the session ID you received in the previous step.
-
-   ```bash
-   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "echo-service.echo", "arguments": {"message": "Hello, WebSocket!"}}, "id": 2}' http://localhost:8081
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-websocket -p "call the tool echo-service.echo with message 'Hello, WebSocket!'"
+```
 
    You should receive a JSON response echoing your message:
 

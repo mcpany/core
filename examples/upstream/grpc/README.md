@@ -42,30 +42,22 @@ The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once both servers are running, you can interact with the tool using `curl`.
+Once both servers are running, you can interact with the tool using the `gemini` CLI.
 
-### Using `curl`
+### Using the `gemini` CLI
 
-1. **Initialize a session:**
-   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
+Now, you can call the `SayHello` tool by sending a `tools/call` request.
 
-   ```bash
-   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8080 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-grpc -p "call the tool greeter-service.SayHello with name World"
+```
 
-2. **Call the tool:**
-   Now, you can call the `SayHello` tool by sending a `tools/call` request with the session ID you received in the previous step.
+You should receive a JSON response with a greeting:
 
-   ```bash
-   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "greeter-service.SayHello", "arguments": {"name": "World"}}, "id": 2}' http://localhost:8080
-   ```
-
-   You should receive a JSON response with a greeting:
-
-   ```json
-   {
-     "message": "Hello, World"
-   }
-   ```
+```json
+{
+  "message": "Hello, World"
+}
+```
 
 This example highlights how `mcpany` can seamlessly integrate existing gRPC services with AI assistants, enabling them to interact with strongly-typed, high-performance APIs.
