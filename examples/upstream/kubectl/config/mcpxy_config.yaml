@@ -14,13 +14,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-upstreamServices:
+global_settings:
+  bind_address: "0.0.0.0:8080"
+upstream_services:
   - name: "kubectl"
-    commandService:
+    command_line_service:
       command: "kubectl"
       calls:
-        - operationId: "get-pods"
-          description: "Get pods in a namespace"
+        - schema:
+            name: "get-pods"
+            description: "Get pods in a namespace"
           args:
             - "get"
             - "pods"
@@ -28,11 +31,15 @@ upstreamServices:
             - "{{ .namespace }}"
             - "-o"
             - "json"
-          parameterMappings:
-            - inputParameterName: "namespace"
-              targetParameterName: "namespace"
-        - operationId: "get-deployments"
-          description: "Get deployments in a namespace"
+          parameters:
+            - schema:
+                name: "namespace"
+                description: "The namespace to get pods from"
+                is_required: true
+                type: "STRING"
+        - schema:
+            name: "get-deployments"
+            description: "Get deployments in a namespace"
           args:
             - "get"
             - "deployments"
@@ -40,6 +47,9 @@ upstreamServices:
             - "{{ .namespace }}"
             - "-o"
             - "json"
-          parameterMappings:
-            - inputParameterName: "namespace"
-              targetParameterName: "namespace"
+          parameters:
+            - schema:
+                name: "namespace"
+                description: "The namespace to get deployments from"
+                is_required: true
+                type: "STRING"
