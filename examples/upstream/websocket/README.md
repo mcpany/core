@@ -50,13 +50,13 @@ Now, you can call the `echo` tool by sending a `tools/call` request.
 gemini --allowed-mcp-server-names mcpany-websocket -p "call the tool echo-service.echo with message 'Hello, WebSocket!'"
 ```
 
-   You should receive a JSON response echoing your message:
+You should receive a JSON response echoing your message:
 
-   ```json
-   {
-     "message": "Hello, WebSocket!"
-   }
-   ```
+```json
+{
+  "message": "Hello, WebSocket!"
+}
+```
 
 ## Test Client
 
