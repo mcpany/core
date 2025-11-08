@@ -31,28 +31,20 @@ The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can interact with the tools using `curl`.
+Once the server is running, you can interact with the tools using the `gemini` CLI.
 
-### Using `curl`
+### Using the `gemini` CLI
 
-1. **Initialize a session:**
-   First, send an `initialize` request to the server to establish a session. The server will respond with a session ID in the `Mcp-Session-Id` header.
+Now, you can call the `get_current_date` tool by sending a `tools/call` request.
 
-   ```bash
-   SESSION_ID=$(curl -i -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "initialize", "params": {"client_name": "curl-client", "client_version": "v0.0.1"}, "id": 1}' http://localhost:8080 2>/dev/null | grep -i "Mcp-Session-Id" | awk '{print $2}' | tr -d '\r')
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-command -p "call the tool datetime-service.get_current_date"
+```
 
-2. **Call a tool:**
-   Now, you can call the `get_current_date` tool by sending a `tools/call` request with the session ID you received in the previous step.
+You can also call the `get_current_date_iso` tool to get the date in ISO 8601 format:
 
-   ```bash
-   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "datetime-service.get_current_date", "arguments": {}}, "id": 2}' http://localhost:8080
-   ```
-
-   You can also call the `get_current_date_iso` tool to get the date in ISO 8601 format:
-
-   ```bash
-   curl -X POST -H "Content-Type: application/json" -H "Mcp-Session-Id: $SESSION_ID" -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "datetime-service.get_current_date_iso", "arguments": {}}, "id": 3}' http://localhost:8080
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-command -p "call the tool datetime-service.get_current_date_iso"
+```
 
 This example shows how easily you can extend your AI assistant with any command-line tool, opening up endless possibilities for automation and integration.

@@ -66,7 +66,9 @@ func newRootCmd() *cobra.Command {
 			if viper.GetBool("debug") {
 				logLevel = slog.LevelDebug
 			}
+
 			logging.Init(logLevel, os.Stdout)
+
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 

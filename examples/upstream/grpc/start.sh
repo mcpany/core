@@ -27,7 +27,7 @@ MCPANY_ROOT_DIR="$(git rev-parse --show-toplevel)"
 MCPANY_SERVER_BIN="${MCPANY_ROOT_DIR}/build/bin/server"
 
 # The path to the configuration file for this example.
-CONFIG_PATH="./config/"
+CONFIG_PATH="$(dirname "$0")/config/"
 
 # Check if the mcpany server binary exists.
 if [ ! -f "${MCPANY_SERVER_BIN}" ]; then
@@ -38,4 +38,4 @@ fi
 
 # Start the mcpany server.
 echo "Starting mcpany server..."
-"${MCPANY_SERVER_BIN}" --config-paths "${CONFIG_PATH}"
+"${MCPANY_SERVER_BIN}" --config-paths "${CONFIG_PATH}" --stdio --logfile /tmp/mcpany.log
