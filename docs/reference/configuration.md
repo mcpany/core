@@ -8,9 +8,9 @@ This document provides a comprehensive reference for configuring the MCP Any ser
 
 The `McpAnyServerConfig` is the top-level configuration object for the entire MCP Any server.
 
-| Field               | Type                             | Description                                                                                                                        |
-| ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                |
+| Field               | Type                             | Description                                                                                                                          |
+| ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                  |
 | `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
 
 ### `GlobalSettings`
