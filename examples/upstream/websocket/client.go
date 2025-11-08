@@ -31,7 +31,7 @@ func main() {
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8080"}, nil)
+	cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8081"}, nil)
 	if err != nil {
 		log.Fatalf("Failed to connect to MCPANY server: %v", err)
 	}
