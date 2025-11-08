@@ -37,4 +37,4 @@ fi
 
 # Start the mcpany server.
 echo "Starting mcpany server..."
-"${MCPANY_SERVER_BIN}" --config-paths "${CONFIG_PATH}"
+"${MCPANY_SERVER_BIN}" --config-paths "${CONFIG_PATH}" --stdio --logfile /tmp/mcpany.log

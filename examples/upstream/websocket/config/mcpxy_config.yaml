@@ -24,3 +24,9 @@ upstream_services:
     - schema:
         name: "echo"
         description: "Echoes a message back."
+      parameters:
+      - schema:
+          name: "message"
+          description: "The message to echo"
+          is_required: true
+          type: "STRING"
