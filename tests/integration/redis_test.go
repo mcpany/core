@@ -21,7 +21,9 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -45,19 +47,53 @@ global_settings:
 
 	// Mock service that registers a tool
 	mockService := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, `{"name": "test-tool", "description": "A test tool"}`)
 	}))
 	defer mockService.Close()
 
-	// Register the mock service
-	RegisterHTTPService(t, serverInfo.RegistrationClient, "test-service", mockService.URL, "test-tool", "/", "GET", nil)
+	// Create a temporary OpenAPI spec file
+	openapiSpec := fmt.Sprintf(`
+openapi: 3.0.0
+info:
+  title: Test Service
+  version: 1.0.0
+servers:
+  - url: %s
+paths:
+  /:
+    get:
+      operationId: test-tool
+      responses:
+        '200':
+          description: OK
+`, mockService.URL)
 
-	// List tools and verify the mock service's tool is present
-	tools, err := serverInfo.ListTools(context.Background())
+	specFile, err := os.CreateTemp(t.TempDir(), "openapi-*.yaml")
 	require.NoError(t, err)
-	require.Len(t, tools.Tools, 1)
-	require.Equal(t, "test-tool", tools.Tools[0].Name)
+	_, err = specFile.WriteString(openapiSpec)
+	require.NoError(t, err)
+	err = specFile.Close()
+	require.NoError(t, err)
+
+	// Register the mock service using the OpenAPI spec
+	RegisterOpenAPIService(t, serverInfo.RegistrationClient, "test-service", specFile.Name(), "", nil)
+
+	// Poll until the tool is registered
+	require.Eventually(t, func() bool {
+		tools, err := serverInfo.ListTools(context.Background())
+		if err != nil {
+			// This is expected if the method isn't registered yet
+			return false
+		}
+		for _, tool := range tools.Tools {
+			if tool.Name == "test-tool" {
+				return true
+			}
+		}
+		return false
+	}, 10*time.Second, 250*time.Millisecond, "Tool 'test-tool' was not registered in time")
 
 	// Call the tool
 	callParams := &mcp.CallToolParams{
@@ -66,4 +102,8 @@ global_settings:
 	result, err := serverInfo.CallTool(context.Background(), callParams)
 	require.NoError(t, err)
 	require.NotNil(t, result)
+	require.NotEmpty(t, result.Content)
+	textContent, ok := result.Content[0].(*mcp.TextContent)
+	require.True(t, ok, "Expected TextContent")
+	require.Contains(t, textContent.Text, `"name": "test-tool"`)
 }
