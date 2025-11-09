@@ -136,8 +136,25 @@ const (
 )
 
 // getDockerCommand returns the command and base arguments for running Docker,
-// respecting the USE_SUDO_FOR_DOCKER environment variable.
+// checking for direct access, then trying passwordless sudo.
 func getDockerCommand() (string, []string) {
+	// First, try running docker directly.
+	if _, err := exec.LookPath("docker"); err == nil {
+		cmd := exec.Command("docker", "info")
+		if err := cmd.Run(); err == nil {
+			return "docker", []string{}
+		}
+	}
+
+	// If direct access fails, check for passwordless sudo.
+	if _, err := exec.LookPath("sudo"); err == nil {
+		cmd := exec.Command("sudo", "-n", "docker", "info")
+		if err := cmd.Run(); err == nil {
+			return "sudo", []string{"docker"}
+		}
+	}
+
+	// Fallback to the original logic as a last resort.
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
 		return "sudo", []string{"docker"}
 	}
