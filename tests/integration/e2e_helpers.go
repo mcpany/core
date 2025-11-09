@@ -135,13 +135,49 @@ const (
 	localHeaderMcpSessionID    = "Mcp-Session-Id"
 )
 
+var (
+	dockerCommand string
+	dockerArgs    []string
+	dockerOnce    sync.Once
+)
+
 // getDockerCommand returns the command and base arguments for running Docker,
-// respecting the USE_SUDO_FOR_DOCKER environment variable.
+// checking for direct access, then trying passwordless sudo. The result is
+// cached for subsequent calls.
 func getDockerCommand() (string, []string) {
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-		return "sudo", []string{"docker"}
-	}
-	return "docker", []string{}
+	dockerOnce.Do(func() {
+		// Environment variable overrides detection.
+		if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+			dockerCommand = "sudo"
+			dockerArgs = []string{"docker"}
+			return
+		}
+
+		// First, try running docker directly.
+		if _, err := exec.LookPath("docker"); err == nil {
+			cmd := exec.Command("docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "docker"
+				dockerArgs = []string{}
+				return
+			}
+		}
+
+		// If direct access fails, check for passwordless sudo.
+		if _, err := exec.LookPath("sudo"); err == nil {
+			cmd := exec.Command("sudo", "-n", "docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "sudo"
+				dockerArgs = []string{"docker"}
+				return
+			}
+		}
+
+		// Fallback to plain docker if all else fails.
+		dockerCommand = "docker"
+		dockerArgs = []string{}
+	})
+	return dockerCommand, dockerArgs
 }
 
 // --- Binary Paths ---
@@ -679,6 +715,38 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	return natsURL, cleanup
 }
 
+// StartRedisContainer starts a Redis container for testing.
+func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
+	t.Helper()
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+
+	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
+	redisPort := FindFreePort(t)
+	redisAddr = fmt.Sprintf("127.0.0.1:%d", redisPort)
+
+	dockerArgs := []string{
+		"-p", fmt.Sprintf("%d:6379", redisPort),
+	}
+
+	cleanup := StartDockerContainer(t, "redis:7-alpine", containerName, dockerArgs...)
+
+	// Wait for Redis to be ready
+	require.Eventually(t, func() bool {
+		// Use redis-cli to ping the server
+		dockerExe, dockerBaseArgs := getDockerCommand()
+		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping")
+		cmd := exec.Command(dockerExe, pingArgs...)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
+			return false
+		}
+		return strings.Contains(string(output), "PONG")
+	}, 15*time.Second, 500*time.Millisecond, "Redis container did not become ready in time")
+
+	return redisAddr, cleanup
+}
+
 func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1072,6 +1140,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1115,6 +1184,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
