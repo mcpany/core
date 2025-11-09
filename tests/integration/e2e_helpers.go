@@ -135,30 +135,49 @@ const (
 	localHeaderMcpSessionID    = "Mcp-Session-Id"
 )
 
+var (
+	dockerCommand string
+	dockerArgs    []string
+	dockerOnce    sync.Once
+)
+
 // getDockerCommand returns the command and base arguments for running Docker,
-// checking for direct access, then trying passwordless sudo.
+// checking for direct access, then trying passwordless sudo. The result is
+// cached for subsequent calls.
 func getDockerCommand() (string, []string) {
-	// First, try running docker directly.
-	if _, err := exec.LookPath("docker"); err == nil {
-		cmd := exec.Command("docker", "info")
-		if err := cmd.Run(); err == nil {
-			return "docker", []string{}
+	dockerOnce.Do(func() {
+		// Environment variable overrides detection.
+		if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+			dockerCommand = "sudo"
+			dockerArgs = []string{"docker"}
+			return
 		}
-	}
 
-	// If direct access fails, check for passwordless sudo.
-	if _, err := exec.LookPath("sudo"); err == nil {
-		cmd := exec.Command("sudo", "-n", "docker", "info")
-		if err := cmd.Run(); err == nil {
-			return "sudo", []string{"docker"}
+		// First, try running docker directly.
+		if _, err := exec.LookPath("docker"); err == nil {
+			cmd := exec.Command("docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "docker"
+				dockerArgs = []string{}
+				return
+			}
 		}
-	}
 
-	// Fallback to the original logic as a last resort.
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-		return "sudo", []string{"docker"}
-	}
-	return "docker", []string{}
+		// If direct access fails, check for passwordless sudo.
+		if _, err := exec.LookPath("sudo"); err == nil {
+			cmd := exec.Command("sudo", "-n", "docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "sudo"
+				dockerArgs = []string{"docker"}
+				return
+			}
+		}
+
+		// Fallback to plain docker if all else fails.
+		dockerCommand = "docker"
+		dockerArgs = []string{}
+	})
+	return dockerCommand, dockerArgs
 }
 
 // --- Binary Paths ---
