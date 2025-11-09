@@ -1104,6 +1104,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1147,6 +1148,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
