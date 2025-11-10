@@ -64,6 +64,18 @@ func TestRedisBus_Publish_MarshalError(t *testing.T) {
 	assert.IsType(t, &json.UnsupportedTypeError{}, err)
 }
 
+func TestRedisBus_Publish_RedisError(t *testing.T) {
+	client, mock := redismock.NewClientMock()
+	bus := NewWithClient[string](client)
+
+	msg, _ := json.Marshal("hello")
+	mock.ExpectPublish("test", msg).SetErr(redis.ErrClosed)
+	err := bus.Publish(context.Background(), "test", "hello")
+	assert.Error(t, err)
+	assert.Equal(t, redis.ErrClosed, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
 func TestRedisBus_Subscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -185,4 +197,8 @@ func TestRedisBus_New(t *testing.T) {
 	bus := New[string](redisBus)
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "password", options.Password)
+	assert.Equal(t, 1, options.DB)
 }
