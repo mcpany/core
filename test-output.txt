@@ -1,0 +1,249 @@
+Preparing development environment...
+protoc version v33.0 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+Python found. Installing/updating pre-commit and fastmcp locally...
+Requirement already satisfied: pip in ./build/venv/lib/python3.12/site-packages (25.3)
+Requirement already satisfied: pre-commit==3.6.0 in ./build/venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (3.6.0)
+Requirement already satisfied: fastmcp>=2.0.0 in ./build/venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (2.13.0.2)
+Requirement already satisfied: cfgv>=2.0.0 in ./build/venv/lib/python3.12/site-packages (from pre-commit==3.6.0->-r requirements.txt (line 1)) (3.4.0)
+Requirement already satisfied: identify>=1.0.0 in ./build/venv/lib/python3.12/site-packages (from pre-commit==3.6.0->-r requirements.txt (line 1)) (2.6.15)
+Requirement already satisfied: nodeenv>=0.11.1 in ./build/venv/lib/python3.12/site-packages (from pre-commit==3.6.0->-r requirements.txt (line 1)) (1.9.1)
+Requirement already satisfied: pyyaml>=5.1 in ./build/venv/lib/python3.12/site-packages (from pre-commit==3.6.0->-r requirements.txt (line 1)) (6.0.3)
+Requirement already satisfied: virtualenv>=20.10.0 in ./build/venv/lib/python3.12/site-packages (from pre-commit==3.6.0->-r requirements.txt (line 1)) (20.35.4)
+Requirement already satisfied: authlib>=1.5.2 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.6.5)
+Requirement already satisfied: cyclopts>=3.0.0 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.2.1)
+Requirement already satisfied: exceptiongroup>=1.2.2 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.3.0)
+Requirement already satisfied: httpx>=0.28.1 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.28.1)
+Requirement already satisfied: jsonschema-path>=0.3.4 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.3.4)
+Requirement already satisfied: mcp<2.0.0,>=1.17.0 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.21.0)
+Requirement already satisfied: openapi-pydantic>=0.5.1 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.5.1)
+Requirement already satisfied: platformdirs>=4.0.0 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.5.0)
+Requirement already satisfied: py-key-value-aio<0.3.0,>=0.2.8 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.2.8)
+Requirement already satisfied: pydantic>=2.11.7 in ./build/venv/lib/python3.12/site-packages (from pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.12.4)
+Requirement already satisfied: pyperclip>=1.9.0 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.11.0)
+Requirement already satisfied: python-dotenv>=1.1.0 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.2.1)
+Requirement already satisfied: rich>=13.9.4 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (14.2.0)
+Requirement already satisfied: websockets>=15.0.1 in ./build/venv/lib/python3.12/site-packages (from fastmcp>=2.0.0->-r requirements.txt (line 2)) (15.0.1)
+Requirement already satisfied: anyio>=4.5 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.11.0)
+Requirement already satisfied: httpx-sse>=0.4 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.4.3)
+Requirement already satisfied: jsonschema>=4.20.0 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.25.1)
+Requirement already satisfied: pydantic-settings>=2.5.2 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.11.0)
+Requirement already satisfied: pyjwt>=2.10.1 in ./build/venv/lib/python3.12/site-packages (from pyjwt[crypto]>=2.10.1->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.10.1)
+Requirement already satisfied: python-multipart>=0.0.9 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.0.20)
+Requirement already satisfied: sse-starlette>=1.6.1 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.0.3)
+Requirement already satisfied: starlette>=0.27 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.50.0)
+Requirement already satisfied: uvicorn>=0.31.1 in ./build/venv/lib/python3.12/site-packages (from mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.38.0)
+Requirement already satisfied: beartype>=0.22.2 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio<0.3.0,>=0.2.8->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.22.5)
+Requirement already satisfied: py-key-value-shared==0.2.8 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio<0.3.0,>=0.2.8->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.2.8)
+Requirement already satisfied: typing-extensions>=4.15.0 in ./build/venv/lib/python3.12/site-packages (from py-key-value-shared==0.2.8->py-key-value-aio<0.3.0,>=0.2.8->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.15.0)
+Requirement already satisfied: diskcache>=5.6.0 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (5.6.3)
+Requirement already satisfied: pathvalidate>=3.3.1 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.3.1)
+Requirement already satisfied: keyring>=25.6.0 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (25.6.0)
+Requirement already satisfied: cachetools>=6.0.0 in ./build/venv/lib/python3.12/site-packages (from py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (6.2.1)
+Requirement already satisfied: annotated-types>=0.6.0 in ./build/venv/lib/python3.12/site-packages (from pydantic>=2.11.7->pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.41.5 in ./build/venv/lib/python3.12/site-packages (from pydantic>=2.11.7->pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.41.5)
+Requirement already satisfied: typing-inspection>=0.4.2 in ./build/venv/lib/python3.12/site-packages (from pydantic>=2.11.7->pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.4.2)
+Requirement already satisfied: idna>=2.8 in ./build/venv/lib/python3.12/site-packages (from anyio>=4.5->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.11)
+Requirement already satisfied: sniffio>=1.1 in ./build/venv/lib/python3.12/site-packages (from anyio>=4.5->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.3.1)
+Requirement already satisfied: cryptography in ./build/venv/lib/python3.12/site-packages (from authlib>=1.5.2->fastmcp>=2.0.0->-r requirements.txt (line 2)) (46.0.3)
+Requirement already satisfied: attrs>=23.1.0 in ./build/venv/lib/python3.12/site-packages (from cyclopts>=3.0.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (25.4.0)
+Requirement already satisfied: docstring-parser<4.0,>=0.15 in ./build/venv/lib/python3.12/site-packages (from cyclopts>=3.0.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.17.0)
+Requirement already satisfied: rich-rst<2.0.0,>=1.3.1 in ./build/venv/lib/python3.12/site-packages (from cyclopts>=3.0.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.3.2)
+Requirement already satisfied: docutils in ./build/venv/lib/python3.12/site-packages (from rich-rst<2.0.0,>=1.3.1->cyclopts>=3.0.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.22.3)
+Requirement already satisfied: certifi in ./build/venv/lib/python3.12/site-packages (from httpx>=0.28.1->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2025.10.5)
+Requirement already satisfied: httpcore==1.* in ./build/venv/lib/python3.12/site-packages (from httpx>=0.28.1->fastmcp>=2.0.0->-r requirements.txt (line 2)) (1.0.9)
+Requirement already satisfied: h11>=0.16 in ./build/venv/lib/python3.12/site-packages (from httpcore==1.*->httpx>=0.28.1->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.16.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in ./build/venv/lib/python3.12/site-packages (from jsonschema>=4.20.0->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2025.9.1)
+Requirement already satisfied: referencing>=0.28.4 in ./build/venv/lib/python3.12/site-packages (from jsonschema>=4.20.0->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.36.2)
+Requirement already satisfied: rpds-py>=0.7.1 in ./build/venv/lib/python3.12/site-packages (from jsonschema>=4.20.0->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.28.0)
+Requirement already satisfied: pathable<0.5.0,>=0.4.1 in ./build/venv/lib/python3.12/site-packages (from jsonschema-path>=0.3.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.4.4)
+Requirement already satisfied: requests<3.0.0,>=2.31.0 in ./build/venv/lib/python3.12/site-packages (from jsonschema-path>=0.3.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.32.5)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./build/venv/lib/python3.12/site-packages (from requests<3.0.0,>=2.31.0->jsonschema-path>=0.3.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.4.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./build/venv/lib/python3.12/site-packages (from requests<3.0.0,>=2.31.0->jsonschema-path>=0.3.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.5.0)
+Requirement already satisfied: SecretStorage>=3.2 in ./build/venv/lib/python3.12/site-packages (from keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.4.0)
+Requirement already satisfied: jeepney>=0.4.2 in ./build/venv/lib/python3.12/site-packages (from keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.9.0)
+Requirement already satisfied: jaraco.classes in ./build/venv/lib/python3.12/site-packages (from keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (3.4.0)
+Requirement already satisfied: jaraco.functools in ./build/venv/lib/python3.12/site-packages (from keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.3.0)
+Requirement already satisfied: jaraco.context in ./build/venv/lib/python3.12/site-packages (from keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (6.0.1)
+Requirement already satisfied: email-validator>=2.0.0 in ./build/venv/lib/python3.12/site-packages (from pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.3.0)
+Requirement already satisfied: dnspython>=2.0.0 in ./build/venv/lib/python3.12/site-packages (from email-validator>=2.0.0->pydantic[email]>=2.11.7->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.8.0)
+Requirement already satisfied: cffi>=2.0.0 in ./build/venv/lib/python3.12/site-packages (from cryptography->authlib>=1.5.2->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.0.0)
+Requirement already satisfied: pycparser in ./build/venv/lib/python3.12/site-packages (from cffi>=2.0.0->cryptography->authlib>=1.5.2->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.23)
+Requirement already satisfied: markdown-it-py>=2.2.0 in ./build/venv/lib/python3.12/site-packages (from rich>=13.9.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in ./build/venv/lib/python3.12/site-packages (from rich>=13.9.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (2.19.2)
+Requirement already satisfied: mdurl~=0.1 in ./build/venv/lib/python3.12/site-packages (from markdown-it-py>=2.2.0->rich>=13.9.4->fastmcp>=2.0.0->-r requirements.txt (line 2)) (0.1.2)
+Requirement already satisfied: click>=7.0 in ./build/venv/lib/python3.12/site-packages (from uvicorn>=0.31.1->mcp<2.0.0,>=1.17.0->fastmcp>=2.0.0->-r requirements.txt (line 2)) (8.3.0)
+Requirement already satisfied: distlib<1,>=0.3.7 in ./build/venv/lib/python3.12/site-packages (from virtualenv>=20.10.0->pre-commit==3.6.0->-r requirements.txt (line 1)) (0.4.0)
+Requirement already satisfied: filelock<4,>=3.12.2 in ./build/venv/lib/python3.12/site-packages (from virtualenv>=20.10.0->pre-commit==3.6.0->-r requirements.txt (line 1)) (3.20.0)
+Requirement already satisfied: more-itertools in ./build/venv/lib/python3.12/site-packages (from jaraco.classes->keyring>=25.6.0->py-key-value-aio[disk,keyring,memory]<0.3.0,>=0.2.8->fastmcp>=2.0.0->-r requirements.txt (line 2)) (10.8.0)
+pre-commit installed at .git/hooks/pre-commit
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+
+up to date, audited 620 packages in 2s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.0
+Protobuf generation complete.
+Building Go project locally...
+Building weather server example...
+make[1]: Entering directory '/app'
+make[1]: '/app/build/test/bin/http_echo_server' is up to date.
+make[1]: '/app/build/test/bin/http_authed_echo_server' is up to date.
+make[1]: '/app/build/test/bin/grpc_weather_server' is up to date.
+make[1]: '/app/build/test/bin/grpc_authed_weather_server' is up to date.
+make[1]: '/app/build/test/bin/openapi_weather_server' is up to date.
+make[1]: '/app/build/test/bin/webrtc_weather_server' is up to date.
+make[1]: '/app/build/test/bin/command-tester' is up to date.
+make[1]: '/app/build/test/bin/prompt-server' is up to date.
+make[1]: Leaving directory '/app'
+Building E2E time server Docker image (mcpany-e2e-time-server)...
+Running fast Go tests locally with a 300s timeout...
+	github.com/mcpany/core/build/venv/lib/python3.12/site-packages/pre_commit/resources		ok  	github.com/mcpany/core/cmd/server	1.255s	coverage: 75.6% of statements
+ok  	github.com/mcpany/core/cmd/worker	1.084s	coverage: 51.9% of statements
+	github.com/mcpany/core/examples/upstream/grpc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/grpc/greeter_server/proto		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/grpc/greeter_server/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/http/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/http/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/http/server/weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/openapi/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/openapi/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/webrtc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/webrtc/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/websocket		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/websocket/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream/websocket/echo_server/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/pkg/app	8.732s	coverage: 85.2% of statements
+?   	github.com/mcpany/core/pkg/appconsts	[no test files]
+ok  	github.com/mcpany/core/pkg/auth	3.860s	coverage: 87.6% of statements
+ok  	github.com/mcpany/core/pkg/bus	11.702s	coverage: 81.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/memory	1.059s	coverage: 94.4% of statements
+ok  	github.com/mcpany/core/pkg/bus/nats	1.506s	coverage: 83.3% of statements
+ok  	github.com/mcpany/core/pkg/bus/redis	9.474s	coverage: 18.2% of statements
+ok  	github.com/mcpany/core/pkg/client	1.065s	coverage: 89.5% of statements
+ok  	github.com/mcpany/core/pkg/config	1.072s	coverage: 80.1% of statements
+?   	github.com/mcpany/core/pkg/consts	[no test files]
+ok  	github.com/mcpany/core/pkg/health	1.085s	coverage: 90.8% of statements
+ok  	github.com/mcpany/core/pkg/logging	1.026s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/mcpserver	31.195s	coverage: 92.4% of statements
+ok  	github.com/mcpany/core/pkg/metrics	1.061s	coverage: 87.5% of statements
+ok  	github.com/mcpany/core/pkg/middleware	7.125s	coverage: 97.8% of statements
+ok  	github.com/mcpany/core/pkg/pool	6.149s	coverage: 84.1% of statements
+ok  	github.com/mcpany/core/pkg/prompt	1.028s	coverage: 89.1% of statements
+ok  	github.com/mcpany/core/pkg/resource	1.027s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.632s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/tool	32.367s	coverage: 73.3% of statements
+ok  	github.com/mcpany/core/pkg/transformer	1.055s	coverage: 95.6% of statements
+?   	github.com/mcpany/core/pkg/upstream	[no test files]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.092s	coverage: 88.9% of statements
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.061s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.118s	coverage: 78.9% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.101s	coverage: 79.4% of statements
+ok  	github.com/mcpany/core/pkg/upstream/http	1.172s	coverage: 86.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/mcp	1.074s	coverage: 66.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.132s	coverage: 79.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.073s	coverage: 83.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.098s	coverage: 93.8% of statements
+ok  	github.com/mcpany/core/pkg/util	1.085s	coverage: 98.5% of statements
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.062s	coverage: 90.6% of statements
+ok  	github.com/mcpany/core/pkg/util/testutil	1.030s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/validation	1.050s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/worker	1.123s	coverage: 64.8% of statements
+	github.com/mcpany/core/proto/api/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/bus		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/config/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/examples/userservice/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/examples/weather/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_options/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_router/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/framework		coverage: 0.0% of statements
+time=2025-11-10T04:30:28.059Z level=INFO source=/app/pkg/app/server.go:129 msg="Starting MCP Any Service..."
+time=2025-11-10T04:30:28.060Z level=INFO source=/app/pkg/worker/upstream_worker.go:57 msg="Upstream worker started" component=UpstreamWorker
+time=2025-11-10T04:30:28.060Z level=INFO source=/app/pkg/worker/registration_worker.go:56 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-11-10T04:30:28.061Z level=INFO source=/app/pkg/app/server.go:219 msg="No services found in config, skipping service registration."
+time=2025-11-10T04:30:28.061Z level=INFO source=/app/pkg/app/server.go:466 msg="HTTP server listening" server="MCP Any HTTP" port=:43851
+time=2025-11-10T04:30:28.062Z level=INFO source=/app/pkg/app/server.go:529 msg="gRPC server listening" server=Registration port=:39647
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/app/server.go:459 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=:43851
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/worker/registration_worker.go:116 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/app/server.go:511 msg="Attempting to gracefully shut down server..." server=Registration port=:39647
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/app/server.go:407 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/app/server.go:410 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-11-10T04:30:28.448Z level=INFO source=/app/pkg/worker/upstream_worker.go:97 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-11-10T04:30:28.449Z level=INFO source=/app/pkg/app/server.go:473 msg="Server shut down." server="MCP Any HTTP" port=:43851
+time=2025-11-10T04:30:28.449Z level=INFO source=/app/pkg/app/server.go:524 msg="Server gracefully stopped." server=Registration port=:39647
+time=2025-11-10T04:30:28.449Z level=INFO source=/app/pkg/app/server.go:534 msg="Server shut down." server=Registration port=:39647
+time=2025-11-10T04:30:28.449Z level=INFO source=/app/pkg/app/server.go:412 msg="All servers have shut down."
+Unable to find image 'redis:7-alpine' locally
+7-alpine: Pulling from library/redis
+docker: toomanyrequests: You have reached your unauthenticated pull rate limit. https://www.docker.com/increase-rate-limit
+
+Run 'docker run --help' for more information
+--- FAIL: TestRedisBus_ExternalServer (18.38s)
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    e2e_helpers.go:741: redis-cli ping failed: exit status 1, output: Error response from daemon: No such container: mcpany-redis-test-1762749029388915062
+    redis_test.go:34:
+		Error Trace:	/app/tests/integration/e2e_helpers.go:734
+							/app/tests/integration/redis_test.go:34
+		Error:      	Condition never satisfied
+		Test:       	TestRedisBus_ExternalServer
+		Messages:   	Redis container did not become ready in time
+FAIL
+coverage: 48.1% of statements
+FAIL	github.com/mcpany/core/tests/integration	21.562s
+ok  	github.com/mcpany/core/tests/integration/cmd	1.023s	coverage: [no statements]
+	github.com/mcpany/core/tests/integration/cmd/command-tester		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/integration/upstream	9.695s	coverage: 90.9% of statements
+FAIL
