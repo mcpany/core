@@ -42,14 +42,14 @@ func TestUpstreamService_Bored(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EBoredServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EBoredServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register Bored Server with MCPANY ---
 	const boredServiceID = "e2e_bored"
 	boredServiceEndpoint := "https://www.boredapi.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", boredServiceID, boredServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/api/activity"),
@@ -78,7 +78,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

@@ -3,7 +3,7 @@
 
 edition = "2023";
 
-package mcpx.config.v1;
+package mcpany.config.v1;
 
 import "proto/config/v1/config.proto";
 

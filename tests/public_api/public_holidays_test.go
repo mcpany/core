@@ -42,8 +42,8 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	t.Parallel()
 
 	// 1. Start MCPANY Server
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// 2. Register Public Holidays Service with MCPANY
 	const serviceID = "e2e_public_holidays"
@@ -51,7 +51,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 	endpointPath := "/api/v3/PublicHolidays/{{year}}/{{countryCode}}"
 	operationID := "getPublicHolidays"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	outputTransformer := configv1.OutputTransformer_builder{
 		Format: configv1.OutputTransformer_JSON.Enum(),
@@ -102,7 +102,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 
 	// 3. Call Tool via MCPANY
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 
@@ -161,8 +161,8 @@ func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) 
 	t.Parallel()
 
 	// 1. Start MCPANY Server
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest_CA_2025")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EPublicHolidaysTest_CA_2025")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// 2. Register Public Holidays Service with MCPANY
 	const serviceID = "e2e_public_holidays_ca_2025"
@@ -170,7 +170,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) 
 	endpointPath := "/api/v3/PublicHolidays/{{year}}/{{countryCode}}"
 	operationID := "getPublicHolidays"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s%s...", serviceID, serviceURL, endpointPath)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	outputTransformer := configv1.OutputTransformer_builder{
 		Format: configv1.OutputTransformer_JSON.Enum(),
@@ -221,7 +221,7 @@ func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) 
 
 	// 3. Call Tool via MCPANY
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

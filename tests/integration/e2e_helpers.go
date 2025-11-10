@@ -52,7 +52,7 @@ import (
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
-	mcpanyConfig := configv1.McpxServerConfig_builder{
+	mcpanyConfig := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
 	}.Build()
 
@@ -74,7 +74,7 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
-	mcpanyConfig := configv1.McpxServerConfig_builder{
+	mcpanyConfig := configv1.McpAnyServerConfig_builder{
 		GlobalSettings: configv1.GlobalSettings_builder{
 			MessageBus: bus.MessageBus_builder{
 				Nats: bus.NatsBus_builder{}.Build(),

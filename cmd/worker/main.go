@@ -44,7 +44,7 @@ func setup() (*worker.Worker, error) {
 	globalSettings := &configv1.GlobalSettings{}
 	globalSettings.SetMessageBus(busConfig)
 
-	cfgToValidate := &configv1.McpxServerConfig{}
+	cfgToValidate := &configv1.McpAnyServerConfig{}
 	cfgToValidate.SetGlobalSettings(globalSettings)
 
 	if validationErrors := config.Validate(cfgToValidate, config.Worker); len(validationErrors) > 0 {

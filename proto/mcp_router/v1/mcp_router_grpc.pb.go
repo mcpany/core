@@ -22,10 +22,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	McpRouter_ListTools_FullMethodName     = "/mcpx.mcp_router.v1.McpRouter/ListTools"
-	McpRouter_ExecuteTool_FullMethodName   = "/mcpx.mcp_router.v1.McpRouter/ExecuteTool"
-	McpRouter_ListPrompts_FullMethodName   = "/mcpx.mcp_router.v1.McpRouter/ListPrompts"
-	McpRouter_ListResources_FullMethodName = "/mcpx.mcp_router.v1.McpRouter/ListResources"
+	McpRouter_ListTools_FullMethodName     = "/mcpany.mcp_router.v1.McpRouter/ListTools"
+	McpRouter_ExecuteTool_FullMethodName   = "/mcpany.mcp_router.v1.McpRouter/ExecuteTool"
+	McpRouter_ListPrompts_FullMethodName   = "/mcpany.mcp_router.v1.McpRouter/ListPrompts"
+	McpRouter_ListResources_FullMethodName = "/mcpany.mcp_router.v1.McpRouter/ListResources"
 )
 
 // McpRouterClient is the client API for McpRouter service.
@@ -213,7 +213,7 @@ func _McpRouter_ListResources_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var McpRouter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcpx.mcp_router.v1.McpRouter",
+	ServiceName: "mcpany.mcp_router.v1.McpRouter",
 	HandlerType: (*McpRouterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

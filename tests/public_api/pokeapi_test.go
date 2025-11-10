@@ -42,14 +42,14 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EPokeAPIServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EPokeAPIServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register PokeAPI Server with MCPANY ---
 	const pokeAPIServiceID = "e2e_pokeapi"
 	pokeAPIServiceEndpoint := "https://pokeapi.co"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", pokeAPIServiceID, pokeAPIServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/api/v2/pokemon/{{name}}"),
@@ -85,7 +85,7 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

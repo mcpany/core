@@ -29,7 +29,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009001,
-		Name:          "mcpx.mcp_options.v1.tool_name",
+		Name:          "mcpany.mcp_options.v1.tool_name",
 		Tag:           "bytes,301009001,opt,name=tool_name",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -37,7 +37,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009002,
-		Name:          "mcpx.mcp_options.v1.tool_description",
+		Name:          "mcpany.mcp_options.v1.tool_description",
 		Tag:           "bytes,301009002,opt,name=tool_description",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -45,7 +45,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009003,
-		Name:          "mcpx.mcp_options.v1.prompt_name",
+		Name:          "mcpany.mcp_options.v1.prompt_name",
 		Tag:           "bytes,301009003,opt,name=prompt_name",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -53,7 +53,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009004,
-		Name:          "mcpx.mcp_options.v1.prompt_description",
+		Name:          "mcpany.mcp_options.v1.prompt_description",
 		Tag:           "bytes,301009004,opt,name=prompt_description",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -61,7 +61,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009005,
-		Name:          "mcpx.mcp_options.v1.prompt_template",
+		Name:          "mcpany.mcp_options.v1.prompt_template",
 		Tag:           "bytes,301009005,opt,name=prompt_template",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -69,7 +69,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MessageOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009006,
-		Name:          "mcpx.mcp_options.v1.resource_name",
+		Name:          "mcpany.mcp_options.v1.resource_name",
 		Tag:           "bytes,301009006,opt,name=resource_name",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -77,7 +77,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MessageOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009007,
-		Name:          "mcpx.mcp_options.v1.resource_description",
+		Name:          "mcpany.mcp_options.v1.resource_description",
 		Tag:           "bytes,301009007,opt,name=resource_description",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -85,7 +85,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         301009008,
-		Name:          "mcpx.mcp_options.v1.field_description",
+		Name:          "mcpany.mcp_options.v1.field_description",
 		Tag:           "bytes,301009008,opt,name=field_description",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -93,7 +93,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         301009009,
-		Name:          "mcpx.mcp_options.v1.mcp_tool_readonly_hint",
+		Name:          "mcpany.mcp_options.v1.mcp_tool_readonly_hint",
 		Tag:           "varint,301009009,opt,name=mcp_tool_readonly_hint",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -101,7 +101,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         301009010,
-		Name:          "mcpx.mcp_options.v1.mcp_tool_destructive_hint",
+		Name:          "mcpany.mcp_options.v1.mcp_tool_destructive_hint",
 		Tag:           "varint,301009010,opt,name=mcp_tool_destructive_hint",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -109,7 +109,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         301009011,
-		Name:          "mcpx.mcp_options.v1.mcp_tool_idempotent_hint",
+		Name:          "mcpany.mcp_options.v1.mcp_tool_idempotent_hint",
 		Tag:           "varint,301009011,opt,name=mcp_tool_idempotent_hint",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -117,7 +117,7 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         301009012,
-		Name:          "mcpx.mcp_options.v1.mcp_tool_openworld_hint",
+		Name:          "mcpany.mcp_options.v1.mcp_tool_openworld_hint",
 		Tag:           "varint,301009012,opt,name=mcp_tool_openworld_hint",
 		Filename:      "proto/mcp_options/v1/mcp_options.proto",
 	},
@@ -163,7 +163,7 @@ var File_proto_mcp_options_v1_mcp_options_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_options_v1_mcp_options_proto_rawDesc = "" +
 	"\n" +
-	"&proto/mcp_options/v1/mcp_options.proto\x12\x13mcpx.mcp_options.v1\x1a google/protobuf/descriptor.proto:?\n" +
+	"&proto/mcp_options/v1/mcp_options.proto\x12\x15mcpany.mcp_options.v1\x1a google/protobuf/descriptor.proto:?\n" +
 	"\ttool_name\x12\x1e.google.protobuf.MethodOptions\x18\xe9\x90ď\x01 \x01(\tR\btoolName:M\n" +
 	"\x10tool_description\x12\x1e.google.protobuf.MethodOptions\x18\xea\x90ď\x01 \x01(\tR\x0ftoolDescription:C\n" +
 	"\vprompt_name\x12\x1e.google.protobuf.MethodOptions\x18\xeb\x90ď\x01 \x01(\tR\n" +
@@ -184,18 +184,18 @@ var file_proto_mcp_options_v1_mcp_options_proto_goTypes = []any{
 	(*descriptorpb.FieldOptions)(nil),   // 2: google.protobuf.FieldOptions
 }
 var file_proto_mcp_options_v1_mcp_options_proto_depIdxs = []int32{
-	0,  // 0: mcpx.mcp_options.v1.tool_name:extendee -> google.protobuf.MethodOptions
-	0,  // 1: mcpx.mcp_options.v1.tool_description:extendee -> google.protobuf.MethodOptions
-	0,  // 2: mcpx.mcp_options.v1.prompt_name:extendee -> google.protobuf.MethodOptions
-	0,  // 3: mcpx.mcp_options.v1.prompt_description:extendee -> google.protobuf.MethodOptions
-	0,  // 4: mcpx.mcp_options.v1.prompt_template:extendee -> google.protobuf.MethodOptions
-	1,  // 5: mcpx.mcp_options.v1.resource_name:extendee -> google.protobuf.MessageOptions
-	1,  // 6: mcpx.mcp_options.v1.resource_description:extendee -> google.protobuf.MessageOptions
-	2,  // 7: mcpx.mcp_options.v1.field_description:extendee -> google.protobuf.FieldOptions
-	0,  // 8: mcpx.mcp_options.v1.mcp_tool_readonly_hint:extendee -> google.protobuf.MethodOptions
-	0,  // 9: mcpx.mcp_options.v1.mcp_tool_destructive_hint:extendee -> google.protobuf.MethodOptions
-	0,  // 10: mcpx.mcp_options.v1.mcp_tool_idempotent_hint:extendee -> google.protobuf.MethodOptions
-	0,  // 11: mcpx.mcp_options.v1.mcp_tool_openworld_hint:extendee -> google.protobuf.MethodOptions
+	0,  // 0: mcpany.mcp_options.v1.tool_name:extendee -> google.protobuf.MethodOptions
+	0,  // 1: mcpany.mcp_options.v1.tool_description:extendee -> google.protobuf.MethodOptions
+	0,  // 2: mcpany.mcp_options.v1.prompt_name:extendee -> google.protobuf.MethodOptions
+	0,  // 3: mcpany.mcp_options.v1.prompt_description:extendee -> google.protobuf.MethodOptions
+	0,  // 4: mcpany.mcp_options.v1.prompt_template:extendee -> google.protobuf.MethodOptions
+	1,  // 5: mcpany.mcp_options.v1.resource_name:extendee -> google.protobuf.MessageOptions
+	1,  // 6: mcpany.mcp_options.v1.resource_description:extendee -> google.protobuf.MessageOptions
+	2,  // 7: mcpany.mcp_options.v1.field_description:extendee -> google.protobuf.FieldOptions
+	0,  // 8: mcpany.mcp_options.v1.mcp_tool_readonly_hint:extendee -> google.protobuf.MethodOptions
+	0,  // 9: mcpany.mcp_options.v1.mcp_tool_destructive_hint:extendee -> google.protobuf.MethodOptions
+	0,  // 10: mcpany.mcp_options.v1.mcp_tool_idempotent_hint:extendee -> google.protobuf.MethodOptions
+	0,  // 11: mcpany.mcp_options.v1.mcp_tool_openworld_hint:extendee -> google.protobuf.MethodOptions
 	12, // [12:12] is the sub-list for method output_type
 	12, // [12:12] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name

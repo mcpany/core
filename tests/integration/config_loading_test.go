@@ -69,10 +69,10 @@ func TestConfigLoading(t *testing.T) {
 			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
 			natsConfigFile := CreateTempNatsConfigFile(t)
-			mcpx := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
-			defer mcpx.CleanupFunc()
+			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
+			defer mcpAny.CleanupFunc()
 
-			conn, err := grpc.Dial(mcpx.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := grpc.Dial(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
 			defer conn.Close()
 
