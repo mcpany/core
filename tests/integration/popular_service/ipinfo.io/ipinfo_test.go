@@ -60,15 +60,9 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		expectedCountry string
 	}{
 		{
-			name:          "No IP (get caller's info)",
-			ip:            "",
-			expectedCity:  "Mountain View",
-			expectedCountry: "US",
-		},
-		{
 			name:          "IPv4 address",
-			ip:            "8.8.8.8",
-			expectedCity:  "Mountain View",
+			ip:            "130.184.0.1",
+			expectedCity:  "Tulsa",
 			expectedCountry: "US",
 		},
 		{
@@ -106,6 +100,9 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 			if tc.ip != "" {
 				require.Equal(t, tc.ip, ipInfoResponse["ip"], "The IP address should match the input")
 			}
+			require.Equal(t, tc.expectedCity, ipInfoResponse["city"], "The city should match the expected value")
+			require.Equal(t, tc.expectedCountry, ipInfoResponse["country"], "The country should match the expected value")
+
 
 			// --- 6. Test with token ---
 			if os.Getenv("IPINFO_API_TOKEN") != "" {

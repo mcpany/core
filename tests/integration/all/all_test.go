@@ -20,10 +20,16 @@ package all_test
 
 import (
 	"context"
+	"io/ioutil"
+	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,7 +54,37 @@ func TestLoadAllPopularServices(t *testing.T) {
 	require.NoError(t, err)
 
 	// --- 3. Assert Response ---
-	require.Greater(t, len(listToolsResult.Tools), 0, "No tools were registered")
+	// Find all the config files
+	configs, err := filepath.Glob("../../../examples/popular_services/*/config.yaml")
+	require.NoError(t, err)
+	require.Greater(t, len(configs), 0, "No popular service configs found")
+
+	// Create a new FileStore
+	fs := afero.NewOsFs()
+	store := config.NewFileStore(fs, configs)
+
+	// Load the config
+	cfg, err := config.LoadServices(store, "server")
+	require.NoError(t, err)
+
+	// Get the expected tool names
+	var expectedToolNames []string
+	for _, service := range cfg.GetUpstreamServices() {
+		sanitizedServiceName, _ := util.SanitizeServiceName(service.GetName())
+		for _, call := range service.GetHttpService().GetCalls() {
+			sanitizedToolName, _ := util.SanitizeToolName(call.GetSchema().GetName())
+			expectedToolNames = append(expectedToolNames, sanitizedServiceName+"."+sanitizedToolName)
+		}
+	}
+
+	// Get the actual tool names
+	var actualToolNames []string
+	for _, tool := range listToolsResult.Tools {
+		actualToolNames = append(actualToolNames, tool.Name)
+	}
+
+	// Assert that the tool names match
+	require.ElementsMatch(t, expectedToolNames, actualToolNames, "The discovered tools do not match the expected tools")
 
 	for _, tool := range listToolsResult.Tools {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
