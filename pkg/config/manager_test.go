@@ -39,6 +39,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 
 	// Create a mock HTTP server to serve the remote collections
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/collection1":
 			w.Write([]byte(`{"services": [{"name": "service1", "version": "2.0"}]}`))
@@ -74,6 +75,13 @@ services:
 				return
 			}
 			w.Write([]byte(`{"services": [{"name": "service1", "version": "6.0"}]}`))
+		case "/collection-no-content-type":
+			w.Header().Del("Content-Type")
+			w.Write([]byte(`
+services:
+- name: service1
+  version: "7.0"
+`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -260,6 +268,20 @@ services:
 			}).Build(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "6.0",
+			},
+		},
+		{
+			name: "no content type assumes yaml",
+			initialConfig: (configv1.McpxServerConfig_builder{
+				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+					(configv1.UpstreamServiceCollection_builder{
+						Name:    proto.String("collection-no-content-type"),
+						HttpUrl: proto.String(server.URL + "/collection-no-content-type"),
+					}).Build(),
+				},
+			}).Build(),
+			expectedServiceNamesAndVersions: map[string]string{
+				"service1": "7.0",
 			},
 		},
 	}
