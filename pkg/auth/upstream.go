@@ -65,31 +65,47 @@ func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (Upst
 	}
 
 	if apiKey := authConfig.GetApiKey(); apiKey != nil {
-		if apiKey.GetHeaderName() == "" || apiKey.GetApiKey() == "" {
+		apiKeyValue, err := ResolveSecretValue(apiKey.GetApiKey())
+		if err != nil {
+			return nil, err
+		}
+		if apiKey.GetHeaderName() == "" || apiKeyValue == "" {
 			return nil, errors.New("API key authentication requires a header name and a key")
 		}
 		return &APIKeyAuth{
 			HeaderName:  apiKey.GetHeaderName(),
-			HeaderValue: apiKey.GetApiKey(),
+			HeaderValue: apiKeyValue,
 		}, nil
 	}
 
 	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-		if bearerToken.GetToken() == "" {
+		tokenValue, err := ResolveSecretValue(bearerToken.GetToken())
+		if err != nil {
+			return nil, err
+		}
+		if tokenValue == "" {
 			return nil, errors.New("bearer token authentication requires a token")
 		}
 		return &BearerTokenAuth{
-			Token: bearerToken.GetToken(),
+			Token: tokenValue,
 		}, nil
 	}
 
 	if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
-		if basicAuth.GetUsername() == "" {
+		username, err := ResolveSecretValue(basicAuth.GetUsername())
+		if err != nil {
+			return nil, err
+		}
+		password, err := ResolveSecretValue(basicAuth.GetPassword())
+		if err != nil {
+			return nil, err
+		}
+		if username == "" {
 			return nil, errors.New("basic authentication requires a username")
 		}
 		return &BasicAuth{
-			Username: basicAuth.GetUsername(),
-			Password: basicAuth.GetPassword(),
+			Username: username,
+			Password: password,
 		}, nil
 	}
 
@@ -103,16 +119,45 @@ func substituteEnvVars(authConfig *configv1.UpstreamAuthentication) error {
 		envVars[pair[0]] = pair[1]
 	}
 
+	applySubstitution := func(secret *configv1.SecretValue) (*configv1.SecretValue, error) {
+		if secret == nil {
+			return nil, nil
+		}
+		val, err := ResolveSecretValue(secret)
+		if err != nil {
+			return nil, err
+		}
+		substitutedVal := fasttemplate.New(val, "{{", "}}").ExecuteString(envVars)
+		return configv1.SecretValue_builder{PlainText: &substitutedVal}.Build(), nil
+	}
+
 	if apiKey := authConfig.GetApiKey(); apiKey != nil {
 		apiKey.SetHeaderName(fasttemplate.New(apiKey.GetHeaderName(), "{{", "}}").ExecuteString(envVars))
-		apiKey.SetApiKey(fasttemplate.New(apiKey.GetApiKey(), "{{", "}}").ExecuteString(envVars))
+		newSecret, err := applySubstitution(apiKey.GetApiKey())
+		if err != nil {
+			return err
+		}
+		apiKey.SetApiKey(newSecret)
 	}
 	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-		bearerToken.SetToken(fasttemplate.New(bearerToken.GetToken(), "{{", "}}").ExecuteString(envVars))
+		newSecret, err := applySubstitution(bearerToken.GetToken())
+		if err != nil {
+			return err
+		}
+		bearerToken.SetToken(newSecret)
 	}
 	if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
-		basicAuth.SetUsername(fasttemplate.New(basicAuth.GetUsername(), "{{", "}}").ExecuteString(envVars))
-		basicAuth.SetPassword(fasttemplate.New(basicAuth.GetPassword(), "{{", "}}").ExecuteString(envVars))
+		newUsername, err := applySubstitution(basicAuth.GetUsername())
+		if err != nil {
+			return err
+		}
+		basicAuth.SetUsername(newUsername)
+
+		newPassword, err := applySubstitution(basicAuth.GetPassword())
+		if err != nil {
+			return err
+		}
+		basicAuth.SetPassword(newPassword)
 	}
 	return nil
 }

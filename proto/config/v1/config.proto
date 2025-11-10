@@ -466,18 +466,24 @@ message ToolDefinition {
 message HttpParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret_value = 2;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 message WebsocketParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret_value = 2;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 message WebrtcParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret_value = 2;
 }
 
 // CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
@@ -652,6 +658,28 @@ message OAuth2Auth {
 // Upstream Authentication Definitions
 // ===================================================================
 
+// A secret value that can be sourced from a variety of locations.
+message SecretValue {
+  oneof value {
+    // A plain text secret.
+    string plain_text = 1;
+    // The name of an environment variable to read the secret from.
+    string environment_variable = 2;
+    // The path to a file to read the secret from.
+    string file_path = 3;
+    // A secret that is fetched from a remote http url.
+    RemoteContent remote_content = 4;
+  }
+}
+
+// RemoteContent defines a secret that is fetched from a remote http url.
+message RemoteContent {
+  // The http url to fetch the secret from.
+  string http_url = 1;
+  // The authentication to use when fetching the secret.
+  UpstreamAuthentication auth = 2;
+}
+
 // UpstreamAuthentication defines the authentication method to use when mcpx communicates
 // with an upstream service.
 message UpstreamAuthentication {
@@ -669,26 +697,26 @@ message UpstreamAPIKeyAuth {
   // The name of the header to carry the API key (e.g., "X-API-Key").
   string header_name = 1;
   // The API key value.
-  string api_key = 2;
+  SecretValue api_key = 2;
 }
 
 // UpstreamBearerTokenAuth defines authentication using a bearer token.
 message UpstreamBearerTokenAuth {
   // The bearer token.
-  string token = 1;
+  SecretValue token = 1;
 }
 
 // UpstreamBasicAuth defines authentication using a username and password.
 message UpstreamBasicAuth {
-  string username = 1;
-  string password = 2;
+  SecretValue username = 1;
+  SecretValue password = 2;
 }
 
 // UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 message UpstreamOAuth2Auth {
   string token_url = 1;
-  string client_id = 2;
-  string client_secret = 3;
+  SecretValue client_id = 2;
+  SecretValue client_secret = 3;
   string scopes = 4;
 }
 
