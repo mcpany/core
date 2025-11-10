@@ -141,7 +141,7 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		}
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-			log.Warn("Invalid TargetAddress for OpenAPI service. This default target will be ignored if spec contains servers.", "address", openapiService.GetAddress())
+			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
 		}
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		switch mcpService.WhichConnectionType() {
