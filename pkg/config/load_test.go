@@ -182,7 +182,14 @@ upstream_services: {
 	}
 }
 `,
-			expectLoadError: true,
+			expectedCount: 1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "duplicate-name", s.GetName())
+				httpService := s.GetHttpService()
+				require.NotNil(t, httpService)
+				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+			},
 		},
 		{
 			name: "detailed error for duplicate service names",
@@ -200,7 +207,14 @@ upstream_services: {
 	}
 }
 `,
-			expectLoadError: true,
+			expectedCount: 1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "duplicate-name", s.GetName())
+				httpService := s.GetHttpService()
+				require.NotNil(t, httpService)
+				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+			},
 		},
 	}
 
