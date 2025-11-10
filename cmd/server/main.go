@@ -61,7 +61,7 @@ func newRootCmd() *cobra.Command {
 			jsonrpcPort := viper.GetString("jsonrpc-port")
 			registrationPort := viper.GetString("grpc-port")
 			stdio := viper.GetBool("stdio")
-			configPaths := viper.GetStringSlice("config-paths")
+			configPaths := viper.GetStringSlice("config-path")
 
 			logLevel := slog.LevelInfo
 			if viper.GetBool("debug") {
@@ -84,9 +84,9 @@ func newRootCmd() *cobra.Command {
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
-			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-paths", configPaths)
+			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-path", configPaths)
 			if len(configPaths) > 0 {
-				log.Info("Attempting to load services from config paths", "paths", configPaths)
+				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
 
 			osFs := afero.NewOsFs()
@@ -139,7 +139,7 @@ func newRootCmd() *cobra.Command {
 		Use:   "health",
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			configPaths := viper.GetStringSlice("config-paths")
+			configPaths := viper.GetStringSlice("config-path")
 			fs := afero.NewOsFs()
 			var addr string
 
@@ -173,12 +173,12 @@ func newRootCmd() *cobra.Command {
 	})
 
 	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
-	rootCmd.PersistentFlags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATHS")
+	rootCmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
 	if err := viper.BindPFlag("jsonrpc-port", rootCmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
 		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
 	}
-	if err := viper.BindPFlag("config-paths", rootCmd.PersistentFlags().Lookup("config-paths")); err != nil {
-		fmt.Printf("Error binding config-paths flag: %v\n", err)
+	if err := viper.BindPFlag("config-path", rootCmd.PersistentFlags().Lookup("config-path")); err != nil {
+		fmt.Printf("Error binding config-path flag: %v\n", err)
 	}
 
 	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
