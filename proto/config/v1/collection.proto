@@ -1,0 +1,17 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpx.config.v1;
+
+import "proto/config/v1/config.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+message UpstreamServiceCollectionShare {
+  repeated UpstreamServiceConfig services = 1;
+  string version = 2;
+  string description = 3;
+  string name = 4;
+}
