@@ -67,8 +67,8 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		},
 		{
 			name:          "IPv6 address",
-			ip:            "2001:4860:4860::8888",
-			expectedCity:  "Mountain View",
+			ip:            "2607:f6d0:0:53::64:53",
+			expectedCity:  "San Jose",
 			expectedCountry: "US",
 		},
 	}
