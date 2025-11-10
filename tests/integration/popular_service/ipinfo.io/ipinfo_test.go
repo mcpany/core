@@ -23,11 +23,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/pkg/config"
-	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,29 +36,10 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest", "--config-path", "../../../../examples/popular_services/ipinfo.io")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register IP Info Server with MCPANY ---
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
-
-	// Create a new FileStore
-	fs := afero.NewOsFs()
-	store := config.NewFileStore(fs, []string{"../../../../examples/popular_services/ipinfo.io/config.yaml"})
-
-	// Load the config
-	cfg, err := config.LoadServices(store, "server")
-	require.NoError(t, err)
-
-	// Register the service
-	for _, service := range cfg.GetUpstreamServices() {
-		req := apiv1.RegisterServiceRequest_builder{
-			Config: service,
-		}.Build()
-		integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	}
-
-	// --- 3. Call Tool via MCPANY ---
+	// --- 2. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -77,7 +55,7 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	// --- 4. Assert Response ---
+	// --- 3. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")

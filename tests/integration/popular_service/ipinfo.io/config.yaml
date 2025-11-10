@@ -1,9 +1,0 @@
-upstream_services:
-- name: ipinfo.io
-  http_service:
-    address: "https://ipinfo.io"
-    calls:
-    - endpoint_path: "/json"
-      schema:
-        name: "ipinfo"
-      method: "HTTP_METHOD_GET"
