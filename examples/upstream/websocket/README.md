@@ -1,20 +1,20 @@
 # Example: Exposing a WebSocket Service
 
-This example demonstrates how to expose a WebSocket service as a tool through `mcpany`.
+This example demonstrates how to expose a WebSocket service as a tool through `MCP Any`.
 
 ## Overview
 
 This example consists of three main components:
 
 1. **Upstream WebSocket Server**: A simple Go-based WebSocket server (`echo_server/`) that echoes back any message it receives.
-2. **`mcpany` Configuration**: A YAML file (`config/mcpxy_config.yaml`) that tells `mcpany` how to connect to the WebSocket server.
-3. **`mcpany` Server**: The `mcpany` instance that acts as a proxy between the AI assistant and the WebSocket server.
+2. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that tells `MCP Any` how to connect to the WebSocket server.
+3. **`MCP Any` Server**: The `MCP Any` instance that acts as a proxy between the AI assistant and the WebSocket server.
 
 ## Running the Example
 
-### 1. Build the `mcpany` Binary
+### 1. Build the `MCP Any` Binary
 
-Ensure the `mcpany` binary is built. From the root of the repository, run:
+Ensure the `MCP Any` binary is built. From the root of the repository, run:
 
 ```bash
 make build
@@ -30,12 +30,12 @@ go run ./echo_server/server/main.go
 
 The server will start and listen on port `8082`.
 
-### 3. Run the `mcpany` Server
+### 3. Run the `MCP Any` Server
 
-In another terminal, start the `mcpany` server using the provided script. Note that this example is configured to run the `mcpany` server on port `8081` to avoid conflicts with other examples.
+In another terminal, start the `MCP Any` server using the provided script. Note that this example is configured to run the `MCP Any` server on port `8081` to avoid conflicts with other examples.
 
 ```bash
-./start_mcpany.sh
+./start.sh
 ```
 
 ## Interacting with the Tool
@@ -60,4 +60,4 @@ You should receive a JSON response echoing your message:
 
 ## Test Client
 
-This example also includes a test client in `client.go` that demonstrates how to interact with the `mcpany` server programmatically using the Go SDK. You can run it with `go run ./client/main.go`.
+This example also includes a test client in `client.go` that demonstrates how to interact with the `MCP Any` server programmatically using the Go SDK. You can run it with `go run ./client/main.go`.

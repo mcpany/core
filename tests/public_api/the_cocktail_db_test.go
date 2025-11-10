@@ -42,14 +42,14 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2ETheCocktailDBServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETheCocktailDBServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register TheCocktailDB Server with MCPANY ---
 	const theCocktailDBServiceID = "e2e_thecocktaildb"
 	theCocktailDBServiceEndpoint := "https://www.thecocktaildb.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", theCocktailDBServiceID, theCocktailDBServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/api/json/v1/1/search.php?s={{drink}}"),
@@ -85,7 +85,7 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

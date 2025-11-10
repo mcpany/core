@@ -45,7 +45,7 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpxServerConfig for correctness and consistency.
+// Validate inspects the given McpAnyServerConfig for correctness and consistency.
 // It iterates through the list of upstream services, checking for valid
 // service definitions, addresses, cache settings, and authentication
 // configurations.
@@ -57,7 +57,7 @@ func (e *ValidationError) Error() string {
 //
 // It returns a slice of ValidationErrors, which will be empty if the
 // configuration is valid.
-func Validate(config *configv1.McpxServerConfig, binaryType BinaryType) []ValidationError {
+func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
 
