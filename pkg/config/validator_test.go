@@ -154,7 +154,7 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "grpc-svc-1": gRPC service has empty target_address`,
 		},
 		{
-			name: "invalid openapi service - invalid address",
+			name: "invalid openapi service - invalid address should be an error",
 			config: (&configv1.McpxServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
@@ -165,7 +165,8 @@ func TestValidate(t *testing.T) {
 					}).Build(),
 				},
 			}).Build(),
-			expectedErrorCount: 0, // This is a warning, not an error
+			expectedErrorCount:  1,
+			expectedErrorString: `service "openapi-svc-1": invalid openapi target_address: not a url`,
 		},
 		{
 			name: "invalid mcp service - no connection",
