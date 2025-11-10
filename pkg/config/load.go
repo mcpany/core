@@ -17,6 +17,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -48,6 +49,13 @@ func LoadServices(store Store, binaryType string) (*configv1.McpxServerConfig, e
 		log.Info("No configuration files found or all were empty, using default configuration.")
 		fileConfig = &configv1.McpxServerConfig{}
 	}
+
+	manager := NewUpstreamServiceManager()
+	services, err := manager.LoadAndMergeServices(context.Background(), fileConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load and merge services: %w", err)
+	}
+	fileConfig.SetUpstreamServices(services)
 
 	var bt BinaryType
 	if binaryType == "server" {
