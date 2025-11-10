@@ -158,6 +158,37 @@ func TestHealthCheck(t *testing.T) {
 		// Verify that only one connection was made, proving that keep-alive is working.
 		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
 	})
+
+	t.Run("connection is reused across multiple health checks", func(t *testing.T) {
+		// Set up a listener that can count the number of connections.
+		rawLis, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		countingLis := &connCountingListener{Listener: rawLis}
+
+		// Configure and start a test server.
+		server := &http.Server{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}),
+		}
+		go func() {
+			_ = server.Serve(countingLis)
+		}()
+		defer server.Close()
+
+		addr := countingLis.Addr().String()
+
+		// Perform the health check multiple times.
+		err = HealthCheck(addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on first call")
+		err = HealthCheck(addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on second call")
+		err = HealthCheck(addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on third call")
+
+		// Verify that only one connection was made, proving that keep-alive is working.
+		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
+	})
 }
 
 func TestSetup(t *testing.T) {
