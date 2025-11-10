@@ -6,9 +6,8 @@ This directory contains a collection of popular services that have been converte
 
 To use these services, you can load the `config.yaml` files in this directory into your `mcp-any-server` instance. You can do this by adding the following to your `mcp-any-server` configuration:
 
-```yaml
-upstream_services:
-  - include: "examples/popular_services/*/config.yaml"
+```bash
+mcp-any-server --config-path "examples/popular_services/ipinfo.io"
 ```
 
 ## Contributing
