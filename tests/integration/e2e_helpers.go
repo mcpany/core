@@ -617,7 +617,7 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 	require.NoError(t, err)
 	err = tmpFile.Close()
 	require.NoError(t, err)
-	return StartMCPANYServer(t, testName, "--config-paths", tmpFile.Name())
+	return StartMCPANYServer(t, testName, "--config-path", tmpFile.Name())
 }
 
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
