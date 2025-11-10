@@ -126,11 +126,8 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 	var err error
 
 	switch contentType {
-	case "application/x-yaml", "text/yaml":
-		jsonData, err = yaml.YAMLToJSON(data)
-		if err != nil {
-			return fmt.Errorf("failed to convert yaml to json: %w", err)
-		}
+	case "application/json":
+		jsonData = data
 	case "application/protobuf", "text/plain":
 		var serviceList configv1.UpstreamServiceCollectionShare
 		if err := prototext.Unmarshal(data, &serviceList); err != nil {
@@ -139,8 +136,11 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 		*services = serviceList.GetServices()
 		return nil
 	default:
-		// Assume JSON
-		jsonData = data
+		// Assume YAML
+		jsonData, err = yaml.YAMLToJSON(data)
+		if err != nil {
+			return fmt.Errorf("failed to convert yaml to json: %w", err)
+		}
 	}
 
 	return m.unmarshalProtoJSON(jsonData, services)
@@ -200,8 +200,10 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		} else if priority == existingPriority {
 			// Same priority, keep the one loaded first
 			m.log.Info("Ignoring service with same priority, keeping the first one loaded", "service_name", serviceName, "priority", priority)
+		} else {
+			// lower priority, do nothing
+			m.log.Info("Ignoring service due to lower priority", "service_name", serviceName, "existing_priority", existingPriority, "new_priority", priority)
 		}
-		// else: lower priority, do nothing
 	} else {
 		// New service, add it
 		m.services[serviceName] = service
