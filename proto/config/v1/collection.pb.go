@@ -187,20 +187,20 @@ var File_proto_config_v1_collection_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\n" +
-	" proto/config/v1/collection.proto\x12\x0emcpx.config.v1\x1a\x1cproto/config/v1/config.proto\"\xb3\x01\n" +
-	"\x1eUpstreamServiceCollectionShare\x12A\n" +
-	"\bservices\x18\x01 \x03(\v2%.mcpx.config.v1.UpstreamServiceConfigR\bservices\x12\x18\n" +
+	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a\x1cproto/config/v1/config.proto\"\xb5\x01\n" +
+	"\x1eUpstreamServiceCollectionShare\x12C\n" +
+	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04nameB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_collection_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_collection_proto_goTypes = []any{
-	(*UpstreamServiceCollectionShare)(nil), // 0: mcpx.config.v1.UpstreamServiceCollectionShare
-	(*UpstreamServiceConfig)(nil),          // 1: mcpx.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollectionShare)(nil), // 0: mcpany.config.v1.UpstreamServiceCollectionShare
+	(*UpstreamServiceConfig)(nil),          // 1: mcpany.config.v1.UpstreamServiceConfig
 }
 var file_proto_config_v1_collection_proto_depIdxs = []int32{
-	1, // 0: mcpx.config.v1.UpstreamServiceCollectionShare.services:type_name -> mcpx.config.v1.UpstreamServiceConfig
+	1, // 0: mcpany.config.v1.UpstreamServiceCollectionShare.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

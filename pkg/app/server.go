@@ -129,7 +129,7 @@ func (a *Application) Run(
 	log.Info("Starting MCP Any Service...")
 
 	// Load initial services from config files
-	var cfg *config_v1.McpxServerConfig
+	var cfg *config_v1.McpAnyServerConfig
 	if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
@@ -138,7 +138,7 @@ func (a *Application) Run(
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
 	} else {
-		cfg = &config_v1.McpxServerConfig{}
+		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()

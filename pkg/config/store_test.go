@@ -53,7 +53,7 @@ func TestJsonEngine_Unmarshal(t *testing.T) {
 				"log_level": "INFO"
 			}
 		}`)
-		cfg := &configv1.McpxServerConfig{}
+		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validJSON, cfg)
 		require.NoError(t, err)
 		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
@@ -67,7 +67,7 @@ func TestJsonEngine_Unmarshal(t *testing.T) {
 				"log_level": "INFO",
 			}
 		}`)
-		cfg := &configv1.McpxServerConfig{}
+		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(invalidJSON, cfg)
 		assert.Error(t, err)
 	})
@@ -84,7 +84,7 @@ global_settings:
   protoc_version: "3.19.4"
 - this is not valid
 `)
-		cfg := &configv1.McpxServerConfig{}
+		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(invalidYAML, cfg)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal YAML")
@@ -96,7 +96,7 @@ global_settings:
   bind_address: "0.0.0.0:8080"
   log_level: "INFO"
 `)
-		cfg := &configv1.McpxServerConfig{}
+		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validYAML, cfg)
 		require.NoError(t, err)
 		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
@@ -127,7 +127,7 @@ func TestYamlEngine_Unmarshal_MarshalError(t *testing.T) {
 global_settings:
   bind_address: "0.0.0.0:8080"
 `)
-	err := engine.UnmarshalWithFailingJSON(validYAML, &configv1.McpxServerConfig{})
+	err := engine.UnmarshalWithFailingJSON(validYAML, &configv1.McpAnyServerConfig{})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to marshal map to JSON")
 }
@@ -162,14 +162,14 @@ upstream_services:
 		name          string
 		paths         []string
 		expectErr     bool
-		expectedCfg   *configv1.McpxServerConfig
-		checkResult   func(t *testing.T, cfg *configv1.McpxServerConfig)
+		expectedCfg   *configv1.McpAnyServerConfig
+		checkResult   func(t *testing.T, cfg *configv1.McpAnyServerConfig)
 		expectedErrFn func(t *testing.T, err error)
 	}{
 		{
 			name:  "Load single file",
 			paths: []string{"configs/01_base.yaml"},
-			checkResult: func(t *testing.T, cfg *configv1.McpxServerConfig) {
+			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
 				assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
 				assert.Len(t, cfg.GetUpstreamServices(), 1)
 			},
@@ -177,7 +177,7 @@ upstream_services:
 		{
 			name:  "Load and merge multiple files",
 			paths: []string{"configs/01_base.yaml", "configs/02_override.yaml"},
-			checkResult: func(t *testing.T, cfg *configv1.McpxServerConfig) {
+			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
 				// Last one wins for scalar fields
 				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetBindAddress())
 				// Repeated fields are appended
@@ -205,7 +205,7 @@ upstream_services:
 		{
 			name:  "Empty directory results in nil config",
 			paths: []string{"configs/subdir/empty"},
-			checkResult: func(t *testing.T, cfg *configv1.McpxServerConfig) {
+			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
 				assert.Nil(t, cfg)
 			},
 		},

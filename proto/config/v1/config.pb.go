@@ -314,8 +314,8 @@ func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// McpxServerConfig is the root configuration for the entire MCPANY server.
-type McpxServerConfig struct {
+// McpAnyServerConfig is the root configuration for the entire MCPANY server.
+type McpAnyServerConfig struct {
 	state                                 protoimpl.MessageState        `protogen:"opaque.v1"`
 	xxx_hidden_GlobalSettings             *GlobalSettings               `protobuf:"bytes,1,opt,name=global_settings,json=globalSettings"`
 	xxx_hidden_UpstreamServices           *[]*UpstreamServiceConfig     `protobuf:"bytes,2,rep,name=upstream_services,json=upstreamServices"`
@@ -324,20 +324,20 @@ type McpxServerConfig struct {
 	sizeCache                             protoimpl.SizeCache
 }
 
-func (x *McpxServerConfig) Reset() {
-	*x = McpxServerConfig{}
+func (x *McpAnyServerConfig) Reset() {
+	*x = McpAnyServerConfig{}
 	mi := &file_proto_config_v1_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *McpxServerConfig) String() string {
+func (x *McpAnyServerConfig) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*McpxServerConfig) ProtoMessage() {}
+func (*McpAnyServerConfig) ProtoMessage() {}
 
-func (x *McpxServerConfig) ProtoReflect() protoreflect.Message {
+func (x *McpAnyServerConfig) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_config_v1_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -349,14 +349,14 @@ func (x *McpxServerConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *McpxServerConfig) GetGlobalSettings() *GlobalSettings {
+func (x *McpAnyServerConfig) GetGlobalSettings() *GlobalSettings {
 	if x != nil {
 		return x.xxx_hidden_GlobalSettings
 	}
 	return nil
 }
 
-func (x *McpxServerConfig) GetUpstreamServices() []*UpstreamServiceConfig {
+func (x *McpAnyServerConfig) GetUpstreamServices() []*UpstreamServiceConfig {
 	if x != nil {
 		if x.xxx_hidden_UpstreamServices != nil {
 			return *x.xxx_hidden_UpstreamServices
@@ -365,7 +365,7 @@ func (x *McpxServerConfig) GetUpstreamServices() []*UpstreamServiceConfig {
 	return nil
 }
 
-func (x *McpxServerConfig) GetUpstreamServiceCollections() []*UpstreamServiceCollection {
+func (x *McpAnyServerConfig) GetUpstreamServiceCollections() []*UpstreamServiceCollection {
 	if x != nil {
 		if x.xxx_hidden_UpstreamServiceCollections != nil {
 			return *x.xxx_hidden_UpstreamServiceCollections
@@ -374,42 +374,42 @@ func (x *McpxServerConfig) GetUpstreamServiceCollections() []*UpstreamServiceCol
 	return nil
 }
 
-func (x *McpxServerConfig) SetGlobalSettings(v *GlobalSettings) {
+func (x *McpAnyServerConfig) SetGlobalSettings(v *GlobalSettings) {
 	x.xxx_hidden_GlobalSettings = v
 }
 
-func (x *McpxServerConfig) SetUpstreamServices(v []*UpstreamServiceConfig) {
+func (x *McpAnyServerConfig) SetUpstreamServices(v []*UpstreamServiceConfig) {
 	x.xxx_hidden_UpstreamServices = &v
 }
 
-func (x *McpxServerConfig) SetUpstreamServiceCollections(v []*UpstreamServiceCollection) {
+func (x *McpAnyServerConfig) SetUpstreamServiceCollections(v []*UpstreamServiceCollection) {
 	x.xxx_hidden_UpstreamServiceCollections = &v
 }
 
-func (x *McpxServerConfig) HasGlobalSettings() bool {
+func (x *McpAnyServerConfig) HasGlobalSettings() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_GlobalSettings != nil
 }
 
-func (x *McpxServerConfig) ClearGlobalSettings() {
+func (x *McpAnyServerConfig) ClearGlobalSettings() {
 	x.xxx_hidden_GlobalSettings = nil
 }
 
-type McpxServerConfig_builder struct {
+type McpAnyServerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Server-wide operational parameters.
 	GlobalSettings *GlobalSettings
-	// A list of all configured upstream services that mcpx can proxy to.
+	// A list of all configured upstream services that MCP Any can proxy to.
 	UpstreamServices []*UpstreamServiceConfig
 	// A list of upstream service collections to load from.
 	UpstreamServiceCollections []*UpstreamServiceCollection
 }
 
-func (b0 McpxServerConfig_builder) Build() *McpxServerConfig {
-	m0 := &McpxServerConfig{}
+func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
+	m0 := &McpAnyServerConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_GlobalSettings = b.GlobalSettings
@@ -594,7 +594,7 @@ type HttpCallDefinition struct {
 	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
 	xxx_hidden_Schema            *ToolSchema                   `protobuf:"bytes,1,opt,name=schema"`
 	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,2,opt,name=endpoint_path,json=endpointPath"`
-	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,3,opt,name=method,enum=mcpx.config.v1.HttpCallDefinition_HttpMethod"`
+	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,3,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod"`
 	xxx_hidden_Parameters        *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer,json=outputTransformer"`
@@ -1366,7 +1366,7 @@ func (b0 InputTransformer_builder) Build() *InputTransformer {
 // OutputTransformer defines how to parse an output text into structured data.
 type OutputTransformer struct {
 	state                      protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Format          OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpx.config.v1.OutputTransformer_OutputFormat"`
+	xxx_hidden_Format          OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpany.config.v1.OutputTransformer_OutputFormat"`
 	xxx_hidden_ExtractionRules map[string]string              `protobuf:"bytes,2,rep,name=extraction_rules,json=extractionRules" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Template        *string                        `protobuf:"bytes,3,opt,name=template"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
@@ -1966,7 +1966,7 @@ type GlobalSettings struct {
 	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_BindAddress *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
 	xxx_hidden_McpBasepath *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpx.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
 	xxx_hidden_MessageBus  *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -2135,7 +2135,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 }
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
-// that mcpx will proxy. It defines the service's identity, how to connect to it,
+// that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 type UpstreamServiceConfig struct {
 	state                             protoimpl.MessageState                `protogen:"opaque.v1"`
@@ -2146,7 +2146,7 @@ type UpstreamServiceConfig struct {
 	xxx_hidden_UpstreamAuthentication *UpstreamAuthentication               `protobuf:"bytes,4,opt,name=upstream_authentication,json=upstreamAuthentication"`
 	xxx_hidden_Cache                  *CacheConfig                          `protobuf:"bytes,5,opt,name=cache"`
 	xxx_hidden_RateLimit              *RateLimitConfig                      `protobuf:"bytes,6,opt,name=rate_limit,json=rateLimit"`
-	xxx_hidden_LoadBalancingStrategy  LoadBalancingStrategy                 `protobuf:"varint,7,opt,name=load_balancing_strategy,json=loadBalancingStrategy,enum=mcpx.config.v1.LoadBalancingStrategy"`
+	xxx_hidden_LoadBalancingStrategy  LoadBalancingStrategy                 `protobuf:"varint,7,opt,name=load_balancing_strategy,json=loadBalancingStrategy,enum=mcpany.config.v1.LoadBalancingStrategy"`
 	xxx_hidden_Resilience             *ResilienceConfig                     `protobuf:"bytes,8,opt,name=resilience"`
 	xxx_hidden_ServiceConfig          isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
 	xxx_hidden_Version                *string                               `protobuf:"bytes,14,opt,name=version"`
@@ -2775,7 +2775,7 @@ type UpstreamServiceConfig_builder struct {
 	SanitizedName *string
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
-	// Authentication configuration for mcpx to use when connecting to the upstream service.
+	// Authentication configuration for mcpany to use when connecting to the upstream service.
 	UpstreamAuthentication *UpstreamAuthentication
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
@@ -3104,7 +3104,7 @@ type GrpcUpstreamService_builder struct {
 
 	// The address of the gRPC server (e.g., "localhost:50051").
 	Address *string
-	// If true, mcpx will use gRPC reflection to discover services and methods.
+	// If true, mcpany will use gRPC reflection to discover services and methods.
 	UseReflection *bool
 	// TLS configuration for the gRPC connection.
 	TlsConfig *TLSConfig
@@ -4808,7 +4808,7 @@ type McpUpstreamService_builder struct {
 	// Connect via a stdio process.
 	StdioConnection *McpStdioConnection
 	// -- end of xxx_hidden_ConnectionType
-	// If true, mcpx will automatically discover and proxy all tools from the upstream.
+	// If true, mcpany will automatically discover and proxy all tools from the upstream.
 	ToolAutoDiscovery *bool
 	// Optional: Pre-defined tools to register, can be used to filter or augment discovered tools.
 	Tools []*ToolDefinition
@@ -5432,7 +5432,7 @@ type ParameterSchema struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_Type         ParameterType          `protobuf:"varint,3,opt,name=type,enum=mcpx.config.v1.ParameterType"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType"`
 	xxx_hidden_IsRequired   bool                   `protobuf:"varint,4,opt,name=is_required,json=isRequired"`
 	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
@@ -7875,7 +7875,7 @@ func (*authenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
 type APIKeyAuth struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ParamName   *string                `protobuf:"bytes,1,opt,name=param_name,json=paramName"`
-	xxx_hidden_In          APIKeyAuth_Location    `protobuf:"varint,2,opt,name=in,enum=mcpx.config.v1.APIKeyAuth_Location"`
+	xxx_hidden_In          APIKeyAuth_Location    `protobuf:"varint,2,opt,name=in,enum=mcpany.config.v1.APIKeyAuth_Location"`
 	xxx_hidden_KeyValue    *string                `protobuf:"bytes,3,opt,name=key_value,json=keyValue"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -8229,7 +8229,7 @@ func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
 	return m0
 }
 
-// UpstreamAuthentication defines the authentication method to use when mcpx communicates
+// UpstreamAuthentication defines the authentication method to use when mcpany communicates
 // with an upstream service.
 type UpstreamAuthentication struct {
 	state                             protoimpl.MessageState              `protogen:"opaque.v1"`
@@ -9223,26 +9223,26 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x0emcpx.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\"\x9c\x02\n" +
-	"\x10McpxServerConfig\x12G\n" +
-	"\x0fglobal_settings\x18\x01 \x01(\v2\x1e.mcpx.config.v1.GlobalSettingsR\x0eglobalSettings\x12R\n" +
-	"\x11upstream_services\x18\x02 \x03(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x10upstreamServices\x12k\n" +
-	"\x1cupstream_service_collections\x18\x03 \x03(\v2).mcpx.config.v1.UpstreamServiceCollectionR\x1aupstreamServiceCollections\"\xb6\x01\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\"\xa4\x02\n" +
+	"\x12McpAnyServerConfig\x12I\n" +
+	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0eglobalSettings\x12T\n" +
+	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x10upstreamServices\x12m\n" +
+	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1aupstreamServiceCollections\"\xb8\x01\n" +
 	"\x19UpstreamServiceCollection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
-	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12N\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2&.mcpx.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xe9\x04\n" +
-	"\x12HttpCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12#\n" +
-	"\rendpoint_path\x18\x02 \x01(\tR\fendpointPath\x12E\n" +
-	"\x06method\x18\x03 \x01(\x0e2-.mcpx.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12D\n" +
+	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xf5\x04\n" +
+	"\x12HttpCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12#\n" +
+	"\rendpoint_path\x18\x02 \x01(\tR\fendpointPath\x12G\n" +
+	"\x06method\x18\x03 \x01(\x0e2/.mcpany.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12F\n" +
 	"\n" +
-	"parameters\x18\x05 \x03(\v2$.mcpx.config.v1.HttpParameterMappingR\n" +
-	"parameters\x12M\n" +
-	"\x11input_transformer\x18\x06 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\a \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\b \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
+	"parameters\x18\x05 \x03(\v2&.mcpany.config.v1.HttpParameterMappingR\n" +
+	"parameters\x12O\n" +
+	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
+	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
 	"\n" +
 	"HttpMethod\x12\x1b\n" +
 	"\x17HTTP_METHOD_UNSPECIFIED\x10\x00\x12\x13\n" +
@@ -9250,35 +9250,35 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xec\x02\n" +
-	"\x17WebsocketCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12I\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xf6\x02\n" +
+	"\x17WebsocketCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12K\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v2).mcpx.config.v1.WebsocketParameterMappingR\n" +
-	"parameters\x12M\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xe6\x02\n" +
-	"\x14WebrtcCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12F\n" +
+	"parameters\x18\x03 \x03(\v2+.mcpany.config.v1.WebsocketParameterMappingR\n" +
+	"parameters\x12O\n" +
+	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf0\x02\n" +
+	"\x14WebrtcCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12H\n" +
 	"\n" +
-	"parameters\x18\x03 \x03(\v2&.mcpx.config.v1.WebrtcParameterMappingR\n" +
-	"parameters\x12M\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\xe3\x01\n" +
-	"\x19CommandLineCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12K\n" +
+	"parameters\x18\x03 \x03(\v2(.mcpany.config.v1.WebrtcParameterMappingR\n" +
+	"parameters\x12O\n" +
+	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xe9\x01\n" +
+	"\x19CommandLineCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12M\n" +
 	"\n" +
-	"parameters\x18\x02 \x03(\v2+.mcpx.config.v1.CommandLineParameterMappingR\n" +
-	"parameters\x121\n" +
-	"\x05cache\x18\x03 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12\x12\n" +
+	"parameters\x18\x02 \x03(\v2-.mcpany.config.v1.CommandLineParameterMappingR\n" +
+	"parameters\x123\n" +
+	"\x05cache\x18\x03 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
 	"\x04args\x18\x04 \x03(\tR\x04args\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
-	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcb\x02\n" +
-	"\x11OutputTransformer\x12F\n" +
-	"\x06format\x18\x01 \x01(\x0e2..mcpx.config.v1.OutputTransformer.OutputFormatR\x06format\x12a\n" +
-	"\x10extraction_rules\x18\x02 \x03(\v26.mcpx.config.v1.OutputTransformer.ExtractionRulesEntryR\x0fextractionRules\x12\x1a\n" +
+	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcf\x02\n" +
+	"\x11OutputTransformer\x12H\n" +
+	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12c\n" +
+	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x0fextractionRules\x12\x1a\n" +
 	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
 	"\x14ExtractionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -9286,74 +9286,74 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\fOutputFormat\x12\b\n" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
-	"\x04TEXT\x10\x02\"\xad\x01\n" +
-	"\x12GrpcCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12\x18\n" +
+	"\x04TEXT\x10\x02\"\xb1\x01\n" +
+	"\x12GrpcCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12\x18\n" +
 	"\aservice\x18\x02 \x01(\tR\aservice\x12\x16\n" +
-	"\x06method\x18\x03 \x01(\tR\x06method\x121\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x9f\x02\n" +
-	"\x15OpenAPICallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
-	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x9b\x02\n" +
-	"\x11MCPCallDefinition\x122\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1a.mcpx.config.v1.ToolSchemaR\x06schema\x12M\n" +
-	"\x11input_transformer\x18\x02 \x01(\v2 .mcpx.config.v1.InputTransformerR\x10inputTransformer\x12P\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2!.mcpx.config.v1.OutputTransformerR\x11outputTransformer\x121\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\"\x84\x02\n" +
+	"\x06method\x18\x03 \x01(\tR\x06method\x123\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xa7\x02\n" +
+	"\x15OpenAPICallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12O\n" +
+	"\x11input_transformer\x18\x02 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xa3\x02\n" +
+	"\x11MCPCallDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12O\n" +
+	"\x11input_transformer\x18\x02 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
+	"\x12output_transformer\x18\x03 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x86\x02\n" +
 	"\x0eGlobalSettings\x12!\n" +
 	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
-	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12D\n" +
-	"\tlog_level\x18\x03 \x01(\x0e2'.mcpx.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
+	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
+	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\n" +
 	"messageBus\"4\n" +
 	"\bLogLevel\x12\b\n" +
 	"\x04INFO\x10\x00\x12\b\n" +
 	"\x04WARN\x10\x01\x12\t\n" +
 	"\x05ERROR\x10\x02\x12\t\n" +
-	"\x05DEBUG\x10\x03\"\x8d\n" +
+	"\x05DEBUG\x10\x03\"\xa9\n" +
 	"\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
-	"\x0esanitized_name\x18\x12 \x01(\tR\rsanitizedName\x12M\n" +
-	"\x0fconnection_pool\x18\x03 \x01(\v2$.mcpx.config.v1.ConnectionPoolConfigR\x0econnectionPool\x12_\n" +
-	"\x17upstream_authentication\x18\x04 \x01(\v2&.mcpx.config.v1.UpstreamAuthenticationR\x16upstreamAuthentication\x121\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12>\n" +
+	"\x0esanitized_name\x18\x12 \x01(\tR\rsanitizedName\x12O\n" +
+	"\x0fconnection_pool\x18\x03 \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0econnectionPool\x12a\n" +
+	"\x17upstream_authentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x16upstreamAuthentication\x123\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12@\n" +
 	"\n" +
-	"rate_limit\x18\x06 \x01(\v2\x1f.mcpx.config.v1.RateLimitConfigR\trateLimit\x12]\n" +
-	"\x17load_balancing_strategy\x18\a \x01(\x0e2%.mcpx.config.v1.LoadBalancingStrategyR\x15loadBalancingStrategy\x12@\n" +
+	"rate_limit\x18\x06 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\trateLimit\x12_\n" +
+	"\x17load_balancing_strategy\x18\a \x01(\x0e2'.mcpany.config.v1.LoadBalancingStrategyR\x15loadBalancingStrategy\x12B\n" +
 	"\n" +
-	"resilience\x18\b \x01(\v2 .mcpx.config.v1.ResilienceConfigR\n" +
-	"resilience\x12E\n" +
-	"\vmcp_service\x18\t \x01(\v2\".mcpx.config.v1.McpUpstreamServiceH\x00R\n" +
-	"mcpService\x12H\n" +
+	"resilience\x18\b \x01(\v2\".mcpany.config.v1.ResilienceConfigR\n" +
+	"resilience\x12G\n" +
+	"\vmcp_service\x18\t \x01(\v2$.mcpany.config.v1.McpUpstreamServiceH\x00R\n" +
+	"mcpService\x12J\n" +
 	"\fhttp_service\x18\n" +
-	" \x01(\v2#.mcpx.config.v1.HttpUpstreamServiceH\x00R\vhttpService\x12H\n" +
-	"\fgrpc_service\x18\v \x01(\v2#.mcpx.config.v1.GrpcUpstreamServiceH\x00R\vgrpcService\x12Q\n" +
-	"\x0fopenapi_service\x18\f \x01(\v2&.mcpx.config.v1.OpenapiUpstreamServiceH\x00R\x0eopenapiService\x12^\n" +
-	"\x14command_line_service\x18\r \x01(\v2*.mcpx.config.v1.CommandLineUpstreamServiceH\x00R\x12commandLineService\x12W\n" +
-	"\x11websocket_service\x18\x10 \x01(\v2(.mcpx.config.v1.WebsocketUpstreamServiceH\x00R\x10websocketService\x12N\n" +
-	"\x0ewebrtc_service\x18\x11 \x01(\v2%.mcpx.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12\x18\n" +
-	"\aversion\x18\x0e \x01(\tR\aversion\x12L\n" +
-	"\x0eauthentication\x18\x0f \x01(\v2$.mcpx.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
+	" \x01(\v2%.mcpany.config.v1.HttpUpstreamServiceH\x00R\vhttpService\x12J\n" +
+	"\fgrpc_service\x18\v \x01(\v2%.mcpany.config.v1.GrpcUpstreamServiceH\x00R\vgrpcService\x12S\n" +
+	"\x0fopenapi_service\x18\f \x01(\v2(.mcpany.config.v1.OpenapiUpstreamServiceH\x00R\x0eopenapiService\x12`\n" +
+	"\x14command_line_service\x18\r \x01(\v2,.mcpany.config.v1.CommandLineUpstreamServiceH\x00R\x12commandLineService\x12Y\n" +
+	"\x11websocket_service\x18\x10 \x01(\v2*.mcpany.config.v1.WebsocketUpstreamServiceH\x00R\x10websocketService\x12P\n" +
+	"\x0ewebrtc_service\x18\x11 \x01(\v2'.mcpany.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12\x18\n" +
+	"\aversion\x18\x0e \x01(\tR\aversion\x12N\n" +
+	"\x0eauthentication\x18\x0f \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
 	"\adisable\x18\x13 \x01(\bR\adisable\x12\x1a\n" +
 	"\bpriority\x18\x14 \x01(\x05R\bpriorityB\x10\n" +
-	"\x0eservice_config\"\xa8\x03\n" +
+	"\x0eservice_config\"\xb2\x03\n" +
 	"\x13GrpcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
-	"\x0euse_reflection\x18\x02 \x01(\bR\ruseReflection\x128\n" +
+	"\x0euse_reflection\x18\x02 \x01(\bR\ruseReflection\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x128\n" +
-	"\x05calls\x18\x04 \x03(\v2\".mcpx.config.v1.GrpcCallDefinitionR\x05calls\x12B\n" +
-	"\fhealth_check\x18\x05 \x01(\v2\x1f.mcpx.config.v1.GrpcHealthCheckR\vhealthCheck\x12L\n" +
-	"\x11proto_definitions\x18\x06 \x03(\v2\x1f.mcpx.config.v1.ProtoDefinitionR\x10protoDefinitions\x12J\n" +
-	"\x10proto_collection\x18\a \x03(\v2\x1f.mcpx.config.v1.ProtoCollectionR\x0fprotoCollection\"\xa8\x01\n" +
-	"\x0fProtoDefinition\x12:\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12:\n" +
+	"\x05calls\x18\x04 \x03(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x05calls\x12D\n" +
+	"\fhealth_check\x18\x05 \x01(\v2!.mcpany.config.v1.GrpcHealthCheckR\vhealthCheck\x12N\n" +
+	"\x11proto_definitions\x18\x06 \x03(\v2!.mcpany.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
+	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x0fprotoCollection\"\xac\x01\n" +
+	"\x0fProtoDefinition\x12<\n" +
 	"\n" +
-	"proto_file\x18\x01 \x01(\v2\x19.mcpx.config.v1.ProtoFileH\x00R\tprotoFile\x12L\n" +
-	"\x10proto_descriptor\x18\x02 \x01(\v2\x1f.mcpx.config.v1.ProtoDescriptorH\x00R\x0fprotoDescriptorB\v\n" +
+	"proto_file\x18\x01 \x01(\v2\x1b.mcpany.config.v1.ProtoFileH\x00R\tprotoFile\x12N\n" +
+	"\x10proto_descriptor\x18\x02 \x01(\v2!.mcpany.config.v1.ProtoDescriptorH\x00R\x0fprotoDescriptorB\v\n" +
 	"\tproto_ref\"x\n" +
 	"\tProtoFile\x12\x1b\n" +
 	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12#\n" +
@@ -9369,55 +9369,55 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1b\n" +
 	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xe7\x01\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xed\x01\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x128\n" +
-	"\x05calls\x18\x02 \x03(\v2\".mcpx.config.v1.HttpCallDefinitionR\x05calls\x12B\n" +
-	"\fhealth_check\x18\x03 \x01(\v2\x1f.mcpx.config.v1.HttpHealthCheckR\vhealthCheck\x128\n" +
-	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\xad\x01\n" +
-	"\x18WebsocketUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12=\n" +
-	"\x05calls\x18\x02 \x03(\v2'.mcpx.config.v1.WebsocketCallDefinitionR\x05calls\x128\n" +
-	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\xa7\x01\n" +
-	"\x15WebrtcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12:\n" +
-	"\x05calls\x18\x02 \x03(\v2$.mcpx.config.v1.WebrtcCallDefinitionR\x05calls\x128\n" +
+	"\x05calls\x18\x02 \x03(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05calls\x12D\n" +
+	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\x90\x02\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xb1\x01\n" +
+	"\x18WebsocketUpstreamService\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12?\n" +
+	"\x05calls\x18\x02 \x03(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05calls\x12:\n" +
+	"\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xab\x01\n" +
+	"\x15WebrtcUpstreamService\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12<\n" +
+	"\x05calls\x18\x02 \x03(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05calls\x12:\n" +
+	"\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\x96\x02\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12!\n" +
-	"\fopenapi_spec\x18\x02 \x01(\tR\vopenapiSpec\x12B\n" +
-	"\fhealth_check\x18\x03 \x01(\v2\x1f.mcpx.config.v1.HttpHealthCheckR\vhealthCheck\x128\n" +
+	"\fopenapi_spec\x18\x02 \x01(\tR\vopenapiSpec\x12D\n" +
+	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\x12;\n" +
-	"\x05calls\x18\x05 \x03(\v2%.mcpx.config.v1.OpenAPICallDefinitionR\x05calls\"\xb2\x03\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12=\n" +
+	"\x05calls\x18\x05 \x03(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05calls\"\xba\x03\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
-	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12?\n" +
-	"\x05calls\x18\x04 \x03(\v2).mcpx.config.v1.CommandLineCallDefinitionR\x05calls\x12I\n" +
-	"\fhealth_check\x18\x05 \x01(\v2&.mcpx.config.v1.CommandLineHealthCheckR\vhealthCheck\x121\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1b.mcpx.config.v1.CacheConfigR\x05cache\x12Y\n" +
-	"\x15container_environment\x18\a \x01(\v2$.mcpx.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
-	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xef\x02\n" +
-	"\x12McpUpstreamService\x12V\n" +
-	"\x0fhttp_connection\x18\x01 \x01(\v2+.mcpx.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12O\n" +
-	"\x10stdio_connection\x18\x02 \x01(\v2\".mcpx.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12.\n" +
-	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x124\n" +
-	"\x05tools\x18\x04 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x05tools\x127\n" +
-	"\x05calls\x18\x06 \x03(\v2!.mcpx.config.v1.MCPCallDefinitionR\x05callsB\x11\n" +
+	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12A\n" +
+	"\x05calls\x18\x04 \x03(\v2+.mcpany.config.v1.CommandLineCallDefinitionR\x05calls\x12K\n" +
+	"\fhealth_check\x18\x05 \x01(\v2(.mcpany.config.v1.CommandLineHealthCheckR\vhealthCheck\x123\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12[\n" +
+	"\x15container_environment\x18\a \x01(\v2&.mcpany.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
+	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xf7\x02\n" +
+	"\x12McpUpstreamService\x12X\n" +
+	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12Q\n" +
+	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12.\n" +
+	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x126\n" +
+	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x129\n" +
+	"\x05calls\x18\x06 \x03(\v2#.mcpany.config.v1.MCPCallDefinitionR\x05callsB\x11\n" +
 	"\x0fconnection_type\"\xbf\x01\n" +
 	"\x12McpStdioConnection\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
 	"\x04args\x18\x02 \x03(\tR\x04args\x12+\n" +
 	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12'\n" +
 	"\x0fcontainer_image\x18\x04 \x01(\tR\x0econtainerImage\x12%\n" +
-	"\x0esetup_commands\x18\x05 \x03(\tR\rsetupCommands\"z\n" +
+	"\x0esetup_commands\x18\x05 \x03(\tR\rsetupCommands\"|\n" +
 	"\x1bMcpStreamableHttpConnection\x12!\n" +
-	"\fhttp_address\x18\x01 \x01(\tR\vhttpAddress\x128\n" +
+	"\fhttp_address\x18\x01 \x01(\tR\vhttpAddress\x12:\n" +
 	"\n" +
-	"tls_config\x18\x05 \x01(\v2\x19.mcpx.config.v1.TLSConfigR\ttlsConfig\"\xfa\x01\n" +
+	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xfa\x01\n" +
 	"\n" +
 	"ToolSchema\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
@@ -9426,11 +9426,11 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fidempotent_hint\x18\x04 \x01(\bR\x0eidempotentHint\x12&\n" +
 	"\x0fopen_world_hint\x18\x05 \x01(\bR\ropenWorldHint\x12\x12\n" +
 	"\x04name\x18\x06 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\"\xd8\x01\n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\"\xda\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x121\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x1d.mcpx.config.v1.ParameterTypeR\x04type\x12\x1f\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12\x1f\n" +
 	"\vis_required\x18\x04 \x01(\bR\n" +
 	"isRequired\x12;\n" +
 	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xdd\x01\n" +
@@ -9439,15 +9439,15 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x05 \x01(\bR\bisStream\"O\n" +
-	"\x14HttpParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"T\n" +
-	"\x19WebsocketParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"Q\n" +
-	"\x16WebrtcParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"V\n" +
-	"\x1bCommandLineParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"\xaf\x01\n" +
+	"\tis_stream\x18\x05 \x01(\bR\bisStream\"Q\n" +
+	"\x14HttpParameterMapping\x129\n" +
+	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\"V\n" +
+	"\x19WebsocketParameterMapping\x129\n" +
+	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\"S\n" +
+	"\x16WebrtcParameterMapping\x129\n" +
+	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\"X\n" +
+	"\x1bCommandLineParameterMapping\x129\n" +
+	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\"\xaf\x01\n" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
@@ -9471,11 +9471,11 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06prompt\x18\x02 \x01(\tR\x06prompt\x12<\n" +
 	"\x1aexpected_response_contains\x18\x03 \x01(\tR\x18expectedResponseContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc9\x01\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xcb\x01\n" +
 	"\x14ContainerEnvironment\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05image\x18\x02 \x01(\tR\x05image\x12K\n" +
-	"\avolumes\x18\x03 \x03(\v21.mcpx.config.v1.ContainerEnvironment.VolumesEntryR\avolumes\x1a:\n" +
+	"\x05image\x18\x02 \x01(\tR\x05image\x12M\n" +
+	"\avolumes\x18\x03 \x03(\v23.mcpany.config.v1.ContainerEnvironment.VolumesEntryR\avolumes\x1a:\n" +
 	"\fVolumesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"v\n" +
@@ -9488,10 +9488,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xa1\x01\n" +
-	"\x10ResilienceConfig\x12M\n" +
-	"\x0fcircuit_breaker\x18\x01 \x01(\v2$.mcpx.config.v1.CircuitBreakerConfigR\x0ecircuitBreaker\x12>\n" +
-	"\fretry_policy\x18\x02 \x01(\v2\x1b.mcpx.config.v1.RetryConfigR\vretryPolicy\"\xed\x01\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xa5\x01\n" +
+	"\x10ResilienceConfig\x12O\n" +
+	"\x0fcircuit_breaker\x18\x01 \x01(\v2&.mcpany.config.v1.CircuitBreakerConfigR\x0ecircuitBreaker\x12@\n" +
+	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\vretryPolicy\"\xed\x01\n" +
 	"\x14CircuitBreakerConfig\x124\n" +
 	"\x16failure_rate_threshold\x18\x01 \x01(\x01R\x14failureRateThreshold\x121\n" +
 	"\x14consecutive_failures\x18\x02 \x01(\x05R\x13consecutiveFailures\x12>\n" +
@@ -9501,16 +9501,16 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11number_of_retries\x18\x01 \x01(\x05R\x0fnumberOfRetries\x12<\n" +
 	"\fbase_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\vbaseBackoff\x12:\n" +
 	"\vmax_backoff\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\n" +
-	"maxBackoff\"\x92\x01\n" +
-	"\x14AuthenticationConfig\x125\n" +
-	"\aapi_key\x18\x01 \x01(\v2\x1a.mcpx.config.v1.APIKeyAuthH\x00R\x06apiKey\x124\n" +
-	"\x06oauth2\x18\x02 \x01(\v2\x1a.mcpx.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xa0\x01\n" +
+	"maxBackoff\"\x96\x01\n" +
+	"\x14AuthenticationConfig\x127\n" +
+	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\x06apiKey\x126\n" +
+	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
+	"\vauth_method\"\xa2\x01\n" +
 	"\n" +
 	"APIKeyAuth\x12\x1d\n" +
 	"\n" +
-	"param_name\x18\x01 \x01(\tR\tparamName\x123\n" +
-	"\x02in\x18\x02 \x01(\x0e2#.mcpx.config.v1.APIKeyAuth.LocationR\x02in\x12\x1b\n" +
+	"param_name\x18\x01 \x01(\tR\tparamName\x125\n" +
+	"\x02in\x18\x02 \x01(\x0e2%.mcpany.config.v1.APIKeyAuth.LocationR\x02in\x12\x1b\n" +
 	"\tkey_value\x18\x03 \x01(\tR\bkeyValue\"!\n" +
 	"\bLocation\x12\n" +
 	"\n" +
@@ -9523,13 +9523,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06scopes\x18\x05 \x01(\tR\x06scopes\x12\x1d\n" +
 	"\n" +
 	"issuer_url\x18\x06 \x01(\tR\tissuerUrl\x12\x1a\n" +
-	"\baudience\x18\a \x01(\tR\baudience\"\xf0\x02\n" +
-	"\x16UpstreamAuthentication\x12=\n" +
-	"\aapi_key\x18\x01 \x01(\v2\".mcpx.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12L\n" +
-	"\fbearer_token\x18\x02 \x01(\v2'.mcpx.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12B\n" +
+	"\baudience\x18\a \x01(\tR\baudience\"\xf8\x02\n" +
+	"\x16UpstreamAuthentication\x12?\n" +
+	"\aapi_key\x18\x01 \x01(\v2$.mcpany.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12N\n" +
+	"\fbearer_token\x18\x02 \x01(\v2).mcpany.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12D\n" +
 	"\n" +
-	"basic_auth\x18\x03 \x01(\v2!.mcpx.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x12<\n" +
-	"\x06oauth2\x18\x05 \x01(\v2\".mcpx.config.v1.UpstreamOAuth2AuthH\x00R\x06oauth2\x128\n" +
+	"basic_auth\x18\x03 \x01(\v2#.mcpany.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x12>\n" +
+	"\x06oauth2\x18\x05 \x01(\v2$.mcpany.config.v1.UpstreamOAuth2AuthH\x00R\x06oauth2\x128\n" +
 	"\x18use_environment_variable\x18\x04 \x01(\bR\x16useEnvironmentVariableB\r\n" +
 	"\vauth_method\"N\n" +
 	"\x12UpstreamAPIKeyAuth\x12\x1f\n" +
@@ -9573,179 +9573,179 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
 var file_proto_config_v1_config_proto_goTypes = []any{
-	(ParameterType)(0),                  // 0: mcpx.config.v1.ParameterType
-	(LoadBalancingStrategy)(0),          // 1: mcpx.config.v1.LoadBalancingStrategy
-	(HttpCallDefinition_HttpMethod)(0),  // 2: mcpx.config.v1.HttpCallDefinition.HttpMethod
-	(OutputTransformer_OutputFormat)(0), // 3: mcpx.config.v1.OutputTransformer.OutputFormat
-	(GlobalSettings_LogLevel)(0),        // 4: mcpx.config.v1.GlobalSettings.LogLevel
-	(APIKeyAuth_Location)(0),            // 5: mcpx.config.v1.APIKeyAuth.Location
-	(*McpxServerConfig)(nil),            // 6: mcpx.config.v1.McpxServerConfig
-	(*UpstreamServiceCollection)(nil),   // 7: mcpx.config.v1.UpstreamServiceCollection
-	(*HttpCallDefinition)(nil),          // 8: mcpx.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),     // 9: mcpx.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),        // 10: mcpx.config.v1.WebrtcCallDefinition
-	(*CommandLineCallDefinition)(nil),   // 11: mcpx.config.v1.CommandLineCallDefinition
-	(*InputTransformer)(nil),            // 12: mcpx.config.v1.InputTransformer
-	(*OutputTransformer)(nil),           // 13: mcpx.config.v1.OutputTransformer
-	(*GrpcCallDefinition)(nil),          // 14: mcpx.config.v1.GrpcCallDefinition
-	(*OpenAPICallDefinition)(nil),       // 15: mcpx.config.v1.OpenAPICallDefinition
-	(*MCPCallDefinition)(nil),           // 16: mcpx.config.v1.MCPCallDefinition
-	(*GlobalSettings)(nil),              // 17: mcpx.config.v1.GlobalSettings
-	(*UpstreamServiceConfig)(nil),       // 18: mcpx.config.v1.UpstreamServiceConfig
-	(*GrpcUpstreamService)(nil),         // 19: mcpx.config.v1.GrpcUpstreamService
-	(*ProtoDefinition)(nil),             // 20: mcpx.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                   // 21: mcpx.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),             // 22: mcpx.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),             // 23: mcpx.config.v1.ProtoCollection
-	(*HttpUpstreamService)(nil),         // 24: mcpx.config.v1.HttpUpstreamService
-	(*WebsocketUpstreamService)(nil),    // 25: mcpx.config.v1.WebsocketUpstreamService
-	(*WebrtcUpstreamService)(nil),       // 26: mcpx.config.v1.WebrtcUpstreamService
-	(*OpenapiUpstreamService)(nil),      // 27: mcpx.config.v1.OpenapiUpstreamService
-	(*CommandLineUpstreamService)(nil),  // 28: mcpx.config.v1.CommandLineUpstreamService
-	(*McpUpstreamService)(nil),          // 29: mcpx.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),          // 30: mcpx.config.v1.McpStdioConnection
-	(*McpStreamableHttpConnection)(nil), // 31: mcpx.config.v1.McpStreamableHttpConnection
-	(*ToolSchema)(nil),                  // 32: mcpx.config.v1.ToolSchema
-	(*ParameterSchema)(nil),             // 33: mcpx.config.v1.ParameterSchema
-	(*ToolDefinition)(nil),              // 34: mcpx.config.v1.ToolDefinition
-	(*HttpParameterMapping)(nil),        // 35: mcpx.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),   // 36: mcpx.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),      // 37: mcpx.config.v1.WebrtcParameterMapping
-	(*CommandLineParameterMapping)(nil), // 38: mcpx.config.v1.CommandLineParameterMapping
-	(*ConnectionPoolConfig)(nil),        // 39: mcpx.config.v1.ConnectionPoolConfig
-	(*HttpHealthCheck)(nil),             // 40: mcpx.config.v1.HttpHealthCheck
-	(*GrpcHealthCheck)(nil),             // 41: mcpx.config.v1.GrpcHealthCheck
-	(*CommandLineHealthCheck)(nil),      // 42: mcpx.config.v1.CommandLineHealthCheck
-	(*ContainerEnvironment)(nil),        // 43: mcpx.config.v1.ContainerEnvironment
-	(*RateLimitConfig)(nil),             // 44: mcpx.config.v1.RateLimitConfig
-	(*CacheConfig)(nil),                 // 45: mcpx.config.v1.CacheConfig
-	(*ResilienceConfig)(nil),            // 46: mcpx.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),        // 47: mcpx.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                 // 48: mcpx.config.v1.RetryConfig
-	(*AuthenticationConfig)(nil),        // 49: mcpx.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),                  // 50: mcpx.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),                  // 51: mcpx.config.v1.OAuth2Auth
-	(*UpstreamAuthentication)(nil),      // 52: mcpx.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 53: mcpx.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 54: mcpx.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 55: mcpx.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),          // 56: mcpx.config.v1.UpstreamOAuth2Auth
-	(*TLSConfig)(nil),                   // 57: mcpx.config.v1.TLSConfig
-	nil,                                 // 58: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	nil,                                 // 59: mcpx.config.v1.ContainerEnvironment.VolumesEntry
+	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
+	(LoadBalancingStrategy)(0),          // 1: mcpany.config.v1.LoadBalancingStrategy
+	(HttpCallDefinition_HttpMethod)(0),  // 2: mcpany.config.v1.HttpCallDefinition.HttpMethod
+	(OutputTransformer_OutputFormat)(0), // 3: mcpany.config.v1.OutputTransformer.OutputFormat
+	(GlobalSettings_LogLevel)(0),        // 4: mcpany.config.v1.GlobalSettings.LogLevel
+	(APIKeyAuth_Location)(0),            // 5: mcpany.config.v1.APIKeyAuth.Location
+	(*McpAnyServerConfig)(nil),          // 6: mcpany.config.v1.McpAnyServerConfig
+	(*UpstreamServiceCollection)(nil),   // 7: mcpany.config.v1.UpstreamServiceCollection
+	(*HttpCallDefinition)(nil),          // 8: mcpany.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),     // 9: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),        // 10: mcpany.config.v1.WebrtcCallDefinition
+	(*CommandLineCallDefinition)(nil),   // 11: mcpany.config.v1.CommandLineCallDefinition
+	(*InputTransformer)(nil),            // 12: mcpany.config.v1.InputTransformer
+	(*OutputTransformer)(nil),           // 13: mcpany.config.v1.OutputTransformer
+	(*GrpcCallDefinition)(nil),          // 14: mcpany.config.v1.GrpcCallDefinition
+	(*OpenAPICallDefinition)(nil),       // 15: mcpany.config.v1.OpenAPICallDefinition
+	(*MCPCallDefinition)(nil),           // 16: mcpany.config.v1.MCPCallDefinition
+	(*GlobalSettings)(nil),              // 17: mcpany.config.v1.GlobalSettings
+	(*UpstreamServiceConfig)(nil),       // 18: mcpany.config.v1.UpstreamServiceConfig
+	(*GrpcUpstreamService)(nil),         // 19: mcpany.config.v1.GrpcUpstreamService
+	(*ProtoDefinition)(nil),             // 20: mcpany.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                   // 21: mcpany.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),             // 22: mcpany.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),             // 23: mcpany.config.v1.ProtoCollection
+	(*HttpUpstreamService)(nil),         // 24: mcpany.config.v1.HttpUpstreamService
+	(*WebsocketUpstreamService)(nil),    // 25: mcpany.config.v1.WebsocketUpstreamService
+	(*WebrtcUpstreamService)(nil),       // 26: mcpany.config.v1.WebrtcUpstreamService
+	(*OpenapiUpstreamService)(nil),      // 27: mcpany.config.v1.OpenapiUpstreamService
+	(*CommandLineUpstreamService)(nil),  // 28: mcpany.config.v1.CommandLineUpstreamService
+	(*McpUpstreamService)(nil),          // 29: mcpany.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),          // 30: mcpany.config.v1.McpStdioConnection
+	(*McpStreamableHttpConnection)(nil), // 31: mcpany.config.v1.McpStreamableHttpConnection
+	(*ToolSchema)(nil),                  // 32: mcpany.config.v1.ToolSchema
+	(*ParameterSchema)(nil),             // 33: mcpany.config.v1.ParameterSchema
+	(*ToolDefinition)(nil),              // 34: mcpany.config.v1.ToolDefinition
+	(*HttpParameterMapping)(nil),        // 35: mcpany.config.v1.HttpParameterMapping
+	(*WebsocketParameterMapping)(nil),   // 36: mcpany.config.v1.WebsocketParameterMapping
+	(*WebrtcParameterMapping)(nil),      // 37: mcpany.config.v1.WebrtcParameterMapping
+	(*CommandLineParameterMapping)(nil), // 38: mcpany.config.v1.CommandLineParameterMapping
+	(*ConnectionPoolConfig)(nil),        // 39: mcpany.config.v1.ConnectionPoolConfig
+	(*HttpHealthCheck)(nil),             // 40: mcpany.config.v1.HttpHealthCheck
+	(*GrpcHealthCheck)(nil),             // 41: mcpany.config.v1.GrpcHealthCheck
+	(*CommandLineHealthCheck)(nil),      // 42: mcpany.config.v1.CommandLineHealthCheck
+	(*ContainerEnvironment)(nil),        // 43: mcpany.config.v1.ContainerEnvironment
+	(*RateLimitConfig)(nil),             // 44: mcpany.config.v1.RateLimitConfig
+	(*CacheConfig)(nil),                 // 45: mcpany.config.v1.CacheConfig
+	(*ResilienceConfig)(nil),            // 46: mcpany.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),        // 47: mcpany.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                 // 48: mcpany.config.v1.RetryConfig
+	(*AuthenticationConfig)(nil),        // 49: mcpany.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),                  // 50: mcpany.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),                  // 51: mcpany.config.v1.OAuth2Auth
+	(*UpstreamAuthentication)(nil),      // 52: mcpany.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),          // 53: mcpany.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil),     // 54: mcpany.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),           // 55: mcpany.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),          // 56: mcpany.config.v1.UpstreamOAuth2Auth
+	(*TLSConfig)(nil),                   // 57: mcpany.config.v1.TLSConfig
+	nil,                                 // 58: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	nil,                                 // 59: mcpany.config.v1.ContainerEnvironment.VolumesEntry
 	(*bus.MessageBus)(nil),              // 60: bus.MessageBus
 	(*durationpb.Duration)(nil),         // 61: google.protobuf.Duration
 	(*structpb.Value)(nil),              // 62: google.protobuf.Value
 	(*structpb.Struct)(nil),             // 63: google.protobuf.Struct
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	17,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
-	18,  // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	7,   // 2: mcpx.config.v1.McpxServerConfig.upstream_service_collections:type_name -> mcpx.config.v1.UpstreamServiceCollection
-	52,  // 3: mcpx.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	32,  // 4: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	2,   // 5: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
-	35,  // 6: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
-	12,  // 7: mcpx.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	13,  // 8: mcpx.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	45,  // 9: mcpx.config.v1.HttpCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32,  // 10: mcpx.config.v1.WebsocketCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	36,  // 11: mcpx.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpx.config.v1.WebsocketParameterMapping
-	12,  // 12: mcpx.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	13,  // 13: mcpx.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	45,  // 14: mcpx.config.v1.WebsocketCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32,  // 15: mcpx.config.v1.WebrtcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	37,  // 16: mcpx.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpx.config.v1.WebrtcParameterMapping
-	12,  // 17: mcpx.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	13,  // 18: mcpx.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	45,  // 19: mcpx.config.v1.WebrtcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32,  // 20: mcpx.config.v1.CommandLineCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	38,  // 21: mcpx.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpx.config.v1.CommandLineParameterMapping
-	45,  // 22: mcpx.config.v1.CommandLineCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	3,   // 23: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	58,  // 24: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	32,  // 25: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	45,  // 26: mcpx.config.v1.GrpcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32,  // 27: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	12,  // 28: mcpx.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	13,  // 29: mcpx.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	45,  // 30: mcpx.config.v1.OpenAPICallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	32,  // 31: mcpx.config.v1.MCPCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
-	12,  // 32: mcpx.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpx.config.v1.InputTransformer
-	13,  // 33: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
-	45,  // 34: mcpx.config.v1.MCPCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
-	4,   // 35: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	60,  // 36: mcpx.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	39,  // 37: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	52,  // 38: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
-	45,  // 39: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
-	44,  // 40: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
-	1,   // 41: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
-	46,  // 42: mcpx.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpx.config.v1.ResilienceConfig
-	29,  // 43: mcpx.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpx.config.v1.McpUpstreamService
-	24,  // 44: mcpx.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpx.config.v1.HttpUpstreamService
-	19,  // 45: mcpx.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpx.config.v1.GrpcUpstreamService
-	27,  // 46: mcpx.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpx.config.v1.OpenapiUpstreamService
-	28,  // 47: mcpx.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpx.config.v1.CommandLineUpstreamService
-	25,  // 48: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
-	26,  // 49: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
-	49,  // 50: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	57,  // 51: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	14,  // 52: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
-	41,  // 53: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
-	20,  // 54: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
-	23,  // 55: mcpx.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpx.config.v1.ProtoCollection
-	21,  // 56: mcpx.config.v1.ProtoDefinition.proto_file:type_name -> mcpx.config.v1.ProtoFile
-	22,  // 57: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
-	8,   // 58: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
-	40,  // 59: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	57,  // 60: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	9,   // 61: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	57,  // 62: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	10,  // 63: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	57,  // 64: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	40,  // 65: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	57,  // 66: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	15,  // 67: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
-	11,  // 68: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.CommandLineCallDefinition
-	42,  // 69: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.CommandLineHealthCheck
-	45,  // 70: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
-	43,  // 71: mcpx.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpx.config.v1.ContainerEnvironment
-	61,  // 72: mcpx.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
-	31,  // 73: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
-	30,  // 74: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
-	34,  // 75: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
-	16,  // 76: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	57,  // 77: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
-	0,   // 78: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	62,  // 79: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	63,  // 80: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	63,  // 81: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	33,  // 82: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	33,  // 83: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	33,  // 84: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	33,  // 85: mcpx.config.v1.CommandLineParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	61,  // 86: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	61,  // 87: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	61,  // 88: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	61,  // 89: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	61,  // 90: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	61,  // 91: mcpx.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
-	61,  // 92: mcpx.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
-	59,  // 93: mcpx.config.v1.ContainerEnvironment.volumes:type_name -> mcpx.config.v1.ContainerEnvironment.VolumesEntry
-	61,  // 94: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	47,  // 95: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	48,  // 96: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	61,  // 97: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	61,  // 98: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	61,  // 99: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	50,  // 100: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	51,  // 101: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,   // 102: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	53,  // 103: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	54,  // 104: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	55,  // 105: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	56,  // 106: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	17,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	18,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	7,   // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	52,  // 3: mcpany.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	32,  // 4: mcpany.config.v1.HttpCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	2,   // 5: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
+	35,  // 6: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
+	12,  // 7: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	13,  // 8: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	45,  // 9: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 10: mcpany.config.v1.WebsocketCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	36,  // 11: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
+	12,  // 12: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	13,  // 13: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	45,  // 14: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 15: mcpany.config.v1.WebrtcCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	37,  // 16: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
+	12,  // 17: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	13,  // 18: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	45,  // 19: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 20: mcpany.config.v1.CommandLineCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	38,  // 21: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
+	45,  // 22: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	3,   // 23: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
+	58,  // 24: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	32,  // 25: mcpany.config.v1.GrpcCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	45,  // 26: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 27: mcpany.config.v1.OpenAPICallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	12,  // 28: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	13,  // 29: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	45,  // 30: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 31: mcpany.config.v1.MCPCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
+	12,  // 32: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	13,  // 33: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	45,  // 34: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	4,   // 35: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	60,  // 36: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	39,  // 37: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
+	52,  // 38: mcpany.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	45,  // 39: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
+	44,  // 40: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	1,   // 41: mcpany.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpany.config.v1.LoadBalancingStrategy
+	46,  // 42: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
+	29,  // 43: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
+	24,  // 44: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
+	19,  // 45: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
+	27,  // 46: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
+	28,  // 47: mcpany.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpany.config.v1.CommandLineUpstreamService
+	25,  // 48: mcpany.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpany.config.v1.WebsocketUpstreamService
+	26,  // 49: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
+	49,  // 50: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	57,  // 51: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	14,  // 52: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcCallDefinition
+	41,  // 53: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
+	20,  // 54: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
+	23,  // 55: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
+	21,  // 56: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
+	22,  // 57: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
+	8,   // 58: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpCallDefinition
+	40,  // 59: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	57,  // 60: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	9,   // 61: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	57,  // 62: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	10,  // 63: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	57,  // 64: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	40,  // 65: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	57,  // 66: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	15,  // 67: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	11,  // 68: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	42,  // 69: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
+	45,  // 70: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
+	43,  // 71: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
+	61,  // 72: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	31,  // 73: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
+	30,  // 74: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
+	34,  // 75: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	16,  // 76: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.MCPCallDefinition
+	57,  // 77: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	0,   // 78: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	62,  // 79: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	63,  // 80: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	63,  // 81: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	33,  // 82: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	33,  // 83: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	33,  // 84: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	33,  // 85: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	61,  // 86: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	61,  // 87: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	61,  // 88: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	61,  // 89: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	61,  // 90: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	61,  // 91: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	61,  // 92: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	59,  // 93: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	61,  // 94: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	47,  // 95: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
+	48,  // 96: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
+	61,  // 97: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	61,  // 98: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	61,  // 99: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	50,  // 100: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
+	51,  // 101: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
+	5,   // 102: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
+	53,  // 103: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
+	54,  // 104: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
+	55,  // 105: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
+	56,  // 106: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
 	107, // [107:107] is the sub-list for method output_type
 	107, // [107:107] is the sub-list for method input_type
 	107, // [107:107] is the sub-list for extension type_name

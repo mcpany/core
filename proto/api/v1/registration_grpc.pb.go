@@ -22,12 +22,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RegistrationService_RegisterService_FullMethodName    = "/mcpx.api.v1.RegistrationService/RegisterService"
-	RegistrationService_UnregisterService_FullMethodName  = "/mcpx.api.v1.RegistrationService/UnregisterService"
-	RegistrationService_InitiateOAuth2Flow_FullMethodName = "/mcpx.api.v1.RegistrationService/InitiateOAuth2Flow"
-	RegistrationService_RegisterTools_FullMethodName      = "/mcpx.api.v1.RegistrationService/RegisterTools"
-	RegistrationService_GetServiceStatus_FullMethodName   = "/mcpx.api.v1.RegistrationService/GetServiceStatus"
-	RegistrationService_ListServices_FullMethodName       = "/mcpx.api.v1.RegistrationService/ListServices"
+	RegistrationService_RegisterService_FullMethodName    = "/mcpany.api.v1.RegistrationService/RegisterService"
+	RegistrationService_UnregisterService_FullMethodName  = "/mcpany.api.v1.RegistrationService/UnregisterService"
+	RegistrationService_InitiateOAuth2Flow_FullMethodName = "/mcpany.api.v1.RegistrationService/InitiateOAuth2Flow"
+	RegistrationService_RegisterTools_FullMethodName      = "/mcpany.api.v1.RegistrationService/RegisterTools"
+	RegistrationService_GetServiceStatus_FullMethodName   = "/mcpany.api.v1.RegistrationService/GetServiceStatus"
+	RegistrationService_ListServices_FullMethodName       = "/mcpany.api.v1.RegistrationService/ListServices"
 )
 
 // RegistrationServiceClient is the client API for RegistrationService service.
@@ -281,7 +281,7 @@ func _RegistrationService_ListServices_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RegistrationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcpx.api.v1.RegistrationService",
+	ServiceName: "mcpany.api.v1.RegistrationService",
 	HandlerType: (*RegistrationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
