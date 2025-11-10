@@ -9,13 +9,13 @@ You can use this service to get your own IP address and location information, or
 To get your own IP address information, simply call the `ipinfo` tool with no parameters:
 
 ```
-mcp call ipinfo_io.ipinfo
+gemini -m gemini-2.5-flash -p 'what is my current ip information'
 ```
 
 To look up a specific IP address, provide the `ip` parameter:
 
 ```
-mcp call ipinfo_io.ipinfo --ip 8.8.8.8
+gemini -m gemini-2.5-flash -p 'what is ip information for IP 8.8.8.8'
 ```
 
 ## Authentication
