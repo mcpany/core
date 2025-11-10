@@ -30,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -89,14 +90,54 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	})
 	defer unsub()
 
-	// It can take a moment for the subscription to be active.
-	// A brief sleep is pragmatic here to ensure the subscriber is ready.
-	time.Sleep(100 * time.Millisecond)
+	// Wait for the subscription to be active.
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-subscribe").Val()
+		return len(subs) > 0 && subs["test-subscribe"] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
 	err := bus.Publish(context.Background(), "test-subscribe", "hello")
 	assert.NoError(t, err)
 
 	wg.Wait()
+}
+
+func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "once-concurrent-publish"
+
+	handlerCalled := make(chan string, 10) // Buffer to avoid blocking publishers
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		handlerCalled <- msg
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	var wg sync.WaitGroup
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			bus.Publish(context.Background(), topic, "message")
+		}()
+	}
+	wg.Wait()
+
+	// Wait for the message to be processed and the subscription to be closed.
+	// We check for the subscription to be gone to ensure SubscribeOnce's unsub ran.
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after message")
+
+	assert.Len(t, handlerCalled, 1, "handler should have been called exactly once")
+	close(handlerCalled)
 }
 
 func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
@@ -116,7 +157,10 @@ func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
 	})
 	defer unsub()
 
-	time.Sleep(100 * time.Millisecond)
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-unmarshal-error").Val()
+		return len(subs) > 0 && subs["test-unmarshal-error"] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
 	err := client.Publish(context.Background(), "test-unmarshal-error", "invalid json").Err()
 	assert.NoError(t, err)
@@ -150,7 +194,10 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	})
 	defer unsub()
 
-	time.Sleep(100 * time.Millisecond)
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-once").Val()
+		return len(subs) > 0 && subs["test-once"] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
 	err := bus.Publish(context.Background(), "test-once", "hello")
 	assert.NoError(t, err)
@@ -172,9 +219,17 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 		handlerCalled <- true
 	})
 
-	time.Sleep(100 * time.Millisecond)
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-unsubscribe").Val()
+		return len(subs) > 0 && subs["test-unsubscribe"] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
 	unsub()
-	time.Sleep(100 * time.Millisecond) // Allow time for unsubscribe to propagate
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-unsubscribe").Val()
+		return len(subs) == 0 || subs["test-unsubscribe"] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
 
 	err := bus.Publish(context.Background(), "test-unsubscribe", "hello")
 	assert.NoError(t, err)
@@ -201,4 +256,27 @@ func TestRedisBus_New(t *testing.T) {
 	assert.Equal(t, "localhost:6379", options.Addr)
 	assert.Equal(t, "password", options.Password)
 	assert.Equal(t, 1, options.DB)
+}
+
+func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "concurrent-topic"
+
+	var wg sync.WaitGroup
+	numGoroutines := 10
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+				// No-op handler
+			})
+			time.Sleep(10 * time.Millisecond) // Give a chance for other goroutines to run
+			unsub()
+		}()
+	}
+
+	wg.Wait()
 }
