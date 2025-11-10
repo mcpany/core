@@ -42,14 +42,14 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EZippopotamServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EZippopotamServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register Zippopotam Server with MCPANY ---
 	const zippopotamServiceID = "e2e_zippopotam"
 	zippopotamServiceEndpoint := "https://api.zippopotam.us"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", zippopotamServiceID, zippopotamServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/us/{{zipcode}}"),
@@ -85,7 +85,7 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

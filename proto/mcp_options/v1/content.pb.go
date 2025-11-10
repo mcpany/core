@@ -138,7 +138,7 @@ var File_proto_mcp_options_v1_content_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_options_v1_content_proto_rawDesc = "" +
 	"\n" +
-	"\"proto/mcp_options/v1/content.proto\x12\x13mcpx.mcp_options.v1\"V\n" +
+	"\"proto/mcp_options/v1/content.proto\x12\x15mcpany.mcp_options.v1\"V\n" +
 	"\aContent\x12\x1d\n" +
 	"\acontent\x18\x01 \x01(\tH\x00R\acontent\x88\x01\x01\x12\x17\n" +
 	"\x04role\x18\x02 \x01(\tH\x01R\x04role\x88\x01\x01B\n" +
@@ -148,7 +148,7 @@ const file_proto_mcp_options_v1_content_proto_rawDesc = "" +
 
 var file_proto_mcp_options_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_mcp_options_v1_content_proto_goTypes = []any{
-	(*Content)(nil), // 0: mcpx.mcp_options.v1.Content
+	(*Content)(nil), // 0: mcpany.mcp_options.v1.Content
 }
 var file_proto_mcp_options_v1_content_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

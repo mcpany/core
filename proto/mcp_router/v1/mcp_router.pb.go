@@ -1563,7 +1563,7 @@ var File_proto_mcp_router_v1_mcp_router_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\n" +
-	"$proto/mcp_router/v1/mcp_router.proto\x12\x12mcpx.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xe6\x03\n" +
+	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xe8\x03\n" +
 	"\x04Tool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
@@ -1574,8 +1574,8 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\x10request_type_fqn\x18\x06 \x01(\tR\x0erequestTypeFqn\x12*\n" +
 	"\x11response_type_fqn\x18\a \x01(\tR\x0fresponseTypeFqn\x12:\n" +
 	"\finput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
-	"\routput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12E\n" +
-	"\vannotations\x18\v \x01(\v2#.mcpx.mcp_router.v1.ToolAnnotationsR\vannotations\x12\x1b\n" +
+	"\routput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12G\n" +
+	"\vannotations\x18\v \x01(\v2%.mcpany.mcp_router.v1.ToolAnnotationsR\vannotations\x12\x1b\n" +
 	"\tis_stream\x18\f \x01(\bR\bisStream\"\xc3\x02\n" +
 	"\x0fToolAnnotations\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
@@ -1585,9 +1585,9 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\x0fopen_world_hint\x18\x05 \x01(\bR\ropenWorldHint\x12:\n" +
 	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\foutputSchema\"\x12\n" +
-	"\x10ListToolsRequest\"C\n" +
-	"\x11ListToolsResponse\x12.\n" +
-	"\x05tools\x18\x01 \x03(\v2\x18.mcpx.mcp_router.v1.ToolR\x05tools\"^\n" +
+	"\x10ListToolsRequest\"E\n" +
+	"\x11ListToolsResponse\x120\n" +
+	"\x05tools\x18\x01 \x03(\v2\x1a.mcpany.mcp_router.v1.ToolR\x05tools\"^\n" +
 	"\x12ExecuteToolRequest\x12\x17\n" +
 	"\atool_id\x18\x01 \x01(\tR\x06toolId\x12/\n" +
 	"\x06inputs\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06inputs\"H\n" +
@@ -1599,60 +1599,60 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1a\n" +
 	"\btemplate\x18\x04 \x01(\tR\btemplate\x12:\n" +
 	"\finput_schema\x18\x05 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\"\x14\n" +
-	"\x12ListPromptsRequest\"K\n" +
-	"\x13ListPromptsResponse\x124\n" +
-	"\aprompts\x18\x01 \x03(\v2\x1a.mcpx.mcp_router.v1.PromptR\aprompts\"~\n" +
+	"\x12ListPromptsRequest\"M\n" +
+	"\x13ListPromptsResponse\x126\n" +
+	"\aprompts\x18\x01 \x03(\v2\x1c.mcpany.mcp_router.v1.PromptR\aprompts\"~\n" +
 	"\bResource\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x12\n" +
 	"\x04type\x18\x04 \x01(\tR\x04type\x12\x18\n" +
 	"\acontent\x18\x05 \x01(\fR\acontent\"\x16\n" +
-	"\x14ListResourcesRequest\"S\n" +
-	"\x15ListResourcesResponse\x12:\n" +
-	"\tresources\x18\x01 \x03(\v2\x1c.mcpx.mcp_router.v1.ResourceR\tresources2\x8b\x03\n" +
-	"\tMcpRouter\x12X\n" +
-	"\tListTools\x12$.mcpx.mcp_router.v1.ListToolsRequest\x1a%.mcpx.mcp_router.v1.ListToolsResponse\x12^\n" +
-	"\vExecuteTool\x12&.mcpx.mcp_router.v1.ExecuteToolRequest\x1a'.mcpx.mcp_router.v1.ExecuteToolResponse\x12^\n" +
-	"\vListPrompts\x12&.mcpx.mcp_router.v1.ListPromptsRequest\x1a'.mcpx.mcp_router.v1.ListPromptsResponse\x12d\n" +
-	"\rListResources\x12(.mcpx.mcp_router.v1.ListResourcesRequest\x1a).mcpx.mcp_router.v1.ListResourcesResponseB,Z*github.com/mcpany/core/proto/mcp_router/v1b\beditionsp\xe8\a"
+	"\x14ListResourcesRequest\"U\n" +
+	"\x15ListResourcesResponse\x12<\n" +
+	"\tresources\x18\x01 \x03(\v2\x1e.mcpany.mcp_router.v1.ResourceR\tresources2\x9b\x03\n" +
+	"\tMcpRouter\x12\\\n" +
+	"\tListTools\x12&.mcpany.mcp_router.v1.ListToolsRequest\x1a'.mcpany.mcp_router.v1.ListToolsResponse\x12b\n" +
+	"\vExecuteTool\x12(.mcpany.mcp_router.v1.ExecuteToolRequest\x1a).mcpany.mcp_router.v1.ExecuteToolResponse\x12b\n" +
+	"\vListPrompts\x12(.mcpany.mcp_router.v1.ListPromptsRequest\x1a).mcpany.mcp_router.v1.ListPromptsResponse\x12h\n" +
+	"\rListResources\x12*.mcpany.mcp_router.v1.ListResourcesRequest\x1a+.mcpany.mcp_router.v1.ListResourcesResponseB,Z*github.com/mcpany/core/proto/mcp_router/v1b\beditionsp\xe8\a"
 
 var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_proto_mcp_router_v1_mcp_router_proto_goTypes = []any{
-	(*Tool)(nil),                  // 0: mcpx.mcp_router.v1.Tool
-	(*ToolAnnotations)(nil),       // 1: mcpx.mcp_router.v1.ToolAnnotations
-	(*ListToolsRequest)(nil),      // 2: mcpx.mcp_router.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),     // 3: mcpx.mcp_router.v1.ListToolsResponse
-	(*ExecuteToolRequest)(nil),    // 4: mcpx.mcp_router.v1.ExecuteToolRequest
-	(*ExecuteToolResponse)(nil),   // 5: mcpx.mcp_router.v1.ExecuteToolResponse
-	(*Prompt)(nil),                // 6: mcpx.mcp_router.v1.Prompt
-	(*ListPromptsRequest)(nil),    // 7: mcpx.mcp_router.v1.ListPromptsRequest
-	(*ListPromptsResponse)(nil),   // 8: mcpx.mcp_router.v1.ListPromptsResponse
-	(*Resource)(nil),              // 9: mcpx.mcp_router.v1.Resource
-	(*ListResourcesRequest)(nil),  // 10: mcpx.mcp_router.v1.ListResourcesRequest
-	(*ListResourcesResponse)(nil), // 11: mcpx.mcp_router.v1.ListResourcesResponse
+	(*Tool)(nil),                  // 0: mcpany.mcp_router.v1.Tool
+	(*ToolAnnotations)(nil),       // 1: mcpany.mcp_router.v1.ToolAnnotations
+	(*ListToolsRequest)(nil),      // 2: mcpany.mcp_router.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),     // 3: mcpany.mcp_router.v1.ListToolsResponse
+	(*ExecuteToolRequest)(nil),    // 4: mcpany.mcp_router.v1.ExecuteToolRequest
+	(*ExecuteToolResponse)(nil),   // 5: mcpany.mcp_router.v1.ExecuteToolResponse
+	(*Prompt)(nil),                // 6: mcpany.mcp_router.v1.Prompt
+	(*ListPromptsRequest)(nil),    // 7: mcpany.mcp_router.v1.ListPromptsRequest
+	(*ListPromptsResponse)(nil),   // 8: mcpany.mcp_router.v1.ListPromptsResponse
+	(*Resource)(nil),              // 9: mcpany.mcp_router.v1.Resource
+	(*ListResourcesRequest)(nil),  // 10: mcpany.mcp_router.v1.ListResourcesRequest
+	(*ListResourcesResponse)(nil), // 11: mcpany.mcp_router.v1.ListResourcesResponse
 	(*structpb.Struct)(nil),       // 12: google.protobuf.Struct
 }
 var file_proto_mcp_router_v1_mcp_router_proto_depIdxs = []int32{
-	12, // 0: mcpx.mcp_router.v1.Tool.input_schema:type_name -> google.protobuf.Struct
-	12, // 1: mcpx.mcp_router.v1.Tool.output_schema:type_name -> google.protobuf.Struct
-	1,  // 2: mcpx.mcp_router.v1.Tool.annotations:type_name -> mcpx.mcp_router.v1.ToolAnnotations
-	12, // 3: mcpx.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
-	12, // 4: mcpx.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
-	0,  // 5: mcpx.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpx.mcp_router.v1.Tool
-	12, // 6: mcpx.mcp_router.v1.ExecuteToolRequest.inputs:type_name -> google.protobuf.Struct
-	12, // 7: mcpx.mcp_router.v1.ExecuteToolResponse.outputs:type_name -> google.protobuf.Struct
-	12, // 8: mcpx.mcp_router.v1.Prompt.input_schema:type_name -> google.protobuf.Struct
-	6,  // 9: mcpx.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpx.mcp_router.v1.Prompt
-	9,  // 10: mcpx.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpx.mcp_router.v1.Resource
-	2,  // 11: mcpx.mcp_router.v1.McpRouter.ListTools:input_type -> mcpx.mcp_router.v1.ListToolsRequest
-	4,  // 12: mcpx.mcp_router.v1.McpRouter.ExecuteTool:input_type -> mcpx.mcp_router.v1.ExecuteToolRequest
-	7,  // 13: mcpx.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpx.mcp_router.v1.ListPromptsRequest
-	10, // 14: mcpx.mcp_router.v1.McpRouter.ListResources:input_type -> mcpx.mcp_router.v1.ListResourcesRequest
-	3,  // 15: mcpx.mcp_router.v1.McpRouter.ListTools:output_type -> mcpx.mcp_router.v1.ListToolsResponse
-	5,  // 16: mcpx.mcp_router.v1.McpRouter.ExecuteTool:output_type -> mcpx.mcp_router.v1.ExecuteToolResponse
-	8,  // 17: mcpx.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpx.mcp_router.v1.ListPromptsResponse
-	11, // 18: mcpx.mcp_router.v1.McpRouter.ListResources:output_type -> mcpx.mcp_router.v1.ListResourcesResponse
+	12, // 0: mcpany.mcp_router.v1.Tool.input_schema:type_name -> google.protobuf.Struct
+	12, // 1: mcpany.mcp_router.v1.Tool.output_schema:type_name -> google.protobuf.Struct
+	1,  // 2: mcpany.mcp_router.v1.Tool.annotations:type_name -> mcpany.mcp_router.v1.ToolAnnotations
+	12, // 3: mcpany.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
+	12, // 4: mcpany.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
+	0,  // 5: mcpany.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	12, // 6: mcpany.mcp_router.v1.ExecuteToolRequest.inputs:type_name -> google.protobuf.Struct
+	12, // 7: mcpany.mcp_router.v1.ExecuteToolResponse.outputs:type_name -> google.protobuf.Struct
+	12, // 8: mcpany.mcp_router.v1.Prompt.input_schema:type_name -> google.protobuf.Struct
+	6,  // 9: mcpany.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpany.mcp_router.v1.Prompt
+	9,  // 10: mcpany.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpany.mcp_router.v1.Resource
+	2,  // 11: mcpany.mcp_router.v1.McpRouter.ListTools:input_type -> mcpany.mcp_router.v1.ListToolsRequest
+	4,  // 12: mcpany.mcp_router.v1.McpRouter.ExecuteTool:input_type -> mcpany.mcp_router.v1.ExecuteToolRequest
+	7,  // 13: mcpany.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpany.mcp_router.v1.ListPromptsRequest
+	10, // 14: mcpany.mcp_router.v1.McpRouter.ListResources:input_type -> mcpany.mcp_router.v1.ListResourcesRequest
+	3,  // 15: mcpany.mcp_router.v1.McpRouter.ListTools:output_type -> mcpany.mcp_router.v1.ListToolsResponse
+	5,  // 16: mcpany.mcp_router.v1.McpRouter.ExecuteTool:output_type -> mcpany.mcp_router.v1.ExecuteToolResponse
+	8,  // 17: mcpany.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpany.mcp_router.v1.ListPromptsResponse
+	11, // 18: mcpany.mcp_router.v1.McpRouter.ListResources:output_type -> mcpany.mcp_router.v1.ListResourcesResponse
 	15, // [15:19] is the sub-list for method output_type
 	11, // [11:15] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name

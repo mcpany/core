@@ -43,14 +43,14 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EFunTranslationsServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EFunTranslationsServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register Fun Translations Server with MCPANY ---
 	const funTranslationsServiceID = "e2e_funtranslations"
 	funTranslationsServiceEndpoint := "https://api.funtranslations.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", funTranslationsServiceID, funTranslationsServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	httpCall := configv1.HttpCallDefinition_builder{
 		EndpointPath: proto.String("/translate/yoda.json"),
@@ -86,7 +86,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

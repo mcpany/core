@@ -267,7 +267,7 @@ var File_proto_config_v1_resource_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/config/v1/resource.proto\x12\x0emcpx.config.v1\"\xa3\x01\n" +
+	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\"\xa3\x01\n" +
 	"\x12ResourceDefinition\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -278,7 +278,7 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 
 var file_proto_config_v1_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_resource_proto_goTypes = []any{
-	(*ResourceDefinition)(nil), // 0: mcpx.config.v1.ResourceDefinition
+	(*ResourceDefinition)(nil), // 0: mcpany.config.v1.ResourceDefinition
 }
 var file_proto_config_v1_resource_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

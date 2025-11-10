@@ -3,7 +3,7 @@
 
 edition = "2023";
 
-package mcpx.mcp_options.v1;
+package mcpany.mcp_options.v1;
 
 option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
 

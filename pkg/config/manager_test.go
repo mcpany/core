@@ -90,13 +90,13 @@ services:
 
 	testCases := []struct {
 		name                            string
-		initialConfig                   *configv1.McpxServerConfig
+		initialConfig                   *configv1.McpAnyServerConfig
 		expectedServiceNamesAndVersions map[string]string
 		expectLoadError                 bool
 	}{
 		{
 			name: "local services only",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
 			}).Build(),
 			expectedServiceNamesAndVersions: map[string]string{
@@ -106,7 +106,7 @@ services:
 		},
 		{
 			name: "local and remote services, remote has higher priority",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
@@ -123,7 +123,7 @@ services:
 		},
 		{
 			name: "local and remote services, local has higher priority",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
@@ -140,7 +140,7 @@ services:
 		},
 		{
 			name: "multiple remote collections, mixed priorities",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
@@ -168,7 +168,7 @@ services:
 		},
 		{
 			name: "same priority, first one wins",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1},
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
@@ -184,7 +184,7 @@ services:
 		},
 		{
 			name: "invalid semver",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:     proto.String("collection-invalid-semver"),
@@ -198,7 +198,7 @@ services:
 		},
 		{
 			name: "yaml content type",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:     proto.String("collection-yaml"),
@@ -213,7 +213,7 @@ services:
 		},
 		{
 			name: "authenticated collection",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-authed"),
@@ -232,7 +232,7 @@ services:
 		},
 		{
 			name: "api key authenticated collection",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-apikey"),
@@ -252,7 +252,7 @@ services:
 		},
 		{
 			name: "basic auth authenticated collection",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-basicauth"),
@@ -272,7 +272,7 @@ services:
 		},
 		{
 			name: "no content type assumes yaml",
-			initialConfig: (configv1.McpxServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-no-content-type"),

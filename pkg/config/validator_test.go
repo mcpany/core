@@ -28,13 +28,13 @@ import (
 func TestValidate(t *testing.T) {
 	tests := []struct {
 		name                string
-		config              *configv1.McpxServerConfig
+		config              *configv1.McpAnyServerConfig
 		expectedErrorCount  int
 		expectedErrorString string
 	}{
 		{
 			name: "valid grpc service",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("grpc-svc-1"),
@@ -49,7 +49,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid http service - empty address",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-svc-1"),
@@ -64,7 +64,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid http service - invalid url",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-svc-2"),
@@ -79,7 +79,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "valid http service",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-svc-1"),
@@ -93,7 +93,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "valid openapi service",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("openapi-svc-1"),
@@ -107,7 +107,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "valid mcp service (http)",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-svc-1"),
@@ -123,7 +123,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "valid mcp service (stdio)",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-svc-2"),
@@ -139,7 +139,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid grpc service - empty address",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("grpc-svc-1"),
@@ -155,7 +155,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid openapi service - invalid address should be an error",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("openapi-svc-1"),
@@ -170,7 +170,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid mcp service - no connection",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name:       proto.String("mcp-svc-1"),
@@ -183,7 +183,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "invalid mcp service - empty stdio command",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-svc-2"),
@@ -200,7 +200,7 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			name: "duplicate service name",
-			config: (&configv1.McpxServerConfig_builder{
+			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					(&configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("dup-svc"),
