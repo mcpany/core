@@ -728,7 +728,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		"-p", fmt.Sprintf("%d:6379", redisPort),
 	}
 
-	cleanup := StartDockerContainer(t, "redis:7-alpine", containerName, dockerArgs...)
+	cleanup := StartDockerContainer(t, "public.ecr.aws/docker/library/redis:alpine", containerName, dockerArgs...)
 
 	// Wait for Redis to be ready
 	require.Eventually(t, func() bool {
