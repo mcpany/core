@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-//go:build e2e_popular_service
+//go:build e2e
 
 package all_test
 
 import (
 	"context"
+	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/pkg/config"
-	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
@@ -39,12 +41,19 @@ func TestLoadAllPopularServices(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EAllPopularServicesTest")
+	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EAllPopularServicesTest", "--config-path", "../../../examples/popular_services")
 	defer mcpxTestServerInfo.CleanupFunc()
 
-	// --- 2. Register All Popular Services with MCPANY ---
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	// --- 2. Call Tool via MCPANY ---
+	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	require.NoError(t, err)
+	defer cs.Close()
 
+	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err)
+
+	// --- 3. Assert Response ---
 	// Find all the config files
 	configs, err := filepath.Glob("../../../examples/popular_services/*/config.yaml")
 	require.NoError(t, err)
@@ -58,25 +67,24 @@ func TestLoadAllPopularServices(t *testing.T) {
 	cfg, err := config.LoadServices(store, "server")
 	require.NoError(t, err)
 
-	// Register the service
+	// Get the expected tool names
+	var expectedToolNames []string
 	for _, service := range cfg.GetUpstreamServices() {
-		req := apiv1.RegisterServiceRequest_builder{
-			Config: service,
-		}.Build()
-		integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
+		sanitizedServiceName, _ := util.SanitizeServiceName(service.GetName())
+		for _, call := range service.GetHttpService().GetCalls() {
+			sanitizedToolName, _ := util.SanitizeToolName(call.GetSchema().GetName())
+			expectedToolNames = append(expectedToolNames, sanitizedServiceName+"."+sanitizedToolName)
+		}
 	}
 
-	// --- 3. Call Tool via MCPANY ---
-	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
-	require.NoError(t, err)
-	defer cs.Close()
+	// Get the actual tool names
+	var actualToolNames []string
+	for _, tool := range listToolsResult.Tools {
+		actualToolNames = append(actualToolNames, tool.Name)
+	}
 
-	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-
-	// --- 4. Assert Response ---
-	require.Greater(t, len(listToolsResult.Tools), 0, "No tools were registered")
+	// Assert that the tool names match
+	require.ElementsMatch(t, expectedToolNames, actualToolNames, "The discovered tools do not match the expected tools")
 
 	for _, tool := range listToolsResult.Tools {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)

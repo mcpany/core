@@ -18,8 +18,110 @@ upstream_services:
 - name: ipinfo.io
   http_service:
     address: "https://ipinfo.io"
+    authentication:
+      token: "${IPINFO_API_TOKEN}"
     calls:
-    - endpoint_path: "/json"
+    - endpoint_path: "/{{ip}}/json"
       schema:
         name: "ipinfo"
+        input_schema:
+          type: "object"
+          properties:
+            ip:
+              type: "string"
+              description: "The IP address to look up. If not provided, the server will use the client's IP address."
+        output_schema:
+          type: "object"
+          properties:
+            ip:
+              type: "string"
+            hostname:
+              type: "string"
+            city:
+              type: "string"
+            region:
+              type: "string"
+            country:
+              type: "string"
+            loc:
+              type: "string"
+            org:
+              type: "string"
+            postal:
+              type: "string"
+            timezone:
+              type: "string"
+            asn:
+              type: "object"
+              properties:
+                asn:
+                  type: "string"
+                name:
+                  type: "string"
+                domain:
+                  type: "string"
+                route:
+                  type: "string"
+                type:
+                  type: "string"
+            company:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                domain:
+                  type: "string"
+                type:
+                  type: "string"
+            carrier:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                mcc:
+                  type: "string"
+                mnc:
+                  type: "string"
+            privacy:
+              type: "object"
+              properties:
+                vpn:
+                  type: "boolean"
+                proxy:
+                  type: "boolean"
+                tor:
+                  type: "boolean"
+                relay:
+                  type: "boolean"
+                hosting:
+                  type: "boolean"
+                service:
+                  type: "string"
+            abuse:
+              type: "object"
+              properties:
+                address:
+                  type: "string"
+                country:
+                  type: "string"
+                email:
+                  type: "string"
+                name:
+                  type: "string"
+                network:
+                  type: "string"
+                phone:
+                  type: "string"
+            domains:
+              type: "object"
+              properties:
+                ip:
+                  type: "string"
+                total:
+                  type: "integer"
+                domains:
+                  type: "array"
+                  items:
+                    type: "string"
+
       method: "HTTP_METHOD_GET"
