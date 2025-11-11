@@ -302,12 +302,13 @@ var (
 // health check.
 //
 // Parameters:
+//   - out: The writer to which the success message will be written.
 //   - addr: The address (host:port) on which the server is running.
 //
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-func HealthCheck(addr string, timeout time.Duration) error {
+func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -332,7 +333,7 @@ func HealthCheck(addr string, timeout time.Duration) error {
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
-	fmt.Println("Health check successful: server is running and healthy.")
+	fmt.Fprintln(out, "Health check successful: server is running and healthy.")
 	return nil
 }
 
