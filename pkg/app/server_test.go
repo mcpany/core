@@ -970,7 +970,9 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", ":0", 5*time.Second, func(s *gogrpc.Server) {
+	lis, err := net.Listen("tcp", ":0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
 		panic("test panic in registration")
 	})
 
