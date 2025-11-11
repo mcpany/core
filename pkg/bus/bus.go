@@ -117,6 +117,10 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 //   - topic: The name of the topic for which to get the bus.
 //
 // Returns a Bus instance for the specified message type and topic.
+func (p *BusProvider) SetBus(topic string, bus any) {
+	p.buses.Store(topic, bus)
+}
+
 func GetBus[T any](p *BusProvider, topic string) Bus[T] {
 	if bus, ok := p.buses.Load(topic); ok {
 		return bus.(Bus[T])
