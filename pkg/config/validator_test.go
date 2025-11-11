@@ -78,6 +78,21 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "http-svc-2": invalid http target_address: not a url`,
 		},
 		{
+			name: "invalid http service - invalid scheme",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("http-svc-3"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("ftp://localhost:8080"),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "http-svc-3": invalid http target_address scheme: ftp`,
+		},
+		{
 			name: "valid http service",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{

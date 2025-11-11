@@ -18,6 +18,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
@@ -128,6 +129,10 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		}
 		if !validation.IsValidURL(httpService.GetAddress()) {
 			return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+		}
+		u, _ := url.Parse(httpService.GetAddress())
+		if u.Scheme != "http" && u.Scheme != "https" {
+			return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 		}
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
 		if websocketService.GetAddress() == "" {
