@@ -26,21 +26,21 @@ Contains server-wide operational parameters.
 
 ## Upstream Service Configuration (`UpstreamServiceConfig`)
 
-This is the top-level configuration for a single upstream service that MCP-X will proxy.
+This is the top-level configuration for a single upstream service that MCP Any will proxy.
 
 | Field                     | Type                     | Description                                                                                   |
 | ------------------------- | ------------------------ | --------------------------------------------------------------------------------------------- |
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP-X to use when connecting to the upstream service.        |
+| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.        |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
 | `resilience`              | `ResilienceConfig`       | Advanced resiliency features like circuit breakers and retries to handle failures gracefully. |
 | `service_config`          | `oneof`                  | The specific configuration for the type of upstream service (gRPC, HTTP, OpenAPI, etc.).      |
 | `version`                 | `string`                 | The version of the upstream service, if known (e.g., "v1.2.3").                               |
-| `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP-X service (incoming requests).    |
+| `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).    |
 
 ### Upstream Service Types
 
@@ -50,11 +50,11 @@ The `service_config` oneof field can contain one of the following service types:
 - **`HttpUpstreamService`**: For generic HTTP services.
 - **`OpenapiUpstreamService`**: For services defined by an OpenAPI (Swagger) specification.
 - **`CommandLineUpstreamService`**: For services that communicate over standard I/O.
-- **`McpUpstreamService`**: For proxying another MCP-X instance.
+- **`McpUpstreamService`**: For proxying another MCP Any instance.
 
 ### Service Policies and Advanced Configuration
 
-MCP-X supports several advanced policies that can be applied to upstream services.
+MCP Any supports several advanced policies that can be applied to upstream services.
 
 #### `ConnectionPoolConfig`
 
@@ -96,7 +96,7 @@ Contains configurations for circuit breakers and retries.
 
 ### Health Checks
 
-MCP-X can perform health checks on upstream services to ensure they are available.
+MCP Any can perform health checks on upstream services to ensure they are available.
 
 - **`HttpHealthCheck`**: For HTTP-based services.
 - **`GrpcHealthCheck`**: For gRPC-based services.
@@ -104,18 +104,18 @@ MCP-X can perform health checks on upstream services to ensure they are availabl
 
 ### Authentication
 
-MCP-X supports authentication for both incoming requests and requests to upstream services.
+MCP Any supports authentication for both incoming requests and requests to upstream services.
 
 #### `AuthenticationConfig` (Incoming)
 
-Secures access to the MCP-X service itself.
+Secures access to the MCP Any service itself.
 
 - **`api_key` (`APIKeyAuth`)**: API key in a header or query parameter.
 - **`oauth2` (`OAuth2Auth`)**: OAuth 2.0 client credentials flow.
 
 #### `UpstreamAuthentication` (Outgoing)
 
-Authenticates MCP-X with the upstream service.
+Authenticates MCP Any with the upstream service.
 
 - **`api_key` (`UpstreamAPIKeyAuth`)**: API key sent in a header.
 - **`bearer_token` (`UpstreamBearerTokenAuth`)**: Bearer token in the `Authorization` header.
