@@ -161,7 +161,7 @@ func newRootCmd() *cobra.Command {
 				}
 			}
 			timeout, _ := cmd.Flags().GetDuration("timeout")
-			return app.HealthCheck(addr, timeout)
+			return app.HealthCheck(cmd.OutOrStdout(), addr, timeout)
 		},
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
