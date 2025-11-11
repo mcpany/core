@@ -33,14 +33,14 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.        |
+| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
 | `resilience`              | `ResilienceConfig`       | Advanced resiliency features like circuit breakers and retries to handle failures gracefully. |
 | `service_config`          | `oneof`                  | The specific configuration for the type of upstream service (gRPC, HTTP, OpenAPI, etc.).      |
 | `version`                 | `string`                 | The version of the upstream service, if known (e.g., "v1.2.3").                               |
-| `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).    |
+| `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).  |
 
 ### Upstream Service Types
 
