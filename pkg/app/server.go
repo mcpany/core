@@ -523,6 +523,10 @@ func startGrpcServer(
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
+			// Always close the listener.
+			// For a graceful shutdown, this is redundant as `Serve` will have returned and the listener will have been closed.
+			// However, for a forced shutdown, we need to close the listener to release the port.
+			_ = lis.Close()
 			close(shutdownComplete)
 		}()
 
