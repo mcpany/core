@@ -207,6 +207,11 @@ func TestSanitizeOperationID(t *testing.T) {
 			input:    "get user by id (new)",
 			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id_36a9e7_(new)",
 		},
+		{
+			name:     "with consecutive disallowed characters",
+			input:    "get  user",
+			expected: "get_6c179f_user",
+		},
 	}
 
 	for _, tc := range testCases {
