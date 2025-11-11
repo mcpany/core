@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
@@ -77,7 +78,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// This call should now succeed because we are providing the exact
 		// address of the listener.
-		err = HealthCheck(addr, 5*time.Second)
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.NoError(t, err, "HealthCheck should succeed when given the correct IP")
 	})
 
@@ -89,7 +90,7 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(addr, 50*time.Millisecond)
+		err := HealthCheck(io.Discard, addr, 50*time.Millisecond)
 		assert.Error(t, err, "HealthCheck should time out and return an error")
 	})
 
@@ -102,7 +103,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Extract port from server URL
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(addr, 5*time.Second)
+		err := HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.NoError(t, err)
 	})
 
@@ -113,7 +114,7 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(addr, 5*time.Second)
+		err := HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed with status code: 500")
 	})
@@ -125,7 +126,7 @@ func TestHealthCheck(t *testing.T) {
 		addr := l.Addr().String()
 		l.Close()
 
-		err = HealthCheck(addr, 5*time.Second)
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
@@ -151,7 +152,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Perform the health check multiple times.
 		for i := 0; i < 3; i++ {
-			err := HealthCheck(addr, 5*time.Second)
+			err := HealthCheck(io.Discard, addr, 5*time.Second)
 			require.NoError(t, err, "Health check should succeed on iteration %d", i)
 		}
 
@@ -179,15 +180,28 @@ func TestHealthCheck(t *testing.T) {
 		addr := countingLis.Addr().String()
 
 		// Perform the health check multiple times.
-		err = HealthCheck(addr, 5*time.Second)
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		require.NoError(t, err, "Health check should succeed on first call")
-		err = HealthCheck(addr, 5*time.Second)
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		require.NoError(t, err, "Health check should succeed on second call")
-		err = HealthCheck(addr, 5*time.Second)
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		require.NoError(t, err, "Health check should succeed on third call")
 
 		// Verify that only one connection was made, proving that keep-alive is working.
 		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
+	})
+
+	t.Run("successful health check writes to writer", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		var out bytes.Buffer
+		err := HealthCheck(&out, addr, 5*time.Second)
+		assert.NoError(t, err)
+		assert.Equal(t, "Health check successful: server is running and healthy.\n", out.String())
 	})
 }
 
