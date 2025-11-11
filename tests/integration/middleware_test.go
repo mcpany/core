@@ -59,7 +59,7 @@ upstream_services:
       ttl: "10s"
 `, upstream.URL)
 
-	// Start the MCP-XY server
+	// Start the MCP Any server
 	serverInfo := integration.StartMCPANYServerWithConfig(t, "middleware-test", configContent)
 	defer serverInfo.CleanupFunc()
 

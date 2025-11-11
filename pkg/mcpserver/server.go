@@ -33,7 +33,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Server is the core of the MCP-X application. It orchestrates the handling of
+// Server is the core of the MCP Any application. It orchestrates the handling of
 // MCP (Model Context Protocol) requests by managing various components such as
 // tools, prompts, resources, and services. It uses an internal router to
 // delegate requests to the appropriate handlers and communicates with backend
@@ -56,7 +56,7 @@ func (s *Server) Server() *mcp.Server {
 	return s.server
 }
 
-// NewServer creates and initializes a new MCP-X Server. It sets up the
+// NewServer creates and initializes a new MCP Any Server. It sets up the
 // necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for
 // request processing, such as routing and tool list filtering.

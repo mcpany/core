@@ -1,6 +1,6 @@
 # MCP Any Documentation
 
-Welcome to the official documentation for MCP Any, the Model Context Protocol eXtensions server. This documentation provides everything you need to understand, use, and extend `mcpany`.
+Welcome to the official documentation for MCP Any. This documentation provides everything you need to understand, use, and extend `mcpany`.
 
 Whether you are a developer looking to integrate your services, an operator deploying `mcpany` in a production environment, or a contributor wanting to improve the project, this is the place to start.
 

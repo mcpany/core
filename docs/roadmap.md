@@ -1,6 +1,6 @@
 # 🗺️ Roadmap
 
-This document outlines the current status and future direction of the MCP-X project.
+This document outlines the current status and future direction of the MCP Any project.
 
 ## Current Status
 
