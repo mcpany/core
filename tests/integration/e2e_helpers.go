@@ -42,6 +42,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 
@@ -1112,6 +1113,71 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 
 	RegisterServiceViaAPI(t, regClient, req)
 	t.Logf("OpenAPI Service '%s' registration request sent via API (spec: %s, intended server: %s)", serviceID, absSpecPath, serverURLOverride)
+}
+
+func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
+	t.Helper()
+	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
+
+	httpMethodEnumName := "HTTP_METHOD_" + strings.ToUpper(httpMethod)
+	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
+		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
+	}
+	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+
+	callDef := configv1.HttpCallDefinition_builder{
+		Schema:       configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		EndpointPath: &endpointPath,
+		Method:       &method,
+	}.Build()
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
+		Name: &serviceID,
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: &baseURL,
+			Calls:   []*configv1.HttpCallDefinition{callDef},
+		}.Build(),
+	}
+	if authConfig != nil {
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+	}
+	config := upstreamServiceConfigBuilder.Build()
+
+	req := apiv1.RegisterServiceRequest_builder{
+		Config: config,
+	}.Build()
+
+	// Use protojson to marshal the request to JSON
+	jsonBytes, err := protojson.Marshal(req)
+	require.NoError(t, err)
+
+	var params json.RawMessage = jsonBytes
+
+	jsonRPCReq := map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "registration/register",
+		"params":  params,
+		"id":      "1",
+	}
+
+	reqBody, err := json.Marshal(jsonRPCReq)
+	require.NoError(t, err)
+
+	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody))
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status OK")
+
+	var rpcResp struct {
+		Result json.RawMessage  `json:"result"`
+		Error  *MCPJSONRPCError `json:"error"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&rpcResp)
+	require.NoError(t, err, "Failed to decode JSON-RPC response")
+	require.Nil(t, rpcResp.Error, "Received JSON-RPC error: %v", rpcResp.Error)
+
+	t.Logf("HTTP Service '%s' registration request sent via JSON-RPC successfully.", serviceID)
 }
 
 type MCPJSONRPCError struct {
