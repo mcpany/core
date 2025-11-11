@@ -103,6 +103,41 @@ func TestLocalExecutor(t *testing.T) {
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 1, exitCode)
 	})
+
+	t.Run("ContextCancellation", func(t *testing.T) {
+		executor := NewExecutor(nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"5"}, "", nil)
+		require.NoError(t, err)
+
+		// Cancel the context after a short delay
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			cancel()
+		}()
+
+		// Read from stdout and stderr to ensure the process is running
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			io.ReadAll(stdout)
+		}()
+		go func() {
+			defer wg.Done()
+			io.ReadAll(stderr)
+		}()
+
+		// Wait for the exit code
+		exitCode := <-exitCodeChan
+
+		// The exit code might be -1 on some OSes
+		assert.True(t, exitCode == -1 || exitCode == 1)
+
+		wg.Wait()
+	})
 }
 
 func TestDockerExecutor(t *testing.T) {
@@ -128,14 +163,14 @@ func TestDockerExecutor(t *testing.T) {
 		assert.Equal(t, 0, exitCode)
 	})
 
-	t.Run("WithVolumeMount", func(t *testing.T) {
+	t.Run("WithVolumeMount", func(t_ *testing.T) {
 		// Create a dummy file to mount
 		tmpfile, err := os.CreateTemp("", "test-volume-mount")
-		require.NoError(t, err)
+		require.NoError(t_, err)
 		defer os.Remove(tmpfile.Name())
 
 		_, err = tmpfile.WriteString("hello from the host")
-		require.NoError(t, err)
+		require.NoError(t_, err)
 		tmpfile.Close()
 
 		containerEnv := &configv1.ContainerEnvironment{}
@@ -147,37 +182,66 @@ func TestDockerExecutor(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil)
-		require.NoError(t, err)
+		require.NoError(t_, err)
 
 		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
-		assert.Equal(t, "hello from the host", string(stdoutBytes))
+		require.NoError(t_, err)
+		assert.Equal(t_, "hello from the host", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
-		require.NoError(t, err)
-		assert.Empty(t, string(stderrBytes))
+		require.NoError(t_, err)
+		assert.Empty(t_, string(stderrBytes))
 
 		exitCode := <-exitCodeChan
-		assert.Equal(t, 0, exitCode)
+		assert.Equal(t_, 0, exitCode)
 	})
 
-	t.Run("ImageNotFound", func(t *testing.T) {
+	t.Run("ImageNotFound", func(t_ *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("non-existent-image:latest")
 		executor := NewExecutor(containerEnv)
 		_, _, _, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
-		assert.Error(t, err)
+		assert.Error(t_, err)
 	})
 
-	t.Run("CommandFailsInContainer", func(t *testing.T) {
+	t.Run("CommandFailsInContainer", func(t_ *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		executor := NewExecutor(containerEnv)
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil)
-		require.NoError(t, err)
+		require.NoError(t_, err)
 
 		exitCode := <-exitCodeChan
-		assert.Equal(t, 1, exitCode)
+		assert.Equal(t_, 1, exitCode)
+	})
+
+	t.Run("ContainerStartFailure", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		// Using an invalid command to cause a start failure.
+		executor := NewExecutor(containerEnv)
+		_, _, _, err := executor.Execute(context.Background(), "/bin/does_not_exist", nil, "", nil)
+		assert.Error(t, err)
+	})
+}
+
+func TestNewExecutor(t *testing.T) {
+	t.Run("NilContainerEnv", func(t *testing.T) {
+		executor := NewExecutor(nil)
+		assert.IsType(t, &localExecutor{}, executor)
+	})
+
+	t.Run("EmptyImage", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		executor := NewExecutor(containerEnv)
+		assert.IsType(t, &localExecutor{}, executor)
+	})
+
+	t.Run("WithImage", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := NewExecutor(containerEnv)
+		assert.IsType(t, &dockerExecutor{}, executor)
 	})
 }
 
