@@ -19,7 +19,7 @@ package appconsts
 const (
 	// Name is the name of the MCP Any server. This is used in help messages and
 	// other user-facing output.
-	Name = "MCP Any"
+	Name = "mcpany"
 )
 
 // Version is the version of the MCP Any server. This is a variable so it can be
