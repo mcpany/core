@@ -501,6 +501,17 @@ func startGrpcServer(
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		defer func() {
+			if r := recover(); r != nil {
+				errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
+			}
+		}()
+
+		lis, err := net.Listen("tcp", port)
+		if err != nil {
+			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
+			return
+		}
 
 		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
 		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))

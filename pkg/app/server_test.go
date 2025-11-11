@@ -963,3 +963,25 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// The close count should be exactly 1.
 	assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.closeCount), "The listener's Close() method should be called exactly once.")
 }
+
+func TestGRPCServer_PanicInRegistration(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", ":0", 5*time.Second, func(s *gogrpc.Server) {
+		panic("test panic in registration")
+	})
+
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "panic during gRPC service registration")
+		assert.Contains(t, err.Error(), "test panic in registration")
+	default:
+		t.Fatal("expected an error from panic but got none")
+	}
+}
