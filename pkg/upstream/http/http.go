@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
@@ -216,8 +215,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 
-		baseURL.Path = path.Join(baseURL.Path, endpointURL.Path)
-		fullURL := baseURL.String()
+		fullURL := baseURL.JoinPath(endpointURL.Path).String()
 
 		if properties == nil {
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
