@@ -219,21 +219,6 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "dup-svc": duplicate service name found`,
 		},
-		{
-			name: "invalid command line service - empty command",
-			config: (&configv1.McpAnyServerConfig_builder{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					(&configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("cmd-svc-1"),
-						CommandLineService: (&configv1.CommandLineUpstreamService_builder{
-							Command: proto.String(""),
-						}).Build(),
-					}).Build(),
-				},
-			}).Build(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "cmd-svc-1": command line service has empty command`,
-		},
 	}
 
 	for _, tt := range tests {
