@@ -54,6 +54,7 @@ type E2ETestCase struct {
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
 	StartMCPANYServer      func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
+	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
@@ -144,8 +145,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
 			if method == GRPCRegistration {
 				testCase.RegisterUpstream(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+			} else if method == JSONRPCRegistration {
+				testCase.RegisterUpstreamWithJSONRPC(t, mcpanyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
 			}
-			// TODO: JSONRPC registration
 			t.Logf("INFO: Upstream service registered.")
 
 			// --- 4. Validate Registered Tool ---

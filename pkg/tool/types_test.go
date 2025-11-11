@@ -310,8 +310,8 @@ func (m *MockConn) Invoke(ctx context.Context, method string, args, reply interf
 }
 
 func (m *MockConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	//TODO implement me
-	panic("implement me")
+	args := m.Called(ctx, desc, method, opts)
+	return args.Get(0).(grpc.ClientStream), args.Error(1)
 }
 
 func (m *MockConn) Close() error {
