@@ -2798,7 +2798,7 @@ type UpstreamServiceConfig_builder struct {
 	// -- end of xxx_hidden_ServiceConfig
 	// The version of the upstream service, if known (e.g., "v1.2.3").
 	Version *string
-	// Authentication configuration for securing access to the MCPx service (incoming requests).
+	// Authentication configuration for securing access to the MCP Any service (incoming requests).
 	Authentication *AuthenticationConfig
 	// If true, this upstream service is disabled.
 	Disable *bool
