@@ -102,6 +102,45 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
+func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "handler-panic-topic"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		defer wg.Done()
+		panic("test panic")
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	wg.Wait()
+}
+
+func TestRedisBus_MultipleUnsubCalls(t *testing.T) {
+	client, _ := redismock.NewClientMock()
+	bus := NewWithClient[string](client)
+
+	unsub := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		// No-op handler
+	})
+
+	// Call unsub multiple times and assert that it doesn't panic
+	assert.NotPanics(t, unsub)
+	assert.NotPanics(t, unsub)
+}
+
+
 func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)

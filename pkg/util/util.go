@@ -118,7 +118,7 @@ var (
 	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
+	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
 )
 
 // GenerateUUID creates a new version 4 UUID and returns it as a string.
