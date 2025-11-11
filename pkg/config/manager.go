@@ -55,6 +55,9 @@ func NewUpstreamServiceManager() *UpstreamServiceManager {
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
+		if _, exists := m.services[service.GetName()]; exists {
+			return nil, fmt.Errorf("duplicate service name '%s' found in configuration", service.GetName())
+		}
 		m.addService(service, 0)
 	}
 
