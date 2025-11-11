@@ -38,6 +38,7 @@ type Worker struct {
 	pond        pond.Pool
 	stopFuncs   []func()
 	mu          sync.Mutex
+	wg          sync.WaitGroup
 }
 
 // New creates a new Worker.
@@ -53,11 +54,13 @@ func New(busProvider *bus.BusProvider, cfg *Config) *Worker {
 
 // Start starts the worker.
 func (w *Worker) Start(ctx context.Context) {
+	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
 // Stop stops the worker.
 func (w *Worker) Stop() {
+	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	for _, stop := range w.stopFuncs {
@@ -67,6 +70,7 @@ func (w *Worker) Stop() {
 }
 
 func (w *Worker) startToolExecutionWorker(ctx context.Context) {
+	defer w.wg.Done()
 	reqBus := bus.GetBus[*bus.ToolExecutionRequest](w.busProvider, bus.ToolExecutionRequestTopic)
 	resBus := bus.GetBus[*bus.ToolExecutionResult](w.busProvider, bus.ToolExecutionResultTopic)
 
