@@ -294,10 +294,17 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	for _, param := range t.parameters {
-		schema := param.GetSchema()
-		if val, ok := inputs[schema.GetName()]; ok {
-			url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
-			delete(inputs, schema.GetName())
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			url = strings.ReplaceAll(url, "{{"+param.GetSchema().GetName()+"}}", secretValue)
+		} else if schema := param.GetSchema(); schema != nil {
+			if val, ok := inputs[schema.GetName()]; ok {
+				url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
+				delete(inputs, schema.GetName())
+			}
 		}
 	}
 
@@ -775,6 +782,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	env := os.Environ()
 	for key, value := range inputs {
 		env = append(env, fmt.Sprintf("%s=%v", key, value))
+	}
+
+	for _, param := range t.callDefinition.GetParameters() {
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", param.GetSchema().GetName(), secretValue))
+		}
 	}
 
 	startTime := time.Now()

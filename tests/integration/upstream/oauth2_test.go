@@ -152,12 +152,14 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const serviceID = "e2e_http_oauth2_echo"
 			tokenURL := oauth2Server.URL + oauth2TestTokenPath
-			clientID := oauth2TestClientID
-			clientSecret := oauth2TestClientSecret
+			clientID := &configv1.SecretValue{}
+			clientID.SetPlainText(oauth2TestClientID)
+			clientSecret := &configv1.SecretValue{}
+			clientSecret.SetPlainText(oauth2TestClientSecret)
 			oauth2AuthConfig := configv1.UpstreamOAuth2Auth_builder{
 				TokenUrl:     &tokenURL,
-				ClientId:     &clientID,
-				ClientSecret: &clientSecret,
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
 			}.Build()
 			authConfig := configv1.UpstreamAuthentication_builder{
 				Oauth2: oauth2AuthConfig,

@@ -351,7 +351,9 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 
 		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
 		apiKeyAuth.SetHeaderName("X-API-Key")
-		apiKeyAuth.SetApiKey("test-key")
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText("test-key")
+		apiKeyAuth.SetApiKey(secret)
 
 		authConfig := &configv1.UpstreamAuthentication{}
 		authConfig.SetApiKey(apiKeyAuth)

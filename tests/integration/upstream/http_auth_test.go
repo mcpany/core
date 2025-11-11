@@ -74,10 +74,12 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
+			secret := &configv1.SecretValue{}
+			secret.SetPlainText("wrong-key")
 			wrongAuthConfig := configv1.UpstreamAuthentication_builder{
 				ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 					HeaderName: proto.String("X-Api-Key"),
-					ApiKey:     proto.String("wrong-key"),
+					ApiKey:     secret,
 				}.Build(),
 			}.Build()
 			integration.RegisterHTTPService(t, registrationClient, wrongAuthServiceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)

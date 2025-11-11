@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -75,7 +76,7 @@ upstream_services: {
 	upstream_authentication: {
 		api_key: {
 			header_name: "X-Token"
-			api_key: "secretapikey"
+			api_key: { plain_text: "secretapikey" }
 		}
 	}
 	http_service: {
@@ -95,7 +96,9 @@ upstream_services: {
 				apiKey := auth.GetApiKey()
 				require.NotNil(t, apiKey)
 				assert.Equal(t, "X-Token", apiKey.GetHeaderName())
-				assert.Equal(t, "secretapikey", apiKey.GetApiKey(), "API key should be plaintext")
+				apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+				require.NoError(t, err)
+				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
 			},
 		},
 		{
@@ -105,7 +108,7 @@ upstream_services: {
 	name: "http-svc-bearer"
 	upstream_authentication: {
 		bearer_token: {
-			token: "secretbearertoken"
+			token: { plain_text: "secretbearertoken" }
 		}
 	}
 	http_service: {
@@ -120,7 +123,9 @@ upstream_services: {
 				require.NotNil(t, auth)
 				bearerToken := auth.GetBearerToken()
 				require.NotNil(t, bearerToken)
-				assert.Equal(t, "secretbearertoken", bearerToken.GetToken())
+				tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+				require.NoError(t, err)
+				assert.Equal(t, "secretbearertoken", tokenValue)
 			},
 		},
 		{
@@ -131,7 +136,7 @@ upstream_services: {
 	upstream_authentication: {
 		basic_auth: {
 			username: "testuser"
-			password: "secretpassword"
+			password: { plain_text: "secretpassword" }
 		}
 	}
 	http_service: {
@@ -147,7 +152,9 @@ upstream_services: {
 				basicAuth := auth.GetBasicAuth()
 				require.NotNil(t, basicAuth)
 				assert.Equal(t, "testuser", basicAuth.GetUsername())
-				assert.Equal(t, "secretpassword", basicAuth.GetPassword())
+				passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+				require.NoError(t, err)
+				assert.Equal(t, "secretpassword", passwordValue)
 			},
 		},
 		{
