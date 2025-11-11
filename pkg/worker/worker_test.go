@@ -448,8 +448,18 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
 	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
-	bp.SetBus(bus.ToolExecutionRequestTopic, reqBusMock)
-	bp.SetBus(bus.ToolExecutionResultTopic, resBusMock)
+	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+		if topic == bus.ToolExecutionRequestTopic {
+			return reqBusMock
+		}
+		if topic == bus.ToolExecutionResultTopic {
+			return resBusMock
+		}
+		return nil
+	}
+	t.Cleanup(func() {
+		bus.GetBusHook = nil
+	})
 
 	var wg sync.WaitGroup
 	wg.Add(1)
