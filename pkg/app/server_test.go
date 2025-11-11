@@ -387,7 +387,9 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(s *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -430,7 +432,9 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {})
+			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			require.NoError(t, err)
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(s *gogrpc.Server) {})
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -548,7 +552,9 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a service that will hang.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", fmt.Sprintf(":%d", port), 1*time.Second, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -625,7 +631,9 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", fmt.Sprintf(":%d", port), 50*time.Millisecond, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
 		// This service will hang for 10 seconds, which is much longer than our
 		// shutdown timeout.
 		hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -721,7 +729,9 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", 5*time.Second, func(_ *gogrpc.Server) {})
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {})
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -750,7 +760,9 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {})
+			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			require.NoError(t, err)
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(s *gogrpc.Server) {})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -835,7 +847,9 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", fmt.Sprintf(":%d", port), 50*time.Millisecond, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 10 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -876,4 +890,76 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	if l != nil {
 		l.Close()
 	}
+}
+
+// mockCloseCountingListener is a mock net.Listener that wraps a real
+// net.Listener and counts the number of times its Close method is called. This
+// is used to test for race conditions and double-close bugs in server shutdown
+// logic.
+type mockCloseCountingListener struct {
+	net.Listener
+	closeCount int32
+}
+
+// Close increments a counter and then calls the underlying listener's Close
+// method.
+func (l *mockCloseCountingListener) Close() error {
+	atomic.AddInt32(&l.closeCount, 1)
+	return l.Listener.Close()
+}
+
+func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
+	// This test ensures that the listener is not closed more than once, even
+	// when a graceful shutdown times out and the server is forcefully stopped.
+	rawLis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	countingLis := &mockCloseCountingListener{Listener: rawLis}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server with a mock service that hangs.
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangService := &mockHangService{hangTime: 5 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	// Give the server a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// In a separate goroutine, make a call to the hanging RPC.
+	go func() {
+		port := countingLis.Addr().(*net.TCPAddr).Port
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			return // Don't fail the test if the connection fails, as the server might be shutting down.
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	// Allow the RPC call to be initiated.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+	wg.Wait() // Wait for the server to shut down.
+
+	// The close count should be exactly 1.
+	assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.closeCount), "The listener's Close() method should be called exactly once.")
 }
