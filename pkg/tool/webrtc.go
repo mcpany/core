@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/pion/webrtc/v3"
@@ -94,6 +95,16 @@ func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, e
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	for _, param := range t.parameters {
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			inputs[param.GetSchema().GetName()] = secretValue
+		}
 	}
 
 	var message []byte
