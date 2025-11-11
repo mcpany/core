@@ -25,7 +25,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LoadServices loads, validates, and processes the MCP-X server configuration
+// LoadServices loads, validates, and processes the MCP Any server configuration
 // from a given store. It orchestrates the reading of the configuration,
 // validates its contents, and returns a sanitized configuration object.
 //
