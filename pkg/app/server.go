@@ -539,6 +539,7 @@ func startGrpcServer(
 		serverLog.Info("gRPC server listening")
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
+			return
 		}
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
