@@ -745,6 +745,43 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	}
 }
 
+func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
+	// This test ensures that the goroutine for startGrpcServer terminates even when
+	// grpcServer.Serve(lis) returns an error.
+
+	// Find a free port and occupy it to cause a bind error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	l.Close() // Immediately close it so we can try to use it.
+
+	// Attempt to start a server on a closed listener, which will cause an error.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// We create a listener that is already closed to force an error in grpcServer.Serve.
+	closedListener, err := net.Listen("tcp", addr)
+	require.NoError(t, err)
+	closedListener.Close()
+
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(s *gogrpc.Server) {
+		// No services need to be registered for this test.
+	})
+
+	// Wait for the goroutine to finish. If the bug is present, this will hang.
+	wg.Wait()
+
+	// Check that an error was received.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err, "An error should have been sent to the error channel.")
+	default:
+		t.Fatal("expected an error but got none")
+	}
+}
+
 func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	// This test is designed to fail if the double-close issue is present.
 	// It runs the shutdown sequence multiple times to ensure stability.
