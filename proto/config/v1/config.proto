@@ -467,7 +467,7 @@ message HttpParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
   // A secret value to use for the parameter.
-  SecretValue secret_value = 2;
+  SecretValue secret = 2;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
@@ -475,7 +475,7 @@ message WebsocketParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
   // A secret value to use for the parameter.
-  SecretValue secret_value = 2;
+  SecretValue secret = 2;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
@@ -483,13 +483,15 @@ message WebrtcParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
   // A secret value to use for the parameter.
-  SecretValue secret_value = 2;
+  SecretValue secret = 2;
 }
 
 // CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
 message CommandLineParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
 }
 
 
@@ -655,30 +657,39 @@ message OAuth2Auth {
 }
 
 // ===================================================================
-// Upstream Authentication Definitions
+// Secret Management
 // ===================================================================
 
-// A secret value that can be sourced from a variety of locations.
+// SecretValue represents a value that should be treated as a secret.
+// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
 message SecretValue {
   oneof value {
-    // A plain text secret.
     string plain_text = 1;
-    // The name of an environment variable to read the secret from.
     string environment_variable = 2;
-    // The path to a file to read the secret from.
     string file_path = 3;
-    // A secret that is fetched from a remote http url.
     RemoteContent remote_content = 4;
   }
 }
 
-// RemoteContent defines a secret that is fetched from a remote http url.
+// RemoteContent represents content that is fetched from a remote URL.
 message RemoteContent {
-  // The http url to fetch the secret from.
   string http_url = 1;
-  // The authentication to use when fetching the secret.
-  UpstreamAuthentication auth = 2;
+  Authentication auth = 2;
 }
+
+// Authentication defines the authentication method to use when fetching remote content.
+message Authentication {
+  oneof auth_method {
+    UpstreamAPIKeyAuth api_key = 1;
+    UpstreamBearerTokenAuth bearer_token = 2;
+    UpstreamBasicAuth basic_auth = 3;
+    UpstreamOAuth2Auth oauth2 = 5;
+  }
+}
+
+// ===================================================================
+// Upstream Authentication Definitions
+// ===================================================================
 
 // UpstreamAuthentication defines the authentication method to use when mcpx communicates
 // with an upstream service.
@@ -708,7 +719,7 @@ message UpstreamBearerTokenAuth {
 
 // UpstreamBasicAuth defines authentication using a username and password.
 message UpstreamBasicAuth {
-  SecretValue username = 1;
+  string username = 1;
   SecretValue password = 2;
 }
 

@@ -110,7 +110,9 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		toolProto := &v1.Tool{}
 		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
 		apiKeyAuth.SetHeaderName("X-API-Key")
-		apiKeyAuth.SetApiKey(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-secret-key"}})
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText("my-secret-key")
+		apiKeyAuth.SetApiKey(secret)
 		authn := &configv1.UpstreamAuthentication{}
 		authn.SetApiKey(apiKeyAuth)
 		authenticator, err := auth.NewUpstreamAuthenticator(authn)

@@ -17,12 +17,13 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"net/http"
-	"os"
 	"strings"
 
-	"github.com/valyala/fasttemplate"
+	"github.com/mcpany/core/pkg/util"
+	"golang.org/x/oauth2/clientcredentials"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -57,116 +58,67 @@ func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (Upst
 		return nil, nil
 	}
 
-	if authConfig.GetUseEnvironmentVariable() {
-		err := substituteEnvVars(authConfig)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	if apiKey := authConfig.GetApiKey(); apiKey != nil {
-		apiKeyValue, err := ResolveSecretValue(apiKey.GetApiKey())
-		if err != nil {
-			return nil, err
+		if apiKey.GetHeaderName() == "" {
+			return nil, errors.New("API key authentication requires a header name")
 		}
-		if apiKey.GetHeaderName() == "" || apiKeyValue == "" {
-			return nil, errors.New("API key authentication requires a header name and a key")
+		if apiKey.GetApiKey() == nil {
+			return nil, errors.New("API key authentication requires an API key")
 		}
 		return &APIKeyAuth{
 			HeaderName:  apiKey.GetHeaderName(),
-			HeaderValue: apiKeyValue,
+			HeaderValue: apiKey.GetApiKey(),
 		}, nil
 	}
 
 	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-		tokenValue, err := ResolveSecretValue(bearerToken.GetToken())
-		if err != nil {
-			return nil, err
-		}
-		if tokenValue == "" {
+		if bearerToken.GetToken() == nil {
 			return nil, errors.New("bearer token authentication requires a token")
 		}
 		return &BearerTokenAuth{
-			Token: tokenValue,
+			Token: bearerToken.GetToken(),
 		}, nil
 	}
 
 	if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
-		username, err := ResolveSecretValue(basicAuth.GetUsername())
-		if err != nil {
-			return nil, err
-		}
-		password, err := ResolveSecretValue(basicAuth.GetPassword())
-		if err != nil {
-			return nil, err
-		}
-		if username == "" {
+		if basicAuth.GetUsername() == "" {
 			return nil, errors.New("basic authentication requires a username")
 		}
+		if basicAuth.GetPassword() == nil {
+			return nil, errors.New("basic authentication requires a password")
+		}
 		return &BasicAuth{
-			Username: username,
-			Password: password,
+			Username: basicAuth.GetUsername(),
+			Password: basicAuth.GetPassword(),
+		}, nil
+	}
+
+	if oauth2 := authConfig.GetOauth2(); oauth2 != nil {
+		if oauth2.GetClientId() == nil {
+			return nil, errors.New("OAuth2 authentication requires a client ID")
+		}
+		if oauth2.GetClientSecret() == nil {
+			return nil, errors.New("OAuth2 authentication requires a client secret")
+		}
+		if oauth2.GetTokenUrl() == "" {
+			return nil, errors.New("OAuth2 authentication requires a token URL")
+		}
+		return &OAuth2Auth{
+			ClientID:     oauth2.GetClientId(),
+			ClientSecret: oauth2.GetClientSecret(),
+			TokenURL:     oauth2.GetTokenUrl(),
+			Scopes:       strings.Split(oauth2.GetScopes(), " "),
 		}, nil
 	}
 
 	return nil, nil
 }
 
-func substituteEnvVars(authConfig *configv1.UpstreamAuthentication) error {
-	envVars := make(map[string]interface{})
-	for _, env := range os.Environ() {
-		pair := strings.SplitN(env, "=", 2)
-		envVars[pair[0]] = pair[1]
-	}
-
-	applySubstitution := func(secret *configv1.SecretValue) (*configv1.SecretValue, error) {
-		if secret == nil {
-			return nil, nil
-		}
-		val, err := ResolveSecretValue(secret)
-		if err != nil {
-			return nil, err
-		}
-		substitutedVal := fasttemplate.New(val, "{{", "}}").ExecuteString(envVars)
-		return configv1.SecretValue_builder{PlainText: &substitutedVal}.Build(), nil
-	}
-
-	if apiKey := authConfig.GetApiKey(); apiKey != nil {
-		apiKey.SetHeaderName(fasttemplate.New(apiKey.GetHeaderName(), "{{", "}}").ExecuteString(envVars))
-		newSecret, err := applySubstitution(apiKey.GetApiKey())
-		if err != nil {
-			return err
-		}
-		apiKey.SetApiKey(newSecret)
-	}
-	if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-		newSecret, err := applySubstitution(bearerToken.GetToken())
-		if err != nil {
-			return err
-		}
-		bearerToken.SetToken(newSecret)
-	}
-	if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
-		newUsername, err := applySubstitution(basicAuth.GetUsername())
-		if err != nil {
-			return err
-		}
-		basicAuth.SetUsername(newUsername)
-
-		newPassword, err := applySubstitution(basicAuth.GetPassword())
-		if err != nil {
-			return err
-		}
-		basicAuth.SetPassword(newPassword)
-	}
-	return nil
-}
-
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
 type APIKeyAuth struct {
 	HeaderName  string
-	HeaderValue string
+	HeaderValue *configv1.SecretValue
 }
 
 // Authenticate adds the configured API key to the request's header.
@@ -176,14 +128,18 @@ type APIKeyAuth struct {
 //
 // Returns `nil` on success.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
-	req.Header.Set(a.HeaderName, a.HeaderValue)
+	value, err := util.ResolveSecret(a.HeaderValue)
+	if err != nil {
+		return err
+	}
+	req.Header.Set(a.HeaderName, value)
 	return nil
 }
 
 // BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
 // authentication. It adds an "Authorization" header with a bearer token.
 type BearerTokenAuth struct {
-	Token string
+	Token *configv1.SecretValue
 }
 
 // Authenticate adds the bearer token to the request's "Authorization" header.
@@ -193,7 +149,11 @@ type BearerTokenAuth struct {
 //
 // Returns `nil` on success.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
-	req.Header.Set("Authorization", "Bearer "+b.Token)
+	token, err := util.ResolveSecret(b.Token)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
 	return nil
 }
 
@@ -201,7 +161,7 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 // It adds an "Authorization" header with the username and password.
 type BasicAuth struct {
 	Username string
-	Password string
+	Password *configv1.SecretValue
 }
 
 // Authenticate sets the request's basic authentication credentials.
@@ -211,6 +171,47 @@ type BasicAuth struct {
 //
 // Returns `nil` on success.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
-	req.SetBasicAuth(b.Username, b.Password)
+	password, err := util.ResolveSecret(b.Password)
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(b.Username, password)
+	return nil
+}
+
+// OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
+type OAuth2Auth struct {
+	ClientID     *configv1.SecretValue
+	ClientSecret *configv1.SecretValue
+	TokenURL     string
+	Scopes       []string
+}
+
+// Authenticate fetches a token and adds it to the request's "Authorization" header.
+//
+// Parameters:
+//   - req: The HTTP request to be modified.
+//
+// Returns `nil` on success.
+func (o *OAuth2Auth) Authenticate(req *http.Request) error {
+	clientID, err := util.ResolveSecret(o.ClientID)
+	if err != nil {
+		return err
+	}
+	clientSecret, err := util.ResolveSecret(o.ClientSecret)
+	if err != nil {
+		return err
+	}
+	cfg := &clientcredentials.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		TokenURL:     o.TokenURL,
+		Scopes:       o.Scopes,
+	}
+	token, err := cfg.TokenSource(context.Background()).Token()
+	if err != nil {
+		return err
+	}
+	token.SetAuthHeader(req)
 	return nil
 }

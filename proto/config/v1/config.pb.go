@@ -5830,11 +5830,11 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 type HttpParameterMapping struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema      *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_SecretValue *SecretValue           `protobuf:"bytes,2,opt,name=secret_value,json=secretValue"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *HttpParameterMapping) Reset() {
@@ -5869,9 +5869,9 @@ func (x *HttpParameterMapping) GetSchema() *ParameterSchema {
 	return nil
 }
 
-func (x *HttpParameterMapping) GetSecretValue() *SecretValue {
+func (x *HttpParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_SecretValue
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
@@ -5880,8 +5880,8 @@ func (x *HttpParameterMapping) SetSchema(v *ParameterSchema) {
 	x.xxx_hidden_Schema = v
 }
 
-func (x *HttpParameterMapping) SetSecretValue(v *SecretValue) {
-	x.xxx_hidden_SecretValue = v
+func (x *HttpParameterMapping) SetSecret(v *SecretValue) {
+	x.xxx_hidden_Secret = v
 }
 
 func (x *HttpParameterMapping) HasSchema() bool {
@@ -5891,19 +5891,19 @@ func (x *HttpParameterMapping) HasSchema() bool {
 	return x.xxx_hidden_Schema != nil
 }
 
-func (x *HttpParameterMapping) HasSecretValue() bool {
+func (x *HttpParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_SecretValue != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *HttpParameterMapping) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
-func (x *HttpParameterMapping) ClearSecretValue() {
-	x.xxx_hidden_SecretValue = nil
+func (x *HttpParameterMapping) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type HttpParameterMapping_builder struct {
@@ -5912,7 +5912,7 @@ type HttpParameterMapping_builder struct {
 	// The schema for the parameter.
 	Schema *ParameterSchema
 	// A secret value to use for the parameter.
-	SecretValue *SecretValue
+	Secret *SecretValue
 }
 
 func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
@@ -5920,17 +5920,17 @@ func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_SecretValue = b.SecretValue
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 type WebsocketParameterMapping struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema      *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_SecretValue *SecretValue           `protobuf:"bytes,2,opt,name=secret_value,json=secretValue"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WebsocketParameterMapping) Reset() {
@@ -5965,9 +5965,9 @@ func (x *WebsocketParameterMapping) GetSchema() *ParameterSchema {
 	return nil
 }
 
-func (x *WebsocketParameterMapping) GetSecretValue() *SecretValue {
+func (x *WebsocketParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_SecretValue
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
@@ -5976,8 +5976,8 @@ func (x *WebsocketParameterMapping) SetSchema(v *ParameterSchema) {
 	x.xxx_hidden_Schema = v
 }
 
-func (x *WebsocketParameterMapping) SetSecretValue(v *SecretValue) {
-	x.xxx_hidden_SecretValue = v
+func (x *WebsocketParameterMapping) SetSecret(v *SecretValue) {
+	x.xxx_hidden_Secret = v
 }
 
 func (x *WebsocketParameterMapping) HasSchema() bool {
@@ -5987,19 +5987,19 @@ func (x *WebsocketParameterMapping) HasSchema() bool {
 	return x.xxx_hidden_Schema != nil
 }
 
-func (x *WebsocketParameterMapping) HasSecretValue() bool {
+func (x *WebsocketParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_SecretValue != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *WebsocketParameterMapping) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
-func (x *WebsocketParameterMapping) ClearSecretValue() {
-	x.xxx_hidden_SecretValue = nil
+func (x *WebsocketParameterMapping) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type WebsocketParameterMapping_builder struct {
@@ -6008,7 +6008,7 @@ type WebsocketParameterMapping_builder struct {
 	// The schema for the parameter.
 	Schema *ParameterSchema
 	// A secret value to use for the parameter.
-	SecretValue *SecretValue
+	Secret *SecretValue
 }
 
 func (b0 WebsocketParameterMapping_builder) Build() *WebsocketParameterMapping {
@@ -6016,17 +6016,17 @@ func (b0 WebsocketParameterMapping_builder) Build() *WebsocketParameterMapping {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_SecretValue = b.SecretValue
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 type WebrtcParameterMapping struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema      *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_SecretValue *SecretValue           `protobuf:"bytes,2,opt,name=secret_value,json=secretValue"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WebrtcParameterMapping) Reset() {
@@ -6061,9 +6061,9 @@ func (x *WebrtcParameterMapping) GetSchema() *ParameterSchema {
 	return nil
 }
 
-func (x *WebrtcParameterMapping) GetSecretValue() *SecretValue {
+func (x *WebrtcParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_SecretValue
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
@@ -6072,8 +6072,8 @@ func (x *WebrtcParameterMapping) SetSchema(v *ParameterSchema) {
 	x.xxx_hidden_Schema = v
 }
 
-func (x *WebrtcParameterMapping) SetSecretValue(v *SecretValue) {
-	x.xxx_hidden_SecretValue = v
+func (x *WebrtcParameterMapping) SetSecret(v *SecretValue) {
+	x.xxx_hidden_Secret = v
 }
 
 func (x *WebrtcParameterMapping) HasSchema() bool {
@@ -6083,19 +6083,19 @@ func (x *WebrtcParameterMapping) HasSchema() bool {
 	return x.xxx_hidden_Schema != nil
 }
 
-func (x *WebrtcParameterMapping) HasSecretValue() bool {
+func (x *WebrtcParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_SecretValue != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *WebrtcParameterMapping) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
-func (x *WebrtcParameterMapping) ClearSecretValue() {
-	x.xxx_hidden_SecretValue = nil
+func (x *WebrtcParameterMapping) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type WebrtcParameterMapping_builder struct {
@@ -6104,7 +6104,7 @@ type WebrtcParameterMapping_builder struct {
 	// The schema for the parameter.
 	Schema *ParameterSchema
 	// A secret value to use for the parameter.
-	SecretValue *SecretValue
+	Secret *SecretValue
 }
 
 func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
@@ -6112,7 +6112,7 @@ func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_SecretValue = b.SecretValue
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
@@ -6120,6 +6120,7 @@ func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
 type CommandLineParameterMapping struct {
 	state             protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -6156,8 +6157,19 @@ func (x *CommandLineParameterMapping) GetSchema() *ParameterSchema {
 	return nil
 }
 
+func (x *CommandLineParameterMapping) GetSecret() *SecretValue {
+	if x != nil {
+		return x.xxx_hidden_Secret
+	}
+	return nil
+}
+
 func (x *CommandLineParameterMapping) SetSchema(v *ParameterSchema) {
 	x.xxx_hidden_Schema = v
+}
+
+func (x *CommandLineParameterMapping) SetSecret(v *SecretValue) {
+	x.xxx_hidden_Secret = v
 }
 
 func (x *CommandLineParameterMapping) HasSchema() bool {
@@ -6167,8 +6179,19 @@ func (x *CommandLineParameterMapping) HasSchema() bool {
 	return x.xxx_hidden_Schema != nil
 }
 
+func (x *CommandLineParameterMapping) HasSecret() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Secret != nil
+}
+
 func (x *CommandLineParameterMapping) ClearSchema() {
 	x.xxx_hidden_Schema = nil
+}
+
+func (x *CommandLineParameterMapping) ClearSecret() {
+	x.xxx_hidden_Secret = nil
 }
 
 type CommandLineParameterMapping_builder struct {
@@ -6176,6 +6199,8 @@ type CommandLineParameterMapping_builder struct {
 
 	// The schema for the parameter.
 	Schema *ParameterSchema
+	// A secret value to use for the parameter.
+	Secret *SecretValue
 }
 
 func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMapping {
@@ -6183,6 +6208,7 @@ func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMappi
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Schema = b.Schema
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
@@ -8307,7 +8333,8 @@ func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
 	return m0
 }
 
-// A secret value that can be sourced from a variety of locations.
+// SecretValue represents a value that should be treated as a secret.
+// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
 type SecretValue struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Value isSecretValue_Value    `protobuf_oneof:"value"`
@@ -8491,14 +8518,10 @@ type SecretValue_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Fields of oneof xxx_hidden_Value:
-	// A plain text secret.
-	PlainText *string
-	// The name of an environment variable to read the secret from.
+	PlainText           *string
 	EnvironmentVariable *string
-	// The path to a file to read the secret from.
-	FilePath *string
-	// A secret that is fetched from a remote http url.
-	RemoteContent *RemoteContent
+	FilePath            *string
+	RemoteContent       *RemoteContent
 	// -- end of xxx_hidden_Value
 }
 
@@ -8536,22 +8559,18 @@ type isSecretValue_Value interface {
 }
 
 type secretValue_PlainText struct {
-	// A plain text secret.
 	PlainText string `protobuf:"bytes,1,opt,name=plain_text,json=plainText,oneof"`
 }
 
 type secretValue_EnvironmentVariable struct {
-	// The name of an environment variable to read the secret from.
 	EnvironmentVariable string `protobuf:"bytes,2,opt,name=environment_variable,json=environmentVariable,oneof"`
 }
 
 type secretValue_FilePath struct {
-	// The path to a file to read the secret from.
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
 }
 
 type secretValue_RemoteContent struct {
-	// A secret that is fetched from a remote http url.
 	RemoteContent *RemoteContent `protobuf:"bytes,4,opt,name=remote_content,json=remoteContent,oneof"`
 }
 
@@ -8563,11 +8582,11 @@ func (*secretValue_FilePath) isSecretValue_Value() {}
 
 func (*secretValue_RemoteContent) isSecretValue_Value() {}
 
-// RemoteContent defines a secret that is fetched from a remote http url.
+// RemoteContent represents content that is fetched from a remote URL.
 type RemoteContent struct {
-	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_HttpUrl     *string                 `protobuf:"bytes,1,opt,name=http_url,json=httpUrl"`
-	xxx_hidden_Auth        *UpstreamAuthentication `protobuf:"bytes,2,opt,name=auth"`
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_HttpUrl     *string                `protobuf:"bytes,1,opt,name=http_url,json=httpUrl"`
+	xxx_hidden_Auth        *Authentication        `protobuf:"bytes,2,opt,name=auth"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -8609,7 +8628,7 @@ func (x *RemoteContent) GetHttpUrl() string {
 	return ""
 }
 
-func (x *RemoteContent) GetAuth() *UpstreamAuthentication {
+func (x *RemoteContent) GetAuth() *Authentication {
 	if x != nil {
 		return x.xxx_hidden_Auth
 	}
@@ -8621,7 +8640,7 @@ func (x *RemoteContent) SetHttpUrl(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *RemoteContent) SetAuth(v *UpstreamAuthentication) {
+func (x *RemoteContent) SetAuth(v *Authentication) {
 	x.xxx_hidden_Auth = v
 }
 
@@ -8651,10 +8670,8 @@ func (x *RemoteContent) ClearAuth() {
 type RemoteContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The http url to fetch the secret from.
 	HttpUrl *string
-	// The authentication to use when fetching the secret.
-	Auth *UpstreamAuthentication
+	Auth    *Authentication
 }
 
 func (b0 RemoteContent_builder) Build() *RemoteContent {
@@ -8668,6 +8685,266 @@ func (b0 RemoteContent_builder) Build() *RemoteContent {
 	x.xxx_hidden_Auth = b.Auth
 	return m0
 }
+
+// Authentication defines the authentication method to use when fetching remote content.
+type Authentication struct {
+	state                 protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_AuthMethod isAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *Authentication) Reset() {
+	*x = Authentication{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Authentication) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Authentication) ProtoMessage() {}
+
+func (x *Authentication) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Authentication) GetApiKey() *UpstreamAPIKeyAuth {
+	if x != nil {
+		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
+			return x.ApiKey
+		}
+	}
+	return nil
+}
+
+func (x *Authentication) GetBearerToken() *UpstreamBearerTokenAuth {
+	if x != nil {
+		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
+			return x.BearerToken
+		}
+	}
+	return nil
+}
+
+func (x *Authentication) GetBasicAuth() *UpstreamBasicAuth {
+	if x != nil {
+		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
+			return x.BasicAuth
+		}
+	}
+	return nil
+}
+
+func (x *Authentication) GetOauth2() *UpstreamOAuth2Auth {
+	if x != nil {
+		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
+			return x.Oauth2
+		}
+	}
+	return nil
+}
+
+func (x *Authentication) SetApiKey(v *UpstreamAPIKeyAuth) {
+	if v == nil {
+		x.xxx_hidden_AuthMethod = nil
+		return
+	}
+	x.xxx_hidden_AuthMethod = &authentication_ApiKey{v}
+}
+
+func (x *Authentication) SetBearerToken(v *UpstreamBearerTokenAuth) {
+	if v == nil {
+		x.xxx_hidden_AuthMethod = nil
+		return
+	}
+	x.xxx_hidden_AuthMethod = &authentication_BearerToken{v}
+}
+
+func (x *Authentication) SetBasicAuth(v *UpstreamBasicAuth) {
+	if v == nil {
+		x.xxx_hidden_AuthMethod = nil
+		return
+	}
+	x.xxx_hidden_AuthMethod = &authentication_BasicAuth{v}
+}
+
+func (x *Authentication) SetOauth2(v *UpstreamOAuth2Auth) {
+	if v == nil {
+		x.xxx_hidden_AuthMethod = nil
+		return
+	}
+	x.xxx_hidden_AuthMethod = &authentication_Oauth2{v}
+}
+
+func (x *Authentication) HasAuthMethod() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_AuthMethod != nil
+}
+
+func (x *Authentication) HasApiKey() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey)
+	return ok
+}
+
+func (x *Authentication) HasBearerToken() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken)
+	return ok
+}
+
+func (x *Authentication) HasBasicAuth() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth)
+	return ok
+}
+
+func (x *Authentication) HasOauth2() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2)
+	return ok
+}
+
+func (x *Authentication) ClearAuthMethod() {
+	x.xxx_hidden_AuthMethod = nil
+}
+
+func (x *Authentication) ClearApiKey() {
+	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
+		x.xxx_hidden_AuthMethod = nil
+	}
+}
+
+func (x *Authentication) ClearBearerToken() {
+	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
+		x.xxx_hidden_AuthMethod = nil
+	}
+}
+
+func (x *Authentication) ClearBasicAuth() {
+	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
+		x.xxx_hidden_AuthMethod = nil
+	}
+}
+
+func (x *Authentication) ClearOauth2() {
+	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
+		x.xxx_hidden_AuthMethod = nil
+	}
+}
+
+const Authentication_AuthMethod_not_set_case case_Authentication_AuthMethod = 0
+const Authentication_ApiKey_case case_Authentication_AuthMethod = 1
+const Authentication_BearerToken_case case_Authentication_AuthMethod = 2
+const Authentication_BasicAuth_case case_Authentication_AuthMethod = 3
+const Authentication_Oauth2_case case_Authentication_AuthMethod = 5
+
+func (x *Authentication) WhichAuthMethod() case_Authentication_AuthMethod {
+	if x == nil {
+		return Authentication_AuthMethod_not_set_case
+	}
+	switch x.xxx_hidden_AuthMethod.(type) {
+	case *authentication_ApiKey:
+		return Authentication_ApiKey_case
+	case *authentication_BearerToken:
+		return Authentication_BearerToken_case
+	case *authentication_BasicAuth:
+		return Authentication_BasicAuth_case
+	case *authentication_Oauth2:
+		return Authentication_Oauth2_case
+	default:
+		return Authentication_AuthMethod_not_set_case
+	}
+}
+
+type Authentication_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_AuthMethod:
+	ApiKey      *UpstreamAPIKeyAuth
+	BearerToken *UpstreamBearerTokenAuth
+	BasicAuth   *UpstreamBasicAuth
+	Oauth2      *UpstreamOAuth2Auth
+	// -- end of xxx_hidden_AuthMethod
+}
+
+func (b0 Authentication_builder) Build() *Authentication {
+	m0 := &Authentication{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ApiKey != nil {
+		x.xxx_hidden_AuthMethod = &authentication_ApiKey{b.ApiKey}
+	}
+	if b.BearerToken != nil {
+		x.xxx_hidden_AuthMethod = &authentication_BearerToken{b.BearerToken}
+	}
+	if b.BasicAuth != nil {
+		x.xxx_hidden_AuthMethod = &authentication_BasicAuth{b.BasicAuth}
+	}
+	if b.Oauth2 != nil {
+		x.xxx_hidden_AuthMethod = &authentication_Oauth2{b.Oauth2}
+	}
+	return m0
+}
+
+type case_Authentication_AuthMethod protoreflect.FieldNumber
+
+func (x case_Authentication_AuthMethod) String() string {
+	md := file_proto_config_v1_config_proto_msgTypes[48].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isAuthentication_AuthMethod interface {
+	isAuthentication_AuthMethod()
+}
+
+type authentication_ApiKey struct {
+	ApiKey *UpstreamAPIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
+}
+
+type authentication_BearerToken struct {
+	BearerToken *UpstreamBearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,json=bearerToken,oneof"`
+}
+
+type authentication_BasicAuth struct {
+	BasicAuth *UpstreamBasicAuth `protobuf:"bytes,3,opt,name=basic_auth,json=basicAuth,oneof"`
+}
+
+type authentication_Oauth2 struct {
+	Oauth2 *UpstreamOAuth2Auth `protobuf:"bytes,5,opt,name=oauth2,oneof"`
+}
+
+func (*authentication_ApiKey) isAuthentication_AuthMethod() {}
+
+func (*authentication_BearerToken) isAuthentication_AuthMethod() {}
+
+func (*authentication_BasicAuth) isAuthentication_AuthMethod() {}
+
+func (*authentication_Oauth2) isAuthentication_AuthMethod() {}
 
 // UpstreamAuthentication defines the authentication method to use when mcpx communicates
 // with an upstream service.
@@ -8683,7 +8960,7 @@ type UpstreamAuthentication struct {
 
 func (x *UpstreamAuthentication) Reset() {
 	*x = UpstreamAuthentication{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	mi := &file_proto_config_v1_config_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8695,7 +8972,7 @@ func (x *UpstreamAuthentication) String() string {
 func (*UpstreamAuthentication) ProtoMessage() {}
 
 func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
+	mi := &file_proto_config_v1_config_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8927,7 +9204,7 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 type case_UpstreamAuthentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_UpstreamAuthentication_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[48].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[49].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -8975,7 +9252,7 @@ type UpstreamAPIKeyAuth struct {
 
 func (x *UpstreamAPIKeyAuth) Reset() {
 	*x = UpstreamAPIKeyAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
+	mi := &file_proto_config_v1_config_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8987,7 +9264,7 @@ func (x *UpstreamAPIKeyAuth) String() string {
 func (*UpstreamAPIKeyAuth) ProtoMessage() {}
 
 func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
+	mi := &file_proto_config_v1_config_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9078,7 +9355,7 @@ type UpstreamBearerTokenAuth struct {
 
 func (x *UpstreamBearerTokenAuth) Reset() {
 	*x = UpstreamBearerTokenAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[50]
+	mi := &file_proto_config_v1_config_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9090,7 +9367,7 @@ func (x *UpstreamBearerTokenAuth) String() string {
 func (*UpstreamBearerTokenAuth) ProtoMessage() {}
 
 func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[50]
+	mi := &file_proto_config_v1_config_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9140,16 +9417,18 @@ func (b0 UpstreamBearerTokenAuth_builder) Build() *UpstreamBearerTokenAuth {
 
 // UpstreamBasicAuth defines authentication using a username and password.
 type UpstreamBasicAuth struct {
-	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Username *SecretValue           `protobuf:"bytes,1,opt,name=username"`
-	xxx_hidden_Password *SecretValue           `protobuf:"bytes,2,opt,name=password"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Username    *string                `protobuf:"bytes,1,opt,name=username"`
+	xxx_hidden_Password    *SecretValue           `protobuf:"bytes,2,opt,name=password"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpstreamBasicAuth) Reset() {
 	*x = UpstreamBasicAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[51]
+	mi := &file_proto_config_v1_config_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9161,7 +9440,7 @@ func (x *UpstreamBasicAuth) String() string {
 func (*UpstreamBasicAuth) ProtoMessage() {}
 
 func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[51]
+	mi := &file_proto_config_v1_config_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9172,11 +9451,14 @@ func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UpstreamBasicAuth) GetUsername() *SecretValue {
+func (x *UpstreamBasicAuth) GetUsername() string {
 	if x != nil {
-		return x.xxx_hidden_Username
+		if x.xxx_hidden_Username != nil {
+			return *x.xxx_hidden_Username
+		}
+		return ""
 	}
-	return nil
+	return ""
 }
 
 func (x *UpstreamBasicAuth) GetPassword() *SecretValue {
@@ -9186,8 +9468,9 @@ func (x *UpstreamBasicAuth) GetPassword() *SecretValue {
 	return nil
 }
 
-func (x *UpstreamBasicAuth) SetUsername(v *SecretValue) {
-	x.xxx_hidden_Username = v
+func (x *UpstreamBasicAuth) SetUsername(v string) {
+	x.xxx_hidden_Username = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *UpstreamBasicAuth) SetPassword(v *SecretValue) {
@@ -9198,7 +9481,7 @@ func (x *UpstreamBasicAuth) HasUsername() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Username != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *UpstreamBasicAuth) HasPassword() bool {
@@ -9209,6 +9492,7 @@ func (x *UpstreamBasicAuth) HasPassword() bool {
 }
 
 func (x *UpstreamBasicAuth) ClearUsername() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Username = nil
 }
 
@@ -9219,7 +9503,7 @@ func (x *UpstreamBasicAuth) ClearPassword() {
 type UpstreamBasicAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Username *SecretValue
+	Username *string
 	Password *SecretValue
 }
 
@@ -9227,7 +9511,10 @@ func (b0 UpstreamBasicAuth_builder) Build() *UpstreamBasicAuth {
 	m0 := &UpstreamBasicAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Username = b.Username
+	if b.Username != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Username = b.Username
+	}
 	x.xxx_hidden_Password = b.Password
 	return m0
 }
@@ -9247,7 +9534,7 @@ type UpstreamOAuth2Auth struct {
 
 func (x *UpstreamOAuth2Auth) Reset() {
 	*x = UpstreamOAuth2Auth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[52]
+	mi := &file_proto_config_v1_config_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9259,7 +9546,7 @@ func (x *UpstreamOAuth2Auth) String() string {
 func (*UpstreamOAuth2Auth) ProtoMessage() {}
 
 func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[52]
+	mi := &file_proto_config_v1_config_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9410,7 +9697,7 @@ type TLSConfig struct {
 
 func (x *TLSConfig) Reset() {
 	*x = TLSConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[53]
+	mi := &file_proto_config_v1_config_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9422,7 +9709,7 @@ func (x *TLSConfig) String() string {
 func (*TLSConfig) ProtoMessage() {}
 
 func (x *TLSConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[53]
+	mi := &file_proto_config_v1_config_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9827,18 +10114,19 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x05 \x01(\bR\bisStream\"\x8f\x01\n" +
+	"\tis_stream\x18\x05 \x01(\bR\bisStream\"\x84\x01\n" +
 	"\x14HttpParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x12>\n" +
-	"\fsecret_value\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\vsecretValue\"\x94\x01\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x123\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x06secret\"\x89\x01\n" +
 	"\x19WebsocketParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x12>\n" +
-	"\fsecret_value\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\vsecretValue\"\x91\x01\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x123\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x06secret\"\x86\x01\n" +
 	"\x16WebrtcParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x12>\n" +
-	"\fsecret_value\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\vsecretValue\"V\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x123\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x06secret\"\x8b\x01\n" +
 	"\x1bCommandLineParameterMapping\x127\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\"\xaf\x01\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1f.mcpx.config.v1.ParameterSchemaR\x06schema\x123\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x06secret\"\xaf\x01\n" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
@@ -9921,10 +10209,17 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x14environment_variable\x18\x02 \x01(\tH\x00R\x13environmentVariable\x12\x1d\n" +
 	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePath\x12F\n" +
 	"\x0eremote_content\x18\x04 \x01(\v2\x1d.mcpx.config.v1.RemoteContentH\x00R\rremoteContentB\a\n" +
-	"\x05value\"f\n" +
+	"\x05value\"^\n" +
 	"\rRemoteContent\x12\x19\n" +
-	"\bhttp_url\x18\x01 \x01(\tR\ahttpUrl\x12:\n" +
-	"\x04auth\x18\x02 \x01(\v2&.mcpx.config.v1.UpstreamAuthenticationR\x04auth\"\xf0\x02\n" +
+	"\bhttp_url\x18\x01 \x01(\tR\ahttpUrl\x122\n" +
+	"\x04auth\x18\x02 \x01(\v2\x1e.mcpx.config.v1.AuthenticationR\x04auth\"\xae\x02\n" +
+	"\x0eAuthentication\x12=\n" +
+	"\aapi_key\x18\x01 \x01(\v2\".mcpx.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12L\n" +
+	"\fbearer_token\x18\x02 \x01(\v2'.mcpx.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12B\n" +
+	"\n" +
+	"basic_auth\x18\x03 \x01(\v2!.mcpx.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x12<\n" +
+	"\x06oauth2\x18\x05 \x01(\v2\".mcpx.config.v1.UpstreamOAuth2AuthH\x00R\x06oauth2B\r\n" +
+	"\vauth_method\"\xf0\x02\n" +
 	"\x16UpstreamAuthentication\x12=\n" +
 	"\aapi_key\x18\x01 \x01(\v2\".mcpx.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12L\n" +
 	"\fbearer_token\x18\x02 \x01(\v2'.mcpx.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12B\n" +
@@ -9938,9 +10233,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"headerName\x124\n" +
 	"\aapi_key\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x06apiKey\"L\n" +
 	"\x17UpstreamBearerTokenAuth\x121\n" +
-	"\x05token\x18\x01 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x05token\"\x85\x01\n" +
-	"\x11UpstreamBasicAuth\x127\n" +
-	"\busername\x18\x01 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\busername\x127\n" +
+	"\x05token\x18\x01 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\x05token\"h\n" +
+	"\x11UpstreamBasicAuth\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x127\n" +
 	"\bpassword\x18\x02 \x01(\v2\x1b.mcpx.config.v1.SecretValueR\bpassword\"\xc5\x01\n" +
 	"\x12UpstreamOAuth2Auth\x12\x1b\n" +
 	"\ttoken_url\x18\x01 \x01(\tR\btokenUrl\x128\n" +
@@ -9972,7 +10267,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x06RANDOM\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 56)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpx.config.v1.ParameterType
 	(LoadBalancingStrategy)(0),          // 1: mcpx.config.v1.LoadBalancingStrategy
@@ -10028,24 +10323,25 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*OAuth2Auth)(nil),                  // 51: mcpx.config.v1.OAuth2Auth
 	(*SecretValue)(nil),                 // 52: mcpx.config.v1.SecretValue
 	(*RemoteContent)(nil),               // 53: mcpx.config.v1.RemoteContent
-	(*UpstreamAuthentication)(nil),      // 54: mcpx.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 55: mcpx.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 56: mcpx.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 57: mcpx.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),          // 58: mcpx.config.v1.UpstreamOAuth2Auth
-	(*TLSConfig)(nil),                   // 59: mcpx.config.v1.TLSConfig
-	nil,                                 // 60: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
-	nil,                                 // 61: mcpx.config.v1.ContainerEnvironment.VolumesEntry
-	(*bus.MessageBus)(nil),              // 62: bus.MessageBus
-	(*durationpb.Duration)(nil),         // 63: google.protobuf.Duration
-	(*structpb.Value)(nil),              // 64: google.protobuf.Value
-	(*structpb.Struct)(nil),             // 65: google.protobuf.Struct
+	(*Authentication)(nil),              // 54: mcpx.config.v1.Authentication
+	(*UpstreamAuthentication)(nil),      // 55: mcpx.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),          // 56: mcpx.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil),     // 57: mcpx.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),           // 58: mcpx.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),          // 59: mcpx.config.v1.UpstreamOAuth2Auth
+	(*TLSConfig)(nil),                   // 60: mcpx.config.v1.TLSConfig
+	nil,                                 // 61: mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	nil,                                 // 62: mcpx.config.v1.ContainerEnvironment.VolumesEntry
+	(*bus.MessageBus)(nil),              // 63: bus.MessageBus
+	(*durationpb.Duration)(nil),         // 64: google.protobuf.Duration
+	(*structpb.Value)(nil),              // 65: google.protobuf.Value
+	(*structpb.Struct)(nil),             // 66: google.protobuf.Struct
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	17,  // 0: mcpx.config.v1.McpxServerConfig.global_settings:type_name -> mcpx.config.v1.GlobalSettings
 	18,  // 1: mcpx.config.v1.McpxServerConfig.upstream_services:type_name -> mcpx.config.v1.UpstreamServiceConfig
 	7,   // 2: mcpx.config.v1.McpxServerConfig.upstream_service_collections:type_name -> mcpx.config.v1.UpstreamServiceCollection
-	54,  // 3: mcpx.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	55,  // 3: mcpx.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
 	32,  // 4: mcpx.config.v1.HttpCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	2,   // 5: mcpx.config.v1.HttpCallDefinition.method:type_name -> mcpx.config.v1.HttpCallDefinition.HttpMethod
 	35,  // 6: mcpx.config.v1.HttpCallDefinition.parameters:type_name -> mcpx.config.v1.HttpParameterMapping
@@ -10066,7 +10362,7 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	38,  // 21: mcpx.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpx.config.v1.CommandLineParameterMapping
 	45,  // 22: mcpx.config.v1.CommandLineCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	3,   // 23: mcpx.config.v1.OutputTransformer.format:type_name -> mcpx.config.v1.OutputTransformer.OutputFormat
-	60,  // 24: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
+	61,  // 24: mcpx.config.v1.OutputTransformer.extraction_rules:type_name -> mcpx.config.v1.OutputTransformer.ExtractionRulesEntry
 	32,  // 25: mcpx.config.v1.GrpcCallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
 	45,  // 26: mcpx.config.v1.GrpcCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	32,  // 27: mcpx.config.v1.OpenAPICallDefinition.schema:type_name -> mcpx.config.v1.ToolSchema
@@ -10078,9 +10374,9 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	13,  // 33: mcpx.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpx.config.v1.OutputTransformer
 	45,  // 34: mcpx.config.v1.MCPCallDefinition.cache:type_name -> mcpx.config.v1.CacheConfig
 	4,   // 35: mcpx.config.v1.GlobalSettings.log_level:type_name -> mcpx.config.v1.GlobalSettings.LogLevel
-	62,  // 36: mcpx.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	63,  // 36: mcpx.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	39,  // 37: mcpx.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpx.config.v1.ConnectionPoolConfig
-	54,  // 38: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
+	55,  // 38: mcpx.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpx.config.v1.UpstreamAuthentication
 	45,  // 39: mcpx.config.v1.UpstreamServiceConfig.cache:type_name -> mcpx.config.v1.CacheConfig
 	44,  // 40: mcpx.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpx.config.v1.RateLimitConfig
 	1,   // 41: mcpx.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpx.config.v1.LoadBalancingStrategy
@@ -10093,7 +10389,7 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	25,  // 48: mcpx.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpx.config.v1.WebsocketUpstreamService
 	26,  // 49: mcpx.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpx.config.v1.WebrtcUpstreamService
 	49,  // 50: mcpx.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpx.config.v1.AuthenticationConfig
-	59,  // 51: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 51: mcpx.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	14,  // 52: mcpx.config.v1.GrpcUpstreamService.calls:type_name -> mcpx.config.v1.GrpcCallDefinition
 	41,  // 53: mcpx.config.v1.GrpcUpstreamService.health_check:type_name -> mcpx.config.v1.GrpcHealthCheck
 	20,  // 54: mcpx.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpx.config.v1.ProtoDefinition
@@ -10102,69 +10398,73 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	22,  // 57: mcpx.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpx.config.v1.ProtoDescriptor
 	8,   // 58: mcpx.config.v1.HttpUpstreamService.calls:type_name -> mcpx.config.v1.HttpCallDefinition
 	40,  // 59: mcpx.config.v1.HttpUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	59,  // 60: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 60: mcpx.config.v1.HttpUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	9,   // 61: mcpx.config.v1.WebsocketUpstreamService.calls:type_name -> mcpx.config.v1.WebsocketCallDefinition
-	59,  // 62: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 62: mcpx.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	10,  // 63: mcpx.config.v1.WebrtcUpstreamService.calls:type_name -> mcpx.config.v1.WebrtcCallDefinition
-	59,  // 64: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 64: mcpx.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	40,  // 65: mcpx.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpx.config.v1.HttpHealthCheck
-	59,  // 66: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 66: mcpx.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	15,  // 67: mcpx.config.v1.OpenapiUpstreamService.calls:type_name -> mcpx.config.v1.OpenAPICallDefinition
 	11,  // 68: mcpx.config.v1.CommandLineUpstreamService.calls:type_name -> mcpx.config.v1.CommandLineCallDefinition
 	42,  // 69: mcpx.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpx.config.v1.CommandLineHealthCheck
 	45,  // 70: mcpx.config.v1.CommandLineUpstreamService.cache:type_name -> mcpx.config.v1.CacheConfig
 	43,  // 71: mcpx.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpx.config.v1.ContainerEnvironment
-	63,  // 72: mcpx.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	64,  // 72: mcpx.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
 	31,  // 73: mcpx.config.v1.McpUpstreamService.http_connection:type_name -> mcpx.config.v1.McpStreamableHttpConnection
 	30,  // 74: mcpx.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpx.config.v1.McpStdioConnection
 	34,  // 75: mcpx.config.v1.McpUpstreamService.tools:type_name -> mcpx.config.v1.ToolDefinition
 	16,  // 76: mcpx.config.v1.McpUpstreamService.calls:type_name -> mcpx.config.v1.MCPCallDefinition
-	59,  // 77: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
+	60,  // 77: mcpx.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpx.config.v1.TLSConfig
 	0,   // 78: mcpx.config.v1.ParameterSchema.type:type_name -> mcpx.config.v1.ParameterType
-	64,  // 79: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	65,  // 80: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	65,  // 81: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	65,  // 79: mcpx.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	66,  // 80: mcpx.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	66,  // 81: mcpx.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
 	33,  // 82: mcpx.config.v1.HttpParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	52,  // 83: mcpx.config.v1.HttpParameterMapping.secret_value:type_name -> mcpx.config.v1.SecretValue
+	52,  // 83: mcpx.config.v1.HttpParameterMapping.secret:type_name -> mcpx.config.v1.SecretValue
 	33,  // 84: mcpx.config.v1.WebsocketParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	52,  // 85: mcpx.config.v1.WebsocketParameterMapping.secret_value:type_name -> mcpx.config.v1.SecretValue
+	52,  // 85: mcpx.config.v1.WebsocketParameterMapping.secret:type_name -> mcpx.config.v1.SecretValue
 	33,  // 86: mcpx.config.v1.WebrtcParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	52,  // 87: mcpx.config.v1.WebrtcParameterMapping.secret_value:type_name -> mcpx.config.v1.SecretValue
+	52,  // 87: mcpx.config.v1.WebrtcParameterMapping.secret:type_name -> mcpx.config.v1.SecretValue
 	33,  // 88: mcpx.config.v1.CommandLineParameterMapping.schema:type_name -> mcpx.config.v1.ParameterSchema
-	63,  // 89: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	63,  // 90: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	63,  // 91: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	63,  // 92: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	63,  // 93: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	63,  // 94: mcpx.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
-	63,  // 95: mcpx.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
-	61,  // 96: mcpx.config.v1.ContainerEnvironment.volumes:type_name -> mcpx.config.v1.ContainerEnvironment.VolumesEntry
-	63,  // 97: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	47,  // 98: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
-	48,  // 99: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
-	63,  // 100: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	63,  // 101: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	63,  // 102: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	50,  // 103: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
-	51,  // 104: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
-	5,   // 105: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
-	53,  // 106: mcpx.config.v1.SecretValue.remote_content:type_name -> mcpx.config.v1.RemoteContent
-	54,  // 107: mcpx.config.v1.RemoteContent.auth:type_name -> mcpx.config.v1.UpstreamAuthentication
-	55,  // 108: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
-	56,  // 109: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
-	57,  // 110: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
-	58,  // 111: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
-	52,  // 112: mcpx.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpx.config.v1.SecretValue
-	52,  // 113: mcpx.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpx.config.v1.SecretValue
-	52,  // 114: mcpx.config.v1.UpstreamBasicAuth.username:type_name -> mcpx.config.v1.SecretValue
-	52,  // 115: mcpx.config.v1.UpstreamBasicAuth.password:type_name -> mcpx.config.v1.SecretValue
-	52,  // 116: mcpx.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpx.config.v1.SecretValue
-	52,  // 117: mcpx.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpx.config.v1.SecretValue
-	118, // [118:118] is the sub-list for method output_type
-	118, // [118:118] is the sub-list for method input_type
-	118, // [118:118] is the sub-list for extension type_name
-	118, // [118:118] is the sub-list for extension extendee
-	0,   // [0:118] is the sub-list for field type_name
+	52,  // 89: mcpx.config.v1.CommandLineParameterMapping.secret:type_name -> mcpx.config.v1.SecretValue
+	64,  // 90: mcpx.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	64,  // 91: mcpx.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	64,  // 92: mcpx.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	64,  // 93: mcpx.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	64,  // 94: mcpx.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	64,  // 95: mcpx.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	64,  // 96: mcpx.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	62,  // 97: mcpx.config.v1.ContainerEnvironment.volumes:type_name -> mcpx.config.v1.ContainerEnvironment.VolumesEntry
+	64,  // 98: mcpx.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	47,  // 99: mcpx.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpx.config.v1.CircuitBreakerConfig
+	48,  // 100: mcpx.config.v1.ResilienceConfig.retry_policy:type_name -> mcpx.config.v1.RetryConfig
+	64,  // 101: mcpx.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	64,  // 102: mcpx.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	64,  // 103: mcpx.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	50,  // 104: mcpx.config.v1.AuthenticationConfig.api_key:type_name -> mcpx.config.v1.APIKeyAuth
+	51,  // 105: mcpx.config.v1.AuthenticationConfig.oauth2:type_name -> mcpx.config.v1.OAuth2Auth
+	5,   // 106: mcpx.config.v1.APIKeyAuth.in:type_name -> mcpx.config.v1.APIKeyAuth.Location
+	53,  // 107: mcpx.config.v1.SecretValue.remote_content:type_name -> mcpx.config.v1.RemoteContent
+	54,  // 108: mcpx.config.v1.RemoteContent.auth:type_name -> mcpx.config.v1.Authentication
+	56,  // 109: mcpx.config.v1.Authentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	57,  // 110: mcpx.config.v1.Authentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	58,  // 111: mcpx.config.v1.Authentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	59,  // 112: mcpx.config.v1.Authentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	56,  // 113: mcpx.config.v1.UpstreamAuthentication.api_key:type_name -> mcpx.config.v1.UpstreamAPIKeyAuth
+	57,  // 114: mcpx.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpx.config.v1.UpstreamBearerTokenAuth
+	58,  // 115: mcpx.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpx.config.v1.UpstreamBasicAuth
+	59,  // 116: mcpx.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpx.config.v1.UpstreamOAuth2Auth
+	52,  // 117: mcpx.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpx.config.v1.SecretValue
+	52,  // 118: mcpx.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpx.config.v1.SecretValue
+	52,  // 119: mcpx.config.v1.UpstreamBasicAuth.password:type_name -> mcpx.config.v1.SecretValue
+	52,  // 120: mcpx.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpx.config.v1.SecretValue
+	52,  // 121: mcpx.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpx.config.v1.SecretValue
+	122, // [122:122] is the sub-list for method output_type
+	122, // [122:122] is the sub-list for method input_type
+	122, // [122:122] is the sub-list for extension type_name
+	122, // [122:122] is the sub-list for extension extendee
+	0,   // [0:122] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -10207,6 +10507,12 @@ func file_proto_config_v1_config_proto_init() {
 		(*secretValue_RemoteContent)(nil),
 	}
 	file_proto_config_v1_config_proto_msgTypes[48].OneofWrappers = []any{
+		(*authentication_ApiKey)(nil),
+		(*authentication_BearerToken)(nil),
+		(*authentication_BasicAuth)(nil),
+		(*authentication_Oauth2)(nil),
+	}
+	file_proto_config_v1_config_proto_msgTypes[49].OneofWrappers = []any{
 		(*upstreamAuthentication_ApiKey)(nil),
 		(*upstreamAuthentication_BearerToken)(nil),
 		(*upstreamAuthentication_BasicAuth)(nil),
@@ -10218,7 +10524,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   56,
+			NumMessages:   57,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

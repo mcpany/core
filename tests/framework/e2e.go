@@ -195,9 +195,11 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 
 func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_grpc_authed_weather"
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("test-bearer-token")
 	authConfig := configv1.UpstreamAuthentication_builder{
 		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
-			Token: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "test-bearer-token"}},
+			Token: secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, authConfig)
@@ -331,10 +333,12 @@ paths:
 	require.NoError(t, err)
 	err = tmpfile.Close()
 	require.NoError(t, err)
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("test-api-key")
 	authConfig := configv1.UpstreamAuthentication_builder{
 		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"}},
+			ApiKey:     secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterOpenAPIService(t, registrationClient, serviceID, tmpfile.Name(), upstreamEndpoint, authConfig)
