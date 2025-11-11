@@ -383,22 +383,27 @@ func (a *Application) runServerMode(
 		if !strings.Contains(grpcPort, ":") {
 			grpcPort = ":" + grpcPort
 		}
-		startGrpcServer(
-			ctx,
-			&wg,
-			errChan,
-			"Registration",
-			grpcPort,
-			shutdownTimeout,
-			func(s *gogrpc.Server) {
-				registrationServer, err := mcpserver.NewRegistrationServer(bus)
-				if err != nil {
-					errChan <- fmt.Errorf("failed to create API server: %w", err)
-					return
-				}
-				v1.RegisterRegistrationServiceServer(s, registrationServer)
-			},
-		)
+		lis, err := net.Listen("tcp", grpcPort)
+		if err != nil {
+			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
+		} else {
+			startGrpcServer(
+				ctx,
+				&wg,
+				errChan,
+				"Registration",
+				lis,
+				shutdownTimeout,
+				func(s *gogrpc.Server) {
+					registrationServer, err := mcpserver.NewRegistrationServer(bus)
+					if err != nil {
+						errChan <- fmt.Errorf("failed to create API server: %w", err)
+						return
+					}
+					v1.RegisterRegistrationServiceServer(s, registrationServer)
+				},
+			)
+		}
 	}
 
 	select {
@@ -482,13 +487,14 @@ func startHTTPServer(
 // wg is a WaitGroup to signal when the server has shut down.
 // errChan is a channel for reporting errors during startup.
 // name is a descriptive name for the server, used in logging.
-// port is the port on which the server will listen.
+// lis is the net.Listener for the server.
 // register is a function that registers the gRPC services with the server.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	errChan chan<- error,
-	name, port string,
+	name string,
+	lis net.Listener,
 	shutdownTimeout time.Duration,
 	register func(*gogrpc.Server),
 ) {
@@ -501,13 +507,7 @@ func startGrpcServer(
 			}
 		}()
 
-		lis, err := net.Listen("tcp", port)
-		if err != nil {
-			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-			return
-		}
-
-		serverLog := logging.GetLogger().With("server", name, "port", port)
+		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
 		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
 		register(grpcServer)
 		reflection.Register(grpcServer)
@@ -530,10 +530,9 @@ func startGrpcServer(
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
-			// Always close the listener.
-			// For a graceful shutdown, this is redundant as `Serve` will have returned and the listener will have been closed.
-			// However, for a forced shutdown, we need to close the listener to release the port.
-			_ = lis.Close()
+			// For a graceful shutdown, `Serve` will return, and the listener will be closed by the defer statement.
+			// For a forced shutdown, we need to close the listener to release the port.
+			// The `Stop` method on the gRPC server will close the listener.
 			close(shutdownComplete)
 		}()
 
