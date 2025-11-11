@@ -466,24 +466,32 @@ message ToolDefinition {
 message HttpParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 message WebsocketParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 message WebrtcParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
 }
 
 // CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
 message CommandLineParameterMapping {
   // The schema for the parameter.
   ParameterSchema schema = 1;
+  // A secret value to use for the parameter.
+  SecretValue secret = 2;
 }
 
 
@@ -649,6 +657,37 @@ message OAuth2Auth {
 }
 
 // ===================================================================
+// Secret Management
+// ===================================================================
+
+// SecretValue represents a value that should be treated as a secret.
+// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
+message SecretValue {
+  oneof value {
+    string plain_text = 1;
+    string environment_variable = 2;
+    string file_path = 3;
+    RemoteContent remote_content = 4;
+  }
+}
+
+// RemoteContent represents content that is fetched from a remote URL.
+message RemoteContent {
+  string http_url = 1;
+  Authentication auth = 2;
+}
+
+// Authentication defines the authentication method to use when fetching remote content.
+message Authentication {
+  oneof auth_method {
+    UpstreamAPIKeyAuth api_key = 1;
+    UpstreamBearerTokenAuth bearer_token = 2;
+    UpstreamBasicAuth basic_auth = 3;
+    UpstreamOAuth2Auth oauth2 = 5;
+  }
+}
+
+// ===================================================================
 // Upstream Authentication Definitions
 // ===================================================================
 
@@ -669,26 +708,26 @@ message UpstreamAPIKeyAuth {
   // The name of the header to carry the API key (e.g., "X-API-Key").
   string header_name = 1;
   // The API key value.
-  string api_key = 2;
+  SecretValue api_key = 2;
 }
 
 // UpstreamBearerTokenAuth defines authentication using a bearer token.
 message UpstreamBearerTokenAuth {
   // The bearer token.
-  string token = 1;
+  SecretValue token = 1;
 }
 
 // UpstreamBasicAuth defines authentication using a username and password.
 message UpstreamBasicAuth {
   string username = 1;
-  string password = 2;
+  SecretValue password = 2;
 }
 
 // UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 message UpstreamOAuth2Auth {
   string token_url = 1;
-  string client_id = 2;
-  string client_secret = 3;
+  SecretValue client_id = 2;
+  SecretValue client_secret = 3;
   string scopes = 4;
 }
 

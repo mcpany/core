@@ -54,10 +54,12 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 
 func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_authed_echo"
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("test-api-key")
 	authConfig := configv1.UpstreamAuthentication_builder{
 		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     proto.String("test-api-key"),
+			ApiKey:     secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)

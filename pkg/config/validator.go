@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -174,11 +175,19 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			if apiKey.GetHeaderName() == "" {
 				log.Warn("API key 'header_name' is empty. Authentication may fail.")
 			}
-			if apiKey.GetApiKey() == "" {
+			apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+			if err != nil {
+				return fmt.Errorf("failed to resolve api key secret: %w", err)
+			}
+			if apiKeyValue == "" {
 				return fmt.Errorf("api key 'api_key' is empty")
 			}
 		} else if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
-			if bearerToken.GetToken() == "" {
+			tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+			if err != nil {
+				return fmt.Errorf("failed to resolve bearer token secret: %w", err)
+			}
+			if tokenValue == "" {
 				return fmt.Errorf("bearer token 'token' is empty")
 			}
 		} else if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {

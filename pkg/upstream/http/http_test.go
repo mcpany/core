@@ -175,7 +175,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		configJSON := `{"name": "auth-fail-service", "http_service": {"address": "http://localhost", "calls": [{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET"}]}, "upstream_authentication": {"api_key": {}}}`
+		configJSON := `{"name": "auth-fail-service", "http_service": {"address": "http://localhost", "calls": [{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET"}]}, "upstream_authentication": {"api_key": {"api_key": {"plain_text": ""}}}}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 

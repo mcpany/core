@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -176,11 +177,23 @@ func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *co
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		req.Header.Set(apiKey.GetHeaderName(), apiKey.GetApiKey())
+		apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+		if err != nil {
+			return err
+		}
+		req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
 	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
-		req.Header.Set("Authorization", "Bearer "+bearerToken.GetToken())
+		tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Bearer "+tokenValue)
 	} else if basicAuth := auth.GetBasicAuth(); basicAuth != nil {
-		req.SetBasicAuth(basicAuth.GetUsername(), basicAuth.GetPassword())
+		passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+		if err != nil {
+			return err
+		}
+		req.SetBasicAuth(basicAuth.GetUsername(), passwordValue)
 	}
 
 	return nil
