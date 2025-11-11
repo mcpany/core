@@ -52,7 +52,7 @@ func NewUpstreamServiceManager() *UpstreamServiceManager {
 
 // LoadAndMergeServices loads all upstream services from the given configuration,
 // including local and remote collections, and merges them.
-func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpxServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
+func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
 		m.addService(service, 0)

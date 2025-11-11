@@ -35,9 +35,9 @@ import (
 // Parameters:
 //   - store: The configuration store from which to load the configuration.
 //
-// Returns a validated `McpxServerConfig` or an error if loading or validation
+// Returns a validated `McpAnyServerConfig` or an error if loading or validation
 // fails.
-func LoadServices(store Store, binaryType string) (*configv1.McpxServerConfig, error) {
+func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
 	fileConfig, err := store.Load()
@@ -47,7 +47,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpxServerConfig, e
 
 	if fileConfig == nil {
 		log.Info("No configuration files found or all were empty, using default configuration.")
-		fileConfig = &configv1.McpxServerConfig{}
+		fileConfig = &configv1.McpAnyServerConfig{}
 	}
 
 	manager := NewUpstreamServiceManager()

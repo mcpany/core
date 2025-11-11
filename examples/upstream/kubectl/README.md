@@ -1,13 +1,13 @@
 # Example: Wrapping `kubectl`
 
-This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `mcpany`. This allows an AI assistant to interact with a Kubernetes cluster.
+This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `MCP Any`. This allows an AI assistant to interact with a Kubernetes cluster.
 
 ## Overview
 
 This example consists of two main components:
 
-1. **`mcpany` Configuration**: A YAML file (`config/mcpxy_config.yaml`) that defines how to translate `mcpany` tool calls into `kubectl` commands.
-2. **`mcpany` Server**: The `mcpany` instance that executes the `kubectl` commands.
+1. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that defines how to translate `MCP Any` tool calls into `kubectl` commands.
+2. **`MCP Any` Server**: The `MCP Any` instance that executes the `kubectl` commands.
 
 ## Prerequisites
 
@@ -19,23 +19,23 @@ This example consists of two main components:
 
 ## Running the Example
 
-### 1. Build the `mcpany` Binary
+### 1. Build the `MCP Any` Binary
 
-Ensure the `mcpany` binary is built. From the root of the repository, run:
+Ensure the `MCP Any` binary is built. From the root of the repository, run:
 
 ```bash
 make build
 ```
 
-### 2. Run the `mcpany` Server
+### 2. Run the `MCP Any` Server
 
-Start the `mcpany` server using the provided shell script.
+Start the `MCP Any` server using the provided shell script.
 
 ```bash
 ./start.sh
 ```
 
-The `mcpany` server will start and listen for JSON-RPC requests on port `8080`.
+The `MCP Any` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
@@ -55,4 +55,4 @@ You can also call the `get-deployments` tool:
 gemini --allowed-mcp-server-names mcpany-kubectl -p "call the tool kubectl.get-deployments with namespace default"
 ```
 
-This example showcases how `mcpany` can be used to create powerful integrations with existing command-line tools, enabling AI assistants to perform complex tasks like managing a Kubernetes cluster.
+This example showcases how `MCP Any` can be used to create powerful integrations with existing command-line tools, enabling AI assistants to perform complex tasks like managing a Kubernetes cluster.

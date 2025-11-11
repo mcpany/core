@@ -22,7 +22,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -33,6 +35,7 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
@@ -355,6 +358,15 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		httpReq.URL.RawQuery = q.Encode()
 	}
 
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		reqDump, err := httputil.DumpRequestOut(httpReq, true)
+		if err != nil {
+			logging.GetLogger().Error("failed to dump http request", "error", err)
+		} else {
+			logging.GetLogger().Debug("sending http request", "request", string(reqDump))
+		}
+	}
+
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
@@ -366,6 +378,18 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
+	}
+
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		// Since we have already read the body, we need to create a new reader and assign it back to the response
+		// so that DumpResponse can read it.
+		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
+		respDump, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			logging.GetLogger().Error("failed to dump http response", "error", err)
+		} else {
+			logging.GetLogger().Debug("received http response", "response", string(respDump))
+		}
 	}
 
 	if resp.StatusCode >= 400 {
