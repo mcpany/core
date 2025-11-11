@@ -81,7 +81,7 @@ func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 				BaseMessage: bus.BaseMessage{CID: req.CorrelationID()},
 				Result:      []byte(result),
 			}
-			if err := resBus.Publish(context.Background(), req.CorrelationID(), res); err != nil {
+			if err := resBus.Publish(ctx, req.CorrelationID(), res); err != nil {
 				log.Error("Failed to publish tool execution result", "error", err)
 			}
 		})
