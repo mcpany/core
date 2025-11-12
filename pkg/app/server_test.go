@@ -373,6 +373,33 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 }
 
+func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	// Occupy a port to ensure the HTTP server fails to start.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	httpPort := l.Addr().(*net.TCPAddr).Port
+
+	app := NewApplication()
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	runErr := app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", nil, 1*time.Second)
+
+	require.Error(t, runErr, "app.Run should return an error")
+	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
+
+	logs := buf.String()
+	assert.Contains(t, logs, "gRPC server listening", "The gRPC server should have started.")
+	assert.Contains(t, logs, "Attempting to gracefully shut down server...", "A graceful shutdown should be attempted.")
+	assert.Contains(t, logs, "Server shut down.", "The gRPC server should have been shut down gracefully.")
+}
+
 func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
 	lis, err := net.Listen("tcp", "localhost:0")
