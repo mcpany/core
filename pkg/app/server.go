@@ -457,22 +457,31 @@ func startHTTPServer(
 			},
 		}
 
+		// localCtx is used to signal the shutdown goroutine to exit.
+		localCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
 		shutdownComplete := make(chan struct{})
 		go func() {
-			<-ctx.Done()
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-			defer cancel()
+			defer close(shutdownComplete)
+			select {
+			case <-ctx.Done():
+				// This is the normal shutdown path.
+			case <-localCtx.Done():
+				// This is the shutdown path for when the server fails to start.
+			}
+			shutdownCtx, cancelTimeout := context.WithTimeout(context.Background(), shutdownTimeout)
+			defer cancelTimeout()
 			serverLog.Info("Attempting to gracefully shut down server...")
 			if err := server.Shutdown(shutdownCtx); err != nil {
 				serverLog.Error("Shutdown error", "error", err)
 			}
-			close(shutdownComplete)
 		}()
 
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			return
+			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 
 		<-shutdownComplete
@@ -512,15 +521,25 @@ func startGrpcServer(
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
+		// localCtx is used to signal the shutdown goroutine to exit.
+		localCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
 		shutdownComplete := make(chan struct{})
 		go func() {
-			<-ctx.Done()
-			serverLog.Info("Attempting to gracefully shut down server...")
+			defer close(shutdownComplete)
+			select {
+			case <-ctx.Done():
+				// This is the normal shutdown path.
+			case <-localCtx.Done():
+				// This is the shutdown path for when the server fails to start.
+			}
 
+			serverLog.Info("Attempting to gracefully shut down server...")
 			stopped := make(chan struct{})
 			go func() {
+				defer close(stopped)
 				grpcServer.GracefulStop()
-				close(stopped)
 			}()
 
 			select {
@@ -530,16 +549,12 @@ func startGrpcServer(
 			case <-stopped:
 				serverLog.Info("Server gracefully stopped.")
 			}
-			// For a graceful shutdown, `Serve` will return, and the listener will be closed by the defer statement.
-			// For a forced shutdown, we need to close the listener to release the port.
-			// The `Stop` method on the gRPC server will close the listener.
-			close(shutdownComplete)
 		}()
 
 		serverLog.Info("gRPC server listening")
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
-			return
+			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
