@@ -53,7 +53,10 @@ func setup() (*worker.Worker, error) {
 	} else {
 		busConfig.SetInMemory(&buspb.InMemoryBus{})
 	}
+	return setupWithConfig(busConfig)
+}
 
+func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 	// Validate the bus configuration
 	globalSettings := &configv1.GlobalSettings{}
 	globalSettings.SetMessageBus(busConfig)

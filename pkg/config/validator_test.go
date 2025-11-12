@@ -23,6 +23,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/prototext"
 )
 
 func TestValidate(t *testing.T) {
@@ -262,6 +263,31 @@ func TestValidate(t *testing.T) {
 			}).Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "dup-svc": duplicate service name found`,
+		},
+		{
+			name: "invalid basic auth - empty password",
+			config: func() *configv1.McpAnyServerConfig {
+				var cfg configv1.McpAnyServerConfig
+				prototext.Unmarshal([]byte(`
+					upstream_services: {
+						name: "http-svc-1"
+						http_service: {
+							address: "http://localhost:8080"
+						}
+						upstream_authentication: {
+							basic_auth: {
+								username: "user"
+								password: {
+									plain_text: ""
+								}
+							}
+						}
+					}
+				`), &cfg)
+				return &cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "http-svc-1": basic auth 'password' is empty`,
 		},
 	}
 

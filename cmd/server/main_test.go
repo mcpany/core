@@ -147,3 +147,39 @@ func TestMainExecution(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestHealthCmdFlagPrecedence(t *testing.T) {
+	// Start a mock HTTP server on a custom port
+	port := "8089"
+	server := &http.Server{
+		Addr: ":" + port,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}),
+	}
+	go func() {
+		_ = server.ListenAndServe()
+	}()
+	defer func() { _ = server.Shutdown(context.Background()) }()
+
+	// Wait for the server to start
+	time.Sleep(100 * time.Millisecond)
+
+	// Create a temporary config file with a different port
+	dir, err := os.MkdirTemp("", "test-config")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	configFile := dir + "/config.yaml"
+	err = os.WriteFile(configFile, []byte(`
+global_settings:
+  bind_address: "localhost:9090"
+`), 0644)
+	assert.NoError(t, err)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"health", "--config-path", configFile, "--jsonrpc-port", port})
+	err = rootCmd.Execute()
+
+	assert.NoError(t, err, "Health check should pass because the --jsonrpc-port flag should take precedence over the config file")
+}

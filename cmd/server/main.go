@@ -141,9 +141,8 @@ func newRootCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			configPaths := viper.GetStringSlice("config-path")
 			fs := afero.NewOsFs()
-			var addr string
-
-			if len(configPaths) > 0 {
+			addr := viper.GetString("jsonrpc-port")
+			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
 				store := config.NewFileStore(fs, configPaths)
 				cfg, err := config.LoadServices(store, "server")
 				if err != nil {
@@ -154,11 +153,8 @@ func newRootCmd() *cobra.Command {
 				}
 			}
 
-			if addr == "" {
-				addr = viper.GetString("jsonrpc-port")
-				if !strings.Contains(addr, ":") {
-					addr = "localhost:" + addr
-				}
+			if !strings.Contains(addr, ":") {
+				addr = "localhost:" + addr
 			}
 			timeout, _ := cmd.Flags().GetDuration("timeout")
 			return app.HealthCheck(cmd.OutOrStdout(), addr, timeout)
