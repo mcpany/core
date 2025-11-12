@@ -141,6 +141,10 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		if !validation.IsValidURL(websocketService.GetAddress()) {
 			return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
 		}
+		u, _ := url.Parse(websocketService.GetAddress())
+		if u.Scheme != "ws" && u.Scheme != "wss" {
+			return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
+		}
 	} else if grpcService := service.GetGrpcService(); grpcService != nil {
 		if grpcService.GetAddress() == "" {
 			return fmt.Errorf("gRPC service has empty target_address")
