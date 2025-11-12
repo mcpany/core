@@ -2,12 +2,14 @@ upstream_services: {
   name: "http-echo-from-textproto"
   http_service: {
     address: "http://localhost:8080"
-    calls: {
-      endpoint_path: "/echo"
-      schema: {
-        name: "echo"
+    tools: {
+      call: {
+        schema: {
+          name: "echo"
+        }
+        endpoint_path: "/echo"
+        method: HTTP_METHOD_POST
       }
-      method: HTTP_METHOD_POST
     }
   }
 }

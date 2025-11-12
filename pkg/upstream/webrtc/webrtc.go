@@ -95,7 +95,7 @@ func (u *WebrtcUpstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	address := webrtcService.GetAddress()
-	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	log.Info("Registered WebRTC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -104,10 +104,10 @@ func (u *WebrtcUpstream) Register(
 // createAndRegisterWebrtcTools iterates through the WebRTC call definitions in
 // the service configuration, creates a new WebrtcTool for each, and registers it
 // with the tool manager.
-func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
-	definitions := webrtcService.GetCalls()
+	definitions := webrtcService.GetTools()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(definitions))
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -116,7 +116,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		return nil
 	}
 
-	for i, wrtcDef := range definitions {
+	for i, toolDefinition := range definitions {
+		wrtcDef := toolDefinition.GetCall()
 		schema := wrtcDef.GetSchema()
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
@@ -174,5 +175,28 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
+
+	for _, resourceDef := range webrtcService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetWebrtcCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools
 }

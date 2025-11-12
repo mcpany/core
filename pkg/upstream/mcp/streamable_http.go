@@ -402,10 +402,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetCalls()
+	callDefs := mcpService.GetTools()
 	callDefMap := make(map[string]*configv1.MCPCallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
+		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -474,6 +474,29 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			},
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	log := logging.GetLogger()
+	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetMcpCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return discoveredTools, discoveredResources, nil
@@ -552,10 +575,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetCalls()
+	callDefs := mcpService.GetTools()
 	callDefMap := make(map[string]*configv1.MCPCallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
+		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -624,6 +647,29 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			},
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	log := logging.GetLogger()
+	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetMcpCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return discoveredTools, discoveredResources, nil
