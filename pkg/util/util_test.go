@@ -82,6 +82,15 @@ func TestSanitizeID(t *testing.T) {
 			ids:         []string{""},
 			expectError: true,
 		},
+		{
+			name:                     "id with only non-word characters",
+			ids:                      []string{"@@@"},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "id_2ec847d8",
+			expectError:              false,
+		},
 	}
 
 	for _, tc := range testCases {
