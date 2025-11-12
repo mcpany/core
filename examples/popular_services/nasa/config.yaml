@@ -1,0 +1,23 @@
+upstreamServices:
+  - name: "nasa-gibs"
+    httpService:
+      address: "https://gibs.earthdata.nasa.gov"
+      calls:
+        - schema:
+            name: "get_tile"
+            description: "Get a map tile from the NASA GIBS service."
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/wmts/epsg4326/best/{LayerIdentifier}/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpg"
+          parameters:
+            - schema:
+                name: "LayerIdentifier"
+            - schema:
+                name: "Time"
+            - schema:
+                name: "TileMatrixSet"
+            - schema:
+                name: "TileMatrix"
+            - schema:
+                name: "TileRow"
+            - schema:
+                name: "TileCol"
