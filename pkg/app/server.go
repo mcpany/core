@@ -406,9 +406,11 @@ func (a *Application) runServerMode(
 		}
 	}
 
+	var startupErr error
 	select {
 	case err := <-errChan:
-		return fmt.Errorf("failed to start a server: %w", err)
+		startupErr = fmt.Errorf("failed to start a server: %w", err)
+		logging.GetLogger().Error("Server startup failed, initiating shutdown...", "error", startupErr)
 	case <-ctx.Done():
 		logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
 	}
@@ -417,7 +419,7 @@ func (a *Application) runServerMode(
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
 
-	return nil
+	return startupErr
 }
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
