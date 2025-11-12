@@ -27,32 +27,91 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+import (
+	"net/http"
+)
+
 func TestAuthMiddleware(t *testing.T) {
-	t.Run("should call next handler", func(t *testing.T) {
+	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
 		authManager := auth.NewAuthManager()
 		mw := middleware.AuthMiddleware(authManager)
 
 		var nextCalled bool
 		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			nextCalled = true
-			return &mcp.CallToolResult{
-				Content: []mcp.Content{
-					&mcp.TextContent{Text: "test"},
-				},
-			}, nil
+			return &mcp.CallToolResult{}, nil
 		}
 
 		handler := mw(nextHandler)
-		result, err := handler(context.Background(), "test.method", nil)
+		_, err := handler(context.Background(), "test.method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled, "next handler should be called")
+	})
 
-		callToolResult, ok := result.(*mcp.CallToolResult)
-		require.True(t, ok)
+	t.Run("should return error when authentication fails", func(t *testing.T) {
+		authManager := auth.NewAuthManager()
+		authenticator := &auth.APIKeyAuthenticator{
+			HeaderName:  "X-API-Key",
+			HeaderValue: "secret",
+		}
+		err := authManager.AddAuthenticator("test", authenticator)
+		require.NoError(t, err)
 
-		require.Len(t, callToolResult.Content, 1)
-		textContent, ok := callToolResult.Content[0].(*mcp.TextContent)
-		require.True(t, ok)
-		assert.Equal(t, "test", textContent.Text)
+		mw := middleware.AuthMiddleware(authManager)
+
+		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			t.Fatal("next handler should not be called")
+			return nil, nil
+		}
+
+		handler := mw(nextHandler)
+
+		// Create an http.Request without the API key.
+		httpReq, err := http.NewRequest("POST", "/", nil)
+		require.NoError(t, err)
+
+		// Add the http.Request to the context.
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		// Call the handler. The method "test.method" implies the serviceID is "test".
+		_, err = handler(ctx, "test.method", nil)
+
+		// This is the point of failure for the existing buggy middleware.
+		// It should return an error, but it will return nil.
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized")
+	})
+
+	t.Run("should call next handler when authentication succeeds", func(t *testing.T) {
+		authManager := auth.NewAuthManager()
+		authenticator := &auth.APIKeyAuthenticator{
+			HeaderName:  "X-API-Key",
+			HeaderValue: "secret",
+		}
+		err := authManager.AddAuthenticator("test", authenticator)
+		require.NoError(t, err)
+
+		mw := middleware.AuthMiddleware(authManager)
+
+		var nextCalled bool
+		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+			nextCalled = true
+			return nil, nil
+		}
+
+		handler := mw(nextHandler)
+
+		// Create an http.Request with the correct API key.
+		httpReq, err := http.NewRequest("POST", "/", nil)
+		require.NoError(t, err)
+		httpReq.Header.Set("X-API-Key", "secret")
+
+		// Add the http.Request to the context.
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		// Call the handler.
+		_, err = handler(ctx, "test.method", nil)
+		require.NoError(t, err)
+		assert.True(t, nextCalled, "next handler should have been called")
 	})
 }
