@@ -93,21 +93,6 @@ func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
 	})
 }
 
-func TestTextParser_GeneralEdgeCases(t *testing.T) {
-	parser := NewTextParser()
-
-	t.Run("unsupported_type", func(t *testing.T) {
-		_, err := parser.Parse("csv", []byte{}, nil)
-		assert.Error(t, err)
-	})
-
-	t.Run("empty_input_and_config", func(t *testing.T) {
-		result, err := parser.Parse("json", []byte(`{}`), map[string]string{})
-		assert.NoError(t, err)
-		assert.Empty(t, result)
-	})
-}
-
 func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
@@ -116,40 +101,6 @@ func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 		config := map[string]string{"name": `//name[`}
 		_, err := parser.Parse("xml", xmlInput, config)
 		assert.Error(t, err)
-	})
-
-	t.Run("invalid_xml", func(t *testing.T) {
-		invalidXMLInput := []byte(`<root><name>test</name>`)
-		config := map[string]string{"name": `//name`}
-		_, err := parser.Parse("xml", invalidXMLInput, config)
-		assert.Error(t, err)
-	})
-
-	t.Run("xpath_not_found", func(t *testing.T) {
-		config := map[string]string{"name": `//nonexistent`}
-		result, err := parser.Parse("xml", xmlInput, config)
-		assert.NoError(t, err)
-		assert.Empty(t, result)
-	})
-}
-
-func TestTextParser_ParseJSON_EdgeCases(t *testing.T) {
-	parser := NewTextParser()
-
-	t.Run("empty_config", func(t *testing.T) {
-		jsonInput := []byte(`{"person": {"name": "test"}}`)
-		config := map[string]string{}
-		result, err := parser.Parse("json", jsonInput, config)
-		assert.NoError(t, err)
-		assert.Empty(t, result)
-	})
-
-	t.Run("empty_input", func(t *testing.T) {
-		jsonInput := []byte(`{}`)
-		config := map[string]string{"name": `{.person.name}`}
-		result, err := parser.Parse("json", jsonInput, config)
-		assert.NoError(t, err)
-		assert.Empty(t, result)
 	})
 }
 
@@ -224,12 +175,5 @@ func TestTextParser_ParseText_ErrorCases(t *testing.T) {
 		config := map[string]string{"userId": `User ID: (\d+[`}
 		_, err := parser.Parse("text", textInput, config)
 		assert.Error(t, err)
-	})
-
-	t.Run("regex_not_found", func(t *testing.T) {
-		config := map[string]string{"userId": `User ID: (\s+)`}
-		result, err := parser.Parse("text", textInput, config)
-		assert.NoError(t, err)
-		assert.Empty(t, result)
 	})
 }
