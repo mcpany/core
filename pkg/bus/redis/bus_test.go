@@ -80,26 +80,59 @@ func TestRedisBus_Publish_RedisError(t *testing.T) {
 func TestRedisBus_Subscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
+	topic := "test-subscribe"
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.Subscribe(context.Background(), "test-subscribe", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
 		assert.Equal(t, "hello", msg)
 		wg.Done()
 	})
 	defer unsub()
 
-	// Wait for the subscription to be active.
 	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), "test-subscribe").Val()
-		return len(subs) > 0 && subs["test-subscribe"] == 1
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
-	err := bus.Publish(context.Background(), "test-subscribe", "hello")
+	err := bus.Publish(context.Background(), topic, "hello")
 	assert.NoError(t, err)
 
 	wg.Wait()
+}
+
+func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-subscribe-panic"
+
+	var wg sync.WaitGroup
+	wg.Add(2) // Expecting two messages
+
+	handlerCount := 0
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		defer wg.Done()
+		handlerCount++
+		if handlerCount == 1 {
+			panic("handler panic")
+		}
+		assert.Equal(t, "second message", msg)
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Even if the handler panics, the subscription should remain active
+	bus.Publish(context.Background(), topic, "first message")
+	bus.Publish(context.Background(), topic, "second message")
+
+	wg.Wait()
+
+	assert.Equal(t, 2, handlerCount, "handler should be called twice")
 }
 
 func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
@@ -222,30 +255,53 @@ func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
 func TestRedisBus_SubscribeOnce(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
+	topic := "test-subscribe-once"
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	var receivedMessages []string
-	unsub := bus.SubscribeOnce(context.Background(), "test-once", func(msg string) {
-		receivedMessages = append(receivedMessages, msg)
+	handlerCalled := make(chan string, 1)
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		handlerCalled <- msg
 		wg.Done()
 	})
 	defer unsub()
 
 	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), "test-once").Val()
-		return len(subs) > 0 && subs["test-once"] == 1
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
-	err := bus.Publish(context.Background(), "test-once", "hello")
-	assert.NoError(t, err)
-	err = bus.Publish(context.Background(), "test-once", "world")
+	err := bus.Publish(context.Background(), topic, "first message")
 	assert.NoError(t, err)
 
 	wg.Wait()
 
-	assert.Equal(t, []string{"hello"}, receivedMessages)
+	// The subscription should be automatically removed after one message
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
+
+	// Publish another message to ensure the handler is not called again
+	err = bus.Publish(context.Background(), topic, "second message")
+	assert.NoError(t, err)
+
+	select {
+	case msg := <-handlerCalled:
+		assert.Equal(t, "first message", msg)
+	default:
+		t.Fatal("handler should have been called once")
+	}
+
+	// Ensure no more messages are received
+	select {
+	case msg := <-handlerCalled:
+		t.Fatalf("handler should not have been called again, but received: %s", msg)
+	case <-time.After(100 * time.Millisecond):
+		// Test passed, no second message received
+	}
 }
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
