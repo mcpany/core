@@ -22,31 +22,17 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/worker"
 	buspb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/redis/go-redis/v9"
 )
 
 func setup() (*worker.Worker, error) {
 	busConfig := &buspb.MessageBus{}
 	if redisAddr := os.Getenv("REDIS_ADDR"); redisAddr != "" {
-		// Verify Redis connection
-		opts, err := redis.ParseURL(redisAddr)
-		if err != nil {
-			return nil, fmt.Errorf("invalid redis address: %w", err)
-		}
-		rdb := redis.NewClient(opts)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if _, err := rdb.Ping(ctx).Result(); err != nil {
-			return nil, fmt.Errorf("redis connection failed: %w", err)
-		}
-
 		redisBus := &buspb.RedisBus{}
 		redisBus.SetAddress(redisAddr)
 		busConfig.SetRedis(redisBus)

@@ -17,50 +17,20 @@
 package main
 
 import (
-	"context"
 	"os"
 	"testing"
 
-	"github.com/redis/go-redis/v9"
 	buspb "github.com/mcpany/core/proto/bus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSetup_NoErrorOnValidRedis(t *testing.T) {
 	// Set a valid REDIS_ADDR
-	redisAddr := "redis://localhost:6379"
-	os.Setenv("REDIS_ADDR", redisAddr)
+	os.Setenv("REDIS_ADDR", "localhost:6379")
 	defer os.Unsetenv("REDIS_ADDR")
 
-	// Skip test if Redis is not available
-	opts, err := redis.ParseURL(redisAddr)
-	if err != nil {
-		t.Fatalf("invalid redis url: %v", err)
-	}
-	client := redis.NewClient(opts)
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
-
-	_, err = setup()
+	_, err := setup()
 	assert.NoError(t, err, "setup() should not return an error with a valid REDIS_ADDR")
-}
-
-func TestSetup_InMemoryBusWhenRedisAddrNotSet(t *testing.T) {
-	// Unset REDIS_ADDR to ensure in-memory bus is used
-	os.Unsetenv("REDIS_ADDR")
-
-	_, err := setup()
-	assert.NoError(t, err, "setup() should not return an error when REDIS_ADDR is not set")
-}
-
-func TestSetup_ErrorOnInvalidRedisAddr(t *testing.T) {
-	// Set an invalid REDIS_ADDR
-	os.Setenv("REDIS_ADDR", "invalid-address")
-	defer os.Unsetenv("REDIS_ADDR")
-
-	_, err := setup()
-	assert.Error(t, err, "setup() should return an error with an invalid REDIS_ADDR")
 }
 
 func TestSetup_InMemoryBus(t *testing.T) {

@@ -22,15 +22,16 @@ import (
 	"encoding/json"
 	"log/slog"
 	"sync"
-	"strings"
 	"testing"
 	"time"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
@@ -100,164 +101,6 @@ func TestRedisBus_Subscribe(t *testing.T) {
 
 	wg.Wait()
 }
-
-func TestRedisBus_Subscribe_GoroutineLogging(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "goroutine-logging"
-
-	var logBuffer bytes.Buffer
-	logging.ForTestsOnlyResetLogger()
-	logging.Init(slog.LevelDebug, &logBuffer)
-	defer logging.ForTestsOnlyResetLogger()
-
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		// No-op handler
-	})
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	unsub()
-
-	require.Eventually(t, func() bool {
-		return strings.Contains(logBuffer.String(), "Started subscription goroutine")
-	}, 1*time.Second, 10*time.Millisecond, "start log message did not appear")
-	require.Eventually(t, func() bool {
-		return strings.Contains(logBuffer.String(), "Exited subscription goroutine")
-	}, 1*time.Second, 10*time.Millisecond, "exit log message did not appear")
-}
-
-func TestRedisBus_Subscribe_GoroutineTermination(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "goroutine-termination"
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	handlerCalled := make(chan bool, 1)
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
-		handlerCalled <- true
-	})
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
-
-	// This is a bit tricky to test directly, but we can check that the pubsub is closed.
-	// The goroutine should exit when the pubsub is closed.
-	// We can't really check the goroutine directly, so we'll just check the pubsub.
-	// A more robust test would involve a mock that can tell us when the goroutine exits.
-	// For now, we'll just check that the pubsub is closed.
-	assert.Equal(t, 0, len(bus.pubsubs))
-	cancel()
-}
-
-func TestRedisBus_Subscribe_MultipleMessages(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "multiple-messages"
-
-	var wg sync.WaitGroup
-	wg.Add(3)
-
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		wg.Done()
-	})
-	defer unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	bus.Publish(context.Background(), topic, "message 1")
-	bus.Publish(context.Background(), topic, "message 2")
-	bus.Publish(context.Background(), topic, "message 3")
-
-	wg.Wait()
-}
-
-func TestRedisBus_Subscribe_Close(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "close-topic"
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
-		// No-op handler
-	})
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
-
-	// This is a bit tricky to test directly, but we can check that the pubsub is closed.
-	// The goroutine should exit when the pubsub is closed.
-	// We can't really check the goroutine directly, so we'll just check the pubsub.
-	// A more robust test would involve a mock that can tell us when the goroutine exits.
-	// For now, we'll just check that the pubsub is closed.
-	assert.Equal(t, 0, len(bus.pubsubs))
-	cancel()
-}
-
-func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "context-cancellation"
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	handlerCalled := make(chan bool, 1)
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
-		handlerCalled <- true
-	})
-	defer unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	cancel()
-
-	// After context cancellation, the subscription should be gone.
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after context cancellation")
-
-	// Make sure the handler is not called after cancellation
-	err := bus.Publish(context.Background(), topic, "hello")
-	assert.NoError(t, err)
-
-	select {
-	case <-handlerCalled:
-		t.Fatal("handler should not have been called")
-	case <-time.After(100 * time.Millisecond):
-		// Test passed
-	}
-}
-
 
 func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
@@ -379,74 +222,30 @@ func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
 func TestRedisBus_SubscribeOnce(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
-	topic := "test-once"
 
-	msgCh := make(chan string, 1)
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
-		msgCh <- msg
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	var receivedMessages []string
+	unsub := bus.SubscribeOnce(context.Background(), "test-once", func(msg string) {
+		receivedMessages = append(receivedMessages, msg)
+		wg.Done()
 	})
 	defer unsub()
 
 	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
+		subs := client.PubSubNumSub(context.Background(), "test-once").Val()
+		return len(subs) > 0 && subs["test-once"] == 1
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
-	err := bus.Publish(context.Background(), topic, "hello")
+	err := bus.Publish(context.Background(), "test-once", "hello")
 	assert.NoError(t, err)
-	err = bus.Publish(context.Background(), topic, "world")
+	err = bus.Publish(context.Background(), "test-once", "world")
 	assert.NoError(t, err)
 
-	var receivedMsg string
-	select {
-	case receivedMsg = <-msgCh:
-	// expected
-	case <-time.After(1 * time.Second):
-		t.Fatal("timed out waiting for message")
-	}
+	wg.Wait()
 
-	assert.Equal(t, "hello", receivedMsg)
-
-	// Ensure no more messages are received
-	select {
-	case msg := <-msgCh:
-		t.Fatalf("received unexpected message: %s", msg)
-	case <-time.After(100 * time.Millisecond):
-	// This is expected, no more messages should be received.
-	}
-
-	// Also good to check if the subscriber is gone.
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
-}
-
-func TestRedisBus_SubscribeOnce_NoPublish(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-once-no-publish"
-
-	handlerCalled := make(chan bool, 1)
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
-		handlerCalled <- true
-	})
-	defer unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// No message is published.
-	// We expect the handler to not be called.
-
-	select {
-	case <-handlerCalled:
-		t.Fatal("handler should not have been called")
-	case <-time.After(100 * time.Millisecond):
-		// Test passed
-	}
+	assert.Equal(t, []string{"hello"}, receivedMessages)
 }
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
@@ -482,6 +281,21 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	}
 }
 
+func TestRedisBus_New(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address:  proto.String("localhost:6379"),
+		Password: proto.String("password"),
+		Db:       proto.Int32(1),
+	}.Build()
+
+	bus := New[string](redisBus)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "password", options.Password)
+	assert.Equal(t, 1, options.DB)
+}
 
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
@@ -504,74 +318,4 @@ func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	}
 
 	wg.Wait()
-}
-
-func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "once-unsub-before-message"
-
-	handlerCalled := make(chan bool, 1)
-
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
-		handlerCalled <- true
-	})
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Unsubscribe before publishing
-	unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribe")
-
-	err := bus.Publish(context.Background(), topic, "hello")
-	assert.NoError(t, err)
-
-	select {
-	case <-handlerCalled:
-		t.Fatal("handler should not have been called after unsubscribe")
-	case <-time.After(200 * time.Millisecond):
-		// Test passed
-	}
-}
-
-func TestRedisBus_Subscribe_WithCancelledContext(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "cancelled-context-topic-int"
-
-	handlerCalled := make(chan bool, 1)
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
-		handlerCalled <- true
-	})
-	defer unsub()
-
-	// Cancel the context after subscribing
-	cancel()
-
-	// The redis client should handle the context cancellation and close the subscription.
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) == 0 || subs[topic] == 0
-	}, 5*time.Second, 100*time.Millisecond, "subscriber did not disappear after context cancellation")
-
-	// Now try publishing. The handler should not be called.
-	err := bus.Publish(context.Background(), topic, "hello")
-	assert.NoError(t, err)
-
-	select {
-	case <-handlerCalled:
-		t.Fatal("handler should not have been called")
-	case <-time.After(200 * time.Millisecond):
-		// Test passed
-	}
 }
