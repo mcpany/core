@@ -20,9 +20,13 @@ import (
 	"context"
 	"sync"
 	"sync/atomic"
+	"bytes"
+	"log/slog"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -117,4 +121,62 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	}
 
 	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount))
+}
+
+func TestDefaultBus_PublishTimeout(t *testing.T) {
+	// 1. Set up a logger to capture output
+	var logBuffer bytes.Buffer
+	logging.ForTestsOnlyResetLogger()
+	logging.Init(slog.LevelWarn, &logBuffer)
+
+	// 2. Create a bus with a very short timeout
+	bus := New[string]()
+	bus.publishTimeout = 1 * time.Millisecond
+
+	// 3. Create a subscriber with a full channel that will not receive messages
+	var wg sync.WaitGroup
+	wg.Add(1)
+	unsub := bus.Subscribe(context.Background(), "test_timeout", func(msg string) {
+		// This handler will block, preventing further messages from being processed
+		wg.Wait()
+	})
+	defer unsub()
+
+	// 4. Publish messages to block the subscriber and fill the channel buffer.
+	// The first message will be consumed by the handler, which will block.
+	// The next 128 messages will fill the channel's buffer.
+	for i := 0; i < 129; i++ {
+		bus.Publish(context.Background(), "test_timeout", "fill")
+	}
+
+	// 5. Publish the message that should time out
+	bus.Publish(context.Background(), "test_timeout", "should_drop")
+
+	// 6. Check the log output for the dropped message warning
+	assert.Eventually(t, func() bool {
+		return strings.Contains(logBuffer.String(), "Message dropped on topic")
+	}, 1*time.Second, 10*time.Millisecond)
+
+	// 7. Clean up the blocking handler
+	wg.Done()
+}
+
+func TestDefaultBus_SubscribeOnce_Unsubscribe(t *testing.T) {
+	bus := New[string]()
+	handlerCalled := false
+
+	unsub := bus.SubscribeOnce(context.Background(), "test_unsub_once", func(msg string) {
+		handlerCalled = true
+	})
+
+	// Unsubscribe immediately, before any message is published
+	unsub()
+
+	// Publish a message to the topic
+	bus.Publish(context.Background(), "test_unsub_once", "hello")
+
+	// Wait a moment to ensure the handler is not called
+	time.Sleep(10 * time.Millisecond)
+
+	assert.False(t, handlerCalled, "handler should not be called after unsubscribing")
 }
