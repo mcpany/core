@@ -7,6 +7,7 @@ This service provides access to global, full-resolution satellite imagery from N
 You can use this service to retrieve a map tile for a specific location, date, and imagery layer.
 
 To get a map tile, call the `get_tile` tool with the following parameters:
+
 - `LayerIdentifier`: The name of the imagery layer.
 - `Time`: The date of the imagery (YYYY-MM-DD).
 - `TileMatrixSet`: The tile matrix set (e.g., '250m').
