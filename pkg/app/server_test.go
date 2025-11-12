@@ -258,11 +258,12 @@ upstream_services:
   - name: "test-http-service"
     http_service:
       address: "http://localhost:8080"
-      calls:
-        - schema:
-            name: "echo"
-          endpoint_path: "/echo"
-          method: "HTTP_METHOD_POST"
+      tools:
+        - call:
+            schema:
+              name: "echo"
+            endpoint_path: "/echo"
+            method: "HTTP_METHOD_POST"
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
@@ -878,16 +879,18 @@ upstream_services:
  - name: "test-service"
    http_service:
      address: "http://localhost:8080"
-     calls:
-       - schema:
-           name: "test-call"
+     tools:
+       - call:
+           schema:
+             name: "test-call"
  - name: "disabled-service"
    disable: true
    http_service:
      address: "http://localhost:8081"
-     calls:
-       - schema:
-           name: "test-call"
+     tools:
+       - call:
+           schema:
+             name: "test-call"
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)

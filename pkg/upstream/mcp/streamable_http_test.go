@@ -593,6 +593,15 @@ func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
 			HttpConnection: configv1.McpStreamableHttpConnection_builder{
 				HttpAddress: proto.String("http://localhost:12345"),
 			}.Build(),
+			Tools: []*configv1.MCPToolDefinition{
+				configv1.MCPToolDefinition_builder{
+					Call: configv1.MCPCallDefinition_builder{
+						Schema: configv1.ToolSchema_builder{
+							Name: proto.String("test-tool"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
 		}.Build(),
 	}.Build()
 

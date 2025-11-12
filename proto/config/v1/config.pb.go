@@ -14,7 +14,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -25,60 +24,6 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
-
-// ParameterType defines the data type of a parameter.
-type ParameterType int32
-
-const (
-	ParameterType_STRING  ParameterType = 0
-	ParameterType_NUMBER  ParameterType = 1
-	ParameterType_INTEGER ParameterType = 2
-	ParameterType_BOOLEAN ParameterType = 3
-	ParameterType_ARRAY   ParameterType = 4
-	ParameterType_OBJECT  ParameterType = 5
-)
-
-// Enum value maps for ParameterType.
-var (
-	ParameterType_name = map[int32]string{
-		0: "STRING",
-		1: "NUMBER",
-		2: "INTEGER",
-		3: "BOOLEAN",
-		4: "ARRAY",
-		5: "OBJECT",
-	}
-	ParameterType_value = map[string]int32{
-		"STRING":  0,
-		"NUMBER":  1,
-		"INTEGER": 2,
-		"BOOLEAN": 3,
-		"ARRAY":   4,
-		"OBJECT":  5,
-	}
-)
-
-func (x ParameterType) Enum() *ParameterType {
-	p := new(ParameterType)
-	*p = x
-	return p
-}
-
-func (x ParameterType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ParameterType) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[0].Descriptor()
-}
-
-func (ParameterType) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[0]
-}
-
-func (x ParameterType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
 
 // Defines strategies for load balancing across multiple service endpoints.
 type LoadBalancingStrategy int32
@@ -117,111 +62,14 @@ func (x LoadBalancingStrategy) String() string {
 }
 
 func (LoadBalancingStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[1].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[0].Descriptor()
 }
 
 func (LoadBalancingStrategy) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[1]
+	return &file_proto_config_v1_config_proto_enumTypes[0]
 }
 
 func (x LoadBalancingStrategy) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-type HttpCallDefinition_HttpMethod int32
-
-const (
-	HttpCallDefinition_HTTP_METHOD_UNSPECIFIED HttpCallDefinition_HttpMethod = 0
-	HttpCallDefinition_HTTP_METHOD_GET         HttpCallDefinition_HttpMethod = 1
-	HttpCallDefinition_HTTP_METHOD_POST        HttpCallDefinition_HttpMethod = 2
-	HttpCallDefinition_HTTP_METHOD_PUT         HttpCallDefinition_HttpMethod = 3
-	HttpCallDefinition_HTTP_METHOD_DELETE      HttpCallDefinition_HttpMethod = 4
-	HttpCallDefinition_HTTP_METHOD_PATCH       HttpCallDefinition_HttpMethod = 5
-)
-
-// Enum value maps for HttpCallDefinition_HttpMethod.
-var (
-	HttpCallDefinition_HttpMethod_name = map[int32]string{
-		0: "HTTP_METHOD_UNSPECIFIED",
-		1: "HTTP_METHOD_GET",
-		2: "HTTP_METHOD_POST",
-		3: "HTTP_METHOD_PUT",
-		4: "HTTP_METHOD_DELETE",
-		5: "HTTP_METHOD_PATCH",
-	}
-	HttpCallDefinition_HttpMethod_value = map[string]int32{
-		"HTTP_METHOD_UNSPECIFIED": 0,
-		"HTTP_METHOD_GET":         1,
-		"HTTP_METHOD_POST":        2,
-		"HTTP_METHOD_PUT":         3,
-		"HTTP_METHOD_DELETE":      4,
-		"HTTP_METHOD_PATCH":       5,
-	}
-)
-
-func (x HttpCallDefinition_HttpMethod) Enum() *HttpCallDefinition_HttpMethod {
-	p := new(HttpCallDefinition_HttpMethod)
-	*p = x
-	return p
-}
-
-func (x HttpCallDefinition_HttpMethod) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (HttpCallDefinition_HttpMethod) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[2].Descriptor()
-}
-
-func (HttpCallDefinition_HttpMethod) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[2]
-}
-
-func (x HttpCallDefinition_HttpMethod) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-type OutputTransformer_OutputFormat int32
-
-const (
-	OutputTransformer_JSON OutputTransformer_OutputFormat = 0 // The output is JSON, which will be parsed using JSONPath expressions.
-	OutputTransformer_XML  OutputTransformer_OutputFormat = 1 // The output is XML, which will be parsed using XPath expressions.
-	OutputTransformer_TEXT OutputTransformer_OutputFormat = 2 // The output is plain text, which will be parsed using regex.
-)
-
-// Enum value maps for OutputTransformer_OutputFormat.
-var (
-	OutputTransformer_OutputFormat_name = map[int32]string{
-		0: "JSON",
-		1: "XML",
-		2: "TEXT",
-	}
-	OutputTransformer_OutputFormat_value = map[string]int32{
-		"JSON": 0,
-		"XML":  1,
-		"TEXT": 2,
-	}
-)
-
-func (x OutputTransformer_OutputFormat) Enum() *OutputTransformer_OutputFormat {
-	p := new(OutputTransformer_OutputFormat)
-	*p = x
-	return p
-}
-
-func (x OutputTransformer_OutputFormat) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (OutputTransformer_OutputFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[3].Descriptor()
-}
-
-func (OutputTransformer_OutputFormat) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[3]
-}
-
-func (x OutputTransformer_OutputFormat) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
@@ -261,56 +109,14 @@ func (x GlobalSettings_LogLevel) String() string {
 }
 
 func (GlobalSettings_LogLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[4].Descriptor()
+	return file_proto_config_v1_config_proto_enumTypes[1].Descriptor()
 }
 
 func (GlobalSettings_LogLevel) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[4]
+	return &file_proto_config_v1_config_proto_enumTypes[1]
 }
 
 func (x GlobalSettings_LogLevel) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Where the API key is located.
-type APIKeyAuth_Location int32
-
-const (
-	APIKeyAuth_HEADER APIKeyAuth_Location = 0
-	APIKeyAuth_QUERY  APIKeyAuth_Location = 1
-)
-
-// Enum value maps for APIKeyAuth_Location.
-var (
-	APIKeyAuth_Location_name = map[int32]string{
-		0: "HEADER",
-		1: "QUERY",
-	}
-	APIKeyAuth_Location_value = map[string]int32{
-		"HEADER": 0,
-		"QUERY":  1,
-	}
-)
-
-func (x APIKeyAuth_Location) Enum() *APIKeyAuth_Location {
-	p := new(APIKeyAuth_Location)
-	*p = x
-	return p
-}
-
-func (x APIKeyAuth_Location) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (APIKeyAuth_Location) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_config_v1_config_proto_enumTypes[5].Descriptor()
-}
-
-func (APIKeyAuth_Location) Type() protoreflect.EnumType {
-	return &file_proto_config_v1_config_proto_enumTypes[5]
-}
-
-func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
@@ -589,1378 +395,6 @@ func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
 	return m0
 }
 
-// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
-type HttpCallDefinition struct {
-	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema                   `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,2,opt,name=endpoint_path,json=endpointPath"`
-	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,3,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod"`
-	xxx_hidden_Parameters        *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameters"`
-	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer,json=inputTransformer"`
-	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer,json=outputTransformer"`
-	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,8,opt,name=cache"`
-	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
-	XXX_presence                 [1]uint32
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
-}
-
-func (x *HttpCallDefinition) Reset() {
-	*x = HttpCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HttpCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HttpCallDefinition) ProtoMessage() {}
-
-func (x *HttpCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *HttpCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *HttpCallDefinition) GetEndpointPath() string {
-	if x != nil {
-		if x.xxx_hidden_EndpointPath != nil {
-			return *x.xxx_hidden_EndpointPath
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *HttpCallDefinition) GetMethod() HttpCallDefinition_HttpMethod {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 2) {
-			return x.xxx_hidden_Method
-		}
-	}
-	return HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
-}
-
-func (x *HttpCallDefinition) GetParameters() []*HttpParameterMapping {
-	if x != nil {
-		if x.xxx_hidden_Parameters != nil {
-			return *x.xxx_hidden_Parameters
-		}
-	}
-	return nil
-}
-
-func (x *HttpCallDefinition) GetInputTransformer() *InputTransformer {
-	if x != nil {
-		return x.xxx_hidden_InputTransformer
-	}
-	return nil
-}
-
-func (x *HttpCallDefinition) GetOutputTransformer() *OutputTransformer {
-	if x != nil {
-		return x.xxx_hidden_OutputTransformer
-	}
-	return nil
-}
-
-func (x *HttpCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *HttpCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *HttpCallDefinition) SetEndpointPath(v string) {
-	x.xxx_hidden_EndpointPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
-}
-
-func (x *HttpCallDefinition) SetMethod(v HttpCallDefinition_HttpMethod) {
-	x.xxx_hidden_Method = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
-}
-
-func (x *HttpCallDefinition) SetParameters(v []*HttpParameterMapping) {
-	x.xxx_hidden_Parameters = &v
-}
-
-func (x *HttpCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.xxx_hidden_InputTransformer = v
-}
-
-func (x *HttpCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.xxx_hidden_OutputTransformer = v
-}
-
-func (x *HttpCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *HttpCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *HttpCallDefinition) HasEndpointPath() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *HttpCallDefinition) HasMethod() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *HttpCallDefinition) HasInputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputTransformer != nil
-}
-
-func (x *HttpCallDefinition) HasOutputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputTransformer != nil
-}
-
-func (x *HttpCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *HttpCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *HttpCallDefinition) ClearEndpointPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_EndpointPath = nil
-}
-
-func (x *HttpCallDefinition) ClearMethod() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Method = HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
-}
-
-func (x *HttpCallDefinition) ClearInputTransformer() {
-	x.xxx_hidden_InputTransformer = nil
-}
-
-func (x *HttpCallDefinition) ClearOutputTransformer() {
-	x.xxx_hidden_OutputTransformer = nil
-}
-
-func (x *HttpCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type HttpCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// The path of the HTTP endpoint (e.g., "/users/{userId}").
-	EndpointPath *string
-	// The HTTP method to use for the request.
-	Method *HttpCallDefinition_HttpMethod
-	// Defines the parameters for the HTTP request.
-	Parameters []*HttpParameterMapping
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
-	m0 := &HttpCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	if b.EndpointPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
-		x.xxx_hidden_EndpointPath = b.EndpointPath
-	}
-	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_Method = *b.Method
-	}
-	x.xxx_hidden_Parameters = &b.Parameters
-	x.xxx_hidden_InputTransformer = b.InputTransformer
-	x.xxx_hidden_OutputTransformer = b.OutputTransformer
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
-// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
-type WebsocketCallDefinition struct {
-	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema                   `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Parameters        *[]*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
-	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
-	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
-	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
-}
-
-func (x *WebsocketCallDefinition) Reset() {
-	*x = WebsocketCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebsocketCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebsocketCallDefinition) ProtoMessage() {}
-
-func (x *WebsocketCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebsocketCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *WebsocketCallDefinition) GetParameters() []*WebsocketParameterMapping {
-	if x != nil {
-		if x.xxx_hidden_Parameters != nil {
-			return *x.xxx_hidden_Parameters
-		}
-	}
-	return nil
-}
-
-func (x *WebsocketCallDefinition) GetInputTransformer() *InputTransformer {
-	if x != nil {
-		return x.xxx_hidden_InputTransformer
-	}
-	return nil
-}
-
-func (x *WebsocketCallDefinition) GetOutputTransformer() *OutputTransformer {
-	if x != nil {
-		return x.xxx_hidden_OutputTransformer
-	}
-	return nil
-}
-
-func (x *WebsocketCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *WebsocketCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *WebsocketCallDefinition) SetParameters(v []*WebsocketParameterMapping) {
-	x.xxx_hidden_Parameters = &v
-}
-
-func (x *WebsocketCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.xxx_hidden_InputTransformer = v
-}
-
-func (x *WebsocketCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.xxx_hidden_OutputTransformer = v
-}
-
-func (x *WebsocketCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *WebsocketCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *WebsocketCallDefinition) HasInputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputTransformer != nil
-}
-
-func (x *WebsocketCallDefinition) HasOutputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputTransformer != nil
-}
-
-func (x *WebsocketCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *WebsocketCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *WebsocketCallDefinition) ClearInputTransformer() {
-	x.xxx_hidden_InputTransformer = nil
-}
-
-func (x *WebsocketCallDefinition) ClearOutputTransformer() {
-	x.xxx_hidden_OutputTransformer = nil
-}
-
-func (x *WebsocketCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type WebsocketCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// Defines the parameters for the websocket message.
-	Parameters []*WebsocketParameterMapping
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
-	m0 := &WebsocketCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Parameters = &b.Parameters
-	x.xxx_hidden_InputTransformer = b.InputTransformer
-	x.xxx_hidden_OutputTransformer = b.OutputTransformer
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
-// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
-type WebrtcCallDefinition struct {
-	state                        protoimpl.MessageState     `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema                `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Parameters        *[]*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
-	xxx_hidden_InputTransformer  *InputTransformer          `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer"`
-	xxx_hidden_OutputTransformer *OutputTransformer         `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer"`
-	xxx_hidden_Cache             *CacheConfig               `protobuf:"bytes,6,opt,name=cache"`
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
-}
-
-func (x *WebrtcCallDefinition) Reset() {
-	*x = WebrtcCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebrtcCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebrtcCallDefinition) ProtoMessage() {}
-
-func (x *WebrtcCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebrtcCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *WebrtcCallDefinition) GetParameters() []*WebrtcParameterMapping {
-	if x != nil {
-		if x.xxx_hidden_Parameters != nil {
-			return *x.xxx_hidden_Parameters
-		}
-	}
-	return nil
-}
-
-func (x *WebrtcCallDefinition) GetInputTransformer() *InputTransformer {
-	if x != nil {
-		return x.xxx_hidden_InputTransformer
-	}
-	return nil
-}
-
-func (x *WebrtcCallDefinition) GetOutputTransformer() *OutputTransformer {
-	if x != nil {
-		return x.xxx_hidden_OutputTransformer
-	}
-	return nil
-}
-
-func (x *WebrtcCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *WebrtcCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *WebrtcCallDefinition) SetParameters(v []*WebrtcParameterMapping) {
-	x.xxx_hidden_Parameters = &v
-}
-
-func (x *WebrtcCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.xxx_hidden_InputTransformer = v
-}
-
-func (x *WebrtcCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.xxx_hidden_OutputTransformer = v
-}
-
-func (x *WebrtcCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *WebrtcCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *WebrtcCallDefinition) HasInputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputTransformer != nil
-}
-
-func (x *WebrtcCallDefinition) HasOutputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputTransformer != nil
-}
-
-func (x *WebrtcCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *WebrtcCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *WebrtcCallDefinition) ClearInputTransformer() {
-	x.xxx_hidden_InputTransformer = nil
-}
-
-func (x *WebrtcCallDefinition) ClearOutputTransformer() {
-	x.xxx_hidden_OutputTransformer = nil
-}
-
-func (x *WebrtcCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type WebrtcCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// Defines the parameters for the webrtc message.
-	Parameters []*WebrtcParameterMapping
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
-	m0 := &WebrtcCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Parameters = &b.Parameters
-	x.xxx_hidden_InputTransformer = b.InputTransformer
-	x.xxx_hidden_OutputTransformer = b.OutputTransformer
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
-// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
-type CommandLineCallDefinition struct {
-	state                 protoimpl.MessageState          `protogen:"opaque.v1"`
-	xxx_hidden_Schema     *ToolSchema                     `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Parameters *[]*CommandLineParameterMapping `protobuf:"bytes,2,rep,name=parameters"`
-	xxx_hidden_Cache      *CacheConfig                    `protobuf:"bytes,3,opt,name=cache"`
-	xxx_hidden_Args       []string                        `protobuf:"bytes,4,rep,name=args"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *CommandLineCallDefinition) Reset() {
-	*x = CommandLineCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CommandLineCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CommandLineCallDefinition) ProtoMessage() {}
-
-func (x *CommandLineCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CommandLineCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *CommandLineCallDefinition) GetParameters() []*CommandLineParameterMapping {
-	if x != nil {
-		if x.xxx_hidden_Parameters != nil {
-			return *x.xxx_hidden_Parameters
-		}
-	}
-	return nil
-}
-
-func (x *CommandLineCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *CommandLineCallDefinition) GetArgs() []string {
-	if x != nil {
-		return x.xxx_hidden_Args
-	}
-	return nil
-}
-
-func (x *CommandLineCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *CommandLineCallDefinition) SetParameters(v []*CommandLineParameterMapping) {
-	x.xxx_hidden_Parameters = &v
-}
-
-func (x *CommandLineCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *CommandLineCallDefinition) SetArgs(v []string) {
-	x.xxx_hidden_Args = v
-}
-
-func (x *CommandLineCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *CommandLineCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *CommandLineCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *CommandLineCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type CommandLineCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// Defines the parameters for the stdio command.
-	Parameters []*CommandLineParameterMapping
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-	// The arguments to pass to the command.
-	Args []string
-}
-
-func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
-	m0 := &CommandLineCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Parameters = &b.Parameters
-	x.xxx_hidden_Cache = b.Cache
-	x.xxx_hidden_Args = b.Args
-	return m0
-}
-
-// InputTransformer defines how to render a template from input parameters.
-type InputTransformer struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Template    *string                `protobuf:"bytes,1,opt,name=template"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *InputTransformer) Reset() {
-	*x = InputTransformer{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *InputTransformer) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*InputTransformer) ProtoMessage() {}
-
-func (x *InputTransformer) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *InputTransformer) GetTemplate() string {
-	if x != nil {
-		if x.xxx_hidden_Template != nil {
-			return *x.xxx_hidden_Template
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *InputTransformer) SetTemplate(v string) {
-	x.xxx_hidden_Template = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *InputTransformer) HasTemplate() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *InputTransformer) ClearTemplate() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Template = nil
-}
-
-type InputTransformer_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// A text template to be rendered.
-	// This is used for generating the request body for POST/PUT requests.
-	// The template engine is compatible with Jinja2.
-	Template *string
-}
-
-func (b0 InputTransformer_builder) Build() *InputTransformer {
-	m0 := &InputTransformer{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Template != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Template = b.Template
-	}
-	return m0
-}
-
-// OutputTransformer defines how to parse an output text into structured data.
-type OutputTransformer struct {
-	state                      protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Format          OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpany.config.v1.OutputTransformer_OutputFormat"`
-	xxx_hidden_ExtractionRules map[string]string              `protobuf:"bytes,2,rep,name=extraction_rules,json=extractionRules" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Template        *string                        `protobuf:"bytes,3,opt,name=template"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
-}
-
-func (x *OutputTransformer) Reset() {
-	*x = OutputTransformer{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OutputTransformer) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OutputTransformer) ProtoMessage() {}
-
-func (x *OutputTransformer) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OutputTransformer) GetFormat() OutputTransformer_OutputFormat {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
-			return x.xxx_hidden_Format
-		}
-	}
-	return OutputTransformer_JSON
-}
-
-func (x *OutputTransformer) GetExtractionRules() map[string]string {
-	if x != nil {
-		return x.xxx_hidden_ExtractionRules
-	}
-	return nil
-}
-
-func (x *OutputTransformer) GetTemplate() string {
-	if x != nil {
-		if x.xxx_hidden_Template != nil {
-			return *x.xxx_hidden_Template
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OutputTransformer) SetFormat(v OutputTransformer_OutputFormat) {
-	x.xxx_hidden_Format = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *OutputTransformer) SetExtractionRules(v map[string]string) {
-	x.xxx_hidden_ExtractionRules = v
-}
-
-func (x *OutputTransformer) SetTemplate(v string) {
-	x.xxx_hidden_Template = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *OutputTransformer) HasFormat() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *OutputTransformer) HasTemplate() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *OutputTransformer) ClearFormat() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Format = OutputTransformer_JSON
-}
-
-func (x *OutputTransformer) ClearTemplate() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Template = nil
-}
-
-type OutputTransformer_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The format of the upstream service's output.
-	Format *OutputTransformer_OutputFormat
-	// A map of field names to the extraction expressions.
-	// The interpretation of the expression depends on the 'format':
-	// - JSON: JSONPath expressions.
-	// - XML: XPath expressions.
-	// - TEXT: Regular expressions (first capture group is used).
-	ExtractionRules map[string]string
-	// An optional template to render the extracted data into a final string.
-	// If this is not provided, the raw extracted data will be returned.
-	Template *string
-}
-
-func (b0 OutputTransformer_builder) Build() *OutputTransformer {
-	m0 := &OutputTransformer{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Format != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_Format = *b.Format
-	}
-	x.xxx_hidden_ExtractionRules = b.ExtractionRules
-	if b.Template != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_Template = b.Template
-	}
-	return m0
-}
-
-// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
-type GrpcCallDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema      *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Service     *string                `protobuf:"bytes,2,opt,name=service"`
-	xxx_hidden_Method      *string                `protobuf:"bytes,3,opt,name=method"`
-	xxx_hidden_Cache       *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *GrpcCallDefinition) Reset() {
-	*x = GrpcCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GrpcCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GrpcCallDefinition) ProtoMessage() {}
-
-func (x *GrpcCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *GrpcCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *GrpcCallDefinition) GetService() string {
-	if x != nil {
-		if x.xxx_hidden_Service != nil {
-			return *x.xxx_hidden_Service
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *GrpcCallDefinition) GetMethod() string {
-	if x != nil {
-		if x.xxx_hidden_Method != nil {
-			return *x.xxx_hidden_Method
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *GrpcCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *GrpcCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *GrpcCallDefinition) SetService(v string) {
-	x.xxx_hidden_Service = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
-}
-
-func (x *GrpcCallDefinition) SetMethod(v string) {
-	x.xxx_hidden_Method = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
-}
-
-func (x *GrpcCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *GrpcCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *GrpcCallDefinition) HasService() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *GrpcCallDefinition) HasMethod() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *GrpcCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *GrpcCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *GrpcCallDefinition) ClearService() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Service = nil
-}
-
-func (x *GrpcCallDefinition) ClearMethod() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Method = nil
-}
-
-func (x *GrpcCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type GrpcCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// The fully-qualified gRPC service name.
-	Service *string
-	// The name of the gRPC method to call.
-	Method *string
-	// Note: For gRPC, parameter mapping is typically done by matching field names
-	// between the MCP input schema and the gRPC request message.
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
-	m0 := &GrpcCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	if b.Service != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Service = b.Service
-	}
-	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_Method = b.Method
-	}
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
-// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
-// This is often used for discovery rather than manual configuration.
-type OpenAPICallDefinition struct {
-	state                        protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,2,opt,name=input_transformer,json=inputTransformer"`
-	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,3,opt,name=output_transformer,json=outputTransformer"`
-	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
-}
-
-func (x *OpenAPICallDefinition) Reset() {
-	*x = OpenAPICallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OpenAPICallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OpenAPICallDefinition) ProtoMessage() {}
-
-func (x *OpenAPICallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OpenAPICallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *OpenAPICallDefinition) GetInputTransformer() *InputTransformer {
-	if x != nil {
-		return x.xxx_hidden_InputTransformer
-	}
-	return nil
-}
-
-func (x *OpenAPICallDefinition) GetOutputTransformer() *OutputTransformer {
-	if x != nil {
-		return x.xxx_hidden_OutputTransformer
-	}
-	return nil
-}
-
-func (x *OpenAPICallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *OpenAPICallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *OpenAPICallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.xxx_hidden_InputTransformer = v
-}
-
-func (x *OpenAPICallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.xxx_hidden_OutputTransformer = v
-}
-
-func (x *OpenAPICallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *OpenAPICallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *OpenAPICallDefinition) HasInputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputTransformer != nil
-}
-
-func (x *OpenAPICallDefinition) HasOutputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputTransformer != nil
-}
-
-func (x *OpenAPICallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *OpenAPICallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *OpenAPICallDefinition) ClearInputTransformer() {
-	x.xxx_hidden_InputTransformer = nil
-}
-
-func (x *OpenAPICallDefinition) ClearOutputTransformer() {
-	x.xxx_hidden_OutputTransformer = nil
-}
-
-func (x *OpenAPICallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type OpenAPICallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
-	m0 := &OpenAPICallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_InputTransformer = b.InputTransformer
-	x.xxx_hidden_OutputTransformer = b.OutputTransformer
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
-// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
-type MCPCallDefinition struct {
-	state                        protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,2,opt,name=input_transformer,json=inputTransformer"`
-	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,3,opt,name=output_transformer,json=outputTransformer"`
-	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
-}
-
-func (x *MCPCallDefinition) Reset() {
-	*x = MCPCallDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *MCPCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MCPCallDefinition) ProtoMessage() {}
-
-func (x *MCPCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *MCPCallDefinition) GetSchema() *ToolSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *MCPCallDefinition) GetInputTransformer() *InputTransformer {
-	if x != nil {
-		return x.xxx_hidden_InputTransformer
-	}
-	return nil
-}
-
-func (x *MCPCallDefinition) GetOutputTransformer() *OutputTransformer {
-	if x != nil {
-		return x.xxx_hidden_OutputTransformer
-	}
-	return nil
-}
-
-func (x *MCPCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.xxx_hidden_Cache
-	}
-	return nil
-}
-
-func (x *MCPCallDefinition) SetSchema(v *ToolSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *MCPCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.xxx_hidden_InputTransformer = v
-}
-
-func (x *MCPCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.xxx_hidden_OutputTransformer = v
-}
-
-func (x *MCPCallDefinition) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
-}
-
-func (x *MCPCallDefinition) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *MCPCallDefinition) HasInputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputTransformer != nil
-}
-
-func (x *MCPCallDefinition) HasOutputTransformer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputTransformer != nil
-}
-
-func (x *MCPCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Cache != nil
-}
-
-func (x *MCPCallDefinition) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *MCPCallDefinition) ClearInputTransformer() {
-	x.xxx_hidden_InputTransformer = nil
-}
-
-func (x *MCPCallDefinition) ClearOutputTransformer() {
-	x.xxx_hidden_OutputTransformer = nil
-}
-
-func (x *MCPCallDefinition) ClearCache() {
-	x.xxx_hidden_Cache = nil
-}
-
-type MCPCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Common tool schema.
-	Schema *ToolSchema
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-}
-
-func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
-	m0 := &MCPCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_InputTransformer = b.InputTransformer
-	x.xxx_hidden_OutputTransformer = b.OutputTransformer
-	x.xxx_hidden_Cache = b.Cache
-	return m0
-}
-
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
 	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
@@ -1976,7 +410,7 @@ type GlobalSettings struct {
 
 func (x *GlobalSettings) Reset() {
 	*x = GlobalSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1988,7 +422,7 @@ func (x *GlobalSettings) String() string {
 func (*GlobalSettings) ProtoMessage() {}
 
 func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2161,7 +595,7 @@ type UpstreamServiceConfig struct {
 
 func (x *UpstreamServiceConfig) Reset() {
 	*x = UpstreamServiceConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2173,7 +607,7 @@ func (x *UpstreamServiceConfig) String() string {
 func (*UpstreamServiceConfig) ProtoMessage() {}
 
 func (x *UpstreamServiceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2871,7 +1305,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 type case_UpstreamServiceConfig_ServiceConfig protoreflect.FieldNumber
 
 func (x case_UpstreamServiceConfig_ServiceConfig) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[12].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[3].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -2930,10 +1364,11 @@ type GrpcUpstreamService struct {
 	xxx_hidden_Address          *string                `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_UseReflection    bool                   `protobuf:"varint,2,opt,name=use_reflection,json=useReflection"`
 	xxx_hidden_TlsConfig        *TLSConfig             `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Calls            *[]*GrpcCallDefinition `protobuf:"bytes,4,rep,name=calls"`
+	xxx_hidden_Tools            *[]*GrpcToolDefinition `protobuf:"bytes,4,rep,name=tools"`
 	xxx_hidden_HealthCheck      *GrpcHealthCheck       `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition    `protobuf:"bytes,6,rep,name=proto_definitions,json=protoDefinitions"`
 	xxx_hidden_ProtoCollection  *[]*ProtoCollection    `protobuf:"bytes,7,rep,name=proto_collection,json=protoCollection"`
+	xxx_hidden_Resources        *[]*ResourceDefinition `protobuf:"bytes,8,rep,name=resources"`
 	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
 	XXX_presence                [1]uint32
 	unknownFields               protoimpl.UnknownFields
@@ -2942,7 +1377,7 @@ type GrpcUpstreamService struct {
 
 func (x *GrpcUpstreamService) Reset() {
 	*x = GrpcUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2954,7 +1389,7 @@ func (x *GrpcUpstreamService) String() string {
 func (*GrpcUpstreamService) ProtoMessage() {}
 
 func (x *GrpcUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2989,10 +1424,10 @@ func (x *GrpcUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *GrpcUpstreamService) GetCalls() []*GrpcCallDefinition {
+func (x *GrpcUpstreamService) GetTools() []*GrpcToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
 		}
 	}
 	return nil
@@ -3023,22 +1458,31 @@ func (x *GrpcUpstreamService) GetProtoCollection() []*ProtoCollection {
 	return nil
 }
 
+func (x *GrpcUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
+		}
+	}
+	return nil
+}
+
 func (x *GrpcUpstreamService) SetAddress(v string) {
 	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *GrpcUpstreamService) SetUseReflection(v bool) {
 	x.xxx_hidden_UseReflection = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *GrpcUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
 }
 
-func (x *GrpcUpstreamService) SetCalls(v []*GrpcCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *GrpcUpstreamService) SetTools(v []*GrpcToolDefinition) {
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *GrpcUpstreamService) SetHealthCheck(v *GrpcHealthCheck) {
@@ -3051,6 +1495,10 @@ func (x *GrpcUpstreamService) SetProtoDefinitions(v []*ProtoDefinition) {
 
 func (x *GrpcUpstreamService) SetProtoCollection(v []*ProtoCollection) {
 	x.xxx_hidden_ProtoCollection = &v
+}
+
+func (x *GrpcUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *GrpcUpstreamService) HasAddress() bool {
@@ -3109,13 +1557,15 @@ type GrpcUpstreamService_builder struct {
 	// TLS configuration for the gRPC connection.
 	TlsConfig *TLSConfig
 	// Manually defined mappings from MCP tools to gRPC calls.
-	Calls []*GrpcCallDefinition
+	Tools []*GrpcToolDefinition
 	// Health check configuration.
 	HealthCheck *GrpcHealthCheck
 	// A list of protobuf definitions for the gRPC service.
 	ProtoDefinitions []*ProtoDefinition
 	// A collection of protobuf files to be discovered.
 	ProtoCollection []*ProtoCollection
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
@@ -3123,18 +1573,19 @@ func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
 		x.xxx_hidden_Address = b.Address
 	}
 	if b.UseReflection != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
 		x.xxx_hidden_UseReflection = *b.UseReflection
 	}
 	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_ProtoDefinitions = &b.ProtoDefinitions
 	x.xxx_hidden_ProtoCollection = &b.ProtoCollection
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -3147,7 +1598,7 @@ type ProtoDefinition struct {
 
 func (x *ProtoDefinition) Reset() {
 	*x = ProtoDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3159,7 +1610,7 @@ func (x *ProtoDefinition) String() string {
 func (*ProtoDefinition) ProtoMessage() {}
 
 func (x *ProtoDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3286,7 +1737,7 @@ func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
 type case_ProtoDefinition_ProtoRef protoreflect.FieldNumber
 
 func (x case_ProtoDefinition_ProtoRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[14].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[5].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3321,7 +1772,7 @@ type ProtoFile struct {
 
 func (x *ProtoFile) Reset() {
 	*x = ProtoFile{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3333,7 +1784,7 @@ func (x *ProtoFile) String() string {
 func (*ProtoFile) ProtoMessage() {}
 
 func (x *ProtoFile) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3484,7 +1935,7 @@ func (b0 ProtoFile_builder) Build() *ProtoFile {
 type case_ProtoFile_FileRef protoreflect.FieldNumber
 
 func (x case_ProtoFile_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[15].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[6].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3519,7 +1970,7 @@ type ProtoDescriptor struct {
 
 func (x *ProtoDescriptor) Reset() {
 	*x = ProtoDescriptor{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3531,7 +1982,7 @@ func (x *ProtoDescriptor) String() string {
 func (*ProtoDescriptor) ProtoMessage() {}
 
 func (x *ProtoDescriptor) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3648,7 +2099,7 @@ func (b0 ProtoDescriptor_builder) Build() *ProtoDescriptor {
 type case_ProtoDescriptor_FileRef protoreflect.FieldNumber
 
 func (x case_ProtoDescriptor_FileRef) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[16].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[7].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -3678,7 +2129,7 @@ type ProtoCollection struct {
 
 func (x *ProtoCollection) Reset() {
 	*x = ProtoCollection{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3690,7 +2141,7 @@ func (x *ProtoCollection) String() string {
 func (*ProtoCollection) ProtoMessage() {}
 
 func (x *ProtoCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3810,9 +2261,10 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 type HttpUpstreamService struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Calls       *[]*HttpCallDefinition `protobuf:"bytes,2,rep,name=calls"`
+	xxx_hidden_Tools       *[]*HttpToolDefinition `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_HealthCheck *HttpHealthCheck       `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_TlsConfig   *TLSConfig             `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_Resources   *[]*ResourceDefinition `protobuf:"bytes,5,rep,name=resources"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3821,7 +2273,7 @@ type HttpUpstreamService struct {
 
 func (x *HttpUpstreamService) Reset() {
 	*x = HttpUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3833,7 +2285,7 @@ func (x *HttpUpstreamService) String() string {
 func (*HttpUpstreamService) ProtoMessage() {}
 
 func (x *HttpUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[18]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3854,10 +2306,10 @@ func (x *HttpUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *HttpUpstreamService) GetCalls() []*HttpCallDefinition {
+func (x *HttpUpstreamService) GetTools() []*HttpToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
 		}
 	}
 	return nil
@@ -3877,13 +2329,22 @@ func (x *HttpUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *HttpUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+func (x *HttpUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
+		}
+	}
+	return nil
 }
 
-func (x *HttpUpstreamService) SetCalls(v []*HttpCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *HttpUpstreamService) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *HttpUpstreamService) SetTools(v []*HttpToolDefinition) {
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *HttpUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
@@ -3892,6 +2353,10 @@ func (x *HttpUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
 
 func (x *HttpUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
+}
+
+func (x *HttpUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *HttpUpstreamService) HasAddress() bool {
@@ -3934,11 +2399,13 @@ type HttpUpstreamService_builder struct {
 	// The base URL of the HTTP service (e.g., "https://api.example.com").
 	Address *string
 	// Manually defined mappings from MCP tools to HTTP calls.
-	Calls []*HttpCallDefinition
+	Tools []*HttpToolDefinition
 	// Configuration for checking the health of the HTTP service.
 	HealthCheck *HttpHealthCheck
 	// TLS configuration for the HTTP connection.
 	TlsConfig *TLSConfig
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
@@ -3946,12 +2413,13 @@ func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Address = b.Address
 	}
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_TlsConfig = b.TlsConfig
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -3959,8 +2427,9 @@ func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
 type WebsocketUpstreamService struct {
 	state                  protoimpl.MessageState      `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                     `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Calls       *[]*WebsocketCallDefinition `protobuf:"bytes,2,rep,name=calls"`
+	xxx_hidden_Tools       *[]*WebsocketToolDefinition `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_TlsConfig   *TLSConfig                  `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_Resources   *[]*ResourceDefinition      `protobuf:"bytes,4,rep,name=resources"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3969,7 +2438,7 @@ type WebsocketUpstreamService struct {
 
 func (x *WebsocketUpstreamService) Reset() {
 	*x = WebsocketUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[19]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3981,7 +2450,7 @@ func (x *WebsocketUpstreamService) String() string {
 func (*WebsocketUpstreamService) ProtoMessage() {}
 
 func (x *WebsocketUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[19]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4002,10 +2471,10 @@ func (x *WebsocketUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *WebsocketUpstreamService) GetCalls() []*WebsocketCallDefinition {
+func (x *WebsocketUpstreamService) GetTools() []*WebsocketToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
 		}
 	}
 	return nil
@@ -4018,17 +2487,30 @@ func (x *WebsocketUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *WebsocketUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+func (x *WebsocketUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
+		}
+	}
+	return nil
 }
 
-func (x *WebsocketUpstreamService) SetCalls(v []*WebsocketCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *WebsocketUpstreamService) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *WebsocketUpstreamService) SetTools(v []*WebsocketToolDefinition) {
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *WebsocketUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
+}
+
+func (x *WebsocketUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *WebsocketUpstreamService) HasAddress() bool {
@@ -4060,9 +2542,11 @@ type WebsocketUpstreamService_builder struct {
 	// The URL of the Websocket service (e.g., "ws://api.example.com/ws").
 	Address *string
 	// Manually defined mappings from MCP tools to websocket calls.
-	Calls []*WebsocketCallDefinition
+	Tools []*WebsocketToolDefinition
 	// TLS configuration for the Websocket connection.
 	TlsConfig *TLSConfig
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 WebsocketUpstreamService_builder) Build() *WebsocketUpstreamService {
@@ -4070,11 +2554,12 @@ func (b0 WebsocketUpstreamService_builder) Build() *WebsocketUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Address = b.Address
 	}
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_TlsConfig = b.TlsConfig
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -4082,8 +2567,9 @@ func (b0 WebsocketUpstreamService_builder) Build() *WebsocketUpstreamService {
 type WebrtcUpstreamService struct {
 	state                  protoimpl.MessageState   `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                  `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Calls       *[]*WebrtcCallDefinition `protobuf:"bytes,2,rep,name=calls"`
+	xxx_hidden_Tools       *[]*WebrtcToolDefinition `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_TlsConfig   *TLSConfig               `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_Resources   *[]*ResourceDefinition   `protobuf:"bytes,4,rep,name=resources"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -4092,7 +2578,7 @@ type WebrtcUpstreamService struct {
 
 func (x *WebrtcUpstreamService) Reset() {
 	*x = WebrtcUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[20]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4104,7 +2590,7 @@ func (x *WebrtcUpstreamService) String() string {
 func (*WebrtcUpstreamService) ProtoMessage() {}
 
 func (x *WebrtcUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[20]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4125,10 +2611,10 @@ func (x *WebrtcUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *WebrtcUpstreamService) GetCalls() []*WebrtcCallDefinition {
+func (x *WebrtcUpstreamService) GetTools() []*WebrtcToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
 		}
 	}
 	return nil
@@ -4141,17 +2627,30 @@ func (x *WebrtcUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *WebrtcUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+func (x *WebrtcUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
+		}
+	}
+	return nil
 }
 
-func (x *WebrtcUpstreamService) SetCalls(v []*WebrtcCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *WebrtcUpstreamService) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *WebrtcUpstreamService) SetTools(v []*WebrtcToolDefinition) {
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *WebrtcUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
+}
+
+func (x *WebrtcUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *WebrtcUpstreamService) HasAddress() bool {
@@ -4183,9 +2682,11 @@ type WebrtcUpstreamService_builder struct {
 	// The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
 	Address *string
 	// Manually defined mappings from MCP tools to webrtc calls.
-	Calls []*WebrtcCallDefinition
+	Tools []*WebrtcToolDefinition
 	// TLS configuration for the signaling connection.
 	TlsConfig *TLSConfig
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 WebrtcUpstreamService_builder) Build() *WebrtcUpstreamService {
@@ -4193,11 +2694,12 @@ func (b0 WebrtcUpstreamService_builder) Build() *WebrtcUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Address = b.Address
 	}
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_TlsConfig = b.TlsConfig
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -4208,7 +2710,8 @@ type OpenapiUpstreamService struct {
 	xxx_hidden_OpenapiSpec *string                   `protobuf:"bytes,2,opt,name=openapi_spec,json=openapiSpec"`
 	xxx_hidden_HealthCheck *HttpHealthCheck          `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_TlsConfig   *TLSConfig                `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Calls       *[]*OpenAPICallDefinition `protobuf:"bytes,5,rep,name=calls"`
+	xxx_hidden_Tools       *[]*OpenAPIToolDefinition `protobuf:"bytes,5,rep,name=tools"`
+	xxx_hidden_Resources   *[]*ResourceDefinition    `protobuf:"bytes,6,rep,name=resources"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -4217,7 +2720,7 @@ type OpenapiUpstreamService struct {
 
 func (x *OpenapiUpstreamService) Reset() {
 	*x = OpenapiUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[21]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4229,7 +2732,7 @@ func (x *OpenapiUpstreamService) String() string {
 func (*OpenapiUpstreamService) ProtoMessage() {}
 
 func (x *OpenapiUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[21]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4274,10 +2777,19 @@ func (x *OpenapiUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *OpenapiUpstreamService) GetCalls() []*OpenAPICallDefinition {
+func (x *OpenapiUpstreamService) GetTools() []*OpenAPIToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
+		}
+	}
+	return nil
+}
+
+func (x *OpenapiUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
 		}
 	}
 	return nil
@@ -4285,12 +2797,12 @@ func (x *OpenapiUpstreamService) GetCalls() []*OpenAPICallDefinition {
 
 func (x *OpenapiUpstreamService) SetAddress(v string) {
 	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *OpenapiUpstreamService) SetOpenapiSpec(v string) {
 	x.xxx_hidden_OpenapiSpec = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *OpenapiUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
@@ -4301,8 +2813,12 @@ func (x *OpenapiUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
 }
 
-func (x *OpenapiUpstreamService) SetCalls(v []*OpenAPICallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *OpenapiUpstreamService) SetTools(v []*OpenAPIToolDefinition) {
+	x.xxx_hidden_Tools = &v
+}
+
+func (x *OpenapiUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *OpenapiUpstreamService) HasAddress() bool {
@@ -4363,7 +2879,9 @@ type OpenapiUpstreamService_builder struct {
 	// TLS configuration for the connection.
 	TlsConfig *TLSConfig
 	// Optional: Overrides or specific configurations for calls discovered from the spec.
-	Calls []*OpenAPICallDefinition
+	Tools []*OpenAPIToolDefinition
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
@@ -4371,16 +2889,17 @@ func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Address = b.Address
 	}
 	if b.OpenapiSpec != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_OpenapiSpec = b.OpenapiSpec
 	}
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -4389,11 +2908,12 @@ type CommandLineUpstreamService struct {
 	state                           protoimpl.MessageState        `protogen:"opaque.v1"`
 	xxx_hidden_Command              *string                       `protobuf:"bytes,1,opt,name=command"`
 	xxx_hidden_WorkingDirectory     *string                       `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
-	xxx_hidden_Calls                *[]*CommandLineCallDefinition `protobuf:"bytes,4,rep,name=calls"`
+	xxx_hidden_Tools                *[]*CommandLineToolDefinition `protobuf:"bytes,4,rep,name=tools"`
 	xxx_hidden_HealthCheck          *CommandLineHealthCheck       `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_Cache                *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
 	xxx_hidden_ContainerEnvironment *ContainerEnvironment         `protobuf:"bytes,7,opt,name=container_environment,json=containerEnvironment"`
 	xxx_hidden_Timeout              *durationpb.Duration          `protobuf:"bytes,8,opt,name=timeout"`
+	xxx_hidden_Resources            *[]*ResourceDefinition        `protobuf:"bytes,9,rep,name=resources"`
 	XXX_raceDetectHookData          protoimpl.RaceDetectHookData
 	XXX_presence                    [1]uint32
 	unknownFields                   protoimpl.UnknownFields
@@ -4402,7 +2922,7 @@ type CommandLineUpstreamService struct {
 
 func (x *CommandLineUpstreamService) Reset() {
 	*x = CommandLineUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[22]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4414,7 +2934,7 @@ func (x *CommandLineUpstreamService) String() string {
 func (*CommandLineUpstreamService) ProtoMessage() {}
 
 func (x *CommandLineUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[22]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4445,10 +2965,10 @@ func (x *CommandLineUpstreamService) GetWorkingDirectory() string {
 	return ""
 }
 
-func (x *CommandLineUpstreamService) GetCalls() []*CommandLineCallDefinition {
+func (x *CommandLineUpstreamService) GetTools() []*CommandLineToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
 		}
 	}
 	return nil
@@ -4482,18 +3002,27 @@ func (x *CommandLineUpstreamService) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
+func (x *CommandLineUpstreamService) GetResources() []*ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
+		}
+	}
+	return nil
+}
+
 func (x *CommandLineUpstreamService) SetCommand(v string) {
 	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
 	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
-func (x *CommandLineUpstreamService) SetCalls(v []*CommandLineCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *CommandLineUpstreamService) SetTools(v []*CommandLineToolDefinition) {
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *CommandLineUpstreamService) SetHealthCheck(v *CommandLineHealthCheck) {
@@ -4510,6 +3039,10 @@ func (x *CommandLineUpstreamService) SetContainerEnvironment(v *ContainerEnviron
 
 func (x *CommandLineUpstreamService) SetTimeout(v *durationpb.Duration) {
 	x.xxx_hidden_Timeout = v
+}
+
+func (x *CommandLineUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *CommandLineUpstreamService) HasCommand() bool {
@@ -4588,7 +3121,7 @@ type CommandLineUpstreamService_builder struct {
 	// The working directory for the command.
 	WorkingDirectory *string
 	// Manually defined mappings from MCP tools to command line commands.
-	Calls []*CommandLineCallDefinition
+	Tools []*CommandLineToolDefinition
 	// Health check configuration.
 	HealthCheck *CommandLineHealthCheck
 	// Caching configuration to improve performance and reduce load on the upstream.
@@ -4597,6 +3130,8 @@ type CommandLineUpstreamService_builder struct {
 	ContainerEnvironment *ContainerEnvironment
 	// Timeout for the command execution.
 	Timeout *durationpb.Duration
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService {
@@ -4604,18 +3139,19 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
 		x.xxx_hidden_Command = b.Command
 	}
 	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
 		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
 	}
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_HealthCheck = b.HealthCheck
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_ContainerEnvironment = b.ContainerEnvironment
 	x.xxx_hidden_Timeout = b.Timeout
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
@@ -4624,8 +3160,9 @@ type McpUpstreamService struct {
 	state                        protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_ConnectionType    isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
 	xxx_hidden_ToolAutoDiscovery bool                                `protobuf:"varint,3,opt,name=tool_auto_discovery,json=toolAutoDiscovery"`
-	xxx_hidden_Tools             *[]*ToolDefinition                  `protobuf:"bytes,4,rep,name=tools"`
-	xxx_hidden_Calls             *[]*MCPCallDefinition               `protobuf:"bytes,6,rep,name=calls"`
+	xxx_hidden_PredefinedTools   *[]*ToolDefinition                  `protobuf:"bytes,4,rep,name=predefined_tools,json=predefinedTools"`
+	xxx_hidden_Tools             *[]*MCPToolDefinition               `protobuf:"bytes,6,rep,name=tools"`
+	xxx_hidden_Resources         *[]*ResourceDefinition              `protobuf:"bytes,7,rep,name=resources"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -4634,7 +3171,7 @@ type McpUpstreamService struct {
 
 func (x *McpUpstreamService) Reset() {
 	*x = McpUpstreamService{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[23]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4646,7 +3183,7 @@ func (x *McpUpstreamService) String() string {
 func (*McpUpstreamService) ProtoMessage() {}
 
 func (x *McpUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[23]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4682,7 +3219,16 @@ func (x *McpUpstreamService) GetToolAutoDiscovery() bool {
 	return false
 }
 
-func (x *McpUpstreamService) GetTools() []*ToolDefinition {
+func (x *McpUpstreamService) GetPredefinedTools() []*ToolDefinition {
+	if x != nil {
+		if x.xxx_hidden_PredefinedTools != nil {
+			return *x.xxx_hidden_PredefinedTools
+		}
+	}
+	return nil
+}
+
+func (x *McpUpstreamService) GetTools() []*MCPToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -4691,10 +3237,10 @@ func (x *McpUpstreamService) GetTools() []*ToolDefinition {
 	return nil
 }
 
-func (x *McpUpstreamService) GetCalls() []*MCPCallDefinition {
+func (x *McpUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Calls != nil {
-			return *x.xxx_hidden_Calls
+		if x.xxx_hidden_Resources != nil {
+			return *x.xxx_hidden_Resources
 		}
 	}
 	return nil
@@ -4718,15 +3264,19 @@ func (x *McpUpstreamService) SetStdioConnection(v *McpStdioConnection) {
 
 func (x *McpUpstreamService) SetToolAutoDiscovery(v bool) {
 	x.xxx_hidden_ToolAutoDiscovery = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *McpUpstreamService) SetTools(v []*ToolDefinition) {
+func (x *McpUpstreamService) SetPredefinedTools(v []*ToolDefinition) {
+	x.xxx_hidden_PredefinedTools = &v
+}
+
+func (x *McpUpstreamService) SetTools(v []*MCPToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
-func (x *McpUpstreamService) SetCalls(v []*MCPCallDefinition) {
-	x.xxx_hidden_Calls = &v
+func (x *McpUpstreamService) SetResources(v []*ResourceDefinition) {
+	x.xxx_hidden_Resources = &v
 }
 
 func (x *McpUpstreamService) HasConnectionType() bool {
@@ -4811,9 +3361,11 @@ type McpUpstreamService_builder struct {
 	// If true, mcpany will automatically discover and proxy all tools from the upstream.
 	ToolAutoDiscovery *bool
 	// Optional: Pre-defined tools to register, can be used to filter or augment discovered tools.
-	Tools []*ToolDefinition
+	PredefinedTools []*ToolDefinition
 	// Optional: Overrides or specific configurations for calls discovered from the service.
-	Calls []*MCPCallDefinition
+	Tools []*MCPToolDefinition
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition
 }
 
 func (b0 McpUpstreamService_builder) Build() *McpUpstreamService {
@@ -4827,18 +3379,19 @@ func (b0 McpUpstreamService_builder) Build() *McpUpstreamService {
 		x.xxx_hidden_ConnectionType = &mcpUpstreamService_StdioConnection{b.StdioConnection}
 	}
 	if b.ToolAutoDiscovery != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_ToolAutoDiscovery = *b.ToolAutoDiscovery
 	}
+	x.xxx_hidden_PredefinedTools = &b.PredefinedTools
 	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Calls = &b.Calls
+	x.xxx_hidden_Resources = &b.Resources
 	return m0
 }
 
 type case_McpUpstreamService_ConnectionType protoreflect.FieldNumber
 
 func (x case_McpUpstreamService_ConnectionType) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[23].Descriptor()
+	md := file_proto_config_v1_config_proto_msgTypes[14].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -4878,7 +3431,7 @@ type McpStdioConnection struct {
 
 func (x *McpStdioConnection) Reset() {
 	*x = McpStdioConnection{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[24]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4890,7 +3443,7 @@ func (x *McpStdioConnection) String() string {
 func (*McpStdioConnection) ProtoMessage() {}
 
 func (x *McpStdioConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[24]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5052,7 +3605,7 @@ type McpStreamableHttpConnection struct {
 
 func (x *McpStreamableHttpConnection) Reset() {
 	*x = McpStreamableHttpConnection{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[25]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5064,7 +3617,7 @@ func (x *McpStreamableHttpConnection) String() string {
 func (*McpStreamableHttpConnection) ProtoMessage() {}
 
 func (x *McpStreamableHttpConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[25]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5145,1073 +3698,6 @@ func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnecti
 	return m0
 }
 
-// ToolSchema provides common metadata for a tool.
-type ToolSchema struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Title           *string                `protobuf:"bytes,1,opt,name=title"`
-	xxx_hidden_ReadOnlyHint    bool                   `protobuf:"varint,2,opt,name=read_only_hint,json=readOnlyHint"`
-	xxx_hidden_DestructiveHint bool                   `protobuf:"varint,3,opt,name=destructive_hint,json=destructiveHint"`
-	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,4,opt,name=idempotent_hint,json=idempotentHint"`
-	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,5,opt,name=open_world_hint,json=openWorldHint"`
-	xxx_hidden_Name            *string                `protobuf:"bytes,6,opt,name=name"`
-	xxx_hidden_Description     *string                `protobuf:"bytes,7,opt,name=description"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
-}
-
-func (x *ToolSchema) Reset() {
-	*x = ToolSchema{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ToolSchema) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ToolSchema) ProtoMessage() {}
-
-func (x *ToolSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ToolSchema) GetTitle() string {
-	if x != nil {
-		if x.xxx_hidden_Title != nil {
-			return *x.xxx_hidden_Title
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ToolSchema) GetReadOnlyHint() bool {
-	if x != nil {
-		return x.xxx_hidden_ReadOnlyHint
-	}
-	return false
-}
-
-func (x *ToolSchema) GetDestructiveHint() bool {
-	if x != nil {
-		return x.xxx_hidden_DestructiveHint
-	}
-	return false
-}
-
-func (x *ToolSchema) GetIdempotentHint() bool {
-	if x != nil {
-		return x.xxx_hidden_IdempotentHint
-	}
-	return false
-}
-
-func (x *ToolSchema) GetOpenWorldHint() bool {
-	if x != nil {
-		return x.xxx_hidden_OpenWorldHint
-	}
-	return false
-}
-
-func (x *ToolSchema) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ToolSchema) GetDescription() string {
-	if x != nil {
-		if x.xxx_hidden_Description != nil {
-			return *x.xxx_hidden_Description
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ToolSchema) SetTitle(v string) {
-	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
-}
-
-func (x *ToolSchema) SetReadOnlyHint(v bool) {
-	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
-}
-
-func (x *ToolSchema) SetDestructiveHint(v bool) {
-	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
-}
-
-func (x *ToolSchema) SetIdempotentHint(v bool) {
-	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
-}
-
-func (x *ToolSchema) SetOpenWorldHint(v bool) {
-	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
-}
-
-func (x *ToolSchema) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
-}
-
-func (x *ToolSchema) SetDescription(v string) {
-	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
-}
-
-func (x *ToolSchema) HasTitle() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ToolSchema) HasReadOnlyHint() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *ToolSchema) HasDestructiveHint() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *ToolSchema) HasIdempotentHint() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *ToolSchema) HasOpenWorldHint() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
-func (x *ToolSchema) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
-}
-
-func (x *ToolSchema) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
-}
-
-func (x *ToolSchema) ClearTitle() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Title = nil
-}
-
-func (x *ToolSchema) ClearReadOnlyHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ReadOnlyHint = false
-}
-
-func (x *ToolSchema) ClearDestructiveHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_DestructiveHint = false
-}
-
-func (x *ToolSchema) ClearIdempotentHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_IdempotentHint = false
-}
-
-func (x *ToolSchema) ClearOpenWorldHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_OpenWorldHint = false
-}
-
-func (x *ToolSchema) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *ToolSchema) ClearDescription() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
-	x.xxx_hidden_Description = nil
-}
-
-type ToolSchema_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// A human-readable title for the tool.
-	Title *string
-	// If true, the tool does not modify its environment.
-	// Default: false
-	ReadOnlyHint *bool
-	// If true, the tool may perform destructive updates to its environment. If
-	// false, the tool performs only additive updates.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: true
-	DestructiveHint *bool
-	// If true, calling the tool repeatedly with the same arguments will have no
-	// additional effect on its environment.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: false
-	IdempotentHint *bool
-	// If true, this tool may interact with an "open world" of external entities. If
-	// false, the tool's domain of interaction is closed. For example, the world of
-	// a web search tool is open, whereas that of a memory tool is not.
-	// Default: true
-	OpenWorldHint *bool
-	// The name of the tool, which will be used to invoke it.
-	Name *string
-	// A human-readable description of what the tool does.
-	Description *string
-}
-
-func (b0 ToolSchema_builder) Build() *ToolSchema {
-	m0 := &ToolSchema{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Title = b.Title
-	}
-	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
-		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
-	}
-	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
-	}
-	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
-		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
-	}
-	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
-		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
-	}
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
-		x.xxx_hidden_Description = b.Description
-	}
-	return m0
-}
-
-// ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
-type ParameterSchema struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_Type         ParameterType          `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType"`
-	xxx_hidden_IsRequired   bool                   `protobuf:"varint,4,opt,name=is_required,json=isRequired"`
-	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value,json=defaultValue"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
-}
-
-func (x *ParameterSchema) Reset() {
-	*x = ParameterSchema{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ParameterSchema) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ParameterSchema) ProtoMessage() {}
-
-func (x *ParameterSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ParameterSchema) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ParameterSchema) GetDescription() string {
-	if x != nil {
-		if x.xxx_hidden_Description != nil {
-			return *x.xxx_hidden_Description
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ParameterSchema) GetType() ParameterType {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 2) {
-			return x.xxx_hidden_Type
-		}
-	}
-	return ParameterType_STRING
-}
-
-func (x *ParameterSchema) GetIsRequired() bool {
-	if x != nil {
-		return x.xxx_hidden_IsRequired
-	}
-	return false
-}
-
-func (x *ParameterSchema) GetDefaultValue() *structpb.Value {
-	if x != nil {
-		return x.xxx_hidden_DefaultValue
-	}
-	return nil
-}
-
-func (x *ParameterSchema) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *ParameterSchema) SetDescription(v string) {
-	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
-}
-
-func (x *ParameterSchema) SetType(v ParameterType) {
-	x.xxx_hidden_Type = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
-}
-
-func (x *ParameterSchema) SetIsRequired(v bool) {
-	x.xxx_hidden_IsRequired = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
-}
-
-func (x *ParameterSchema) SetDefaultValue(v *structpb.Value) {
-	x.xxx_hidden_DefaultValue = v
-}
-
-func (x *ParameterSchema) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ParameterSchema) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *ParameterSchema) HasType() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *ParameterSchema) HasIsRequired() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *ParameterSchema) HasDefaultValue() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_DefaultValue != nil
-}
-
-func (x *ParameterSchema) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *ParameterSchema) ClearDescription() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Description = nil
-}
-
-func (x *ParameterSchema) ClearType() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Type = ParameterType_STRING
-}
-
-func (x *ParameterSchema) ClearIsRequired() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_IsRequired = false
-}
-
-func (x *ParameterSchema) ClearDefaultValue() {
-	x.xxx_hidden_DefaultValue = nil
-}
-
-type ParameterSchema_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the input parameter from the MCP call.
-	Name *string
-	// A description of the parameter.
-	Description *string
-	// The data type of the parameter.
-	Type *ParameterType
-	// Whether the parameter is required.
-	IsRequired *bool
-	// The default value of the parameter.
-	DefaultValue *structpb.Value
-}
-
-func (b0 ParameterSchema_builder) Build() *ParameterSchema {
-	m0 := &ParameterSchema{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_Description = b.Description
-	}
-	if b.Type != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Type = *b.Type
-	}
-	if b.IsRequired != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_IsRequired = *b.IsRequired
-	}
-	x.xxx_hidden_DefaultValue = b.DefaultValue
-	return m0
-}
-
-// ToolDefinition describes a single capability or "tool" offered by a service.
-type ToolDefinition struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_InputSchema  *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema"`
-	xxx_hidden_OutputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema"`
-	xxx_hidden_IsStream     bool                   `protobuf:"varint,5,opt,name=is_stream,json=isStream"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
-}
-
-func (x *ToolDefinition) Reset() {
-	*x = ToolDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ToolDefinition) ProtoMessage() {}
-
-func (x *ToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[28]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ToolDefinition) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetDescription() string {
-	if x != nil {
-		if x.xxx_hidden_Description != nil {
-			return *x.xxx_hidden_Description
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.xxx_hidden_InputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetOutputSchema() *structpb.Struct {
-	if x != nil {
-		return x.xxx_hidden_OutputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetIsStream() bool {
-	if x != nil {
-		return x.xxx_hidden_IsStream
-	}
-	return false
-}
-
-func (x *ToolDefinition) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *ToolDefinition) SetDescription(v string) {
-	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
-}
-
-func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
-	x.xxx_hidden_InputSchema = v
-}
-
-func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.xxx_hidden_OutputSchema = v
-}
-
-func (x *ToolDefinition) SetIsStream(v bool) {
-	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
-}
-
-func (x *ToolDefinition) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ToolDefinition) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *ToolDefinition) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputSchema != nil
-}
-
-func (x *ToolDefinition) HasOutputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputSchema != nil
-}
-
-func (x *ToolDefinition) HasIsStream() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
-func (x *ToolDefinition) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *ToolDefinition) ClearDescription() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Description = nil
-}
-
-func (x *ToolDefinition) ClearInputSchema() {
-	x.xxx_hidden_InputSchema = nil
-}
-
-func (x *ToolDefinition) ClearOutputSchema() {
-	x.xxx_hidden_OutputSchema = nil
-}
-
-func (x *ToolDefinition) ClearIsStream() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_IsStream = false
-}
-
-type ToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the tool, which will be used to invoke it.
-	Name *string
-	// A human-readable description of what the tool does.
-	Description *string
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct
-	// Indicates if the tool produces a continuous stream of responses.
-	IsStream *bool
-}
-
-func (b0 ToolDefinition_builder) Build() *ToolDefinition {
-	m0 := &ToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_Description = b.Description
-	}
-	x.xxx_hidden_InputSchema = b.InputSchema
-	x.xxx_hidden_OutputSchema = b.OutputSchema
-	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_IsStream = *b.IsStream
-	}
-	return m0
-}
-
-// HttpParameterMapping defines how to place an input parameter into an HTTP request.
-type HttpParameterMapping struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *HttpParameterMapping) Reset() {
-	*x = HttpParameterMapping{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HttpParameterMapping) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HttpParameterMapping) ProtoMessage() {}
-
-func (x *HttpParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *HttpParameterMapping) GetSchema() *ParameterSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *HttpParameterMapping) GetSecret() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *HttpParameterMapping) SetSchema(v *ParameterSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *HttpParameterMapping) SetSecret(v *SecretValue) {
-	x.xxx_hidden_Secret = v
-}
-
-func (x *HttpParameterMapping) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *HttpParameterMapping) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Secret != nil
-}
-
-func (x *HttpParameterMapping) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *HttpParameterMapping) ClearSecret() {
-	x.xxx_hidden_Secret = nil
-}
-
-type HttpParameterMapping_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The schema for the parameter.
-	Schema *ParameterSchema
-	// A secret value to use for the parameter.
-	Secret *SecretValue
-}
-
-func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
-	m0 := &HttpParameterMapping{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Secret = b.Secret
-	return m0
-}
-
-// WebsocketParameterMapping defines how to place an input parameter into a websocket message.
-type WebsocketParameterMapping struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *WebsocketParameterMapping) Reset() {
-	*x = WebsocketParameterMapping{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[30]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebsocketParameterMapping) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebsocketParameterMapping) ProtoMessage() {}
-
-func (x *WebsocketParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[30]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebsocketParameterMapping) GetSchema() *ParameterSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *WebsocketParameterMapping) GetSecret() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *WebsocketParameterMapping) SetSchema(v *ParameterSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *WebsocketParameterMapping) SetSecret(v *SecretValue) {
-	x.xxx_hidden_Secret = v
-}
-
-func (x *WebsocketParameterMapping) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *WebsocketParameterMapping) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Secret != nil
-}
-
-func (x *WebsocketParameterMapping) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *WebsocketParameterMapping) ClearSecret() {
-	x.xxx_hidden_Secret = nil
-}
-
-type WebsocketParameterMapping_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The schema for the parameter.
-	Schema *ParameterSchema
-	// A secret value to use for the parameter.
-	Secret *SecretValue
-}
-
-func (b0 WebsocketParameterMapping_builder) Build() *WebsocketParameterMapping {
-	m0 := &WebsocketParameterMapping{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Secret = b.Secret
-	return m0
-}
-
-// WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
-type WebrtcParameterMapping struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *WebrtcParameterMapping) Reset() {
-	*x = WebrtcParameterMapping{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebrtcParameterMapping) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebrtcParameterMapping) ProtoMessage() {}
-
-func (x *WebrtcParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebrtcParameterMapping) GetSchema() *ParameterSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *WebrtcParameterMapping) GetSecret() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *WebrtcParameterMapping) SetSchema(v *ParameterSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *WebrtcParameterMapping) SetSecret(v *SecretValue) {
-	x.xxx_hidden_Secret = v
-}
-
-func (x *WebrtcParameterMapping) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *WebrtcParameterMapping) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Secret != nil
-}
-
-func (x *WebrtcParameterMapping) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *WebrtcParameterMapping) ClearSecret() {
-	x.xxx_hidden_Secret = nil
-}
-
-type WebrtcParameterMapping_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The schema for the parameter.
-	Schema *ParameterSchema
-	// A secret value to use for the parameter.
-	Secret *SecretValue
-}
-
-func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
-	m0 := &WebrtcParameterMapping{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Secret = b.Secret
-	return m0
-}
-
-// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
-type CommandLineParameterMapping struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *CommandLineParameterMapping) Reset() {
-	*x = CommandLineParameterMapping{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[32]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CommandLineParameterMapping) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CommandLineParameterMapping) ProtoMessage() {}
-
-func (x *CommandLineParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[32]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CommandLineParameterMapping) GetSchema() *ParameterSchema {
-	if x != nil {
-		return x.xxx_hidden_Schema
-	}
-	return nil
-}
-
-func (x *CommandLineParameterMapping) GetSecret() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return nil
-}
-
-func (x *CommandLineParameterMapping) SetSchema(v *ParameterSchema) {
-	x.xxx_hidden_Schema = v
-}
-
-func (x *CommandLineParameterMapping) SetSecret(v *SecretValue) {
-	x.xxx_hidden_Secret = v
-}
-
-func (x *CommandLineParameterMapping) HasSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Schema != nil
-}
-
-func (x *CommandLineParameterMapping) HasSecret() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Secret != nil
-}
-
-func (x *CommandLineParameterMapping) ClearSchema() {
-	x.xxx_hidden_Schema = nil
-}
-
-func (x *CommandLineParameterMapping) ClearSecret() {
-	x.xxx_hidden_Secret = nil
-}
-
-type CommandLineParameterMapping_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The schema for the parameter.
-	Schema *ParameterSchema
-	// A secret value to use for the parameter.
-	Secret *SecretValue
-}
-
-func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMapping {
-	m0 := &CommandLineParameterMapping{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Schema = b.Schema
-	x.xxx_hidden_Secret = b.Secret
-	return m0
-}
-
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
 type ConnectionPoolConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
@@ -6226,7 +3712,7 @@ type ConnectionPoolConfig struct {
 
 func (x *ConnectionPoolConfig) Reset() {
 	*x = ConnectionPoolConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[33]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6238,7 +3724,7 @@ func (x *ConnectionPoolConfig) String() string {
 func (*ConnectionPoolConfig) ProtoMessage() {}
 
 func (x *ConnectionPoolConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[33]
+	mi := &file_proto_config_v1_config_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6362,7 +3848,7 @@ type HttpHealthCheck struct {
 
 func (x *HttpHealthCheck) Reset() {
 	*x = HttpHealthCheck{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[34]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6374,7 +3860,7 @@ func (x *HttpHealthCheck) String() string {
 func (*HttpHealthCheck) ProtoMessage() {}
 
 func (x *HttpHealthCheck) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[34]
+	mi := &file_proto_config_v1_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6561,7 +4047,7 @@ type GrpcHealthCheck struct {
 
 func (x *GrpcHealthCheck) Reset() {
 	*x = GrpcHealthCheck{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[35]
+	mi := &file_proto_config_v1_config_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6573,7 +4059,7 @@ func (x *GrpcHealthCheck) String() string {
 func (*GrpcHealthCheck) ProtoMessage() {}
 
 func (x *GrpcHealthCheck) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[35]
+	mi := &file_proto_config_v1_config_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6824,7 +4310,7 @@ type CommandLineHealthCheck struct {
 
 func (x *CommandLineHealthCheck) Reset() {
 	*x = CommandLineHealthCheck{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	mi := &file_proto_config_v1_config_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6836,7 +4322,7 @@ func (x *CommandLineHealthCheck) String() string {
 func (*CommandLineHealthCheck) ProtoMessage() {}
 
 func (x *CommandLineHealthCheck) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[36]
+	mi := &file_proto_config_v1_config_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7022,7 +4508,7 @@ type ContainerEnvironment struct {
 
 func (x *ContainerEnvironment) Reset() {
 	*x = ContainerEnvironment{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[37]
+	mi := &file_proto_config_v1_config_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7034,7 +4520,7 @@ func (x *ContainerEnvironment) String() string {
 func (*ContainerEnvironment) ProtoMessage() {}
 
 func (x *ContainerEnvironment) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[37]
+	mi := &file_proto_config_v1_config_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7151,7 +4637,7 @@ type RateLimitConfig struct {
 
 func (x *RateLimitConfig) Reset() {
 	*x = RateLimitConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[38]
+	mi := &file_proto_config_v1_config_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7163,7 +4649,7 @@ func (x *RateLimitConfig) String() string {
 func (*RateLimitConfig) ProtoMessage() {}
 
 func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[38]
+	mi := &file_proto_config_v1_config_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7276,143 +4762,6 @@ func (b0 RateLimitConfig_builder) Build() *RateLimitConfig {
 	return m0
 }
 
-// Configuration for caching responses from the upstream service.
-type CacheConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_IsEnabled   bool                   `protobuf:"varint,1,opt,name=is_enabled,json=isEnabled"`
-	xxx_hidden_Ttl         *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl"`
-	xxx_hidden_Strategy    *string                `protobuf:"bytes,3,opt,name=strategy"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CacheConfig) Reset() {
-	*x = CacheConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[39]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CacheConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CacheConfig) ProtoMessage() {}
-
-func (x *CacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[39]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CacheConfig) GetIsEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_IsEnabled
-	}
-	return false
-}
-
-func (x *CacheConfig) GetTtl() *durationpb.Duration {
-	if x != nil {
-		return x.xxx_hidden_Ttl
-	}
-	return nil
-}
-
-func (x *CacheConfig) GetStrategy() string {
-	if x != nil {
-		if x.xxx_hidden_Strategy != nil {
-			return *x.xxx_hidden_Strategy
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CacheConfig) SetIsEnabled(v bool) {
-	x.xxx_hidden_IsEnabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *CacheConfig) SetTtl(v *durationpb.Duration) {
-	x.xxx_hidden_Ttl = v
-}
-
-func (x *CacheConfig) SetStrategy(v string) {
-	x.xxx_hidden_Strategy = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *CacheConfig) HasIsEnabled() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CacheConfig) HasTtl() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Ttl != nil
-}
-
-func (x *CacheConfig) HasStrategy() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *CacheConfig) ClearIsEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_IsEnabled = false
-}
-
-func (x *CacheConfig) ClearTtl() {
-	x.xxx_hidden_Ttl = nil
-}
-
-func (x *CacheConfig) ClearStrategy() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Strategy = nil
-}
-
-type CacheConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Whether caching is enabled.
-	IsEnabled *bool
-	// The duration for which a cached response is considered valid.
-	Ttl *durationpb.Duration
-	// Caching strategy (e.g., "lru", "lfu"). This allows for future expansion.
-	Strategy *string
-}
-
-func (b0 CacheConfig_builder) Build() *CacheConfig {
-	m0 := &CacheConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.IsEnabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_IsEnabled = *b.IsEnabled
-	}
-	x.xxx_hidden_Ttl = b.Ttl
-	if b.Strategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_Strategy = b.Strategy
-	}
-	return m0
-}
-
 // Configuration for service resilience features like circuit breakers and retries.
 type ResilienceConfig struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
@@ -7424,7 +4773,7 @@ type ResilienceConfig struct {
 
 func (x *ResilienceConfig) Reset() {
 	*x = ResilienceConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[40]
+	mi := &file_proto_config_v1_config_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7436,7 +4785,7 @@ func (x *ResilienceConfig) String() string {
 func (*ResilienceConfig) ProtoMessage() {}
 
 func (x *ResilienceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[40]
+	mi := &file_proto_config_v1_config_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7524,7 +4873,7 @@ type CircuitBreakerConfig struct {
 
 func (x *CircuitBreakerConfig) Reset() {
 	*x = CircuitBreakerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[41]
+	mi := &file_proto_config_v1_config_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7536,7 +4885,7 @@ func (x *CircuitBreakerConfig) String() string {
 func (*CircuitBreakerConfig) ProtoMessage() {}
 
 func (x *CircuitBreakerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[41]
+	mi := &file_proto_config_v1_config_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7688,7 +5037,7 @@ type RetryConfig struct {
 
 func (x *RetryConfig) Reset() {
 	*x = RetryConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[42]
+	mi := &file_proto_config_v1_config_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7700,7 +5049,7 @@ func (x *RetryConfig) String() string {
 func (*RetryConfig) ProtoMessage() {}
 
 func (x *RetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[42]
+	mi := &file_proto_config_v1_config_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7803,1884 +5152,6 @@ func (b0 RetryConfig_builder) Build() *RetryConfig {
 	return m0
 }
 
-// AuthenticationConfig specifies the authentication method to use.
-type AuthenticationConfig struct {
-	state                 protoimpl.MessageState            `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod isAuthenticationConfig_AuthMethod `protobuf_oneof:"auth_method"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *AuthenticationConfig) Reset() {
-	*x = AuthenticationConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[43]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AuthenticationConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AuthenticationConfig) ProtoMessage() {}
-
-func (x *AuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[43]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *AuthenticationConfig) GetApiKey() *APIKeyAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey); ok {
-			return x.ApiKey
-		}
-	}
-	return nil
-}
-
-func (x *AuthenticationConfig) GetOauth2() *OAuth2Auth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2); ok {
-			return x.Oauth2
-		}
-	}
-	return nil
-}
-
-func (x *AuthenticationConfig) SetApiKey(v *APIKeyAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authenticationConfig_ApiKey{v}
-}
-
-func (x *AuthenticationConfig) SetOauth2(v *OAuth2Auth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authenticationConfig_Oauth2{v}
-}
-
-func (x *AuthenticationConfig) HasAuthMethod() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_AuthMethod != nil
-}
-
-func (x *AuthenticationConfig) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey)
-	return ok
-}
-
-func (x *AuthenticationConfig) HasOauth2() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2)
-	return ok
-}
-
-func (x *AuthenticationConfig) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
-}
-
-func (x *AuthenticationConfig) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *AuthenticationConfig) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-const AuthenticationConfig_AuthMethod_not_set_case case_AuthenticationConfig_AuthMethod = 0
-const AuthenticationConfig_ApiKey_case case_AuthenticationConfig_AuthMethod = 1
-const AuthenticationConfig_Oauth2_case case_AuthenticationConfig_AuthMethod = 2
-
-func (x *AuthenticationConfig) WhichAuthMethod() case_AuthenticationConfig_AuthMethod {
-	if x == nil {
-		return AuthenticationConfig_AuthMethod_not_set_case
-	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *authenticationConfig_ApiKey:
-		return AuthenticationConfig_ApiKey_case
-	case *authenticationConfig_Oauth2:
-		return AuthenticationConfig_Oauth2_case
-	default:
-		return AuthenticationConfig_AuthMethod_not_set_case
-	}
-}
-
-type AuthenticationConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_AuthMethod:
-	ApiKey *APIKeyAuth
-	Oauth2 *OAuth2Auth
-	// -- end of xxx_hidden_AuthMethod
-}
-
-func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
-	m0 := &AuthenticationConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &authenticationConfig_ApiKey{b.ApiKey}
-	}
-	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &authenticationConfig_Oauth2{b.Oauth2}
-	}
-	return m0
-}
-
-type case_AuthenticationConfig_AuthMethod protoreflect.FieldNumber
-
-func (x case_AuthenticationConfig_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[43].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isAuthenticationConfig_AuthMethod interface {
-	isAuthenticationConfig_AuthMethod()
-}
-
-type authenticationConfig_ApiKey struct {
-	ApiKey *APIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
-}
-
-type authenticationConfig_Oauth2 struct {
-	Oauth2 *OAuth2Auth `protobuf:"bytes,2,opt,name=oauth2,oneof"` // Can be extended with other auth types like JWT, mTLS etc.
-}
-
-func (*authenticationConfig_ApiKey) isAuthenticationConfig_AuthMethod() {}
-
-func (*authenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
-
-// APIKeyAuth defines authentication using an API key.
-type APIKeyAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ParamName   *string                `protobuf:"bytes,1,opt,name=param_name,json=paramName"`
-	xxx_hidden_In          APIKeyAuth_Location    `protobuf:"varint,2,opt,name=in,enum=mcpany.config.v1.APIKeyAuth_Location"`
-	xxx_hidden_KeyValue    *string                `protobuf:"bytes,3,opt,name=key_value,json=keyValue"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *APIKeyAuth) Reset() {
-	*x = APIKeyAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[44]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *APIKeyAuth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*APIKeyAuth) ProtoMessage() {}
-
-func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[44]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *APIKeyAuth) GetParamName() string {
-	if x != nil {
-		if x.xxx_hidden_ParamName != nil {
-			return *x.xxx_hidden_ParamName
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *APIKeyAuth) GetIn() APIKeyAuth_Location {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_In
-		}
-	}
-	return APIKeyAuth_HEADER
-}
-
-func (x *APIKeyAuth) GetKeyValue() string {
-	if x != nil {
-		if x.xxx_hidden_KeyValue != nil {
-			return *x.xxx_hidden_KeyValue
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *APIKeyAuth) SetParamName(v string) {
-	x.xxx_hidden_ParamName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *APIKeyAuth) SetIn(v APIKeyAuth_Location) {
-	x.xxx_hidden_In = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
-}
-
-func (x *APIKeyAuth) SetKeyValue(v string) {
-	x.xxx_hidden_KeyValue = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *APIKeyAuth) HasParamName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *APIKeyAuth) HasIn() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *APIKeyAuth) HasKeyValue() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *APIKeyAuth) ClearParamName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ParamName = nil
-}
-
-func (x *APIKeyAuth) ClearIn() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_In = APIKeyAuth_HEADER
-}
-
-func (x *APIKeyAuth) ClearKeyValue() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_KeyValue = nil
-}
-
-type APIKeyAuth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
-	ParamName *string
-	In        *APIKeyAuth_Location
-	// The actual API key value. It's recommended to use a secret management system.
-	KeyValue *string
-}
-
-func (b0 APIKeyAuth_builder) Build() *APIKeyAuth {
-	m0 := &APIKeyAuth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ParamName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_ParamName = b.ParamName
-	}
-	if b.In != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_In = *b.In
-	}
-	if b.KeyValue != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_KeyValue = b.KeyValue
-	}
-	return m0
-}
-
-// OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-type OAuth2Auth struct {
-	state                       protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_TokenUrl         *string                `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl"`
-	xxx_hidden_AuthorizationUrl *string                `protobuf:"bytes,4,opt,name=authorization_url,json=authorizationUrl"`
-	xxx_hidden_Scopes           *string                `protobuf:"bytes,5,opt,name=scopes"`
-	xxx_hidden_IssuerUrl        *string                `protobuf:"bytes,6,opt,name=issuer_url,json=issuerUrl"`
-	xxx_hidden_Audience         *string                `protobuf:"bytes,7,opt,name=audience"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
-}
-
-func (x *OAuth2Auth) Reset() {
-	*x = OAuth2Auth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[45]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OAuth2Auth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OAuth2Auth) ProtoMessage() {}
-
-func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[45]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OAuth2Auth) GetTokenUrl() string {
-	if x != nil {
-		if x.xxx_hidden_TokenUrl != nil {
-			return *x.xxx_hidden_TokenUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OAuth2Auth) GetAuthorizationUrl() string {
-	if x != nil {
-		if x.xxx_hidden_AuthorizationUrl != nil {
-			return *x.xxx_hidden_AuthorizationUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OAuth2Auth) GetScopes() string {
-	if x != nil {
-		if x.xxx_hidden_Scopes != nil {
-			return *x.xxx_hidden_Scopes
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OAuth2Auth) GetIssuerUrl() string {
-	if x != nil {
-		if x.xxx_hidden_IssuerUrl != nil {
-			return *x.xxx_hidden_IssuerUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OAuth2Auth) GetAudience() string {
-	if x != nil {
-		if x.xxx_hidden_Audience != nil {
-			return *x.xxx_hidden_Audience
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OAuth2Auth) SetTokenUrl(v string) {
-	x.xxx_hidden_TokenUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *OAuth2Auth) SetAuthorizationUrl(v string) {
-	x.xxx_hidden_AuthorizationUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
-}
-
-func (x *OAuth2Auth) SetScopes(v string) {
-	x.xxx_hidden_Scopes = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
-}
-
-func (x *OAuth2Auth) SetIssuerUrl(v string) {
-	x.xxx_hidden_IssuerUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
-}
-
-func (x *OAuth2Auth) SetAudience(v string) {
-	x.xxx_hidden_Audience = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
-}
-
-func (x *OAuth2Auth) HasTokenUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *OAuth2Auth) HasAuthorizationUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *OAuth2Auth) HasScopes() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *OAuth2Auth) HasIssuerUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *OAuth2Auth) HasAudience() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
-func (x *OAuth2Auth) ClearTokenUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_TokenUrl = nil
-}
-
-func (x *OAuth2Auth) ClearAuthorizationUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_AuthorizationUrl = nil
-}
-
-func (x *OAuth2Auth) ClearScopes() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Scopes = nil
-}
-
-func (x *OAuth2Auth) ClearIssuerUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_IssuerUrl = nil
-}
-
-func (x *OAuth2Auth) ClearAudience() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Audience = nil
-}
-
-type OAuth2Auth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	TokenUrl         *string
-	AuthorizationUrl *string
-	// Space-delimited list of scopes.
-	Scopes    *string
-	IssuerUrl *string
-	Audience  *string
-}
-
-func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
-	m0 := &OAuth2Auth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.TokenUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_TokenUrl = b.TokenUrl
-	}
-	if b.AuthorizationUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_AuthorizationUrl = b.AuthorizationUrl
-	}
-	if b.Scopes != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Scopes = b.Scopes
-	}
-	if b.IssuerUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_IssuerUrl = b.IssuerUrl
-	}
-	if b.Audience != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Audience = b.Audience
-	}
-	return m0
-}
-
-// SecretValue represents a value that should be treated as a secret.
-// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
-type SecretValue struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value isSecretValue_Value    `protobuf_oneof:"value"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *SecretValue) Reset() {
-	*x = SecretValue{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[46]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SecretValue) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SecretValue) ProtoMessage() {}
-
-func (x *SecretValue) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[46]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *SecretValue) GetPlainText() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_PlainText); ok {
-			return x.PlainText
-		}
-	}
-	return ""
-}
-
-func (x *SecretValue) GetEnvironmentVariable() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable); ok {
-			return x.EnvironmentVariable
-		}
-	}
-	return ""
-}
-
-func (x *SecretValue) GetFilePath() string {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_FilePath); ok {
-			return x.FilePath
-		}
-	}
-	return ""
-}
-
-func (x *SecretValue) GetRemoteContent() *RemoteContent {
-	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent); ok {
-			return x.RemoteContent
-		}
-	}
-	return nil
-}
-
-func (x *SecretValue) SetPlainText(v string) {
-	x.xxx_hidden_Value = &secretValue_PlainText{v}
-}
-
-func (x *SecretValue) SetEnvironmentVariable(v string) {
-	x.xxx_hidden_Value = &secretValue_EnvironmentVariable{v}
-}
-
-func (x *SecretValue) SetFilePath(v string) {
-	x.xxx_hidden_Value = &secretValue_FilePath{v}
-}
-
-func (x *SecretValue) SetRemoteContent(v *RemoteContent) {
-	if v == nil {
-		x.xxx_hidden_Value = nil
-		return
-	}
-	x.xxx_hidden_Value = &secretValue_RemoteContent{v}
-}
-
-func (x *SecretValue) HasValue() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Value != nil
-}
-
-func (x *SecretValue) HasPlainText() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_PlainText)
-	return ok
-}
-
-func (x *SecretValue) HasEnvironmentVariable() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable)
-	return ok
-}
-
-func (x *SecretValue) HasFilePath() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_FilePath)
-	return ok
-}
-
-func (x *SecretValue) HasRemoteContent() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent)
-	return ok
-}
-
-func (x *SecretValue) ClearValue() {
-	x.xxx_hidden_Value = nil
-}
-
-func (x *SecretValue) ClearPlainText() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_PlainText); ok {
-		x.xxx_hidden_Value = nil
-	}
-}
-
-func (x *SecretValue) ClearEnvironmentVariable() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable); ok {
-		x.xxx_hidden_Value = nil
-	}
-}
-
-func (x *SecretValue) ClearFilePath() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_FilePath); ok {
-		x.xxx_hidden_Value = nil
-	}
-}
-
-func (x *SecretValue) ClearRemoteContent() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent); ok {
-		x.xxx_hidden_Value = nil
-	}
-}
-
-const SecretValue_Value_not_set_case case_SecretValue_Value = 0
-const SecretValue_PlainText_case case_SecretValue_Value = 1
-const SecretValue_EnvironmentVariable_case case_SecretValue_Value = 2
-const SecretValue_FilePath_case case_SecretValue_Value = 3
-const SecretValue_RemoteContent_case case_SecretValue_Value = 4
-
-func (x *SecretValue) WhichValue() case_SecretValue_Value {
-	if x == nil {
-		return SecretValue_Value_not_set_case
-	}
-	switch x.xxx_hidden_Value.(type) {
-	case *secretValue_PlainText:
-		return SecretValue_PlainText_case
-	case *secretValue_EnvironmentVariable:
-		return SecretValue_EnvironmentVariable_case
-	case *secretValue_FilePath:
-		return SecretValue_FilePath_case
-	case *secretValue_RemoteContent:
-		return SecretValue_RemoteContent_case
-	default:
-		return SecretValue_Value_not_set_case
-	}
-}
-
-type SecretValue_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_Value:
-	PlainText           *string
-	EnvironmentVariable *string
-	FilePath            *string
-	RemoteContent       *RemoteContent
-	// -- end of xxx_hidden_Value
-}
-
-func (b0 SecretValue_builder) Build() *SecretValue {
-	m0 := &SecretValue{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.PlainText != nil {
-		x.xxx_hidden_Value = &secretValue_PlainText{*b.PlainText}
-	}
-	if b.EnvironmentVariable != nil {
-		x.xxx_hidden_Value = &secretValue_EnvironmentVariable{*b.EnvironmentVariable}
-	}
-	if b.FilePath != nil {
-		x.xxx_hidden_Value = &secretValue_FilePath{*b.FilePath}
-	}
-	if b.RemoteContent != nil {
-		x.xxx_hidden_Value = &secretValue_RemoteContent{b.RemoteContent}
-	}
-	return m0
-}
-
-type case_SecretValue_Value protoreflect.FieldNumber
-
-func (x case_SecretValue_Value) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[46].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isSecretValue_Value interface {
-	isSecretValue_Value()
-}
-
-type secretValue_PlainText struct {
-	PlainText string `protobuf:"bytes,1,opt,name=plain_text,json=plainText,oneof"`
-}
-
-type secretValue_EnvironmentVariable struct {
-	EnvironmentVariable string `protobuf:"bytes,2,opt,name=environment_variable,json=environmentVariable,oneof"`
-}
-
-type secretValue_FilePath struct {
-	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
-}
-
-type secretValue_RemoteContent struct {
-	RemoteContent *RemoteContent `protobuf:"bytes,4,opt,name=remote_content,json=remoteContent,oneof"`
-}
-
-func (*secretValue_PlainText) isSecretValue_Value() {}
-
-func (*secretValue_EnvironmentVariable) isSecretValue_Value() {}
-
-func (*secretValue_FilePath) isSecretValue_Value() {}
-
-func (*secretValue_RemoteContent) isSecretValue_Value() {}
-
-// RemoteContent represents content that is fetched from a remote URL.
-type RemoteContent struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HttpUrl     *string                `protobuf:"bytes,1,opt,name=http_url,json=httpUrl"`
-	xxx_hidden_Auth        *Authentication        `protobuf:"bytes,2,opt,name=auth"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *RemoteContent) Reset() {
-	*x = RemoteContent{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[47]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RemoteContent) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RemoteContent) ProtoMessage() {}
-
-func (x *RemoteContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[47]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *RemoteContent) GetHttpUrl() string {
-	if x != nil {
-		if x.xxx_hidden_HttpUrl != nil {
-			return *x.xxx_hidden_HttpUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *RemoteContent) GetAuth() *Authentication {
-	if x != nil {
-		return x.xxx_hidden_Auth
-	}
-	return nil
-}
-
-func (x *RemoteContent) SetHttpUrl(v string) {
-	x.xxx_hidden_HttpUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *RemoteContent) SetAuth(v *Authentication) {
-	x.xxx_hidden_Auth = v
-}
-
-func (x *RemoteContent) HasHttpUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *RemoteContent) HasAuth() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Auth != nil
-}
-
-func (x *RemoteContent) ClearHttpUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HttpUrl = nil
-}
-
-func (x *RemoteContent) ClearAuth() {
-	x.xxx_hidden_Auth = nil
-}
-
-type RemoteContent_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	HttpUrl *string
-	Auth    *Authentication
-}
-
-func (b0 RemoteContent_builder) Build() *RemoteContent {
-	m0 := &RemoteContent{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.HttpUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_HttpUrl = b.HttpUrl
-	}
-	x.xxx_hidden_Auth = b.Auth
-	return m0
-}
-
-// Authentication defines the authentication method to use when fetching remote content.
-type Authentication struct {
-	state                 protoimpl.MessageState      `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod isAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *Authentication) Reset() {
-	*x = Authentication{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Authentication) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Authentication) ProtoMessage() {}
-
-func (x *Authentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[48]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *Authentication) GetApiKey() *UpstreamAPIKeyAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
-			return x.ApiKey
-		}
-	}
-	return nil
-}
-
-func (x *Authentication) GetBearerToken() *UpstreamBearerTokenAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
-			return x.BearerToken
-		}
-	}
-	return nil
-}
-
-func (x *Authentication) GetBasicAuth() *UpstreamBasicAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
-			return x.BasicAuth
-		}
-	}
-	return nil
-}
-
-func (x *Authentication) GetOauth2() *UpstreamOAuth2Auth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
-			return x.Oauth2
-		}
-	}
-	return nil
-}
-
-func (x *Authentication) SetApiKey(v *UpstreamAPIKeyAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authentication_ApiKey{v}
-}
-
-func (x *Authentication) SetBearerToken(v *UpstreamBearerTokenAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authentication_BearerToken{v}
-}
-
-func (x *Authentication) SetBasicAuth(v *UpstreamBasicAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authentication_BasicAuth{v}
-}
-
-func (x *Authentication) SetOauth2(v *UpstreamOAuth2Auth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &authentication_Oauth2{v}
-}
-
-func (x *Authentication) HasAuthMethod() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_AuthMethod != nil
-}
-
-func (x *Authentication) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey)
-	return ok
-}
-
-func (x *Authentication) HasBearerToken() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken)
-	return ok
-}
-
-func (x *Authentication) HasBasicAuth() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth)
-	return ok
-}
-
-func (x *Authentication) HasOauth2() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2)
-	return ok
-}
-
-func (x *Authentication) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
-}
-
-func (x *Authentication) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *Authentication) ClearBearerToken() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *Authentication) ClearBasicAuth() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *Authentication) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-const Authentication_AuthMethod_not_set_case case_Authentication_AuthMethod = 0
-const Authentication_ApiKey_case case_Authentication_AuthMethod = 1
-const Authentication_BearerToken_case case_Authentication_AuthMethod = 2
-const Authentication_BasicAuth_case case_Authentication_AuthMethod = 3
-const Authentication_Oauth2_case case_Authentication_AuthMethod = 5
-
-func (x *Authentication) WhichAuthMethod() case_Authentication_AuthMethod {
-	if x == nil {
-		return Authentication_AuthMethod_not_set_case
-	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *authentication_ApiKey:
-		return Authentication_ApiKey_case
-	case *authentication_BearerToken:
-		return Authentication_BearerToken_case
-	case *authentication_BasicAuth:
-		return Authentication_BasicAuth_case
-	case *authentication_Oauth2:
-		return Authentication_Oauth2_case
-	default:
-		return Authentication_AuthMethod_not_set_case
-	}
-}
-
-type Authentication_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_AuthMethod:
-	ApiKey      *UpstreamAPIKeyAuth
-	BearerToken *UpstreamBearerTokenAuth
-	BasicAuth   *UpstreamBasicAuth
-	Oauth2      *UpstreamOAuth2Auth
-	// -- end of xxx_hidden_AuthMethod
-}
-
-func (b0 Authentication_builder) Build() *Authentication {
-	m0 := &Authentication{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &authentication_ApiKey{b.ApiKey}
-	}
-	if b.BearerToken != nil {
-		x.xxx_hidden_AuthMethod = &authentication_BearerToken{b.BearerToken}
-	}
-	if b.BasicAuth != nil {
-		x.xxx_hidden_AuthMethod = &authentication_BasicAuth{b.BasicAuth}
-	}
-	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &authentication_Oauth2{b.Oauth2}
-	}
-	return m0
-}
-
-type case_Authentication_AuthMethod protoreflect.FieldNumber
-
-func (x case_Authentication_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[48].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isAuthentication_AuthMethod interface {
-	isAuthentication_AuthMethod()
-}
-
-type authentication_ApiKey struct {
-	ApiKey *UpstreamAPIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
-}
-
-type authentication_BearerToken struct {
-	BearerToken *UpstreamBearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,json=bearerToken,oneof"`
-}
-
-type authentication_BasicAuth struct {
-	BasicAuth *UpstreamBasicAuth `protobuf:"bytes,3,opt,name=basic_auth,json=basicAuth,oneof"`
-}
-
-type authentication_Oauth2 struct {
-	Oauth2 *UpstreamOAuth2Auth `protobuf:"bytes,5,opt,name=oauth2,oneof"`
-}
-
-func (*authentication_ApiKey) isAuthentication_AuthMethod() {}
-
-func (*authentication_BearerToken) isAuthentication_AuthMethod() {}
-
-func (*authentication_BasicAuth) isAuthentication_AuthMethod() {}
-
-func (*authentication_Oauth2) isAuthentication_AuthMethod() {}
-
-// UpstreamAuthentication defines the authentication method to use when mcpany communicates
-// with an upstream service.
-type UpstreamAuthentication struct {
-	state                             protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod             isUpstreamAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
-	xxx_hidden_UseEnvironmentVariable bool                                `protobuf:"varint,4,opt,name=use_environment_variable,json=useEnvironmentVariable"`
-	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
-	XXX_presence                      [1]uint32
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
-}
-
-func (x *UpstreamAuthentication) Reset() {
-	*x = UpstreamAuthentication{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpstreamAuthentication) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamAuthentication) ProtoMessage() {}
-
-func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[49]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *UpstreamAuthentication) GetApiKey() *UpstreamAPIKeyAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey); ok {
-			return x.ApiKey
-		}
-	}
-	return nil
-}
-
-func (x *UpstreamAuthentication) GetBearerToken() *UpstreamBearerTokenAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken); ok {
-			return x.BearerToken
-		}
-	}
-	return nil
-}
-
-func (x *UpstreamAuthentication) GetBasicAuth() *UpstreamBasicAuth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth); ok {
-			return x.BasicAuth
-		}
-	}
-	return nil
-}
-
-func (x *UpstreamAuthentication) GetOauth2() *UpstreamOAuth2Auth {
-	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2); ok {
-			return x.Oauth2
-		}
-	}
-	return nil
-}
-
-func (x *UpstreamAuthentication) GetUseEnvironmentVariable() bool {
-	if x != nil {
-		return x.xxx_hidden_UseEnvironmentVariable
-	}
-	return false
-}
-
-func (x *UpstreamAuthentication) SetApiKey(v *UpstreamAPIKeyAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_ApiKey{v}
-}
-
-func (x *UpstreamAuthentication) SetBearerToken(v *UpstreamBearerTokenAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_BearerToken{v}
-}
-
-func (x *UpstreamAuthentication) SetBasicAuth(v *UpstreamBasicAuth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{v}
-}
-
-func (x *UpstreamAuthentication) SetOauth2(v *UpstreamOAuth2Auth) {
-	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
-		return
-	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_Oauth2{v}
-}
-
-func (x *UpstreamAuthentication) SetUseEnvironmentVariable(v bool) {
-	x.xxx_hidden_UseEnvironmentVariable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *UpstreamAuthentication) HasAuthMethod() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_AuthMethod != nil
-}
-
-func (x *UpstreamAuthentication) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey)
-	return ok
-}
-
-func (x *UpstreamAuthentication) HasBearerToken() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken)
-	return ok
-}
-
-func (x *UpstreamAuthentication) HasBasicAuth() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth)
-	return ok
-}
-
-func (x *UpstreamAuthentication) HasOauth2() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2)
-	return ok
-}
-
-func (x *UpstreamAuthentication) HasUseEnvironmentVariable() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *UpstreamAuthentication) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
-}
-
-func (x *UpstreamAuthentication) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *UpstreamAuthentication) ClearBearerToken() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *UpstreamAuthentication) ClearBasicAuth() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *UpstreamAuthentication) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
-	}
-}
-
-func (x *UpstreamAuthentication) ClearUseEnvironmentVariable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_UseEnvironmentVariable = false
-}
-
-const UpstreamAuthentication_AuthMethod_not_set_case case_UpstreamAuthentication_AuthMethod = 0
-const UpstreamAuthentication_ApiKey_case case_UpstreamAuthentication_AuthMethod = 1
-const UpstreamAuthentication_BearerToken_case case_UpstreamAuthentication_AuthMethod = 2
-const UpstreamAuthentication_BasicAuth_case case_UpstreamAuthentication_AuthMethod = 3
-const UpstreamAuthentication_Oauth2_case case_UpstreamAuthentication_AuthMethod = 5
-
-func (x *UpstreamAuthentication) WhichAuthMethod() case_UpstreamAuthentication_AuthMethod {
-	if x == nil {
-		return UpstreamAuthentication_AuthMethod_not_set_case
-	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *upstreamAuthentication_ApiKey:
-		return UpstreamAuthentication_ApiKey_case
-	case *upstreamAuthentication_BearerToken:
-		return UpstreamAuthentication_BearerToken_case
-	case *upstreamAuthentication_BasicAuth:
-		return UpstreamAuthentication_BasicAuth_case
-	case *upstreamAuthentication_Oauth2:
-		return UpstreamAuthentication_Oauth2_case
-	default:
-		return UpstreamAuthentication_AuthMethod_not_set_case
-	}
-}
-
-type UpstreamAuthentication_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Fields of oneof xxx_hidden_AuthMethod:
-	ApiKey      *UpstreamAPIKeyAuth
-	BearerToken *UpstreamBearerTokenAuth
-	BasicAuth   *UpstreamBasicAuth
-	Oauth2      *UpstreamOAuth2Auth
-	// -- end of xxx_hidden_AuthMethod
-	UseEnvironmentVariable *bool
-}
-
-func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
-	m0 := &UpstreamAuthentication{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_ApiKey{b.ApiKey}
-	}
-	if b.BearerToken != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_BearerToken{b.BearerToken}
-	}
-	if b.BasicAuth != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{b.BasicAuth}
-	}
-	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_Oauth2{b.Oauth2}
-	}
-	if b.UseEnvironmentVariable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_UseEnvironmentVariable = *b.UseEnvironmentVariable
-	}
-	return m0
-}
-
-type case_UpstreamAuthentication_AuthMethod protoreflect.FieldNumber
-
-func (x case_UpstreamAuthentication_AuthMethod) String() string {
-	md := file_proto_config_v1_config_proto_msgTypes[49].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isUpstreamAuthentication_AuthMethod interface {
-	isUpstreamAuthentication_AuthMethod()
-}
-
-type upstreamAuthentication_ApiKey struct {
-	ApiKey *UpstreamAPIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
-}
-
-type upstreamAuthentication_BearerToken struct {
-	BearerToken *UpstreamBearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,json=bearerToken,oneof"`
-}
-
-type upstreamAuthentication_BasicAuth struct {
-	BasicAuth *UpstreamBasicAuth `protobuf:"bytes,3,opt,name=basic_auth,json=basicAuth,oneof"`
-}
-
-type upstreamAuthentication_Oauth2 struct {
-	Oauth2 *UpstreamOAuth2Auth `protobuf:"bytes,5,opt,name=oauth2,oneof"`
-}
-
-func (*upstreamAuthentication_ApiKey) isUpstreamAuthentication_AuthMethod() {}
-
-func (*upstreamAuthentication_BearerToken) isUpstreamAuthentication_AuthMethod() {}
-
-func (*upstreamAuthentication_BasicAuth) isUpstreamAuthentication_AuthMethod() {}
-
-func (*upstreamAuthentication_Oauth2) isUpstreamAuthentication_AuthMethod() {}
-
-// UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.
-type UpstreamAPIKeyAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HeaderName  *string                `protobuf:"bytes,1,opt,name=header_name,json=headerName"`
-	xxx_hidden_ApiKey      *SecretValue           `protobuf:"bytes,2,opt,name=api_key,json=apiKey"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *UpstreamAPIKeyAuth) Reset() {
-	*x = UpstreamAPIKeyAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[50]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpstreamAPIKeyAuth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamAPIKeyAuth) ProtoMessage() {}
-
-func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[50]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *UpstreamAPIKeyAuth) GetHeaderName() string {
-	if x != nil {
-		if x.xxx_hidden_HeaderName != nil {
-			return *x.xxx_hidden_HeaderName
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpstreamAPIKeyAuth) GetApiKey() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_ApiKey
-	}
-	return nil
-}
-
-func (x *UpstreamAPIKeyAuth) SetHeaderName(v string) {
-	x.xxx_hidden_HeaderName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *UpstreamAPIKeyAuth) SetApiKey(v *SecretValue) {
-	x.xxx_hidden_ApiKey = v
-}
-
-func (x *UpstreamAPIKeyAuth) HasHeaderName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *UpstreamAPIKeyAuth) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_ApiKey != nil
-}
-
-func (x *UpstreamAPIKeyAuth) ClearHeaderName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HeaderName = nil
-}
-
-func (x *UpstreamAPIKeyAuth) ClearApiKey() {
-	x.xxx_hidden_ApiKey = nil
-}
-
-type UpstreamAPIKeyAuth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the header to carry the API key (e.g., "X-API-Key").
-	HeaderName *string
-	// The API key value.
-	ApiKey *SecretValue
-}
-
-func (b0 UpstreamAPIKeyAuth_builder) Build() *UpstreamAPIKeyAuth {
-	m0 := &UpstreamAPIKeyAuth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.HeaderName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_HeaderName = b.HeaderName
-	}
-	x.xxx_hidden_ApiKey = b.ApiKey
-	return m0
-}
-
-// UpstreamBearerTokenAuth defines authentication using a bearer token.
-type UpstreamBearerTokenAuth struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Token *SecretValue           `protobuf:"bytes,1,opt,name=token"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *UpstreamBearerTokenAuth) Reset() {
-	*x = UpstreamBearerTokenAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[51]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpstreamBearerTokenAuth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamBearerTokenAuth) ProtoMessage() {}
-
-func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[51]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *UpstreamBearerTokenAuth) GetToken() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Token
-	}
-	return nil
-}
-
-func (x *UpstreamBearerTokenAuth) SetToken(v *SecretValue) {
-	x.xxx_hidden_Token = v
-}
-
-func (x *UpstreamBearerTokenAuth) HasToken() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Token != nil
-}
-
-func (x *UpstreamBearerTokenAuth) ClearToken() {
-	x.xxx_hidden_Token = nil
-}
-
-type UpstreamBearerTokenAuth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The bearer token.
-	Token *SecretValue
-}
-
-func (b0 UpstreamBearerTokenAuth_builder) Build() *UpstreamBearerTokenAuth {
-	m0 := &UpstreamBearerTokenAuth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Token = b.Token
-	return m0
-}
-
-// UpstreamBasicAuth defines authentication using a username and password.
-type UpstreamBasicAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Username    *string                `protobuf:"bytes,1,opt,name=username"`
-	xxx_hidden_Password    *SecretValue           `protobuf:"bytes,2,opt,name=password"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *UpstreamBasicAuth) Reset() {
-	*x = UpstreamBasicAuth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[52]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpstreamBasicAuth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamBasicAuth) ProtoMessage() {}
-
-func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[52]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *UpstreamBasicAuth) GetUsername() string {
-	if x != nil {
-		if x.xxx_hidden_Username != nil {
-			return *x.xxx_hidden_Username
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpstreamBasicAuth) GetPassword() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_Password
-	}
-	return nil
-}
-
-func (x *UpstreamBasicAuth) SetUsername(v string) {
-	x.xxx_hidden_Username = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *UpstreamBasicAuth) SetPassword(v *SecretValue) {
-	x.xxx_hidden_Password = v
-}
-
-func (x *UpstreamBasicAuth) HasUsername() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *UpstreamBasicAuth) HasPassword() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Password != nil
-}
-
-func (x *UpstreamBasicAuth) ClearUsername() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Username = nil
-}
-
-func (x *UpstreamBasicAuth) ClearPassword() {
-	x.xxx_hidden_Password = nil
-}
-
-type UpstreamBasicAuth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Username *string
-	Password *SecretValue
-}
-
-func (b0 UpstreamBasicAuth_builder) Build() *UpstreamBasicAuth {
-	m0 := &UpstreamBasicAuth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Username != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Username = b.Username
-	}
-	x.xxx_hidden_Password = b.Password
-	return m0
-}
-
-// UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-type UpstreamOAuth2Auth struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_TokenUrl     *string                `protobuf:"bytes,1,opt,name=token_url,json=tokenUrl"`
-	xxx_hidden_ClientId     *SecretValue           `protobuf:"bytes,2,opt,name=client_id,json=clientId"`
-	xxx_hidden_ClientSecret *SecretValue           `protobuf:"bytes,3,opt,name=client_secret,json=clientSecret"`
-	xxx_hidden_Scopes       *string                `protobuf:"bytes,4,opt,name=scopes"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
-}
-
-func (x *UpstreamOAuth2Auth) Reset() {
-	*x = UpstreamOAuth2Auth{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[53]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpstreamOAuth2Auth) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpstreamOAuth2Auth) ProtoMessage() {}
-
-func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[53]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *UpstreamOAuth2Auth) GetTokenUrl() string {
-	if x != nil {
-		if x.xxx_hidden_TokenUrl != nil {
-			return *x.xxx_hidden_TokenUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpstreamOAuth2Auth) GetClientId() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_ClientId
-	}
-	return nil
-}
-
-func (x *UpstreamOAuth2Auth) GetClientSecret() *SecretValue {
-	if x != nil {
-		return x.xxx_hidden_ClientSecret
-	}
-	return nil
-}
-
-func (x *UpstreamOAuth2Auth) GetScopes() string {
-	if x != nil {
-		if x.xxx_hidden_Scopes != nil {
-			return *x.xxx_hidden_Scopes
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpstreamOAuth2Auth) SetTokenUrl(v string) {
-	x.xxx_hidden_TokenUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
-}
-
-func (x *UpstreamOAuth2Auth) SetClientId(v *SecretValue) {
-	x.xxx_hidden_ClientId = v
-}
-
-func (x *UpstreamOAuth2Auth) SetClientSecret(v *SecretValue) {
-	x.xxx_hidden_ClientSecret = v
-}
-
-func (x *UpstreamOAuth2Auth) SetScopes(v string) {
-	x.xxx_hidden_Scopes = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
-}
-
-func (x *UpstreamOAuth2Auth) HasTokenUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *UpstreamOAuth2Auth) HasClientId() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_ClientId != nil
-}
-
-func (x *UpstreamOAuth2Auth) HasClientSecret() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_ClientSecret != nil
-}
-
-func (x *UpstreamOAuth2Auth) HasScopes() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *UpstreamOAuth2Auth) ClearTokenUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_TokenUrl = nil
-}
-
-func (x *UpstreamOAuth2Auth) ClearClientId() {
-	x.xxx_hidden_ClientId = nil
-}
-
-func (x *UpstreamOAuth2Auth) ClearClientSecret() {
-	x.xxx_hidden_ClientSecret = nil
-}
-
-func (x *UpstreamOAuth2Auth) ClearScopes() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Scopes = nil
-}
-
-type UpstreamOAuth2Auth_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	TokenUrl     *string
-	ClientId     *SecretValue
-	ClientSecret *SecretValue
-	Scopes       *string
-}
-
-func (b0 UpstreamOAuth2Auth_builder) Build() *UpstreamOAuth2Auth {
-	m0 := &UpstreamOAuth2Auth{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.TokenUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_TokenUrl = b.TokenUrl
-	}
-	x.xxx_hidden_ClientId = b.ClientId
-	x.xxx_hidden_ClientSecret = b.ClientSecret
-	if b.Scopes != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_Scopes = b.Scopes
-	}
-	return m0
-}
-
 // TLSConfig defines the TLS settings for connecting to an upstream service.
 type TLSConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
@@ -9697,7 +5168,7 @@ type TLSConfig struct {
 
 func (x *TLSConfig) Reset() {
 	*x = TLSConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[54]
+	mi := &file_proto_config_v1_config_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9709,7 +5180,7 @@ func (x *TLSConfig) String() string {
 func (*TLSConfig) ProtoMessage() {}
 
 func (x *TLSConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[54]
+	mi := &file_proto_config_v1_config_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9898,7 +5369,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\"\xa4\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\x1a\x1aproto/config/v1/auth.proto\"\xa4\x02\n" +
 	"\x12McpAnyServerConfig\x12I\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0eglobalSettings\x12T\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x10upstreamServices\x12m\n" +
@@ -9907,76 +5378,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xf5\x04\n" +
-	"\x12HttpCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12#\n" +
-	"\rendpoint_path\x18\x02 \x01(\tR\fendpointPath\x12G\n" +
-	"\x06method\x18\x03 \x01(\x0e2/.mcpany.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12F\n" +
-	"\n" +
-	"parameters\x18\x05 \x03(\v2&.mcpany.config.v1.HttpParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
-	"\n" +
-	"HttpMethod\x12\x1b\n" +
-	"\x17HTTP_METHOD_UNSPECIFIED\x10\x00\x12\x13\n" +
-	"\x0fHTTP_METHOD_GET\x10\x01\x12\x14\n" +
-	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
-	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
-	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xf6\x02\n" +
-	"\x17WebsocketCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12K\n" +
-	"\n" +
-	"parameters\x18\x03 \x03(\v2+.mcpany.config.v1.WebsocketParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf0\x02\n" +
-	"\x14WebrtcCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12H\n" +
-	"\n" +
-	"parameters\x18\x03 \x03(\v2(.mcpany.config.v1.WebrtcParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xe9\x01\n" +
-	"\x19CommandLineCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12M\n" +
-	"\n" +
-	"parameters\x18\x02 \x03(\v2-.mcpany.config.v1.CommandLineParameterMappingR\n" +
-	"parameters\x123\n" +
-	"\x05cache\x18\x03 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
-	"\x04args\x18\x04 \x03(\tR\x04args\".\n" +
-	"\x10InputTransformer\x12\x1a\n" +
-	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcf\x02\n" +
-	"\x11OutputTransformer\x12H\n" +
-	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12c\n" +
-	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x0fextractionRules\x12\x1a\n" +
-	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
-	"\x14ExtractionRulesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"+\n" +
-	"\fOutputFormat\x12\b\n" +
-	"\x04JSON\x10\x00\x12\a\n" +
-	"\x03XML\x10\x01\x12\b\n" +
-	"\x04TEXT\x10\x02\"\xb1\x01\n" +
-	"\x12GrpcCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12\x18\n" +
-	"\aservice\x18\x02 \x01(\tR\aservice\x12\x16\n" +
-	"\x06method\x18\x03 \x01(\tR\x06method\x123\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xa7\x02\n" +
-	"\x15OpenAPICallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12O\n" +
-	"\x11input_transformer\x18\x02 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xa3\x02\n" +
-	"\x11MCPCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12O\n" +
-	"\x11input_transformer\x18\x02 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x03 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x86\x02\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x86\x02\n" +
 	"\x0eGlobalSettings\x12!\n" +
 	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
@@ -10015,16 +5417,17 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0eauthentication\x18\x0f \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
 	"\adisable\x18\x13 \x01(\bR\adisable\x12\x1a\n" +
 	"\bpriority\x18\x14 \x01(\x05R\bpriorityB\x10\n" +
-	"\x0eservice_config\"\xb2\x03\n" +
+	"\x0eservice_config\"\xf6\x03\n" +
 	"\x13GrpcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
 	"\x0euse_reflection\x18\x02 \x01(\bR\ruseReflection\x12:\n" +
 	"\n" +
 	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12:\n" +
-	"\x05calls\x18\x04 \x03(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x05calls\x12D\n" +
+	"\x05tools\x18\x04 \x03(\v2$.mcpany.config.v1.GrpcToolDefinitionR\x05tools\x12D\n" +
 	"\fhealth_check\x18\x05 \x01(\v2!.mcpany.config.v1.GrpcHealthCheckR\vhealthCheck\x12N\n" +
 	"\x11proto_definitions\x18\x06 \x03(\v2!.mcpany.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
-	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x0fprotoCollection\"\xac\x01\n" +
+	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x0fprotoCollection\x12B\n" +
+	"\tresources\x18\b \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xac\x01\n" +
 	"\x0fProtoDefinition\x12<\n" +
 	"\n" +
 	"proto_file\x18\x01 \x01(\v2\x1b.mcpany.config.v1.ProtoFileH\x00R\tprotoFile\x12N\n" +
@@ -10044,44 +5447,50 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1b\n" +
 	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xed\x01\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xb1\x02\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12:\n" +
-	"\x05calls\x18\x02 \x03(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05calls\x12D\n" +
+	"\x05tools\x18\x02 \x03(\v2$.mcpany.config.v1.HttpToolDefinitionR\x05tools\x12D\n" +
 	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xb1\x01\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
+	"\tresources\x18\x05 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xf5\x01\n" +
 	"\x18WebsocketUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12?\n" +
-	"\x05calls\x18\x02 \x03(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05calls\x12:\n" +
+	"\x05tools\x18\x02 \x03(\v2).mcpany.config.v1.WebsocketToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xab\x01\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
+	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xef\x01\n" +
 	"\x15WebrtcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12<\n" +
-	"\x05calls\x18\x02 \x03(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05calls\x12:\n" +
+	"\x05tools\x18\x02 \x03(\v2&.mcpany.config.v1.WebrtcToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\x96\x02\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
+	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xda\x02\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12!\n" +
 	"\fopenapi_spec\x18\x02 \x01(\tR\vopenapiSpec\x12D\n" +
 	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
 	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12=\n" +
-	"\x05calls\x18\x05 \x03(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05calls\"\xba\x03\n" +
+	"\x05tools\x18\x05 \x03(\v2'.mcpany.config.v1.OpenAPIToolDefinitionR\x05tools\x12B\n" +
+	"\tresources\x18\x06 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xfe\x03\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
 	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12A\n" +
-	"\x05calls\x18\x04 \x03(\v2+.mcpany.config.v1.CommandLineCallDefinitionR\x05calls\x12K\n" +
+	"\x05tools\x18\x04 \x03(\v2+.mcpany.config.v1.CommandLineToolDefinitionR\x05tools\x12K\n" +
 	"\fhealth_check\x18\x05 \x01(\v2(.mcpany.config.v1.CommandLineHealthCheckR\vhealthCheck\x123\n" +
 	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12[\n" +
 	"\x15container_environment\x18\a \x01(\v2&.mcpany.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
-	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xf7\x02\n" +
+	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12B\n" +
+	"\tresources\x18\t \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\"\xd0\x03\n" +
 	"\x12McpUpstreamService\x12X\n" +
 	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12Q\n" +
 	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12.\n" +
-	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x126\n" +
-	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x129\n" +
-	"\x05calls\x18\x06 \x03(\v2#.mcpany.config.v1.MCPCallDefinitionR\x05callsB\x11\n" +
+	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x12K\n" +
+	"\x10predefined_tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x0fpredefinedTools\x129\n" +
+	"\x05tools\x18\x06 \x03(\v2#.mcpany.config.v1.MCPToolDefinitionR\x05tools\x12B\n" +
+	"\tresources\x18\a \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresourcesB\x11\n" +
 	"\x0fconnection_type\"\xbf\x01\n" +
 	"\x12McpStdioConnection\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
@@ -10092,41 +5501,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x1bMcpStreamableHttpConnection\x12!\n" +
 	"\fhttp_address\x18\x01 \x01(\tR\vhttpAddress\x12:\n" +
 	"\n" +
-	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xfa\x01\n" +
-	"\n" +
-	"ToolSchema\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
-	"\x0eread_only_hint\x18\x02 \x01(\bR\freadOnlyHint\x12)\n" +
-	"\x10destructive_hint\x18\x03 \x01(\bR\x0fdestructiveHint\x12'\n" +
-	"\x0fidempotent_hint\x18\x04 \x01(\bR\x0eidempotentHint\x12&\n" +
-	"\x0fopen_world_hint\x18\x05 \x01(\bR\ropenWorldHint\x12\x12\n" +
-	"\x04name\x18\x06 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\"\xda\x01\n" +
-	"\x0fParameterSchema\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12\x1f\n" +
-	"\vis_required\x18\x04 \x01(\bR\n" +
-	"isRequired\x12;\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\xdd\x01\n" +
-	"\x0eToolDefinition\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x05 \x01(\bR\bisStream\"\x88\x01\n" +
-	"\x14HttpParameterMapping\x129\n" +
-	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8d\x01\n" +
-	"\x19WebsocketParameterMapping\x129\n" +
-	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8a\x01\n" +
-	"\x16WebrtcParameterMapping\x129\n" +
-	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8f\x01\n" +
-	"\x1bCommandLineParameterMapping\x129\n" +
-	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\xaf\x01\n" +
+	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\"\xaf\x01\n" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
@@ -10162,12 +5537,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12.\n" +
 	"\x13requests_per_second\x18\x02 \x01(\x01R\x11requestsPerSecond\x12\x14\n" +
-	"\x05burst\x18\x03 \x01(\x03R\x05burst\"u\n" +
-	"\vCacheConfig\x12\x1d\n" +
-	"\n" +
-	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
-	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xa5\x01\n" +
+	"\x05burst\x18\x03 \x01(\x03R\x05burst\"\xa5\x01\n" +
 	"\x10ResilienceConfig\x12O\n" +
 	"\x0fcircuit_breaker\x18\x01 \x01(\v2&.mcpany.config.v1.CircuitBreakerConfigR\x0ecircuitBreaker\x12@\n" +
 	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\vretryPolicy\"\xed\x01\n" +
@@ -10180,68 +5550,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11number_of_retries\x18\x01 \x01(\x05R\x0fnumberOfRetries\x12<\n" +
 	"\fbase_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\vbaseBackoff\x12:\n" +
 	"\vmax_backoff\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\n" +
-	"maxBackoff\"\x96\x01\n" +
-	"\x14AuthenticationConfig\x127\n" +
-	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\x06apiKey\x126\n" +
-	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xa2\x01\n" +
-	"\n" +
-	"APIKeyAuth\x12\x1d\n" +
-	"\n" +
-	"param_name\x18\x01 \x01(\tR\tparamName\x125\n" +
-	"\x02in\x18\x02 \x01(\x0e2%.mcpany.config.v1.APIKeyAuth.LocationR\x02in\x12\x1b\n" +
-	"\tkey_value\x18\x03 \x01(\tR\bkeyValue\"!\n" +
-	"\bLocation\x12\n" +
-	"\n" +
-	"\x06HEADER\x10\x00\x12\t\n" +
-	"\x05QUERY\x10\x01\"\xa9\x01\n" +
-	"\n" +
-	"OAuth2Auth\x12\x1b\n" +
-	"\ttoken_url\x18\x03 \x01(\tR\btokenUrl\x12+\n" +
-	"\x11authorization_url\x18\x04 \x01(\tR\x10authorizationUrl\x12\x16\n" +
-	"\x06scopes\x18\x05 \x01(\tR\x06scopes\x12\x1d\n" +
-	"\n" +
-	"issuer_url\x18\x06 \x01(\tR\tissuerUrl\x12\x1a\n" +
-	"\baudience\x18\a \x01(\tR\baudience\"\xd5\x01\n" +
-	"\vSecretValue\x12\x1f\n" +
-	"\n" +
-	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
-	"\x14environment_variable\x18\x02 \x01(\tH\x00R\x13environmentVariable\x12\x1d\n" +
-	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePath\x12H\n" +
-	"\x0eremote_content\x18\x04 \x01(\v2\x1f.mcpany.config.v1.RemoteContentH\x00R\rremoteContentB\a\n" +
-	"\x05value\"`\n" +
-	"\rRemoteContent\x12\x19\n" +
-	"\bhttp_url\x18\x01 \x01(\tR\ahttpUrl\x124\n" +
-	"\x04auth\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x04auth\"\xb6\x02\n" +
-	"\x0eAuthentication\x12?\n" +
-	"\aapi_key\x18\x01 \x01(\v2$.mcpany.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12N\n" +
-	"\fbearer_token\x18\x02 \x01(\v2).mcpany.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12D\n" +
-	"\n" +
-	"basic_auth\x18\x03 \x01(\v2#.mcpany.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x12>\n" +
-	"\x06oauth2\x18\x05 \x01(\v2$.mcpany.config.v1.UpstreamOAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xf8\x02\n" +
-	"\x16UpstreamAuthentication\x12?\n" +
-	"\aapi_key\x18\x01 \x01(\v2$.mcpany.config.v1.UpstreamAPIKeyAuthH\x00R\x06apiKey\x12N\n" +
-	"\fbearer_token\x18\x02 \x01(\v2).mcpany.config.v1.UpstreamBearerTokenAuthH\x00R\vbearerToken\x12D\n" +
-	"\n" +
-	"basic_auth\x18\x03 \x01(\v2#.mcpany.config.v1.UpstreamBasicAuthH\x00R\tbasicAuth\x12>\n" +
-	"\x06oauth2\x18\x05 \x01(\v2$.mcpany.config.v1.UpstreamOAuth2AuthH\x00R\x06oauth2\x128\n" +
-	"\x18use_environment_variable\x18\x04 \x01(\bR\x16useEnvironmentVariableB\r\n" +
-	"\vauth_method\"m\n" +
-	"\x12UpstreamAPIKeyAuth\x12\x1f\n" +
-	"\vheader_name\x18\x01 \x01(\tR\n" +
-	"headerName\x126\n" +
-	"\aapi_key\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06apiKey\"N\n" +
-	"\x17UpstreamBearerTokenAuth\x123\n" +
-	"\x05token\x18\x01 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05token\"j\n" +
-	"\x11UpstreamBasicAuth\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x129\n" +
-	"\bpassword\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\bpassword\"\xc9\x01\n" +
-	"\x12UpstreamOAuth2Auth\x12\x1b\n" +
-	"\ttoken_url\x18\x01 \x01(\tR\btokenUrl\x12:\n" +
-	"\tclient_id\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\bclientId\x12B\n" +
-	"\rclient_secret\x18\x03 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\fclientSecret\x12\x16\n" +
-	"\x06scopes\x18\x04 \x01(\tR\x06scopes\"\xd2\x01\n" +
+	"maxBackoff\"\xd2\x01\n" +
 	"\tTLSConfig\x12\x1f\n" +
 	"\vserver_name\x18\x01 \x01(\tR\n" +
 	"serverName\x12 \n" +
@@ -10249,222 +5558,134 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"caCertPath\x12(\n" +
 	"\x10client_cert_path\x18\x03 \x01(\tR\x0eclientCertPath\x12&\n" +
 	"\x0fclient_key_path\x18\x04 \x01(\tR\rclientKeyPath\x120\n" +
-	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x12insecureSkipVerify*X\n" +
-	"\rParameterType\x12\n" +
-	"\n" +
-	"\x06STRING\x10\x00\x12\n" +
-	"\n" +
-	"\x06NUMBER\x10\x01\x12\v\n" +
-	"\aINTEGER\x10\x02\x12\v\n" +
-	"\aBOOLEAN\x10\x03\x12\t\n" +
-	"\x05ARRAY\x10\x04\x12\n" +
-	"\n" +
-	"\x06OBJECT\x10\x05*K\n" +
+	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x12insecureSkipVerify*K\n" +
 	"\x15LoadBalancingStrategy\x12\x0f\n" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +
 	"\n" +
 	"\x06RANDOM\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
+var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_proto_config_v1_config_proto_goTypes = []any{
-	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
-	(LoadBalancingStrategy)(0),          // 1: mcpany.config.v1.LoadBalancingStrategy
-	(HttpCallDefinition_HttpMethod)(0),  // 2: mcpany.config.v1.HttpCallDefinition.HttpMethod
-	(OutputTransformer_OutputFormat)(0), // 3: mcpany.config.v1.OutputTransformer.OutputFormat
-	(GlobalSettings_LogLevel)(0),        // 4: mcpany.config.v1.GlobalSettings.LogLevel
-	(APIKeyAuth_Location)(0),            // 5: mcpany.config.v1.APIKeyAuth.Location
-	(*McpAnyServerConfig)(nil),          // 6: mcpany.config.v1.McpAnyServerConfig
-	(*UpstreamServiceCollection)(nil),   // 7: mcpany.config.v1.UpstreamServiceCollection
-	(*HttpCallDefinition)(nil),          // 8: mcpany.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),     // 9: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),        // 10: mcpany.config.v1.WebrtcCallDefinition
-	(*CommandLineCallDefinition)(nil),   // 11: mcpany.config.v1.CommandLineCallDefinition
-	(*InputTransformer)(nil),            // 12: mcpany.config.v1.InputTransformer
-	(*OutputTransformer)(nil),           // 13: mcpany.config.v1.OutputTransformer
-	(*GrpcCallDefinition)(nil),          // 14: mcpany.config.v1.GrpcCallDefinition
-	(*OpenAPICallDefinition)(nil),       // 15: mcpany.config.v1.OpenAPICallDefinition
-	(*MCPCallDefinition)(nil),           // 16: mcpany.config.v1.MCPCallDefinition
-	(*GlobalSettings)(nil),              // 17: mcpany.config.v1.GlobalSettings
-	(*UpstreamServiceConfig)(nil),       // 18: mcpany.config.v1.UpstreamServiceConfig
-	(*GrpcUpstreamService)(nil),         // 19: mcpany.config.v1.GrpcUpstreamService
-	(*ProtoDefinition)(nil),             // 20: mcpany.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                   // 21: mcpany.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),             // 22: mcpany.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),             // 23: mcpany.config.v1.ProtoCollection
-	(*HttpUpstreamService)(nil),         // 24: mcpany.config.v1.HttpUpstreamService
-	(*WebsocketUpstreamService)(nil),    // 25: mcpany.config.v1.WebsocketUpstreamService
-	(*WebrtcUpstreamService)(nil),       // 26: mcpany.config.v1.WebrtcUpstreamService
-	(*OpenapiUpstreamService)(nil),      // 27: mcpany.config.v1.OpenapiUpstreamService
-	(*CommandLineUpstreamService)(nil),  // 28: mcpany.config.v1.CommandLineUpstreamService
-	(*McpUpstreamService)(nil),          // 29: mcpany.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),          // 30: mcpany.config.v1.McpStdioConnection
-	(*McpStreamableHttpConnection)(nil), // 31: mcpany.config.v1.McpStreamableHttpConnection
-	(*ToolSchema)(nil),                  // 32: mcpany.config.v1.ToolSchema
-	(*ParameterSchema)(nil),             // 33: mcpany.config.v1.ParameterSchema
-	(*ToolDefinition)(nil),              // 34: mcpany.config.v1.ToolDefinition
-	(*HttpParameterMapping)(nil),        // 35: mcpany.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),   // 36: mcpany.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),      // 37: mcpany.config.v1.WebrtcParameterMapping
-	(*CommandLineParameterMapping)(nil), // 38: mcpany.config.v1.CommandLineParameterMapping
-	(*ConnectionPoolConfig)(nil),        // 39: mcpany.config.v1.ConnectionPoolConfig
-	(*HttpHealthCheck)(nil),             // 40: mcpany.config.v1.HttpHealthCheck
-	(*GrpcHealthCheck)(nil),             // 41: mcpany.config.v1.GrpcHealthCheck
-	(*CommandLineHealthCheck)(nil),      // 42: mcpany.config.v1.CommandLineHealthCheck
-	(*ContainerEnvironment)(nil),        // 43: mcpany.config.v1.ContainerEnvironment
-	(*RateLimitConfig)(nil),             // 44: mcpany.config.v1.RateLimitConfig
-	(*CacheConfig)(nil),                 // 45: mcpany.config.v1.CacheConfig
-	(*ResilienceConfig)(nil),            // 46: mcpany.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),        // 47: mcpany.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                 // 48: mcpany.config.v1.RetryConfig
-	(*AuthenticationConfig)(nil),        // 49: mcpany.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),                  // 50: mcpany.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),                  // 51: mcpany.config.v1.OAuth2Auth
-	(*SecretValue)(nil),                 // 52: mcpany.config.v1.SecretValue
-	(*RemoteContent)(nil),               // 53: mcpany.config.v1.RemoteContent
-	(*Authentication)(nil),              // 54: mcpany.config.v1.Authentication
-	(*UpstreamAuthentication)(nil),      // 55: mcpany.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),          // 56: mcpany.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil),     // 57: mcpany.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),           // 58: mcpany.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),          // 59: mcpany.config.v1.UpstreamOAuth2Auth
-	(*TLSConfig)(nil),                   // 60: mcpany.config.v1.TLSConfig
-	nil,                                 // 61: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	nil,                                 // 62: mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	(*bus.MessageBus)(nil),              // 63: bus.MessageBus
-	(*durationpb.Duration)(nil),         // 64: google.protobuf.Duration
-	(*structpb.Value)(nil),              // 65: google.protobuf.Value
-	(*structpb.Struct)(nil),             // 66: google.protobuf.Struct
+	(LoadBalancingStrategy)(0),          // 0: mcpany.config.v1.LoadBalancingStrategy
+	(GlobalSettings_LogLevel)(0),        // 1: mcpany.config.v1.GlobalSettings.LogLevel
+	(*McpAnyServerConfig)(nil),          // 2: mcpany.config.v1.McpAnyServerConfig
+	(*UpstreamServiceCollection)(nil),   // 3: mcpany.config.v1.UpstreamServiceCollection
+	(*GlobalSettings)(nil),              // 4: mcpany.config.v1.GlobalSettings
+	(*UpstreamServiceConfig)(nil),       // 5: mcpany.config.v1.UpstreamServiceConfig
+	(*GrpcUpstreamService)(nil),         // 6: mcpany.config.v1.GrpcUpstreamService
+	(*ProtoDefinition)(nil),             // 7: mcpany.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                   // 8: mcpany.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),             // 9: mcpany.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),             // 10: mcpany.config.v1.ProtoCollection
+	(*HttpUpstreamService)(nil),         // 11: mcpany.config.v1.HttpUpstreamService
+	(*WebsocketUpstreamService)(nil),    // 12: mcpany.config.v1.WebsocketUpstreamService
+	(*WebrtcUpstreamService)(nil),       // 13: mcpany.config.v1.WebrtcUpstreamService
+	(*OpenapiUpstreamService)(nil),      // 14: mcpany.config.v1.OpenapiUpstreamService
+	(*CommandLineUpstreamService)(nil),  // 15: mcpany.config.v1.CommandLineUpstreamService
+	(*McpUpstreamService)(nil),          // 16: mcpany.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),          // 17: mcpany.config.v1.McpStdioConnection
+	(*McpStreamableHttpConnection)(nil), // 18: mcpany.config.v1.McpStreamableHttpConnection
+	(*ConnectionPoolConfig)(nil),        // 19: mcpany.config.v1.ConnectionPoolConfig
+	(*HttpHealthCheck)(nil),             // 20: mcpany.config.v1.HttpHealthCheck
+	(*GrpcHealthCheck)(nil),             // 21: mcpany.config.v1.GrpcHealthCheck
+	(*CommandLineHealthCheck)(nil),      // 22: mcpany.config.v1.CommandLineHealthCheck
+	(*ContainerEnvironment)(nil),        // 23: mcpany.config.v1.ContainerEnvironment
+	(*RateLimitConfig)(nil),             // 24: mcpany.config.v1.RateLimitConfig
+	(*ResilienceConfig)(nil),            // 25: mcpany.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),        // 26: mcpany.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                 // 27: mcpany.config.v1.RetryConfig
+	(*TLSConfig)(nil),                   // 28: mcpany.config.v1.TLSConfig
+	nil,                                 // 29: mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	(*UpstreamAuthentication)(nil),      // 30: mcpany.config.v1.UpstreamAuthentication
+	(*bus.MessageBus)(nil),              // 31: bus.MessageBus
+	(*CacheConfig)(nil),                 // 32: mcpany.config.v1.CacheConfig
+	(*AuthenticationConfig)(nil),        // 33: mcpany.config.v1.AuthenticationConfig
+	(*GrpcToolDefinition)(nil),          // 34: mcpany.config.v1.GrpcToolDefinition
+	(*ResourceDefinition)(nil),          // 35: mcpany.config.v1.ResourceDefinition
+	(*HttpToolDefinition)(nil),          // 36: mcpany.config.v1.HttpToolDefinition
+	(*WebsocketToolDefinition)(nil),     // 37: mcpany.config.v1.WebsocketToolDefinition
+	(*WebrtcToolDefinition)(nil),        // 38: mcpany.config.v1.WebrtcToolDefinition
+	(*OpenAPIToolDefinition)(nil),       // 39: mcpany.config.v1.OpenAPIToolDefinition
+	(*CommandLineToolDefinition)(nil),   // 40: mcpany.config.v1.CommandLineToolDefinition
+	(*durationpb.Duration)(nil),         // 41: google.protobuf.Duration
+	(*ToolDefinition)(nil),              // 42: mcpany.config.v1.ToolDefinition
+	(*MCPToolDefinition)(nil),           // 43: mcpany.config.v1.MCPToolDefinition
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	17,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	18,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	7,   // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
-	55,  // 3: mcpany.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
-	32,  // 4: mcpany.config.v1.HttpCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	2,   // 5: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
-	35,  // 6: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
-	12,  // 7: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	13,  // 8: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	45,  // 9: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	32,  // 10: mcpany.config.v1.WebsocketCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	36,  // 11: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
-	12,  // 12: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	13,  // 13: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	45,  // 14: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	32,  // 15: mcpany.config.v1.WebrtcCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	37,  // 16: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
-	12,  // 17: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	13,  // 18: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	45,  // 19: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	32,  // 20: mcpany.config.v1.CommandLineCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	38,  // 21: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
-	45,  // 22: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	3,   // 23: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	61,  // 24: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	32,  // 25: mcpany.config.v1.GrpcCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	45,  // 26: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	32,  // 27: mcpany.config.v1.OpenAPICallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	12,  // 28: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	13,  // 29: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	45,  // 30: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	32,  // 31: mcpany.config.v1.MCPCallDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
-	12,  // 32: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	13,  // 33: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	45,  // 34: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	4,   // 35: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	63,  // 36: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	39,  // 37: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
-	55,  // 38: mcpany.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
-	45,  // 39: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
-	44,  // 40: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
-	1,   // 41: mcpany.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpany.config.v1.LoadBalancingStrategy
-	46,  // 42: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
-	29,  // 43: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
-	24,  // 44: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
-	19,  // 45: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
-	27,  // 46: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
-	28,  // 47: mcpany.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpany.config.v1.CommandLineUpstreamService
-	25,  // 48: mcpany.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpany.config.v1.WebsocketUpstreamService
-	26,  // 49: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
-	49,  // 50: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	60,  // 51: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	14,  // 52: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcCallDefinition
-	41,  // 53: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
-	20,  // 54: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
-	23,  // 55: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
-	21,  // 56: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
-	22,  // 57: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
-	8,   // 58: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpCallDefinition
-	40,  // 59: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	60,  // 60: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	9,   // 61: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	60,  // 62: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	10,  // 63: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	60,  // 64: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	40,  // 65: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	60,  // 66: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	15,  // 67: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	11,  // 68: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	42,  // 69: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
-	45,  // 70: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
-	43,  // 71: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
-	64,  // 72: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
-	31,  // 73: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
-	30,  // 74: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
-	34,  // 75: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	16,  // 76: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.MCPCallDefinition
-	60,  // 77: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	0,   // 78: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	65,  // 79: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	66,  // 80: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	66,  // 81: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	33,  // 82: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	52,  // 83: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	33,  // 84: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	52,  // 85: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	33,  // 86: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	52,  // 87: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	33,  // 88: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	52,  // 89: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	64,  // 90: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	64,  // 91: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	64,  // 92: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	64,  // 93: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	64,  // 94: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	64,  // 95: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
-	64,  // 96: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
-	62,  // 97: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	64,  // 98: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	47,  // 99: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
-	48,  // 100: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
-	64,  // 101: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	64,  // 102: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	64,  // 103: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	50,  // 104: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
-	51,  // 105: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
-	5,   // 106: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
-	53,  // 107: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
-	54,  // 108: mcpany.config.v1.RemoteContent.auth:type_name -> mcpany.config.v1.Authentication
-	56,  // 109: mcpany.config.v1.Authentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	57,  // 110: mcpany.config.v1.Authentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	58,  // 111: mcpany.config.v1.Authentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	59,  // 112: mcpany.config.v1.Authentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	56,  // 113: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	57,  // 114: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	58,  // 115: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	59,  // 116: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	52,  // 117: mcpany.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpany.config.v1.SecretValue
-	52,  // 118: mcpany.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpany.config.v1.SecretValue
-	52,  // 119: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
-	52,  // 120: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
-	52,  // 121: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
-	122, // [122:122] is the sub-list for method output_type
-	122, // [122:122] is the sub-list for method input_type
-	122, // [122:122] is the sub-list for extension type_name
-	122, // [122:122] is the sub-list for extension extendee
-	0,   // [0:122] is the sub-list for field type_name
+	4,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	5,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	3,  // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	30, // 3: mcpany.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	1,  // 4: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	31, // 5: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	19, // 6: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
+	30, // 7: mcpany.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	32, // 8: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
+	24, // 9: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	0,  // 10: mcpany.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpany.config.v1.LoadBalancingStrategy
+	25, // 11: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
+	16, // 12: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
+	11, // 13: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
+	6,  // 14: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
+	14, // 15: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
+	15, // 16: mcpany.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpany.config.v1.CommandLineUpstreamService
+	12, // 17: mcpany.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpany.config.v1.WebsocketUpstreamService
+	13, // 18: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
+	33, // 19: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	28, // 20: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	34, // 21: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.GrpcToolDefinition
+	21, // 22: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
+	7,  // 23: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
+	10, // 24: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
+	35, // 25: mcpany.config.v1.GrpcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	8,  // 26: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
+	9,  // 27: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
+	36, // 28: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.HttpToolDefinition
+	20, // 29: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	28, // 30: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	35, // 31: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	37, // 32: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.WebsocketToolDefinition
+	28, // 33: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	35, // 34: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	38, // 35: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.WebrtcToolDefinition
+	28, // 36: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	35, // 37: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	20, // 38: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	28, // 39: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	39, // 40: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.OpenAPIToolDefinition
+	35, // 41: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	40, // 42: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.CommandLineToolDefinition
+	22, // 43: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
+	32, // 44: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
+	23, // 45: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
+	41, // 46: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	35, // 47: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	18, // 48: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
+	17, // 49: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
+	42, // 50: mcpany.config.v1.McpUpstreamService.predefined_tools:type_name -> mcpany.config.v1.ToolDefinition
+	43, // 51: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.MCPToolDefinition
+	35, // 52: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	28, // 53: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	41, // 54: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	41, // 55: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	41, // 56: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	41, // 57: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	41, // 58: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	41, // 59: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	41, // 60: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	29, // 61: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	26, // 62: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
+	27, // 63: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
+	41, // 64: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	41, // 65: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	41, // 66: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	67, // [67:67] is the sub-list for method output_type
+	67, // [67:67] is the sub-list for method input_type
+	67, // [67:67] is the sub-list for extension type_name
+	67, // [67:67] is the sub-list for extension extendee
+	0,  // [0:67] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -10472,7 +5693,10 @@ func file_proto_config_v1_config_proto_init() {
 	if File_proto_config_v1_config_proto != nil {
 		return
 	}
-	file_proto_config_v1_config_proto_msgTypes[12].OneofWrappers = []any{
+	file_proto_config_v1_resource_proto_init()
+	file_proto_config_v1_call_proto_init()
+	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_config_proto_msgTypes[3].OneofWrappers = []any{
 		(*upstreamServiceConfig_McpService)(nil),
 		(*upstreamServiceConfig_HttpService)(nil),
 		(*upstreamServiceConfig_GrpcService)(nil),
@@ -10481,50 +5705,28 @@ func file_proto_config_v1_config_proto_init() {
 		(*upstreamServiceConfig_WebsocketService)(nil),
 		(*upstreamServiceConfig_WebrtcService)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[14].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[5].OneofWrappers = []any{
 		(*protoDefinition_ProtoFile)(nil),
 		(*protoDefinition_ProtoDescriptor)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[6].OneofWrappers = []any{
 		(*protoFile_FileContent)(nil),
 		(*protoFile_FilePath)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[16].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[7].OneofWrappers = []any{
 		(*protoDescriptor_FilePath)(nil),
 	}
-	file_proto_config_v1_config_proto_msgTypes[23].OneofWrappers = []any{
+	file_proto_config_v1_config_proto_msgTypes[14].OneofWrappers = []any{
 		(*mcpUpstreamService_HttpConnection)(nil),
 		(*mcpUpstreamService_StdioConnection)(nil),
-	}
-	file_proto_config_v1_config_proto_msgTypes[43].OneofWrappers = []any{
-		(*authenticationConfig_ApiKey)(nil),
-		(*authenticationConfig_Oauth2)(nil),
-	}
-	file_proto_config_v1_config_proto_msgTypes[46].OneofWrappers = []any{
-		(*secretValue_PlainText)(nil),
-		(*secretValue_EnvironmentVariable)(nil),
-		(*secretValue_FilePath)(nil),
-		(*secretValue_RemoteContent)(nil),
-	}
-	file_proto_config_v1_config_proto_msgTypes[48].OneofWrappers = []any{
-		(*authentication_ApiKey)(nil),
-		(*authentication_BearerToken)(nil),
-		(*authentication_BasicAuth)(nil),
-		(*authentication_Oauth2)(nil),
-	}
-	file_proto_config_v1_config_proto_msgTypes[49].OneofWrappers = []any{
-		(*upstreamAuthentication_ApiKey)(nil),
-		(*upstreamAuthentication_BearerToken)(nil),
-		(*upstreamAuthentication_BasicAuth)(nil),
-		(*upstreamAuthentication_Oauth2)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   57,
+			NumEnums:      2,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

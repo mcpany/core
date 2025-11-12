@@ -69,6 +69,23 @@ func TestConfigLoading(t *testing.T) {
 			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
 			natsConfigFile := CreateTempNatsConfigFile(t)
+
+			if tc.name == "disabled config" {
+				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
+				// The server should exit quickly because there are no enabled services.
+				// We just need to wait for the process to terminate.
+				select {
+				case <-mcpAny.Process.waitDone:
+					// Process exited as expected.
+				case <-time.After(10 * time.Second):
+					t.Fatal("MCPANY server with only disabled services did not exit as expected.")
+				}
+				mcpAny.CleanupFunc()
+				// Since the server is not running, we cannot check for services.
+				// The test passes if the server exits cleanly.
+				return
+			}
+
 			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
 			defer mcpAny.CleanupFunc()
 

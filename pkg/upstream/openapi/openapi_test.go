@@ -168,7 +168,17 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 	serviceID := "test-service"
 	doc := &openapi3.T{}
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		OpenapiService: &configv1.OpenapiUpstreamService{},
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			Tools: []*configv1.OpenAPIToolDefinition{
+				configv1.OpenAPIToolDefinition_builder{
+					Call: configv1.OpenAPICallDefinition_builder{
+						Schema: configv1.ToolSchema_builder{
+							Name: proto.String("test-tool"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
+		}.Build(),
 	}.Build()
 
 	t.Run("invalid underlying method FQN", func(t *testing.T) {
@@ -180,7 +190,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 				UnderlyingMethodFqn: proto.String("invalid"),
 			}.Build(),
 		}
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -194,7 +204,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 			}.Build(),
 		}
 		doc.Paths = openapi3.NewPaths()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -211,7 +221,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		doc.Paths.Set("/test", &openapi3.PathItem{
 			Get: &openapi3.Operation{},
 		})
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -230,7 +240,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		})
 
 		mockToolManager.On("AddTool", mock.Anything).Return(fmt.Errorf("failed to add tool")).Once()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 		mockToolManager.AssertExpectations(t)
 	})

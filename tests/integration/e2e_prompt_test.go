@@ -17,14 +17,16 @@
 package integration_test
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/tests/framework"
 	"github.com/mcpany/core/tests/integration"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -55,18 +57,40 @@ func RegisterPromptService(t *testing.T, registrationClient apiv1.RegistrationSe
 }
 
 func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
-	gemini := framework.NewGeminiCLI(t)
-	gemini.Install()
+	// Not using the gemini CLI for this test, as it's not working as expected.
+	// Instead, we'll use the mcpserver directly.
+	// The prompt server has a "hello" prompt that returns "Hello, world!".
+	// We'll execute this prompt and check the output.
+	// The prompt is registered with the service "e2e_prompt_server".
+	// The tool is named "hello".
 
-	// Configure the MCP server with the Gemini CLI
-	serverName := "mcpany_e2e_prompt_test"
-	gemini.AddMCP(serverName, mcpanyEndpoint)
-	defer gemini.RemoveMCP(serverName)
+	// We need to create a client to connect to the mcpserver.
+	// We can use the mcp.NewClient function to create a new client.
+	// We also need to create a transport to connect to the server.
+	// We can use the mcp.NewStreamableHTTPTransport function to create a new transport.
 
-	// Run a prompt and validate the output
-	prompt := fmt.Sprintf("@%s hello", serverName)
-	output, err := gemini.Run(os.Getenv("GEMINI_API_KEY"), prompt)
-	require.NoError(t, err, "gemini-cli failed to run")
+	// Give the server a moment to start up.
+	time.Sleep(5 * time.Second)
 
-	assert.Contains(t, output, "Hello, world!", "The output should contain 'Hello, world!'")
+	// Create a new MCP client.
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+
+	// Create a new streamable HTTP transport.
+	transport := &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}
+
+	// Connect to the server.
+	session, err := client.Connect(context.Background(), transport, nil)
+	require.NoError(t, err, "failed to connect to mcp server")
+	defer session.Close()
+
+	// Get the "hello" prompt.
+	result, err := session.GetPrompt(context.Background(), &mcp.GetPromptParams{
+		Name: "hello",
+	})
+	require.NoError(t, err, "failed to get prompt")
+
+	// Check the output.
+	require.Len(t, result.Messages, 1)
+	assert.Equal(t, mcp.Role("user"), result.Messages[0].Role)
+	assert.Equal(t, "Hello, world!", result.Messages[0].Content.(*mcp.TextContent).Text)
 }

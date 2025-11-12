@@ -5,9 +5,11 @@ edition = "2023";
 
 package mcpany.config.v1;
 
-import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 import "proto/bus/bus.proto";
+import "proto/config/v1/resource.proto";
+import "proto/config/v1/call.proto";
+import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -35,139 +37,6 @@ message UpstreamServiceCollection {
   int32 priority = 3;
   // The authentication to use when fetching the collection.
   UpstreamAuthentication authentication = 4;
-}
-
-// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
-message HttpCallDefinition {
-  enum HttpMethod {
-    HTTP_METHOD_UNSPECIFIED = 0;
-    HTTP_METHOD_GET = 1;
-    HTTP_METHOD_POST = 2;
-    HTTP_METHOD_PUT = 3;
-    HTTP_METHOD_DELETE = 4;
-    HTTP_METHOD_PATCH = 5;
-  }
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 2;
-  // The HTTP method to use for the request.
-  HttpMethod method = 3;
-  // Defines the parameters for the HTTP request.
-  repeated HttpParameterMapping parameters = 5;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 6;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 7;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 8;
-}
-
-// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
-message WebsocketCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the websocket message.
-  repeated WebsocketParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
-}
-
-// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
-message WebrtcCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the webrtc message.
-  repeated WebrtcParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
-}
-
-// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
-message CommandLineCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the stdio command.
-  repeated CommandLineParameterMapping parameters = 2;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 3;
-  // The arguments to pass to the command.
-  repeated string args = 4;
-}
-
-// InputTransformer defines how to render a template from input parameters.
-message InputTransformer {
-  // A text template to be rendered.
-  // This is used for generating the request body for POST/PUT requests.
-  // The template engine is compatible with Jinja2.
-  string template = 1;
-}
-
-// OutputTransformer defines how to parse an output text into structured data.
-message OutputTransformer {
-  enum OutputFormat {
-    JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
-    XML = 1;  // The output is XML, which will be parsed using XPath expressions.
-    TEXT = 2; // The output is plain text, which will be parsed using regex.
-  }
-  // The format of the upstream service's output.
-  OutputFormat format = 1;
-  // A map of field names to the extraction expressions.
-  // The interpretation of the expression depends on the 'format':
-  // - JSON: JSONPath expressions.
-  // - XML: XPath expressions.
-  // - TEXT: Regular expressions (first capture group is used).
-  map<string, string> extraction_rules = 2;
-  // An optional template to render the extracted data into a final string.
-  // If this is not provided, the raw extracted data will be returned.
-  string template = 3;
-}
-
-// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
-message GrpcCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // The fully-qualified gRPC service name.
-  string service = 2;
-  // The name of the gRPC method to call.
-  string method = 3;
-  // Note: For gRPC, parameter mapping is typically done by matching field names
-  // between the MCP input schema and the gRPC request message.
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
-}
-
-// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
-// This is often used for discovery rather than manual configuration.
-message OpenAPICallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
-}
-
-// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
-message MCPCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
 }
 
 // GlobalSettings contains server-wide operational parameters.
@@ -255,13 +124,15 @@ message GrpcUpstreamService {
   // TLS configuration for the gRPC connection.
   TLSConfig tls_config = 3;
   // Manually defined mappings from MCP tools to gRPC calls.
-  repeated GrpcCallDefinition calls = 4;
+  repeated GrpcToolDefinition tools = 4;
   // Health check configuration.
   GrpcHealthCheck health_check = 5;
   // A list of protobuf definitions for the gRPC service.
   repeated ProtoDefinition proto_definitions = 6;
   // A collection of protobuf files to be discovered.
   repeated ProtoCollection proto_collection = 7;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 8;
 }
 
 message ProtoDefinition {
@@ -297,11 +168,13 @@ message HttpUpstreamService {
   // The base URL of the HTTP service (e.g., "https://api.example.com").
   string address = 1;
   // Manually defined mappings from MCP tools to HTTP calls.
-  repeated HttpCallDefinition calls = 2;
+  repeated HttpToolDefinition tools = 2;
   // Configuration for checking the health of the HTTP service.
   HttpHealthCheck health_check = 3;
   // TLS configuration for the HTTP connection.
   TLSConfig tls_config = 4;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 5;
 }
 
 // WebsocketUpstreamService defines an upstream service that communicates over Websocket.
@@ -309,9 +182,11 @@ message WebsocketUpstreamService {
   // The URL of the Websocket service (e.g., "ws://api.example.com/ws").
   string address = 1;
   // Manually defined mappings from MCP tools to websocket calls.
-  repeated WebsocketCallDefinition calls = 2;
+  repeated WebsocketToolDefinition tools = 2;
   // TLS configuration for the Websocket connection.
   TLSConfig tls_config = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -319,9 +194,11 @@ message WebrtcUpstreamService {
   // The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
   string address = 1;
   // Manually defined mappings from MCP tools to webrtc calls.
-  repeated WebrtcCallDefinition calls = 2;
+  repeated WebrtcToolDefinition tools = 2;
   // TLS configuration for the signaling connection.
   TLSConfig tls_config = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
@@ -335,7 +212,9 @@ message OpenapiUpstreamService {
   // TLS configuration for the connection.
   TLSConfig tls_config = 4;
   // Optional: Overrides or specific configurations for calls discovered from the spec.
-  repeated OpenAPICallDefinition calls = 5;
+  repeated OpenAPIToolDefinition tools = 5;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 6;
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
@@ -345,7 +224,7 @@ message CommandLineUpstreamService {
   // The working directory for the command.
   string working_directory = 3;
   // Manually defined mappings from MCP tools to command line commands.
-  repeated CommandLineCallDefinition calls = 4;
+  repeated CommandLineToolDefinition tools = 4;
   // Health check configuration.
   CommandLineHealthCheck health_check = 5;
   // Caching configuration to improve performance and reduce load on the upstream.
@@ -354,6 +233,8 @@ message CommandLineUpstreamService {
   ContainerEnvironment container_environment = 7;
   // Timeout for the command execution.
   google.protobuf.Duration timeout = 8;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 9;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
@@ -367,9 +248,11 @@ message McpUpstreamService {
   // If true, mcpany will automatically discover and proxy all tools from the upstream.
   bool tool_auto_discovery = 3;
   // Optional: Pre-defined tools to register, can be used to filter or augment discovered tools.
-  repeated ToolDefinition tools = 4;
+  repeated ToolDefinition predefined_tools = 4;
   // Optional: Overrides or specific configurations for calls discovered from the service.
-  repeated MCPCallDefinition calls = 6;
+  repeated MCPToolDefinition tools = 6;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 7;
 }
 
 // McpStdioConnection defines the parameters for a stdio-based connection.
@@ -395,104 +278,6 @@ message McpStreamableHttpConnection {
 
 
 // --- Call & Tool Definitions ---
-
-// ToolSchema provides common metadata for a tool.
-message ToolSchema {
-  // A human-readable title for the tool.
-  string title = 1;
-  // If true, the tool does not modify its environment.
-  // Default: false
-  bool read_only_hint = 2;
-  // If true, the tool may perform destructive updates to its environment. If
-  // false, the tool performs only additive updates.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: true
-  bool destructive_hint = 3;
-  // If true, calling the tool repeatedly with the same arguments will have no
-  // additional effect on its environment.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: false
-  bool idempotent_hint = 4;
-  // If true, this tool may interact with an "open world" of external entities. If
-  // false, the tool's domain of interaction is closed. For example, the world of
-  // a web search tool is open, whereas that of a memory tool is not.
-  // Default: true
-  bool open_world_hint = 5;
-  // The name of the tool, which will be used to invoke it.
-  string name = 6;
-  // A human-readable description of what the tool does.
-  string description = 7;
-}
-
-// ParameterType defines the data type of a parameter.
-enum ParameterType {
-  STRING = 0;
-  NUMBER = 1;
-  INTEGER = 2;
-  BOOLEAN = 3;
-  ARRAY = 4;
-  OBJECT = 5;
-}
-
-// ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
-message ParameterSchema {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // The data type of the parameter.
-  ParameterType type = 3;
-  // Whether the parameter is required.
-  bool is_required = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
-}
-
-// ToolDefinition describes a single capability or "tool" offered by a service.
-message ToolDefinition {
-  // The name of the tool, which will be used to invoke it.
-  string name = 1;
-  // A human-readable description of what the tool does.
-  string description = 2;
-  // The schema for the input parameters required by the tool.
-  google.protobuf.Struct input_schema = 3;
-  // The schema for the output of the tool.
-  google.protobuf.Struct output_schema = 4;
-  // Indicates if the tool produces a continuous stream of responses.
-  bool is_stream = 5;
-}
-
-// HttpParameterMapping defines how to place an input parameter into an HTTP request.
-message HttpParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-  // A secret value to use for the parameter.
-  SecretValue secret = 2;
-}
-
-// WebsocketParameterMapping defines how to place an input parameter into a websocket message.
-message WebsocketParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-  // A secret value to use for the parameter.
-  SecretValue secret = 2;
-}
-
-// WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
-message WebrtcParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-  // A secret value to use for the parameter.
-  SecretValue secret = 2;
-}
-
-// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
-message CommandLineParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-  // A secret value to use for the parameter.
-  SecretValue secret = 2;
-}
 
 
 // --- Service Policies and Configs ---
@@ -583,15 +368,6 @@ message RateLimitConfig {
   int64 burst = 3;
 }
 
-// Configuration for caching responses from the upstream service.
-message CacheConfig {
-  // Whether caching is enabled.
-  bool is_enabled = 1;
-  // The duration for which a cached response is considered valid.
-  google.protobuf.Duration ttl = 2;
-  // Caching strategy (e.g., "lru", "lfu"). This allows for future expansion.
-  string strategy = 3;
-}
 
 // Configuration for service resilience features like circuit breakers and retries.
 message ResilienceConfig {
@@ -623,113 +399,6 @@ message RetryConfig {
   google.protobuf.Duration max_backoff = 3;
 }
 
-// AuthenticationConfig specifies the authentication method to use.
-message AuthenticationConfig {
-  oneof auth_method {
-    APIKeyAuth api_key = 1;
-    OAuth2Auth oauth2 = 2;
-    // Can be extended with other auth types like JWT, mTLS etc.
-  }
-}
-
-// APIKeyAuth defines authentication using an API key.
-message APIKeyAuth {
-  // The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
-  string param_name = 1;
-  // Where the API key is located.
-  enum Location {
-    HEADER = 0;
-    QUERY = 1;
-  }
-  Location in = 2;
-  // The actual API key value. It's recommended to use a secret management system.
-  string key_value = 3;
-}
-
-// OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-message OAuth2Auth {
-  string token_url = 3;
-  string authorization_url = 4;
-  // Space-delimited list of scopes.
-  string scopes = 5;
-  string issuer_url = 6;
-  string audience = 7;
-}
-
-// ===================================================================
-// Secret Management
-// ===================================================================
-
-// SecretValue represents a value that should be treated as a secret.
-// It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
-message SecretValue {
-  oneof value {
-    string plain_text = 1;
-    string environment_variable = 2;
-    string file_path = 3;
-    RemoteContent remote_content = 4;
-  }
-}
-
-// RemoteContent represents content that is fetched from a remote URL.
-message RemoteContent {
-  string http_url = 1;
-  Authentication auth = 2;
-}
-
-// Authentication defines the authentication method to use when fetching remote content.
-message Authentication {
-  oneof auth_method {
-    UpstreamAPIKeyAuth api_key = 1;
-    UpstreamBearerTokenAuth bearer_token = 2;
-    UpstreamBasicAuth basic_auth = 3;
-    UpstreamOAuth2Auth oauth2 = 5;
-  }
-}
-
-// ===================================================================
-// Upstream Authentication Definitions
-// ===================================================================
-
-// UpstreamAuthentication defines the authentication method to use when mcpany communicates
-// with an upstream service.
-message UpstreamAuthentication {
-  oneof auth_method {
-    UpstreamAPIKeyAuth api_key = 1;
-    UpstreamBearerTokenAuth bearer_token = 2;
-    UpstreamBasicAuth basic_auth = 3;
-    UpstreamOAuth2Auth oauth2 = 5;
-  }
-  bool use_environment_variable = 4;
-}
-
-// UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.
-message UpstreamAPIKeyAuth {
-  // The name of the header to carry the API key (e.g., "X-API-Key").
-  string header_name = 1;
-  // The API key value.
-  SecretValue api_key = 2;
-}
-
-// UpstreamBearerTokenAuth defines authentication using a bearer token.
-message UpstreamBearerTokenAuth {
-  // The bearer token.
-  SecretValue token = 1;
-}
-
-// UpstreamBasicAuth defines authentication using a username and password.
-message UpstreamBasicAuth {
-  string username = 1;
-  SecretValue password = 2;
-}
-
-// UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-message UpstreamOAuth2Auth {
-  string token_url = 1;
-  SecretValue client_id = 2;
-  SecretValue client_secret = 3;
-  string scopes = 4;
-}
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
 message TLSConfig {

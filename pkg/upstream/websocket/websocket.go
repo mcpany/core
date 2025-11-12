@@ -104,7 +104,7 @@ func (u *WebsocketUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
-	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	log.Info("Registered Websocket service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -113,10 +113,10 @@ func (u *WebsocketUpstream) Register(
 // createAndRegisterWebsocketTools iterates through the WebSocket call
 // definitions in the service configuration, creates a new WebsocketTool for each,
 // and registers it with the tool manager.
-func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
-	definitions := websocketService.GetCalls()
+	definitions := websocketService.GetTools()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(definitions))
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -125,7 +125,8 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 		authenticator = nil
 	}
 
-	for i, wsDef := range definitions {
+	for i, toolDefinition := range definitions {
+		wsDef := toolDefinition.GetCall()
 		schema := wsDef.GetSchema()
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
@@ -178,5 +179,28 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
+
+	for _, resourceDef := range websocketService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetWebsocketCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools
 }
