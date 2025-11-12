@@ -69,12 +69,14 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 	b.pubsubs[topic] = pubsub
 
 	go func() {
+		log := logging.GetLogger()
+		log.Debug("Started subscription goroutine", "topic", topic)
+		defer log.Debug("Exited subscription goroutine", "topic", topic)
 		ch := pubsub.Channel()
 		for msg := range ch {
 			var message T
 			err := json.Unmarshal([]byte(msg.Payload), &message)
 			if err != nil {
-				log := logging.GetLogger()
 				log.Error("Failed to unmarshal message", "error", err)
 				continue
 			}
