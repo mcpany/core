@@ -48,6 +48,35 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount: 0,
 		},
 		{
+			name: "invalid websocket service - invalid scheme",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("ws-svc-1"),
+						WebsocketService: (&configv1.WebsocketUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "ws-svc-1": invalid websocket target_address scheme: http`,
+		},
+		{
+			name: "valid websocket service",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("ws-svc-1"),
+						WebsocketService: (&configv1.WebsocketUpstreamService_builder{
+							Address: proto.String("ws://localhost:8080"),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount: 0,
+		},
+		{
 			name: "invalid http service - empty address",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
