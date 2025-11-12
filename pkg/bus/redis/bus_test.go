@@ -319,3 +319,73 @@ func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "once-unsub-before-message"
+
+	handlerCalled := make(chan bool, 1)
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		handlerCalled <- true
+	})
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Unsubscribe before publishing
+	unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribe")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called after unsubscribe")
+	case <-time.After(200 * time.Millisecond):
+		// Test passed
+	}
+}
+
+func TestRedisBus_Subscribe_WithCancelledContext(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "cancelled-context-topic-int"
+
+	handlerCalled := make(chan bool, 1)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+		handlerCalled <- true
+	})
+	defer unsub()
+
+	// Cancel the context after subscribing
+	cancel()
+
+	// The redis client should handle the context cancellation and close the subscription.
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 5*time.Second, 100*time.Millisecond, "subscriber did not disappear after context cancellation")
+
+	// Now try publishing. The handler should not be called.
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called")
+	case <-time.After(200 * time.Millisecond):
+		// Test passed
+	}
+}
