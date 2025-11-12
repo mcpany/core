@@ -131,6 +131,28 @@ func TestHealthCheck(t *testing.T) {
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
 
+	t.Run("health check respects client timeout", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(7 * time.Second) // Sleep longer than the client's timeout
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+
+		start := time.Now()
+		// Use a long timeout for the context, to ensure the client's timeout is what triggers.
+		err := HealthCheck(io.Discard, addr, 10*time.Second)
+		duration := time.Since(start)
+
+		assert.Error(t, err, "HealthCheck should time out")
+
+		// The duration should be around 5 seconds (the client timeout), not 10 seconds (the context timeout).
+		// We add some buffer for execution overhead.
+		assert.GreaterOrEqual(t, duration, 5*time.Second, "Timeout should be at least the client timeout")
+		assert.Less(t, duration, 7*time.Second, "Timeout should be less than the server sleep time")
+	})
+
 	t.Run("connection is reused", func(t *testing.T) {
 		// Set up a listener that can count the number of connections.
 		rawLis, err := net.Listen("tcp", "localhost:0")
