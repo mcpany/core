@@ -42,6 +42,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.11.1
 	github.com/valyala/fasttemplate v1.2.2
+	go.uber.org/goleak v1.3.0
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/sync v0.17.0
 	google.golang.org/grpc v1.75.0
@@ -138,7 +139,6 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
