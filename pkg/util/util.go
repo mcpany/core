@@ -82,6 +82,9 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 
 		if appendHash {
+			if sanitizedPrefix == "" {
+				sanitizedPrefix = "id"
+			}
 			sanitizedIDs = append(sanitizedIDs, fmt.Sprintf("%s_%s", sanitizedPrefix, hash))
 		} else {
 			sanitizedIDs = append(sanitizedIDs, sanitizedPrefix)
