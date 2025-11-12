@@ -81,6 +81,20 @@ upstream_services: {
 	}
 	http_service: {
 		address: "http://api.example.com/v1"
+		tools: {
+			call: {
+				schema: {
+					name: "get_user"
+				}
+			}
+		}
+		resources: {
+			uri: "file:///test.txt"
+			name: "test.txt"
+			static: {
+				text_content: "hello world"
+			}
+		}
 	}
 }
 `,
@@ -99,6 +113,10 @@ upstream_services: {
 				apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
 				require.NoError(t, err)
 				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
+				assert.Len(t, httpService.GetTools(), 1)
+				assert.Equal(t, "get_user", httpService.GetTools()[0].GetCall().GetSchema().GetName())
+				assert.Len(t, httpService.GetResources(), 1)
+				assert.Equal(t, "file:///test.txt", httpService.GetResources()[0].GetUri())
 			},
 		},
 		{

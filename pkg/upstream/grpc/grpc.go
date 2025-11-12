@@ -150,12 +150,12 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceID, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, isReload, fds)
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
 
-	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, isReload, fds)
+	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, resourceManager, isReload, fds)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceID, err)
 	}
@@ -174,6 +174,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
 	tm tool.ToolManagerInterface,
+	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
@@ -182,10 +183,11 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		return nil, nil
 	}
 
-	_, ok := tm.GetServiceInfo(serviceID)
+	serviceInfo, ok := tm.GetServiceInfo(serviceID)
 	if !ok {
 		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
 	}
+	grpcService := serviceInfo.Config.GetGrpcService()
 
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
@@ -280,6 +282,28 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
 
+	for _, resourceDef := range grpcService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetGrpcCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := tm.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools, nil
 }
 
@@ -287,6 +311,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	ctx context.Context,
 	serviceID string,
 	tm tool.ToolManagerInterface,
+	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
@@ -294,6 +319,12 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	if fds == nil {
 		return nil, nil
 	}
+
+	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	if !ok {
+		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
+	}
+	grpcService := serviceInfo.Config.GetGrpcService()
 
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
@@ -381,6 +412,28 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 		}
 		return true
 	})
+
+	for _, resourceDef := range grpcService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetGrpcCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := tm.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
 
 	return discoveredTools, nil
 }
