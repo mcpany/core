@@ -122,6 +122,11 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 			config:      &configv1.UpstreamServiceConfig{},
 			expectError: true,
 		},
+		{
+			name:        "Nil config",
+			config:      nil,
+			expectError: true,
+		},
 	}
 
 	for _, tc := range testCases {

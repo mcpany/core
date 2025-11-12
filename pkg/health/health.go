@@ -54,19 +54,11 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 	switch uc.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		httpService := uc.GetHttpService()
-		client := &http.Client{
-			Timeout: lo.Ternary(httpService.GetHealthCheck() != nil && httpService.GetHealthCheck().GetTimeout() != nil, httpService.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
-		}
-		check = httpCheck(serviceName, httpService, client)
+		check = httpCheck(serviceName, uc.GetHttpService())
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		check = grpcCheck(serviceName, uc.GetGrpcService())
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		openapiService := uc.GetOpenapiService()
-		client := &http.Client{
-			Timeout: lo.Ternary(openapiService.GetHealthCheck() != nil && openapiService.GetHealthCheck().GetTimeout() != nil, openapiService.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
-		}
-		check = httpCheck(serviceName, openapiService, client)
+		check = httpCheck(serviceName, uc.GetOpenapiService())
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		check = commandLineCheck(serviceName, uc.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
@@ -97,13 +89,17 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	return health.NewChecker(opts...)
 }
 
-func httpCheck(name string, c HTTPServiceWithHealthCheck, client *http.Client) health.Check {
+func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 	return health.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
 			if c.GetHealthCheck() == nil {
 				return checkConnection(c.GetAddress())
+			}
+
+			client := &http.Client{
+				Timeout: lo.Ternary(c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
 			}
 
 			req, err := http.NewRequestWithContext(ctx, "GET", c.GetHealthCheck().GetUrl(), nil)
