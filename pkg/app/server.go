@@ -308,7 +308,7 @@ var (
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
+func HealthCheck(out io.Writer, client *http.Client, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -317,7 +317,7 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := healthCheckClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
