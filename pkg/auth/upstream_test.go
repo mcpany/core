@@ -201,6 +201,13 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "OAuth2 authentication requires a token URL")
 		})
+
+		t.Run("Empty_UpstreamAuthentication", func(t *testing.T) {
+			config := &configv1.UpstreamAuthentication{}
+			auth, err := NewUpstreamAuthenticator(config)
+			assert.NoError(t, err)
+			assert.Nil(t, auth)
+		})
 	})
 }
 
