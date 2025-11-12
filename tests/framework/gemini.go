@@ -51,7 +51,7 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
 	require.NoError(g.t, err)
-	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
+	geminiPath := filepath.Join(root, "tests", "framework", "mocks", "gemini-cli")
 	return exec.Command(geminiPath, args...)
 }
 
