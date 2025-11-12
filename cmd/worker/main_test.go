@@ -23,6 +23,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
+	buspb "github.com/mcpany/core/proto/bus"
+	"github.com/stretchr/testify/assert"
 )
 
 type MainTestSuite struct {
@@ -78,4 +80,22 @@ func (s *MainTestSuite) TestMainLifecycle() {
 
 func TestMainTestSuite(t *testing.T) {
 	suite.Run(t, new(MainTestSuite))
+}
+
+func TestSetup_InMemoryBus(t *testing.T) {
+	// Unset REDIS_ADDR to fall back to in-memory bus
+	os.Unsetenv("REDIS_ADDR")
+
+	_, err := setup()
+	assert.NoError(t, err, "setup() should not return an error when using in-memory bus")
+}
+
+func TestSetup_DirectValidationError(t *testing.T) {
+	// This test directly manipulates the config to trigger an error in the validation logic
+	// to ensure the error handling in setup() is covered.
+	busConfig := &buspb.MessageBus{}
+	busConfig.SetRedis(&buspb.RedisBus{}) // Set an empty redis bus to trigger a validation error
+
+	_, err := setupWithConfig(busConfig)
+	assert.Error(t, err, "setupWithConfig() should return an error with an invalid busConfig")
 }
