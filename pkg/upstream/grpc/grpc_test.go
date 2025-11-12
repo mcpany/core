@@ -212,14 +212,14 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 	tm := NewMockToolManager()
 
 	t.Run("nil parsed data", func(t *testing.T) {
-		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, false, nil)
+		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, nil, false, nil)
 		require.NoError(t, err)
 		assert.Nil(t, tools)
 	})
 
 	t.Run("service info not found", func(t *testing.T) {
 		parsedData := &protobufparser.ParsedMcpAnnotations{}
-		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, false, nil)
+		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, nil)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service info not found")
 	})
@@ -228,7 +228,21 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 		poolManager := pool.NewManager()
 		upstream := NewGRPCUpstream(poolManager)
 		tm := NewMockToolManager()
-		tm.AddServiceInfo("test-service", &tool.ServiceInfo{})
+		tm.AddServiceInfo("test-service", &tool.ServiceInfo{
+			Config: configv1.UpstreamServiceConfig_builder{
+				GrpcService: configv1.GrpcUpstreamService_builder{
+					Tools: []*configv1.GrpcToolDefinition{
+						configv1.GrpcToolDefinition_builder{
+							Call: configv1.GrpcCallDefinition_builder{
+								Schema: configv1.ToolSchema_builder{
+									Name: proto.String("test-tool"),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					},
+				}.Build(),
+			}.Build(),
+		})
 
 		parsedData := &protobufparser.ParsedMcpAnnotations{
 			Tools: []protobufparser.McpTool{
@@ -245,7 +259,7 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 			},
 		}
 
-		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, false, fds)
+		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, fds)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create protodesc files")
 	})

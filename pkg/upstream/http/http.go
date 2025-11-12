@@ -150,7 +150,7 @@ func (u *HTTPUpstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	address = httpService.GetAddress()
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -159,11 +159,11 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetCalls()))
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetTools()))
 	httpService := serviceConfig.GetHttpService()
-	definitions := httpService.GetCalls()
+	definitions := httpService.GetTools()
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
@@ -171,7 +171,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		authenticator = nil
 	}
 
-	for i, httpDef := range definitions {
+	for i, toolDefinition := range definitions {
+		httpDef := toolDefinition.GetCall()
 		schema := httpDef.GetSchema()
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
@@ -254,5 +255,28 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			Description: proto.String(schema.GetDescription()),
 		}.Build())
 	}
+
+	for _, resourceDef := range httpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetHttpCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools
 }

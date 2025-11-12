@@ -132,7 +132,7 @@ func (u *OpenAPIUpstream) Register(
 		}.Build())
 	}
 
-	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, isReload, doc, serviceConfig)
+	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, resourceManager, isReload, doc, serviceConfig)
 	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
 	return serviceID, discoveredTools, nil, nil
@@ -179,7 +179,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -192,10 +192,10 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	}
 
 	openapiService := serviceConfig.GetOpenapiService()
-	callDefs := openapiService.GetCalls()
+	callDefs := openapiService.GetTools()
 	callDefMap := make(map[string]*configv1.OpenAPICallDefinition)
 	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
+		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
 	}
 
 	for _, t := range pbTools {
@@ -260,6 +260,28 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 		}
 		numToolsForThisService++
 		log.Info("Registered OpenAPI tool", "tool_id", toolName, "is_reload", isReload)
+	}
+
+	for _, resourceDef := range openapiService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetHttpCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return numToolsForThisService

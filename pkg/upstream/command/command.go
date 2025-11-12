@@ -87,6 +87,7 @@ func (u *CommandUpstream) Register(
 		serviceID,
 		commandLineService,
 		toolManager,
+		resourceManager,
 		isReload,
 	)
 	if err != nil {
@@ -111,12 +112,14 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
 	toolManager tool.ToolManagerInterface,
+	resourceManager resource.ResourceManagerInterface,
 	_ bool,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetTools()))
 
-	for _, toolDef := range commandLineService.GetCalls() {
+	for _, toolDefinition := range commandLineService.GetTools() {
+		toolDef := toolDefinition.GetCall()
 		schema := toolDef.GetSchema()
 		command := schema.GetName()
 
@@ -189,6 +192,28 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name: proto.String(command),
 		}.Build())
+	}
+
+	for _, resourceDef := range commandLineService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			toolName := resourceDef.GetDynamic().GetCommandLineCall().GetSchema().GetName()
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return discoveredTools, nil

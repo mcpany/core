@@ -7,6 +7,8 @@ package mcpany.api.v1;
 
 import "proto/config/v1/config.proto";
 import "proto/config/v1/resource.proto";
+import "proto/config/v1/call.proto";
+
 
 option go_package = "github.com/mcpany/core/proto/api/v1";
 

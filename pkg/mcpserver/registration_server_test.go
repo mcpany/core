@@ -255,7 +255,11 @@ paths:
 
 		websocketService := configv1.WebsocketUpstreamService_builder{
 			Address: proto.String("ws://localhost:8080/test"),
-			Calls:   []*configv1.WebsocketCallDefinition{callDef},
+			Tools: []*configv1.WebsocketToolDefinition{
+				configv1.WebsocketToolDefinition_builder{
+					Call: callDef,
+				}.Build(),
+			},
 		}.Build()
 
 		config := configv1.UpstreamServiceConfig_builder{
