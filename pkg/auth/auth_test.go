@@ -141,6 +141,22 @@ func TestAuthManager(t *testing.T) {
 			assert.NoError(t, err)
 		})
 	})
+
+	t.Run("remove_authenticator", func(t *testing.T) {
+		// Add an authenticator to remove
+		authManager.AddAuthenticator("service-to-remove", apiKeyAuth)
+
+		// Verify it was added
+		_, ok := authManager.GetAuthenticator("service-to-remove")
+		assert.True(t, ok)
+
+		// Remove the authenticator
+		authManager.RemoveAuthenticator("service-to-remove")
+
+		// Verify it was removed
+		_, ok = authManager.GetAuthenticator("service-to-remove")
+		assert.False(t, ok)
+	})
 }
 
 func TestAddOAuth2Authenticator(t *testing.T) {
