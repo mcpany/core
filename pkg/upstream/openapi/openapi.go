@@ -192,16 +192,33 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	}
 
 	openapiService := serviceConfig.GetOpenapiService()
-	callDefs := openapiService.GetTools()
-	callDefMap := make(map[string]*configv1.OpenAPICallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
-	}
+	definitions := openapiService.GetTools()
+	calls := openapiService.GetCalls()
 
-	for _, t := range pbTools {
-		toolName := t.GetName()
+	for _, toolDefinition := range definitions {
+		schema := toolDefinition.GetSchema()
+		callID := toolDefinition.GetCallId()
+		callDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			continue
+		}
 
-		newToolProto := proto.Clone(t).(*pb.Tool)
+		toolName := schema.GetName()
+
+		var pbTool *pb.Tool
+		for _, t := range pbTools {
+			if t.GetName() == toolName {
+				pbTool = t
+				break
+			}
+		}
+		if pbTool == nil {
+			log.Error("Tool not found in parsed OpenAPI spec", "tool_name", toolName)
+			continue
+		}
+
+		newToolProto := proto.Clone(pbTool).(*pb.Tool)
 		newToolProto.SetName(toolName)
 		newToolProto.SetServiceId(serviceID)
 
@@ -214,9 +231,9 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 			}
 		}
 
-		methodAndPath := strings.Fields(t.GetUnderlyingMethodFqn())
+		methodAndPath := strings.Fields(pbTool.GetUnderlyingMethodFqn())
 		if len(methodAndPath) != 2 {
-			log.Error("Invalid underlying method FQN", "fqn", t.GetUnderlyingMethodFqn())
+			log.Error("Invalid underlying method FQN", "fqn", pbTool.GetUnderlyingMethodFqn())
 			continue
 		}
 		method, path := methodAndPath[0], methodAndPath[1]
@@ -247,11 +264,6 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 			serverURL = serviceConfig.GetOpenapiService().GetAddress()
 		}
 		fullURL := serverURL + path
-
-		callDef, ok := callDefMap[toolName]
-		if !ok {
-			callDef = &configv1.OpenAPICallDefinition{}
-		}
 
 		newTool := tool.NewOpenAPITool(newToolProto, httpC, parameterDefs, method, fullURL, authenticator, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
