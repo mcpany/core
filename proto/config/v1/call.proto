@@ -100,6 +100,7 @@ message OutputTransformer {
     JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
     XML = 1;  // The output is XML, which will be parsed using XPath expressions.
     TEXT = 2; // The output is plain text, which will be parsed using regex.
+    RAW_BYTES = 3; // The output is raw bytes, no parsing will be performed.
   }
   // The format of the upstream service's output.
   OutputFormat format = 1;
