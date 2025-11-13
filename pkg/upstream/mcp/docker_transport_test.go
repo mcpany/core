@@ -20,14 +20,52 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"testing"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/client"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+type MockDockerClient struct {
+	client.APIClient
+	mock.Mock
+}
+
+func (m *MockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+	args := m.Called(ctx, ref, options)
+	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
+func (m *MockDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+	args := m.Called(ctx, config, hostConfig, networkingConfig, platform, containerName)
+	return args.Get(0).(container.CreateResponse), args.Error(1)
+}
+
+func (m *MockDockerClient) ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+	args := m.Called(ctx, container, options)
+	return args.Get(0).(types.HijackedResponse), args.Error(1)
+}
+
+func (m *MockDockerClient) ContainerStart(ctx context.Context, container string, options container.StartOptions) error {
+	args := m.Called(ctx, container, options)
+	return args.Error(0)
+}
+
+func (m *MockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
+	args := m.Called(ctx, containerID, options)
+	return args.Error(0)
+}
 
 func TestSlogWriter(t *testing.T) {
 	var buf bytes.Buffer
@@ -134,4 +172,72 @@ func TestDockerTransport_Connect_NoImage(t *testing.T) {
 	_, err := transport.Connect(ctx)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container_image must be specified")
+}
+
+func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
+	ctx := context.Background()
+	mockClient := new(MockDockerClient)
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{
+		StdioConfig: stdioConfig,
+		NewClient: func() (client.APIClient, error) {
+			return mockClient, nil
+		},
+	}
+
+	mockClient.On("ImagePull", ctx, "test-image", mock.Anything).Return(io.NopCloser(bytes.NewReader([]byte(""))), nil)
+	mockClient.On("ContainerCreate", ctx, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(container.CreateResponse{}, assert.AnError)
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+	mockClient.AssertExpectations(t)
+}
+
+func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
+	ctx := context.Background()
+	mockClient := new(MockDockerClient)
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{
+		StdioConfig: stdioConfig,
+		NewClient: func() (client.APIClient, error) {
+			return mockClient, nil
+		},
+	}
+
+	mockClient.On("ImagePull", ctx, "test-image", mock.Anything).Return(io.NopCloser(bytes.NewReader([]byte(""))), nil)
+	mockClient.On("ContainerCreate", ctx, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(container.CreateResponse{ID: "test-id"}, nil)
+	mockClient.On("ContainerAttach", ctx, "test-id", mock.Anything).Return(types.HijackedResponse{}, assert.AnError)
+	mockClient.On("ContainerRemove", ctx, "test-id", mock.Anything).Return(nil)
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+	mockClient.AssertExpectations(t)
+}
+
+func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
+	ctx := context.Background()
+	mockClient := new(MockDockerClient)
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	stdioConfig.SetCommand("echo")
+	transport := &DockerTransport{
+		StdioConfig: stdioConfig,
+		NewClient: func() (client.APIClient, error) {
+			return mockClient, nil
+		},
+	}
+
+	mockClient.On("ImagePull", ctx, "test-image", mock.Anything).Return(io.NopCloser(bytes.NewReader([]byte(""))), nil)
+	mockClient.On("ContainerCreate", ctx, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(container.CreateResponse{ID: "test-id"}, nil)
+	mockClient.On("ContainerAttach", ctx, "test-id", mock.Anything).Return(types.HijackedResponse{}, nil)
+	mockClient.On("ContainerStart", ctx, "test-id", mock.Anything).Return(assert.AnError)
+	mockClient.On("ContainerRemove", ctx, "test-id", mock.Anything).Return(nil)
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
+	mockClient.AssertExpectations(t)
 }

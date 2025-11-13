@@ -39,12 +39,19 @@ import (
 // running inside a Docker container. It manages the container lifecycle.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
+	NewClient   func() (client.APIClient, error)
 }
 
 // Connect establishes a connection to the service within the Docker container.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	newClient := t.NewClient
+	if newClient == nil {
+		newClient = func() (client.APIClient, error) {
+			return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		}
+	}
+	cli, err := newClient()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
@@ -179,7 +186,7 @@ type dockerReadWriteCloser struct {
 	io.Reader
 	io.WriteCloser
 	containerID string
-	cli         *client.Client
+	cli         client.APIClient
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
