@@ -90,30 +90,24 @@ func newRootCmd() *cobra.Command {
 			}
 
 			osFs := afero.NewOsFs()
-			bindAddress := jsonrpcPort
 
-			// If the jsonrpc-port flag is not explicitly set, we'll check the config file.
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
-				store := config.NewFileStore(osFs, configPaths)
-				cfg, err := config.LoadServices(store, "server")
-				if err != nil {
-					return fmt.Errorf("failed to load services from config: %w", err)
-				}
-				if cfg.GetGlobalSettings().GetBindAddress() != "" {
-					bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-				}
+			if !strings.Contains(viper.GetString("jsonrpc-port"), ":") {
+				viper.Set("jsonrpc-port", "localhost:"+viper.GetString("jsonrpc-port"))
 			}
 
-			if !strings.Contains(bindAddress, ":") {
-				bindAddress = "localhost:" + bindAddress
+			store := config.NewFileStore(osFs, configPaths)
+			cfg, err := config.LoadServices(store, viper.GetViper(), "server")
+			if err != nil {
+				return fmt.Errorf("failed to load services from config: %w", err)
 			}
+			bindAddress := cfg.GetGlobalSettings().GetBindAddress()
 
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()
 
 			shutdownTimeout := viper.GetDuration("shutdown-timeout")
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, registrationPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, registrationPort, configPaths, shutdownTimeout, viper.GetViper()); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -139,20 +133,7 @@ func newRootCmd() *cobra.Command {
 		Use:   "health",
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			configPaths := viper.GetStringSlice("config-path")
-			fs := afero.NewOsFs()
-			addr := viper.GetString("jsonrpc-port")
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
-				store := config.NewFileStore(fs, configPaths)
-				cfg, err := config.LoadServices(store, "server")
-				if err != nil {
-					return fmt.Errorf("failed to load services from config: %w", err)
-				}
-				if cfg.GetGlobalSettings().GetBindAddress() != "" {
-					addr = cfg.GetGlobalSettings().GetBindAddress()
-				}
-			}
-
+			addr, _ := cmd.Flags().GetString("jsonrpc-port")
 			if !strings.Contains(addr, ":") {
 				addr = "localhost:" + addr
 			}
@@ -161,6 +142,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
+	healthCmd.Flags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
 	rootCmd.AddCommand(healthCmd)
 
 	cobra.OnInitialize(func() {

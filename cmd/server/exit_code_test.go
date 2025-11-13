@@ -27,6 +27,7 @@ import (
 
 	"github.com/mcpany/core/pkg/app"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -40,6 +41,7 @@ func (m *mockFailingRunner) Run(
 	registrationPort string,
 	configPaths []string,
 	shutdownTimeout time.Duration,
+	v *viper.Viper,
 ) error {
 	if shutdownTimeout != 10*time.Second {
 		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", shutdownTimeout)

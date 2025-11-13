@@ -44,6 +44,7 @@ import (
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -70,6 +71,7 @@ type Runner interface {
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
 		shutdownTimeout time.Duration,
+		v *viper.Viper,
 	) error
 }
 
@@ -119,6 +121,7 @@ func (a *Application) Run(
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
 	shutdownTimeout time.Duration,
+	v *viper.Viper,
 ) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
@@ -133,7 +136,7 @@ func (a *Application) Run(
 	if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
-		cfg, err = config.LoadServices(store, "server")
+		cfg, err = config.LoadServices(store, v, "server")
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}

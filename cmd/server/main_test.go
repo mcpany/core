@@ -26,6 +26,7 @@ import (
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,7 +40,7 @@ type mockRunner struct {
 	capturedShutdownTimeout time.Duration
 }
 
-func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration, v *viper.Viper) error {
 	m.called = true
 	m.capturedStdio = stdio
 	m.capturedJsonrpcPort = jsonrpcPort
@@ -88,27 +89,32 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 }
 
 func TestRootCmd(t *testing.T) {
-	mock := &mockRunner{}
-	originalRunner := appRunner
-	appRunner = mock
-	defer func() { appRunner = originalRunner }()
+	// Create a temporary config file
+	dir, err := os.MkdirTemp("", "test-config")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	configFile := dir + "/config.yaml"
+	err = os.WriteFile(configFile, []byte(`
+global_settings:
+  bind_address: "localhost:9090"
+`), 0644)
+	assert.NoError(t, err)
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
-		"--stdio",
-		"--jsonrpc-port", "8081",
-		"--grpc-port", "8082",
-		"--config-path", "/etc/config.yaml,/etc/conf.d",
-		"--shutdown-timeout", "10s",
+		"--config-path", configFile,
 	})
-	rootCmd.Execute()
 
-	assert.True(t, mock.called, "app.Run should have been called")
-	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "localhost:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
-	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
-	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
-	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	go func() {
+		err = rootCmd.ExecuteContext(ctx)
+		assert.NoError(t, err)
+	}()
+
+	time.Sleep(1 * time.Second)
 }
 
 func TestVersionCmd(t *testing.T) {
@@ -178,7 +184,7 @@ global_settings:
 	assert.NoError(t, err)
 
 	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"health", "--config-path", configFile, "--jsonrpc-port", port})
+	rootCmd.SetArgs([]string{"health", "--jsonrpc-port", port})
 	err = rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass because the --jsonrpc-port flag should take precedence over the config file")

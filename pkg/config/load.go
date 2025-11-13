@@ -23,6 +23,7 @@ import (
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/viper"
 )
 
 // LoadServices loads, validates, and processes the MCP Any server configuration
@@ -37,7 +38,7 @@ import (
 //
 // Returns a validated `McpAnyServerConfig` or an error if loading or validation
 // fails.
-func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
+func LoadServices(store Store, v *viper.Viper, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
 	fileConfig, err := store.Load()
@@ -48,6 +49,14 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	if fileConfig == nil {
 		log.Info("No configuration files found or all were empty, using default configuration.")
 		fileConfig = &configv1.McpAnyServerConfig{}
+	}
+
+	// Create a configuration from Viper, to override file configuration
+	if v.IsSet("jsonrpc-port") {
+		if fileConfig.GetGlobalSettings() == nil {
+			fileConfig.SetGlobalSettings(&configv1.GlobalSettings{})
+		}
+		fileConfig.GetGlobalSettings().SetBindAddress(v.GetString("jsonrpc-port"))
 	}
 
 	manager := NewUpstreamServiceManager()

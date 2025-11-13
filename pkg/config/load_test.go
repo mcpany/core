@@ -24,6 +24,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -256,7 +257,8 @@ upstream_services: {
 			filePath := createTempConfigFile(t, tt.textprotoContent)
 			fs := afero.NewOsFs()
 			fileStore := NewFileStore(fs, []string{filePath})
-			cfg, err := LoadServices(fileStore, "server")
+			v := viper.New()
+			cfg, err := LoadServices(fileStore, v, "server")
 
 			if tt.expectLoadError {
 				assert.Error(t, err)
