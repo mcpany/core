@@ -75,9 +75,15 @@ type BusProvider struct {
 	config *bus.MessageBus
 }
 
+// NewBusProviderHook is a test hook for overriding the NewBusProvider logic.
+var NewBusProviderHook func(*bus.MessageBus) (*BusProvider, error)
+
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
 // multiple topic-based bus instances.
 func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
+	if NewBusProviderHook != nil {
+		return NewBusProviderHook(messageBus)
+	}
 	provider := &BusProvider{
 		buses:  xsync.NewMap[string, any](),
 		config: messageBus,

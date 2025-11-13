@@ -31,8 +31,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 
 	"github.com/stretchr/testify/assert"
@@ -299,6 +301,26 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
+}
+
+func TestRun_BusProviderError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	bus.NewBusProviderHook = func(messageBus *bus_pb.MessageBus) (*bus.BusProvider, error) {
+		return nil, fmt.Errorf("injected bus provider error")
+	}
+	defer func() { bus.NewBusProviderHook = nil }()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
 }
 
 func TestRun_EmptyConfig(t *testing.T) {
