@@ -31,9 +31,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 
@@ -446,6 +453,156 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	assert.Contains(t, logs, "gRPC server listening", "The gRPC server should have started.")
 	assert.Contains(t, logs, "Attempting to gracefully shut down server...", "A graceful shutdown should be attempted.")
 	assert.Contains(t, logs, "Server shut down.", "The gRPC server should have been shut down gracefully.")
+}
+
+func TestRun_DefaultBindAddress(t *testing.T) {
+	defaultAddr := "localhost:8070"
+	// This test is intended to run in an environment where port 8070 is available.
+	// If it's not, we skip the test.
+	conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+	if err == nil {
+		conn.Close()
+		t.Skipf("port %s is already in use, skipping test", defaultAddr)
+	}
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
+		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, 5*time.Second)
+	}()
+
+	// Give the server time to start up.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "server should start listening on the default port")
+
+	// Server is up, now cancel and wait for shutdown.
+	cancel()
+	err = <-errChan
+
+	// On graceful shutdown, it should be nil.
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	// Final check: the port should be free again.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return false
+		}
+		return true
+	}, 2*time.Second, 100*time.Millisecond, "port should be released after shutdown")
+}
+
+func TestRun_GrpcPortNumber(t *testing.T) {
+	// Find a free port to use for the test
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Run with a port number instead of a full address string
+		errChan <- app.Run(ctx, fs, false, "localhost:0", fmt.Sprintf("%d", port), nil, 5*time.Second)
+	}()
+
+	// Give the server time to start up.
+	grpcAddr := fmt.Sprintf("localhost:%d", port)
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start listening on port %d", port)
+
+	// Server is up, now cancel and wait for shutdown.
+	cancel()
+	err = <-errChan
+
+	// On graceful shutdown, it should be nil.
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+}
+
+func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	app := NewApplication()
+	// This context will be canceled to trigger the shutdown.
+	ctx, cancel := context.WithCancel(context.Background())
+
+	// Create dependencies
+	busProvider, err := bus.NewBusProvider(nil) // in-memory bus
+	require.NoError(t, err)
+
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	go func() {
+		// Use ephemeral ports to avoid conflicts.
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second)
+	}()
+
+	// Give the servers a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+
+	// Wait for runServerMode to exit.
+	err = <-errChan
+
+	// A clean shutdown should not return an error.
+	assert.NoError(t, err, "runServerMode should return nil on graceful shutdown")
+
+	// Check the logs to ensure the shutdown sequence was logged as expected.
+	logs := buf.String()
+	assert.Contains(t, logs, "Received shutdown signal, shutting down gracefully...")
+	assert.Contains(t, logs, "Waiting for HTTP and gRPC servers to shut down...")
+	assert.Contains(t, logs, "All servers have shut down.")
 }
 
 func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
