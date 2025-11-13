@@ -1,0 +1,4 @@
+services: {
+  name: "malformed-textproto-service"
+  command: ["echo", "hello"]
+}

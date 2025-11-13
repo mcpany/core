@@ -87,6 +87,13 @@ func newRootCmd() *cobra.Command {
 			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-path", configPaths)
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
+				// Create a new FileStore and load the services.
+				store := config.NewFileStore(afero.NewOsFs(), configPaths)
+				// Pass a dummy service name, since we are only interested in the global settings.
+				_, err := config.LoadServices(store, "server")
+				if err != nil {
+					return fmt.Errorf("failed to load services from config: %w", err)
+				}
 			}
 
 			osFs := afero.NewOsFs()
@@ -99,7 +106,7 @@ func newRootCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("failed to load services from config: %w", err)
 				}
-				if cfg.GetGlobalSettings().GetBindAddress() != "" {
+				if cfg != nil && cfg.GetGlobalSettings().GetBindAddress() != "" {
 					bindAddress = cfg.GetGlobalSettings().GetBindAddress()
 				}
 			}

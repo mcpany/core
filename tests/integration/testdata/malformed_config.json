@@ -1,0 +1,9 @@
+{
+  "services": [
+    {
+      "name": "malformed-json-service",
+      "command": ["echo", "hello"],
+    }
+  ]
+// This trailing comma makes the JSON invalid
+,
