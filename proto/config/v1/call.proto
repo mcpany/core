@@ -13,6 +13,9 @@ option go_package = "github.com/mcpany/core/proto/config/v1";
 
 // HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
 message HttpCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+
   enum HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0;
     HTTP_METHOD_GET = 1;
@@ -22,11 +25,11 @@ message HttpCallDefinition {
     HTTP_METHOD_PATCH = 5;
   }
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 2;
+  string endpoint_path = 3;
   // The HTTP method to use for the request.
-  HttpMethod method = 3;
+  HttpMethod method = 4;
   // Defines the parameters for the HTTP request.
   repeated HttpParameterMapping parameters = 5;
   // An optional input transformer to generate the request body.
@@ -256,7 +259,10 @@ message GrpcToolDefinition {
 
 // HttpToolDefinition wraps a HttpCallDefinition.
 message HttpToolDefinition {
-  HttpCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // WebsocketToolDefinition wraps a WebsocketCallDefinition.
