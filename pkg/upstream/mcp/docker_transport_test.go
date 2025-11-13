@@ -81,7 +81,6 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
-	t.Skip("Skipping integration test")
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
@@ -134,4 +133,21 @@ func TestDockerTransport_Connect_NoImage(t *testing.T) {
 	_, err := transport.Connect(ctx)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container_image must be specified")
+}
+
+func TestDockerTransport_Connect_ContainerCreateFail(t *testing.T) {
+	if !util.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping integration test.")
+	}
+
+	ctx := context.Background()
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("alpine:latest")
+	// An invalid command will cause the container to exit immediately,
+	// which can cause a create failure depending on the Docker version.
+	stdioConfig.SetCommand("invalid-command")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+
+	_, err := transport.Connect(ctx)
+	assert.Error(t, err)
 }
