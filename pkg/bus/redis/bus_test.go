@@ -501,6 +501,38 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_Close(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-close"
+
+	// Subscribe to create a pubsub connection
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+
+	// Check that the subscription is active
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Close the bus
+	err := bus.Close()
+	assert.NoError(t, err)
+
+	// Verify that the client is closed by trying to use it
+	err = client.Ping(context.Background()).Err()
+	assert.Error(t, err)
+	assert.Equal(t, redis.ErrClosed, err)
+
+	// After closing the bus, the pubsubs map should be empty.
+	bus.mu.RLock()
+	assert.Empty(t, bus.pubsubs)
+	bus.mu.RUnlock()
+
+	// Unsubscribing after closing should not panic
+	assert.NotPanics(t, unsub)
+}
+
 func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
