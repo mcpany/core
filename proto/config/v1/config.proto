@@ -133,6 +133,8 @@ message GrpcUpstreamService {
   repeated ProtoCollection proto_collection = 7;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 8;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, GrpcCallDefinition> calls = 9;
 }
 
 message ProtoDefinition {
@@ -189,6 +191,8 @@ message WebsocketUpstreamService {
   TLSConfig tls_config = 3;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebsocketCallDefinition> calls = 5;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -201,6 +205,8 @@ message WebrtcUpstreamService {
   TLSConfig tls_config = 3;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebrtcCallDefinition> calls = 5;
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
@@ -217,6 +223,8 @@ message OpenapiUpstreamService {
   repeated OpenAPIToolDefinition tools = 5;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 6;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, OpenAPICallDefinition> calls = 7;
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
@@ -237,6 +245,8 @@ message CommandLineUpstreamService {
   google.protobuf.Duration timeout = 8;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 9;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, CommandLineCallDefinition> calls = 10;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
@@ -255,6 +265,8 @@ message McpUpstreamService {
   repeated MCPToolDefinition tools = 6;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 7;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, MCPCallDefinition> calls = 8;
 }
 
 // McpStdioConnection defines the parameters for a stdio-based connection.

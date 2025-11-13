@@ -108,6 +108,7 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	definitions := webrtcService.GetTools()
+	calls := webrtcService.GetCalls()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(definitions))
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -117,8 +118,13 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	}
 
 	for i, toolDefinition := range definitions {
-		wrtcDef := toolDefinition.GetCall()
-		schema := wrtcDef.GetSchema()
+		schema := toolDefinition.GetSchema()
+		callID := toolDefinition.GetCallId()
+		wrtcDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			continue
+		}
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
 			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())

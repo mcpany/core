@@ -117,6 +117,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	definitions := websocketService.GetTools()
+	calls := websocketService.GetCalls()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(definitions))
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -126,8 +127,14 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	}
 
 	for i, toolDefinition := range definitions {
-		wsDef := toolDefinition.GetCall()
-		schema := wsDef.GetSchema()
+		schema := toolDefinition.GetSchema()
+		callID := toolDefinition.GetCallId()
+		wsDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			continue
+		}
+
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
 			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())

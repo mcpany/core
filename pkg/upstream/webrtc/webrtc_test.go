@@ -114,17 +114,24 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		toolDef := configv1.WebrtcToolDefinition_builder{
-			Call: configv1.WebrtcCallDefinition_builder{
-				Schema: configv1.ToolSchema_builder{
-					Name:        proto.String("echo"),
-					Description: proto.String("Echoes a message"),
-				}.Build(),
+			Schema: configv1.ToolSchema_builder{
+				Name:        proto.String("echo"),
+				Description: proto.String("Echoes a message"),
 			}.Build(),
+			CallId: proto.String("echo-call"),
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebrtcCallDefinition)
+		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name:        proto.String("echo"),
+				Description: proto.String("Echoes a message"),
+			}.Build(),
+		}.Build()
+		webrtcService.SetCalls(calls)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
@@ -179,16 +186,22 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		toolDef := configv1.WebrtcToolDefinition_builder{
-			Call: configv1.WebrtcCallDefinition_builder{
-				Schema: configv1.ToolSchema_builder{
-					Name: proto.String("echo"),
-				}.Build(),
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("echo"),
 			}.Build(),
+			CallId: proto.String("echo-call"),
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebrtcCallDefinition)
+		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
+			Schema: configv1.ToolSchema_builder{
+				Name: proto.String("echo"),
+			}.Build(),
+		}.Build()
+		webrtcService.SetCalls(calls)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
@@ -208,16 +221,22 @@ func TestWebrtcUpstream_Register_ToolNameGeneration(t *testing.T) {
 	upstream := NewWebrtcUpstream(poolManager)
 
 	toolDef := configv1.WebrtcToolDefinition_builder{
-		Call: configv1.WebrtcCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Description: proto.String("A test description"),
-			}.Build(),
+		Schema: configv1.ToolSchema_builder{
+			Description: proto.String("A test description"),
 		}.Build(),
+		CallId: proto.String("test-call"),
 	}.Build()
 
 	webrtcService := &configv1.WebrtcUpstreamService{}
 	webrtcService.SetAddress("http://localhost:8080/signal")
 	webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
+	calls := make(map[string]*configv1.WebrtcCallDefinition)
+	calls["test-call"] = configv1.WebrtcCallDefinition_builder{
+		Schema: configv1.ToolSchema_builder{
+			Description: proto.String("A test description"),
+		}.Build(),
+	}.Build()
+	webrtcService.SetCalls(calls)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-webrtc-service-tool-name-generation")
