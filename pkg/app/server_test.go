@@ -140,9 +140,12 @@ func TestHealthCheck(t *testing.T) {
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
 
-	t.Run("health check respects client timeout", func(t *testing.T) {
+	t.Run("health check respects function timeout parameter", func(t *testing.T) {
+		// This test verifies that the HealthCheck function respects the timeout
+		// parameter passed to it, especially now that the hardcoded client timeout
+		// has been removed.
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			time.Sleep(7 * time.Second) // Sleep longer than the client's timeout
+			time.Sleep(200 * time.Millisecond) // Sleep for a duration longer than the timeout
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -150,16 +153,16 @@ func TestHealthCheck(t *testing.T) {
 		addr := strings.TrimPrefix(server.URL, "http://")
 
 		start := time.Now()
-		// Use a long timeout for the context, to ensure the client's timeout is what triggers.
-		err := HealthCheck(io.Discard, addr, 10*time.Second)
+		// Use a short timeout that is less than the server's sleep time.
+		err := HealthCheck(io.Discard, addr, 100*time.Millisecond)
 		duration := time.Since(start)
 
-		assert.Error(t, err, "HealthCheck should time out")
+		assert.Error(t, err, "HealthCheck should time out because the timeout is shorter than the server's response time")
 
-		// The duration should be around 5 seconds (the client timeout), not 10 seconds (the context timeout).
-		// We add some buffer for execution overhead.
-		assert.GreaterOrEqual(t, duration, 5*time.Second, "Timeout should be at least the client timeout")
-		assert.Less(t, duration, 7*time.Second, "Timeout should be less than the server sleep time")
+		// The duration should be approximately the timeout we passed to HealthCheck.
+		// We add a small buffer for overhead.
+		assert.GreaterOrEqual(t, duration, 100*time.Millisecond, "The timeout duration should be at least the value of the timeout parameter.")
+		assert.Less(t, duration, 200*time.Millisecond, "The timeout duration should be less than the server's sleep time.")
 	})
 
 	t.Run("connection is reused", func(t *testing.T) {
