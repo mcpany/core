@@ -203,6 +203,13 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			if basicAuth.GetUsername() == "" {
 				log.Warn("Basic auth 'username' is empty. Authentication may fail.")
 			}
+			passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+			if err != nil {
+				return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
+			}
+			if passwordValue == "" {
+				return fmt.Errorf("basic auth 'password' is empty")
+			}
 		}
 	}
 	return nil
