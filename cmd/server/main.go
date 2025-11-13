@@ -92,8 +92,9 @@ func newRootCmd() *cobra.Command {
 			osFs := afero.NewOsFs()
 			bindAddress := jsonrpcPort
 
-			// If the jsonrpc-port flag is not explicitly set, we'll check the config file.
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
+			// If the jsonrpc-port was not set by a flag or environment variable,
+			// try to load it from the configuration file.
+			if !viper.IsSet("jsonrpc-port") && len(configPaths) > 0 {
 				store := config.NewFileStore(osFs, configPaths)
 				cfg, err := config.LoadServices(store, "server")
 				if err != nil {
@@ -142,7 +143,9 @@ func newRootCmd() *cobra.Command {
 			configPaths := viper.GetStringSlice("config-path")
 			fs := afero.NewOsFs()
 			addr := viper.GetString("jsonrpc-port")
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
+			// If the jsonrpc-port was not set by a flag or environment variable,
+			// try to load it from the configuration file.
+			if !viper.IsSet("jsonrpc-port") && len(configPaths) > 0 {
 				store := config.NewFileStore(fs, configPaths)
 				cfg, err := config.LoadServices(store, "server")
 				if err != nil {
