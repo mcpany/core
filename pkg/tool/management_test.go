@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,6 +26,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"google.golang.org/protobuf/types/known/structpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -189,39 +190,6 @@ func TestToolManager_AddServiceInfo(t *testing.T) {
 	assert.False(t, ok)
 }
 
-type MockMCPToolServer struct {
-	*mcp.Server
-	mu    sync.Mutex
-	tools map[string]mcp.ToolHandler
-}
-
-func NewMockMCPToolServer() *MockMCPToolServer {
-	return &MockMCPToolServer{
-		Server: mcp.NewServer(&mcp.Implementation{}, nil),
-		tools:  make(map[string]mcp.ToolHandler),
-	}
-}
-
-func (s *MockMCPToolServer) AddTool(tool *mcp.Tool, handler mcp.ToolHandler) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.tools[tool.Name] = handler
-}
-
-func (s *MockMCPToolServer) HasTool(name string) bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	_, ok := s.tools[name]
-	return ok
-}
-
-func (s *MockMCPToolServer) GetToolHandler(name string) (mcp.ToolHandler, bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	handler, ok := s.tools[name]
-	return handler, ok
-}
-
 func TestToolManager_ConcurrentAccess(t *testing.T) {
 	tm := NewToolManager(nil)
 	var wg sync.WaitGroup
@@ -255,4 +223,119 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
+}
+
+func TestToolManager_AddTool_NoServiceID(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("") // Empty service ID
+	toolProto.SetName("test-tool")
+	mockTool.On("Tool").Return(toolProto)
+
+	err := tm.AddTool(mockTool)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "tool service ID cannot be empty")
+}
+
+func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("") // Empty tool name
+	mockTool.On("Tool").Return(toolProto)
+
+	err := tm.AddTool(mockTool)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to sanitize tool name: id cannot be empty")
+}
+
+func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
+	tm := NewToolManager(nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mcpServer)
+	tm.SetMCPServer(mockProvider)
+
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("test-tool")
+	toolProto.SetDescription("A test tool")
+	annotations := &v1.ToolAnnotations{}
+	// Add an input schema to test the conversion logic and prevent a panic in the MCP server
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+	})
+	assert.NoError(t, err)
+	annotations.SetInputSchema(inputSchema)
+	toolProto.SetAnnotations(annotations)
+
+	mockTool.On("Tool").Return(toolProto)
+
+	// If this doesn't panic, it means the tool was added successfully to the mcpServer.
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+}
+
+// MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
+type MockToolExecutionMiddleware struct {
+	mock.Mock
+}
+
+func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+	args := m.Called(ctx, req, next)
+	// Allow the middleware to either call the next function or return directly
+	if args.Get(0) == "call_next" {
+		return next(ctx, req)
+	}
+	return args.Get(0), args.Error(1)
+}
+
+func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockMiddleware := new(MockToolExecutionMiddleware)
+	tm.AddMiddleware(mockMiddleware)
+
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("exec-service")
+	toolProto.SetName("exec-tool")
+	mockTool.On("Tool").Return(toolProto)
+
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
+	toolID := "exec-service" + "." + sanitizedToolName
+	execReq := &ExecutionRequest{ToolName: toolID}
+
+	// Case 1: Middleware returns a result directly
+	expectedResult := "middleware success"
+	mockMiddleware.On("Execute", mock.Anything, execReq, mock.Anything).Return(expectedResult, nil).Once()
+
+	result, err := tm.ExecuteTool(context.Background(), execReq)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedResult, result)
+	mockMiddleware.AssertExpectations(t)
+
+	// Case 2: Middleware calls the next function
+	expectedToolResult := "tool success"
+	mockMiddleware.On("Execute", mock.Anything, execReq, mock.Anything).Return("call_next", nil).Once()
+	mockTool.On("Execute", mock.Anything, execReq).Return(expectedToolResult, nil).Once()
+
+	result, err = tm.ExecuteTool(context.Background(), execReq)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedToolResult, result)
+	mockMiddleware.AssertExpectations(t)
+	mockTool.AssertExpectations(t)
+}
+
+func TestGetFullyQualifiedToolName(t *testing.T) {
+	serviceID := "test-service"
+	toolName := "test-tool"
+	expectedFQN := "test-service.test-tool"
+	fqn := GetFullyQualifiedToolName(serviceID, toolName)
+	assert.Equal(t, expectedFQN, fqn)
 }
