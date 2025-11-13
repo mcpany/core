@@ -930,20 +930,37 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
+	// Create a mock bus and set the hook.
+	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
+	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+		if topic == "service_registration_requests" {
+			return mockRegBus
+		}
+		return nil
+	}
+	defer func() { bus.GetBusHook = nil }()
+
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
-	// Since we are using an in-memory bus, we can't easily subscribe to the topic.
-	// The best we can do is check the logs to see if the disabled service was skipped.
-	// This is not ideal, but it's better than nothing.
-	time.Sleep(500 * time.Millisecond)
+	// Allow some time for the services to be published.
+	time.Sleep(100 * time.Millisecond)
 	cancel()
 
 	err = <-errChan
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	// Verify that the correct number of messages were published.
+	mockRegBus.mu.Lock()
+	defer mockRegBus.mu.Unlock()
+	assert.Len(t, mockRegBus.publishedMessages, 1, "Expected one service registration request to be published.")
+	if len(mockRegBus.publishedMessages) == 1 {
+		publishedMsg := mockRegBus.publishedMessages[0]
+		assert.Equal(t, "test-service", publishedMsg.Config.GetName(), "The incorrect service was published.")
+	}
 }
 
 func TestRun_NoConfig(t *testing.T) {
@@ -1086,6 +1103,39 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 
 	// The close count should be exactly 1.
 	assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.closeCount), "The listener's Close() method should be called exactly once.")
+}
+
+// mockBus is a mock implementation of the bus.Bus interface for testing.
+type mockBus[T any] struct {
+	// A slice to store published messages for later inspection.
+	publishedMessages []T
+	// A mutex to make the mock thread-safe, as it might be accessed from multiple goroutines.
+	mu sync.Mutex
+}
+
+// newMockBus creates a new mockBus instance.
+func newMockBus[T any]() *mockBus[T] {
+	return &mockBus[T]{
+		publishedMessages: make([]T, 0),
+	}
+}
+
+// Publish records the message in the publishedMessages slice.
+func (m *mockBus[T]) Publish(_ context.Context, _ string, msg T) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.publishedMessages = append(m.publishedMessages, msg)
+	return nil
+}
+
+// Subscribe is a no-op for this mock.
+func (m *mockBus[T]) Subscribe(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+	return func() {}
+}
+
+// SubscribeOnce is a no-op for this mock.
+func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+	return func() {}
 }
 
 func TestGRPCServer_PanicInRegistration(t *testing.T) {
