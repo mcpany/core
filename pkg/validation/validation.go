@@ -28,9 +28,12 @@ import (
 // IsValidBindAddress checks if a given string is a valid bind address.
 // A valid bind address is in the format "host:port".
 func IsValidBindAddress(s string) error {
-	_, _, err := net.SplitHostPort(s)
+	host, port, err := net.SplitHostPort(s)
 	if err != nil {
 		return err
+	}
+	if host == "" && port == "" {
+		return fmt.Errorf("missing host and port")
 	}
 	return nil
 }
