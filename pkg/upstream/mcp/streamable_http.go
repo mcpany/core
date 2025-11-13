@@ -402,16 +402,24 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetTools()
-	callDefMap := make(map[string]*configv1.MCPCallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
+	configToolDefs := mcpService.GetTools()
+	calls := mcpService.GetCalls()
+	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	for _, toolDef := range configToolDefs {
+		configToolMap[toolDef.GetSchema().GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
-		callDef, ok := callDefMap[mcpSDKTool.Name]
-		if !ok {
+		var callDef *configv1.MCPCallDefinition
+		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if call, callOk := calls[configTool.GetCallId()]; callOk {
+				callDef = call
+			} else {
+				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
+				callDef = &configv1.MCPCallDefinition{}
+			}
+		} else {
 			callDef = &configv1.MCPCallDefinition{}
 		}
 
@@ -575,16 +583,24 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetTools()
-	callDefMap := make(map[string]*configv1.MCPCallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetCall().GetSchema().GetName()] = def.GetCall()
+	configToolDefs := mcpService.GetTools()
+	calls := mcpService.GetCalls()
+	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	for _, toolDef := range configToolDefs {
+		configToolMap[toolDef.GetSchema().GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
-		callDef, ok := callDefMap[mcpSDKTool.Name]
-		if !ok {
+		var callDef *configv1.MCPCallDefinition
+		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if call, callOk := calls[configTool.GetCallId()]; callOk {
+				callDef = call
+			} else {
+				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
+				callDef = &configv1.MCPCallDefinition{}
+			}
+		} else {
 			callDef = &configv1.MCPCallDefinition{}
 		}
 

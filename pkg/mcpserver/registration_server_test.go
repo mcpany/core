@@ -206,6 +206,21 @@ paths:
 		serviceName := "openapi-service"
 		openapiService := configv1.OpenapiUpstreamService_builder{
 			OpenapiSpec: &spec,
+			Tools: []*configv1.OpenAPIToolDefinition{
+				configv1.OpenAPIToolDefinition_builder{
+					Schema: configv1.ToolSchema_builder{
+						Name: proto.String("getUser"),
+					}.Build(),
+					CallId: proto.String("getUser-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.OpenAPICallDefinition{
+				"getUser-call": configv1.OpenAPICallDefinition_builder{
+					Schema: configv1.ToolSchema_builder{
+						Name: proto.String("getUser"),
+					}.Build(),
+				}.Build(),
+			},
 		}.Build()
 
 		config := configv1.UpstreamServiceConfig_builder{
@@ -253,13 +268,20 @@ paths:
 			Parameters: []*configv1.WebsocketParameterMapping{param1},
 		}.Build()
 
+		callDef.SetId("test-call")
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["test-call"] = callDef
 		websocketService := configv1.WebsocketUpstreamService_builder{
 			Address: proto.String("ws://localhost:8080/test"),
 			Tools: []*configv1.WebsocketToolDefinition{
 				configv1.WebsocketToolDefinition_builder{
-					Call: callDef,
+					Schema: configv1.ToolSchema_builder{
+						Name: proto.String("test-tool"),
+					}.Build(),
+					CallId: proto.String("test-call"),
 				}.Build(),
 			},
+			Calls: calls,
 		}.Build()
 
 		config := configv1.UpstreamServiceConfig_builder{
