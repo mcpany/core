@@ -130,3 +130,17 @@ func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler f
 	})
 	return unsub
 }
+
+// Close closes all the pubsub connections and the client.
+func (b *RedisBus[T]) Close() error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	for topic, ps := range b.pubsubs {
+		// It's safe to ignore errors here as we are closing everything anyway
+		_ = ps.Close()
+		delete(b.pubsubs, topic)
+	}
+
+	return b.client.Close()
+}
