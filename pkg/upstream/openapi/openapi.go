@@ -196,15 +196,14 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	calls := openapiService.GetCalls()
 
 	for _, toolDefinition := range definitions {
-		schema := toolDefinition.GetSchema()
 		callID := toolDefinition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
 			continue
 		}
 
-		toolName := schema.GetName()
+		toolName := toolDefinition.GetName()
 
 		var pbTool *pb.Tool
 		for _, t := range pbTools {
@@ -276,7 +275,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 
 	for _, resourceDef := range openapiService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
-			toolName := resourceDef.GetDynamic().GetHttpCall().GetSchema().GetName()
+			toolName := resourceDef.GetDynamic().GetHttpCall().GetId()
 			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)

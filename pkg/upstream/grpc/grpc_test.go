@@ -233,17 +233,13 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 				GrpcService: configv1.GrpcUpstreamService_builder{
 					Tools: []*configv1.GrpcToolDefinition{
 						configv1.GrpcToolDefinition_builder{
-							Schema: configv1.ToolSchema_builder{
-								Name: proto.String("test-tool"),
-							}.Build(),
+							Name:   proto.String("test-tool"),
 							CallId: proto.String("test-call"),
 						}.Build(),
 					},
 					Calls: map[string]*configv1.GrpcCallDefinition{
 						"test-call": configv1.GrpcCallDefinition_builder{
-							Schema: configv1.ToolSchema_builder{
-								Name: proto.String("test-tool"),
-							}.Build(),
+							Id: proto.String("test-tool"),
 						}.Build(),
 					},
 				}.Build(),

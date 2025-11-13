@@ -595,17 +595,13 @@ func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
 			}.Build(),
 			Tools: []*configv1.MCPToolDefinition{
 				configv1.MCPToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Name:   proto.String("test-tool"),
 					CallId: proto.String("test-call"),
 				}.Build(),
 			},
 			Calls: map[string]*configv1.MCPCallDefinition{
 				"test-call": configv1.MCPCallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Id: proto.String("test-tool"),
 				}.Build(),
 			},
 		}.Build(),

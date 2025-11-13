@@ -24,66 +24,58 @@ message HttpCallDefinition {
     HTTP_METHOD_DELETE = 4;
     HTTP_METHOD_PATCH = 5;
   }
-  // Common tool schema.
-  ToolSchema schema = 2;
   // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 3;
+  string endpoint_path = 2;
   // The HTTP method to use for the request.
-  HttpMethod method = 4;
+  HttpMethod method = 3;
   // Defines the parameters for the HTTP request.
-  repeated HttpParameterMapping parameters = 5;
+  repeated HttpParameterMapping parameters = 4;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 6;
+  InputTransformer input_transformer = 5;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 7;
+  OutputTransformer output_transformer = 6;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 8;
+  CacheConfig cache = 7;
 }
 
 // WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
 message WebsocketCallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // Defines the parameters for the websocket message.
-  repeated WebsocketParameterMapping parameters = 3;
+  repeated WebsocketParameterMapping parameters = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
+  InputTransformer input_transformer = 3;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
+  OutputTransformer output_transformer = 4;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
+  CacheConfig cache = 5;
 }
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
 message WebrtcCallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // Defines the parameters for the webrtc message.
-  repeated WebrtcParameterMapping parameters = 3;
+  repeated WebrtcParameterMapping parameters = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
+  InputTransformer input_transformer = 3;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
+  OutputTransformer output_transformer = 4;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
+  CacheConfig cache = 5;
 }
 
 // CommandLineCallDefinition describes how to map an MCP call to a stdio command.
 message CommandLineCallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // Defines the parameters for the stdio command.
-  repeated CommandLineParameterMapping parameters = 3;
+  repeated CommandLineParameterMapping parameters = 2;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
+  CacheConfig cache = 3;
   // The arguments to pass to the command.
-  repeated string args = 5;
+  repeated string args = 4;
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -119,16 +111,14 @@ message OutputTransformer {
 message GrpcCallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // The fully-qualified gRPC service name.
-  string service = 3;
+  string service = 2;
   // The name of the gRPC method to call.
-  string method = 4;
+  string method = 3;
   // Note: For gRPC, parameter mapping is typically done by matching field names
   // between the MCP input schema and the gRPC request message.
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 5;
+  CacheConfig cache = 4;
 }
 
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
@@ -136,56 +126,24 @@ message GrpcCallDefinition {
 message OpenAPICallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 3;
+  InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 4;
+  OutputTransformer output_transformer = 3;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 5;
+  CacheConfig cache = 4;
 }
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
 message MCPCallDefinition {
   // The unique identifier for the call.
   string id = 1;
-  // Common tool schema.
-  ToolSchema schema = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 3;
+  InputTransformer input_transformer = 2;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 4;
+  OutputTransformer output_transformer = 3;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 5;
-}
-
-// ToolSchema provides common metadata for a tool.
-message ToolSchema {
-  // A human-readable title for the tool.
-  string title = 1;
-  // If true, the tool does not modify its environment.
-  // Default: false
-  bool read_only_hint = 2;
-  // If true, the tool may perform destructive updates to its environment. If
-  // false, the tool performs only additive updates.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: true
-  bool destructive_hint = 3;
-  // If true, calling the tool repeatedly with the same arguments will have no
-  // additional effect on its environment.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: false
-  bool idempotent_hint = 4;
-  // If true, this tool may interact with an "open world" of external entities. If
-  // false, the tool's domain of interaction is closed. For example, the world of
-  // a web search tool is open, whereas that of a memory tool is not.
-  // Default: true
-  bool open_world_hint = 5;
-  // The name of the tool, which will be used to invoke it.
-  string name = 6;
-  // A human-readable description of what the tool does.
-  string description = 7;
+  CacheConfig cache = 4;
 }
 
 // ParameterType defines the data type of a parameter.
@@ -263,60 +221,248 @@ message ToolDefinition {
   google.protobuf.Struct output_schema = 4;
   // Indicates if the tool produces a continuous stream of responses.
   bool is_stream = 5;
+  // A human-readable title for the tool.
+  string title = 6;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 7;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 8;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 9;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 10;
 }
 
 // GrpcToolDefinition wraps a GrpcCallDefinition.
 message GrpcToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // HttpToolDefinition wraps a HttpCallDefinition.
 message HttpToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // WebsocketToolDefinition wraps a WebsocketCallDefinition.
 message WebsocketToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // WebrtcToolDefinition wraps a WebrtcCallDefinition.
 message WebrtcToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // OpenAPIToolDefinition wraps a OpenAPICallDefinition.
 message OpenAPIToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // CommandLineToolDefinition wraps a CommandLineCallDefinition.
 message CommandLineToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }
 
 // MCPToolDefinition wraps a MCPCallDefinition.
 message MCPToolDefinition {
-  // The schema for the tool.
-  ToolSchema schema = 1;
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // A human-readable description of what the tool does.
+  string description = 2;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 3;
+  // A short summary of what the tool does.
+  string summary = 4;
+  // A human-readable title for the tool.
+  string title = 5;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 6;
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 7;
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 8;
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 9;
 }

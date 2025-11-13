@@ -208,17 +208,13 @@ paths:
 			OpenapiSpec: &spec,
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+					Name:   proto.String("getUser"),
 					CallId: proto.String("getUser-call"),
 				}.Build(),
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"getUser-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+					Id: proto.String("getUser"),
 				}.Build(),
 			},
 		}.Build()
@@ -262,9 +258,7 @@ paths:
 			}.Build(),
 		}.Build()
 		callDef := configv1.WebsocketCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("test-tool"),
-			}.Build(),
+			Id:         proto.String("test-tool"),
 			Parameters: []*configv1.WebsocketParameterMapping{param1},
 		}.Build()
 
@@ -275,9 +269,7 @@ paths:
 			Address: proto.String("ws://localhost:8080/test"),
 			Tools: []*configv1.WebsocketToolDefinition{
 				configv1.WebsocketToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Name:   proto.String("test-tool"),
 					CallId: proto.String("test-call"),
 				}.Build(),
 			},

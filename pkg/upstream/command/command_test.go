@@ -92,15 +92,11 @@ func TestCommandUpstream_Register(t *testing.T) {
 		cmdService := &configv1.CommandLineUpstreamService{}
 		cmdService.SetCommand("/bin/echo")
 		toolDef := configv1.CommandLineToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("echo"),
-			}.Build(),
+			Name:   proto.String("echo"),
 			CallId: proto.String("echo-call"),
 		}.Build()
 		callDef := configv1.CommandLineCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("echo"),
-			}.Build(),
+			Id: proto.String("echo"),
 		}.Build()
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["echo-call"] = callDef
@@ -172,15 +168,11 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-add-tool-error")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		toolDef := configv1.CommandLineToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("ls"),
-			}.Build(),
+			Name:   proto.String("ls"),
 			CallId: proto.String("ls-call"),
 		}.Build()
 		callDef := configv1.CommandLineCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("ls"),
-			}.Build(),
+			Id: proto.String("ls"),
 		}.Build()
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["ls-call"] = callDef

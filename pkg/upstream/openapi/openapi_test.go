@@ -171,17 +171,13 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Name:   proto.String("test-tool"),
 					CallId: proto.String("test-call"),
 				}.Build(),
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"test-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Id: proto.String("test-tool"),
 				}.Build(),
 			},
 		}.Build(),
@@ -265,17 +261,13 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 			OpenapiSpec: proto.String(sampleOpenAPISpecJSONForCacheTest),
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getTest"),
-					}.Build(),
+					Name:   proto.String("getTest"),
 					CallId: proto.String("getTest-call"),
 				}.Build(),
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"getTest-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getTest"),
-					}.Build(),
+					Id: proto.String("getTest"),
 				}.Build(),
 			},
 		}.Build(),
@@ -334,17 +326,13 @@ paths:
 			OpenapiSpec: proto.String(spec),
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+					Name:   proto.String("getUser"),
 					CallId: proto.String("getUser-call"),
 				}.Build(),
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"getUser-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+					Id: proto.String("getUser"),
 				}.Build(),
 			},
 		}.Build(),
