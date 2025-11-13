@@ -171,7 +171,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
+					Definition: configv1.ToolDefinition_builder{
 						Name: proto.String("test-tool"),
 					}.Build(),
 					CallId: proto.String("test-call"),
@@ -179,9 +179,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"test-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+					Id: proto.String("test-call"),
 				}.Build(),
 			},
 		}.Build(),
@@ -265,7 +263,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 			OpenapiSpec: proto.String(sampleOpenAPISpecJSONForCacheTest),
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
+					Definition: configv1.ToolDefinition_builder{
 						Name: proto.String("getTest"),
 					}.Build(),
 					CallId: proto.String("getTest-call"),
@@ -273,9 +271,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"getTest-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getTest"),
-					}.Build(),
+					Id: proto.String("getTest-call"),
 				}.Build(),
 			},
 		}.Build(),
@@ -334,7 +330,7 @@ paths:
 			OpenapiSpec: proto.String(spec),
 			Tools: []*configv1.OpenAPIToolDefinition{
 				configv1.OpenAPIToolDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
+					Definition: configv1.ToolDefinition_builder{
 						Name: proto.String("getUser"),
 					}.Build(),
 					CallId: proto.String("getUser-call"),
@@ -342,9 +338,7 @@ paths:
 			},
 			Calls: map[string]*configv1.OpenAPICallDefinition{
 				"getUser-call": configv1.OpenAPICallDefinition_builder{
-					Schema: configv1.ToolSchema_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+					Id: proto.String("getUser-call"),
 				}.Build(),
 			},
 		}.Build(),

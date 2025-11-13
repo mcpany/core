@@ -173,17 +173,17 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	}
 
 	for i, toolDefinition := range definitions {
-		schema := toolDefinition.GetSchema()
+		definition := toolDefinition.GetDefinition()
 		callID := toolDefinition.GetCallId()
 		httpDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
 			continue
 		}
 
-		toolNamePart := schema.GetName()
+		toolNamePart := definition.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(definition.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -237,15 +237,15 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
-			Description:         proto.String(schema.GetDescription()),
+			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(schema.GetTitle()),
-				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
+				Title:           proto.String(definition.GetTitle()),
+				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
 			}.Build(),
 		}.Build()
@@ -258,14 +258,26 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDefinition.GetSchema().GetName()),
-			Description: proto.String(toolDefinition.GetSchema().GetDescription()),
+			Name:        proto.String(toolDefinition.GetDefinition().GetName()),
+			Description: proto.String(toolDefinition.GetDefinition().GetDescription()),
 		}.Build())
 	}
 
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+	}
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
-			toolName := resourceDef.GetDynamic().GetHttpCall().GetSchema().GetName()
+			call := resourceDef.GetDynamic().GetHttpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
 			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)

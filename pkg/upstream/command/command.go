@@ -121,15 +121,15 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	calls := commandLineService.GetCalls()
 
 	for _, toolDefinition := range definitions {
-		schema := toolDefinition.GetSchema()
+		definition := toolDefinition.GetDefinition()
 		callID := toolDefinition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
 			continue
 		}
 
-		command := schema.GetName()
+		command := definition.GetName()
 
 		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 		if err != nil {
@@ -185,7 +185,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(command),
 			DisplayName:         proto.String(command),
-			Description:         proto.String(schema.GetDescription()),
+			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(command),
 			InputSchema:         inputSchema,
@@ -202,9 +202,21 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		}.Build())
 	}
 
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+	}
 	for _, resourceDef := range commandLineService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
-			toolName := resourceDef.GetDynamic().GetCommandLineCall().GetSchema().GetName()
+			call := resourceDef.GetDynamic().GetCommandLineCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
 			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)

@@ -114,7 +114,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		toolDef := configv1.WebrtcToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
+			Definition: configv1.ToolDefinition_builder{
 				Name:        proto.String("echo"),
 				Description: proto.String("Echoes a message"),
 			}.Build(),
@@ -126,10 +126,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name:        proto.String("echo"),
-				Description: proto.String("Echoes a message"),
-			}.Build(),
+			Id: proto.String("echo-call"),
 		}.Build()
 		webrtcService.SetCalls(calls)
 
@@ -186,7 +183,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		upstream := NewWebrtcUpstream(poolManager)
 
 		toolDef := configv1.WebrtcToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
+			Definition: configv1.ToolDefinition_builder{
 				Name: proto.String("echo"),
 			}.Build(),
 			CallId: proto.String("echo-call"),
@@ -197,9 +194,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("echo"),
-			}.Build(),
+			Id: proto.String("echo-call"),
 		}.Build()
 		webrtcService.SetCalls(calls)
 
@@ -221,7 +216,7 @@ func TestWebrtcUpstream_Register_ToolNameGeneration(t *testing.T) {
 	upstream := NewWebrtcUpstream(poolManager)
 
 	toolDef := configv1.WebrtcToolDefinition_builder{
-		Schema: configv1.ToolSchema_builder{
+		Definition: configv1.ToolDefinition_builder{
 			Description: proto.String("A test description"),
 		}.Build(),
 		CallId: proto.String("test-call"),
@@ -232,9 +227,7 @@ func TestWebrtcUpstream_Register_ToolNameGeneration(t *testing.T) {
 	webrtcService.SetTools([]*configv1.WebrtcToolDefinition{toolDef})
 	calls := make(map[string]*configv1.WebrtcCallDefinition)
 	calls["test-call"] = configv1.WebrtcCallDefinition_builder{
-		Schema: configv1.ToolSchema_builder{
-			Description: proto.String("A test description"),
-		}.Build(),
+		Id: proto.String("test-call"),
 	}.Build()
 	webrtcService.SetCalls(calls)
 
