@@ -34,7 +34,6 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var appRunner app.Runner = app.NewApplication()
@@ -58,25 +57,20 @@ func newRootCmd() *cobra.Command {
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			jsonrpcPort := viper.GetString("jsonrpc-port")
-			registrationPort := viper.GetString("grpc-port")
-			stdio := viper.GetBool("stdio")
-			configPaths := viper.GetStringSlice("config-path")
-
 			logLevel := slog.LevelInfo
-			if viper.GetBool("debug") {
+			if config.IsDebug() {
 				logLevel = slog.LevelDebug
 			}
 
 			var logOutput io.Writer = os.Stdout
-			if logfile := viper.GetString("logfile"); logfile != "" {
+			if logfile := config.GetLogFile(); logfile != "" {
 				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 				if err != nil {
 					return fmt.Errorf("failed to open logfile: %w", err)
 				}
 				defer f.Close()
 				logOutput = f
-			} else if stdio {
+			} else if config.GetStdio() {
 				logOutput = io.Discard // Disable logging in stdio mode to keep the channel clean for JSON-RPC
 			}
 			logging.Init(logLevel, logOutput)
@@ -84,24 +78,19 @@ func newRootCmd() *cobra.Command {
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
-			log.Info("Configuration", "jsonrpc-port", jsonrpcPort, "registration-port", registrationPort, "stdio", stdio, "config-path", configPaths)
-			if len(configPaths) > 0 {
-				log.Info("Attempting to load services from config path", "paths", configPaths)
+			osFs := afero.NewOsFs()
+			bindAddress, err := config.GetBindAddress(cmd, osFs)
+			if err != nil {
+				return err
 			}
 
-			osFs := afero.NewOsFs()
-			bindAddress := jsonrpcPort
+			grpcPort := config.GetGRPCPort()
+			stdio := config.GetStdio()
+			configPaths := config.GetConfigPaths()
 
-			// If the jsonrpc-port flag is not explicitly set, we'll check the config file.
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
-				store := config.NewFileStore(osFs, configPaths)
-				cfg, err := config.LoadServices(store, "server")
-				if err != nil {
-					return fmt.Errorf("failed to load services from config: %w", err)
-				}
-				if cfg.GetGlobalSettings().GetBindAddress() != "" {
-					bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-				}
+			log.Info("Configuration", "jsonrpc-port", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
+			if len(configPaths) > 0 {
+				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
 
 			if !strings.Contains(bindAddress, ":") {
@@ -111,9 +100,9 @@ func newRootCmd() *cobra.Command {
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()
 
-			shutdownTimeout := viper.GetDuration("shutdown-timeout")
+			shutdownTimeout := config.GetShutdownTimeout()
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, registrationPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -139,18 +128,10 @@ func newRootCmd() *cobra.Command {
 		Use:   "health",
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			configPaths := viper.GetStringSlice("config-path")
 			fs := afero.NewOsFs()
-			addr := viper.GetString("jsonrpc-port")
-			if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
-				store := config.NewFileStore(fs, configPaths)
-				cfg, err := config.LoadServices(store, "server")
-				if err != nil {
-					return fmt.Errorf("failed to load services from config: %w", err)
-				}
-				if cfg.GetGlobalSettings().GetBindAddress() != "" {
-					addr = cfg.GetGlobalSettings().GetBindAddress()
-				}
+			addr, err := config.GetBindAddress(cmd, fs)
+			if err != nil {
+				return err
 			}
 
 			if !strings.Contains(addr, ":") {
@@ -163,29 +144,7 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
-	cobra.OnInitialize(func() {
-		viper.AutomaticEnv()
-		viper.SetEnvPrefix("MCPANY")
-	})
-
-	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
-	rootCmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
-	if err := viper.BindPFlag("jsonrpc-port", rootCmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
-		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
-	}
-	if err := viper.BindPFlag("config-path", rootCmd.PersistentFlags().Lookup("config-path")); err != nil {
-		fmt.Printf("Error binding config-path flag: %v\n", err)
-	}
-
-	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
-	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
-	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
-	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
-	rootCmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
-
-	if err := viper.BindPFlags(rootCmd.Flags()); err != nil {
-		fmt.Printf("Error binding command line flags: %v\n", err)
-	}
+	config.BindFlags(rootCmd)
 
 	return rootCmd
 }
