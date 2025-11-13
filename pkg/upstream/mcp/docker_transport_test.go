@@ -20,13 +20,21 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log/slog"
 	"testing"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/client"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/stretchr/testify/assert"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 func TestSlogWriter(t *testing.T) {
@@ -78,6 +86,87 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 	// Test Close
 	err = conn.Close()
 	assert.NoError(t, err)
+}
+
+func TestDockerTransport_Connect_ClientError(t *testing.T) {
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+		return nil, fmt.Errorf("client error")
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+	_, err := transport.Connect(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create docker client")
+}
+
+func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+				return io.NopCloser(bytes.NewReader([]byte{})), nil
+			},
+			ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+				return container.CreateResponse{}, fmt.Errorf("container create error")
+			},
+		}, nil
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+	_, err := transport.Connect(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create container")
+}
+
+func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+				return io.NopCloser(bytes.NewReader([]byte{})), nil
+			},
+			ContainerAttachFunc: func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+				return types.HijackedResponse{}, fmt.Errorf("container attach error")
+			},
+		}, nil
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+	_, err := transport.Connect(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to attach to container")
+}
+
+func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+				return io.NopCloser(bytes.NewReader([]byte{})), nil
+			},
+			ContainerStartFunc: func(ctx context.Context, container string, options container.StartOptions) error {
+				return fmt.Errorf("container start error")
+			},
+		}, nil
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
+	stdioConfig := &configv1.McpStdioConnection{}
+	stdioConfig.SetContainerImage("test-image")
+	transport := &DockerTransport{StdioConfig: stdioConfig}
+	_, err := transport.Connect(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to start container")
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
