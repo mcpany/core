@@ -58,7 +58,8 @@ func (m *mockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T
 
 type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
-	registerFunc func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -66,6 +67,13 @@ func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 		return m.registerFunc(ctx, serviceConfig)
 	}
 	return "mock-service-key", nil, nil, nil
+}
+
+func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error {
+	if m.registerResFunc != nil {
+		return m.registerResFunc(ctx, resourceConfig)
+	}
+	return nil
 }
 
 type mockToolManager struct {
@@ -96,7 +104,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-				return "success-key", nil, nil, nil
+				return "success-key", nil, []*configv1.ResourceDefinition{}, nil
 			},
 		}
 
