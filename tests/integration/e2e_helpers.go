@@ -911,22 +911,26 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
+	callID := "call-" + toolSchema.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
+		Id:           &callID,
 		Schema:       toolSchema,
 		EndpointPath: &endpointPath,
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
 
+	toolDef := configv1.HttpToolDefinition_builder{
+		Schema:  toolSchema,
+		CallId: &callID,
+	}.Build()
+
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
-			Tools: []*configv1.HttpToolDefinition{
-				configv1.HttpToolDefinition_builder{
-					Call: callDef,
-				}.Build(),
-			},
+			Tools:   []*configv1.HttpToolDefinition{toolDef},
+			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -1153,21 +1157,26 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
+	toolSchema := configv1.ToolSchema_builder{Name: &operationID}.Build()
+	callID := "call-" + toolSchema.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
-		Schema:       configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		Id:           &callID,
+		Schema:       toolSchema,
 		EndpointPath: &endpointPath,
 		Method:       &method,
+	}.Build()
+
+	toolDef := configv1.HttpToolDefinition_builder{
+		Schema:  toolSchema,
+		CallId: &callID,
 	}.Build()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
-			Tools: []*configv1.HttpToolDefinition{
-				configv1.HttpToolDefinition_builder{
-					Call: callDef,
-				}.Build(),
-			},
+			Tools:   []*configv1.HttpToolDefinition{toolDef},
+			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {

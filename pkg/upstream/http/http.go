@@ -161,9 +161,10 @@ func (u *HTTPUpstream) Register(
 // with the tool manager.
 func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetTools()))
 	httpService := serviceConfig.GetHttpService()
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
 	definitions := httpService.GetTools()
+	calls := httpService.GetCalls()
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
@@ -172,8 +173,14 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	}
 
 	for i, toolDefinition := range definitions {
-		httpDef := toolDefinition.GetCall()
-		schema := httpDef.GetSchema()
+		schema := toolDefinition.GetSchema()
+		callID := toolDefinition.GetCallId()
+		httpDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			continue
+		}
+
 		toolNamePart := schema.GetName()
 		if toolNamePart == "" {
 			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
@@ -251,8 +258,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(schema.GetName()),
-			Description: proto.String(schema.GetDescription()),
+			Name:        proto.String(toolDefinition.GetSchema().GetName()),
+			Description: proto.String(toolDefinition.GetSchema().GetDescription()),
 		}.Build())
 	}
 

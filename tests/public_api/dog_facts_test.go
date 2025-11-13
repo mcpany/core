@@ -52,17 +52,26 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", dogFactsServiceID, dogFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
+	callID := "getDogFact"
+	toolSchema := configv1.ToolSchema_builder{
+		Name: proto.String("getDogFact"),
+	}.Build()
 	httpCall := configv1.HttpCallDefinition_builder{
+		Id:           proto.String(callID),
 		EndpointPath: proto.String("/api/facts"),
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getDogFact"),
-		}.Build(),
-		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Schema:       toolSchema,
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+	}.Build()
+
+	toolDef := configv1.HttpToolDefinition_builder{
+		Schema:  toolSchema,
+		CallId: proto.String(callID),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(dogFactsServiceEndpoint),
-		Calls:   []*configv1.HttpCallDefinition{httpCall},
+		Tools:   []*configv1.HttpToolDefinition{toolDef},
+		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
