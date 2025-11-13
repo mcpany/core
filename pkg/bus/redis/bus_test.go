@@ -341,6 +341,21 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
+func TestRedisBus_Subscribe_RedisError(t *testing.T) {
+	client, _ := redismock.NewClientMock()
+	bus := NewWithClient[string](client)
+
+	client.Close()
+
+	unsub := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		t.Error("handler should not be called")
+	})
+	defer unsub()
+
+	err := bus.Publish(context.Background(), "test-topic", "hello")
+	assert.Error(t, err)
+}
+
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
