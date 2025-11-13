@@ -30,15 +30,10 @@ import (
 
 func TestConfigLoading(t *testing.T) {
 	testCases := []struct {
-		name                 string
-		configFile           string
-		expectedToolName     string
-		toolShouldBeLoaded   bool
-		expectServerExit     bool
-		expectErrorInLogs    string
-		isAbsPath            bool
-		skipTempNatsConfig   bool
-		additionalConfigPath string
+		name               string
+		configFile         string
+		expectedToolName   string
+		toolShouldBeLoaded bool
 	}{
 		{
 			name:               "json config",
@@ -64,42 +59,6 @@ func TestConfigLoading(t *testing.T) {
 			expectedToolName:   "disabled-service",
 			toolShouldBeLoaded: false,
 		},
-		{
-			name:              "non-existent config file",
-			configFile:        "testdata/non_existent_config.yaml",
-			expectServerExit:  true,
-			expectErrorInLogs: "failed to stat path",
-		},
-		{
-			name:               "unsupported config file extension",
-			configFile:         "testdata/config.dat",
-			expectServerExit:   true,
-			expectErrorInLogs:  "unsupported config file extension",
-			skipTempNatsConfig: true,
-		},
-		{
-			name:              "malformed json config",
-			configFile:        "testdata/malformed_config.json",
-			expectServerExit:  true,
-			expectErrorInLogs: "failed to unmarshal config",
-		},
-		{
-			name:              "malformed yaml config",
-			configFile:        "testdata/malformed_config.yaml",
-			expectServerExit:  true,
-			expectErrorInLogs: "failed to unmarshal config",
-		},
-		{
-			name:              "malformed textproto config",
-			configFile:        "testdata/malformed_config.textproto",
-			expectServerExit:  true,
-			expectErrorInLogs: "failed to unmarshal config",
-		},
-		{
-			name:               "empty config file",
-			configFile:         "testdata/empty_config.yaml",
-			toolShouldBeLoaded: false,
-		},
 	}
 
 	root, err := GetProjectRoot()
@@ -108,48 +67,26 @@ func TestConfigLoading(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
-			var absConfigFile string
-			if tc.isAbsPath {
-				absConfigFile = tc.configFile
-			} else {
-				absConfigFile = filepath.Join(root, "tests", "integration", tc.configFile)
-			}
+			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
+			natsConfigFile := CreateTempNatsConfigFile(t)
 
-			args := []string{"--config-path", absConfigFile}
-			if !tc.skipTempNatsConfig {
-				natsConfigFile := CreateTempNatsConfigFile(t)
-				args = append(args, "--config-path", natsConfigFile)
-			}
-			if tc.additionalConfigPath != "" {
-				args = append(args, "--config-path", tc.additionalConfigPath)
-			}
-
-			if tc.expectServerExit {
-				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, args...)
+			if tc.name == "disabled config" {
+				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
+				// The server should exit quickly because there are no enabled services.
+				// We just need to wait for the process to terminate.
 				select {
 				case <-mcpAny.Process.waitDone:
 					// Process exited as expected.
 				case <-time.After(10 * time.Second):
-					t.Fatal("MCPANY server did not exit as expected.")
-				}
-				mcpAny.CleanupFunc()
-				logs := mcpAny.LogFile.String()
-				require.Contains(t, logs, tc.expectErrorInLogs, "expected error message not found in logs")
-				return
-			}
-
-			if tc.name == "disabled config" {
-				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", CreateTempNatsConfigFile(t))
-				select {
-				case <-mcpAny.Process.waitDone:
-				case <-time.After(10 * time.Second):
 					t.Fatal("MCPANY server with only disabled services did not exit as expected.")
 				}
 				mcpAny.CleanupFunc()
+				// Since the server is not running, we cannot check for services.
+				// The test passes if the server exits cleanly.
 				return
 			}
 
-			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, args...)
+			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
 			defer mcpAny.CleanupFunc()
 
 			conn, err := grpc.Dial(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))

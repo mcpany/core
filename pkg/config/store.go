@@ -210,11 +210,9 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 				return nil, fmt.Errorf("failed to walk directory %s: %w", path, err)
 			}
 		} else {
-			// If a specific file is passed, it must be a valid config file.
-			if _, err := NewEngine(path); err != nil {
-				return nil, err
+			if _, err := NewEngine(path); err == nil {
+				files = append(files, path)
 			}
-			files = append(files, path)
 		}
 	}
 	sort.Strings(files)

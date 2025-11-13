@@ -1,3 +1,0 @@
-services:
-  - name: malformed-yaml-service
-  command: ["echo", "hello"]

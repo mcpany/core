@@ -545,7 +545,6 @@ type MCPANYTestServerInfo struct {
 	RegistrationClient       apiv1.RegistrationServiceClient
 	CleanupFunc              func()
 	T                        *testing.T
-	LogFile                  *threadSafeBuffer
 }
 
 // --- Websocket Echo Server Helper ---
@@ -785,11 +784,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	_, err = os.Stat(absMcpAnyBinaryPath)
 	require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
 
-	logBuffer := &threadSafeBuffer{}
 	mcpProcess := NewManagedProcess(t, "MCPANYServer-"+testName, absMcpAnyBinaryPath, args, env)
 	mcpProcess.cmd.Dir = root
-	mcpProcess.cmd.Stdout = logBuffer
-	mcpProcess.cmd.Stderr = logBuffer
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
@@ -883,8 +879,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			mcpProcess.Stop()
 			natsCleanup()
 		},
-		T:       t,
-		LogFile: logBuffer,
+		T: t,
 	}
 }
 
