@@ -323,3 +323,70 @@ func (m *MockConn) GetState() connectivity.State {
 	args := m.Called()
 	return args.Get(0).(connectivity.State)
 }
+
+func TestHTTPTool_Getters(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("http-tool")
+	cacheConfig := &configv1.CacheConfig{}
+	cacheConfig.SetIsEnabled(true)
+	callDef := &configv1.HttpCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	httpTool := tool.NewHTTPTool(toolProto, nil, "", nil, callDef)
+
+	assert.Equal(t, toolProto, httpTool.Tool(), "Tool() should return the correct tool proto")
+	assert.Equal(t, cacheConfig, httpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+}
+
+func TestMCPTool_Getters(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("mcp-tool")
+	cacheConfig := &configv1.CacheConfig{}
+	cacheConfig.SetIsEnabled(true)
+	callDef := &configv1.MCPCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	mcpTool := tool.NewMCPTool(toolProto, nil, callDef)
+
+	assert.Equal(t, toolProto, mcpTool.Tool(), "Tool() should return the correct tool proto")
+	assert.Equal(t, cacheConfig, mcpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+}
+
+func TestOpenAPITool_Getters(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("openapi-tool")
+	cacheConfig := &configv1.CacheConfig{}
+	cacheConfig.SetIsEnabled(true)
+	callDef := &configv1.OpenAPICallDefinition{}
+	callDef.SetCache(cacheConfig)
+	openapiTool := tool.NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef)
+
+	assert.Equal(t, toolProto, openapiTool.Tool(), "Tool() should return the correct tool proto")
+	assert.Equal(t, cacheConfig, openapiTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+}
+
+func TestGRPCTool_Getters(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("grpc-tool")
+	cacheConfig := &configv1.CacheConfig{}
+	cacheConfig.SetIsEnabled(true)
+	callDef := &configv1.GrpcCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	mockMethodDesc := new(MockMethodDescriptor)
+	mockMethodDesc.On("Input").Return(new(MockMessageDescriptor))
+	grpcTool := tool.NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef)
+
+	assert.Equal(t, toolProto, grpcTool.Tool(), "Tool() should return the correct tool proto")
+	assert.Equal(t, cacheConfig, grpcTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+}
+
+func TestWebsocketTool_Getters(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("websocket-tool")
+	cacheConfig := &configv1.CacheConfig{}
+	cacheConfig.SetIsEnabled(true)
+	callDef := &configv1.WebsocketCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	websocketTool := tool.NewWebsocketTool(toolProto, nil, "", nil, callDef)
+
+	assert.Equal(t, toolProto, websocketTool.Tool(), "Tool() should return the correct tool proto")
+	assert.Equal(t, cacheConfig, websocketTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+}
