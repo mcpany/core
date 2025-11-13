@@ -1089,3 +1089,29 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 		t.Fatal("expected an error from panic but got none")
 	}
 }
+
+func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
+	// This test is designed to fail by timing out if the bug is present.
+	// Occupy a port to force a listen error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	port := l.Addr().(*net.TCPAddr).Port
+
+	app := NewApplication()
+	// Use a context that will never be canceled.
+	ctx := context.Background()
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second)
+	}()
+
+	select {
+	case err := <-errChan:
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "gRPC server failed to listen")
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test hung for 2 seconds. The bug is still present.")
+	}
+}
