@@ -179,9 +179,10 @@ func (x OutputTransformer_OutputFormat) Number() protoreflect.EnumNumber {
 // HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
 type HttpCallDefinition struct {
 	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Schema            *ToolSchema                   `protobuf:"bytes,1,opt,name=schema"`
-	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,2,opt,name=endpoint_path,json=endpointPath"`
-	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,3,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod"`
+	xxx_hidden_Id                *string                       `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Schema            *ToolSchema                   `protobuf:"bytes,2,opt,name=schema"`
+	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,3,opt,name=endpoint_path,json=endpointPath"`
+	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,4,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod"`
 	xxx_hidden_Parameters        *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameters"`
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer,json=inputTransformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer,json=outputTransformer"`
@@ -217,6 +218,16 @@ func (x *HttpCallDefinition) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *HttpCallDefinition) GetId() string {
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *HttpCallDefinition) GetSchema() *ToolSchema {
 	if x != nil {
 		return x.xxx_hidden_Schema
@@ -236,7 +247,7 @@ func (x *HttpCallDefinition) GetEndpointPath() string {
 
 func (x *HttpCallDefinition) GetMethod() HttpCallDefinition_HttpMethod {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 2) {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
 			return x.xxx_hidden_Method
 		}
 	}
@@ -273,18 +284,23 @@ func (x *HttpCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *HttpCallDefinition) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+}
+
 func (x *HttpCallDefinition) SetSchema(v *ToolSchema) {
 	x.xxx_hidden_Schema = v
 }
 
 func (x *HttpCallDefinition) SetEndpointPath(v string) {
 	x.xxx_hidden_EndpointPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *HttpCallDefinition) SetMethod(v HttpCallDefinition_HttpMethod) {
 	x.xxx_hidden_Method = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
 }
 
 func (x *HttpCallDefinition) SetParameters(v []*HttpParameterMapping) {
@@ -303,6 +319,13 @@ func (x *HttpCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
 }
 
+func (x *HttpCallDefinition) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
 func (x *HttpCallDefinition) HasSchema() bool {
 	if x == nil {
 		return false
@@ -314,14 +337,14 @@ func (x *HttpCallDefinition) HasEndpointPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *HttpCallDefinition) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *HttpCallDefinition) HasInputTransformer() bool {
@@ -345,17 +368,22 @@ func (x *HttpCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *HttpCallDefinition) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
 func (x *HttpCallDefinition) ClearSchema() {
 	x.xxx_hidden_Schema = nil
 }
 
 func (x *HttpCallDefinition) ClearEndpointPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_EndpointPath = nil
 }
 
 func (x *HttpCallDefinition) ClearMethod() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_Method = HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
 }
 
@@ -374,6 +402,8 @@ func (x *HttpCallDefinition) ClearCache() {
 type HttpCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The unique identifier for the call.
+	Id *string
 	// Common tool schema.
 	Schema *ToolSchema
 	// The path of the HTTP endpoint (e.g., "/users/{userId}").
@@ -394,13 +424,17 @@ func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
 	m0 := &HttpCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_Id = b.Id
+	}
 	x.xxx_hidden_Schema = b.Schema
 	if b.EndpointPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
 		x.xxx_hidden_EndpointPath = b.EndpointPath
 	}
 	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
 		x.xxx_hidden_Method = *b.Method
 	}
 	x.xxx_hidden_Parameters = &b.Parameters
@@ -2820,10 +2854,13 @@ func (b0 GrpcToolDefinition_builder) Build() *GrpcToolDefinition {
 
 // HttpToolDefinition wraps a HttpCallDefinition.
 type HttpToolDefinition struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Call *HttpCallDefinition    `protobuf:"bytes,1,opt,name=call"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema      *ToolSchema            `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *HttpToolDefinition) Reset() {
@@ -2851,39 +2888,73 @@ func (x *HttpToolDefinition) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *HttpToolDefinition) GetCall() *HttpCallDefinition {
+func (x *HttpToolDefinition) GetSchema() *ToolSchema {
 	if x != nil {
-		return x.xxx_hidden_Call
+		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
-func (x *HttpToolDefinition) SetCall(v *HttpCallDefinition) {
-	x.xxx_hidden_Call = v
+func (x *HttpToolDefinition) GetCallId() string {
+	if x != nil {
+		if x.xxx_hidden_CallId != nil {
+			return *x.xxx_hidden_CallId
+		}
+		return ""
+	}
+	return ""
 }
 
-func (x *HttpToolDefinition) HasCall() bool {
+func (x *HttpToolDefinition) SetSchema(v *ToolSchema) {
+	x.xxx_hidden_Schema = v
+}
+
+func (x *HttpToolDefinition) SetCallId(v string) {
+	x.xxx_hidden_CallId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *HttpToolDefinition) HasSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Call != nil
+	return x.xxx_hidden_Schema != nil
 }
 
-func (x *HttpToolDefinition) ClearCall() {
-	x.xxx_hidden_Call = nil
+func (x *HttpToolDefinition) HasCallId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *HttpToolDefinition) ClearSchema() {
+	x.xxx_hidden_Schema = nil
+}
+
+func (x *HttpToolDefinition) ClearCallId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_CallId = nil
 }
 
 type HttpToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Call *HttpCallDefinition
+	// The schema for the tool.
+	Schema *ToolSchema
+	// The ID of the call definition to use for this tool.
+	CallId *string
 }
 
 func (b0 HttpToolDefinition_builder) Build() *HttpToolDefinition {
 	m0 := &HttpToolDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Call = b.Call
+	x.xxx_hidden_Schema = b.Schema
+	if b.CallId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_CallId = b.CallId
+	}
 	return m0
 }
 
@@ -3236,11 +3307,12 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xf5\x04\n" +
-	"\x12HttpCallDefinition\x124\n" +
-	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12#\n" +
-	"\rendpoint_path\x18\x02 \x01(\tR\fendpointPath\x12G\n" +
-	"\x06method\x18\x03 \x01(\x0e2/.mcpany.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12F\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\x85\x05\n" +
+	"\x12HttpCallDefinition\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x124\n" +
+	"\x06schema\x18\x02 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12#\n" +
+	"\rendpoint_path\x18\x03 \x01(\tR\fendpointPath\x12G\n" +
+	"\x06method\x18\x04 \x01(\x0e2/.mcpany.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12F\n" +
 	"\n" +
 	"parameters\x18\x05 \x03(\v2&.mcpany.config.v1.HttpParameterMappingR\n" +
 	"parameters\x12O\n" +
@@ -3346,9 +3418,10 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
 	"\tis_stream\x18\x05 \x01(\bR\bisStream\"N\n" +
 	"\x12GrpcToolDefinition\x128\n" +
-	"\x04call\x18\x01 \x01(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x04call\"N\n" +
-	"\x12HttpToolDefinition\x128\n" +
-	"\x04call\x18\x01 \x01(\v2$.mcpany.config.v1.HttpCallDefinitionR\x04call\"X\n" +
+	"\x04call\x18\x01 \x01(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x04call\"c\n" +
+	"\x12HttpToolDefinition\x124\n" +
+	"\x06schema\x18\x01 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12\x17\n" +
+	"\acall_id\x18\x02 \x01(\tR\x06callId\"X\n" +
 	"\x17WebsocketToolDefinition\x12=\n" +
 	"\x04call\x18\x01 \x01(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x04call\"R\n" +
 	"\x14WebrtcToolDefinition\x12:\n" +
@@ -3452,7 +3525,7 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	31, // 42: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
 	31, // 43: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
 	9,  // 44: mcpany.config.v1.GrpcToolDefinition.call:type_name -> mcpany.config.v1.GrpcCallDefinition
-	3,  // 45: mcpany.config.v1.HttpToolDefinition.call:type_name -> mcpany.config.v1.HttpCallDefinition
+	12, // 45: mcpany.config.v1.HttpToolDefinition.schema:type_name -> mcpany.config.v1.ToolSchema
 	4,  // 46: mcpany.config.v1.WebsocketToolDefinition.call:type_name -> mcpany.config.v1.WebsocketCallDefinition
 	5,  // 47: mcpany.config.v1.WebrtcToolDefinition.call:type_name -> mcpany.config.v1.WebrtcCallDefinition
 	10, // 48: mcpany.config.v1.OpenAPIToolDefinition.call:type_name -> mcpany.config.v1.OpenAPICallDefinition

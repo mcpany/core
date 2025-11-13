@@ -169,6 +169,8 @@ message HttpUpstreamService {
   string address = 1;
   // Manually defined mappings from MCP tools to HTTP calls.
   repeated HttpToolDefinition tools = 2;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, HttpCallDefinition> calls = 6;
   // Configuration for checking the health of the HTTP service.
   HttpHealthCheck health_check = 3;
   // TLS configuration for the HTTP connection.

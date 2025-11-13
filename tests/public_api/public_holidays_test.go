@@ -62,12 +62,15 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 		Template: proto.String("The first public holiday is {{holidayName}} on {{holidayDate}}."),
 	}.Build()
 
+	callID := "getPublicHolidays"
+	toolSchema := configv1.ToolSchema_builder{
+		Name: proto.String(operationID),
+	}.Build()
 	httpCall := configv1.HttpCallDefinition_builder{
+		Id:           proto.String(callID),
 		EndpointPath: proto.String(endpointPath),
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String(operationID),
-		}.Build(),
-		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Schema:       toolSchema,
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
@@ -83,9 +86,15 @@ func TestUpstreamService_PublicHolidaysWithTransformation(t *testing.T) {
 		OutputTransformer: outputTransformer,
 	}.Build()
 
+	toolDef := configv1.HttpToolDefinition_builder{
+		Schema:  toolSchema,
+		CallId: proto.String(callID),
+	}.Build()
+
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(serviceURL),
-		Calls:   []*configv1.HttpCallDefinition{httpCall},
+		Tools:   []*configv1.HttpToolDefinition{toolDef},
+		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
@@ -181,12 +190,15 @@ func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) 
 		Template: proto.String("The first public holiday is {{holidayName}} on {{holidayDate}}."),
 	}.Build()
 
+	callID := "getPublicHolidays"
+	toolSchema := configv1.ToolSchema_builder{
+		Name: proto.String(operationID),
+	}.Build()
 	httpCall := configv1.HttpCallDefinition_builder{
+		Id:           proto.String(callID),
 		EndpointPath: proto.String(endpointPath),
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String(operationID),
-		}.Build(),
-		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Schema:       toolSchema,
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
@@ -202,9 +214,15 @@ func TestUpstreamService_PublicHolidaysWithTransformation_CA_2025(t *testing.T) 
 		OutputTransformer: outputTransformer,
 	}.Build()
 
+	toolDef := configv1.HttpToolDefinition_builder{
+		Schema:  toolSchema,
+		CallId: proto.String(callID),
+	}.Build()
+
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(serviceURL),
-		Calls:   []*configv1.HttpCallDefinition{httpCall},
+		Tools:   []*configv1.HttpToolDefinition{toolDef},
+		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
