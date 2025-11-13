@@ -180,7 +180,9 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	}
 
 	if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
-		if apiKey := authConfig.GetApiKey(); apiKey != nil {
+		switch authConfig.WhichAuthMethod() {
+		case configv1.UpstreamAuthentication_ApiKey_case:
+			apiKey := authConfig.GetApiKey()
 			if apiKey.GetHeaderName() == "" {
 				log.Warn("API key 'header_name' is empty. Authentication may fail.")
 			}
@@ -191,7 +193,8 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			if apiKeyValue == "" {
 				return fmt.Errorf("api key 'api_key' is empty")
 			}
-		} else if bearerToken := authConfig.GetBearerToken(); bearerToken != nil {
+		case configv1.UpstreamAuthentication_BearerToken_case:
+			bearerToken := authConfig.GetBearerToken()
 			tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
 			if err != nil {
 				return fmt.Errorf("failed to resolve bearer token secret: %w", err)
@@ -199,7 +202,8 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			if tokenValue == "" {
 				return fmt.Errorf("bearer token 'token' is empty")
 			}
-		} else if basicAuth := authConfig.GetBasicAuth(); basicAuth != nil {
+		case configv1.UpstreamAuthentication_BasicAuth_case:
+			basicAuth := authConfig.GetBasicAuth()
 			if basicAuth.GetUsername() == "" {
 				log.Warn("Basic auth 'username' is empty. Authentication may fail.")
 			}
