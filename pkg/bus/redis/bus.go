@@ -65,20 +65,37 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
+	if ps, ok := b.pubsubs[topic]; ok {
+		ps.Close()
+	}
+
 	pubsub := b.client.Subscribe(ctx, topic)
 	b.pubsubs[topic] = pubsub
 
 	go func() {
-		ch := pubsub.Channel()
-		for msg := range ch {
-			var message T
-			err := json.Unmarshal([]byte(msg.Payload), &message)
-			if err != nil {
-				log := logging.GetLogger()
-				log.Error("Failed to unmarshal message", "error", err)
-				continue
+		log := logging.GetLogger()
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("panic in handler", "error", r)
 			}
-			handler(message)
+		}()
+		ch := pubsub.Channel()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case msg := <-ch:
+				if msg == nil {
+					return
+				}
+				var message T
+				err := json.Unmarshal([]byte(msg.Payload), &message)
+				if err != nil {
+					log.Error("Failed to unmarshal message", "error", err)
+					continue
+				}
+				handler(message)
+			}
 		}
 	}()
 

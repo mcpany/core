@@ -34,10 +34,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+import (
+	"os"
+	// ... other imports
+)
+
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "localhost:6379"
+	}
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: redisAddr,
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
@@ -102,38 +111,7 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-subscribe-panic"
 
-	var wg sync.WaitGroup
-	wg.Add(2) // Expecting two messages
-
-	handlerCount := 0
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		defer wg.Done()
-		handlerCount++
-		if handlerCount == 1 {
-			panic("handler panic")
-		}
-		assert.Equal(t, "second message", msg)
-	})
-	defer unsub()
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Even if the handler panics, the subscription should remain active
-	bus.Publish(context.Background(), topic, "first message")
-	bus.Publish(context.Background(), topic, "second message")
-
-	wg.Wait()
-
-	assert.Equal(t, 2, handlerCount, "handler should be called twice")
-}
 
 func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
@@ -374,4 +352,112 @@ func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-resubscribe-replace"
+
+	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {})
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
+
+	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	defer unsub2()
+
+	var subCount int64
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			subCount = val
+			return subCount == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber count should be 1 after resubscribe, but was %d", subCount)
+
+	unsub1()
+}
+
+func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-subscribe-panic"
+
+	handlerCalled := make(chan bool, 2)
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		handlerCalled <- true
+		if len(handlerCalled) == 1 {
+			panic("handler panic")
+		}
+		assert.Equal(t, "second message", msg)
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Even if the handler panics, the subscription should remain active
+	bus.Publish(context.Background(), topic, "first message")
+	bus.Publish(context.Background(), topic, "second message")
+
+	// Wait for both messages to be processed
+	<-handlerCalled
+	<-handlerCalled
+
+	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
+}
+
+func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-context-cancellation"
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+		// This handler should not be called after the context is canceled.
+		t.Error("handler called after context cancellation")
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	cancel()
+
+	// Allow some time for the cancellation to propagate
+	time.Sleep(100 * time.Millisecond)
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	// We expect the handler not to be called, so we don't wait for a WaitGroup.
+	// Instead, we just wait a bit to see if the handler is called.
+	time.Sleep(100 * time.Millisecond)
 }
