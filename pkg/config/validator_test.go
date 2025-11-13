@@ -263,6 +263,29 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "dup-svc": duplicate service name found`,
 		},
+		{
+			name: "invalid basic auth - empty password",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("basic-auth-svc-1"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+						UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+							BasicAuth: (&configv1.UpstreamBasicAuth_builder{
+								Username: proto.String("user"),
+								Password: (&configv1.SecretValue_builder{
+									PlainText: proto.String(""),
+								}).Build(),
+							}).Build(),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "basic-auth-svc-1": basic auth 'password' is empty`,
+		},
 	}
 
 	for _, tt := range tests {
