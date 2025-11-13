@@ -98,7 +98,24 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		configJSON := `{"name": "test-service", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET", "endpoint_path": "/test"}}]}}`
+		configJSON := `{
+			"name": "test-service",
+			"http_service": {
+				"address": "http://localhost",
+				"tools": [{
+					"schema": {"name": "test-op"},
+					"call_id": "test-op-call"
+				}],
+				"calls": {
+					"test-op-call": {
+						"id": "test-op-call",
+						"schema": {"name": "test-op"},
+						"method": "HTTP_METHOD_GET",
+						"endpoint_path": "/test"
+					}
+				}
+			}
+		}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -145,7 +162,36 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		configJSON := `{"name": "test-service-fallback", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"description": "A test operation"}, "method": "HTTP_METHOD_GET", "endpoint_path": "/test"}}, {"call":{"schema": {"description": ""}, "method": "HTTP_METHOD_POST", "endpoint_path": "/test2"}}]}}`
+		configJSON := `{
+			"name": "test-service-fallback",
+			"http_service": {
+				"address": "http://localhost",
+				"tools": [
+					{
+						"schema": {"description": "A test operation"},
+						"call_id": "test-op-1"
+					},
+					{
+						"schema": {"description": ""},
+						"call_id": "test-op-2"
+					}
+				],
+				"calls": {
+					"test-op-1": {
+						"id": "test-op-1",
+						"schema": {"description": "A test operation"},
+						"method": "HTTP_METHOD_GET",
+						"endpoint_path": "/test"
+					},
+					"test-op-2": {
+						"id": "test-op-2",
+						"schema": {"description": ""},
+						"method": "HTTP_METHOD_POST",
+						"endpoint_path": "/test2"
+					}
+				}
+			}
+		}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -175,7 +221,28 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		configJSON := `{"name": "auth-fail-service", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET"}}]}, "upstream_authentication": {"api_key": {"api_key": {"plain_text": ""}}}}`
+		configJSON := `{
+			"name": "auth-fail-service",
+			"http_service": {
+				"address": "http://localhost",
+				"tools": [{
+					"schema": {"name": "test-op"},
+					"call_id": "test-op-call"
+				}],
+				"calls": {
+					"test-op-call": {
+						"id": "test-op-call",
+						"schema": {"name": "test-op"},
+						"method": "HTTP_METHOD_GET"
+					}
+				}
+			},
+			"upstream_authentication": {
+				"api_key": {
+					"api_key": {"plain_text": ""}
+				}
+			}
+		}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -189,7 +256,28 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		tm := tool.NewToolManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
-		configJSON := `{"name": "test-service-with-pool", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET", "endpoint_path": "/test"}}]}, "connection_pool": {"max_connections": 50, "max_idle_connections": 10}}`
+		configJSON := `{
+			"name": "test-service-with-pool",
+			"http_service": {
+				"address": "http://localhost",
+				"tools": [{
+					"schema": {"name": "test-op"},
+					"call_id": "test-op-call"
+				}],
+				"calls": {
+					"test-op-call": {
+						"id": "test-op-call",
+						"schema": {"name": "test-op"},
+						"method": "HTTP_METHOD_GET",
+						"endpoint_path": "/test"
+					}
+				}
+			},
+			"connection_pool": {
+				"max_connections": 50,
+				"max_idle_connections": 10
+			}
+		}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -227,7 +315,23 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 
 	upstream := &HTTPUpstream{poolManager: pm}
 
-	configJSON := `{"name": "add-tool-fail-service", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET"}}]}}`
+	configJSON := `{
+		"name": "add-tool-fail-service",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [{
+				"schema": {"name": "test-op"},
+				"call_id": "test-op-call"
+			}],
+			"calls": {
+				"test-op-call": {
+					"id": "test-op-call",
+					"schema": {"name": "test-op"},
+					"method": "HTTP_METHOD_GET"
+				}
+			}
+		}
+	}`
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -247,7 +351,20 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	upstream := NewHTTPUpstream(pm)
 
 	// Initial registration
-	configJSON1 := `{"name": "reload-test", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "op1"}, "method": "HTTP_METHOD_GET"}}]}}`
+	configJSON1 := `{
+		"name": "reload-test",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [{"schema": {"name": "op1"}, "call_id": "op1-call"}],
+			"calls": {
+				"op1-call": {
+					"id": "op1-call",
+					"schema": {"name": "op1"},
+					"method": "HTTP_METHOD_GET"
+				}
+			}
+		}
+	}`
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON1), serviceConfig1))
 
@@ -256,7 +373,20 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	assert.Len(t, tm.ListTools(), 1)
 
 	// Reload with a different tool
-	configJSON2 := `{"name": "reload-test", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "op2"}, "method": "HTTP_METHOD_GET"}}]}}`
+	configJSON2 := `{
+		"name": "reload-test",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [{"schema": {"name": "op2"}, "call_id": "op2-call"}],
+			"calls": {
+				"op2-call": {
+					"id": "op2-call",
+					"schema": {"name": "op2"},
+					"method": "HTTP_METHOD_GET"
+				}
+			}
+		}
+	}`
 	serviceConfig2 := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON2), serviceConfig2))
 
@@ -282,7 +412,21 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	tm := tool.NewToolManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
-	configJSON := `{"name": "test-service-invalid-method", "http_service": {"address": "http://localhost", "tools": [{"call":{"schema": {"name": "test-op"}, "method": 999, "endpoint_path": "/test"}}]}}`
+	configJSON := `{
+		"name": "test-service-invalid-method",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [{"schema": {"name": "test-op"}, "call_id": "test-op-call"}],
+			"calls": {
+				"test-op-call": {
+					"id": "test-op-call",
+					"schema": {"name": "test-op"},
+					"method": 999,
+					"endpoint_path": "/test"
+				}
+			}
+		}
+	}`
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
@@ -413,7 +557,21 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			tm := tool.NewToolManager(nil)
 			upstream := NewHTTPUpstream(pm)
 
-			configJSON := `{"name": "url-test-service", "http_service": {"address": "` + tc.address + `", "tools": [{"call":{"schema": {"name": "test-op"}, "method": "HTTP_METHOD_GET", "endpoint_path": "` + tc.endpointPath + `"}}]}}`
+			configJSON := `{
+				"name": "url-test-service",
+				"http_service": {
+					"address": "` + tc.address + `",
+					"tools": [{"schema": {"name": "test-op"}, "call_id": "test-op-call"}],
+					"calls": {
+						"test-op-call": {
+							"id": "test-op-call",
+							"schema": {"name": "test-op"},
+							"method": "HTTP_METHOD_GET",
+							"endpoint_path": "` + tc.endpointPath + `"
+						}
+					}
+				}
+			}`
 			serviceConfig := &configv1.UpstreamServiceConfig{}
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
