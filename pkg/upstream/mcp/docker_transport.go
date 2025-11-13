@@ -179,7 +179,7 @@ type dockerReadWriteCloser struct {
 	io.Reader
 	io.WriteCloser
 	containerID string
-	cli         *client.Client
+	cli         client.APIClient
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
