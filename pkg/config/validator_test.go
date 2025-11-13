@@ -122,6 +122,21 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "http-svc-3": invalid http target_address scheme: ftp`,
 		},
 		{
+			name: "invalid http service - missing scheme",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("http-svc-4"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("localhost:8080"),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "http-svc-4": invalid http target_address: missing scheme`,
+		},
+		{
 			name: "valid http service",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
