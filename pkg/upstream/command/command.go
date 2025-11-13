@@ -117,13 +117,21 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetTools()))
+	definitions := commandLineService.GetTools()
+	calls := commandLineService.GetCalls()
 
-	for _, toolDefinition := range commandLineService.GetTools() {
-		toolDef := toolDefinition.GetCall()
-		schema := toolDef.GetSchema()
+	for _, toolDefinition := range definitions {
+		schema := toolDefinition.GetSchema()
+		callID := toolDefinition.GetCallId()
+		callDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", schema.GetName())
+			continue
+		}
+
 		command := schema.GetName()
 
-		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(toolDef.GetParameters())
+		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert config schema to proto properties", "error", err)
 			continue
@@ -184,7 +192,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 			OutputSchema:        outputSchema,
 		}.Build()
 
-		newTool := tool.NewCommandTool(newToolProto, commandLineService, toolDef)
+		newTool := tool.NewCommandTool(newToolProto, commandLineService, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			return nil, err

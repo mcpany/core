@@ -42,8 +42,10 @@ message HttpCallDefinition {
 
 // WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
 message WebsocketCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // Defines the parameters for the websocket message.
   repeated WebsocketParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
@@ -56,8 +58,10 @@ message WebsocketCallDefinition {
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
 message WebrtcCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // Defines the parameters for the webrtc message.
   repeated WebrtcParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
@@ -70,14 +74,16 @@ message WebrtcCallDefinition {
 
 // CommandLineCallDefinition describes how to map an MCP call to a stdio command.
 message CommandLineCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // Defines the parameters for the stdio command.
-  repeated CommandLineParameterMapping parameters = 2;
+  repeated CommandLineParameterMapping parameters = 3;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 3;
+  CacheConfig cache = 4;
   // The arguments to pass to the command.
-  repeated string args = 4;
+  repeated string args = 5;
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -110,41 +116,47 @@ message OutputTransformer {
 
 // GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
 message GrpcCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // The fully-qualified gRPC service name.
-  string service = 2;
+  string service = 3;
   // The name of the gRPC method to call.
-  string method = 3;
+  string method = 4;
   // Note: For gRPC, parameter mapping is typically done by matching field names
   // between the MCP input schema and the gRPC request message.
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
+  CacheConfig cache = 5;
 }
 
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
 // This is often used for discovery rather than manual configuration.
 message OpenAPICallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
+  InputTransformer input_transformer = 3;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
+  OutputTransformer output_transformer = 4;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
+  CacheConfig cache = 5;
 }
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
 message MCPCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
   // Common tool schema.
-  ToolSchema schema = 1;
+  ToolSchema schema = 2;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
+  InputTransformer input_transformer = 3;
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
+  OutputTransformer output_transformer = 4;
   // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
+  CacheConfig cache = 5;
 }
 
 // ToolSchema provides common metadata for a tool.
@@ -254,7 +266,10 @@ message ToolDefinition {
 
 // GrpcToolDefinition wraps a GrpcCallDefinition.
 message GrpcToolDefinition {
-  GrpcCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // HttpToolDefinition wraps a HttpCallDefinition.
@@ -267,25 +282,40 @@ message HttpToolDefinition {
 
 // WebsocketToolDefinition wraps a WebsocketCallDefinition.
 message WebsocketToolDefinition {
-  WebsocketCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // WebrtcToolDefinition wraps a WebrtcCallDefinition.
 message WebrtcToolDefinition {
-  WebrtcCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // OpenAPIToolDefinition wraps a OpenAPICallDefinition.
 message OpenAPIToolDefinition {
-  OpenAPICallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // CommandLineToolDefinition wraps a CommandLineCallDefinition.
 message CommandLineToolDefinition {
-  CommandLineCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
 
 // MCPToolDefinition wraps a MCPCallDefinition.
 message MCPToolDefinition {
-  MCPCallDefinition call = 1;
+  // The schema for the tool.
+  ToolSchema schema = 1;
+  // The ID of the call definition to use for this tool.
+  string call_id = 2;
 }
