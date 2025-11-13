@@ -357,6 +357,11 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 ) error {
+	// localCtx is used to manage the lifecycle of the servers started in this function.
+	// It's canceled when this function returns, ensuring that all servers are shut down.
+	localCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -379,7 +384,7 @@ func (a *Application) runServerMode(
 		bindAddress = ":" + bindAddress
 	}
 
-	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
 
 	if grpcPort != "" {
 		if !strings.Contains(grpcPort, ":") {
@@ -390,7 +395,7 @@ func (a *Application) runServerMode(
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
 			startGrpcServer(
-				ctx,
+				localCtx,
 				&wg,
 				errChan,
 				"Registration",
@@ -413,10 +418,15 @@ func (a *Application) runServerMode(
 	case err := <-errChan:
 		startupErr = fmt.Errorf("failed to start a server: %w", err)
 		logging.GetLogger().Error("Server startup failed, initiating shutdown...", "error", startupErr)
-	case <-ctx.Done():
+		// A server failed to start, so we need to trigger a shutdown of any other
+		// servers that may have started successfully.
+		cancel()
+	case <-localCtx.Done():
 		logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
 	}
 
+	// N.B. We wait for the servers to shut down regardless of whether there was a
+	// startup error or a shutdown signal.
 	logging.GetLogger().Info("Waiting for HTTP and gRPC servers to shut down...")
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
