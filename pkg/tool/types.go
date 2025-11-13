@@ -397,6 +397,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": respBody}, nil
+		}
+
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
@@ -518,6 +522,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": responseBytes}, nil
+		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules())
@@ -678,6 +685,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": respBody}, nil
+		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
