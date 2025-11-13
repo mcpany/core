@@ -3,10 +3,15 @@ upstream_services: {
   http_service: {
     address: "http://localhost:8080"
     tools: {
-      call: {
-        schema: {
-          name: "echo"
-        }
+      schema: {
+        name: "echo"
+      }
+      call_id: "echo_call"
+    }
+    calls: {
+      key: "echo_call"
+      value: {
+        id: "echo_call"
         endpoint_path: "/echo"
         method: HTTP_METHOD_POST
       }
