@@ -290,9 +290,7 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 }
 
 var (
-	healthCheckClient = &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	healthCheckClient = &http.Client{}
 )
 
 // HealthCheck performs a health check against a running server by sending an
