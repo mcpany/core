@@ -259,8 +259,6 @@ message McpUpstreamService {
   }
   // If true, mcpany will automatically discover and proxy all tools from the upstream.
   bool tool_auto_discovery = 3;
-  // Optional: Pre-defined tools to register, can be used to filter or augment discovered tools.
-  repeated ToolDefinition predefined_tools = 4;
   // Optional: Overrides or specific configurations for calls discovered from the service.
   repeated MCPToolDefinition tools = 6;
   // A list of resources served by this service.
