@@ -135,9 +135,10 @@ func (x HttpCallDefinition_HttpMethod) Number() protoreflect.EnumNumber {
 type OutputTransformer_OutputFormat int32
 
 const (
-	OutputTransformer_JSON OutputTransformer_OutputFormat = 0 // The output is JSON, which will be parsed using JSONPath expressions.
-	OutputTransformer_XML  OutputTransformer_OutputFormat = 1 // The output is XML, which will be parsed using XPath expressions.
-	OutputTransformer_TEXT OutputTransformer_OutputFormat = 2 // The output is plain text, which will be parsed using regex.
+	OutputTransformer_JSON      OutputTransformer_OutputFormat = 0 // The output is JSON, which will be parsed using JSONPath expressions.
+	OutputTransformer_XML       OutputTransformer_OutputFormat = 1 // The output is XML, which will be parsed using XPath expressions.
+	OutputTransformer_TEXT      OutputTransformer_OutputFormat = 2 // The output is plain text, which will be parsed using regex.
+	OutputTransformer_RAW_BYTES OutputTransformer_OutputFormat = 3 // The output is raw bytes, no parsing will be performed.
 )
 
 // Enum value maps for OutputTransformer_OutputFormat.
@@ -146,11 +147,13 @@ var (
 		0: "JSON",
 		1: "XML",
 		2: "TEXT",
+		3: "RAW_BYTES",
 	}
 	OutputTransformer_OutputFormat_value = map[string]int32{
-		"JSON": 0,
-		"XML":  1,
-		"TEXT": 2,
+		"JSON":      0,
+		"XML":       1,
+		"TEXT":      2,
+		"RAW_BYTES": 3,
 	}
 )
 
@@ -3790,18 +3793,19 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
 	"\x04args\x18\x05 \x03(\tR\x04args\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
-	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xcf\x02\n" +
+	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xde\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
 	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12c\n" +
 	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x0fextractionRules\x12\x1a\n" +
 	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
 	"\x14ExtractionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"+\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\":\n" +
 	"\fOutputFormat\x12\b\n" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
-	"\x04TEXT\x10\x02\"\xc1\x01\n" +
+	"\x04TEXT\x10\x02\x12\r\n" +
+	"\tRAW_BYTES\x10\x03\"\xc1\x01\n" +
 	"\x12GrpcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x124\n" +
 	"\x06schema\x18\x02 \x01(\v2\x1c.mcpany.config.v1.ToolSchemaR\x06schema\x12\x18\n" +
