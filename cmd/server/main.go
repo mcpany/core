@@ -57,7 +57,7 @@ func newRootCmd() *cobra.Command {
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg := config.LoadServerConfig()
+			cfg := config.Load()
 
 			logLevel := slog.LevelInfo
 			if cfg.Debug {
@@ -80,7 +80,7 @@ func newRootCmd() *cobra.Command {
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
-			log.Info("Configuration", "jsonrpc-port", cfg.JSONRPCPort, "registration-port", cfg.GRPCPort, "stdio", cfg.Stdio, "config-path", cfg.ConfigPaths)
+			log.Info("Configuration", "jsonrpc-port", cfg.JSONRPCPort, "registration-port", cfg.RegistrationPort, "stdio", cfg.Stdio, "config-path", cfg.ConfigPaths)
 			if len(cfg.ConfigPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", cfg.ConfigPaths)
 			}
@@ -91,12 +91,12 @@ func newRootCmd() *cobra.Command {
 			// If the jsonrpc-port flag is not explicitly set, we'll check the config file.
 			if !cmd.Flags().Changed("jsonrpc-port") && len(cfg.ConfigPaths) > 0 {
 				store := config.NewFileStore(osFs, cfg.ConfigPaths)
-				loadedCfg, err := config.LoadServices(store, "server")
+				fileCfg, err := config.LoadServices(store, "server")
 				if err != nil {
 					return fmt.Errorf("failed to load services from config: %w", err)
 				}
-				if loadedCfg.GetGlobalSettings().GetBindAddress() != "" {
-					bindAddress = loadedCfg.GetGlobalSettings().GetBindAddress()
+				if fileCfg.GetGlobalSettings().GetBindAddress() != "" {
+					bindAddress = fileCfg.GetGlobalSettings().GetBindAddress()
 				}
 			}
 
@@ -107,7 +107,7 @@ func newRootCmd() *cobra.Command {
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()
 
-			if err := appRunner.Run(ctx, osFs, cfg.Stdio, bindAddress, cfg.GRPCPort, cfg.ConfigPaths, cfg.ShutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, cfg.Stdio, bindAddress, cfg.RegistrationPort, cfg.ConfigPaths, cfg.ShutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -133,17 +133,17 @@ func newRootCmd() *cobra.Command {
 		Use:   "health",
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg := config.LoadServerConfig()
+			cfg := config.Load()
 			fs := afero.NewOsFs()
 			addr := cfg.JSONRPCPort
 			if !cmd.Flags().Changed("jsonrpc-port") && len(cfg.ConfigPaths) > 0 {
 				store := config.NewFileStore(fs, cfg.ConfigPaths)
-				loadedCfg, err := config.LoadServices(store, "server")
+				fileCfg, err := config.LoadServices(store, "server")
 				if err != nil {
 					return fmt.Errorf("failed to load services from config: %w", err)
 				}
-				if loadedCfg.GetGlobalSettings().GetBindAddress() != "" {
-					addr = loadedCfg.GetGlobalSettings().GetBindAddress()
+				if fileCfg.GetGlobalSettings().GetBindAddress() != "" {
+					addr = fileCfg.GetGlobalSettings().GetBindAddress()
 				}
 			}
 
@@ -157,7 +157,16 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
-	config.BindFlags(rootCmd)
+	rootCmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
+	rootCmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
+
+	rootCmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
+	rootCmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
+	rootCmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
+	rootCmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
+	rootCmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
+
+	config.InitViper(rootCmd)
 
 	return rootCmd
 }
