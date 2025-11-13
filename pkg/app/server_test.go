@@ -142,7 +142,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("health check respects client timeout", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			time.Sleep(7 * time.Second) // Sleep longer than the client's timeout
+			time.Sleep(7 * time.Second) // Sleep longer than the timeout
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -150,15 +150,11 @@ func TestHealthCheck(t *testing.T) {
 		addr := strings.TrimPrefix(server.URL, "http://")
 
 		start := time.Now()
-		// Use a long timeout for the context, to ensure the client's timeout is what triggers.
-		err := HealthCheck(io.Discard, addr, 10*time.Second)
+		err := HealthCheck(io.Discard, addr, 6*time.Second)
 		duration := time.Since(start)
 
-		assert.Error(t, err, "HealthCheck should time out")
-
-		// The duration should be around 5 seconds (the client timeout), not 10 seconds (the context timeout).
-		// We add some buffer for execution overhead.
-		assert.GreaterOrEqual(t, duration, 5*time.Second, "Timeout should be at least the client timeout")
+		require.Error(t, err, "HealthCheck should time out")
+		assert.GreaterOrEqual(t, duration, 6*time.Second, "Timeout should be at least the context timeout")
 		assert.Less(t, duration, 7*time.Second, "Timeout should be less than the server sleep time")
 	})
 

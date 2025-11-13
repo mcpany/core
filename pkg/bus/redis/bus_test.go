@@ -471,3 +471,145 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	// Instead, we just wait a bit to see if the handler is called.
 	time.Sleep(100 * time.Millisecond)
 }
+
+func TestRedisBus_Subscribe_NilMessage(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-nil-message"
+
+	handlerDone := make(chan struct{})
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		// This handler should not be called.
+		t.Error("handler should not be called")
+		close(handlerDone)
+	})
+	defer unsub()
+
+	// Wait for the subscription to be active.
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		return subs[topic] > 0
+	}, time.Second, 10*time.Millisecond)
+
+	// Directly close the pubsub channel to simulate a nil message.
+	bus.mu.RLock()
+	ps, ok := bus.pubsubs[topic]
+	bus.mu.RUnlock()
+	require.True(t, ok, "pubsub not found")
+	err := ps.Close()
+	require.NoError(t, err)
+
+	// The goroutine should exit gracefully. We'll wait a bit to ensure it does.
+	select {
+	case <-handlerDone:
+		// Fail if the handler was called.
+	case <-time.After(200 * time.Millisecond):
+		// Pass if the handler was not called and the test does not panic.
+	}
+}
+
+func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "already-cancelled-context"
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+		t.Error("handler should not be called")
+	})
+	defer unsub()
+
+	// The subscription should not be created in the first place, but we check regardless
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true // No subscribers is the desired state
+	}, 1*time.Second, 10*time.Millisecond, "subscriber should not be created with a cancelled context")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond)
+}
+
+func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "unsubscribe-from-handler"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	var unsub func()
+	unsub = bus.Subscribe(context.Background(), topic, func(msg string) {
+		unsub()
+		wg.Done()
+	})
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	wg.Wait()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
+}
+
+func TestRedisBus_SubscribeOnce_CancelledContext(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "once-cancelled-context"
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	unsub := bus.SubscribeOnce(ctx, topic, func(msg string) {
+		t.Error("handler should not be called")
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	cancel()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after context cancellation")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond)
+}

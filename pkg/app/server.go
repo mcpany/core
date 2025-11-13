@@ -290,9 +290,7 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 }
 
 var (
-	healthCheckClient = &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	healthCheckClient = &http.Client{}
 )
 
 // HealthCheck performs a health check against a running server by sending an
@@ -556,12 +554,15 @@ func startGrpcServer(
 				grpcServer.GracefulStop()
 			}()
 
+			timer := time.NewTimer(shutdownTimeout)
+			defer timer.Stop()
 			select {
-			case <-time.After(shutdownTimeout):
+			case <-stopped:
+				// Successful graceful shutdown.
+			case <-timer.C:
+				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
-			case <-stopped:
-				serverLog.Info("Server gracefully stopped.")
 			}
 		}()
 

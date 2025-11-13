@@ -25,15 +25,34 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
+
+// dockerClient is an interface that abstracts the Docker client methods used by DockerTransport.
+// It is used for testing purposes to allow mocking of the Docker client.
+type dockerClient interface {
+	ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	ContainerStart(ctx context.Context, container string, options container.StartOptions) error
+	ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error
+	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
+	Close() error
+}
+
+var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+	return client.NewClientWithOpts(ops...)
+}
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
@@ -44,7 +63,7 @@ type DockerTransport struct {
 // Connect establishes a connection to the service within the Docker container.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
@@ -179,7 +198,7 @@ type dockerReadWriteCloser struct {
 	io.Reader
 	io.WriteCloser
 	containerID string
-	cli         *client.Client
+	cli         dockerClient
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
