@@ -956,6 +956,92 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	}
 }
 
+func TestRunServerMode_ContextCancellation(t *testing.T) {
+	app := NewApplication()
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
+	require.NoError(t, err)
+
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second)
+	}()
+
+	// Allow some time for the servers to start up
+	time.Sleep(100 * time.Millisecond)
+
+	// Cancel the context to trigger shutdown
+	cancel()
+
+	select {
+	case err := <-errChan:
+		assert.NoError(t, err, "runServerMode should return nil on graceful shutdown")
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test hung for 2 seconds, indicating a shutdown issue.")
+	}
+}
+
+func TestRunStdioMode(t *testing.T) {
+	var called bool
+	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
+		called = true
+		return nil
+	}
+
+	app := &Application{
+		runStdioModeFunc: mockStdioFunc,
+	}
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, 5*time.Second)
+
+	assert.True(t, called, "runStdioMode should have been called")
+	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
+}
+
+func TestHTTPServer_GracefulShutdown(t *testing.T) {
+	errChan := make(chan error, 1)
+	ctx, cancel := context.WithCancel(context.Background())
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := lis.Addr().String()
+	lis.Close() // Close the listener immediately
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP", addr, nil, 5*time.Second)
+
+	// Immediately cancel to trigger shutdown
+	cancel()
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		assert.NoError(t, err, "Graceful shutdown should not produce an error")
+	default:
+		// No error, which is what we want
+	}
+}
+
 func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
