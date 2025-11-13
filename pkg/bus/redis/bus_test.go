@@ -331,6 +331,16 @@ func TestRedisBus_New(t *testing.T) {
 	assert.Equal(t, 1, options.DB)
 }
 
+func TestRedisBus_New_NilConfig(t *testing.T) {
+	bus := New[string](nil)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "", options.Password)
+	assert.Equal(t, 0, options.DB)
+}
+
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
