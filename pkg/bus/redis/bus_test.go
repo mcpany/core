@@ -398,6 +398,12 @@ func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *tes
 }
 
 func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
+	// Capture log output
+	var logBuffer bytes.Buffer
+	logging.ForTestsOnlyResetLogger()
+	logging.Init(slog.LevelDebug, &logBuffer)
+	defer logging.ForTestsOnlyResetLogger()
+
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-panic"
@@ -431,6 +437,10 @@ func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
 	<-handlerCalled
 
 	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
+
+	// Assert that the panic was logged
+	assert.Contains(t, logBuffer.String(), "panic in handler")
+	assert.Contains(t, logBuffer.String(), "handler panic")
 }
 
 func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
@@ -470,4 +480,54 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	// We expect the handler not to be called, so we don't wait for a WaitGroup.
 	// Instead, we just wait a bit to see if the handler is called.
 	time.Sleep(100 * time.Millisecond)
+}
+
+func TestRedisBus_Subscribe_ContextDone(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-context-done"
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	handlerCalled := make(chan struct{})
+
+	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+		close(handlerCalled)
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Cancel the context. This should cause the select in the goroutine to trigger <-ctx.Done().
+	cancel()
+
+	// We need to wait a bit to ensure the goroutine has had time to exit.
+	time.Sleep(200 * time.Millisecond)
+
+	// To be sure, we can check if the subscription is gone from Redis.
+	// The closing of the subscription happens inside the go-redis library when context is canceled.
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return len(subs) == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
+
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called")
+	default:
+		// success
+	}
 }
