@@ -1,0 +1,95 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.api.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+
+message Prompt {
+    string name = 1;
+    string title = 2;
+    string description = 3;
+    repeated PromptArgument arguments = 4;
+}
+
+message PromptArgument {
+    string name = 1;
+    string description = 2;
+    bool required = 3;
+}
+
+message PromptMessage {
+    enum Role {
+        ROLE_UNSPECIFIED = 0;
+        USER = 1;
+        ASSISTANT = 2;
+    }
+
+    Role role = 1;
+    Content content = 2;
+}
+
+message Content {
+    oneof content_type {
+        TextContent text = 1;
+        ImageContent image = 2;
+        AudioContent audio = 3;
+        ResourceContent resource = 4;
+    }
+}
+
+message TextContent {
+    string text = 1;
+}
+
+message ImageContent {
+    bytes data = 1;
+    string mime_type = 2;
+}
+
+message AudioContent {
+    bytes data = 1;
+    string mime_type = 2;
+}
+
+message Resource {
+    string uri = 1;
+    string mime_type = 2;
+    oneof data {
+        string text = 3;
+        bytes blob = 4;
+    }
+}
+
+message ResourceContent {
+    Resource resource = 1;
+}
+
+
+message ListPromptsRequest {
+    string cursor = 1;
+}
+
+message ListPromptsResponse {
+    repeated Prompt prompts = 1;
+    string next_cursor = 2;
+}
+
+message GetPromptRequest {
+    string name = 1;
+    google.protobuf.Struct arguments = 2;
+}
+
+message GetPromptResponse {
+    string description = 1;
+    repeated PromptMessage messages = 2;
+}
+
+service PromptService {
+    rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+    rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+}

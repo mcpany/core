@@ -265,6 +265,66 @@ message McpUpstreamService {
   repeated ResourceDefinition resources = 7;
   // A map of call definitions, keyed by their unique ID.
   map<string, MCPCallDefinition> calls = 8;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 9;
+}
+
+// PromptDefinition defines a prompt that can be used to interact with the model.
+message PromptDefinition {
+  // The name of the prompt.
+  string name = 1;
+  // The title of the prompt.
+  string title = 2;
+  // The description of the prompt.
+  string description = 3;
+  // The arguments for the prompt.
+  repeated PromptArgument arguments = 4;
+  // The messages that make up the prompt.
+  repeated PromptMessage messages = 5;
+}
+
+message PromptArgument {
+    string name = 1;
+    string description = 2;
+    bool required = 3;
+}
+
+message PromptMessage {
+    enum Role {
+        ROLE_UNSPECIFIED = 0;
+        USER = 1;
+        ASSISTANT = 2;
+    }
+
+    Role role = 1;
+    Content content = 2;
+}
+
+message Content {
+    oneof content_type {
+        TextContent text = 1;
+        ImageContent image = 2;
+        AudioContent audio = 3;
+        ResourceContent resource = 4;
+    }
+}
+
+message TextContent {
+    string text = 1;
+}
+
+message ImageContent {
+    bytes data = 1;
+    string mime_type = 2;
+}
+
+message AudioContent {
+    bytes data = 1;
+    string mime_type = 2;
+}
+
+message ResourceContent {
+    ResourceDefinition resource = 1;
 }
 
 // McpStdioConnection defines the parameters for a stdio-based connection.
