@@ -113,7 +113,7 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (m *MockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }
 

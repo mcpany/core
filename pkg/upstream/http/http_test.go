@@ -480,7 +480,7 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return nil, false
 }
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("not implemented")
 }
 

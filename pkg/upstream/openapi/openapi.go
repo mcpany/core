@@ -133,6 +133,7 @@ func (u *OpenAPIUpstream) Register(
 	}
 
 	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, resourceManager, isReload, doc, serviceConfig)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
 	return serviceID, discoveredTools, nil, nil
@@ -308,4 +309,20 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	}
 
 	return numToolsForThisService
+}
+
+func (u *OpenAPIUpstream) createAndRegisterPrompts(
+	ctx context.Context,
+	serviceID string,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	promptManager prompt.PromptManagerInterface,
+	isReload bool,
+) {
+	log := logging.GetLogger()
+	openapiService := serviceConfig.GetOpenapiService()
+	for _, promptDef := range openapiService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

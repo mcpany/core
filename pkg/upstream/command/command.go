@@ -101,6 +101,8 @@ func (u *CommandUpstream) Register(
 		len(discoveredTools),
 	)
 
+	u.createAndRegisterPrompts(ctx, serviceID, commandLineService, promptManager, isReload)
+
 	return serviceID, discoveredTools, nil, nil
 }
 
@@ -236,4 +238,19 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	}
 
 	return discoveredTools, nil
+}
+
+func (u *CommandUpstream) createAndRegisterPrompts(
+	_ context.Context,
+	serviceID string,
+	commandLineService *configv1.CommandLineUpstreamService,
+	promptManager prompt.PromptManagerInterface,
+	_ bool,
+) {
+	log := logging.GetLogger()
+	for _, promptDef := range commandLineService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name)
+	}
 }

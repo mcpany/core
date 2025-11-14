@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
@@ -60,6 +61,21 @@ func newMockToolManager() *mockToolManager {
 	}
 }
 
+type mockPromptManager struct {
+	prompt.PromptManagerInterface
+	prompts map[string]prompt.Prompt
+}
+
+func (m *mockPromptManager) AddPrompt(p prompt.Prompt) {
+	m.prompts[p.Prompt().Name] = p
+}
+
+func newMockPromptManager() *mockPromptManager {
+	return &mockPromptManager{
+		prompts: make(map[string]prompt.Prompt),
+	}
+}
+
 func TestGRPCUpstream_Register_WithProtoContent(t *testing.T) {
 	protoContent := `
 syntax = "proto3";
@@ -95,9 +111,10 @@ message TestResponse3 {
 
 	tm := newMockToolManager()
 	pm := pool.NewManager()
+	mockPromptManager := newMockPromptManager()
 	upstream := NewGRPCUpstream(pm)
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, mockPromptManager, nil, false)
 	require.NoError(t, err)
 
 	// Check if the service info was added

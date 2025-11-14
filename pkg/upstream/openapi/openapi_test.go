@@ -75,7 +75,7 @@ func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {
 	m.Called(provider)
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *MockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

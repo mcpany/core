@@ -39,7 +39,7 @@ import (
 func TestServiceRegistry_UnregisterService(t *testing.T) {
 	f := &mockFactory{}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
+	prm := prompt.NewPromptManager(tm)
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)
@@ -80,7 +80,7 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 		},
 	}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
+	prm := prompt.NewPromptManager(tm)
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)
@@ -140,7 +140,7 @@ func TestServiceRegistry_RegisterService_OAuth2(t *testing.T) {
 
 	f := &mockFactory{}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
+	prm := prompt.NewPromptManager(tm)
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)
@@ -169,7 +169,7 @@ func TestServiceRegistry_RegisterService_OAuth2(t *testing.T) {
 func TestServiceRegistry_RegisterService_OAuth2_Error(t *testing.T) {
 	f := &mockFactory{}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
+	prm := prompt.NewPromptManager(tm)
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)

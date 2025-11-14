@@ -463,6 +463,11 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		}
 	}
 
+	for _, promptDef := range mcpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+	}
+
 	// Register resources
 	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
 	if err != nil {
@@ -654,6 +659,11 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 				},
 			})
 		}
+	}
+
+	for _, promptDef := range mcpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
 	}
 
 	// Register resources
