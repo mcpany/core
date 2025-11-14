@@ -49,7 +49,16 @@ type RegistrationServer struct {
 //
 // Returns a new instance of the RegistrationServer or an error if the bus is
 // nil.
+
+// NewRegistrationServerHook is a test hook for overriding the creation of a
+// RegistrationServer.
+var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
+
 func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
+	if NewRegistrationServerHook != nil {
+		// The type assertion is safe because this is a test-only hook.
+		return NewRegistrationServerHook(bus)
+	}
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}
