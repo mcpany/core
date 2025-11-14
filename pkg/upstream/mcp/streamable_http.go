@@ -404,9 +404,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	mcpService := serviceConfig.GetMcpService()
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
-	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	configToolMap := make(map[string]*configv1.ToolDefinition)
 	for _, toolDef := range configToolDefs {
-		configToolMap[toolDef.GetSchema().GetName()] = toolDef
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -485,9 +485,21 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	log := logging.GetLogger()
+	callIDToName := make(map[string]string)
+	for _, d := range configToolDefs {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
 	for _, resourceDef := range mcpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
-			toolName := resourceDef.GetDynamic().GetMcpCall().GetSchema().GetName()
+			call := resourceDef.GetDynamic().GetMcpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
 			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)
@@ -585,9 +597,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	mcpService := serviceConfig.GetMcpService()
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
-	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	configToolMap := make(map[string]*configv1.ToolDefinition)
 	for _, toolDef := range configToolDefs {
-		configToolMap[toolDef.GetSchema().GetName()] = toolDef
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -666,9 +678,21 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	log := logging.GetLogger()
+	callIDToName := make(map[string]string)
+	for _, d := range configToolDefs {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
 	for _, resourceDef := range mcpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
-			toolName := resourceDef.GetDynamic().GetMcpCall().GetSchema().GetName()
+			call := resourceDef.GetDynamic().GetMcpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
 			sanitizedToolName, err := util.SanitizeToolName(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)
