@@ -2353,6 +2353,7 @@ type ToolDefinition struct {
 	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,9,opt,name=idempotent_hint,json=idempotentHint"`
 	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,10,opt,name=open_world_hint,json=openWorldHint"`
 	xxx_hidden_CallId          *string                `protobuf:"bytes,11,opt,name=call_id,json=callId"`
+	xxx_hidden_Prompts         *[]*PromptDefinition   `protobuf:"bytes,12,rep,name=prompts"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -2473,14 +2474,23 @@ func (x *ToolDefinition) GetCallId() string {
 	return ""
 }
 
+func (x *ToolDefinition) GetPrompts() []*PromptDefinition {
+	if x != nil {
+		if x.xxx_hidden_Prompts != nil {
+			return *x.xxx_hidden_Prompts
+		}
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -2493,37 +2503,41 @@ func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
+}
+
+func (x *ToolDefinition) SetPrompts(v []*PromptDefinition) {
+	x.xxx_hidden_Prompts = &v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -2691,6 +2705,8 @@ type ToolDefinition_builder struct {
 	OpenWorldHint *bool
 	// The ID of the call definition to use for this tool.
 	CallId *string
+	// Prompts associated with the tool.
+	Prompts []*PromptDefinition
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -2698,43 +2714,44 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_Description = b.Description
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_OutputSchema = b.OutputSchema
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
 		x.xxx_hidden_CallId = b.CallId
 	}
+	x.xxx_hidden_Prompts = &b.Prompts
 	return m0
 }
 
@@ -2742,7 +2759,7 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xcf\x04\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1cproto/config/v1/prompt.proto\"\xcf\x04\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rendpoint_path\x18\x03 \x01(\tR\fendpointPath\x12G\n" +
@@ -2836,7 +2853,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xae\x03\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xec\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -2849,7 +2866,8 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
 	"\x0fopen_world_hint\x18\n" +
 	" \x01(\bR\ropenWorldHint\x12\x17\n" +
-	"\acall_id\x18\v \x01(\tR\x06callId*X\n" +
+	"\acall_id\x18\v \x01(\tR\x06callId\x12<\n" +
+	"\aprompts\x18\f \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
@@ -2888,6 +2906,7 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*SecretValue)(nil),                 // 21: mcpany.config.v1.SecretValue
 	(*durationpb.Duration)(nil),         // 22: google.protobuf.Duration
 	(*structpb.Struct)(nil),             // 23: google.protobuf.Struct
+	(*PromptDefinition)(nil),            // 24: mcpany.config.v1.PromptDefinition
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -2927,11 +2946,12 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	22, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
 	23, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
 	23, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	24, // 37: mcpany.config.v1.ToolDefinition.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	38, // [38:38] is the sub-list for method output_type
+	38, // [38:38] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -2940,6 +2960,7 @@ func file_proto_config_v1_call_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_prompt_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

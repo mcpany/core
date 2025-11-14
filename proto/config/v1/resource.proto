@@ -7,6 +7,7 @@ package mcpany.config.v1;
 
 import "google/protobuf/timestamp.proto";
 import "proto/config/v1/call.proto";
+import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -36,6 +37,7 @@ message ResourceDefinition {
         StaticResource static = 8;
         DynamicResource dynamic = 9;
     }
+    repeated PromptDefinition prompts = 10;
 }
 
 message StaticResource {
