@@ -120,7 +120,7 @@ prepare:
 			apt-get update && apt-get install -y curl unzip; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
-		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
+		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$(PROTOC_VERSION)/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
 		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
