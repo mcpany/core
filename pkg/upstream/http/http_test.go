@@ -103,13 +103,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			"http_service": {
 				"address": "http://localhost",
 				"tools": [{
-					"schema": {"name": "test-op"},
+					"definition": {"name": "test-op"},
 					"call_id": "test-op-call"
 				}],
 				"calls": {
 					"test-op-call": {
 						"id": "test-op-call",
-						"schema": {"name": "test-op"},
 						"method": "HTTP_METHOD_GET",
 						"endpoint_path": "/test"
 					}
@@ -168,24 +167,22 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				"address": "http://localhost",
 				"tools": [
 					{
-						"schema": {"description": "A test operation"},
+						"definition": {"description": "A test operation"},
 						"call_id": "test-op-1"
 					},
 					{
-						"schema": {"description": ""},
+						"definition": {"description": ""},
 						"call_id": "test-op-2"
 					}
 				],
 				"calls": {
 					"test-op-1": {
 						"id": "test-op-1",
-						"schema": {"description": "A test operation"},
 						"method": "HTTP_METHOD_GET",
 						"endpoint_path": "/test"
 					},
 					"test-op-2": {
 						"id": "test-op-2",
-						"schema": {"description": ""},
 						"method": "HTTP_METHOD_POST",
 						"endpoint_path": "/test2"
 					}
@@ -226,13 +223,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			"http_service": {
 				"address": "http://localhost",
 				"tools": [{
-					"schema": {"name": "test-op"},
+					"definition": {"name": "test-op"},
 					"call_id": "test-op-call"
 				}],
 				"calls": {
 					"test-op-call": {
 						"id": "test-op-call",
-						"schema": {"name": "test-op"},
 						"method": "HTTP_METHOD_GET"
 					}
 				}
@@ -261,13 +257,12 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			"http_service": {
 				"address": "http://localhost",
 				"tools": [{
-					"schema": {"name": "test-op"},
+					"definition": {"name": "test-op"},
 					"call_id": "test-op-call"
 				}],
 				"calls": {
 					"test-op-call": {
 						"id": "test-op-call",
-						"schema": {"name": "test-op"},
 						"method": "HTTP_METHOD_GET",
 						"endpoint_path": "/test"
 					}
@@ -320,13 +315,12 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 		"http_service": {
 			"address": "http://localhost",
 			"tools": [{
-				"schema": {"name": "test-op"},
+				"definition": {"name": "test-op"},
 				"call_id": "test-op-call"
 			}],
 			"calls": {
 				"test-op-call": {
 					"id": "test-op-call",
-					"schema": {"name": "test-op"},
 					"method": "HTTP_METHOD_GET"
 				}
 			}
@@ -355,11 +349,10 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 		"name": "reload-test",
 		"http_service": {
 			"address": "http://localhost",
-			"tools": [{"schema": {"name": "op1"}, "call_id": "op1-call"}],
+			"tools": [{"definition": {"name": "op1"}, "call_id": "op1-call"}],
 			"calls": {
 				"op1-call": {
 					"id": "op1-call",
-					"schema": {"name": "op1"},
 					"method": "HTTP_METHOD_GET"
 				}
 			}
@@ -377,11 +370,10 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 		"name": "reload-test",
 		"http_service": {
 			"address": "http://localhost",
-			"tools": [{"schema": {"name": "op2"}, "call_id": "op2-call"}],
+			"tools": [{"definition": {"name": "op2"}, "call_id": "op2-call"}],
 			"calls": {
 				"op2-call": {
 					"id": "op2-call",
-					"schema": {"name": "op2"},
 					"method": "HTTP_METHOD_GET"
 				}
 			}
@@ -416,11 +408,10 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 		"name": "test-service-invalid-method",
 		"http_service": {
 			"address": "http://localhost",
-			"tools": [{"schema": {"name": "test-op"}, "call_id": "test-op-call"}],
+			"tools": [{"definition": {"name": "test-op"}, "call_id": "test-op-call"}],
 			"calls": {
 				"test-op-call": {
 					"id": "test-op-call",
-					"schema": {"name": "test-op"},
 					"method": 999,
 					"endpoint_path": "/test"
 				}
@@ -561,11 +552,10 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 				"name": "url-test-service",
 				"http_service": {
 					"address": "` + tc.address + `",
-					"tools": [{"schema": {"name": "test-op"}, "call_id": "test-op-call"}],
+					"tools": [{"definition": {"name": "test-op"}, "call_id": "test-op-call"}],
 					"calls": {
 						"test-op-call": {
 							"id": "test-op-call",
-							"schema": {"name": "test-op"},
 							"method": "HTTP_METHOD_GET",
 							"endpoint_path": "` + tc.endpointPath + `"
 						}

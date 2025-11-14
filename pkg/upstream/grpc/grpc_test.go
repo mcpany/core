@@ -396,3 +396,37 @@ func TestFindMethodDescriptor(t *testing.T) {
 		assert.Contains(t, err.Error(), "method 'NonExistentMethod' not found in service")
 	})
 }
+
+func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewGRPCUpstream(poolManager)
+	tm := NewMockToolManager()
+
+	t.Run("successful tool registration from config", func(t *testing.T) {
+		serviceConfig := (&configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service"),
+			GrpcService: (&configv1.GrpcUpstreamService_builder{
+				Tools: []*configv1.GrpcToolDefinition{
+					(&configv1.GrpcToolDefinition_builder{
+						Definition: (&configv1.ToolDefinition_builder{
+							Name: proto.String("test-tool"),
+						}).Build(),
+						CallId: proto.String("test-call"),
+					}).Build(),
+				},
+				Calls: map[string]*configv1.GrpcCallDefinition{
+					"test-call": (&configv1.GrpcCallDefinition_builder{
+						Id:      proto.String("test-call"),
+						Service: proto.String("TestService"),
+						Method:  proto.String("TestMethod"),
+					}).Build(),
+				},
+			}).Build(),
+		}).Build()
+
+		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(context.Background(), "test-service", tm, serviceConfig)
+		require.NoError(t, err)
+		assert.Len(t, tools, 1)
+		assert.Equal(t, "test-tool", tools[0].GetName())
+	})
+}
