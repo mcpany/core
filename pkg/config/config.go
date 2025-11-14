@@ -60,6 +60,7 @@ func BindFlags(cmd *cobra.Command) {
 // GetBindAddress returns the bind address for the server.
 // It prioritizes the config file over the command line flag if the flag is not explicitly set.
 func GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
+	bindAddress := viper.GetString("jsonrpc-port")
 	configPaths := viper.GetStringSlice("config-path")
 
 	if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
@@ -69,10 +70,10 @@ func GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
 			return "", fmt.Errorf("failed to load services from config: %w", err)
 		}
 		if cfg.GetGlobalSettings().GetBindAddress() != "" {
-			return cfg.GetGlobalSettings().GetBindAddress(), nil
+			bindAddress = cfg.GetGlobalSettings().GetBindAddress()
 		}
 	}
-	return viper.GetString("jsonrpc-port"), nil
+	return bindAddress, nil
 }
 
 // GetGRPCPort returns the gRPC port.
