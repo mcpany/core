@@ -48,21 +48,13 @@ message GlobalSettings {
     DEBUG = 3;
   }
   // The address and port the server should bind to (e.g., "0.0.0.0:8080").
-  string jsonrpc_port = 1;
+  string bind_address = 1;
   // The base path for all MCP API endpoints (e.g., "/mcp/v1").
   string mcp_basepath = 2;
   // The logging level for the server.
   LogLevel log_level = 3;
   // The message bus configuration.
   bus.MessageBus message_bus = 4;
-  // Port for the gRPC registration server. If not specified, gRPC registration is disabled.
-  string grpc_port = 5;
-  // Enable stdio mode for JSON-RPC communication.
-  bool stdio = 6;
-  // Graceful shutdown timeout.
-  google.protobuf.Duration shutdown_timeout = 8;
-  // Path to a file to write logs to. If not set, logs are written to stdout.
-  string log_file = 9;
 }
 
 

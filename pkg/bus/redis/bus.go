@@ -36,13 +36,11 @@ type RedisBus[T any] struct {
 
 // New creates a new RedisBus.
 func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
-	opts := &redis.Options{}
-	if redisConfig != nil {
-		opts.Addr = redisConfig.GetAddress()
-		opts.Password = redisConfig.GetPassword()
-		opts.DB = int(redisConfig.GetDb())
-	}
-	return NewWithClient[T](redis.NewClient(opts))
+	return NewWithClient[T](redis.NewClient(&redis.Options{
+		Addr:     redisConfig.GetAddress(),
+		Password: redisConfig.GetPassword(),
+		DB:       int(redisConfig.GetDb()),
+	}))
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
@@ -131,18 +129,4 @@ func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler f
 		})
 	})
 	return unsub
-}
-
-// Close closes all the pubsub connections and the client.
-func (b *RedisBus[T]) Close() error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-
-	for topic, ps := range b.pubsubs {
-		// It's safe to ignore errors here as we are closing everything anyway
-		_ = ps.Close()
-		delete(b.pubsubs, topic)
-	}
-
-	return b.client.Close()
 }

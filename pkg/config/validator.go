@@ -95,8 +95,8 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	if binaryType == Server {
-		if gs.GetJsonrpcPort() != "" {
-			if err := validation.IsValidBindAddress(gs.GetJsonrpcPort()); err != nil {
+		if gs.GetBindAddress() != "" {
+			if err := validation.IsValidBindAddress(gs.GetBindAddress()); err != nil {
 				return fmt.Errorf("invalid bind_address: %w", err)
 			}
 		}
@@ -124,42 +124,24 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	}
 
 	if httpService := service.GetHttpService(); httpService != nil {
-		address := httpService.GetAddress()
-		if address == "" {
+		if httpService.GetAddress() == "" {
 			return fmt.Errorf("http service has empty target_address")
 		}
-		u, err := url.Parse(address)
-		if err != nil {
-			return fmt.Errorf("invalid http target_address: %s", address)
+		if !validation.IsValidURL(httpService.GetAddress()) {
+			return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
 		}
-
-		if u.Host == "" {
-			if u.Opaque != "" && u.Path == "" {
-				return fmt.Errorf("invalid http target_address: missing scheme")
-			}
-			return fmt.Errorf("invalid http target_address: %s", address)
-		}
-
+		u, _ := url.Parse(httpService.GetAddress())
 		if u.Scheme != "http" && u.Scheme != "https" {
 			return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 		}
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
-		address := websocketService.GetAddress()
-		if address == "" {
+		if websocketService.GetAddress() == "" {
 			return fmt.Errorf("websocket service has empty target_address")
 		}
-		u, err := url.Parse(address)
-		if err != nil {
-			return fmt.Errorf("invalid websocket target_address: %s", address)
+		if !validation.IsValidURL(websocketService.GetAddress()) {
+			return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
 		}
-
-		if u.Host == "" {
-			if u.Opaque != "" && u.Path == "" {
-				return fmt.Errorf("invalid websocket target_address: missing scheme")
-			}
-			return fmt.Errorf("invalid websocket target_address: %s", address)
-		}
-
+		u, _ := url.Parse(websocketService.GetAddress())
 		if u.Scheme != "ws" && u.Scheme != "wss" {
 			return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
 		}

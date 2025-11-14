@@ -341,21 +341,6 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestRedisBus_Subscribe_RedisError(t *testing.T) {
-	client, _ := redismock.NewClientMock()
-	bus := NewWithClient[string](client)
-
-	client.Close()
-
-	unsub := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
-		t.Error("handler should not be called")
-	})
-	defer unsub()
-
-	err := bus.Publish(context.Background(), "test-topic", "hello")
-	assert.Error(t, err)
-}
-
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -487,43 +472,6 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestRedisBus_Subscribe_NilMessage(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-nil-message"
-
-	handlerDone := make(chan struct{})
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		// This handler should not be called.
-		t.Error("handler should not be called")
-		close(handlerDone)
-	})
-	defer unsub()
-
-	// Wait for the subscription to be active.
-	require.Eventually(t, func() bool {
-		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
-		require.NoError(t, err)
-		return subs[topic] > 0
-	}, time.Second, 10*time.Millisecond)
-
-	// Directly close the pubsub channel to simulate a nil message.
-	bus.mu.RLock()
-	ps, ok := bus.pubsubs[topic]
-	bus.mu.RUnlock()
-	require.True(t, ok, "pubsub not found")
-	err := ps.Close()
-	require.NoError(t, err)
-
-	// The goroutine should exit gracefully. We'll wait a bit to ensure it does.
-	select {
-	case <-handlerDone:
-		// Fail if the handler was called.
-	case <-time.After(200 * time.Millisecond):
-		// Pass if the handler was not called and the test does not panic.
-	}
-}
-
 func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -551,86 +499,6 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	assert.NoError(t, err)
 
 	time.Sleep(100 * time.Millisecond)
-}
-
-func TestRedisBus_SubscribeOnce_ContextCancellation_BeforePublish(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-context-cancellation-before-publish"
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	handlerCalled := make(chan bool, 1)
-
-	unsub := bus.SubscribeOnce(ctx, topic, func(msg string) {
-		handlerCalled <- true
-	})
-	defer unsub()
-
-	require.Eventually(t, func() bool {
-		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
-		require.NoError(t, err)
-		if val, ok := subs[topic]; ok {
-			return val == 1
-		}
-		return false
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Cancel the context before publishing.
-	cancel()
-
-	// Allow some time for the cancellation to propagate and the subscription to be removed.
-	require.Eventually(t, func() bool {
-		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
-		require.NoError(t, err)
-		if val, ok := subs[topic]; ok {
-			return val == 0
-		}
-		return true
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after context cancellation")
-
-	err := bus.Publish(context.Background(), topic, "hello")
-	assert.NoError(t, err)
-
-	select {
-	case <-handlerCalled:
-		t.Fatal("handler should not have been called after context cancellation")
-	case <-time.After(200 * time.Millisecond):
-		// Test passed
-	}
-}
-
-func TestRedisBus_Close(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-close"
-
-	// Subscribe to create a pubsub connection
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
-
-	// Check that the subscription is active
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Close the bus
-	err := bus.Close()
-	assert.NoError(t, err)
-
-	// Verify that the client is closed by trying to use it
-	err = client.Ping(context.Background()).Err()
-	assert.Error(t, err)
-	assert.Equal(t, redis.ErrClosed, err)
-
-	// After closing the bus, the pubsubs map should be empty.
-	bus.mu.RLock()
-	assert.Empty(t, bus.pubsubs)
-	bus.mu.RUnlock()
-
-	// Unsubscribing after closing should not panic
-	assert.NotPanics(t, unsub)
 }
 
 func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {

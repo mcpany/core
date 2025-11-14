@@ -105,7 +105,7 @@ func TestRootCmd(t *testing.T) {
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "0.0.0.0:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
+	assert.Equal(t, "localhost:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
@@ -182,20 +182,4 @@ global_settings:
 	err = rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass because the --jsonrpc-port flag should take precedence over the config file")
-}
-
-func TestRootCmdDefaultBindAddress(t *testing.T) {
-	mock := &mockRunner{}
-	originalRunner := appRunner
-	appRunner = mock
-	defer func() { appRunner = originalRunner }()
-
-	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{
-		"--jsonrpc-port", "8081",
-	})
-	rootCmd.Execute()
-
-	assert.True(t, mock.called, "app.Run should have been called")
-	assert.Equal(t, "0.0.0.0:8081", mock.capturedJsonrpcPort, "jsonrpc-port should default to 0.0.0.0")
 }

@@ -120,15 +120,15 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	definitions := commandLineService.GetTools()
 	calls := commandLineService.GetCalls()
 
-	for _, toolDefinition := range definitions {
-		callID := toolDefinition.GetCallId()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
 			continue
 		}
 
-		command := toolDefinition.GetName()
+		command := definition.GetName()
 
 		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 		if err != nil {
@@ -184,7 +184,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(command),
 			DisplayName:         proto.String(command),
-			Description:         proto.String(toolDefinition.GetDescription()),
+			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(command),
 			InputSchema:         inputSchema,

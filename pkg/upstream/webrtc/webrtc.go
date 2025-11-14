@@ -117,16 +117,16 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		return nil
 	}
 
-	for i, toolDefinition := range definitions {
-		callID := toolDefinition.GetCallId()
+	for i, definition := range definitions {
+		callID := definition.GetCallId()
 		wrtcDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
 			continue
 		}
-		toolNamePart := toolDefinition.GetName()
+		toolNamePart := definition.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(toolDefinition.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(definition.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -155,11 +155,11 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WEBRTC %s", address)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(toolDefinition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(toolDefinition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(toolDefinition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(toolDefinition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(toolDefinition.GetOpenWorldHint()),
+				Title:           proto.String(definition.GetTitle()),
+				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
 			}.Build(),
 		}.Build()
@@ -176,8 +176,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDefinition.GetName()),
-			Description: proto.String(toolDefinition.GetDescription()),
+			Name:        proto.String(definition.GetName()),
+			Description: proto.String(definition.GetDescription()),
 		}.Build())
 	}
 

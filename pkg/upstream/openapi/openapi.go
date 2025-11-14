@@ -195,15 +195,15 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	definitions := openapiService.GetTools()
 	calls := openapiService.GetCalls()
 
-	for _, toolDefinition := range definitions {
-		callID := toolDefinition.GetCallId()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
 			continue
 		}
 
-		toolName := toolDefinition.GetName()
+		toolName := definition.GetName()
 
 		var pbTool *pb.Tool
 		for _, t := range pbTools {
