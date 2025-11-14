@@ -8,6 +8,7 @@ package mcpany.config.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -243,4 +244,6 @@ message ToolDefinition {
   bool open_world_hint = 10;
   // The ID of the call definition to use for this tool.
   string call_id = 11;
+  // A list of prompts that can be used by this tool.
+  repeated PromptDefinition prompts = 12;
 }

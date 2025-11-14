@@ -1,0 +1,18 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+// PromptDefinition defines a reusable prompt that can be used by tools.
+message PromptDefinition {
+  // The name of the prompt.
+  string name = 1;
+  // The prompt text.
+  string text = 2;
+  // A description of the prompt.
+  string description = 3;
+}
