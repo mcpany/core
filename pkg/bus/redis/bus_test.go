@@ -553,6 +553,54 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_SubscribeOnce_ContextCancellation_BeforePublish(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-context-cancellation-before-publish"
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	handlerCalled := make(chan bool, 1)
+
+	unsub := bus.SubscribeOnce(ctx, topic, func(msg string) {
+		handlerCalled <- true
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Cancel the context before publishing.
+	cancel()
+
+	// Allow some time for the cancellation to propagate and the subscription to be removed.
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after context cancellation")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called after context cancellation")
+	case <-time.After(200 * time.Millisecond):
+		// Test passed
+	}
+}
+
 func TestRedisBus_Close(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
