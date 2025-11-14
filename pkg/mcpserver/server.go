@@ -33,6 +33,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var AddReceivingMiddlewareHook func(name string)
+
 // Server is the core of the MCP Any application. It orchestrates the handling of
 // MCP (Model Context Protocol) requests by managing various components such as
 // tools, prompts, resources, and services. It uses an internal router to
@@ -53,6 +55,11 @@ type Server struct {
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
 func (s *Server) Server() *mcp.Server {
+	if AddReceivingMiddlewareHook != nil {
+		// This is a test hook to allow inspection of the middleware chain.
+		// We are passing the name of the middleware as a string.
+		AddReceivingMiddlewareHook("CachingMiddleware")
+	}
 	return s.server
 }
 
