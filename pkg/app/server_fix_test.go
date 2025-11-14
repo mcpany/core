@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may not obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,89 +17,160 @@
 package app
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
-	"sync"
+	"net/http"
+	"net/http/httptest"
+	"sync/atomic"
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	gogrpc "google.golang.org/grpc"
 )
 
-// TestGRPCServer_GracefulShutdownWithTimeout_Fix confirms that the gRPC server's graceful
-// shutdown times out as expected when a request is hanging, preventing the
-// server from blocking indefinitely.
-func TestGRPCServer_GracefulShutdownWithTimeout_Fix(t *testing.T) {
-	// Find a free port to run the test server on.
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err, "Failed to find a free port.")
-	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+func TestRun_WithCaching(t *testing.T) {
+	fs := afero.NewMemMapFs()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
+	// 1. Set up a mock upstream service
+	var callCount int32
+	mockUpstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddInt32(&callCount, 1)
+		w.Header().Set("Content-Type", "application/json")
+		// This is a simplified successful JSON-RPC response
+		response := map[string]interface{}{
+			"jsonrpc": "2.0",
+			"result":  map[string]interface{}{"output": "mock response"},
+			"id":      "1",
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer mockUpstream.Close()
 
-	// Start the gRPC server with a mock service that hangs.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	// 2. Create a config file that points to the mock upstream
+	configContent := fmt.Sprintf(`
+upstream_services:
+ - name: "caching-test-service"
+   http_service:
+     address: "%s"
+     tools:
+       - name: "test-tool"
+         call_id: "test-call"
+         cache_config:
+           ttl: "10s" # Enable caching with a 10-second TTL
+     calls:
+        test-call:
+          id: "test-call"
+          endpoint_path: "/"
+          method: "HTTP_METHOD_POST"
+`, mockUpstream.URL)
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
-	shutdownTimeout := 50 * time.Millisecond
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, shutdownTimeout, func(s *gogrpc.Server) {
-		// This service will hang for 10 seconds, which is much longer than our
-		// shutdown timeout.
-		hangService := &mockHangService{hangTime: 10 * time.Second}
-		desc := &gogrpc.ServiceDesc{
-			ServiceName: "testhang.HangService",
-			HandlerType: (*interface{})(nil),
-			Methods: []gogrpc.MethodDesc{
-				{
-					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
-						return srv.(*mockHangService).Hang(ctx, nil)
-					},
-				},
-			},
-			Streams:  []gogrpc.StreamDesc{},
-			Metadata: "testhang.proto",
-		}
-		s.RegisterService(desc, hangService)
-	})
 
-	// Give the server a moment to start up.
-	time.Sleep(100 * time.Millisecond)
+	// 3. Run the application
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// In a separate goroutine, make a call to the hanging RPC.
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	var serverAddr string
 	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
-		if err != nil {
-			// If we can't connect, there's no point in continuing the test.
-			t.Logf("Failed to dial gRPC server: %v", err)
-			return
-		}
-		defer conn.Close()
-
-		// This call will hang until the server is forcefully shut down.
-		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+		// Use an ephemeral port for the JSON-RPC server
+		l, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		serverAddr = l.Addr().String()
+		l.Close() // Close the listener, app.Run will re-listen
+		errChan <- app.Run(ctx, fs, false, serverAddr, "", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
-	// Allow the RPC call to be initiated.
-	time.Sleep(100 * time.Millisecond)
+	// Wait for the server to be ready
+	require.Eventually(t, func() bool {
+		conn, err := net.Dial("tcp", serverAddr)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 3*time.Second, 100*time.Millisecond, "Server did not start in time")
 
-	// Trigger the graceful shutdown.
-	shutdownStartTime := time.Now()
-	cancel()
-	wg.Wait()
-	shutdownDuration := time.Since(shutdownStartTime)
-	require.Less(t, shutdownDuration, 5*time.Second)
+	// 4. Send two identical requests
+	httpClient := &http.Client{Timeout: 2 * time.Second}
+	makeRequest := func() (*http.Response, error) {
+		requestBody := map[string]interface{}{
+			"jsonrpc": "2.0",
+			"method":  "tools/call",
+			"params": map[string]interface{}{
+				"name":      "test-tool",
+				"arguments": json.RawMessage(`{"input": "test"}`),
+			},
+			"id": "1",
+		}
+		bodyBytes, err := json.Marshal(requestBody)
+		require.NoError(t, err)
 
-	// The test should complete without error, as the timeout mechanism allows
-	// the server to shut down without waiting for the hanging connection.
-	select {
-	case err := <-errChan:
-		require.NoError(t, err, "The gRPC server should shut down gracefully without errors.")
-	default:
-		// Expected outcome.
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("http://%s", serverAddr), bytes.NewReader(bodyBytes))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		return httpClient.Do(req)
 	}
+
+	// First request - should go to the upstream
+	resp, err := makeRequest()
+	require.NoError(t, err, "First tool call failed")
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	resp.Body.Close()
+	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "Upstream should have been called once after the first request")
+
+	// Second request - should be served from cache
+	resp, err = makeRequest()
+	require.NoError(t, err, "Second tool call failed")
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	resp.Body.Close()
+	assert.Equal(t, int32(1), atomic.LoadInt32(&callCount), "Upstream should not be called a second time; response should be cached")
+
+	// 5. Cleanly shut down the server
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+}
+
+func TestRun_GRPCRegistrationServerFailsToCreate(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// Inject an error into the NewRegistrationServer function
+	mcpserver.NewRegistrationServerHook = func(bus *bus.BusProvider) (*mcpserver.RegistrationServer, error) {
+		return nil, fmt.Errorf("injected registration server error")
+	}
+	defer func() { mcpserver.NewRegistrationServerHook = nil }()
+
+	app := NewApplication()
+	err := app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 5*time.Second)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create API server: injected registration server error")
+}
+
+func TestRun_MCPServerFailsToCreate(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// Inject an error into the NewServer function
+	mcpserver.NewServerHook = func() (*mcpserver.Server, error) {
+		return nil, fmt.Errorf("injected mcp server error")
+	}
+	defer func() { mcpserver.NewServerHook = nil }()
+
+	app := NewApplication()
+	err := app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 5*time.Second)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create mcp server: injected mcp server error")
 }

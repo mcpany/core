@@ -39,6 +39,11 @@ type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus *bus.BusProvider
 }
+
+// NewRegistrationServerHook is a hook for testing that allows injecting errors
+// into the NewRegistrationServer function.
+var NewRegistrationServerHook func(bus *bus.BusProvider) (*RegistrationServer, error)
+
 // event bus.
 //
 // The bus is used for communicating with the service registration workers,
@@ -50,6 +55,9 @@ type RegistrationServer struct {
 // Returns a new instance of the RegistrationServer or an error if the bus is
 // nil.
 func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
+	if NewRegistrationServerHook != nil {
+		return NewRegistrationServerHook(bus)
+	}
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}

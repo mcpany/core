@@ -56,6 +56,10 @@ func (s *Server) Server() *mcp.Server {
 	return s.server
 }
 
+// NewServerHook is a hook for testing that allows injecting errors into the
+// NewServer function.
+var NewServerHook func() (*Server, error)
+
 // NewServer creates and initializes a new MCP Any Server. It sets up the
 // necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for
@@ -83,6 +87,9 @@ func NewServer(
 	serviceRegistry *serviceregistry.ServiceRegistry,
 	bus *bus.BusProvider,
 ) (*Server, error) {
+	if NewServerHook != nil {
+		return NewServerHook()
+	}
 	s := &Server{
 		router:          NewRouter(),
 		toolManager:     toolManager,
