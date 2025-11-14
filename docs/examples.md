@@ -52,10 +52,10 @@ To list the available tools, run the following command:
 grpcurl -plaintext localhost:8080 mcpany.mcp_router.v1.McpRouter/ListTools
 ```
 
-### Execute a Tool
+### Call a Tool
 
-To execute a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example, you would run the following command:
+To call a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example, you would run the following command:
 
 ```bash
-grpcurl -plaintext -d '{"tool_id": "weather/GetWeather", "inputs": {"location": "London"}}' localhost:8080 mcpany.mcp_router.v1.McpRouter/ExecuteTool
+grpcurl -plaintext -d '{"tool_id": "weather/GetWeather", "inputs": {"location": "London"}}' localhost:8080 mcpany.mcp_router.v1.McpRouter/CallTool
 ```
