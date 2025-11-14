@@ -25,6 +25,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1011,6 +1012,142 @@ func TestRunStdioMode(t *testing.T) {
 
 	assert.True(t, called, "runStdioMode should have been called")
 	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
+}
+
+func Test_runStdioMode_real(t *testing.T) {
+	oldStdin := os.Stdin
+	oldStdout := os.Stdout
+	defer func() {
+		os.Stdin = oldStdin
+		os.Stdout = oldStdout
+	}()
+
+	inR, inW, err := os.Pipe()
+	require.NoError(t, err)
+	os.Stdin = inR
+
+	outR, outW, err := os.Pipe()
+	require.NoError(t, err)
+	os.Stdout = outW
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- runStdioMode(ctx, mcpSrv)
+	}()
+
+	go func() {
+		defer inW.Close()
+		initRequest := `{"jsonrpc":"2.0","method":"initialize","id":0,"params":{"protocolVersion":"1.0"}}` + "\n"
+		_, err := inW.Write([]byte(initRequest))
+		require.NoError(t, err)
+		// Give the server a moment to process the request before the pipe is closed.
+		time.Sleep(100 * time.Millisecond)
+	}()
+
+	var buf bytes.Buffer
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, _ = io.Copy(&buf, outR)
+	}()
+
+	// Give the server time to process the initialize request.
+	time.Sleep(300 * time.Millisecond)
+
+	cancel()
+	runErr := <-errChan
+	assert.NoError(t, runErr)
+	outW.Close()
+	wg.Wait()
+
+	response := buf.String()
+	assert.Contains(t, response, `"id":0`)
+	assert.Contains(t, response, `"result":{"capabilities":{`)
+}
+
+func TestRun_InMemoryBus(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// An empty config will result in an in-memory bus.
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+	// This should not panic and should exit gracefully.
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
+	require.NoError(t, err)
+}
+
+func TestRun_CachingMiddleware(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+
+	// We need a way to inspect the middleware chain. We can use a test hook for this.
+	var middlewareNames []string
+	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		middlewareNames = append(middlewareNames, name)
+	}
+	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
+
+	err = app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
+	require.NoError(t, err)
+
+	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
+}
+
+func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
+	// Inject an error for mcpserver.NewRegistrationServer
+	mcpserver.NewRegistrationServerHook = func(bus interface{}) (*mcpserver.RegistrationServer, error) {
+		return nil, fmt.Errorf("injected registration server error")
+	}
+	defer func() { mcpserver.NewRegistrationServerHook = nil }()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", ":0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(s *gogrpc.Server) {
+		_, err := mcpserver.NewRegistrationServer(nil)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to create API server: %w", err)
+			// Do not return here, let the goroutine exit normally after sending the error.
+		}
+	})
+
+	// We expect to receive the injected error on the channel.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to create API server: injected registration server error")
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for error from startGrpcServer")
+	}
+
 }
 
 func TestHTTPServer_GracefulShutdown(t *testing.T) {

@@ -522,13 +522,14 @@ func startGrpcServer(
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
 		defer func() {
 			if r := recover(); r != nil {
+				serverLog.Error("Panic during gRPC service registration", "panic", r)
 				errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
 			}
 		}()
 
-		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
 		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
 		register(grpcServer)
 		reflection.Register(grpcServer)
