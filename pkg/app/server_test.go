@@ -48,6 +48,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 	gogrpc "google.golang.org/grpc"
+	"go.uber.org/goleak"
 )
 
 // connCountingListener is a net.Listener that wraps another net.Listener and
@@ -850,6 +851,41 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 type mockHangService struct {
 	gogrpc.ServerStream
 	hangTime time.Duration
+}
+
+func TestHealthCheckWithLeakDetection(t *testing.T) {
+	// Skip this test in short mode as it's meant for detecting resource leaks
+	// over multiple iterations, which can be time-consuming.
+	if testing.Short() {
+		t.Skip("Skipping resource leak test in short mode.")
+	}
+
+	// Use goleak to verify that no new goroutines are leaked by the test.
+	// This helps in detecting leaks that might not be immediately obvious.
+	goleak.VerifyNone(t)
+
+	// Set up a simple HTTP test server that mimics a healthy service.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Assert that the request is for the health check endpoint.
+		assert.Equal(t, "/healthz", r.URL.Path)
+		// Respond with a 200 OK status to indicate a healthy service.
+		w.WriteHeader(http.StatusOK)
+	}))
+	// Ensure the server is closed after the test to clean up resources.
+	defer server.Close()
+
+	// Extract the server's address from its URL.
+	addr := strings.TrimPrefix(server.URL, "http://")
+
+	// Run the health check multiple times to check for resource leaks.
+	// If response bodies are not being closed, this will likely lead to an
+	// accumulation of open file descriptors or other resources.
+	for i := 0; i < 50; i++ {
+		// Each health check is performed with a 5-second timeout.
+		err := HealthCheck(io.Discard, addr, 5*time.Second)
+		// Assert that each health check call completes without error.
+		assert.NoError(t, err, "HealthCheck call #%d failed", i+1)
+	}
 }
 
 // Hang is a mock RPC that simulates a long-running operation by sleeping
