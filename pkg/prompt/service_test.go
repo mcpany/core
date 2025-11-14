@@ -23,6 +23,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -85,6 +86,18 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 
 func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
 	m.Called(mcpServer)
+}
+
+func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
+	m.Called(serviceID)
+}
+
+func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	args := m.Called(serviceID)
+	if args.Get(0) == nil {
+		return nil, args.Bool(1)
+	}
+	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
 func TestService_ListPrompts(t *testing.T) {

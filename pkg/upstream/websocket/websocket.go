@@ -105,6 +105,7 @@ func (u *WebsocketUpstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered Websocket service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -221,4 +222,14 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	}
 
 	return discoveredTools
+}
+
+func (u *WebsocketUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+	log := logging.GetLogger()
+	websocketService := serviceConfig.GetWebsocketService()
+	for _, promptDef := range websocketService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

@@ -76,16 +76,16 @@ func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mcpServer = mcpServer
 }
 
-// ExecuteTool finds a tool by its name and executes it with the provided
+// CallTool finds a tool by its name and executes it with the provided
 // request context and inputs.
 //
 // ctx is the context for the tool execution.
 // req contains the name of the tool and its inputs.
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
-func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+func (tm *ToolManager) CallTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
-	log.Debug("Executing tool")
+	log.Debug("Calling tool")
 
 	execute := func(ctx context.Context, req *ExecutionRequest) (any, error) {
 		t, ok := tm.GetTool(req.ToolName)

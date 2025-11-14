@@ -81,7 +81,7 @@ func TestNewCommandUpstream(t *testing.T) {
 
 func TestCommandUpstream_Register(t *testing.T) {
 	tm := newMockToolManager()
-	prm := prompt.NewPromptManager()
+	prm := prompt.NewPromptManager(tm)
 	rm := resource.NewResourceManager()
 	u := NewCommandUpstream()
 
