@@ -1,0 +1,14 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+message PromptDefinition {
+    string id = 1;
+    string template = 2;
+    map<string, string> parameters = 3;
+}
