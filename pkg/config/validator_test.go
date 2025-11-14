@@ -310,7 +310,7 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 		{
 			name: "valid global settings",
 			globalConfig: (&configv1.GlobalSettings_builder{
-				BindAddress: proto.String("localhost:8081"),
+				JsonrpcPort: proto.String("localhost:8081"),
 			}).Build(),
 			binaryType:    Server,
 			expectedError: false,
@@ -318,7 +318,7 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 		{
 			name: "empty bind address for server",
 			globalConfig: (&configv1.GlobalSettings_builder{
-				BindAddress: proto.String(""),
+				JsonrpcPort: proto.String(""),
 			}).Build(),
 			binaryType:    Server,
 			expectedError: false,
@@ -326,7 +326,7 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 		{
 			name: "invalid bind address for server",
 			globalConfig: (&configv1.GlobalSettings_builder{
-				BindAddress: proto.String("invalid"),
+				JsonrpcPort: proto.String("invalid"),
 			}).Build(),
 			binaryType:    Server,
 			expectedError: true,
@@ -334,7 +334,7 @@ func TestValidateGlobalSettings_Validation(t *testing.T) {
 		{
 			name: "empty bind address for worker",
 			globalConfig: (&configv1.GlobalSettings_builder{
-				BindAddress: proto.String(""),
+				JsonrpcPort: proto.String(""),
 			}).Build(),
 			binaryType:    Worker,
 			expectedError: false,

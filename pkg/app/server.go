@@ -250,12 +250,7 @@ func (a *Application) Run(
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	bindAddress := jsonrpcPort
-	if cfg.GetGlobalSettings().GetBindAddress() != "" {
-		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-	}
-
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
