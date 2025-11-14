@@ -151,6 +151,7 @@ func (u *HTTPUpstream) Register(
 
 	address = httpService.GetAddress()
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -297,4 +298,14 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	}
 
 	return discoveredTools
+}
+
+func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+	log := logging.GetLogger()
+	httpService := serviceConfig.GetHttpService()
+	for _, promptDef := range httpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

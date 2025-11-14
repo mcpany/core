@@ -56,8 +56,8 @@ type ToolManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns a slice of all registered tools.
 	ListTools() []Tool
-	// ExecuteTool runs a tool with the given request parameters.
-	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	// CallTool runs a tool with the given request parameters.
+	CallTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer provides the tool manager with a reference to the MCP server,
 	// allowing tools to make calls back to the server if needed.
 	SetMCPServer(mcpServer MCPServerProvider)

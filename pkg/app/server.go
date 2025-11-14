@@ -149,7 +149,7 @@ func (a *Application) Run(
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
+	promptManager := prompt.NewPromptManager(toolManager)
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(

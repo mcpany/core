@@ -16,69 +16,113 @@
 
 package prompt
 
-import "github.com/modelcontextprotocol/go-sdk/mcp"
+import (
+	"context"
+	"encoding/json"
+	"errors"
 
-const (
-	// RoleUser represents the "user" role in a prompt message.
-	RoleUser = "user"
-	// RoleAssistant represents the "assistant" role in a prompt message.
-	RoleAssistant = "assistant"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/transformer"
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const (
-	// ContentTypeText represents a text content type in a prompt message.
-	ContentTypeText = "text"
-	// ContentTypeImage represents an image content type in a prompt message.
-	ContentTypeImage = "image"
-	// ContentTypeAudio represents an audio content type in a prompt message.
-	ContentTypeAudio = "audio"
-	// ContentTypeResource represents a resource content type in a prompt message.
-	ContentTypeResource = "resource"
+var (
+	ErrPromptNotFound = errors.New("prompt not found")
 )
 
-// Argument defines an argument for a prompt, including its name,
-// description, and whether it is required.
-type Argument struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	Required    bool   `json:"required,omitempty"`
+// PromptManagerInterface defines the contract for a prompt manager.
+type PromptManagerInterface interface {
+	GetPrompt(name string) (Prompt, bool)
+	ListPrompts() []Prompt
+	AddPrompt(prompt Prompt)
+	ClearPromptsForService(serviceID string)
+	SetMCPServer(mcpServer MCPServerProvider)
+	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 }
 
-// Message represents a single message within a prompt, including its role and
-// content.
-type Message struct {
-	Role    string  `json:"role"`
-	Content Content `json:"content"`
+// Prompt is the fundamental interface for any executable prompt in the system.
+type Prompt interface {
+	Prompt() *mcp.Prompt
+	Service() string
+	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
-// Content is a generic interface for the different types of content that can
-// be included in a prompt message.
-type Content interface{}
-
-// TextContent represents a plain text message.
-type TextContent struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
+// MCPServerProvider defines an interface for components that can provide an
+// instance of an *mcp.Server. This is used to decouple the PromptManager from the
+// concrete server implementation.
+type MCPServerProvider interface {
+	Server() *mcp.Server
 }
 
-// ImageContent represents an image, with the data being a base64-encoded
-// string.
-type ImageContent struct {
-	Type     string `json:"type"`
-	Data     string `json:"data"`
-	MimeType string `json:"mimeType"`
+// TemplatedPrompt implements the Prompt interface for a prompt that is defined
+// by a template.
+type TemplatedPrompt struct {
+	definition *configv1.PromptDefinition
+	serviceID  string
 }
 
-// AudioContent represents an audio clip, with the data being a base64-encoded
-// string.
-type AudioContent struct {
-	Type     string `json:"type"`
-	Data     string `json:"data"`
-	MimeType string `json:"mimeType"`
+// NewTemplatedPrompt creates a new TemplatedPrompt.
+func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) *TemplatedPrompt {
+	return &TemplatedPrompt{
+		definition: definition,
+		serviceID:  serviceID,
+	}
 }
 
-// ResourceContent represents a reference to a server-side resource.
-type ResourceContent struct {
-	Type     string        `json:"type"`
-	Resource *mcp.Resource `json:"resource"`
+// Prompt returns the MCP prompt definition.
+func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
+	args := make([]*mcp.PromptArgument, len(p.definition.GetArguments()))
+	for i, arg := range p.definition.GetArguments() {
+		args[i] = &mcp.PromptArgument{
+			Name:        arg.GetName(),
+			Description: arg.GetDescription(),
+			Required:    arg.GetRequired(),
+		}
+	}
+	sanitizedName, _ := util.SanitizeToolName(p.definition.GetName())
+
+	return &mcp.Prompt{
+		Name:        p.serviceID + "." + sanitizedName,
+		Title:       p.definition.GetTitle(),
+		Description: p.definition.GetDescription(),
+		Arguments:   args,
+	}
+}
+
+// Service returns the ID of the service that provides this prompt.
+func (p *TemplatedPrompt) Service() string {
+	return p.serviceID
+}
+
+// Get executes the prompt with the provided arguments.
+func (p *TemplatedPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+	var inputs map[string]any
+	if err := json.Unmarshal(args, &inputs); err != nil {
+		return nil, err
+	}
+
+	messages := make([]*mcp.PromptMessage, len(p.definition.GetMessages()))
+	for i, msg := range p.definition.GetMessages() {
+		if text := msg.GetText(); text != nil {
+			tpl, err := transformer.NewTemplate(text.GetText(), "{{", "}}")
+			if err != nil {
+				return nil, err
+			}
+			renderedText, err := tpl.Render(inputs)
+			if err != nil {
+				return nil, err
+			}
+			messages[i] = &mcp.PromptMessage{
+				Role:    mcp.Role(msg.GetRole()),
+				Content: &mcp.TextContent{Text: renderedText},
+			}
+		}
+	}
+
+	return &mcp.GetPromptResult{
+		Description: p.definition.GetDescription(),
+		Messages:    messages,
+	}, nil
 }

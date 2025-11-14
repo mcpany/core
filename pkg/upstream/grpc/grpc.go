@@ -52,6 +52,7 @@ import (
 type GRPCUpstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
+	toolManager     tool.ToolManagerInterface
 }
 
 // NewGRPCUpstream creates a new instance of GRPCUpstream.
@@ -82,6 +83,7 @@ func (u *GRPCUpstream) Register(
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+	u.toolManager = toolManager
 	if serviceConfig == nil {
 		return "", nil, nil, errors.New("service config is nil")
 	}
@@ -166,6 +168,11 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from config for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromConfig...)
+
+	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to create and register prompts from config for %s: %w", serviceID, err)
+	}
 
 	log.Info("Registered gRPC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
@@ -593,4 +600,26 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 		}.Build())
 	}
 	return discoveredTools, nil
+}
+
+func (u *GRPCUpstream) createAndRegisterPromptsFromConfig(
+	ctx context.Context,
+	serviceID string,
+	promptManager prompt.PromptManagerInterface,
+	isReload bool,
+) error {
+	log := logging.GetLogger()
+	serviceInfo, ok := u.toolManager.GetServiceInfo(serviceID)
+	if !ok {
+		return fmt.Errorf("service info not found for service: %s", serviceID)
+	}
+	grpcService := serviceInfo.Config.GetGrpcService()
+
+	for _, promptDef := range grpcService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
+
+	return nil
 }

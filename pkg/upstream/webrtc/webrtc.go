@@ -96,6 +96,7 @@ func (u *WebrtcUpstream) Register(
 
 	address := webrtcService.GetAddress()
 	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered WebRTC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -216,4 +217,14 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	}
 
 	return discoveredTools
+}
+
+func (u *WebrtcUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+	log := logging.GetLogger()
+	webrtcService := serviceConfig.GetWebrtcService()
+	for _, promptDef := range webrtcService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

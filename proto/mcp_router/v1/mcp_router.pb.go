@@ -24,6 +24,47 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type PromptMessage_Role int32
+
+const (
+	PromptMessage_USER      PromptMessage_Role = 0
+	PromptMessage_ASSISTANT PromptMessage_Role = 1
+)
+
+// Enum value maps for PromptMessage_Role.
+var (
+	PromptMessage_Role_name = map[int32]string{
+		0: "USER",
+		1: "ASSISTANT",
+	}
+	PromptMessage_Role_value = map[string]int32{
+		"USER":      0,
+		"ASSISTANT": 1,
+	}
+)
+
+func (x PromptMessage_Role) Enum() *PromptMessage_Role {
+	p := new(PromptMessage_Role)
+	*p = x
+	return p
+}
+
+func (x PromptMessage_Role) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PromptMessage_Role) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_mcp_router_v1_mcp_router_proto_enumTypes[0].Descriptor()
+}
+
+func (PromptMessage_Role) Type() protoreflect.EnumType {
+	return &file_proto_mcp_router_v1_mcp_router_proto_enumTypes[0]
+}
+
+func (x PromptMessage_Role) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // Represents an MCP Tool exposed by the aggregator
 type Tool struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
@@ -770,7 +811,7 @@ func (b0 ListToolsResponse_builder) Build() *ListToolsResponse {
 	return m0
 }
 
-type ExecuteToolRequest struct {
+type CallToolRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ToolId      *string                `protobuf:"bytes,1,opt,name=tool_id,json=toolId"`
 	xxx_hidden_Inputs      *structpb.Struct       `protobuf:"bytes,2,opt,name=inputs"`
@@ -780,20 +821,20 @@ type ExecuteToolRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *ExecuteToolRequest) Reset() {
-	*x = ExecuteToolRequest{}
+func (x *CallToolRequest) Reset() {
+	*x = CallToolRequest{}
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ExecuteToolRequest) String() string {
+func (x *CallToolRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExecuteToolRequest) ProtoMessage() {}
+func (*CallToolRequest) ProtoMessage() {}
 
-func (x *ExecuteToolRequest) ProtoReflect() protoreflect.Message {
+func (x *CallToolRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -805,7 +846,7 @@ func (x *ExecuteToolRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *ExecuteToolRequest) GetToolId() string {
+func (x *CallToolRequest) GetToolId() string {
 	if x != nil {
 		if x.xxx_hidden_ToolId != nil {
 			return *x.xxx_hidden_ToolId
@@ -815,54 +856,54 @@ func (x *ExecuteToolRequest) GetToolId() string {
 	return ""
 }
 
-func (x *ExecuteToolRequest) GetInputs() *structpb.Struct {
+func (x *CallToolRequest) GetInputs() *structpb.Struct {
 	if x != nil {
 		return x.xxx_hidden_Inputs
 	}
 	return nil
 }
 
-func (x *ExecuteToolRequest) SetToolId(v string) {
+func (x *CallToolRequest) SetToolId(v string) {
 	x.xxx_hidden_ToolId = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *ExecuteToolRequest) SetInputs(v *structpb.Struct) {
+func (x *CallToolRequest) SetInputs(v *structpb.Struct) {
 	x.xxx_hidden_Inputs = v
 }
 
-func (x *ExecuteToolRequest) HasToolId() bool {
+func (x *CallToolRequest) HasToolId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *ExecuteToolRequest) HasInputs() bool {
+func (x *CallToolRequest) HasInputs() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Inputs != nil
 }
 
-func (x *ExecuteToolRequest) ClearToolId() {
+func (x *CallToolRequest) ClearToolId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_ToolId = nil
 }
 
-func (x *ExecuteToolRequest) ClearInputs() {
+func (x *CallToolRequest) ClearInputs() {
 	x.xxx_hidden_Inputs = nil
 }
 
-type ExecuteToolRequest_builder struct {
+type CallToolRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	ToolId *string
 	Inputs *structpb.Struct
 }
 
-func (b0 ExecuteToolRequest_builder) Build() *ExecuteToolRequest {
-	m0 := &ExecuteToolRequest{}
+func (b0 CallToolRequest_builder) Build() *CallToolRequest {
+	m0 := &CallToolRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.ToolId != nil {
@@ -873,27 +914,27 @@ func (b0 ExecuteToolRequest_builder) Build() *ExecuteToolRequest {
 	return m0
 }
 
-type ExecuteToolResponse struct {
+type CallToolResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Outputs *structpb.Struct       `protobuf:"bytes,1,opt,name=outputs"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
-func (x *ExecuteToolResponse) Reset() {
-	*x = ExecuteToolResponse{}
+func (x *CallToolResponse) Reset() {
+	*x = CallToolResponse{}
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ExecuteToolResponse) String() string {
+func (x *CallToolResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExecuteToolResponse) ProtoMessage() {}
+func (*CallToolResponse) ProtoMessage() {}
 
-func (x *ExecuteToolResponse) ProtoReflect() protoreflect.Message {
+func (x *CallToolResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -905,36 +946,36 @@ func (x *ExecuteToolResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *ExecuteToolResponse) GetOutputs() *structpb.Struct {
+func (x *CallToolResponse) GetOutputs() *structpb.Struct {
 	if x != nil {
 		return x.xxx_hidden_Outputs
 	}
 	return nil
 }
 
-func (x *ExecuteToolResponse) SetOutputs(v *structpb.Struct) {
+func (x *CallToolResponse) SetOutputs(v *structpb.Struct) {
 	x.xxx_hidden_Outputs = v
 }
 
-func (x *ExecuteToolResponse) HasOutputs() bool {
+func (x *CallToolResponse) HasOutputs() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Outputs != nil
 }
 
-func (x *ExecuteToolResponse) ClearOutputs() {
+func (x *CallToolResponse) ClearOutputs() {
 	x.xxx_hidden_Outputs = nil
 }
 
-type ExecuteToolResponse_builder struct {
+type CallToolResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Outputs *structpb.Struct
 }
 
-func (b0 ExecuteToolResponse_builder) Build() *ExecuteToolResponse {
-	m0 := &ExecuteToolResponse{}
+func (b0 CallToolResponse_builder) Build() *CallToolResponse {
+	m0 := &CallToolResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Outputs = b.Outputs
@@ -944,11 +985,10 @@ func (b0 ExecuteToolResponse_builder) Build() *ExecuteToolResponse {
 // A Prompt is a pre-defined template for interacting with a language model.
 type Prompt struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
 	xxx_hidden_Description *string                `protobuf:"bytes,3,opt,name=description"`
-	xxx_hidden_Template    *string                `protobuf:"bytes,4,opt,name=template"`
-	xxx_hidden_InputSchema *structpb.Struct       `protobuf:"bytes,5,opt,name=input_schema,json=inputSchema"`
+	xxx_hidden_Arguments   *[]*PromptArgument     `protobuf:"bytes,4,rep,name=arguments"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -980,20 +1020,20 @@ func (x *Prompt) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *Prompt) GetId() string {
+func (x *Prompt) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *Prompt) GetName() string {
+func (x *Prompt) GetTitle() string {
 	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
 		}
 		return ""
 	}
@@ -1010,55 +1050,42 @@ func (x *Prompt) GetDescription() string {
 	return ""
 }
 
-func (x *Prompt) GetTemplate() string {
+func (x *Prompt) GetArguments() []*PromptArgument {
 	if x != nil {
-		if x.xxx_hidden_Template != nil {
-			return *x.xxx_hidden_Template
+		if x.xxx_hidden_Arguments != nil {
+			return *x.xxx_hidden_Arguments
 		}
-		return ""
-	}
-	return ""
-}
-
-func (x *Prompt) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
-func (x *Prompt) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
 func (x *Prompt) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *Prompt) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *Prompt) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
-func (x *Prompt) SetTemplate(v string) {
-	x.xxx_hidden_Template = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+func (x *Prompt) SetArguments(v []*PromptArgument) {
+	x.xxx_hidden_Arguments = &v
 }
 
-func (x *Prompt) SetInputSchema(v *structpb.Struct) {
-	x.xxx_hidden_InputSchema = v
-}
-
-func (x *Prompt) HasId() bool {
+func (x *Prompt) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *Prompt) HasName() bool {
+func (x *Prompt) HasTitle() bool {
 	if x == nil {
 		return false
 	}
@@ -1072,28 +1099,14 @@ func (x *Prompt) HasDescription() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *Prompt) HasTemplate() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *Prompt) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputSchema != nil
-}
-
-func (x *Prompt) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
 func (x *Prompt) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
+}
+
+func (x *Prompt) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
 }
 
 func (x *Prompt) ClearDescription() {
@@ -1101,69 +1114,60 @@ func (x *Prompt) ClearDescription() {
 	x.xxx_hidden_Description = nil
 }
 
-func (x *Prompt) ClearTemplate() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Template = nil
-}
-
-func (x *Prompt) ClearInputSchema() {
-	x.xxx_hidden_InputSchema = nil
-}
-
 type Prompt_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id          *string
 	Name        *string
+	Title       *string
 	Description *string
-	Template    *string
-	InputSchema *structpb.Struct
+	Arguments   []*PromptArgument
 }
 
 func (b0 Prompt_builder) Build() *Prompt {
 	m0 := &Prompt{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Id = b.Id
-	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Name = b.Name
 	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Title = b.Title
+	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_Description = b.Description
 	}
-	if b.Template != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_Template = b.Template
-	}
-	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_Arguments = &b.Arguments
 	return m0
 }
 
-type ListPromptsRequest struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+type PromptArgument struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_Required    bool                   `protobuf:"varint,3,opt,name=required"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
-func (x *ListPromptsRequest) Reset() {
-	*x = ListPromptsRequest{}
+func (x *PromptArgument) Reset() {
+	*x = PromptArgument{}
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListPromptsRequest) String() string {
+func (x *PromptArgument) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListPromptsRequest) ProtoMessage() {}
+func (*PromptArgument) ProtoMessage() {}
 
-func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
+func (x *PromptArgument) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1175,28 +1179,202 @@ func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *PromptArgument) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *PromptArgument) GetDescription() string {
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *PromptArgument) GetRequired() bool {
+	if x != nil {
+		return x.xxx_hidden_Required
+	}
+	return false
+}
+
+func (x *PromptArgument) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *PromptArgument) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *PromptArgument) SetRequired(v bool) {
+	x.xxx_hidden_Required = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *PromptArgument) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *PromptArgument) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *PromptArgument) HasRequired() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *PromptArgument) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *PromptArgument) ClearDescription() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
+}
+
+func (x *PromptArgument) ClearRequired() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Required = false
+}
+
+type PromptArgument_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name        *string
+	Description *string
+	Required    *bool
+}
+
+func (b0 PromptArgument_builder) Build() *PromptArgument {
+	m0 := &PromptArgument{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.Required != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Required = *b.Required
+	}
+	return m0
+}
+
+type ListPromptsRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Cursor      *string                `protobuf:"bytes,1,opt,name=cursor"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ListPromptsRequest) Reset() {
+	*x = ListPromptsRequest{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPromptsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPromptsRequest) ProtoMessage() {}
+
+func (x *ListPromptsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ListPromptsRequest) GetCursor() string {
+	if x != nil {
+		if x.xxx_hidden_Cursor != nil {
+			return *x.xxx_hidden_Cursor
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ListPromptsRequest) SetCursor(v string) {
+	x.xxx_hidden_Cursor = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *ListPromptsRequest) HasCursor() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ListPromptsRequest) ClearCursor() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Cursor = nil
+}
+
 type ListPromptsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	Cursor *string
 }
 
 func (b0 ListPromptsRequest_builder) Build() *ListPromptsRequest {
 	m0 := &ListPromptsRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
+	if b.Cursor != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Cursor = b.Cursor
+	}
 	return m0
 }
 
 type ListPromptsResponse struct {
-	state              protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Prompts *[]*Prompt             `protobuf:"bytes,1,rep,name=prompts"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Prompts     *[]*Prompt             `protobuf:"bytes,1,rep,name=prompts"`
+	xxx_hidden_NextCursor  *string                `protobuf:"bytes,2,opt,name=next_cursor,json=nextCursor"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ListPromptsResponse) Reset() {
 	*x = ListPromptsResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1208,7 +1386,7 @@ func (x *ListPromptsResponse) String() string {
 func (*ListPromptsResponse) ProtoMessage() {}
 
 func (x *ListPromptsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[8]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1228,14 +1406,42 @@ func (x *ListPromptsResponse) GetPrompts() []*Prompt {
 	return nil
 }
 
+func (x *ListPromptsResponse) GetNextCursor() string {
+	if x != nil {
+		if x.xxx_hidden_NextCursor != nil {
+			return *x.xxx_hidden_NextCursor
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *ListPromptsResponse) SetPrompts(v []*Prompt) {
 	x.xxx_hidden_Prompts = &v
+}
+
+func (x *ListPromptsResponse) SetNextCursor(v string) {
+	x.xxx_hidden_NextCursor = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *ListPromptsResponse) HasNextCursor() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ListPromptsResponse) ClearNextCursor() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_NextCursor = nil
 }
 
 type ListPromptsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Prompts []*Prompt
+	Prompts    []*Prompt
+	NextCursor *string
 }
 
 func (b0 ListPromptsResponse_builder) Build() *ListPromptsResponse {
@@ -1243,8 +1449,1036 @@ func (b0 ListPromptsResponse_builder) Build() *ListPromptsResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Prompts = &b.Prompts
+	if b.NextCursor != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_NextCursor = b.NextCursor
+	}
 	return m0
 }
+
+type GetPromptRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Arguments   *structpb.Struct       `protobuf:"bytes,2,opt,name=arguments"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *GetPromptRequest) Reset() {
+	*x = GetPromptRequest{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPromptRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPromptRequest) ProtoMessage() {}
+
+func (x *GetPromptRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetPromptRequest) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GetPromptRequest) GetArguments() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_Arguments
+	}
+	return nil
+}
+
+func (x *GetPromptRequest) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *GetPromptRequest) SetArguments(v *structpb.Struct) {
+	x.xxx_hidden_Arguments = v
+}
+
+func (x *GetPromptRequest) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetPromptRequest) HasArguments() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Arguments != nil
+}
+
+func (x *GetPromptRequest) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *GetPromptRequest) ClearArguments() {
+	x.xxx_hidden_Arguments = nil
+}
+
+type GetPromptRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name      *string
+	Arguments *structpb.Struct
+}
+
+func (b0 GetPromptRequest_builder) Build() *GetPromptRequest {
+	m0 := &GetPromptRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Name = b.Name
+	}
+	x.xxx_hidden_Arguments = b.Arguments
+	return m0
+}
+
+type GetPromptResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Description *string                `protobuf:"bytes,1,opt,name=description"`
+	xxx_hidden_Messages    *[]*PromptMessage      `protobuf:"bytes,2,rep,name=messages"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *GetPromptResponse) Reset() {
+	*x = GetPromptResponse{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPromptResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPromptResponse) ProtoMessage() {}
+
+func (x *GetPromptResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetPromptResponse) GetDescription() string {
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GetPromptResponse) GetMessages() []*PromptMessage {
+	if x != nil {
+		if x.xxx_hidden_Messages != nil {
+			return *x.xxx_hidden_Messages
+		}
+	}
+	return nil
+}
+
+func (x *GetPromptResponse) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *GetPromptResponse) SetMessages(v []*PromptMessage) {
+	x.xxx_hidden_Messages = &v
+}
+
+func (x *GetPromptResponse) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetPromptResponse) ClearDescription() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Description = nil
+}
+
+type GetPromptResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Description *string
+	Messages    []*PromptMessage
+}
+
+func (b0 GetPromptResponse_builder) Build() *GetPromptResponse {
+	m0 := &GetPromptResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Description = b.Description
+	}
+	x.xxx_hidden_Messages = &b.Messages
+	return m0
+}
+
+type PromptMessage struct {
+	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Role        PromptMessage_Role      `protobuf:"varint,1,opt,name=role,enum=mcpany.mcp_router.v1.PromptMessage_Role"`
+	xxx_hidden_Content     isPromptMessage_Content `protobuf_oneof:"content"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *PromptMessage) Reset() {
+	*x = PromptMessage{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromptMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromptMessage) ProtoMessage() {}
+
+func (x *PromptMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *PromptMessage) GetRole() PromptMessage_Role {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_Role
+		}
+	}
+	return PromptMessage_USER
+}
+
+func (x *PromptMessage) GetText() *TextContent {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Text); ok {
+			return x.Text
+		}
+	}
+	return nil
+}
+
+func (x *PromptMessage) GetImage() *ImageContent {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Image); ok {
+			return x.Image
+		}
+	}
+	return nil
+}
+
+func (x *PromptMessage) GetAudio() *AudioContent {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Audio); ok {
+			return x.Audio
+		}
+	}
+	return nil
+}
+
+func (x *PromptMessage) GetResource() *ResourceContent {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Resource); ok {
+			return x.Resource
+		}
+	}
+	return nil
+}
+
+func (x *PromptMessage) SetRole(v PromptMessage_Role) {
+	x.xxx_hidden_Role = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *PromptMessage) SetText(v *TextContent) {
+	if v == nil {
+		x.xxx_hidden_Content = nil
+		return
+	}
+	x.xxx_hidden_Content = &promptMessage_Text{v}
+}
+
+func (x *PromptMessage) SetImage(v *ImageContent) {
+	if v == nil {
+		x.xxx_hidden_Content = nil
+		return
+	}
+	x.xxx_hidden_Content = &promptMessage_Image{v}
+}
+
+func (x *PromptMessage) SetAudio(v *AudioContent) {
+	if v == nil {
+		x.xxx_hidden_Content = nil
+		return
+	}
+	x.xxx_hidden_Content = &promptMessage_Audio{v}
+}
+
+func (x *PromptMessage) SetResource(v *ResourceContent) {
+	if v == nil {
+		x.xxx_hidden_Content = nil
+		return
+	}
+	x.xxx_hidden_Content = &promptMessage_Resource{v}
+}
+
+func (x *PromptMessage) HasRole() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *PromptMessage) HasContent() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Content != nil
+}
+
+func (x *PromptMessage) HasText() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Text)
+	return ok
+}
+
+func (x *PromptMessage) HasImage() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Image)
+	return ok
+}
+
+func (x *PromptMessage) HasAudio() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Audio)
+	return ok
+}
+
+func (x *PromptMessage) HasResource() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Resource)
+	return ok
+}
+
+func (x *PromptMessage) ClearRole() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Role = PromptMessage_USER
+}
+
+func (x *PromptMessage) ClearContent() {
+	x.xxx_hidden_Content = nil
+}
+
+func (x *PromptMessage) ClearText() {
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Text); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+func (x *PromptMessage) ClearImage() {
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Image); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+func (x *PromptMessage) ClearAudio() {
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Audio); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+func (x *PromptMessage) ClearResource() {
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Resource); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+const PromptMessage_Content_not_set_case case_PromptMessage_Content = 0
+const PromptMessage_Text_case case_PromptMessage_Content = 2
+const PromptMessage_Image_case case_PromptMessage_Content = 3
+const PromptMessage_Audio_case case_PromptMessage_Content = 4
+const PromptMessage_Resource_case case_PromptMessage_Content = 5
+
+func (x *PromptMessage) WhichContent() case_PromptMessage_Content {
+	if x == nil {
+		return PromptMessage_Content_not_set_case
+	}
+	switch x.xxx_hidden_Content.(type) {
+	case *promptMessage_Text:
+		return PromptMessage_Text_case
+	case *promptMessage_Image:
+		return PromptMessage_Image_case
+	case *promptMessage_Audio:
+		return PromptMessage_Audio_case
+	case *promptMessage_Resource:
+		return PromptMessage_Resource_case
+	default:
+		return PromptMessage_Content_not_set_case
+	}
+}
+
+type PromptMessage_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Role *PromptMessage_Role
+	// Fields of oneof xxx_hidden_Content:
+	Text     *TextContent
+	Image    *ImageContent
+	Audio    *AudioContent
+	Resource *ResourceContent
+	// -- end of xxx_hidden_Content
+}
+
+func (b0 PromptMessage_builder) Build() *PromptMessage {
+	m0 := &PromptMessage{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Role != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Role = *b.Role
+	}
+	if b.Text != nil {
+		x.xxx_hidden_Content = &promptMessage_Text{b.Text}
+	}
+	if b.Image != nil {
+		x.xxx_hidden_Content = &promptMessage_Image{b.Image}
+	}
+	if b.Audio != nil {
+		x.xxx_hidden_Content = &promptMessage_Audio{b.Audio}
+	}
+	if b.Resource != nil {
+		x.xxx_hidden_Content = &promptMessage_Resource{b.Resource}
+	}
+	return m0
+}
+
+type case_PromptMessage_Content protoreflect.FieldNumber
+
+func (x case_PromptMessage_Content) String() string {
+	md := file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isPromptMessage_Content interface {
+	isPromptMessage_Content()
+}
+
+type promptMessage_Text struct {
+	Text *TextContent `protobuf:"bytes,2,opt,name=text,oneof"`
+}
+
+type promptMessage_Image struct {
+	Image *ImageContent `protobuf:"bytes,3,opt,name=image,oneof"`
+}
+
+type promptMessage_Audio struct {
+	Audio *AudioContent `protobuf:"bytes,4,opt,name=audio,oneof"`
+}
+
+type promptMessage_Resource struct {
+	Resource *ResourceContent `protobuf:"bytes,5,opt,name=resource,oneof"`
+}
+
+func (*promptMessage_Text) isPromptMessage_Content() {}
+
+func (*promptMessage_Image) isPromptMessage_Content() {}
+
+func (*promptMessage_Audio) isPromptMessage_Content() {}
+
+func (*promptMessage_Resource) isPromptMessage_Content() {}
+
+type TextContent struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Text        *string                `protobuf:"bytes,1,opt,name=text"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *TextContent) Reset() {
+	*x = TextContent{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TextContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TextContent) ProtoMessage() {}
+
+func (x *TextContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TextContent) GetText() string {
+	if x != nil {
+		if x.xxx_hidden_Text != nil {
+			return *x.xxx_hidden_Text
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TextContent) SetText(v string) {
+	x.xxx_hidden_Text = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *TextContent) HasText() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TextContent) ClearText() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Text = nil
+}
+
+type TextContent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Text *string
+}
+
+func (b0 TextContent_builder) Build() *TextContent {
+	m0 := &TextContent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Text != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Text = b.Text
+	}
+	return m0
+}
+
+type ImageContent struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
+	xxx_hidden_MimeType    *string                `protobuf:"bytes,2,opt,name=mime_type,json=mimeType"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ImageContent) Reset() {
+	*x = ImageContent{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImageContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImageContent) ProtoMessage() {}
+
+func (x *ImageContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ImageContent) GetData() string {
+	if x != nil {
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ImageContent) GetMimeType() string {
+	if x != nil {
+		if x.xxx_hidden_MimeType != nil {
+			return *x.xxx_hidden_MimeType
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ImageContent) SetData(v string) {
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ImageContent) SetMimeType(v string) {
+	x.xxx_hidden_MimeType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *ImageContent) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ImageContent) HasMimeType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ImageContent) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *ImageContent) ClearMimeType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MimeType = nil
+}
+
+type ImageContent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Data     *string
+	MimeType *string
+}
+
+func (b0 ImageContent_builder) Build() *ImageContent {
+	m0 := &ImageContent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.MimeType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_MimeType = b.MimeType
+	}
+	return m0
+}
+
+type AudioContent struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
+	xxx_hidden_MimeType    *string                `protobuf:"bytes,2,opt,name=mime_type,json=mimeType"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *AudioContent) Reset() {
+	*x = AudioContent{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AudioContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AudioContent) ProtoMessage() {}
+
+func (x *AudioContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AudioContent) GetData() string {
+	if x != nil {
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *AudioContent) GetMimeType() string {
+	if x != nil {
+		if x.xxx_hidden_MimeType != nil {
+			return *x.xxx_hidden_MimeType
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *AudioContent) SetData(v string) {
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *AudioContent) SetMimeType(v string) {
+	x.xxx_hidden_MimeType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *AudioContent) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *AudioContent) HasMimeType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *AudioContent) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *AudioContent) ClearMimeType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MimeType = nil
+}
+
+type AudioContent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Data     *string
+	MimeType *string
+}
+
+func (b0 AudioContent_builder) Build() *AudioContent {
+	m0 := &AudioContent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.MimeType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_MimeType = b.MimeType
+	}
+	return m0
+}
+
+type ResourceContent struct {
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Uri         *string                   `protobuf:"bytes,1,opt,name=uri"`
+	xxx_hidden_MimeType    *string                   `protobuf:"bytes,2,opt,name=mime_type,json=mimeType"`
+	xxx_hidden_Content     isResourceContent_Content `protobuf_oneof:"content"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ResourceContent) Reset() {
+	*x = ResourceContent{}
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourceContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourceContent) ProtoMessage() {}
+
+func (x *ResourceContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ResourceContent) GetUri() string {
+	if x != nil {
+		if x.xxx_hidden_Uri != nil {
+			return *x.xxx_hidden_Uri
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ResourceContent) GetMimeType() string {
+	if x != nil {
+		if x.xxx_hidden_MimeType != nil {
+			return *x.xxx_hidden_MimeType
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ResourceContent) GetText() string {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*resourceContent_Text); ok {
+			return x.Text
+		}
+	}
+	return ""
+}
+
+func (x *ResourceContent) GetBlob() []byte {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Content.(*resourceContent_Blob); ok {
+			return x.Blob
+		}
+	}
+	return nil
+}
+
+func (x *ResourceContent) SetUri(v string) {
+	x.xxx_hidden_Uri = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *ResourceContent) SetMimeType(v string) {
+	x.xxx_hidden_MimeType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ResourceContent) SetText(v string) {
+	x.xxx_hidden_Content = &resourceContent_Text{v}
+}
+
+func (x *ResourceContent) SetBlob(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Content = &resourceContent_Blob{v}
+}
+
+func (x *ResourceContent) HasUri() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ResourceContent) HasMimeType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ResourceContent) HasContent() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Content != nil
+}
+
+func (x *ResourceContent) HasText() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*resourceContent_Text)
+	return ok
+}
+
+func (x *ResourceContent) HasBlob() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Content.(*resourceContent_Blob)
+	return ok
+}
+
+func (x *ResourceContent) ClearUri() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Uri = nil
+}
+
+func (x *ResourceContent) ClearMimeType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MimeType = nil
+}
+
+func (x *ResourceContent) ClearContent() {
+	x.xxx_hidden_Content = nil
+}
+
+func (x *ResourceContent) ClearText() {
+	if _, ok := x.xxx_hidden_Content.(*resourceContent_Text); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+func (x *ResourceContent) ClearBlob() {
+	if _, ok := x.xxx_hidden_Content.(*resourceContent_Blob); ok {
+		x.xxx_hidden_Content = nil
+	}
+}
+
+const ResourceContent_Content_not_set_case case_ResourceContent_Content = 0
+const ResourceContent_Text_case case_ResourceContent_Content = 3
+const ResourceContent_Blob_case case_ResourceContent_Content = 4
+
+func (x *ResourceContent) WhichContent() case_ResourceContent_Content {
+	if x == nil {
+		return ResourceContent_Content_not_set_case
+	}
+	switch x.xxx_hidden_Content.(type) {
+	case *resourceContent_Text:
+		return ResourceContent_Text_case
+	case *resourceContent_Blob:
+		return ResourceContent_Blob_case
+	default:
+		return ResourceContent_Content_not_set_case
+	}
+}
+
+type ResourceContent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Uri      *string
+	MimeType *string
+	// Fields of oneof xxx_hidden_Content:
+	Text *string
+	Blob []byte
+	// -- end of xxx_hidden_Content
+}
+
+func (b0 ResourceContent_builder) Build() *ResourceContent {
+	m0 := &ResourceContent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Uri != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Uri = b.Uri
+	}
+	if b.MimeType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_MimeType = b.MimeType
+	}
+	if b.Text != nil {
+		x.xxx_hidden_Content = &resourceContent_Text{*b.Text}
+	}
+	if b.Blob != nil {
+		x.xxx_hidden_Content = &resourceContent_Blob{b.Blob}
+	}
+	return m0
+}
+
+type case_ResourceContent_Content protoreflect.FieldNumber
+
+func (x case_ResourceContent_Content) String() string {
+	md := file_proto_mcp_router_v1_mcp_router_proto_msgTypes[16].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isResourceContent_Content interface {
+	isResourceContent_Content()
+}
+
+type resourceContent_Text struct {
+	Text string `protobuf:"bytes,3,opt,name=text,oneof"`
+}
+
+type resourceContent_Blob struct {
+	Blob []byte `protobuf:"bytes,4,opt,name=blob,oneof"`
+}
+
+func (*resourceContent_Text) isResourceContent_Content() {}
+
+func (*resourceContent_Blob) isResourceContent_Content() {}
 
 // A Resource is a piece of data that can be used by tools or prompts.
 type Resource struct {
@@ -1262,7 +2496,7 @@ type Resource struct {
 
 func (x *Resource) Reset() {
 	*x = Resource{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1274,7 +2508,7 @@ func (x *Resource) String() string {
 func (*Resource) ProtoMessage() {}
 
 func (x *Resource) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[9]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1465,7 +2699,7 @@ type ListResourcesRequest struct {
 
 func (x *ListResourcesRequest) Reset() {
 	*x = ListResourcesRequest{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1477,7 +2711,7 @@ func (x *ListResourcesRequest) String() string {
 func (*ListResourcesRequest) ProtoMessage() {}
 
 func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[10]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1509,7 +2743,7 @@ type ListResourcesResponse struct {
 
 func (x *ListResourcesResponse) Reset() {
 	*x = ListResourcesResponse{}
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1521,7 +2755,7 @@ func (x *ListResourcesResponse) String() string {
 func (*ListResourcesResponse) ProtoMessage() {}
 
 func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[11]
+	mi := &file_proto_mcp_router_v1_mcp_router_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1587,21 +2821,57 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\foutputSchema\"\x12\n" +
 	"\x10ListToolsRequest\"E\n" +
 	"\x11ListToolsResponse\x120\n" +
-	"\x05tools\x18\x01 \x03(\v2\x1a.mcpany.mcp_router.v1.ToolR\x05tools\"^\n" +
-	"\x12ExecuteToolRequest\x12\x17\n" +
+	"\x05tools\x18\x01 \x03(\v2\x1a.mcpany.mcp_router.v1.ToolR\x05tools\"[\n" +
+	"\x0fCallToolRequest\x12\x17\n" +
 	"\atool_id\x18\x01 \x01(\tR\x06toolId\x12/\n" +
-	"\x06inputs\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06inputs\"H\n" +
-	"\x13ExecuteToolResponse\x121\n" +
-	"\aoutputs\x18\x01 \x01(\v2\x17.google.protobuf.StructR\aoutputs\"\xa6\x01\n" +
-	"\x06Prompt\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1a\n" +
-	"\btemplate\x18\x04 \x01(\tR\btemplate\x12:\n" +
-	"\finput_schema\x18\x05 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\"\x14\n" +
-	"\x12ListPromptsRequest\"M\n" +
+	"\x06inputs\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06inputs\"E\n" +
+	"\x10CallToolResponse\x121\n" +
+	"\aoutputs\x18\x01 \x01(\v2\x17.google.protobuf.StructR\aoutputs\"\x98\x01\n" +
+	"\x06Prompt\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12B\n" +
+	"\targuments\x18\x04 \x03(\v2$.mcpany.mcp_router.v1.PromptArgumentR\targuments\"b\n" +
+	"\x0ePromptArgument\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1a\n" +
+	"\brequired\x18\x03 \x01(\bR\brequired\",\n" +
+	"\x12ListPromptsRequest\x12\x16\n" +
+	"\x06cursor\x18\x01 \x01(\tR\x06cursor\"n\n" +
 	"\x13ListPromptsResponse\x126\n" +
-	"\aprompts\x18\x01 \x03(\v2\x1c.mcpany.mcp_router.v1.PromptR\aprompts\"~\n" +
+	"\aprompts\x18\x01 \x03(\v2\x1c.mcpany.mcp_router.v1.PromptR\aprompts\x12\x1f\n" +
+	"\vnext_cursor\x18\x02 \x01(\tR\n" +
+	"nextCursor\"]\n" +
+	"\x10GetPromptRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x125\n" +
+	"\targuments\x18\x02 \x01(\v2\x17.google.protobuf.StructR\targuments\"v\n" +
+	"\x11GetPromptResponse\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12?\n" +
+	"\bmessages\x18\x02 \x03(\v2#.mcpany.mcp_router.v1.PromptMessageR\bmessages\"\xef\x02\n" +
+	"\rPromptMessage\x12<\n" +
+	"\x04role\x18\x01 \x01(\x0e2(.mcpany.mcp_router.v1.PromptMessage.RoleR\x04role\x127\n" +
+	"\x04text\x18\x02 \x01(\v2!.mcpany.mcp_router.v1.TextContentH\x00R\x04text\x12:\n" +
+	"\x05image\x18\x03 \x01(\v2\".mcpany.mcp_router.v1.ImageContentH\x00R\x05image\x12:\n" +
+	"\x05audio\x18\x04 \x01(\v2\".mcpany.mcp_router.v1.AudioContentH\x00R\x05audio\x12C\n" +
+	"\bresource\x18\x05 \x01(\v2%.mcpany.mcp_router.v1.ResourceContentH\x00R\bresource\"\x1f\n" +
+	"\x04Role\x12\b\n" +
+	"\x04USER\x10\x00\x12\r\n" +
+	"\tASSISTANT\x10\x01B\t\n" +
+	"\acontent\"!\n" +
+	"\vTextContent\x12\x12\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\"?\n" +
+	"\fImageContent\x12\x12\n" +
+	"\x04data\x18\x01 \x01(\tR\x04data\x12\x1b\n" +
+	"\tmime_type\x18\x02 \x01(\tR\bmimeType\"?\n" +
+	"\fAudioContent\x12\x12\n" +
+	"\x04data\x18\x01 \x01(\tR\x04data\x12\x1b\n" +
+	"\tmime_type\x18\x02 \x01(\tR\bmimeType\"w\n" +
+	"\x0fResourceContent\x12\x10\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x1b\n" +
+	"\tmime_type\x18\x02 \x01(\tR\bmimeType\x12\x14\n" +
+	"\x04text\x18\x03 \x01(\tH\x00R\x04text\x12\x14\n" +
+	"\x04blob\x18\x04 \x01(\fH\x00R\x04blobB\t\n" +
+	"\acontent\"~\n" +
 	"\bResource\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
@@ -1610,54 +2880,74 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\acontent\x18\x05 \x01(\fR\acontent\"\x16\n" +
 	"\x14ListResourcesRequest\"U\n" +
 	"\x15ListResourcesResponse\x12<\n" +
-	"\tresources\x18\x01 \x03(\v2\x1e.mcpany.mcp_router.v1.ResourceR\tresources2\x9b\x03\n" +
+	"\tresources\x18\x01 \x03(\v2\x1e.mcpany.mcp_router.v1.ResourceR\tresources2\xf0\x03\n" +
 	"\tMcpRouter\x12\\\n" +
-	"\tListTools\x12&.mcpany.mcp_router.v1.ListToolsRequest\x1a'.mcpany.mcp_router.v1.ListToolsResponse\x12b\n" +
-	"\vExecuteTool\x12(.mcpany.mcp_router.v1.ExecuteToolRequest\x1a).mcpany.mcp_router.v1.ExecuteToolResponse\x12b\n" +
-	"\vListPrompts\x12(.mcpany.mcp_router.v1.ListPromptsRequest\x1a).mcpany.mcp_router.v1.ListPromptsResponse\x12h\n" +
+	"\tListTools\x12&.mcpany.mcp_router.v1.ListToolsRequest\x1a'.mcpany.mcp_router.v1.ListToolsResponse\x12Y\n" +
+	"\bCallTool\x12%.mcpany.mcp_router.v1.CallToolRequest\x1a&.mcpany.mcp_router.v1.CallToolResponse\x12b\n" +
+	"\vListPrompts\x12(.mcpany.mcp_router.v1.ListPromptsRequest\x1a).mcpany.mcp_router.v1.ListPromptsResponse\x12\\\n" +
+	"\tGetPrompt\x12&.mcpany.mcp_router.v1.GetPromptRequest\x1a'.mcpany.mcp_router.v1.GetPromptResponse\x12h\n" +
 	"\rListResources\x12*.mcpany.mcp_router.v1.ListResourcesRequest\x1a+.mcpany.mcp_router.v1.ListResourcesResponseB,Z*github.com/mcpany/core/proto/mcp_router/v1b\beditionsp\xe8\a"
 
-var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_mcp_router_v1_mcp_router_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_mcp_router_v1_mcp_router_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_proto_mcp_router_v1_mcp_router_proto_goTypes = []any{
-	(*Tool)(nil),                  // 0: mcpany.mcp_router.v1.Tool
-	(*ToolAnnotations)(nil),       // 1: mcpany.mcp_router.v1.ToolAnnotations
-	(*ListToolsRequest)(nil),      // 2: mcpany.mcp_router.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),     // 3: mcpany.mcp_router.v1.ListToolsResponse
-	(*ExecuteToolRequest)(nil),    // 4: mcpany.mcp_router.v1.ExecuteToolRequest
-	(*ExecuteToolResponse)(nil),   // 5: mcpany.mcp_router.v1.ExecuteToolResponse
-	(*Prompt)(nil),                // 6: mcpany.mcp_router.v1.Prompt
-	(*ListPromptsRequest)(nil),    // 7: mcpany.mcp_router.v1.ListPromptsRequest
-	(*ListPromptsResponse)(nil),   // 8: mcpany.mcp_router.v1.ListPromptsResponse
-	(*Resource)(nil),              // 9: mcpany.mcp_router.v1.Resource
-	(*ListResourcesRequest)(nil),  // 10: mcpany.mcp_router.v1.ListResourcesRequest
-	(*ListResourcesResponse)(nil), // 11: mcpany.mcp_router.v1.ListResourcesResponse
-	(*structpb.Struct)(nil),       // 12: google.protobuf.Struct
+	(PromptMessage_Role)(0),       // 0: mcpany.mcp_router.v1.PromptMessage.Role
+	(*Tool)(nil),                  // 1: mcpany.mcp_router.v1.Tool
+	(*ToolAnnotations)(nil),       // 2: mcpany.mcp_router.v1.ToolAnnotations
+	(*ListToolsRequest)(nil),      // 3: mcpany.mcp_router.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),     // 4: mcpany.mcp_router.v1.ListToolsResponse
+	(*CallToolRequest)(nil),       // 5: mcpany.mcp_router.v1.CallToolRequest
+	(*CallToolResponse)(nil),      // 6: mcpany.mcp_router.v1.CallToolResponse
+	(*Prompt)(nil),                // 7: mcpany.mcp_router.v1.Prompt
+	(*PromptArgument)(nil),        // 8: mcpany.mcp_router.v1.PromptArgument
+	(*ListPromptsRequest)(nil),    // 9: mcpany.mcp_router.v1.ListPromptsRequest
+	(*ListPromptsResponse)(nil),   // 10: mcpany.mcp_router.v1.ListPromptsResponse
+	(*GetPromptRequest)(nil),      // 11: mcpany.mcp_router.v1.GetPromptRequest
+	(*GetPromptResponse)(nil),     // 12: mcpany.mcp_router.v1.GetPromptResponse
+	(*PromptMessage)(nil),         // 13: mcpany.mcp_router.v1.PromptMessage
+	(*TextContent)(nil),           // 14: mcpany.mcp_router.v1.TextContent
+	(*ImageContent)(nil),          // 15: mcpany.mcp_router.v1.ImageContent
+	(*AudioContent)(nil),          // 16: mcpany.mcp_router.v1.AudioContent
+	(*ResourceContent)(nil),       // 17: mcpany.mcp_router.v1.ResourceContent
+	(*Resource)(nil),              // 18: mcpany.mcp_router.v1.Resource
+	(*ListResourcesRequest)(nil),  // 19: mcpany.mcp_router.v1.ListResourcesRequest
+	(*ListResourcesResponse)(nil), // 20: mcpany.mcp_router.v1.ListResourcesResponse
+	(*structpb.Struct)(nil),       // 21: google.protobuf.Struct
 }
 var file_proto_mcp_router_v1_mcp_router_proto_depIdxs = []int32{
-	12, // 0: mcpany.mcp_router.v1.Tool.input_schema:type_name -> google.protobuf.Struct
-	12, // 1: mcpany.mcp_router.v1.Tool.output_schema:type_name -> google.protobuf.Struct
-	1,  // 2: mcpany.mcp_router.v1.Tool.annotations:type_name -> mcpany.mcp_router.v1.ToolAnnotations
-	12, // 3: mcpany.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
-	12, // 4: mcpany.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
-	0,  // 5: mcpany.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	12, // 6: mcpany.mcp_router.v1.ExecuteToolRequest.inputs:type_name -> google.protobuf.Struct
-	12, // 7: mcpany.mcp_router.v1.ExecuteToolResponse.outputs:type_name -> google.protobuf.Struct
-	12, // 8: mcpany.mcp_router.v1.Prompt.input_schema:type_name -> google.protobuf.Struct
-	6,  // 9: mcpany.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpany.mcp_router.v1.Prompt
-	9,  // 10: mcpany.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpany.mcp_router.v1.Resource
-	2,  // 11: mcpany.mcp_router.v1.McpRouter.ListTools:input_type -> mcpany.mcp_router.v1.ListToolsRequest
-	4,  // 12: mcpany.mcp_router.v1.McpRouter.ExecuteTool:input_type -> mcpany.mcp_router.v1.ExecuteToolRequest
-	7,  // 13: mcpany.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpany.mcp_router.v1.ListPromptsRequest
-	10, // 14: mcpany.mcp_router.v1.McpRouter.ListResources:input_type -> mcpany.mcp_router.v1.ListResourcesRequest
-	3,  // 15: mcpany.mcp_router.v1.McpRouter.ListTools:output_type -> mcpany.mcp_router.v1.ListToolsResponse
-	5,  // 16: mcpany.mcp_router.v1.McpRouter.ExecuteTool:output_type -> mcpany.mcp_router.v1.ExecuteToolResponse
-	8,  // 17: mcpany.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpany.mcp_router.v1.ListPromptsResponse
-	11, // 18: mcpany.mcp_router.v1.McpRouter.ListResources:output_type -> mcpany.mcp_router.v1.ListResourcesResponse
-	15, // [15:19] is the sub-list for method output_type
-	11, // [11:15] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	21, // 0: mcpany.mcp_router.v1.Tool.input_schema:type_name -> google.protobuf.Struct
+	21, // 1: mcpany.mcp_router.v1.Tool.output_schema:type_name -> google.protobuf.Struct
+	2,  // 2: mcpany.mcp_router.v1.Tool.annotations:type_name -> mcpany.mcp_router.v1.ToolAnnotations
+	21, // 3: mcpany.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
+	21, // 4: mcpany.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
+	1,  // 5: mcpany.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	21, // 6: mcpany.mcp_router.v1.CallToolRequest.inputs:type_name -> google.protobuf.Struct
+	21, // 7: mcpany.mcp_router.v1.CallToolResponse.outputs:type_name -> google.protobuf.Struct
+	8,  // 8: mcpany.mcp_router.v1.Prompt.arguments:type_name -> mcpany.mcp_router.v1.PromptArgument
+	7,  // 9: mcpany.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpany.mcp_router.v1.Prompt
+	21, // 10: mcpany.mcp_router.v1.GetPromptRequest.arguments:type_name -> google.protobuf.Struct
+	13, // 11: mcpany.mcp_router.v1.GetPromptResponse.messages:type_name -> mcpany.mcp_router.v1.PromptMessage
+	0,  // 12: mcpany.mcp_router.v1.PromptMessage.role:type_name -> mcpany.mcp_router.v1.PromptMessage.Role
+	14, // 13: mcpany.mcp_router.v1.PromptMessage.text:type_name -> mcpany.mcp_router.v1.TextContent
+	15, // 14: mcpany.mcp_router.v1.PromptMessage.image:type_name -> mcpany.mcp_router.v1.ImageContent
+	16, // 15: mcpany.mcp_router.v1.PromptMessage.audio:type_name -> mcpany.mcp_router.v1.AudioContent
+	17, // 16: mcpany.mcp_router.v1.PromptMessage.resource:type_name -> mcpany.mcp_router.v1.ResourceContent
+	18, // 17: mcpany.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpany.mcp_router.v1.Resource
+	3,  // 18: mcpany.mcp_router.v1.McpRouter.ListTools:input_type -> mcpany.mcp_router.v1.ListToolsRequest
+	5,  // 19: mcpany.mcp_router.v1.McpRouter.CallTool:input_type -> mcpany.mcp_router.v1.CallToolRequest
+	9,  // 20: mcpany.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpany.mcp_router.v1.ListPromptsRequest
+	11, // 21: mcpany.mcp_router.v1.McpRouter.GetPrompt:input_type -> mcpany.mcp_router.v1.GetPromptRequest
+	19, // 22: mcpany.mcp_router.v1.McpRouter.ListResources:input_type -> mcpany.mcp_router.v1.ListResourcesRequest
+	4,  // 23: mcpany.mcp_router.v1.McpRouter.ListTools:output_type -> mcpany.mcp_router.v1.ListToolsResponse
+	6,  // 24: mcpany.mcp_router.v1.McpRouter.CallTool:output_type -> mcpany.mcp_router.v1.CallToolResponse
+	10, // 25: mcpany.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpany.mcp_router.v1.ListPromptsResponse
+	12, // 26: mcpany.mcp_router.v1.McpRouter.GetPrompt:output_type -> mcpany.mcp_router.v1.GetPromptResponse
+	20, // 27: mcpany.mcp_router.v1.McpRouter.ListResources:output_type -> mcpany.mcp_router.v1.ListResourcesResponse
+	23, // [23:28] is the sub-list for method output_type
+	18, // [18:23] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_proto_mcp_router_v1_mcp_router_proto_init() }
@@ -1665,18 +2955,29 @@ func file_proto_mcp_router_v1_mcp_router_proto_init() {
 	if File_proto_mcp_router_v1_mcp_router_proto != nil {
 		return
 	}
+	file_proto_mcp_router_v1_mcp_router_proto_msgTypes[12].OneofWrappers = []any{
+		(*promptMessage_Text)(nil),
+		(*promptMessage_Image)(nil),
+		(*promptMessage_Audio)(nil),
+		(*promptMessage_Resource)(nil),
+	}
+	file_proto_mcp_router_v1_mcp_router_proto_msgTypes[16].OneofWrappers = []any{
+		(*resourceContent_Text)(nil),
+		(*resourceContent_Blob)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_mcp_router_v1_mcp_router_proto_rawDesc), len(file_proto_mcp_router_v1_mcp_router_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   12,
+			NumEnums:      1,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_mcp_router_v1_mcp_router_proto_goTypes,
 		DependencyIndexes: file_proto_mcp_router_v1_mcp_router_proto_depIdxs,
+		EnumInfos:         file_proto_mcp_router_v1_mcp_router_proto_enumTypes,
 		MessageInfos:      file_proto_mcp_router_v1_mcp_router_proto_msgTypes,
 	}.Build()
 	File_proto_mcp_router_v1_mcp_router_proto = out.File

@@ -32,9 +32,11 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // mockPrompt is a mock implementation of the prompt.Prompt interface for testing.
@@ -84,7 +86,7 @@ func TestPromptsEndToEnd(t *testing.T) {
 	require.NoError(t, err)
 	poolManager := pool.NewManager()
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
+	promptManager := prompt.NewPromptManager(toolManager)
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(
@@ -108,6 +110,21 @@ func TestPromptsEndToEnd(t *testing.T) {
 	// Add the mock prompt
 	promptManager.AddPrompt(&mockPrompt{})
 
+	// Add a templated prompt
+	role := configv1.PromptMessage_USER
+	definition := configv1.PromptDefinition_builder{
+		Name: proto.String("templated-prompt"),
+		Messages: []*configv1.PromptMessage{
+			configv1.PromptMessage_builder{
+				Role: &role,
+				Text: configv1.TextContent_builder{
+					Text: proto.String("Hello, {{name}}!"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	promptManager.AddPrompt(prompt.NewTemplatedPrompt(definition, "test-service"))
+
 	// Client setup
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
@@ -123,9 +140,28 @@ func TestPromptsEndToEnd(t *testing.T) {
 	// Test prompts/list
 	listResult, err := clientSession.ListPrompts(ctx, &mcp.ListPromptsParams{})
 	require.NoError(t, err)
-	require.Len(t, listResult.Prompts, 1)
-	assert.Equal(t, "test_prompt", listResult.Prompts[0].Name)
-	assert.Equal(t, "Test Prompt", listResult.Prompts[0].Title)
+	require.Len(t, listResult.Prompts, 2)
+
+	// Check for the mock prompt
+	foundMockPrompt := false
+	for _, p := range listResult.Prompts {
+		if p.Name == "test_prompt" {
+			assert.Equal(t, "Test Prompt", p.Title)
+			foundMockPrompt = true
+			break
+		}
+	}
+	assert.True(t, foundMockPrompt, "mock prompt not found")
+
+	// Check for the templated prompt
+	foundTemplatedPrompt := false
+	for _, p := range listResult.Prompts {
+		if p.Name == "test-service.templated-prompt" {
+			foundTemplatedPrompt = true
+			break
+		}
+	}
+	assert.True(t, foundTemplatedPrompt, "templated prompt not found")
 
 	// Test prompts/get
 	getResult, err := clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
@@ -139,4 +175,17 @@ func TestPromptsEndToEnd(t *testing.T) {
 	textContent, ok := getResult.Messages[0].Content.(*mcp.TextContent)
 	require.True(t, ok)
 	assert.Equal(t, "test content", textContent.Text)
+
+	// Test templated prompts/get
+	getResult, err = clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
+		Name: "test-service.templated-prompt",
+		Arguments: map[string]string{
+			"name": "world",
+		},
+	})
+	require.NoError(t, err)
+	require.Len(t, getResult.Messages, 1)
+	textContent, ok = getResult.Messages[0].Content.(*mcp.TextContent)
+	require.True(t, ok)
+	assert.Equal(t, "Hello, world!", textContent.Text)
 }

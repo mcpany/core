@@ -81,7 +81,7 @@ type mockToolManager struct {
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
 	}
