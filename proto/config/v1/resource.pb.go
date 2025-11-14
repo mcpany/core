@@ -156,6 +156,7 @@ type ResourceDefinition struct {
 	xxx_hidden_Size         int64                             `protobuf:"varint,6,opt,name=size"`
 	xxx_hidden_Annotations  *ResourceAnnotation               `protobuf:"bytes,7,opt,name=annotations"`
 	xxx_hidden_ResourceType isResourceDefinition_ResourceType `protobuf_oneof:"resource_type"`
+	xxx_hidden_Prompts      *[]*PromptDefinition              `protobuf:"bytes,10,rep,name=prompts"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -269,34 +270,43 @@ func (x *ResourceDefinition) GetDynamic() *DynamicResource {
 	return nil
 }
 
+func (x *ResourceDefinition) GetPrompts() []*PromptDefinition {
+	if x != nil {
+		if x.xxx_hidden_Prompts != nil {
+			return *x.xxx_hidden_Prompts
+		}
+	}
+	return nil
+}
+
 func (x *ResourceDefinition) SetUri(v string) {
 	x.xxx_hidden_Uri = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *ResourceDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *ResourceDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *ResourceDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
 }
 
 func (x *ResourceDefinition) SetMimeType(v string) {
 	x.xxx_hidden_MimeType = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
 }
 
 func (x *ResourceDefinition) SetSize(v int64) {
 	x.xxx_hidden_Size = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
 }
 
 func (x *ResourceDefinition) SetAnnotations(v *ResourceAnnotation) {
@@ -317,6 +327,10 @@ func (x *ResourceDefinition) SetDynamic(v *DynamicResource) {
 		return
 	}
 	x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{v}
+}
+
+func (x *ResourceDefinition) SetPrompts(v []*PromptDefinition) {
+	x.xxx_hidden_Prompts = &v
 }
 
 func (x *ResourceDefinition) HasUri() bool {
@@ -473,6 +487,8 @@ type ResourceDefinition_builder struct {
 	Static  *StaticResource
 	Dynamic *DynamicResource
 	// -- end of xxx_hidden_ResourceType
+	// A list of prompts associated with the resource.
+	Prompts []*PromptDefinition
 }
 
 func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
@@ -480,27 +496,27 @@ func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Uri != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
 		x.xxx_hidden_Uri = b.Uri
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.MimeType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
 		x.xxx_hidden_MimeType = b.MimeType
 	}
 	if b.Size != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
 		x.xxx_hidden_Size = *b.Size
 	}
 	x.xxx_hidden_Annotations = b.Annotations
@@ -510,6 +526,7 @@ func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
 	if b.Dynamic != nil {
 		x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{b.Dynamic}
 	}
+	x.xxx_hidden_Prompts = &b.Prompts
 	return m0
 }
 
@@ -1056,11 +1073,11 @@ var File_proto_config_v1_resource_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\"\x8d\x01\n" +
+	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\x1a\x1cproto/config/v1/prompt.proto\"\x8d\x01\n" +
 	"\x12ResourceAnnotation\x12\x1a\n" +
 	"\baudience\x18\x01 \x03(\tR\baudience\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x01R\bpriority\x12?\n" +
-	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xf7\x02\n" +
+	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xb5\x03\n" +
 	"\x12ResourceDefinition\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -1070,7 +1087,9 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\x04size\x18\x06 \x01(\x03R\x04size\x12F\n" +
 	"\vannotations\x18\a \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotations\x12:\n" +
 	"\x06static\x18\b \x01(\v2 .mcpany.config.v1.StaticResourceH\x00R\x06static\x12=\n" +
-	"\adynamic\x18\t \x01(\v2!.mcpany.config.v1.DynamicResourceH\x00R\adynamicB\x0f\n" +
+	"\adynamic\x18\t \x01(\v2!.mcpany.config.v1.DynamicResourceH\x00R\adynamic\x12<\n" +
+	"\aprompts\x18\n" +
+	" \x03(\v2\".mcpany.config.v1.PromptDefinitionR\apromptsB\x0f\n" +
 	"\rresource_type\"n\n" +
 	"\x0eStaticResource\x12#\n" +
 	"\ftext_content\x18\x01 \x01(\tH\x00R\vtextContent\x12'\n" +
@@ -1093,29 +1112,31 @@ var file_proto_config_v1_resource_proto_goTypes = []any{
 	(*StaticResource)(nil),            // 2: mcpany.config.v1.StaticResource
 	(*DynamicResource)(nil),           // 3: mcpany.config.v1.DynamicResource
 	(*timestamppb.Timestamp)(nil),     // 4: google.protobuf.Timestamp
-	(*HttpCallDefinition)(nil),        // 5: mcpany.config.v1.HttpCallDefinition
-	(*GrpcCallDefinition)(nil),        // 6: mcpany.config.v1.GrpcCallDefinition
-	(*WebsocketCallDefinition)(nil),   // 7: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),      // 8: mcpany.config.v1.WebrtcCallDefinition
-	(*CommandLineCallDefinition)(nil), // 9: mcpany.config.v1.CommandLineCallDefinition
-	(*MCPCallDefinition)(nil),         // 10: mcpany.config.v1.MCPCallDefinition
+	(*PromptDefinition)(nil),          // 5: mcpany.config.v1.PromptDefinition
+	(*HttpCallDefinition)(nil),        // 6: mcpany.config.v1.HttpCallDefinition
+	(*GrpcCallDefinition)(nil),        // 7: mcpany.config.v1.GrpcCallDefinition
+	(*WebsocketCallDefinition)(nil),   // 8: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),      // 9: mcpany.config.v1.WebrtcCallDefinition
+	(*CommandLineCallDefinition)(nil), // 10: mcpany.config.v1.CommandLineCallDefinition
+	(*MCPCallDefinition)(nil),         // 11: mcpany.config.v1.MCPCallDefinition
 }
 var file_proto_config_v1_resource_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.ResourceAnnotation.last_modified:type_name -> google.protobuf.Timestamp
 	0,  // 1: mcpany.config.v1.ResourceDefinition.annotations:type_name -> mcpany.config.v1.ResourceAnnotation
 	2,  // 2: mcpany.config.v1.ResourceDefinition.static:type_name -> mcpany.config.v1.StaticResource
 	3,  // 3: mcpany.config.v1.ResourceDefinition.dynamic:type_name -> mcpany.config.v1.DynamicResource
-	5,  // 4: mcpany.config.v1.DynamicResource.http_call:type_name -> mcpany.config.v1.HttpCallDefinition
-	6,  // 5: mcpany.config.v1.DynamicResource.grpc_call:type_name -> mcpany.config.v1.GrpcCallDefinition
-	7,  // 6: mcpany.config.v1.DynamicResource.websocket_call:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	8,  // 7: mcpany.config.v1.DynamicResource.webrtc_call:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	9,  // 8: mcpany.config.v1.DynamicResource.command_line_call:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	10, // 9: mcpany.config.v1.DynamicResource.mcp_call:type_name -> mcpany.config.v1.MCPCallDefinition
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	5,  // 4: mcpany.config.v1.ResourceDefinition.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	6,  // 5: mcpany.config.v1.DynamicResource.http_call:type_name -> mcpany.config.v1.HttpCallDefinition
+	7,  // 6: mcpany.config.v1.DynamicResource.grpc_call:type_name -> mcpany.config.v1.GrpcCallDefinition
+	8,  // 7: mcpany.config.v1.DynamicResource.websocket_call:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	9,  // 8: mcpany.config.v1.DynamicResource.webrtc_call:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	10, // 9: mcpany.config.v1.DynamicResource.command_line_call:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	11, // 10: mcpany.config.v1.DynamicResource.mcp_call:type_name -> mcpany.config.v1.MCPCallDefinition
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_resource_proto_init() }
@@ -1124,6 +1145,7 @@ func file_proto_config_v1_resource_proto_init() {
 		return
 	}
 	file_proto_config_v1_call_proto_init()
+	file_proto_config_v1_prompt_proto_init()
 	file_proto_config_v1_resource_proto_msgTypes[1].OneofWrappers = []any{
 		(*resourceDefinition_Static)(nil),
 		(*resourceDefinition_Dynamic)(nil),

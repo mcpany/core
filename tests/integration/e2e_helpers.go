@@ -1274,6 +1274,50 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	return rpcResp.Result, nil
 }
 
+func (s *MCPANYTestServerInfo) ListPrompts(ctx context.Context) (*mcp.ListPromptsResult, error) {
+	reqBody, err := json.Marshal(map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "prompts/list",
+		"params":  map[string]interface{}{},
+		"id":      1,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+
+	resp, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var rpcResp struct {
+		Result *mcp.ListPromptsResult `json:"result"`
+		Error  *MCPJSONRPCError       `json:"error"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if rpcResp.Error != nil {
+		return nil, rpcResp.Error
+	}
+
+	return rpcResp.Result, nil
+}
+
 func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",

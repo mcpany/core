@@ -47,38 +47,6 @@ type Argument struct {
 // Message represents a single message within a prompt, including its role and
 // content.
 type Message struct {
-	Role    string  `json:"role"`
-	Content Content `json:"content"`
-}
-
-// Content is a generic interface for the different types of content that can
-// be included in a prompt message.
-type Content interface{}
-
-// TextContent represents a plain text message.
-type TextContent struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
-}
-
-// ImageContent represents an image, with the data being a base64-encoded
-// string.
-type ImageContent struct {
-	Type     string `json:"type"`
-	Data     string `json:"data"`
-	MimeType string `json:"mimeType"`
-}
-
-// AudioContent represents an audio clip, with the data being a base64-encoded
-// string.
-type AudioContent struct {
-	Type     string `json:"type"`
-	Data     string `json:"data"`
-	MimeType string `json:"mimeType"`
-}
-
-// ResourceContent represents a reference to a server-side resource.
-type ResourceContent struct {
-	Type     string        `json:"type"`
-	Resource *mcp.Resource `json:"resource"`
+	Role    string      `json:"role"`
+	Content mcp.Content `json:"content"`
 }

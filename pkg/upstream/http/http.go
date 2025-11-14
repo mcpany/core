@@ -150,7 +150,7 @@ func (u *HTTPUpstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	address = httpService.GetAddress()
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, promptManager, resourceManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -159,7 +159,7 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -173,6 +173,10 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	}
 
 	for i, definition := range definitions {
+		for _, p := range definition.GetPrompts() {
+			promptManager.AddPrompt(prompt.NewConfigPrompt(p, serviceID))
+		}
+
 		callID := definition.GetCallId()
 		httpDef, ok := calls[callID]
 		if !ok {
@@ -267,6 +271,9 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range httpService.GetResources() {
+		for _, p := range resourceDef.GetPrompts() {
+			promptManager.AddPrompt(prompt.NewConfigPrompt(p, serviceID))
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetHttpCall()
 			if call == nil {
