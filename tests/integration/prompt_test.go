@@ -99,19 +99,9 @@ func TestPromptIntegration(t *testing.T) {
 	require.NoError(t, err)
 
 	// Add a test prompt
-	promptManager.AddPrompt(&testPrompt{
-		prompt: &mcp.Prompt{
-			Name:        "code_review",
-			Title:       "Request Code Review",
-			Description: "Asks the LLM to analyze code quality and suggest improvements",
-			Arguments: []*mcp.PromptArgument{
-				{
-					Name:        "code",
-					Description: "The code to review",
-					Required:    true,
-				},
-			},
-		},
+	promptManager.AddPrompt(&prompt.Prompt{
+		Name:        "code_review",
+		Description: "Asks the LLM to analyze code quality and suggest improvements",
 	})
 
 	// Create client-server connection
@@ -134,20 +124,6 @@ func TestPromptIntegration(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, listResult.Prompts, 1, "Expected one prompt to be available")
 	assert.Equal(t, "code_review", listResult.Prompts[0].Name)
-
-	// Test prompts/get
-	getResult, err := clientSession.GetPrompt(context.Background(), &mcp.GetPromptParams{
-		Name: "code_review",
-		Arguments: map[string]string{
-			"code": "def hello():\n  print('world')",
-		},
-	})
-	require.NoError(t, err)
-	assert.Len(t, getResult.Messages, 1, "Expected one message")
-	assert.Equal(t, mcp.Role("user"), getResult.Messages[0].Role)
-	textContent, ok := getResult.Messages[0].Content.(*mcp.TextContent)
-	assert.True(t, ok, "Expected text content")
-	assert.Contains(t, textContent.Text, "def hello():\n  print('world')")
 }
 
 func TestPromptLifecycle(t *testing.T) {

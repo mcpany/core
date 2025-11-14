@@ -32,6 +32,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -106,7 +107,10 @@ func TestPromptsEndToEnd(t *testing.T) {
 	require.NoError(t, err)
 
 	// Add the mock prompt
-	promptManager.AddPrompt(&mockPrompt{})
+	promptManager.AddPrompt(&prompt.Prompt{
+		Name:        "test_prompt",
+		Description: "A prompt for testing.",
+	})
 
 	// Client setup
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
@@ -125,18 +129,71 @@ func TestPromptsEndToEnd(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, listResult.Prompts, 1)
 	assert.Equal(t, "test_prompt", listResult.Prompts[0].Name)
-	assert.Equal(t, "Test Prompt", listResult.Prompts[0].Title)
+	assert.Equal(t, "A prompt for testing.", listResult.Prompts[0].Description)
+}
 
-	// Test prompts/get
-	getResult, err := clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
-		Name: "test_prompt",
-		Arguments: map[string]string{
-			"test_arg": "test_value",
-		},
-	})
+func TestPromptsEndToEndWithConfig(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Server setup
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
-	require.Len(t, getResult.Messages, 1)
-	textContent, ok := getResult.Messages[0].Content.(*mcp.TextContent)
-	require.True(t, ok)
-	assert.Equal(t, "test content", textContent.Text)
+	poolManager := pool.NewManager()
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(
+		factory.NewUpstreamServiceFactory(poolManager),
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
+	mcpServer, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
+	require.NoError(t, err)
+
+	// Add a service with a prompt
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	promptDef := &configv1.PromptDefinition{}
+	promptDef.SetName("test-prompt")
+	promptDef.SetDescription("A test prompt")
+	promptDef.SetTemplate("Hello, {{.name}}!")
+	httpService.SetPrompts([]*configv1.PromptDefinition{promptDef})
+	serviceConfig.SetHttpService(httpService)
+	_, _, _, err = serviceRegistry.RegisterService(ctx, serviceConfig)
+	require.NoError(t, err)
+
+	// Client setup
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	// Connect server and client
+	serverSession, err := mcpServer.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// Test prompts/list
+	listResult, err := clientSession.ListPrompts(ctx, &mcp.ListPromptsParams{})
+	require.NoError(t, err)
+	require.Len(t, listResult.Prompts, 1)
+	assert.Equal(t, "test-prompt", listResult.Prompts[0].Name)
+	assert.Equal(t, "A test prompt", listResult.Prompts[0].Description)
 }

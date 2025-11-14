@@ -197,3 +197,30 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	require.Error(t, err, "Second registration with the same name should fail")
 	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
 }
+
+func TestServiceRegistry_UnregisterService(t *testing.T) {
+	f := &mockFactory{}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	serviceConfig.SetHttpService(httpService)
+
+	// Register the service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err)
+
+	// Verify the service is removed
+	_, ok := registry.GetServiceConfig(serviceID)
+	assert.False(t, ok)
+}

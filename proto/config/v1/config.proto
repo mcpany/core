@@ -10,7 +10,6 @@ import "proto/bus/bus.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/auth.proto";
-import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -112,8 +111,6 @@ message UpstreamServiceConfig {
   bool disable = 19;
   // The priority of the service. Lower numbers have higher priority.
   int32 priority = 20;
-  // A list of prompts served by this service.
-  repeated Prompt prompts = 21;
 }
 
 // --- Upstream Service Types ---
@@ -138,6 +135,8 @@ message GrpcUpstreamService {
   repeated ResourceDefinition resources = 8;
   // A map of call definitions, keyed by their unique ID.
   map<string, GrpcCallDefinition> calls = 9;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 10;
 }
 
 message ProtoDefinition {
@@ -182,6 +181,8 @@ message HttpUpstreamService {
   TLSConfig tls_config = 4;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 7;
 }
 
 // WebsocketUpstreamService defines an upstream service that communicates over Websocket.
@@ -196,6 +197,8 @@ message WebsocketUpstreamService {
   repeated ResourceDefinition resources = 4;
   // A map of call definitions, keyed by their unique ID.
   map<string, WebsocketCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -210,6 +213,8 @@ message WebrtcUpstreamService {
   repeated ResourceDefinition resources = 4;
   // A map of call definitions, keyed by their unique ID.
   map<string, WebrtcCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
@@ -228,6 +233,8 @@ message OpenapiUpstreamService {
   repeated ResourceDefinition resources = 6;
   // A map of call definitions, keyed by their unique ID.
   map<string, OpenAPICallDefinition> calls = 7;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 8;
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
@@ -250,6 +257,8 @@ message CommandLineUpstreamService {
   repeated ResourceDefinition resources = 9;
   // A map of call definitions, keyed by their unique ID.
   map<string, CommandLineCallDefinition> calls = 10;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 11;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
@@ -268,6 +277,8 @@ message McpUpstreamService {
   repeated ResourceDefinition resources = 7;
   // A map of call definitions, keyed by their unique ID.
   map<string, MCPCallDefinition> calls = 8;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 9;
 }
 
 // McpStdioConnection defines the parameters for a stdio-based connection.

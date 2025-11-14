@@ -18,8 +18,7 @@ package prompt
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -64,30 +63,17 @@ func (s *Service) ListPrompts(
 	prompts := s.promptManager.ListPrompts()
 	mcpPrompts := make([]*mcp.Prompt, len(prompts))
 	for i, p := range prompts {
-		mcpPrompts[i] = p.Prompt()
+		mcpPrompts[i] = &mcp.Prompt{
+			Name:        p.Name,
+			Description: p.Description,
+		}
 	}
 	return &mcp.ListPromptsResult{
 		Prompts: mcpPrompts,
 	}, nil
 }
 
-// GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
-// prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result. If the prompt is not found, it returns a
-// ErrPromptNotFound error.
-func (s *Service) GetPrompt(
-	ctx context.Context,
-	req *mcp.GetPromptRequest,
-) (*mcp.GetPromptResult, error) {
-	p, ok := s.promptManager.GetPrompt(req.Params.Name)
-	if !ok {
-		return nil, ErrPromptNotFound
-	}
-
-	argsBytes, err := json.Marshal(req.Params.Arguments)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
-	}
-
-	return p.Get(ctx, argsBytes)
-}
+var (
+	// ErrPromptNotFound is returned when a prompt is not found.
+	ErrPromptNotFound = errors.New("prompt not found")
+)

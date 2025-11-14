@@ -452,14 +452,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
-			promptManager.AddPrompt(&mcpPrompt{
-				mcpPrompt: mcpSDKPrompt,
-				service:   serviceID,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					stdioConfig: stdio,
-				},
-			})
+			promptDef := &configv1.PromptDefinition{}
+			promptDef.SetName(mcpSDKPrompt.Name)
+			promptDef.SetDescription(mcpSDKPrompt.Description)
+			p, err := prompt.NewFromProto(promptDef, serviceID)
+			if err != nil {
+				logging.GetLogger().Error("Failed to create prompt from proto", "error", err)
+				continue
+			}
+			promptManager.AddPrompt(p)
 		}
 	}
 
@@ -644,15 +645,15 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
-			promptManager.AddPrompt(&mcpPrompt{
-				mcpPrompt: mcpSDKPrompt,
-				service:   serviceID,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					httpAddress: httpAddress,
-					httpClient:  httpClient,
-				},
-			})
+			promptDef := &configv1.PromptDefinition{}
+			promptDef.SetName(mcpSDKPrompt.Name)
+			promptDef.SetDescription(mcpSDKPrompt.Description)
+			p, err := prompt.NewFromProto(promptDef, serviceID)
+			if err != nil {
+				logging.GetLogger().Error("Failed to create prompt from proto", "error", err)
+				continue
+			}
+			promptManager.AddPrompt(p)
 		}
 	}
 

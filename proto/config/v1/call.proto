@@ -244,3 +244,15 @@ message ToolDefinition {
   // The ID of the call definition to use for this tool.
   string call_id = 11;
 }
+
+// PromptDefinition describes a prompt that can be used to generate a response from a service.
+message PromptDefinition {
+  // The name of the prompt.
+  string name = 1;
+  // A human-readable description of what the prompt does.
+  string description = 2;
+  // The template for the prompt.
+  string template = 3;
+  // The schema for the input parameters required by the prompt.
+  google.protobuf.Struct input_schema = 4;
+}

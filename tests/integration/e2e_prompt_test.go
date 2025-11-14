@@ -83,14 +83,11 @@ func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
 	require.NoError(t, err, "failed to connect to mcp server")
 	defer session.Close()
 
-	// Get the "hello" prompt.
-	result, err := session.GetPrompt(context.Background(), &mcp.GetPromptParams{
-		Name: "hello",
-	})
-	require.NoError(t, err, "failed to get prompt")
+	// List the prompts.
+	result, err := session.ListPrompts(context.Background(), &mcp.ListPromptsParams{})
+	require.NoError(t, err, "failed to list prompts")
 
 	// Check the output.
-	require.Len(t, result.Messages, 1)
-	assert.Equal(t, mcp.Role("user"), result.Messages[0].Role)
-	assert.Equal(t, "Hello, world!", result.Messages[0].Content.(*mcp.TextContent).Text)
+	require.Len(t, result.Prompts, 1)
+	assert.Equal(t, "hello", result.Prompts[0].Name)
 }

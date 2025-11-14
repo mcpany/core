@@ -247,57 +247,6 @@ upstream_services: {
 				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
 			},
 		},
-		{
-			name: "valid service with prompt",
-			textprotoContent: `
-upstream_services: {
-	name: "service-with-prompt"
-	http_service: {
-		address: "http://api.example.com/v1"
-	}
-	prompts: {
-		name: "test-prompt"
-		title: "Test Prompt"
-		description: "This is a test prompt."
-		arguments: {
-			name: "arg1"
-			description: "Argument 1"
-			required: true
-		}
-		messages: {
-			role: "user"
-			text_content: {
-				text: "Hello, {{arg1}}"
-			}
-		}
-	}
-}
-`,
-			expectedCount: 1,
-			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "service-with-prompt", s.GetName())
-				prompts := s.GetPrompts()
-				require.Len(t, prompts, 1)
-				prompt := prompts[0]
-				assert.Equal(t, "test-prompt", prompt.GetName())
-				assert.Equal(t, "Test Prompt", prompt.GetTitle())
-				assert.Equal(t, "This is a test prompt.", prompt.GetDescription())
-				args := prompt.GetArguments()
-				require.Len(t, args, 1)
-				arg := args[0]
-				assert.Equal(t, "arg1", arg.GetName())
-				assert.Equal(t, "Argument 1", arg.GetDescription())
-				assert.True(t, arg.GetRequired())
-				messages := prompt.GetMessages()
-				require.Len(t, messages, 1)
-				msg := messages[0]
-				assert.Equal(t, "user", msg.GetRole())
-				textContent := msg.GetTextContent()
-				require.NotNil(t, textContent)
-				assert.Equal(t, "Hello, {{arg1}}", textContent.GetText())
-			},
-		},
 	}
 
 	for _, tt := range tests {

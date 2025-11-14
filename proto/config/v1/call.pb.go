@@ -2738,6 +2738,180 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	return m0
 }
 
+// PromptDefinition describes a prompt that can be used to generate a response from a service.
+type PromptDefinition struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_Template    *string                `protobuf:"bytes,3,opt,name=template"`
+	xxx_hidden_InputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=input_schema,json=inputSchema"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *PromptDefinition) Reset() {
+	*x = PromptDefinition{}
+	mi := &file_proto_config_v1_call_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromptDefinition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromptDefinition) ProtoMessage() {}
+
+func (x *PromptDefinition) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_call_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *PromptDefinition) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *PromptDefinition) GetDescription() string {
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *PromptDefinition) GetTemplate() string {
+	if x != nil {
+		if x.xxx_hidden_Template != nil {
+			return *x.xxx_hidden_Template
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *PromptDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *PromptDefinition) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *PromptDefinition) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *PromptDefinition) SetTemplate(v string) {
+	x.xxx_hidden_Template = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *PromptDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *PromptDefinition) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *PromptDefinition) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *PromptDefinition) HasTemplate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *PromptDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *PromptDefinition) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *PromptDefinition) ClearDescription() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
+}
+
+func (x *PromptDefinition) ClearTemplate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Template = nil
+}
+
+func (x *PromptDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+type PromptDefinition_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The name of the prompt.
+	Name *string
+	// A human-readable description of what the prompt does.
+	Description *string
+	// The template for the prompt.
+	Template *string
+	// The schema for the input parameters required by the prompt.
+	InputSchema *structpb.Struct
+}
+
+func (b0 PromptDefinition_builder) Build() *PromptDefinition {
+	m0 := &PromptDefinition{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.Template != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Template = b.Template
+	}
+	x.xxx_hidden_InputSchema = b.InputSchema
+	return m0
+}
+
 var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
@@ -2849,7 +3023,12 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
 	"\x0fopen_world_hint\x18\n" +
 	" \x01(\bR\ropenWorldHint\x12\x17\n" +
-	"\acall_id\x18\v \x01(\tR\x06callId*X\n" +
+	"\acall_id\x18\v \x01(\tR\x06callId\"\xa0\x01\n" +
+	"\x10PromptDefinition\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1a\n" +
+	"\btemplate\x18\x03 \x01(\tR\btemplate\x12:\n" +
+	"\finput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\vinputSchema*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
@@ -2862,7 +3041,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_proto_config_v1_call_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
 	(HttpCallDefinition_HttpMethod)(0),  // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -2883,11 +3062,12 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*CommandLineParameterMapping)(nil), // 16: mcpany.config.v1.CommandLineParameterMapping
 	(*CacheConfig)(nil),                 // 17: mcpany.config.v1.CacheConfig
 	(*ToolDefinition)(nil),              // 18: mcpany.config.v1.ToolDefinition
-	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Value)(nil),              // 20: google.protobuf.Value
-	(*SecretValue)(nil),                 // 21: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),         // 22: google.protobuf.Duration
-	(*structpb.Struct)(nil),             // 23: google.protobuf.Struct
+	(*PromptDefinition)(nil),            // 19: mcpany.config.v1.PromptDefinition
+	nil,                                 // 20: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Value)(nil),              // 21: google.protobuf.Value
+	(*SecretValue)(nil),                 // 22: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 23: google.protobuf.Duration
+	(*structpb.Struct)(nil),             // 24: google.protobuf.Struct
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -2906,7 +3086,7 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	16, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
 	17, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	20, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
 	17, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
@@ -2915,23 +3095,24 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
 	17, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	0,  // 24: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	20, // 25: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	21, // 25: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
 	12, // 26: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 27: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 27: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 28: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 29: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 29: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 30: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 31: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 31: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 32: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 33: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	22, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	23, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	23, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	22, // 33: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	23, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	24, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	24, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	24, // 37: mcpany.config.v1.PromptDefinition.input_schema:type_name -> google.protobuf.Struct
+	38, // [38:38] is the sub-list for method output_type
+	38, // [38:38] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -2946,7 +3127,7 @@ func file_proto_config_v1_call_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_call_proto_rawDesc), len(file_proto_config_v1_call_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   17,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

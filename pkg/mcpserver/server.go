@@ -18,7 +18,6 @@ package mcpserver
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/mcpany/core/pkg/appconsts"
@@ -111,16 +110,6 @@ func NewServer(
 	)
 
 	s.router.Register(
-		consts.MethodPromptsGet,
-		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
-			if r, ok := req.(*mcp.GetPromptRequest); ok {
-				return s.GetPrompt(ctx, r)
-			}
-			return nil, fmt.Errorf("invalid request type for %s", consts.MethodPromptsGet)
-		},
-	)
-
-	s.router.Register(
 		consts.MethodResourcesList,
 		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.ListResourcesRequest); ok {
@@ -149,7 +138,6 @@ func NewServer(
 	s.server = mcpServer
 
 	s.toolManager.SetMCPServer(s)
-	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
 
 	// TODO: Re-enable notifications when the go-sdk supports them
 	// s.resourceManager.OnListChanged(func() {
@@ -225,41 +213,16 @@ func (s *Server) ListPrompts(
 	prompts := s.promptManager.ListPrompts()
 	mcpPrompts := make([]*mcp.Prompt, len(prompts))
 	for i, p := range prompts {
-		mcpPrompts[i] = p.Prompt()
+		mcpPrompts[i] = &mcp.Prompt{
+			Name:        p.Name,
+			Description: p.Description,
+		}
 	}
 	return &mcp.ListPromptsResult{
 		Prompts: mcpPrompts,
 	}, nil
 }
 
-// GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
-// prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result. If the prompt is not found, it returns a
-// prompt.ErrPromptNotFound error.
-//
-// Parameters:
-//   - ctx: The context for the request.
-//   - req: The "prompts/get" request from the client, containing the prompt
-//     name and arguments.
-//
-// Returns the result of the prompt execution or an error if the prompt is not
-// found or execution fails.
-func (s *Server) GetPrompt(
-	ctx context.Context,
-	req *mcp.GetPromptRequest,
-) (*mcp.GetPromptResult, error) {
-	p, ok := s.promptManager.GetPrompt(req.Params.Name)
-	if !ok {
-		return nil, prompt.ErrPromptNotFound
-	}
-
-	argsBytes, err := json.Marshal(req.Params.Arguments)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
-	}
-
-	return p.Get(ctx, argsBytes)
-}
 
 // ListResources handles the "resources/list" MCP request. It fetches the list
 // of available resources from the ResourceManager, converts them to the MCP

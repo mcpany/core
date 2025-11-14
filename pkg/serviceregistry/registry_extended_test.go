@@ -18,10 +18,10 @@ package serviceregistry
 
 import (
 	"context"
-	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,16 +30,36 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+type mockPromptManager struct {
+	prompt.PromptManagerInterface
+	clearedServices map[string]bool
+}
+
+func newMockPromptManager() *mockPromptManager {
+	return &mockPromptManager{
+		clearedServices: make(map[string]bool),
+	}
+}
+
+func (m *mockPromptManager) ClearPromptsForService(serviceID string) {
+	m.clearedServices[serviceID] = true
+}
+
+func (m *mockPromptManager) RegisterPrompt(serviceID, name, description, template string, inputSchema *tool.Schema) error {
+	return nil
+}
+
 func TestServiceRegistry_UnregisterService(t *testing.T) {
 	f := &mockFactory{}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
+	prm := newMockPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)
@@ -65,6 +85,9 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	// Unregister non-existent service
 	err = registry.UnregisterService(context.Background(), "non-existent")
 	assert.Error(t, err)
+
+	// Verify that the prompt manager's ClearPromptsForService was called
+	assert.True(t, prm.clearedServices[serviceID], "ClearPromptsForService should have been called")
 }
 
 func TestServiceRegistry_GetAllServices(t *testing.T) {

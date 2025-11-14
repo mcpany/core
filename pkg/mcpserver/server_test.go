@@ -363,8 +363,8 @@ func TestServer_Prompts(t *testing.T) {
 	require.NoError(t, err)
 
 	// Add a test prompt
-	promptManager.AddPrompt(&testPrompt{
-		NameValue: "test-prompt",
+	promptManager.AddPrompt(&prompt.Prompt{
+		Name: "test-prompt",
 	})
 
 	// Create client-server connection
@@ -384,21 +384,6 @@ func TestServer_Prompts(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, result.Prompts, 1)
 		assert.Equal(t, "test-prompt", result.Prompts[0].Name)
-	})
-
-	t.Run("get prompt", func(t *testing.T) {
-		_, err := clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
-			Name: "test-prompt",
-		})
-		require.NoError(t, err)
-	})
-
-	t.Run("get non-existent prompt", func(t *testing.T) {
-		_, err := clientSession.GetPrompt(ctx, &mcp.GetPromptParams{
-			Name: "non-existent-prompt",
-		})
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), prompt.ErrPromptNotFound.Error())
 	})
 }
 
