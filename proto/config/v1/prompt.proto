@@ -1,0 +1,82 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "proto/config/v1/resource.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+// PromptDefinition defines a prompt that can be exposed to clients.
+message PromptDefinition {
+  // The unique name of the prompt.
+  string name = 1;
+  // The human-readable title of the prompt.
+  string title = 2;
+  // A description of the prompt.
+  string description = 3;
+  // The arguments that can be provided to the prompt.
+  repeated PromptArgument arguments = 4;
+  // The messages that make up the prompt.
+  repeated PromptMessage messages = 5;
+}
+
+// PromptArgument defines an argument that can be provided to a prompt.
+message PromptArgument {
+  // The name of the argument.
+  string name = 1;
+  // A description of the argument.
+  string description = 2;
+  // Whether the argument is required.
+  bool required = 3;
+}
+
+// PromptMessage defines a single message in a prompt.
+message PromptMessage {
+  // The role of the message sender.
+  enum Role {
+    // The user is the sender.
+    USER = 0;
+    // The assistant is the sender.
+    ASSISTANT = 1;
+  }
+  Role role = 1;
+
+  // The content of the message.
+  oneof content {
+    TextContent text = 2;
+    ImageContent image = 3;
+    AudioContent audio = 4;
+    ResourceContent resource = 5;
+  }
+}
+
+// TextContent defines a text message.
+message TextContent {
+  // The text content of the message.
+  string text = 1;
+}
+
+// ImageContent defines an image message.
+message ImageContent {
+  // The base64-encoded image data.
+  string data = 1;
+  // The MIME type of the image.
+  string mime_type = 2;
+}
+
+// AudioContent defines an audio message.
+message AudioContent {
+  // The base64-encoded audio data.
+  string data = 1;
+  // The MIME type of the audio.
+  string mime_type = 2;
+}
+
+// ResourceContent defines a message that references a resource.
+message ResourceContent {
+  // The resource to reference.
+  ResourceDefinition resource = 1;
+}

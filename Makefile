@@ -351,7 +351,7 @@ E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_serve
 .PHONY: build-e2e-mocks
 build-e2e-mocks:
 	@mkdir -p $(E2E_BIN_DIR)
-	@$(MAKE) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
+	@$(MAKE) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES)) build-e2e-prompt-server
 
 # Rule to build a single E2E mock service
 # < is the first prerequisite (the main.go file)
@@ -363,6 +363,13 @@ $(E2E_BIN_DIR)/%: $(E2E_MOCK_DIR)/%/main.go
 
 $(E2E_BIN_DIR)/command-tester: tests/integration/cmd/command-tester/main.go
 	@echo "Building E2E mock service: command-tester from $< into $(E2E_BIN_DIR)"
+	@$(GO_CMD) build -buildvcs=false -o $@ $<
+
+.PHONY: build-e2e-prompt-server
+build-e2e-prompt-server: $(E2E_BIN_DIR)/prompt-server
+
+$(E2E_BIN_DIR)/prompt-server: tests/integration/cmd/mocks/prompt-server/main.go
+	@echo "Building E2E mock service: prompt-server from $< into $(E2E_BIN_DIR)"
 	@$(GO_CMD) build -buildvcs=false -o $@ $<
 
 # Target to ensure the E2E binary directory exists

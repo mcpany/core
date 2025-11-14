@@ -153,6 +153,15 @@ func (u *HTTPUpstream) Register(
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
+	for _, promptDef := range httpService.GetPrompts() {
+		p, err := prompt.NewConfiguredPrompt(promptDef, serviceID)
+		if err != nil {
+			log.Error("Failed to create configured prompt", "error", err)
+			continue
+		}
+		promptManager.AddPrompt(p)
+	}
+
 	return serviceID, discoveredTools, nil, nil
 }
 

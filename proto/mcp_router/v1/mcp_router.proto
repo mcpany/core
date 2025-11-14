@@ -8,6 +8,7 @@ package mcpany.mcp_router.v1;
 option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
 
 import "google/protobuf/struct.proto"; // For generic JSON-like data
+import "proto/mcp_router/v1/prompt.proto";
 
 // Represents an MCP Tool exposed by the aggregator
 message Tool {
@@ -67,28 +68,10 @@ message ExecuteToolResponse {
                                           // The fields will match the fields of the underlying gRPC method's response message
 }
 
-// A Prompt is a pre-defined template for interacting with a language model.
-message Prompt {
-     string id = 1;
-     string name = 2;
-     string description = 3;
-     string template = 4;
-     google.protobuf.Struct input_schema = 5;
-}
-
 message ListPromptsRequest {}
 
 message ListPromptsResponse {
     repeated Prompt prompts = 1;
-}
-
-// A Resource is a piece of data that can be used by tools or prompts.
-message Resource {
-     string id = 1;
-     string name = 2;
-     string description = 3;
-     string type = 4; // e.g., "text", "image", "url"
-     bytes content = 5;
 }
 
 message ListResourcesRequest {}

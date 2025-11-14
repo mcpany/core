@@ -169,6 +169,15 @@ func (u *GRPCUpstream) Register(
 
 	log.Info("Registered gRPC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
+	for _, promptDef := range grpcService.GetPrompts() {
+		p, err := prompt.NewConfiguredPrompt(promptDef, serviceID)
+		if err != nil {
+			log.Error("Failed to create configured prompt", "error", err)
+			continue
+		}
+		promptManager.AddPrompt(p)
+	}
+
 	return serviceID, discoveredTools, nil, nil
 }
 

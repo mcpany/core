@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package mcpany.mcp_router.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/mcpany/core/proto/mcp_router/v1;v1";
+
+message Argument {
+  string name = 1;
+  string description = 2;
+  bool required = 3;
+}
+
+message TextContent {
+  string text = 1;
+}
+
+message ImageContent {
+  bytes data = 1;
+  string mime_type = 2;
+}
+
+message AudioContent {
+  bytes data = 1;
+  string mime_type = 2;
+}
+
+message Resource {
+    string uri = 1;
+    string mime_type = 2;
+    string text = 3;
+}
+
+message ResourceContent {
+    Resource resource = 1;
+}
+
+
+message PromptMessageContent {
+    oneof content {
+        TextContent text = 1;
+        ImageContent image = 2;
+        AudioContent audio = 3;
+        ResourceContent resource = 4;
+    }
+}
+
+message PromptMessage {
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    ROLE_USER = 1;
+    ROLE_ASSISTANT = 2;
+  }
+  Role role = 1;
+  PromptMessageContent content = 2;
+}
+
+message Prompt {
+  string name = 1;
+  string title = 2;
+  string description = 3;
+  repeated Argument arguments = 4;
+  repeated PromptMessage messages = 5;
+}
