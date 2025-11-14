@@ -151,6 +151,38 @@ func TestRedisBus_MultipleUnsubCalls(t *testing.T) {
 	assert.NotPanics(t, unsub)
 }
 
+func TestRedisBus_SubscribeOnce_Correctness(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "correctness-topic"
+
+	callCount := 0
+	var mu sync.Mutex
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		mu.Lock()
+		callCount++
+		mu.Unlock()
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	for i := 0; i < 5; i++ {
+		err := bus.Publish(context.Background(), topic, "hello")
+		assert.NoError(t, err)
+	}
+
+	time.Sleep(200 * time.Millisecond) // Allow time for messages to be processed
+
+	mu.Lock()
+	assert.Equal(t, 1, callCount, "handler should be called exactly once")
+	mu.Unlock()
+}
+
 
 func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
