@@ -264,8 +264,7 @@ upstream_services:
     http_service:
       address: "http://localhost:8080"
       tools:
-        - schema:
-            name: "echo"
+        - name: "echo"
           call_id: "echo_call"
       calls:
         echo_call:
@@ -1144,8 +1143,7 @@ upstream_services:
    http_service:
      address: "http://localhost:8080"
      tools:
-       - schema:
-           name: "test-call"
+       - name: "test-call"
          call_id: "test-call"
      calls:
         test-call:
@@ -1157,8 +1155,7 @@ upstream_services:
    http_service:
      address: "http://localhost:8081"
      tools:
-       - schema:
-           name: "test-call"
+       - name: "test-call"
          call_id: "test-call"
      calls:
         test-call:
