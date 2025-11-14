@@ -94,7 +94,7 @@ func newRootCmd() *cobra.Command {
 			}
 
 			if !strings.Contains(bindAddress, ":") {
-				bindAddress = "localhost:" + bindAddress
+				bindAddress = "0.0.0.0:" + bindAddress
 			}
 
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

@@ -397,15 +397,19 @@ func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
 
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
-	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BindAddress *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
-	xxx_hidden_McpBasepath *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_MessageBus  *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                      protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_JsonrpcPort     *string                 `protobuf:"bytes,1,opt,name=jsonrpc_port,json=jsonrpcPort"`
+	xxx_hidden_McpBasepath     *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
+	xxx_hidden_LogLevel        GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_MessageBus      *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
+	xxx_hidden_GrpcPort        *string                 `protobuf:"bytes,5,opt,name=grpc_port,json=grpcPort"`
+	xxx_hidden_Stdio           bool                    `protobuf:"varint,6,opt,name=stdio"`
+	xxx_hidden_ShutdownTimeout *durationpb.Duration    `protobuf:"bytes,8,opt,name=shutdown_timeout,json=shutdownTimeout"`
+	xxx_hidden_LogFile         *string                 `protobuf:"bytes,9,opt,name=log_file,json=logFile"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -433,10 +437,10 @@ func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *GlobalSettings) GetBindAddress() string {
+func (x *GlobalSettings) GetJsonrpcPort() string {
 	if x != nil {
-		if x.xxx_hidden_BindAddress != nil {
-			return *x.xxx_hidden_BindAddress
+		if x.xxx_hidden_JsonrpcPort != nil {
+			return *x.xxx_hidden_JsonrpcPort
 		}
 		return ""
 	}
@@ -469,26 +473,79 @@ func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
 	return nil
 }
 
-func (x *GlobalSettings) SetBindAddress(v string) {
-	x.xxx_hidden_BindAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+func (x *GlobalSettings) GetGrpcPort() string {
+	if x != nil {
+		if x.xxx_hidden_GrpcPort != nil {
+			return *x.xxx_hidden_GrpcPort
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetStdio() bool {
+	if x != nil {
+		return x.xxx_hidden_Stdio
+	}
+	return false
+}
+
+func (x *GlobalSettings) GetShutdownTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.xxx_hidden_ShutdownTimeout
+	}
+	return nil
+}
+
+func (x *GlobalSettings) GetLogFile() string {
+	if x != nil {
+		if x.xxx_hidden_LogFile != nil {
+			return *x.xxx_hidden_LogFile
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GlobalSettings) SetJsonrpcPort(v string) {
+	x.xxx_hidden_JsonrpcPort = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *GlobalSettings) SetMcpBasepath(v string) {
 	x.xxx_hidden_McpBasepath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 	x.xxx_hidden_MessageBus = v
 }
 
-func (x *GlobalSettings) HasBindAddress() bool {
+func (x *GlobalSettings) SetGrpcPort(v string) {
+	x.xxx_hidden_GrpcPort = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+}
+
+func (x *GlobalSettings) SetStdio(v bool) {
+	x.xxx_hidden_Stdio = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+}
+
+func (x *GlobalSettings) SetShutdownTimeout(v *durationpb.Duration) {
+	x.xxx_hidden_ShutdownTimeout = v
+}
+
+func (x *GlobalSettings) SetLogFile(v string) {
+	x.xxx_hidden_LogFile = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 8)
+}
+
+func (x *GlobalSettings) HasJsonrpcPort() bool {
 	if x == nil {
 		return false
 	}
@@ -516,9 +573,37 @@ func (x *GlobalSettings) HasMessageBus() bool {
 	return x.xxx_hidden_MessageBus != nil
 }
 
-func (x *GlobalSettings) ClearBindAddress() {
+func (x *GlobalSettings) HasGrpcPort() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *GlobalSettings) HasStdio() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *GlobalSettings) HasShutdownTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ShutdownTimeout != nil
+}
+
+func (x *GlobalSettings) HasLogFile() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *GlobalSettings) ClearJsonrpcPort() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_BindAddress = nil
+	x.xxx_hidden_JsonrpcPort = nil
 }
 
 func (x *GlobalSettings) ClearMcpBasepath() {
@@ -535,36 +620,76 @@ func (x *GlobalSettings) ClearMessageBus() {
 	x.xxx_hidden_MessageBus = nil
 }
 
+func (x *GlobalSettings) ClearGrpcPort() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_GrpcPort = nil
+}
+
+func (x *GlobalSettings) ClearStdio() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Stdio = false
+}
+
+func (x *GlobalSettings) ClearShutdownTimeout() {
+	x.xxx_hidden_ShutdownTimeout = nil
+}
+
+func (x *GlobalSettings) ClearLogFile() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_LogFile = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The address and port the server should bind to (e.g., "0.0.0.0:8080").
-	BindAddress *string
+	JsonrpcPort *string
 	// The base path for all MCP API endpoints (e.g., "/mcp/v1").
 	McpBasepath *string
 	// The logging level for the server.
 	LogLevel *GlobalSettings_LogLevel
 	// The message bus configuration.
 	MessageBus *bus.MessageBus
+	// Port for the gRPC registration server. If not specified, gRPC registration is disabled.
+	GrpcPort *string
+	// Enable stdio mode for JSON-RPC communication.
+	Stdio *bool
+	// Graceful shutdown timeout.
+	ShutdownTimeout *durationpb.Duration
+	// Path to a file to write logs to. If not set, logs are written to stdout.
+	LogFile *string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	m0 := &GlobalSettings{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.BindAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_BindAddress = b.BindAddress
+	if b.JsonrpcPort != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_JsonrpcPort = b.JsonrpcPort
 	}
 	if b.McpBasepath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
 		x.xxx_hidden_McpBasepath = b.McpBasepath
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
+	if b.GrpcPort != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		x.xxx_hidden_GrpcPort = b.GrpcPort
+	}
+	if b.Stdio != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_Stdio = *b.Stdio
+	}
+	x.xxx_hidden_ShutdownTimeout = b.ShutdownTimeout
+	if b.LogFile != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 8)
+		x.xxx_hidden_LogFile = b.LogFile
+	}
 	return m0
 }
 
@@ -5466,13 +5591,17 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x86\x02\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x9a\x03\n" +
 	"\x0eGlobalSettings\x12!\n" +
-	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
+	"\fjsonrpc_port\x18\x01 \x01(\tR\vjsonrpcPort\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\n" +
-	"messageBus\"4\n" +
+	"messageBus\x12\x1b\n" +
+	"\tgrpc_port\x18\x05 \x01(\tR\bgrpcPort\x12\x14\n" +
+	"\x05stdio\x18\x06 \x01(\bR\x05stdio\x12D\n" +
+	"\x10shutdown_timeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\x0fshutdownTimeout\x12\x19\n" +
+	"\blog_file\x18\t \x01(\tR\alogFile\"4\n" +
 	"\bLogLevel\x12\b\n" +
 	"\x04INFO\x10\x00\x12\b\n" +
 	"\x04WARN\x10\x01\x12\t\n" +

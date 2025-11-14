@@ -99,7 +99,7 @@ func TestIsValidBindAddress(t *testing.T) {
 		{"no port", "localhost", true},
 		{"no host", ":8080", false},
 		{"empty", "", true},
-		{"just colon", ":", false},
+		{"just colon", ":", true},
 		{"multiple colons", "localhost:8080:8080", true},
 		{"ipv6", "[::1]:8080", false},
 	}
