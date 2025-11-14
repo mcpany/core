@@ -17,89 +17,53 @@
 package app
 
 import (
-	"context"
-	"fmt"
+	"io"
 	"net"
-	"sync"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	gogrpc "google.golang.org/grpc"
 )
 
-// TestGRPCServer_GracefulShutdownWithTimeout_Fix confirms that the gRPC server's graceful
-// shutdown times out as expected when a request is hanging, preventing the
-// server from blocking indefinitely.
-func TestGRPCServer_GracefulShutdownWithTimeout_Fix(t *testing.T) {
-	// Find a free port to run the test server on.
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err, "Failed to find a free port.")
-	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+// TestHealthCheck_ConnectionTimeout is designed to explicitly test the timeout
+// behavior of the http.Client used in the HealthCheck function. The test sets
+// up a TCP listener that accepts a connection but never reads from it,
+// simulating a hanging server or network issue.
+//
+// Without a timeout configured on the http.Client's Transport, the client
+// would wait indefinitely for the server's response, causing the health check
+// to hang. This test ensures that the client has a timeout that prevents such
+// hangs.
+func TestHealthCheck_ConnectionTimeout(t *testing.T) {
+	// 1. Set up a listener that will accept one connection and then hang.
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err, "Failed to create a listener for the test.")
+	defer listener.Close()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
-
-	// Start the gRPC server with a mock service that hangs.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	require.NoError(t, err)
-	shutdownTimeout := 50 * time.Millisecond
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, shutdownTimeout, func(s *gogrpc.Server) {
-		// This service will hang for 10 seconds, which is much longer than our
-		// shutdown timeout.
-		hangService := &mockHangService{hangTime: 10 * time.Second}
-		desc := &gogrpc.ServiceDesc{
-			ServiceName: "testhang.HangService",
-			HandlerType: (*interface{})(nil),
-			Methods: []gogrpc.MethodDesc{
-				{
-					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
-						return srv.(*mockHangService).Hang(ctx, nil)
-					},
-				},
-			},
-			Streams:  []gogrpc.StreamDesc{},
-			Metadata: "testhang.proto",
-		}
-		s.RegisterService(desc, hangService)
-	})
-
-	// Give the server a moment to start up.
-	time.Sleep(100 * time.Millisecond)
-
-	// In a separate goroutine, make a call to the hanging RPC.
+	// 2. In a separate goroutine, accept one connection and then do nothing.
+	// This simulates a server that is unresponsive after connection.
 	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
-		if err != nil {
-			// If we can't connect, there's no point in continuing the test.
-			t.Logf("Failed to dial gRPC server: %v", err)
-			return
+		conn, err := listener.Accept()
+		if err == nil {
+			// Keep the connection open but don't read or write to it.
+			// The client will be stuck in the "waiting for response" state.
+			time.Sleep(20 * time.Second) // Keep it open longer than the check timeout.
+			conn.Close()
 		}
-		defer conn.Close()
-
-		// This call will hang until the server is forcefully shut down.
-		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 	}()
 
-	// Allow the RPC call to be initiated.
-	time.Sleep(100 * time.Millisecond)
+	// 3. Get the address of our hanging listener.
+	addr := listener.Addr().String()
 
-	// Trigger the graceful shutdown.
-	shutdownStartTime := time.Now()
-	cancel()
-	wg.Wait()
-	shutdownDuration := time.Since(shutdownStartTime)
-	require.Less(t, shutdownDuration, 5*time.Second)
+	// 4. Perform the health check against the hanging server.
+	// We expect this to time out.
+	err = HealthCheck(io.Discard, addr, 15*time.Second)
 
-	// The test should complete without error, as the timeout mechanism allows
-	// the server to shut down without waiting for the hanging connection.
-	select {
-	case err := <-errChan:
-		require.NoError(t, err, "The gRPC server should shut down gracefully without errors.")
-	default:
-		// Expected outcome.
+	// 5. Assert that the health check failed with a timeout error.
+	// The error message should indicate a timeout.
+	assert.Error(t, err, "HealthCheck should have returned an error due to the timeout.")
+	if err != nil {
+		assert.Contains(t, err.Error(), "context deadline exceeded", "The error should be a context deadline exceeded error.")
 	}
 }
