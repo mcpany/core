@@ -250,12 +250,7 @@ func (a *Application) Run(
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	bindAddress := jsonrpcPort
-	if cfg.GetGlobalSettings().GetBindAddress() != "" {
-		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-	}
-
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -304,12 +299,6 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-var (
-	healthCheckClient = &http.Client{
-		Timeout: 5 * time.Second,
-	}
-)
-
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -319,7 +308,8 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := healthCheckClient.Do(req)
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
@@ -556,12 +546,15 @@ func startGrpcServer(
 				grpcServer.GracefulStop()
 			}()
 
+			timer := time.NewTimer(shutdownTimeout)
+			defer timer.Stop()
 			select {
-			case <-time.After(shutdownTimeout):
+			case <-stopped:
+				// Successful graceful shutdown.
+			case <-timer.C:
+				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
-			case <-stopped:
-				serverLog.Info("Server gracefully stopped.")
 			}
 		}()
 
