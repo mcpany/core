@@ -404,9 +404,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	mcpService := serviceConfig.GetMcpService()
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
-	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	configToolMap := make(map[string]*configv1.ToolDefinition)
 	for _, toolDef := range configToolDefs {
-		configToolMap[toolDef.GetDefinition().GetName()] = toolDef
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -487,7 +487,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	log := logging.GetLogger()
 	callIDToName := make(map[string]string)
 	for _, d := range configToolDefs {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range mcpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
@@ -597,9 +597,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	mcpService := serviceConfig.GetMcpService()
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
-	configToolMap := make(map[string]*configv1.MCPToolDefinition)
+	configToolMap := make(map[string]*configv1.ToolDefinition)
 	for _, toolDef := range configToolDefs {
-		configToolMap[toolDef.GetDefinition().GetName()] = toolDef
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
@@ -680,7 +680,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	log := logging.GetLogger()
 	callIDToName := make(map[string]string)
 	for _, d := range configToolDefs {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range mcpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {

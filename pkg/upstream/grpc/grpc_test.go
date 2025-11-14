@@ -231,11 +231,9 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 		tm.AddServiceInfo("test-service", &tool.ServiceInfo{
 			Config: configv1.UpstreamServiceConfig_builder{
 				GrpcService: configv1.GrpcUpstreamService_builder{
-					Tools: []*configv1.GrpcToolDefinition{
-						configv1.GrpcToolDefinition_builder{
-							Definition: configv1.ToolDefinition_builder{
-								Name: proto.String("test-tool"),
-							}.Build(),
+					Tools: []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{
+							Name:   proto.String("test-tool"),
 							CallId: proto.String("test-call"),
 						}.Build(),
 					},

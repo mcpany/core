@@ -241,60 +241,6 @@ message ToolDefinition {
   // a web search tool is open, whereas that of a memory tool is not.
   // Default: true
   bool open_world_hint = 10;
-}
-
-// GrpcToolDefinition wraps a GrpcCallDefinition.
-message GrpcToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
   // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// HttpToolDefinition wraps a HttpCallDefinition.
-message HttpToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// WebsocketToolDefinition wraps a WebsocketCallDefinition.
-message WebsocketToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// WebrtcToolDefinition wraps a WebrtcCallDefinition.
-message WebrtcToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// OpenAPIToolDefinition wraps a OpenAPICallDefinition.
-message OpenAPIToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// CommandLineToolDefinition wraps a CommandLineCallDefinition.
-message CommandLineToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
-}
-
-// MCPToolDefinition wraps a MCPCallDefinition.
-message MCPToolDefinition {
-  // The definition of the tool.
-  ToolDefinition definition = 1;
-  // The ID of the call definition to use for this tool.
-  string call_id = 2;
+  string call_id = 11;
 }

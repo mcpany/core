@@ -291,8 +291,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	definitions := grpcService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		if d.GetDefinition() != nil {
-			callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		if d != nil {
+			callIDToName[d.GetCallId()] = d.GetName()
 		}
 	}
 	for _, resourceDef := range grpcService.GetResources() {
@@ -437,8 +437,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	definitions := grpcService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		if d.GetDefinition() != nil {
-			callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		if d != nil {
+			callIDToName[d.GetCallId()] = d.GetName()
 		}
 	}
 	for _, resourceDef := range grpcService.GetResources() {
@@ -537,9 +537,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	definitions := grpcService.GetTools()
 	calls := grpcService.GetCalls()
 
-	for _, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
-		callID := toolDefinition.GetCallId()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
 		grpcDef, ok := calls[callID]
 		if !ok {
 			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
