@@ -31,6 +31,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -314,6 +315,16 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	}
 }
 
+func TestRedisBus_SubscribeOnce_NilHandler(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-nil-handler"
+
+	assert.PanicsWithValue(t, "redis bus: handler cannot be nil", func() {
+		bus.SubscribeOnce(context.Background(), topic, nil)
+	})
+}
+
 func TestRedisBus_Unsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -364,7 +375,10 @@ func TestRedisBus_New(t *testing.T) {
 }
 
 func TestRedisBus_New_NilConfig(t *testing.T) {
-	bus := New[string](nil)
+	var bus *RedisBus[string]
+	assert.NotPanics(t, func() {
+		bus = New[string](nil)
+	})
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
@@ -427,6 +441,51 @@ func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *tes
 	}, 1*time.Second, 10*time.Millisecond, "subscriber count should be 1 after resubscribe, but was %d", subCount)
 
 	unsub1()
+}
+
+func TestRedisBus_Subscribe_NilHandler(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-nil-handler"
+
+	assert.PanicsWithValue(t, "redis bus: handler cannot be nil", func() {
+		bus.Subscribe(context.Background(), topic, nil)
+	})
+}
+
+func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-close-subscription"
+
+	// Use goleak to verify that the goroutine exits.
+	// We need to ignore the goroutines that are part of the test framework.
+	defer goleak.VerifyNone(t,
+		goleak.IgnoreTopFunction("testing.runTests"),
+		goleak.IgnoreTopFunction("testing.(*T).Run"),
+		goleak.IgnoreTopFunction("sync.runtime_notifyListWait"),
+		goleak.IgnoreTopFunction("internal/poll.runtime_pollWait"),
+		goleak.IgnoreTopFunction("github.com/go-redis/redis/v9/internal/pool.(*ConnPool).reaper"),
+	)
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		// This handler should not be called.
+		t.Error("handler called unexpectedly")
+	})
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	unsub()
+
+	// Allow some time for the goroutine to exit.
+	time.Sleep(100 * time.Millisecond)
 }
 
 func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
