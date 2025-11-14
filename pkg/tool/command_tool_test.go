@@ -138,3 +138,13 @@ func TestCommandTool_GetCacheConfig(t *testing.T) {
 	cmdTool := newCommandTool("echo", callDef)
 	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
 }
+
+func TestCommandTool_Tool(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("test-tool")
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+	}).Build()
+	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{})
+	assert.Equal(t, toolProto, cmdTool.Tool())
+}

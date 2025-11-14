@@ -63,22 +63,29 @@ func (b *RedisBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Subscribe subscribes to a Redis channel.
 func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
-	defer b.mu.Unlock()
-
 	if ps, ok := b.pubsubs[topic]; ok {
 		ps.Close()
 	}
 
 	pubsub := b.client.Subscribe(ctx, topic)
 	b.pubsubs[topic] = pubsub
+	b.mu.Unlock()
+
+	var unsubscribeOnce sync.Once
+	unsubscribe = func() {
+		unsubscribeOnce.Do(func() {
+			b.mu.Lock()
+			defer b.mu.Unlock()
+			if ps, ok := b.pubsubs[topic]; ok && ps == pubsub {
+				ps.Close()
+				delete(b.pubsubs, topic)
+			}
+		})
+	}
 
 	go func() {
+		defer unsubscribe()
 		log := logging.GetLogger()
-		defer func() {
-			if r := recover(); r != nil {
-				log.Error("panic in handler", "error", r)
-			}
-		}()
 		ch := pubsub.Channel()
 		for {
 			select {
@@ -94,19 +101,20 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 					log.Error("Failed to unmarshal message", "error", err)
 					continue
 				}
-				handler(message)
+
+				func() {
+					defer func() {
+						if r := recover(); r != nil {
+							log.Error("panic in handler", "error", r)
+						}
+					}()
+					handler(message)
+				}()
 			}
 		}
 	}()
 
-	return func() {
-		b.mu.Lock()
-		defer b.mu.Unlock()
-		if ps, ok := b.pubsubs[topic]; ok {
-			ps.Close()
-			delete(b.pubsubs, topic)
-		}
-	}
+	return unsubscribe
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
