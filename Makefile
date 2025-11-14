@@ -287,7 +287,13 @@ build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
-test: test-fast e2e test-public-api
+test: test-coverage
+
+test-coverage:
+	@echo "mode: atomic" > $(COVERAGE_FILE)
+	@$(MAKE) test-fast-cov
+	@$(MAKE) e2e-cov
+	@$(MAKE) test-public-api-cov
 
 COVERAGE_FILE ?= coverage.out
 
@@ -303,6 +309,24 @@ test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 test-public-api: build
 	@echo "Running public API E2E Go tests with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
+
+test-fast-cov: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
+	@echo "Running fast Go tests locally with a 300s timeout..."
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=coverage.tmp $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@tail -n +2 coverage.tmp >> $(COVERAGE_FILE)
+	@rm coverage.tmp
+
+e2e-cov: build build-examples build-e2e-mocks build-e2e-timeserver-docker
+	@echo "Running E2E Go tests locally with a 300s timeout..."
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.tmp $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@tail -n +2 coverage.tmp >> $(COVERAGE_FILE)
+	@rm coverage.tmp
+
+test-public-api-cov: build
+	@echo "Running public API E2E Go tests with a 300s timeout..."
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=coverage.tmp ./tests/public_api/...
+	@tail -n +2 coverage.tmp >> $(COVERAGE_FILE)
+	@rm coverage.tmp
 
 # ==============================================================================
 # Example Binaries Build
