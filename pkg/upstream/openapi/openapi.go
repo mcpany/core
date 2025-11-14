@@ -196,15 +196,14 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	calls := openapiService.GetCalls()
 
 	for _, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
 		callID := toolDefinition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
 			continue
 		}
 
-		toolName := definition.GetName()
+		toolName := toolDefinition.GetName()
 
 		var pbTool *pb.Tool
 		for _, t := range pbTools {
@@ -276,7 +275,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range openapiService.GetResources() {
 		if resourceDef.GetDynamic() != nil {

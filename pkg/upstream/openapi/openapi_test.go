@@ -169,11 +169,9 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 	doc := &openapi3.T{}
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
-			Tools: []*configv1.OpenAPIToolDefinition{
-				configv1.OpenAPIToolDefinition_builder{
-					Definition: configv1.ToolDefinition_builder{
-						Name: proto.String("test-tool"),
-					}.Build(),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("test-tool"),
 					CallId: proto.String("test-call"),
 				}.Build(),
 			},
@@ -261,11 +259,9 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			Address:     proto.String("http://localhost"),
 			OpenapiSpec: proto.String(sampleOpenAPISpecJSONForCacheTest),
-			Tools: []*configv1.OpenAPIToolDefinition{
-				configv1.OpenAPIToolDefinition_builder{
-					Definition: configv1.ToolDefinition_builder{
-						Name: proto.String("getTest"),
-					}.Build(),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("getTest"),
 					CallId: proto.String("getTest-call"),
 				}.Build(),
 			},
@@ -328,11 +324,9 @@ paths:
 		Name: proto.String("test-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			OpenapiSpec: proto.String(spec),
-			Tools: []*configv1.OpenAPIToolDefinition{
-				configv1.OpenAPIToolDefinition_builder{
-					Definition: configv1.ToolDefinition_builder{
-						Name: proto.String("getUser"),
-					}.Build(),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("getUser"),
 					CallId: proto.String("getUser-call"),
 				}.Build(),
 			},

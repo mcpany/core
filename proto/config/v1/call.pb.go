@@ -2348,10 +2348,11 @@ type ToolDefinition struct {
 	xxx_hidden_OutputSchema    *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema"`
 	xxx_hidden_IsStream        bool                   `protobuf:"varint,5,opt,name=is_stream,json=isStream"`
 	xxx_hidden_Title           *string                `protobuf:"bytes,6,opt,name=title"`
-	xxx_hidden_ReadOnlyHint    bool                   `protobuf:"varint,7,opt,name=read_only_hint,json=readOnlyHint"`
-	xxx_hidden_DestructiveHint bool                   `protobuf:"varint,8,opt,name=destructive_hint,json=destructiveHint"`
-	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,9,opt,name=idempotent_hint,json=idempotentHint"`
-	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,10,opt,name=open_world_hint,json=openWorldHint"`
+	xxx_hidden_CallId          *string                `protobuf:"bytes,7,opt,name=call_id,json=callId"`
+	xxx_hidden_ReadOnlyHint    bool                   `protobuf:"varint,8,opt,name=read_only_hint,json=readOnlyHint"`
+	xxx_hidden_DestructiveHint bool                   `protobuf:"varint,9,opt,name=destructive_hint,json=destructiveHint"`
+	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,10,opt,name=idempotent_hint,json=idempotentHint"`
+	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,11,opt,name=open_world_hint,json=openWorldHint"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -2434,6 +2435,16 @@ func (x *ToolDefinition) GetTitle() string {
 	return ""
 }
 
+func (x *ToolDefinition) GetCallId() string {
+	if x != nil {
+		if x.xxx_hidden_CallId != nil {
+			return *x.xxx_hidden_CallId
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *ToolDefinition) GetReadOnlyHint() bool {
 	if x != nil {
 		return x.xxx_hidden_ReadOnlyHint
@@ -2464,12 +2475,12 @@ func (x *ToolDefinition) GetOpenWorldHint() bool {
 
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -2482,32 +2493,37 @@ func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 11)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 11)
+}
+
+func (x *ToolDefinition) SetCallId(v string) {
+	x.xxx_hidden_CallId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 11)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -2552,32 +2568,39 @@ func (x *ToolDefinition) HasTitle() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
-func (x *ToolDefinition) HasReadOnlyHint() bool {
+func (x *ToolDefinition) HasCallId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
-func (x *ToolDefinition) HasDestructiveHint() bool {
+func (x *ToolDefinition) HasReadOnlyHint() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
-func (x *ToolDefinition) HasIdempotentHint() bool {
+func (x *ToolDefinition) HasDestructiveHint() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
 }
 
-func (x *ToolDefinition) HasOpenWorldHint() bool {
+func (x *ToolDefinition) HasIdempotentHint() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *ToolDefinition) HasOpenWorldHint() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
 func (x *ToolDefinition) ClearName() {
@@ -2608,23 +2631,28 @@ func (x *ToolDefinition) ClearTitle() {
 	x.xxx_hidden_Title = nil
 }
 
-func (x *ToolDefinition) ClearReadOnlyHint() {
+func (x *ToolDefinition) ClearCallId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_CallId = nil
+}
+
+func (x *ToolDefinition) ClearReadOnlyHint() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
 	x.xxx_hidden_ReadOnlyHint = false
 }
 
 func (x *ToolDefinition) ClearDestructiveHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
 	x.xxx_hidden_DestructiveHint = false
 }
 
 func (x *ToolDefinition) ClearIdempotentHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
 	x.xxx_hidden_IdempotentHint = false
 }
 
 func (x *ToolDefinition) ClearOpenWorldHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
 	x.xxx_hidden_OpenWorldHint = false
 }
 
@@ -2643,6 +2671,8 @@ type ToolDefinition_builder struct {
 	IsStream *bool
 	// A human-readable title for the tool.
 	Title *string
+	// The ID of the call definition to use for this tool.
+	CallId *string
 	// If true, the tool does not modify its environment.
 	// Default: false
 	ReadOnlyHint *bool
@@ -2668,780 +2698,42 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
 		x.xxx_hidden_Description = b.Description
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_OutputSchema = b.OutputSchema
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 11)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 11)
 		x.xxx_hidden_Title = b.Title
 	}
+	if b.CallId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
+		x.xxx_hidden_CallId = b.CallId
+	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 11)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
-	}
-	return m0
-}
-
-// GrpcToolDefinition wraps a GrpcCallDefinition.
-type GrpcToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *GrpcToolDefinition) Reset() {
-	*x = GrpcToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GrpcToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GrpcToolDefinition) ProtoMessage() {}
-
-func (x *GrpcToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *GrpcToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *GrpcToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *GrpcToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *GrpcToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *GrpcToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *GrpcToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *GrpcToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *GrpcToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type GrpcToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 GrpcToolDefinition_builder) Build() *GrpcToolDefinition {
-	m0 := &GrpcToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// HttpToolDefinition wraps a HttpCallDefinition.
-type HttpToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *HttpToolDefinition) Reset() {
-	*x = HttpToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HttpToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HttpToolDefinition) ProtoMessage() {}
-
-func (x *HttpToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *HttpToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *HttpToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *HttpToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *HttpToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *HttpToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *HttpToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *HttpToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *HttpToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type HttpToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 HttpToolDefinition_builder) Build() *HttpToolDefinition {
-	m0 := &HttpToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// WebsocketToolDefinition wraps a WebsocketCallDefinition.
-type WebsocketToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *WebsocketToolDefinition) Reset() {
-	*x = WebsocketToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebsocketToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebsocketToolDefinition) ProtoMessage() {}
-
-func (x *WebsocketToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebsocketToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *WebsocketToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *WebsocketToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *WebsocketToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *WebsocketToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *WebsocketToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *WebsocketToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *WebsocketToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type WebsocketToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 WebsocketToolDefinition_builder) Build() *WebsocketToolDefinition {
-	m0 := &WebsocketToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// WebrtcToolDefinition wraps a WebrtcCallDefinition.
-type WebrtcToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *WebrtcToolDefinition) Reset() {
-	*x = WebrtcToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[19]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebrtcToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebrtcToolDefinition) ProtoMessage() {}
-
-func (x *WebrtcToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[19]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebrtcToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *WebrtcToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *WebrtcToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *WebrtcToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *WebrtcToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *WebrtcToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *WebrtcToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *WebrtcToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type WebrtcToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 WebrtcToolDefinition_builder) Build() *WebrtcToolDefinition {
-	m0 := &WebrtcToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// OpenAPIToolDefinition wraps a OpenAPICallDefinition.
-type OpenAPIToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *OpenAPIToolDefinition) Reset() {
-	*x = OpenAPIToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OpenAPIToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OpenAPIToolDefinition) ProtoMessage() {}
-
-func (x *OpenAPIToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OpenAPIToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *OpenAPIToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *OpenAPIToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *OpenAPIToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *OpenAPIToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *OpenAPIToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *OpenAPIToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *OpenAPIToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type OpenAPIToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 OpenAPIToolDefinition_builder) Build() *OpenAPIToolDefinition {
-	m0 := &OpenAPIToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// CommandLineToolDefinition wraps a CommandLineCallDefinition.
-type CommandLineToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CommandLineToolDefinition) Reset() {
-	*x = CommandLineToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CommandLineToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CommandLineToolDefinition) ProtoMessage() {}
-
-func (x *CommandLineToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CommandLineToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *CommandLineToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CommandLineToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *CommandLineToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *CommandLineToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *CommandLineToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *CommandLineToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *CommandLineToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type CommandLineToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 CommandLineToolDefinition_builder) Build() *CommandLineToolDefinition {
-	m0 := &CommandLineToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
-	}
-	return m0
-}
-
-// MCPToolDefinition wraps a MCPCallDefinition.
-type MCPToolDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Definition  *ToolDefinition        `protobuf:"bytes,1,opt,name=definition"`
-	xxx_hidden_CallId      *string                `protobuf:"bytes,2,opt,name=call_id,json=callId"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *MCPToolDefinition) Reset() {
-	*x = MCPToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *MCPToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MCPToolDefinition) ProtoMessage() {}
-
-func (x *MCPToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[22]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *MCPToolDefinition) GetDefinition() *ToolDefinition {
-	if x != nil {
-		return x.xxx_hidden_Definition
-	}
-	return nil
-}
-
-func (x *MCPToolDefinition) GetCallId() string {
-	if x != nil {
-		if x.xxx_hidden_CallId != nil {
-			return *x.xxx_hidden_CallId
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *MCPToolDefinition) SetDefinition(v *ToolDefinition) {
-	x.xxx_hidden_Definition = v
-}
-
-func (x *MCPToolDefinition) SetCallId(v string) {
-	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *MCPToolDefinition) HasDefinition() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Definition != nil
-}
-
-func (x *MCPToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *MCPToolDefinition) ClearDefinition() {
-	x.xxx_hidden_Definition = nil
-}
-
-func (x *MCPToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CallId = nil
-}
-
-type MCPToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The definition of the tool.
-	Definition *ToolDefinition
-	// The ID of the call definition to use for this tool.
-	CallId *string
-}
-
-func (b0 MCPToolDefinition_builder) Build() *MCPToolDefinition {
-	m0 := &MCPToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Definition = b.Definition
-	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_CallId = b.CallId
 	}
 	return m0
 }
@@ -3544,54 +2836,20 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\x95\x03\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xae\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
 	"\tis_stream\x18\x05 \x01(\bR\bisStream\x12\x14\n" +
-	"\x05title\x18\x06 \x01(\tR\x05title\x12$\n" +
-	"\x0eread_only_hint\x18\a \x01(\bR\freadOnlyHint\x12)\n" +
-	"\x10destructive_hint\x18\b \x01(\bR\x0fdestructiveHint\x12'\n" +
-	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
-	"\x0fopen_world_hint\x18\n" +
-	" \x01(\bR\ropenWorldHint\"o\n" +
-	"\x12GrpcToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"o\n" +
-	"\x12HttpToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"t\n" +
-	"\x17WebsocketToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"q\n" +
-	"\x14WebrtcToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"r\n" +
-	"\x15OpenAPIToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"v\n" +
-	"\x19CommandLineToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId\"n\n" +
-	"\x11MCPToolDefinition\x12@\n" +
-	"\n" +
-	"definition\x18\x01 \x01(\v2 .mcpany.config.v1.ToolDefinitionR\n" +
-	"definition\x12\x17\n" +
-	"\acall_id\x18\x02 \x01(\tR\x06callId*X\n" +
+	"\x05title\x18\x06 \x01(\tR\x05title\x12\x17\n" +
+	"\acall_id\x18\a \x01(\tR\x06callId\x12$\n" +
+	"\x0eread_only_hint\x18\b \x01(\bR\freadOnlyHint\x12)\n" +
+	"\x10destructive_hint\x18\t \x01(\bR\x0fdestructiveHint\x12'\n" +
+	"\x0fidempotent_hint\x18\n" +
+	" \x01(\bR\x0eidempotentHint\x12&\n" +
+	"\x0fopen_world_hint\x18\v \x01(\bR\ropenWorldHint*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
@@ -3604,7 +2862,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_config_v1_call_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
 	(HttpCallDefinition_HttpMethod)(0),  // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -3625,18 +2883,11 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*CommandLineParameterMapping)(nil), // 16: mcpany.config.v1.CommandLineParameterMapping
 	(*CacheConfig)(nil),                 // 17: mcpany.config.v1.CacheConfig
 	(*ToolDefinition)(nil),              // 18: mcpany.config.v1.ToolDefinition
-	(*GrpcToolDefinition)(nil),          // 19: mcpany.config.v1.GrpcToolDefinition
-	(*HttpToolDefinition)(nil),          // 20: mcpany.config.v1.HttpToolDefinition
-	(*WebsocketToolDefinition)(nil),     // 21: mcpany.config.v1.WebsocketToolDefinition
-	(*WebrtcToolDefinition)(nil),        // 22: mcpany.config.v1.WebrtcToolDefinition
-	(*OpenAPIToolDefinition)(nil),       // 23: mcpany.config.v1.OpenAPIToolDefinition
-	(*CommandLineToolDefinition)(nil),   // 24: mcpany.config.v1.CommandLineToolDefinition
-	(*MCPToolDefinition)(nil),           // 25: mcpany.config.v1.MCPToolDefinition
-	nil,                                 // 26: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Value)(nil),              // 27: google.protobuf.Value
-	(*SecretValue)(nil),                 // 28: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),         // 29: google.protobuf.Duration
-	(*structpb.Struct)(nil),             // 30: google.protobuf.Struct
+	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Value)(nil),              // 20: google.protobuf.Value
+	(*SecretValue)(nil),                 // 21: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 22: google.protobuf.Duration
+	(*structpb.Struct)(nil),             // 23: google.protobuf.Struct
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -3655,7 +2906,7 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	16, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
 	17, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	26, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
 	17, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
@@ -3664,30 +2915,23 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
 	17, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	0,  // 24: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	27, // 25: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	20, // 25: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
 	12, // 26: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	28, // 27: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	21, // 27: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 28: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	28, // 29: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	21, // 29: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 30: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	28, // 31: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	21, // 31: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	12, // 32: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	28, // 33: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	29, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	30, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	30, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	18, // 37: mcpany.config.v1.GrpcToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 38: mcpany.config.v1.HttpToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 39: mcpany.config.v1.WebsocketToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 40: mcpany.config.v1.WebrtcToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 41: mcpany.config.v1.OpenAPIToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 42: mcpany.config.v1.CommandLineToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	18, // 43: mcpany.config.v1.MCPToolDefinition.definition:type_name -> mcpany.config.v1.ToolDefinition
-	44, // [44:44] is the sub-list for method output_type
-	44, // [44:44] is the sub-list for method input_type
-	44, // [44:44] is the sub-list for extension type_name
-	44, // [44:44] is the sub-list for extension extendee
-	0,  // [0:44] is the sub-list for field type_name
+	21, // 33: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	23, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	23, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	37, // [37:37] is the sub-list for method output_type
+	37, // [37:37] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -3702,7 +2946,7 @@ func file_proto_config_v1_call_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_call_proto_rawDesc), len(file_proto_config_v1_call_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   24,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -895,13 +895,13 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
-	toolSchema := configv1.ToolSchema_builder{
+	toolDef := configv1.ToolDefinition_builder{
 		Name: &operationID,
 	}.Build()
-	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolSchema, endpointPath, httpMethod, nil, authConfig)
+	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolDef, endpointPath, httpMethod, nil, authConfig)
 }
 
-func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolSchema *configv1.ToolSchema, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
 
@@ -911,25 +911,21 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
-	callID := "call-" + toolSchema.GetName()
+	callID := "call-" + toolDef.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
 		Id:           &callID,
-		Schema:       toolSchema,
 		EndpointPath: &endpointPath,
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
 
-	toolDef := configv1.HttpToolDefinition_builder{
-		Schema:  toolSchema,
-		CallId: &callID,
-	}.Build()
+	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
-			Tools:   []*configv1.HttpToolDefinition{toolDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
 			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
 		}.Build(),
 	}
@@ -952,12 +948,11 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 
 	callID := "call-" + operationID
 	callDef := configv1.WebsocketCallDefinition_builder{
-		Id:     &callID,
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		Id: &callID,
 	}.Build()
 
-	toolDef := configv1.WebsocketToolDefinition_builder{
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &operationID,
 		CallId: &callID,
 	}.Build()
 
@@ -965,7 +960,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 		Name: &serviceID,
 		WebsocketService: configv1.WebsocketUpstreamService_builder{
 			Address: &baseURL,
-			Tools:   []*configv1.WebsocketToolDefinition{toolDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
 			Calls:   map[string]*configv1.WebsocketCallDefinition{callID: callDef},
 		}.Build(),
 	}
@@ -988,12 +983,11 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 	callID := "call-" + operationID
 	callDef := configv1.WebrtcCallDefinition_builder{
-		Id:     &callID,
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		Id: &callID,
 	}.Build()
 
-	toolDef := configv1.WebrtcToolDefinition_builder{
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &operationID,
 		CallId: &callID,
 	}.Build()
 
@@ -1001,7 +995,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 		Name: &serviceID,
 		WebrtcService: configv1.WebrtcUpstreamService_builder{
 			Address: &baseURL,
-			Tools:   []*configv1.WebrtcToolDefinition{toolDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
 			Calls:   map[string]*configv1.WebrtcCallDefinition{callID: callDef},
 		}.Build(),
 	}
@@ -1027,12 +1021,11 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 
 	callID := "call-hello"
 	callDef := configv1.MCPCallDefinition_builder{
-		Id:     &callID,
-		Schema: configv1.ToolSchema_builder{Name: proto.String("hello")}.Build(),
+		Id: &callID,
 	}.Build()
 
-	toolDef := configv1.MCPToolDefinition_builder{
-		Schema: configv1.ToolSchema_builder{Name: proto.String("hello")}.Build(),
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("hello"),
 		CallId: &callID,
 	}.Build()
 
@@ -1041,7 +1034,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 		McpService: configv1.McpUpstreamService_builder{
 			ToolAutoDiscovery: &toolAutoDiscovery,
 			HttpConnection:    mcpStreamableHttpConnection,
-			Tools:             []*configv1.MCPToolDefinition{toolDef},
+			Tools:             []*configv1.ToolDefinition{toolDef},
 			Calls:             map[string]*configv1.MCPCallDefinition{callID: callDef},
 		}.Build(),
 	}
@@ -1169,25 +1162,21 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
-	toolSchema := configv1.ToolSchema_builder{Name: &operationID}.Build()
-	callID := "call-" + toolSchema.GetName()
+	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
+	callID := "call-" + toolDef.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
 		Id:           &callID,
-		Schema:       toolSchema,
 		EndpointPath: &endpointPath,
 		Method:       &method,
 	}.Build()
 
-	toolDef := configv1.HttpToolDefinition_builder{
-		Schema:  toolSchema,
-		CallId: &callID,
-	}.Build()
+	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
-			Tools:   []*configv1.HttpToolDefinition{toolDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
 			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
 		}.Build(),
 	}

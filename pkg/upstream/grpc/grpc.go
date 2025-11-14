@@ -291,8 +291,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	definitions := grpcService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		if d.GetDefinition() != nil {
-			callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		if d != nil {
+			callIDToName[d.GetCallId()] = d.GetName()
 		}
 	}
 	for _, resourceDef := range grpcService.GetResources() {
@@ -437,8 +437,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	definitions := grpcService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		if d.GetDefinition() != nil {
-			callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		if d != nil {
+			callIDToName[d.GetCallId()] = d.GetName()
 		}
 	}
 	for _, resourceDef := range grpcService.GetResources() {
@@ -538,18 +538,17 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	calls := grpcService.GetCalls()
 
 	for _, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
 		callID := toolDefinition.GetCallId()
 		grpcDef, ok := calls[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", toolDefinition.GetName())
 			continue
 		}
 
 		fullMethodName := fmt.Sprintf("%s.%s", grpcDef.GetService(), grpcDef.GetMethod())
 		methodDescriptor, err := findMethodDescriptor(files, fullMethodName)
 		if err != nil {
-			log.Error("Failed to find method descriptor, skipping tool.", "tool_name", definition.GetName(), "method_fqn", fullMethodName, "error", err)
+			log.Error("Failed to find method descriptor, skipping tool.", "tool_name", toolDefinition.GetName(), "method_fqn", fullMethodName, "error", err)
 			continue
 		}
 
@@ -566,16 +565,16 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(definition.GetName()),
-			Description:         proto.String(definition.GetDescription()),
+			Name:                proto.String(toolDefinition.GetName()),
+			Description:         proto.String(toolDefinition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fullMethodName),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
+				Title:           proto.String(toolDefinition.GetTitle()),
+				ReadOnlyHint:    proto.Bool(toolDefinition.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(toolDefinition.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(toolDefinition.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(toolDefinition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
 				OutputSchema:    outputSchema,
 			}.Build(),
@@ -587,8 +586,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:         proto.String(definition.GetName()),
-			Description:  proto.String(definition.GetDescription()),
+			Name:         proto.String(toolDefinition.GetName()),
+			Description:  proto.String(toolDefinition.GetDescription()),
 			InputSchema:  inputSchema,
 			OutputSchema: outputSchema,
 		}.Build())
