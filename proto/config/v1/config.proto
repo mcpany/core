@@ -124,7 +124,7 @@ message GrpcUpstreamService {
   // TLS configuration for the gRPC connection.
   TLSConfig tls_config = 3;
   // Manually defined mappings from MCP tools to gRPC calls.
-  repeated GrpcToolDefinition tools = 4;
+  repeated ToolDefinition tools = 4;
   // Health check configuration.
   GrpcHealthCheck health_check = 5;
   // A list of protobuf definitions for the gRPC service.
@@ -170,7 +170,7 @@ message HttpUpstreamService {
   // The base URL of the HTTP service (e.g., "https://api.example.com").
   string address = 1;
   // Manually defined mappings from MCP tools to HTTP calls.
-  repeated HttpToolDefinition tools = 2;
+  repeated ToolDefinition tools = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, HttpCallDefinition> calls = 6;
   // Configuration for checking the health of the HTTP service.
@@ -186,7 +186,7 @@ message WebsocketUpstreamService {
   // The URL of the Websocket service (e.g., "ws://api.example.com/ws").
   string address = 1;
   // Manually defined mappings from MCP tools to websocket calls.
-  repeated WebsocketToolDefinition tools = 2;
+  repeated ToolDefinition tools = 2;
   // TLS configuration for the Websocket connection.
   TLSConfig tls_config = 3;
   // A list of resources served by this service.
@@ -200,7 +200,7 @@ message WebrtcUpstreamService {
   // The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
   string address = 1;
   // Manually defined mappings from MCP tools to webrtc calls.
-  repeated WebrtcToolDefinition tools = 2;
+  repeated ToolDefinition tools = 2;
   // TLS configuration for the signaling connection.
   TLSConfig tls_config = 3;
   // A list of resources served by this service.
@@ -220,7 +220,7 @@ message OpenapiUpstreamService {
   // TLS configuration for the connection.
   TLSConfig tls_config = 4;
   // Optional: Overrides or specific configurations for calls discovered from the spec.
-  repeated OpenAPIToolDefinition tools = 5;
+  repeated ToolDefinition tools = 5;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 6;
   // A map of call definitions, keyed by their unique ID.
@@ -234,7 +234,7 @@ message CommandLineUpstreamService {
   // The working directory for the command.
   string working_directory = 3;
   // Manually defined mappings from MCP tools to command line commands.
-  repeated CommandLineToolDefinition tools = 4;
+  repeated ToolDefinition tools = 4;
   // Health check configuration.
   CommandLineHealthCheck health_check = 5;
   // Caching configuration to improve performance and reduce load on the upstream.
@@ -260,7 +260,7 @@ message McpUpstreamService {
   // If true, mcpany will automatically discover and proxy all tools from the upstream.
   bool tool_auto_discovery = 3;
   // Optional: Overrides or specific configurations for calls discovered from the service.
-  repeated MCPToolDefinition tools = 6;
+  repeated ToolDefinition tools = 6;
   // A list of resources served by this service.
   repeated ResourceDefinition resources = 7;
   // A map of call definitions, keyed by their unique ID.

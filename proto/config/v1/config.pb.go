@@ -1364,7 +1364,7 @@ type GrpcUpstreamService struct {
 	xxx_hidden_Address          *string                        `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_UseReflection    bool                           `protobuf:"varint,2,opt,name=use_reflection,json=useReflection"`
 	xxx_hidden_TlsConfig        *TLSConfig                     `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Tools            *[]*GrpcToolDefinition         `protobuf:"bytes,4,rep,name=tools"`
+	xxx_hidden_Tools            *[]*ToolDefinition             `protobuf:"bytes,4,rep,name=tools"`
 	xxx_hidden_HealthCheck      *GrpcHealthCheck               `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition            `protobuf:"bytes,6,rep,name=proto_definitions,json=protoDefinitions"`
 	xxx_hidden_ProtoCollection  *[]*ProtoCollection            `protobuf:"bytes,7,rep,name=proto_collection,json=protoCollection"`
@@ -1425,7 +1425,7 @@ func (x *GrpcUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *GrpcUpstreamService) GetTools() []*GrpcToolDefinition {
+func (x *GrpcUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -1489,7 +1489,7 @@ func (x *GrpcUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
 }
 
-func (x *GrpcUpstreamService) SetTools(v []*GrpcToolDefinition) {
+func (x *GrpcUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -1569,7 +1569,7 @@ type GrpcUpstreamService_builder struct {
 	// TLS configuration for the gRPC connection.
 	TlsConfig *TLSConfig
 	// Manually defined mappings from MCP tools to gRPC calls.
-	Tools []*GrpcToolDefinition
+	Tools []*ToolDefinition
 	// Health check configuration.
 	HealthCheck *GrpcHealthCheck
 	// A list of protobuf definitions for the gRPC service.
@@ -2276,7 +2276,7 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 type HttpUpstreamService struct {
 	state                  protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*HttpToolDefinition         `protobuf:"bytes,2,rep,name=tools"`
+	xxx_hidden_Tools       *[]*ToolDefinition             `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_Calls       map[string]*HttpCallDefinition `protobuf:"bytes,6,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_HealthCheck *HttpHealthCheck               `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_TlsConfig   *TLSConfig                     `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
@@ -2322,7 +2322,7 @@ func (x *HttpUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *HttpUpstreamService) GetTools() []*HttpToolDefinition {
+func (x *HttpUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -2366,7 +2366,7 @@ func (x *HttpUpstreamService) SetAddress(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
-func (x *HttpUpstreamService) SetTools(v []*HttpToolDefinition) {
+func (x *HttpUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -2426,7 +2426,7 @@ type HttpUpstreamService_builder struct {
 	// The base URL of the HTTP service (e.g., "https://api.example.com").
 	Address *string
 	// Manually defined mappings from MCP tools to HTTP calls.
-	Tools []*HttpToolDefinition
+	Tools []*ToolDefinition
 	// A map of call definitions, keyed by their unique ID.
 	Calls map[string]*HttpCallDefinition
 	// Configuration for checking the health of the HTTP service.
@@ -2457,7 +2457,7 @@ func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
 type WebsocketUpstreamService struct {
 	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*WebsocketToolDefinition         `protobuf:"bytes,2,rep,name=tools"`
+	xxx_hidden_Tools       *[]*ToolDefinition                  `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Resources   *[]*ResourceDefinition              `protobuf:"bytes,4,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*WebsocketCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -2502,7 +2502,7 @@ func (x *WebsocketUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *WebsocketUpstreamService) GetTools() []*WebsocketToolDefinition {
+func (x *WebsocketUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -2539,7 +2539,7 @@ func (x *WebsocketUpstreamService) SetAddress(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
-func (x *WebsocketUpstreamService) SetTools(v []*WebsocketToolDefinition) {
+func (x *WebsocketUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -2584,7 +2584,7 @@ type WebsocketUpstreamService_builder struct {
 	// The URL of the Websocket service (e.g., "ws://api.example.com/ws").
 	Address *string
 	// Manually defined mappings from MCP tools to websocket calls.
-	Tools []*WebsocketToolDefinition
+	Tools []*ToolDefinition
 	// TLS configuration for the Websocket connection.
 	TlsConfig *TLSConfig
 	// A list of resources served by this service.
@@ -2612,7 +2612,7 @@ func (b0 WebsocketUpstreamService_builder) Build() *WebsocketUpstreamService {
 type WebrtcUpstreamService struct {
 	state                  protoimpl.MessageState           `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                          `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*WebrtcToolDefinition         `protobuf:"bytes,2,rep,name=tools"`
+	xxx_hidden_Tools       *[]*ToolDefinition               `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_TlsConfig   *TLSConfig                       `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Resources   *[]*ResourceDefinition           `protobuf:"bytes,4,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*WebrtcCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -2657,7 +2657,7 @@ func (x *WebrtcUpstreamService) GetAddress() string {
 	return ""
 }
 
-func (x *WebrtcUpstreamService) GetTools() []*WebrtcToolDefinition {
+func (x *WebrtcUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -2694,7 +2694,7 @@ func (x *WebrtcUpstreamService) SetAddress(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
-func (x *WebrtcUpstreamService) SetTools(v []*WebrtcToolDefinition) {
+func (x *WebrtcUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -2739,7 +2739,7 @@ type WebrtcUpstreamService_builder struct {
 	// The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
 	Address *string
 	// Manually defined mappings from MCP tools to webrtc calls.
-	Tools []*WebrtcToolDefinition
+	Tools []*ToolDefinition
 	// TLS configuration for the signaling connection.
 	TlsConfig *TLSConfig
 	// A list of resources served by this service.
@@ -2770,7 +2770,7 @@ type OpenapiUpstreamService struct {
 	xxx_hidden_OpenapiSpec *string                           `protobuf:"bytes,2,opt,name=openapi_spec,json=openapiSpec"`
 	xxx_hidden_HealthCheck *HttpHealthCheck                  `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_TlsConfig   *TLSConfig                        `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
-	xxx_hidden_Tools       *[]*OpenAPIToolDefinition         `protobuf:"bytes,5,rep,name=tools"`
+	xxx_hidden_Tools       *[]*ToolDefinition                `protobuf:"bytes,5,rep,name=tools"`
 	xxx_hidden_Resources   *[]*ResourceDefinition            `protobuf:"bytes,6,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*OpenAPICallDefinition `protobuf:"bytes,7,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
@@ -2838,7 +2838,7 @@ func (x *OpenapiUpstreamService) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
-func (x *OpenapiUpstreamService) GetTools() []*OpenAPIToolDefinition {
+func (x *OpenapiUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -2881,7 +2881,7 @@ func (x *OpenapiUpstreamService) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
 }
 
-func (x *OpenapiUpstreamService) SetTools(v []*OpenAPIToolDefinition) {
+func (x *OpenapiUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -2951,7 +2951,7 @@ type OpenapiUpstreamService_builder struct {
 	// TLS configuration for the connection.
 	TlsConfig *TLSConfig
 	// Optional: Overrides or specific configurations for calls discovered from the spec.
-	Tools []*OpenAPIToolDefinition
+	Tools []*ToolDefinition
 	// A list of resources served by this service.
 	Resources []*ResourceDefinition
 	// A map of call definitions, keyed by their unique ID.
@@ -2983,7 +2983,7 @@ type CommandLineUpstreamService struct {
 	state                           protoimpl.MessageState                `protogen:"opaque.v1"`
 	xxx_hidden_Command              *string                               `protobuf:"bytes,1,opt,name=command"`
 	xxx_hidden_WorkingDirectory     *string                               `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
-	xxx_hidden_Tools                *[]*CommandLineToolDefinition         `protobuf:"bytes,4,rep,name=tools"`
+	xxx_hidden_Tools                *[]*ToolDefinition                    `protobuf:"bytes,4,rep,name=tools"`
 	xxx_hidden_HealthCheck          *CommandLineHealthCheck               `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_Cache                *CacheConfig                          `protobuf:"bytes,6,opt,name=cache"`
 	xxx_hidden_ContainerEnvironment *ContainerEnvironment                 `protobuf:"bytes,7,opt,name=container_environment,json=containerEnvironment"`
@@ -3041,7 +3041,7 @@ func (x *CommandLineUpstreamService) GetWorkingDirectory() string {
 	return ""
 }
 
-func (x *CommandLineUpstreamService) GetTools() []*CommandLineToolDefinition {
+func (x *CommandLineUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -3104,7 +3104,7 @@ func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
-func (x *CommandLineUpstreamService) SetTools(v []*CommandLineToolDefinition) {
+func (x *CommandLineUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -3208,7 +3208,7 @@ type CommandLineUpstreamService_builder struct {
 	// The working directory for the command.
 	WorkingDirectory *string
 	// Manually defined mappings from MCP tools to command line commands.
-	Tools []*CommandLineToolDefinition
+	Tools []*ToolDefinition
 	// Health check configuration.
 	HealthCheck *CommandLineHealthCheck
 	// Caching configuration to improve performance and reduce load on the upstream.
@@ -3250,7 +3250,7 @@ type McpUpstreamService struct {
 	state                        protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_ConnectionType    isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
 	xxx_hidden_ToolAutoDiscovery bool                                `protobuf:"varint,3,opt,name=tool_auto_discovery,json=toolAutoDiscovery"`
-	xxx_hidden_Tools             *[]*MCPToolDefinition               `protobuf:"bytes,6,rep,name=tools"`
+	xxx_hidden_Tools             *[]*ToolDefinition                  `protobuf:"bytes,6,rep,name=tools"`
 	xxx_hidden_Resources         *[]*ResourceDefinition              `protobuf:"bytes,7,rep,name=resources"`
 	xxx_hidden_Calls             map[string]*MCPCallDefinition       `protobuf:"bytes,8,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
@@ -3309,7 +3309,7 @@ func (x *McpUpstreamService) GetToolAutoDiscovery() bool {
 	return false
 }
 
-func (x *McpUpstreamService) GetTools() []*MCPToolDefinition {
+func (x *McpUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
 		if x.xxx_hidden_Tools != nil {
 			return *x.xxx_hidden_Tools
@@ -3355,7 +3355,7 @@ func (x *McpUpstreamService) SetToolAutoDiscovery(v bool) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *McpUpstreamService) SetTools(v []*MCPToolDefinition) {
+func (x *McpUpstreamService) SetTools(v []*ToolDefinition) {
 	x.xxx_hidden_Tools = &v
 }
 
@@ -3449,7 +3449,7 @@ type McpUpstreamService_builder struct {
 	// If true, mcpany will automatically discover and proxy all tools from the upstream.
 	ToolAutoDiscovery *bool
 	// Optional: Overrides or specific configurations for calls discovered from the service.
-	Tools []*MCPToolDefinition
+	Tools []*ToolDefinition
 	// A list of resources served by this service.
 	Resources []*ResourceDefinition
 	// A map of call definitions, keyed by their unique ID.
@@ -5505,13 +5505,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0eauthentication\x18\x0f \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
 	"\adisable\x18\x13 \x01(\bR\adisable\x12\x1a\n" +
 	"\bpriority\x18\x14 \x01(\x05R\bpriorityB\x10\n" +
-	"\x0eservice_config\"\x9e\x05\n" +
+	"\x0eservice_config\"\x9a\x05\n" +
 	"\x13GrpcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
 	"\x0euse_reflection\x18\x02 \x01(\bR\ruseReflection\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12:\n" +
-	"\x05tools\x18\x04 \x03(\v2$.mcpany.config.v1.GrpcToolDefinitionR\x05tools\x12D\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x126\n" +
+	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12D\n" +
 	"\fhealth_check\x18\x05 \x01(\v2!.mcpany.config.v1.GrpcHealthCheckR\vhealthCheck\x12N\n" +
 	"\x11proto_definitions\x18\x06 \x03(\v2!.mcpany.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
 	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x0fprotoCollection\x12B\n" +
@@ -5540,10 +5540,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1b\n" +
 	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xd9\x03\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\xd5\x03\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12:\n" +
-	"\x05tools\x18\x02 \x03(\v2$.mcpany.config.v1.HttpToolDefinitionR\x05tools\x12F\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
+	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12F\n" +
 	"\x05calls\x18\x06 \x03(\v20.mcpany.config.v1.HttpUpstreamService.CallsEntryR\x05calls\x12D\n" +
 	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
@@ -5552,10 +5552,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12:\n" +
-	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05value:\x028\x01\"\xa7\x03\n" +
+	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05value:\x028\x01\"\x9e\x03\n" +
 	"\x18WebsocketUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12?\n" +
-	"\x05tools\x18\x02 \x03(\v2).mcpany.config.v1.WebsocketToolDefinitionR\x05tools\x12:\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
+	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
 	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12K\n" +
@@ -5563,10 +5563,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
-	"\x05value\x18\x02 \x01(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05value:\x028\x01\"\x9b\x03\n" +
+	"\x05value\x18\x02 \x01(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05value:\x028\x01\"\x95\x03\n" +
 	"\x15WebrtcUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12<\n" +
-	"\x05tools\x18\x02 \x03(\v2&.mcpany.config.v1.WebrtcToolDefinitionR\x05tools\x12:\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
+	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
 	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12H\n" +
@@ -5574,24 +5574,24 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
-	"\x05value\x18\x02 \x01(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05value:\x028\x01\"\x88\x04\n" +
+	"\x05value\x18\x02 \x01(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05value:\x028\x01\"\x81\x04\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12!\n" +
 	"\fopenapi_spec\x18\x02 \x01(\tR\vopenapiSpec\x12D\n" +
 	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12=\n" +
-	"\x05tools\x18\x05 \x03(\v2'.mcpany.config.v1.OpenAPIToolDefinitionR\x05tools\x12B\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x126\n" +
+	"\x05tools\x18\x05 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\x06 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12I\n" +
 	"\x05calls\x18\a \x03(\v23.mcpany.config.v1.OpenapiUpstreamService.CallsEntryR\x05calls\x1aa\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
-	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01\"\xb4\x05\n" +
+	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01\"\xa9\x05\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
-	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12A\n" +
-	"\x05tools\x18\x04 \x03(\v2+.mcpany.config.v1.CommandLineToolDefinitionR\x05tools\x12K\n" +
+	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x126\n" +
+	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12K\n" +
 	"\fhealth_check\x18\x05 \x01(\v2(.mcpany.config.v1.CommandLineHealthCheckR\vhealthCheck\x123\n" +
 	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12[\n" +
 	"\x15container_environment\x18\a \x01(\v2&.mcpany.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
@@ -5602,12 +5602,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
-	"\x05value\x18\x02 \x01(\v2+.mcpany.config.v1.CommandLineCallDefinitionR\x05value:\x028\x01\"\xa9\x04\n" +
+	"\x05value\x18\x02 \x01(\v2+.mcpany.config.v1.CommandLineCallDefinitionR\x05value:\x028\x01\"\xa6\x04\n" +
 	"\x12McpUpstreamService\x12X\n" +
 	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12Q\n" +
 	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12.\n" +
-	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x129\n" +
-	"\x05tools\x18\x06 \x03(\v2#.mcpany.config.v1.MCPToolDefinitionR\x05tools\x12B\n" +
+	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x126\n" +
+	"\x05tools\x18\x06 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\a \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12E\n" +
 	"\x05calls\x18\b \x03(\v2/.mcpany.config.v1.McpUpstreamService.CallsEntryR\x05calls\x1a]\n" +
 	"\n" +
@@ -5732,22 +5732,16 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*bus.MessageBus)(nil),              // 38: bus.MessageBus
 	(*CacheConfig)(nil),                 // 39: mcpany.config.v1.CacheConfig
 	(*AuthenticationConfig)(nil),        // 40: mcpany.config.v1.AuthenticationConfig
-	(*GrpcToolDefinition)(nil),          // 41: mcpany.config.v1.GrpcToolDefinition
+	(*ToolDefinition)(nil),              // 41: mcpany.config.v1.ToolDefinition
 	(*ResourceDefinition)(nil),          // 42: mcpany.config.v1.ResourceDefinition
-	(*HttpToolDefinition)(nil),          // 43: mcpany.config.v1.HttpToolDefinition
-	(*WebsocketToolDefinition)(nil),     // 44: mcpany.config.v1.WebsocketToolDefinition
-	(*WebrtcToolDefinition)(nil),        // 45: mcpany.config.v1.WebrtcToolDefinition
-	(*OpenAPIToolDefinition)(nil),       // 46: mcpany.config.v1.OpenAPIToolDefinition
-	(*CommandLineToolDefinition)(nil),   // 47: mcpany.config.v1.CommandLineToolDefinition
-	(*durationpb.Duration)(nil),         // 48: google.protobuf.Duration
-	(*MCPToolDefinition)(nil),           // 49: mcpany.config.v1.MCPToolDefinition
-	(*GrpcCallDefinition)(nil),          // 50: mcpany.config.v1.GrpcCallDefinition
-	(*HttpCallDefinition)(nil),          // 51: mcpany.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),     // 52: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),        // 53: mcpany.config.v1.WebrtcCallDefinition
-	(*OpenAPICallDefinition)(nil),       // 54: mcpany.config.v1.OpenAPICallDefinition
-	(*CommandLineCallDefinition)(nil),   // 55: mcpany.config.v1.CommandLineCallDefinition
-	(*MCPCallDefinition)(nil),           // 56: mcpany.config.v1.MCPCallDefinition
+	(*durationpb.Duration)(nil),         // 43: google.protobuf.Duration
+	(*GrpcCallDefinition)(nil),          // 44: mcpany.config.v1.GrpcCallDefinition
+	(*HttpCallDefinition)(nil),          // 45: mcpany.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),     // 46: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),        // 47: mcpany.config.v1.WebrtcCallDefinition
+	(*OpenAPICallDefinition)(nil),       // 48: mcpany.config.v1.OpenAPICallDefinition
+	(*CommandLineCallDefinition)(nil),   // 49: mcpany.config.v1.CommandLineCallDefinition
+	(*MCPCallDefinition)(nil),           // 50: mcpany.config.v1.MCPCallDefinition
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -5771,7 +5765,7 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	13, // 18: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
 	40, // 19: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	28, // 20: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	41, // 21: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.GrpcToolDefinition
+	41, // 21: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	21, // 22: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
 	7,  // 23: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
 	10, // 24: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
@@ -5779,57 +5773,57 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	29, // 26: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcUpstreamService.CallsEntry
 	8,  // 27: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
 	9,  // 28: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
-	43, // 29: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.HttpToolDefinition
+	41, // 29: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	30, // 30: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpUpstreamService.CallsEntry
 	20, // 31: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
 	28, // 32: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
 	42, // 33: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	44, // 34: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.WebsocketToolDefinition
+	41, // 34: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	28, // 35: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
 	42, // 36: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
 	31, // 37: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketUpstreamService.CallsEntry
-	45, // 38: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.WebrtcToolDefinition
+	41, // 38: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	28, // 39: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
 	42, // 40: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
 	32, // 41: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcUpstreamService.CallsEntry
 	20, // 42: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
 	28, // 43: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	46, // 44: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.OpenAPIToolDefinition
+	41, // 44: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	42, // 45: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
 	33, // 46: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenapiUpstreamService.CallsEntry
-	47, // 47: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.CommandLineToolDefinition
+	41, // 47: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	22, // 48: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
 	39, // 49: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
 	23, // 50: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
-	48, // 51: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	43, // 51: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
 	42, // 52: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
 	34, // 53: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineUpstreamService.CallsEntry
 	18, // 54: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
 	17, // 55: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
-	49, // 56: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.MCPToolDefinition
+	41, // 56: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
 	42, // 57: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
 	35, // 58: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.McpUpstreamService.CallsEntry
 	28, // 59: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	48, // 60: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	48, // 61: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	48, // 62: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	48, // 63: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	48, // 64: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	48, // 65: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
-	48, // 66: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	43, // 60: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	43, // 61: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	43, // 62: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	43, // 63: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	43, // 64: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	43, // 65: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	43, // 66: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
 	36, // 67: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
 	26, // 68: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
 	27, // 69: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
-	48, // 70: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	48, // 71: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	48, // 72: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	50, // 73: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
-	51, // 74: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
-	52, // 75: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	53, // 76: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	54, // 77: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	55, // 78: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	56, // 79: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
+	43, // 70: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	43, // 71: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	43, // 72: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	44, // 73: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
+	45, // 74: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
+	46, // 75: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	47, // 76: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	48, // 77: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	49, // 78: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	50, // 79: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
 	80, // [80:80] is the sub-list for method output_type
 	80, // [80:80] is the sub-list for method input_type
 	80, // [80:80] is the sub-list for extension type_name

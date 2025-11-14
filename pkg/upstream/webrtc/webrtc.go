@@ -117,9 +117,8 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		return nil
 	}
 
-	for i, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
-		callID := toolDefinition.GetCallId()
+	for i, definition := range definitions {
+		callID := definition.GetCallId()
 		wrtcDef, ok := calls[callID]
 		if !ok {
 			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
@@ -184,7 +183,7 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range webrtcService.GetResources() {
 		if resourceDef.GetDynamic() != nil {

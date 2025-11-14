@@ -120,9 +120,8 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	definitions := commandLineService.GetTools()
 	calls := commandLineService.GetCalls()
 
-	for _, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
-		callID := toolDefinition.GetCallId()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
 			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
@@ -204,7 +203,7 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range commandLineService.GetResources() {
 		if resourceDef.GetDynamic() != nil {

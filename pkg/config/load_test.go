@@ -82,9 +82,7 @@ upstream_services: {
 	http_service: {
 		address: "http://api.example.com/v1"
 		tools: {
-			schema: {
-				name: "get_user"
-			}
+			name: "get_user"
 			call_id: "get_user_call"
 		}
 		calls: {
@@ -120,7 +118,7 @@ upstream_services: {
 				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
 				assert.Len(t, httpService.GetTools(), 1)
 				tool := httpService.GetTools()[0]
-				assert.Equal(t, "get_user", tool.GetDefinition().GetName())
+				assert.Equal(t, "get_user", tool.GetName())
 				assert.Equal(t, "get_user_call", tool.GetCallId())
 				assert.Contains(t, httpService.GetCalls(), "get_user_call")
 				assert.Len(t, httpService.GetResources(), 1)

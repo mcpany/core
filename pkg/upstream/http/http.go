@@ -172,9 +172,8 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		authenticator = nil
 	}
 
-	for i, toolDefinition := range definitions {
-		definition := toolDefinition.GetDefinition()
-		callID := toolDefinition.GetCallId()
+	for i, definition := range definitions {
+		callID := definition.GetCallId()
 		httpDef, ok := calls[callID]
 		if !ok {
 			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
@@ -258,14 +257,14 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDefinition.GetDefinition().GetName()),
-			Description: proto.String(toolDefinition.GetDefinition().GetDescription()),
+			Name:        proto.String(definition.GetName()),
+			Description: proto.String(definition.GetDescription()),
 		}.Build())
 	}
 
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetDefinition().GetName()
+		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDynamic() != nil {
