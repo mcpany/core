@@ -39,20 +39,14 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 	tm.AddServiceInfo(serviceID, &tool.ServiceInfo{
 		Config: configv1.UpstreamServiceConfig_builder{
 			GrpcService: configv1.GrpcUpstreamService_builder{
-				Tools: []*configv1.GrpcToolDefinition{
-					configv1.GrpcToolDefinition_builder{
-						Schema: configv1.ToolSchema_builder{
-							Name: proto.String("test-tool"),
-						}.Build(),
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("test-tool"),
 						CallId: proto.String("test-call"),
 					}.Build(),
 				},
 				Calls: map[string]*configv1.GrpcCallDefinition{
-					"test-call": configv1.GrpcCallDefinition_builder{
-						Schema: configv1.ToolSchema_builder{
-							Name: proto.String("test-tool"),
-						}.Build(),
-					}.Build(),
+					"test-call": configv1.GrpcCallDefinition_builder{}.Build(),
 				},
 			}.Build(),
 		}.Build(),
@@ -88,20 +82,14 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 		tm.AddServiceInfo(serviceID, &tool.ServiceInfo{
 			Config: configv1.UpstreamServiceConfig_builder{
 				GrpcService: configv1.GrpcUpstreamService_builder{
-					Tools: []*configv1.GrpcToolDefinition{
-						configv1.GrpcToolDefinition_builder{
-							Schema: configv1.ToolSchema_builder{
-								Name: proto.String("test-tool"),
-							}.Build(),
+					Tools: []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{
+							Name:   proto.String("test-tool"),
 							CallId: proto.String("non-existent-call"),
 						}.Build(),
 					},
 					Calls: map[string]*configv1.GrpcCallDefinition{
-						"test-call": configv1.GrpcCallDefinition_builder{
-							Schema: configv1.ToolSchema_builder{
-								Name: proto.String("test-tool"),
-							}.Build(),
-						}.Build(),
+						"test-call": configv1.GrpcCallDefinition_builder{}.Build(),
 					},
 				}.Build(),
 			}.Build(),
