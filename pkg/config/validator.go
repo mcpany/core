@@ -95,8 +95,8 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	if binaryType == Server {
-		if gs.GetBindAddress() != "" {
-			if err := validation.IsValidBindAddress(gs.GetBindAddress()); err != nil {
+		if gs.GetJsonrpcPort() != "" {
+			if err := validation.IsValidBindAddress(gs.GetJsonrpcPort()); err != nil {
 				return fmt.Errorf("invalid bind_address: %w", err)
 			}
 		}
