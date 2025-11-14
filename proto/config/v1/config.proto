@@ -10,6 +10,7 @@ import "proto/bus/bus.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -111,6 +112,8 @@ message UpstreamServiceConfig {
   bool disable = 19;
   // The priority of the service. Lower numbers have higher priority.
   int32 priority = 20;
+  // A list of prompts served by this service.
+  repeated Prompt prompts = 21;
 }
 
 // --- Upstream Service Types ---
