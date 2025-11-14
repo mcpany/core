@@ -223,24 +223,24 @@ message ToolDefinition {
   bool is_stream = 5;
   // A human-readable title for the tool.
   string title = 6;
-  // The ID of the call definition to use for this tool.
-  string call_id = 7;
   // If true, the tool does not modify its environment.
   // Default: false
-  bool read_only_hint = 8;
+  bool read_only_hint = 7;
   // If true, the tool may perform destructive updates to its environment. If
   // false, the tool performs only additive updates.
   // (This property is meaningful only when ReadOnlyHint == false.)
   // Default: true
-  bool destructive_hint = 9;
+  bool destructive_hint = 8;
   // If true, calling the tool repeatedly with the same arguments will have no
   // additional effect on its environment.
   // (This property is meaningful only when ReadOnlyHint == false.)
   // Default: false
-  bool idempotent_hint = 10;
+  bool idempotent_hint = 9;
   // If true, this tool may interact with an "open world" of external entities. If
   // false, the tool's domain of interaction is closed. For example, the world of
   // a web search tool is open, whereas that of a memory tool is not.
   // Default: true
-  bool open_world_hint = 11;
+  bool open_world_hint = 10;
+  // The ID of the call definition to use for this tool.
+  string call_id = 11;
 }

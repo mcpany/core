@@ -895,13 +895,10 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
-	toolDef := configv1.ToolDefinition_builder{
-		Name: &operationID,
-	}.Build()
-	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolDef, endpointPath, httpMethod, nil, authConfig)
+	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, operationID, endpointPath, httpMethod, nil, authConfig)
 }
 
-func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, toolName, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
 
@@ -911,7 +908,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
-	callID := "call-" + toolDef.GetName()
+	callID := "call-" + toolName
 	callDef := configv1.HttpCallDefinition_builder{
 		Id:           &callID,
 		EndpointPath: &endpointPath,
@@ -919,7 +916,10 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		Parameters:   params,
 	}.Build()
 
-	toolDef.CallId = &callID
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &toolName,
+		CallId: &callID,
+	}.Build()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -1162,15 +1162,17 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
-	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
-	callID := "call-" + toolDef.GetName()
+	callID := "call-" + operationID
 	callDef := configv1.HttpCallDefinition_builder{
 		Id:           &callID,
 		EndpointPath: &endpointPath,
 		Method:       &method,
 	}.Build()
 
-	toolDef.CallId = &callID
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &operationID,
+		CallId: &callID,
+	}.Build()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
