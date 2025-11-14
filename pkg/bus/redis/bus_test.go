@@ -472,6 +472,43 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_Subscribe_NilMessage(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-nil-message"
+
+	handlerDone := make(chan struct{})
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		// This handler should not be called.
+		t.Error("handler should not be called")
+		close(handlerDone)
+	})
+	defer unsub()
+
+	// Wait for the subscription to be active.
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		return subs[topic] > 0
+	}, time.Second, 10*time.Millisecond)
+
+	// Directly close the pubsub channel to simulate a nil message.
+	bus.mu.RLock()
+	ps, ok := bus.pubsubs[topic]
+	bus.mu.RUnlock()
+	require.True(t, ok, "pubsub not found")
+	err := ps.Close()
+	require.NoError(t, err)
+
+	// The goroutine should exit gracefully. We'll wait a bit to ensure it does.
+	select {
+	case <-handlerDone:
+		// Fail if the handler was called.
+	case <-time.After(200 * time.Millisecond):
+		// Pass if the handler was not called and the test does not panic.
+	}
+}
+
 func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
