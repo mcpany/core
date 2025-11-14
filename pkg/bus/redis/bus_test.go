@@ -316,40 +316,66 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_New(t *testing.T) {
-	redisBus := bus_pb.RedisBus_builder{
-		Address:  proto.String("localhost:6379"),
-		Password: proto.String("password"),
-		Db:       proto.Int32(1),
-	}.Build()
+	testCases := []struct {
+		name         string
+		config       *bus_pb.RedisBus
+		expectedAddr string
+		expectedPass string
+		expectedDB   int
+	}{
+		{
+			name: "full config",
+			config: bus_pb.RedisBus_builder{
+				Address:  proto.String("redis:6379"),
+				Password: proto.String("password"),
+				Db:       proto.Int32(1),
+			}.Build(),
+			expectedAddr: "redis:6379",
+			expectedPass: "password",
+			expectedDB:   1,
+		},
+		{
+			name:         "nil config",
+			config:       nil,
+			expectedAddr: "localhost:6379",
+			expectedPass: "",
+			expectedDB:   0,
+		},
+		{
+			name:         "empty config",
+			config:       bus_pb.RedisBus_builder{}.Build(),
+			expectedAddr: "localhost:6379",
+			expectedPass: "",
+			expectedDB:   0,
+		},
+	}
 
-	bus := New[string](redisBus)
-	assert.NotNil(t, bus)
-	assert.NotNil(t, bus.client)
-	options := bus.client.Options()
-	assert.Equal(t, "localhost:6379", options.Addr)
-	assert.Equal(t, "password", options.Password)
-	assert.Equal(t, 1, options.DB)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bus := New[string](tc.config)
+			require.NotNil(t, bus)
+			require.NotNil(t, bus.client)
+			opts := bus.client.Options()
+			assert.Equal(t, tc.expectedAddr, opts.Addr)
+			assert.Equal(t, tc.expectedPass, opts.Password)
+			assert.Equal(t, tc.expectedDB, opts.DB)
+		})
+	}
 }
 
-func TestRedisBus_New_NilConfig(t *testing.T) {
-	bus := New[string](nil)
-	assert.NotNil(t, bus)
-	assert.NotNil(t, bus.client)
-	options := bus.client.Options()
-	assert.Equal(t, "localhost:6379", options.Addr)
-	assert.Equal(t, "", options.Password)
-	assert.Equal(t, 0, options.DB)
-}
+func TestRedisBus_Subscribe_RedisError(t *testing.T) {
+	client, _ := redismock.NewClientMock()
+	bus := NewWithClient[string](client)
 
-func TestRedisBus_NewWithEmptyConfig(t *testing.T) {
-	bus := New[string](&bus_pb.RedisBus{})
-	require.NotNil(t, bus)
-	require.NotNil(t, bus.client)
+	client.Close()
 
-	opts := bus.client.Options()
-	assert.Equal(t, "localhost:6379", opts.Addr)
-	assert.Equal(t, "", opts.Password)
-	assert.Equal(t, 0, opts.DB)
+	unsub := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		t.Error("handler should not be called")
+	})
+	defer unsub()
+
+	err := bus.Publish(context.Background(), "test-topic", "hello")
+	assert.Error(t, err)
 }
 
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
@@ -547,6 +573,86 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	assert.NoError(t, err)
 
 	time.Sleep(100 * time.Millisecond)
+}
+
+func TestRedisBus_SubscribeOnce_ContextCancellation_BeforePublish(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-context-cancellation-before-publish"
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	handlerCalled := make(chan bool, 1)
+
+	unsub := bus.SubscribeOnce(ctx, topic, func(msg string) {
+		handlerCalled <- true
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Cancel the context before publishing.
+	cancel()
+
+	// Allow some time for the cancellation to propagate and the subscription to be removed.
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after context cancellation")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called after context cancellation")
+	case <-time.After(200 * time.Millisecond):
+		// Test passed
+	}
+}
+
+func TestRedisBus_Close(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-close"
+
+	// Subscribe to create a pubsub connection
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+
+	// Check that the subscription is active
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Close the bus
+	err := bus.Close()
+	assert.NoError(t, err)
+
+	// Verify that the client is closed by trying to use it
+	err = client.Ping(context.Background()).Err()
+	assert.Error(t, err)
+	assert.Equal(t, redis.ErrClosed, err)
+
+	// After closing the bus, the pubsubs map should be empty.
+	bus.mu.RLock()
+	assert.Empty(t, bus.pubsubs)
+	bus.mu.RUnlock()
+
+	// Unsubscribing after closing should not panic
+	assert.NotPanics(t, unsub)
 }
 
 func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
