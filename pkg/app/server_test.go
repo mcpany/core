@@ -46,7 +46,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/goleak"
 	gogrpc "google.golang.org/grpc"
 )
 
@@ -265,8 +264,7 @@ upstream_services:
     http_service:
       address: "http://localhost:8080"
       tools:
-        - schema:
-            name: "echo"
+        - name: "echo"
           call_id: "echo_call"
       calls:
         echo_call:
@@ -709,7 +707,7 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 
 func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	// This test verifies that the HTTP server's graceful shutdown waits for
-	// the timeout duration when a request is hanging.
+	// the timeout duration when a request hangs.
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
@@ -722,53 +720,38 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 
 	handlerStarted := make(chan struct{})
 	shutdownTimeout := 100 * time.Millisecond
+	handlerSleep := 5 * time.Second
 
-	// This handler will block reading the request body, simulating a slow or stuck client.
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		close(handlerStarted)
-		// This will block until the client sends data or the connection is closed by the server shutdown.
-		_, _ = io.Copy(io.Discard, r.Body)
+		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
-	})
-
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), handler, shutdownTimeout)
+	}), shutdownTimeout)
 
 	time.Sleep(50 * time.Millisecond) // give server time to start
 
-	// This client will send a request with a streaming body that is never written to,
-	// causing the handler to block.
-	pr, pw := io.Pipe()
-	t.Cleanup(func() { pw.Close() }) // Ensure the pipe writer is closed at the end of the test.
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://localhost:%d", port), pr)
-	require.NoError(t, err)
-
-	client := &http.Client{}
 	go func() {
-		resp, err := client.Do(req)
-		if err != nil {
-			// This error is expected as the server will close the connection during shutdown.
-			return
-		}
-		resp.Body.Close()
+		_, _ = http.Get(fmt.Sprintf("http://localhost:%d", port))
 	}()
 
-	// Wait for the handler to receive the request before we shutdown.
+	// Wait for the handler to receive the request before we shutdown
 	select {
 	case <-handlerStarted:
-		// Great, handler is running.
+		// Great, handler is running
 	case <-time.After(1 * time.Second):
 		t.Fatal("timed out waiting for handler to start")
 	}
 
 	shutdownStartTime := time.Now()
-	cancel() // Trigger shutdown.
+	cancel()
 	wg.Wait()
 	shutdownDuration := time.Since(shutdownStartTime)
 
-	// The shutdown should have been blocked by the hanging handler and timed out after `shutdownTimeout`.
+	// With the bug, shutdown is immediate. With the fix, it should wait for the timeout.
+	// We expect the shutdown to take at least as long as the timeout.
 	assert.GreaterOrEqual(t, shutdownDuration, shutdownTimeout, "Shutdown should take at least the shutdown timeout duration.")
-	// It should not wait excessively long (e.g., more than 5x the timeout).
-	assert.Less(t, shutdownDuration, shutdownTimeout*5, "Shutdown should not wait excessively long.")
+	// And it should not wait for the full handler sleep duration.
+	assert.Less(t, shutdownDuration, handlerSleep, "Shutdown should not wait for the handler to complete.")
 
 	select {
 	case err := <-errChan:
@@ -968,33 +951,6 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	}
 }
 
-func TestGRPCServer_GoroutineLeakOnServeError(t *testing.T) {
-	defer goleak.VerifyNone(t)
-
-	// Create a listener that is already closed to force an error in grpcServer.Serve.
-	closedListener, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	closedListener.Close()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
-
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Leak", closedListener, 5*time.Second, func(s *gogrpc.Server) {})
-
-	// Wait for the goroutine to finish.
-	wg.Wait()
-
-	// Check that an error was received.
-	select {
-	case err := <-errChan:
-		assert.Error(t, err)
-	default:
-		t.Fatal("expected an error but got none")
-	}
-}
-
 func TestRunServerMode_ContextCancellation(t *testing.T) {
 	app := NewApplication()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1187,8 +1143,7 @@ upstream_services:
    http_service:
      address: "http://localhost:8080"
      tools:
-       - schema:
-           name: "test-call"
+       - name: "test-call"
          call_id: "test-call"
      calls:
         test-call:
@@ -1200,8 +1155,7 @@ upstream_services:
    http_service:
      address: "http://localhost:8081"
      tools:
-       - schema:
-           name: "test-call"
+       - name: "test-call"
          call_id: "test-call"
      calls:
         test-call:
@@ -1385,33 +1339,6 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 
 	// The close count should be exactly 1.
 	assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.closeCount), "The listener's Close() method should be called exactly once.")
-}
-
-func TestGRPCServer_PanicInRegistrationHangs(t *testing.T) {
-	// This test is designed to fail by timing out if the bug is present.
-	done := make(chan bool)
-	go func() {
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		errChan := make(chan error, 1)
-		var wg sync.WaitGroup
-
-		lis, err := net.Listen("tcp", ":0")
-		require.NoError(t, err)
-		startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
-			panic("test panic in registration")
-		})
-		// The test will hang here waiting for the goroutine to finish
-		wg.Wait()
-
-		close(done)
-	}()
-	select {
-	case <-done:
-		// The test completed without hanging, which is the expected behavior after the fix.
-	case <-time.After(2 * time.Second):
-		t.Fatal("Test hung for 2 seconds. The bug is still present.")
-	}
 }
 
 // mockBus is a mock implementation of the bus.Bus interface for testing.

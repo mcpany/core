@@ -18,7 +18,6 @@ package metrics
 
 import (
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/armon/go-metrics"
@@ -26,28 +25,24 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var initOnce sync.Once
-
 // Initialize prepares the metrics system with a Prometheus sink.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
 func Initialize() {
-	initOnce.Do(func() {
-		// Create a Prometheus sink
-		sink, err := prometheus.NewPrometheusSink()
-		if err != nil {
-			panic(err)
-		}
+	// Create a Prometheus sink
+	sink, err := prometheus.NewPrometheusSink()
+	if err != nil {
+		panic(err)
+	}
 
-		// Create a metrics configuration
-		conf := metrics.DefaultConfig("mcpany")
-		conf.EnableHostname = false
+	// Create a metrics configuration
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
 
-		// Initialize the metrics system
-		if _, err := metrics.NewGlobal(conf, sink); err != nil {
-			panic(err)
-		}
-	})
+	// Initialize the metrics system
+	if _, err := metrics.NewGlobal(conf, sink); err != nil {
+		panic(err)
+	}
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.

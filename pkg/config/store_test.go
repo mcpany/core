@@ -49,21 +49,21 @@ func TestJsonEngine_Unmarshal(t *testing.T) {
 	t.Run("ValidJSON", func(t *testing.T) {
 		validJSON := []byte(`{
 			"global_settings": {
-				"jsonrpc_port": "0.0.0.0:8080",
+				"bind_address": "0.0.0.0:8080",
 				"log_level": "INFO"
 			}
 		}`)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validJSON, cfg)
 		require.NoError(t, err)
-		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetJsonrpcPort())
+		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
 		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 
 	t.Run("InvalidJSON", func(t *testing.T) {
 		invalidJSON := []byte(`{
 			"global_settings": {
-				"jsonrpc_port": "0.0.0.0:8080",
+				"bind_address": "0.0.0.0:8080",
 				"log_level": "INFO",
 			}
 		}`)
@@ -79,7 +79,7 @@ func TestYamlEngine_Unmarshal(t *testing.T) {
 	t.Run("InvalidYAML", func(t *testing.T) {
 		invalidYAML := []byte(`
 global_settings:
-  jsonrpc_port: "0.0.0.0:8080"
+  bind_address: "0.0.0.0:8080"
   log_level: "INFO"
   protoc_version: "3.19.4"
 - this is not valid
@@ -93,13 +93,13 @@ global_settings:
 	t.Run("ValidYAML", func(t *testing.T) {
 		validYAML := []byte(`
 global_settings:
-  jsonrpc_port: "0.0.0.0:8080"
+  bind_address: "0.0.0.0:8080"
   log_level: "INFO"
 `)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validYAML, cfg)
 		require.NoError(t, err)
-		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetJsonrpcPort())
+		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
 		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 }
@@ -125,7 +125,7 @@ func TestYamlEngine_Unmarshal_MarshalError(t *testing.T) {
 	engine := &yamlEngine{}
 	validYAML := []byte(`
 global_settings:
-  jsonrpc_port: "0.0.0.0:8080"
+  bind_address: "0.0.0.0:8080"
 `)
 	err := engine.UnmarshalWithFailingJSON(validYAML, &configv1.McpAnyServerConfig{})
 	assert.Error(t, err)
@@ -139,9 +139,8 @@ func TestFileStore_Load(t *testing.T) {
 	require.NoError(t, fs.MkdirAll("configs/subdir", 0o755))
 	afero.WriteFile(fs, "configs/01_base.yaml", []byte(`
 global_settings:
-  jsonrpc_port: "0.0.0.0:8080"
+  bind_address: "0.0.0.0:8080"
   log_level: "INFO"
-  log_file: "/var/log/mcpany.log"
 upstream_services:
 - id: "service-1"
   name: "first-service"
@@ -149,8 +148,7 @@ upstream_services:
 
 	afero.WriteFile(fs, "configs/02_override.yaml", []byte(`
 global_settings:
-  jsonrpc_port: "127.0.0.1:9090"
-  log_file: "/var/log/override.log"
+  bind_address: "127.0.0.1:9090"
 upstream_services:
 - id: "service-2"
   name: "second-service"
@@ -172,8 +170,7 @@ upstream_services:
 			name:  "Load single file",
 			paths: []string{"configs/01_base.yaml"},
 			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
-				assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetJsonrpcPort())
-				assert.Equal(t, "/var/log/mcpany.log", cfg.GetGlobalSettings().GetLogFile())
+				assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
 				assert.Len(t, cfg.GetUpstreamServices(), 1)
 			},
 		},
@@ -182,8 +179,7 @@ upstream_services:
 			paths: []string{"configs/01_base.yaml", "configs/02_override.yaml"},
 			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
 				// Last one wins for scalar fields
-				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetJsonrpcPort())
-				assert.Equal(t, "/var/log/override.log", cfg.GetGlobalSettings().GetLogFile())
+				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetBindAddress())
 				// Repeated fields are appended
 				assert.Len(t, cfg.GetUpstreamServices(), 2)
 				assert.Equal(t, "service-1", cfg.GetUpstreamServices()[0].GetId())

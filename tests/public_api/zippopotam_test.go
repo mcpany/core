@@ -52,13 +52,9 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	callID := "getZipcode"
-	toolSchema := configv1.ToolSchema_builder{
-		Name: proto.String("getZipcode"),
-	}.Build()
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/us/{{zipcode}}"),
-		Schema:       toolSchema,
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
@@ -69,14 +65,14 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 		},
 	}.Build()
 
-	toolDef := configv1.HttpToolDefinition_builder{
-		Schema:  toolSchema,
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("getZipcode"),
 		CallId: proto.String(callID),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(zippopotamServiceEndpoint),
-		Tools:   []*configv1.HttpToolDefinition{toolDef},
+		Tools:   []*configv1.ToolDefinition{toolDef},
 		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 

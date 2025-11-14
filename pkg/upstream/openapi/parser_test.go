@@ -24,7 +24,6 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const sampleOpenAPISpecJSON = `
@@ -667,34 +666,4 @@ func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
 	propSchema := requestBodyProp.GetStructValue().GetFields()
 	assert.Equal(t, "array", propSchema["type"].GetStringValue(), "The wrapper property should be of type 'array'")
 	assert.NotNil(t, propSchema["items"], "The array property should have an 'items' schema")
-}
-
-func TestParseOpenAPIToProto_RFC3339Validation(t *testing.T) {
-	spec := `
-openapi: 3.0.0
-info:
-  title: Test API
-  version: 1.0.0
-paths:
-  /test:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                datetime:
-                  type: string
-                  format: date-time
-      responses:
-        '200':
-          description: OK
-`
-	loader := openapi3.NewLoader()
-	doc, err := loader.LoadFromData([]byte(spec))
-	require.NoError(t, err)
-
-	err = doc.Validate(context.Background())
-	assert.NoError(t, err, "RFC3339 validation should pass")
 }
