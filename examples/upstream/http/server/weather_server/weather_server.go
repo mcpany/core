@@ -1,27 +1,28 @@
-// Copyright 2025 Author(s) of MCP Any
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2025 Author(s) of MCP Any
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"flag"
 	"log"
 	"net/http"
-	"os"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -32,107 +33,63 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-var weatherData = map[string]string{
-	"new york": "Sunny, 25°C",
-	"london":   "Cloudy, 15°C",
-	"tokyo":    "Rainy, 20°C",
+type WeatherRequest struct {
+	City string `json:"city"`
 }
 
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "OK")
+type WeatherResponse struct {
+	City        string  `json:"city"`
+	Temperature float64 `json:"temperature"`
+	Description string  `json:"description"`
+	Time        string  `json:"time"`
 }
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
-	var location string
-	if r.Method == "GET" {
-		location = r.URL.Query().Get("location")
-	} else if r.Method == "POST" {
-		var reqBody map[string]string
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-		location = reqBody["location"]
-	} else {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if location == "" {
-		http.Error(w, "Missing location parameter", http.StatusBadRequest)
-		return
-	}
-
-	weather, ok := weatherData[location]
-	if !ok {
-		http.Error(w, "Location not found", http.StatusNotFound)
-		return
-	}
-
-	response := map[string]string{
-		"location": location,
-		"weather":  weather,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-	}
-}
-
-func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("upgrade error:", err)
 		return
 	}
 	defer conn.Close()
 
 	for {
-		_, msg, err := conn.ReadMessage()
+		messageType, p, err := conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
-			return
+			log.Println("read error:", err)
+			break
 		}
-
-		var reqBody map[string]string
-		if err := json.Unmarshal(msg, &reqBody); err != nil {
-			log.Println(err)
-			return
-		}
-
-		location := reqBody["location"]
-		weather, ok := weatherData[location]
-		if !ok {
-			weather = "Location not found"
-		}
-
-		response := map[string]string{
-			"location": location,
-			"weather":  weather,
-		}
-
-		if err := conn.WriteJSON(response); err != nil {
-			log.Println(err)
-			return
+		if messageType == websocket.TextMessage {
+			var req WeatherRequest
+			if err := json.Unmarshal(p, &req); err != nil {
+				log.Println("unmarshal error:", err)
+				continue
+			}
+			resp := WeatherResponse{
+				City:        req.City,
+				Temperature: 25.5,
+				Description: "Sunny",
+				Time:        time.Now().Format(time.RFC3339),
+			}
+			respBytes, err := json.Marshal(resp)
+			if err != nil {
+				log.Println("marshal error:", err)
+				continue
+			}
+			if err := conn.WriteMessage(websocket.TextMessage, respBytes); err != nil {
+				log.Println("write error:", err)
+				break
+			}
 		}
 	}
 }
 
 func main() {
-	port := os.Getenv("HTTP_PORT")
-	if port == "" {
-		port = "8091"
-	}
+	port := flag.Int("port", 8091, "port to serve on")
+	flag.Parse()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", healthHandler)
-	mux.HandleFunc("/weather", weatherHandler)
-	mux.HandleFunc("/ws", wsHandler)
-
-	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+	http.HandleFunc("/weather", weatherHandler)
+	log.Printf("Server starting on port %d", *port)
+	if err := http.ListenAndServe(":"+strconv.Itoa(*port), nil); err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
