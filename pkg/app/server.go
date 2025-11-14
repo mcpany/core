@@ -284,6 +284,10 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
+var (
+	healthCheckClient = &http.Client{}
+)
+
 // HealthCheck performs a health check against a running server by sending an
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
@@ -303,14 +307,12 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	client := &http.Client{}
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("http://%s/healthz", addr), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := client.Do(req)
+	resp, err := healthCheckClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
