@@ -91,21 +91,17 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		cmdService.SetCommand("/bin/echo")
-		toolDef := configv1.CommandLineToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("echo"),
-			}.Build(),
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("echo"),
 			CallId: proto.String("echo-call"),
 		}.Build()
 		callDef := configv1.CommandLineCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("echo"),
-			}.Build(),
+			Id: proto.String("echo-call"),
 		}.Build()
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["echo-call"] = callDef
 		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.CommandLineToolDefinition{toolDef})
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
 		serviceID, discoveredTools, _, err := u.Register(
@@ -171,21 +167,17 @@ func TestCommandUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-add-tool-error")
 		cmdService := &configv1.CommandLineUpstreamService{}
-		toolDef := configv1.CommandLineToolDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("ls"),
-			}.Build(),
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("ls"),
 			CallId: proto.String("ls-call"),
 		}.Build()
 		callDef := configv1.CommandLineCallDefinition_builder{
-			Schema: configv1.ToolSchema_builder{
-				Name: proto.String("ls"),
-			}.Build(),
+			Id: proto.String("ls-call"),
 		}.Build()
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["ls-call"] = callDef
 		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.CommandLineToolDefinition{toolDef})
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
 		serviceConfig.SetCommandLineService(cmdService)
 
 		_, discoveredTools, _, err := u.Register(

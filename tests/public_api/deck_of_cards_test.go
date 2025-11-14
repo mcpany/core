@@ -52,24 +52,20 @@ func TestUpstreamService_DeckOfCards(t *testing.T) {
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	callID := "shuffleDeck"
-	toolSchema := configv1.ToolSchema_builder{
-		Name: proto.String("shuffleDeck"),
-	}.Build()
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/api/deck/new/shuffle/?deck_count=1"),
-		Schema:       toolSchema,
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 	}.Build()
 
-	toolDef := configv1.HttpToolDefinition_builder{
-		Schema:  toolSchema,
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("shuffleDeck"),
 		CallId: proto.String(callID),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(deckOfCardsServiceEndpoint),
-		Tools:   []*configv1.HttpToolDefinition{toolDef},
+		Tools:   []*configv1.ToolDefinition{toolDef},
 		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 

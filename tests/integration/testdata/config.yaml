@@ -19,8 +19,7 @@ upstream_services:
   http_service:
     address: "http://localhost:8080"
     tools:
-    - schema:
-        name: "echo"
+    - name: "echo"
       call_id: "echo_call"
     calls:
       echo_call:
