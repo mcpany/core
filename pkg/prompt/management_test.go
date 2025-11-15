@@ -130,3 +130,12 @@ func TestPromptManager(t *testing.T) {
 	})
 
 }
+
+func TestManagement_SetMCPServer(t *testing.T) {
+	pm := NewPromptManager()
+	mockMCPServer := &mcp.Server{}
+	provider := NewMCPServerProvider(mockMCPServer)
+	pm.SetMCPServer(provider)
+
+	assert.Equal(t, provider, pm.mcpServer, "mcpServer should be set correctly")
+}
