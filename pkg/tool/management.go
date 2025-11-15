@@ -306,8 +306,6 @@ func (tm *ToolManager) ListTools() []Tool {
 // serviceID is the unique identifier for the service whose tools should be
 // cleared.
 func (tm *ToolManager) ClearToolsForService(serviceID string) {
-	tm.mu.Lock()
-	defer tm.mu.Unlock()
 	log := logging.GetLogger().With("serviceID", serviceID)
 	log.Debug("Clearing existing tools for serviceID before reload/overwrite.")
 	deletedCount := 0
