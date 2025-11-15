@@ -184,7 +184,7 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		case configv1.UpstreamAuthentication_ApiKey_case:
 			apiKey := authConfig.GetApiKey()
 			if apiKey.GetHeaderName() == "" {
-				log.Warn("API key 'header_name' is empty. Authentication may fail.")
+				return fmt.Errorf("api key 'header_name' is empty")
 			}
 			apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
 			if err != nil {
