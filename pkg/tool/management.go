@@ -38,6 +38,19 @@ type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
+// ToolManagerInterface defines the interface for a tool manager.
+type ToolManagerInterface interface {
+	AddTool(tool Tool) error
+	GetTool(toolName string) (Tool, bool)
+	ListTools() []Tool
+	ClearToolsForService(serviceID string)
+	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	SetMCPServer(mcpServer MCPServerProvider)
+	AddMiddleware(middleware ToolExecutionMiddleware)
+	AddServiceInfo(serviceID string, info *ServiceInfo)
+	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+}
+
 // ToolManager is a thread-safe manager for registering, retrieving, and
 // executing tools. It also handles the registration of tools with an MCP server,
 // making them available for remote execution.
@@ -76,16 +89,16 @@ func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mcpServer = mcpServer
 }
 
-// CallTool finds a tool by its name and executes it with the provided
+// ExecuteTool finds a tool by its name and executes it with the provided
 // request context and inputs.
 //
 // ctx is the context for the tool execution.
 // req contains the name of the tool and its inputs.
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
-func (tm *ToolManager) CallTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
-	log.Debug("Calling tool")
+	log.Debug("Executing tool")
 
 	execute := func(ctx context.Context, req *ExecutionRequest) (any, error) {
 		t, ok := tm.GetTool(req.ToolName)

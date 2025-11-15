@@ -49,28 +49,6 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-// ToolManagerInterface defines the contract for a tool manager, which is
-// responsible for the lifecycle and execution of tools within the system.
-type ToolManagerInterface interface {
-	// GetTool retrieves a tool by its fully qualified name.
-	GetTool(toolName string) (Tool, bool)
-	// ListTools returns a slice of all registered tools.
-	ListTools() []Tool
-	// CallTool runs a tool with the given request parameters.
-	CallTool(ctx context.Context, req *ExecutionRequest) (any, error)
-	// SetMCPServer provides the tool manager with a reference to the MCP server,
-	// allowing tools to make calls back to the server if needed.
-	SetMCPServer(mcpServer MCPServerProvider)
-	// AddTool registers a new tool with the manager.
-	AddTool(tool Tool) error
-	// GetServiceInfo retrieves metadata about a registered service.
-	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
-	// AddServiceInfo registers metadata for a service.
-	AddServiceInfo(serviceID string, info *ServiceInfo)
-	// ClearToolsForService removes all tools associated with a specific service.
-	ClearToolsForService(serviceID string)
-}
-
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).

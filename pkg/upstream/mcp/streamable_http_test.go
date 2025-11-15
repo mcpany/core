@@ -202,7 +202,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("successful registration with stdio", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -259,7 +259,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("successful registration with stdio and setup commands", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -313,7 +313,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		defer func() { util.IsDockerSocketAccessibleFunc = originalIsDockerSocketAccessibleFunc }()
 
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -367,7 +367,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		defer func() { util.IsDockerSocketAccessibleFunc = originalIsDockerSocketAccessibleFunc }()
 
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -424,7 +424,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		defer server.Close()
 
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -469,7 +469,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("connection error", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -499,7 +499,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("list tools error", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -535,7 +535,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("nil mcp service config", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
@@ -550,7 +550,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 	t.Run("invalid service name", func(t *testing.T) {
 		toolManager := tool.NewToolManager(nil)
-		promptManager := prompt.NewPromptManager(toolManager)
+		promptManager := prompt.NewPromptManager()
 		resourceManager := resource.NewResourceManager()
 		upstream := NewMCPUpstream()
 
