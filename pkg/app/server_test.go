@@ -141,6 +141,29 @@ func TestHealthCheck(t *testing.T) {
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
 
+	t.Run("health check with a hanging server", func(t *testing.T) {
+		// This handler will hang indefinitely, simulating a non-responsive server.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			<-r.Context().Done() // Wait until the client hangs up or the request is canceled.
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		timeout := 50 * time.Millisecond
+
+		start := time.Now()
+		err := HealthCheck(io.Discard, addr, timeout)
+		duration := time.Since(start)
+
+		// The health check should fail with an error because of the timeout.
+		assert.Error(t, err, "HealthCheck should time out and return an error against a hanging server")
+
+		// The duration should be slightly more than the timeout, but not by a large margin.
+		// Let's check if it's within a reasonable range, e.g., timeout < duration < timeout * 2
+		assert.GreaterOrEqual(t, duration, timeout, "The check should take at least the timeout duration")
+		assert.Less(t, duration, timeout*2, "The check should not take significantly longer than the timeout")
+	})
+
 	t.Run("health check respects client timeout", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			time.Sleep(7 * time.Second) // Sleep longer than the timeout
