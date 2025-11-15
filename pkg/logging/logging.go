@@ -21,6 +21,8 @@ import (
 	"log/slog"
 	"os"
 	"sync"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 var (
@@ -67,4 +69,20 @@ func GetLogger() *slog.Logger {
 		}))
 	})
 	return defaultLogger
+}
+
+// ToSlogLevel converts a string log level to a slog.Level.
+func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
+	switch level {
+	case configv1.GlobalSettings_DEBUG:
+		return slog.LevelDebug
+	case configv1.GlobalSettings_INFO:
+		return slog.LevelInfo
+	case configv1.GlobalSettings_WARN:
+		return slog.LevelWarn
+	case configv1.GlobalSettings_ERROR:
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
 }

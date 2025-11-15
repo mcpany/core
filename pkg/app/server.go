@@ -251,8 +251,8 @@ func (a *Application) Run(
 	}
 
 	bindAddress := jsonrpcPort
-	if cfg.GetGlobalSettings().GetBindAddress() != "" {
-		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
+	if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
+		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
 	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
