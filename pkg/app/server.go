@@ -305,7 +305,9 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
-	return HealthCheckWithContext(context.Background(), out, addr, timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	return HealthCheckWithContext(ctx, out, addr)
 }
 
 // HealthCheckWithContext performs a health check against a running server by
@@ -328,11 +330,8 @@ func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
 	addr string,
-	timeout time.Duration,
 ) error {
-	healthCheckClient := &http.Client{
-		Timeout: timeout,
-	}
+	healthCheckClient := &http.Client{}
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
