@@ -402,6 +402,7 @@ type GlobalSettings struct {
 	xxx_hidden_McpBasepath *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
 	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
 	xxx_hidden_MessageBus  *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
+	LogFile                string                  `protobuf:"bytes,5,opt,name=log_file,json=logFile"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields

@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	v1 "github.com/mcpany/core/proto/config/v1"
@@ -34,10 +35,10 @@ func BindFlags(cmd *cobra.Command) {
 		viper.SetEnvPrefix("MCPANY")
 	})
 
-	cmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
+	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server listen address. Env: MCPANY_MCP_LISTEN_ADDRESS")
 	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
-	if err := viper.BindPFlag("jsonrpc-port", cmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
-		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
+	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
+		fmt.Printf("Error binding mcp-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
@@ -57,13 +58,39 @@ func BindFlags(cmd *cobra.Command) {
 	}
 }
 
+// Config holds all the configuration for the application.
+type Config struct {
+	GRPC       *v1.GrpcUpstreamService
+	MCP        *v1.McpUpstreamService
+	Global     *v1.GlobalSettings
+	shutdown   time.Duration
+	configFile string
+}
+
+var (
+	globalConfig *Config
+	once         sync.Once
+)
+
+// GlobalConfig returns the global configuration instance.
+func GlobalConfig() *Config {
+	once.Do(func() {
+		var err error
+		globalConfig, err = LoadConfig()
+		if err != nil {
+			panic(err)
+		}
+	})
+	return globalConfig
+}
+
 // GetBindAddress returns the bind address for the server.
 // It prioritizes the config file over the command line flag if the flag is not explicitly set.
-func GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
-	bindAddress := viper.GetString("jsonrpc-port")
+func (c *Config) GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
+	bindAddress := viper.GetString("mcp-listen-address")
 	configPaths := viper.GetStringSlice("config-path")
 
-	if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
+	if !cmd.Flags().Changed("mcp-listen-address") && len(configPaths) > 0 {
 		store := NewFileStore(fs, configPaths)
 		cfg, err := LoadServices(store, "server")
 		if err != nil {
@@ -76,40 +103,43 @@ func GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
 	return bindAddress, nil
 }
 
-// GetGRPCPort returns the gRPC port.
-func GetGRPCPort() string {
-	return viper.GetString("grpc-port")
+// GRPCPort returns the gRPC port.
+func (c *Config) GRPCPort() string {
+	if c.GRPC == nil {
+		return ""
+	}
+	return c.GRPC.GetAddress()
 }
 
-// GetStdio returns whether stdio mode is enabled.
-func GetStdio() bool {
-	return viper.GetBool("stdio")
+// Stdio returns whether stdio mode is enabled.
+func (c *Config) Stdio() bool {
+	if c.MCP == nil {
+		return false
+	}
+	return c.MCP.GetStdioConnection() != nil
 }
 
-// GetConfigPaths returns the paths to the configuration files.
-func GetConfigPaths() []string {
+// ConfigPaths returns the paths to the configuration files.
+func (c *Config) ConfigPaths() []string {
 	return viper.GetStringSlice("config-path")
 }
 
 // IsDebug returns whether debug mode is enabled.
-func IsDebug() bool {
-	return viper.GetBool("debug")
+func (c *Config) IsDebug() bool {
+	return c.Global.GetLogLevel() == v1.GlobalSettings_DEBUG
 }
 
-// GetLogFile returns the path to the log file.
-func GetLogFile() string {
-	return viper.GetString("logfile")
+// LogFile returns the path to the log file.
+func (c *Config) LogFile() string {
+	return c.Global.LogFile
 }
 
-// GetShutdownTimeout returns the graceful shutdown timeout.
-func GetShutdownTimeout() time.Duration {
-	return viper.GetDuration("shutdown-timeout")
+// ShutdownTimeout returns the graceful shutdown timeout.
+func (c *Config) ShutdownTimeout() time.Duration {
+	return c.shutdown
 }
 
-// GetLogLevel returns the log level for the server.
-func GetLogLevel() v1.GlobalSettings_LogLevel {
-	if IsDebug() {
-		return v1.GlobalSettings_DEBUG
-	}
-	return v1.GlobalSettings_INFO
+// LogLevel returns the log level for the server.
+func (c *Config) LogLevel() v1.GlobalSettings_LogLevel {
+	return c.Global.GetLogLevel()
 }

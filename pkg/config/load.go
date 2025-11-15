@@ -19,10 +19,12 @@ package config
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/viper"
 )
 
 // LoadServices loads, validates, and processes the MCP Any server configuration
@@ -77,4 +79,21 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		log.Info("Successfully processed config file", "services", len(fileConfig.GetUpstreamServices()))
 	}
 	return fileConfig, nil
+}
+
+// LoadConfig creates a new Config object from viper.
+func LoadConfig() (*Config, error) {
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+
+	// If a config file is defined and not found, return an error.
+	if viper.ConfigFileUsed() != "" {
+		if _, err := os.Stat(viper.ConfigFileUsed()); os.IsNotExist(err) {
+			return nil, fmt.Errorf("config file not found: %s", viper.ConfigFileUsed())
+		}
+	}
+
+	return &cfg, nil
 }
