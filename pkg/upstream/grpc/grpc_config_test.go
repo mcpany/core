@@ -120,4 +120,40 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 		require.NoError(t, err)
 		assert.Empty(t, tools)
 	})
+
+	t.Run("successful tool registration", func(t *testing.T) {
+		server, addr := startMockServer(t)
+		defer server.Stop()
+		ctx := context.Background()
+		fds, err := protobufparser.ParseProtoByReflection(ctx, addr)
+		require.NoError(t, err)
+
+		serviceConfig := &configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service"),
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("GetWeather"),
+						CallId: proto.String("get-weather-call"),
+					}.Build(),
+				},
+				Calls: map[string]*configv1.GrpcCallDefinition{
+					"get-weather-call": configv1.GrpcCallDefinition_builder{
+						Service: proto.String("examples.weather.v1.WeatherService"),
+						Method:  proto.String("GetWeather"),
+					}.Build(),
+				},
+			}.Build(),
+		}
+
+		tm.AddServiceInfo(serviceID, &tool.ServiceInfo{Config: serviceConfig.Build()})
+
+		discoveredTools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(
+			context.Background(), serviceID, tm, nil, false, fds,
+		)
+		require.NoError(t, err)
+		assert.Len(t, discoveredTools, 1)
+		assert.Len(t, tm.ListTools(), 1)
+		assert.Equal(t, "GetWeather", discoveredTools[0].GetName())
+	})
 }
