@@ -1401,60 +1401,6 @@ func TestRun_NoConfig(t *testing.T) {
 	assert.NoError(t, runErr, "app.Run should return nil on graceful shutdown")
 }
 
-func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err, "Failed to find a free port.")
-	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
-
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
-		hangService := &mockHangService{hangTime: 10 * time.Second}
-		desc := &gogrpc.ServiceDesc{
-			ServiceName: "testhang.HangService",
-			HandlerType: (*interface{})(nil),
-			Methods: []gogrpc.MethodDesc{
-				{
-					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
-						return srv.(*mockHangService).Hang(ctx, nil)
-					},
-				},
-			},
-			Streams:  []gogrpc.StreamDesc{},
-			Metadata: "testhang.proto",
-		}
-		s.RegisterService(desc, hangService)
-	})
-
-	time.Sleep(100 * time.Millisecond)
-
-	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
-		if err != nil {
-			t.Logf("Failed to dial gRPC server: %v", err)
-			return
-		}
-		defer conn.Close()
-		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
-	}()
-
-	time.Sleep(100 * time.Millisecond)
-
-	cancel()
-	wg.Wait()
-
-	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
-	if l != nil {
-		l.Close()
-	}
-}
 
 // mockCloseCountingListener is a mock net.Listener that wraps a real
 // net.Listener and counts the number of times its Close method is called. This
@@ -1656,5 +1602,60 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 		// The WaitGroup was correctly handled.
 	case <-time.After(2 * time.Second):
 		t.Fatal("Test timed out, expected WaitGroup to be done")
+	}
+}
+
+func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	lis.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangService := &mockHangService{hangTime: 10 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	time.Sleep(100 * time.Millisecond)
+
+	go func() {
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			t.Logf("Failed to dial gRPC server: %v", err)
+			return
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+
+	cancel()
+	wg.Wait()
+
+	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
+	if l != nil {
+		l.Close()
 	}
 }
