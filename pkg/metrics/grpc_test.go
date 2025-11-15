@@ -41,6 +41,7 @@ func TestGrpcStatsHandler(t *testing.T) {
 
 	// Test HandleRPC
 	h.HandleRPC(context.Background(), &stats.Begin{})
+	h.HandleRPC(context.Background(), &stats.End{})
 
 	// Test TagConn
 	if ctx := h.TagConn(context.Background(), &stats.ConnTagInfo{}); ctx == nil {
@@ -70,5 +71,13 @@ func TestGrpcStatsHandler(t *testing.T) {
 	}
 	if !strings.Contains(string(body), "mcpany_grpc_connections_closed_total 1") {
 		t.Errorf("Expected metric mcpany_grpc_connections_closed_total not found in response body")
+	}
+
+	// Check for RPC metrics
+	if !strings.Contains(string(body), "mcpany_grpc_rpc_started_total 1") {
+		t.Errorf("Expected metric mcpany_grpc_rpc_started_total not found in response body")
+	}
+	if !strings.Contains(string(body), "mcpany_grpc_rpc_finished_total 1") {
+		t.Errorf("Expected metric mcpany_grpc_rpc_finished_total not found in response body")
 	}
 }

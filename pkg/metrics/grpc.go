@@ -31,7 +31,14 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) cont
 }
 
 // HandleRPC processes RPC stats.
-func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {}
+func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	switch s.(type) {
+	case *stats.Begin:
+		IncrCounter([]string{"grpc", "rpc", "started", "total"}, 1)
+	case *stats.End:
+		IncrCounter([]string{"grpc", "rpc", "finished", "total"}, 1)
+	}
+}
 
 // TagConn can be used to tag connections with custom information.
 func (h *GrpcStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
