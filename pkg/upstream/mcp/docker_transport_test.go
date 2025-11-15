@@ -30,6 +30,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
@@ -86,6 +87,41 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 	// Test Close
 	err = conn.Close()
 	assert.NoError(t, err)
+}
+
+func TestDockerConn_Read_UnmarshalError(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("invalid header", func(t *testing.T) {
+		rwc := &mockReadWriteCloser{}
+		conn := &dockerConn{
+			rwc:     rwc,
+			decoder: json.NewDecoder(rwc),
+			encoder: json.NewEncoder(rwc),
+		}
+		invalidHeaderMsg := `{"method": 123}`
+		rwc.WriteString(invalidHeaderMsg + "\n")
+
+		_, err := conn.Read(ctx)
+		if assert.Error(t, err) {
+			assert.Contains(t, err.Error(), "failed to unmarshal message header")
+		}
+	})
+
+	t.Run("invalid json syntax", func(t *testing.T) {
+		rwc := &mockReadWriteCloser{}
+		conn := &dockerConn{
+			rwc:     rwc,
+			decoder: json.NewDecoder(rwc),
+			encoder: json.NewEncoder(rwc),
+		}
+		// This is syntactically invalid, and will cause `decoder.Decode` to fail.
+		invalidMsg := `{"method": "test"`
+		rwc.WriteString(invalidMsg + "\n")
+
+		_, err := conn.Read(ctx)
+		assert.Error(t, err)
+	})
 }
 
 func TestDockerTransport_Connect_ClientError(t *testing.T) {
@@ -223,4 +259,37 @@ func TestDockerTransport_Connect_NoImage(t *testing.T) {
 	_, err := transport.Connect(ctx)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container_image must be specified")
+}
+
+func TestDockerReadWriteCloser_Close_Error(t *testing.T) {
+	var buf bytes.Buffer
+	logging.ForTestsOnlyResetLogger()
+	logging.Init(slog.LevelInfo, &buf)
+
+	mockClient := &mockDockerClient{
+		ContainerStopFunc: func(ctx context.Context, containerID string, options container.StopOptions) error {
+			return fmt.Errorf("stop error")
+		},
+		ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+			return fmt.Errorf("remove error")
+		},
+		CloseFunc: func() error {
+			return nil
+		},
+	}
+
+	rwc := &dockerReadWriteCloser{
+		WriteCloser: &mockReadWriteCloser{},
+		containerID: "test-container",
+		cli:         mockClient,
+	}
+
+	err := rwc.Close()
+	assert.NoError(t, err)
+
+	logOutput := buf.String()
+	assert.Contains(t, logOutput, "Failed to stop container")
+	assert.Contains(t, logOutput, "stop error")
+	assert.Contains(t, logOutput, "Failed to remove container")
+	assert.Contains(t, logOutput, "remove error")
 }
