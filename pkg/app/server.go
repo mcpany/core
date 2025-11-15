@@ -437,6 +437,23 @@ func (a *Application) runServerMode(
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
 
+	// After shutting down, we perform a final, non-blocking check of the error
+	// channel. This is to prevent a race condition where a startup error occurs
+	// almost simultaneously with a shutdown signal. In that scenario, the
+	// `localCtx.Done()` case might be selected, and the startup error could be
+	// missed, causing the function to return a nil error when it should not.
+	if startupErr == nil {
+		select {
+		case err := <-errChan:
+			if err != nil {
+				startupErr = fmt.Errorf("failed to start a server: %w", err)
+				logging.GetLogger().Error("Captured a startup error during shutdown", "error", startupErr)
+			}
+		default:
+			// No error was waiting.
+		}
+	}
+
 	return startupErr
 }
 

@@ -1567,3 +1567,49 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 		t.Fatal("Test hung for 2 seconds. The bug is still present.")
 	}
 }
+
+func TestRunServerMode_StartupErrorRaceWithShutdown(t *testing.T) {
+	// This is a regression test for a race condition where a server startup error
+	// could be missed if a shutdown signal is received at the same time.
+	// We run this multiple times to increase the likelihood of hitting the race.
+	for i := 0; i < 50; i++ {
+		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
+			t.Parallel()
+			// Occupy a port to guarantee a startup error.
+			l, err := net.Listen("tcp", "localhost:0")
+			require.NoError(t, err)
+			defer l.Close()
+			port := l.Addr().(*net.TCPAddr).Port
+
+			app := &Application{}
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			var wg sync.WaitGroup
+			wg.Add(1)
+			var runErr error
+
+			go func() {
+				defer wg.Done()
+				// This call is expected to fail because the port is in use.
+				runErr = app.runServerMode(ctx, nil, nil, fmt.Sprintf("localhost:%d", port), "localhost:0", 5*time.Second)
+			}()
+
+			// This is the key to the test: we wait a very short, variable amount of time
+			// before canceling the context. This creates a race between the startup
+			// error being sent to the error channel and the context cancellation
+			// being detected by the select statement in runServerMode.
+			time.Sleep(time.Duration(i) * 10 * time.Microsecond)
+			cancel()
+
+			wg.Wait()
+
+			// The bug would cause runErr to be nil in some iterations. The fix ensures
+			// that the startup error is always captured and returned.
+			assert.Error(t, runErr, "runServerMode should have returned a startup error")
+			if runErr != nil {
+				assert.Contains(t, runErr.Error(), "failed to start a server", "The error message should indicate a server startup failure.")
+			}
+		})
+	}
+}
