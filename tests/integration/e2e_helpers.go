@@ -770,7 +770,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	args := []string{
-		"--jsonrpc-port", fmt.Sprintf("localhost:%d", jsonrpcPort),
+		"--mcp-listen-address", fmt.Sprintf("localhost:%d", jsonrpcPort),
 		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
