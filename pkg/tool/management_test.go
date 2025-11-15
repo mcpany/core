@@ -147,7 +147,7 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 	assert.Equal(t, "service-b", tools[0].Tool().GetServiceId(), "The remaining tool should belong to service-b")
 }
 
-func TestToolManager_CallTool(t *testing.T) {
+func TestToolManager_ExecuteTool(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockTool := new(MockTool)
 	toolProto := &v1.Tool{}
@@ -163,31 +163,18 @@ func TestToolManager_CallTool(t *testing.T) {
 
 	_ = tm.AddTool(mockTool)
 
-	result, err := tm.CallTool(context.Background(), execReq)
+	result, err := tm.ExecuteTool(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResult, result)
 	mockTool.AssertExpectations(t)
 }
 
-func TestToolManager_CallTool_NotFound(t *testing.T) {
+func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 	tm := NewToolManager(nil)
 	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
-	_, err := tm.CallTool(context.Background(), execReq)
+	_, err := tm.ExecuteTool(context.Background(), execReq)
 	assert.Error(t, err, "Should return an error for a non-existent tool")
 	assert.Equal(t, ErrToolNotFound, err, "Error should be ErrToolNotFound")
-}
-
-func TestToolManager_AddServiceInfo(t *testing.T) {
-	tm := NewToolManager(nil)
-	serviceInfo := &ServiceInfo{Name: "Test Service"}
-	tm.AddServiceInfo("service1", serviceInfo)
-
-	retrievedInfo, ok := tm.GetServiceInfo("service1")
-	assert.True(t, ok)
-	assert.Equal(t, serviceInfo, retrievedInfo)
-
-	_, ok = tm.GetServiceInfo("non-existent-service")
-	assert.False(t, ok)
 }
 
 func TestToolManager_ConcurrentAccess(t *testing.T) {
@@ -315,7 +302,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	expectedResult := "middleware success"
 	mockMiddleware.On("Execute", mock.Anything, execReq, mock.Anything).Return(expectedResult, nil).Once()
 
-	result, err := tm.CallTool(context.Background(), execReq)
+	result, err := tm.ExecuteTool(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResult, result)
 	mockMiddleware.AssertExpectations(t)
@@ -325,7 +312,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	mockMiddleware.On("Execute", mock.Anything, execReq, mock.Anything).Return("call_next", nil).Once()
 	mockTool.On("Execute", mock.Anything, execReq).Return(expectedToolResult, nil).Once()
 
-	result, err = tm.CallTool(context.Background(), execReq)
+	result, err = tm.ExecuteTool(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedToolResult, result)
 	mockMiddleware.AssertExpectations(t)

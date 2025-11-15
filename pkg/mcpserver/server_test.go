@@ -74,7 +74,7 @@ func TestToolListFiltering(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -145,7 +145,7 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -227,7 +227,7 @@ func TestServer_CallTool(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -353,7 +353,7 @@ func TestServer_Prompts(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -431,7 +431,7 @@ func TestServer_Resources(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -488,7 +488,7 @@ func TestServer_Getters(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
@@ -509,7 +509,7 @@ type mockToolManager struct {
 	addServiceInfoCalled       bool
 	getToolCalled              bool
 	listToolsCalled            bool
-	callToolCalled             bool
+	executeToolCalled          bool
 	setMCPServerCalled         bool
 	addToolCalled              bool
 	getServiceInfoCalled       bool
@@ -530,9 +530,12 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return []tool.Tool{}
 }
 
-func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	m.callToolCalled = true
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	m.executeToolCalled = true
 	return nil, nil
+}
+
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
 }
 
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
@@ -561,7 +564,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	busProvider, err := bus.NewBusProvider(messageBus)
 	require.NoError(t, err)
 	mockToolManager := &mockToolManager{}
-	promptManager := prompt.NewPromptManager(mockToolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
@@ -580,7 +583,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	assert.True(t, mockToolManager.listToolsCalled)
 
 	_, _ = server.CallTool(ctx, &tool.ExecutionRequest{})
-	assert.True(t, mockToolManager.callToolCalled)
+	assert.True(t, mockToolManager.executeToolCalled)
 
 	server.SetMCPServer(nil)
 	assert.True(t, mockToolManager.setMCPServerCalled)
