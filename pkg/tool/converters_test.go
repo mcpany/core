@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -308,4 +309,14 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 	if diff := cmp.Diff(expectedTool, mcpTool, protocmp.Transform()); diff != "" {
 		t.Errorf("ConvertProtoToMCPTool() returned diff (-want +got):\n%s", diff)
 	}
+}
+
+func TestConvertJSONSchemaToStruct_InvalidType(t *testing.T) {
+	jsonSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"type": structpb.NewStringValue("invalid-type"),
+		},
+	}
+	_, err := convertJSONSchemaToStruct(jsonSchema)
+	assert.Error(t, err, "Should return an error for an invalid schema type")
 }

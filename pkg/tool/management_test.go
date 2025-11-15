@@ -343,3 +343,11 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	_, ok = tm.GetServiceInfo("non-existent-service")
 	assert.False(t, ok, "Service info for a non-existent service should not be found")
 }
+
+func TestToolManager_SetMCPServer(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return((*mcp.Server)(nil))
+	tm.SetMCPServer(mockProvider)
+	assert.Equal(t, mockProvider, tm.mcpServer, "MCPServerProvider should be set")
+}
