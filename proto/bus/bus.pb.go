@@ -26,6 +26,7 @@ package bus
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -518,7 +519,7 @@ var File_proto_bus_bus_proto protoreflect.FileDescriptor
 
 const file_proto_bus_bus_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/bus/bus.proto\x12\x03bus\"\x94\x01\n" +
+	"\x13proto/bus/bus.proto\x12\x03bus\x1a!google/protobuf/go_features.proto\"\x94\x01\n" +
 	"\n" +
 	"MessageBus\x12/\n" +
 	"\tin_memory\x18\x01 \x01(\v2\x10.bus.InMemoryBusH\x00R\binMemory\x12%\n" +
@@ -533,7 +534,7 @@ const file_proto_bus_bus_proto_rawDesc = "" +
 	"\bRedisBus\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x0e\n" +
 	"\x02db\x18\x02 \x01(\x05R\x02db\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpasswordB\"Z github.com/mcpany/core/proto/busb\beditionsp\xe8\a"
+	"\bpassword\x18\x03 \x01(\tR\bpasswordB4B\bBusProtoZ github.com/mcpany/core/proto/bus\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_bus_bus_proto_goTypes = []any{
