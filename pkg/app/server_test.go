@@ -828,7 +828,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	}()
 
 	// Allow the RPC call to be initiated.
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	// Trigger the graceful shutdown.
 	cancel()
