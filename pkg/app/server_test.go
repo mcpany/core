@@ -255,7 +255,7 @@ func TestHealthCheck(t *testing.T) {
 		assert.Equal(t, "Health check successful: server is running and healthy.\n", out.String())
 	})
 
-	t.Run("failed health check writes to writer", func(t *testing.T) {
+	t.Run("failed health check does not write to writer", func(t *testing.T) {
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
@@ -264,7 +264,7 @@ func TestHealthCheck(t *testing.T) {
 		var out bytes.Buffer
 		err = HealthCheck(&out, addr, 1*time.Second)
 		assert.Error(t, err)
-		assert.Contains(t, out.String(), "health check failed")
+		assert.Empty(t, out.String(), "HealthCheck should not write to the writer on failure")
 	})
 }
 
