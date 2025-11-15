@@ -563,6 +563,27 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_NewWithRedisConfig(t *testing.T) {
+	config := bus_pb.RedisBus_builder{
+		Address:  proto.String("localhost:6380"),
+		Password: proto.String("testpassword"),
+		Db:       proto.Int32(2),
+	}.Build()
+	bus := New[string](config)
+	opts := bus.client.Options()
+	assert.Equal(t, "localhost:6380", opts.Addr)
+	assert.Equal(t, "testpassword", opts.Password)
+	assert.Equal(t, 2, opts.DB)
+}
+
+func TestRedisBus_NewWithNilRedisConfig(t *testing.T) {
+	bus := New[string](nil)
+	opts := bus.client.Options()
+	assert.Equal(t, "localhost:6379", opts.Addr)
+	assert.Equal(t, "", opts.Password)
+	assert.Equal(t, 0, opts.DB)
+}
+
 func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)

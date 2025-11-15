@@ -18,16 +18,98 @@ package logging
 
 import (
 	"bytes"
+	"context"
 	"log/slog"
-	"sync"
+	"os"
+	"strings"
 	"testing"
-
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/stretchr/testify/assert"
 )
 
+// setup is a helper function to reset the logger for each test.
+func setup(t *testing.T) {
+	t.Helper()
+	ForTestsOnlyResetLogger()
+}
+
+func TestGetLogger_DefaultInitialization(t *testing.T) {
+	setup(t)
+
+	// Capture the initial stderr.
+	oldStderr := os.Stderr
+	_, w, _ := os.Pipe()
+	os.Stderr = w
+
+	logger := GetLogger()
+
+	// Restore stderr.
+	w.Close()
+	os.Stderr = oldStderr
+
+	if !logger.Enabled(context.Background(), slog.LevelInfo) {
+		t.Error("Default logger should have Info level enabled")
+	}
+	if logger.Enabled(context.Background(), slog.LevelDebug) {
+		t.Error("Default logger should not have Debug level enabled")
+	}
+}
+
+func TestInit_FirstTime(t *testing.T) {
+	setup(t)
+
+	var buf bytes.Buffer
+	Init(slog.LevelDebug, &buf)
+
+	logger := GetLogger()
+	logger.Debug("test message")
+
+	if !strings.Contains(buf.String(), "test message") {
+		t.Error("Log message was not written to the buffer")
+	}
+	if !logger.Enabled(context.Background(), slog.LevelDebug) {
+		t.Error("Logger should have Debug level enabled")
+	}
+}
+
+func TestInit_IsNoOpAfterFirstCall(t *testing.T) {
+	setup(t)
+
+	var buf1, buf2 bytes.Buffer
+	Init(slog.LevelDebug, &buf1)
+	Init(slog.LevelInfo, &buf2)
+
+	logger := GetLogger()
+	logger.Debug("test message")
+
+	if !strings.Contains(buf1.String(), "test message") {
+		t.Error("Log message was not written to the first buffer")
+	}
+	if len(buf2.String()) > 0 {
+		t.Error("Second Init call should be a no-op and not write to the second buffer")
+	}
+}
+
+func TestGetLogger_ReturnsSingleton(t *testing.T) {
+	setup(t)
+
+	logger1 := GetLogger()
+	logger2 := GetLogger()
+
+	if logger1 != logger2 {
+		t.Error("GetLogger should always return the same instance")
+	}
+
+	var buf bytes.Buffer
+	Init(slog.LevelDebug, &buf)
+	logger3 := GetLogger()
+
+	if logger1 != logger3 {
+		t.Error("GetLogger should return the same instance even after Init")
+	}
+}
+
 func TestToSlogLevel(t *testing.T) {
-	testCases := []struct {
+	tests := []struct {
 		name     string
 		level    configv1.GlobalSettings_LogLevel
 		expected slog.Level
@@ -53,40 +135,17 @@ func TestToSlogLevel(t *testing.T) {
 			expected: slog.LevelError,
 		},
 		{
-			name:     "Default",
+			name:     "Unknown",
 			level:    configv1.GlobalSettings_LogLevel(999),
 			expected: slog.LevelInfo,
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, ToSlogLevel(tc.level))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ToSlogLevel(tt.level); got != tt.expected {
+				t.Errorf("ToSlogLevel() = %v, want %v", got, tt.expected)
+			}
 		})
 	}
-}
-
-func TestGetLogger(t *testing.T) {
-	ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
-	defaultLogger = slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
-	}))
-	once = sync.Once{}
-	once.Do(func() {})
-
-	logger := GetLogger()
-	assert.NotNil(t, logger)
-	logger.Info("test message")
-	assert.Contains(t, buf.String(), "test message")
-}
-
-func TestInit(t *testing.T) {
-	ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
-	Init(slog.LevelDebug, &buf)
-
-	logger := GetLogger()
-	logger.Debug("test debug message")
-	assert.Contains(t, buf.String(), "test debug message")
 }

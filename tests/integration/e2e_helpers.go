@@ -733,8 +733,8 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		"-p", fmt.Sprintf("%d:6379", redisPort),
 	}
 
-	cleanup := StartDockerContainer(t, "docker.io/library/redis:alpine", containerName, dockerArgs...)
-
+	cleanup := StartDockerContainer(t, "redis:alpine", containerName, dockerArgs...)
+	time.Sleep(5 * time.Second)
 	// Wait for Redis to be ready
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server

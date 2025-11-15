@@ -73,14 +73,13 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	t.Skip("Skipping test due to Docker Hub rate limiting issues in the test environment")
 	t.Parallel()
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
 	}
 
 	// Test StartDockerContainer
-	imageName := "nginx:alpine"
+	imageName := "redis:alpine"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
 	cleanup := StartDockerContainer(t, imageName, containerName, "-d")
 	defer cleanup()
@@ -91,4 +90,11 @@ func TestDockerHelpers(t *testing.T) {
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
 	assert.Contains(t, string(out), containerName)
+
+	// Test StartRedisContainer
+	_, redisCleanup := StartRedisContainer(t)
+	defer redisCleanup()
+
+	// The StartRedisContainer function has internal checks to ensure the container
+	// starts and is responsive. A successful return is a pass.
 }
