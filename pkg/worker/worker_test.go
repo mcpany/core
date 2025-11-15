@@ -81,11 +81,39 @@ type mockToolManager struct {
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.executeFunc != nil {
 		return m.executeFunc(ctx, req)
 	}
 	return "mock-result", nil
+}
+
+func (m *mockToolManager) AddTool(tool tool.Tool) error {
+	return nil
+}
+
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+	return nil, false
+}
+
+func (m *mockToolManager) ListTools() []tool.Tool {
+	return nil
+}
+
+func (m *mockToolManager) ClearToolsForService(serviceID string) {
+}
+
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+}
+
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+}
+
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return nil, false
 }
 
 func TestServiceRegistrationWorker(t *testing.T) {

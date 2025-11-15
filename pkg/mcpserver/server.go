@@ -350,7 +350,7 @@ func (s *Server) ListTools() []tool.Tool {
 }
 
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return s.toolManager.CallTool(ctx, req)
+	return s.toolManager.ExecuteTool(ctx, req)
 }
 
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {

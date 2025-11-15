@@ -19,23 +19,28 @@ package prompt
 import (
 	"sync"
 
-	"github.com/mcpany/core/pkg/tool"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
+// PromptManagerInterface defines the interface for a prompt manager.
+type PromptManagerInterface interface {
+	AddPrompt(prompt Prompt)
+	GetPrompt(name string) (Prompt, bool)
+	ListPrompts() []Prompt
+	ClearPromptsForService(serviceID string)
+	SetMCPServer(mcpServer MCPServerProvider)
+}
 
 // PromptManager is a thread-safe manager for registering and retrieving prompts.
 type PromptManager struct {
-	prompts     *xsync.Map[string, Prompt]
-	mcpServer   MCPServerProvider
-	mu          sync.RWMutex
-	toolManager tool.ToolManagerInterface
+	prompts   *xsync.Map[string, Prompt]
+	mcpServer MCPServerProvider
+	mu        sync.RWMutex
 }
 
 // NewPromptManager creates and returns a new, empty PromptManager.
-func NewPromptManager(toolManager tool.ToolManagerInterface) *PromptManager {
+func NewPromptManager() *PromptManager {
 	return &PromptManager{
-		prompts:     xsync.NewMap[string, Prompt](),
-		toolManager: toolManager,
+		prompts: xsync.NewMap[string, Prompt](),
 	}
 }
 
@@ -75,9 +80,4 @@ func (pm *PromptManager) ClearPromptsForService(serviceID string) {
 		}
 		return true
 	})
-}
-
-// GetServiceInfo retrieves the service info for a given service ID.
-func (pm *PromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return pm.toolManager.GetServiceInfo(serviceID)
 }
