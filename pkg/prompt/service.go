@@ -44,6 +44,7 @@ func NewService(promptManager PromptManagerInterface) *Service {
 // SetMCPServer sets the MCP server instance for the service.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
+	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
 }
 
 // TODO: Re-enable this method when the go-sdk supports notifications.
