@@ -526,8 +526,16 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, args ..
 		}
 	}
 
-	// Give the container a moment to initialize
-	time.Sleep(3 * time.Second)
+	// Wait for the container to be in a running state
+	require.Eventually(t, func() bool {
+		psCmd := exec.Command(dockerExe, buildArgs("ps", "-f", fmt.Sprintf("name=%s", containerName))...)
+		out, err := psCmd.Output()
+		if err != nil {
+			t.Logf("docker ps command failed: %v, output: %s", err, string(out))
+			return false
+		}
+		return strings.Contains(string(out), containerName)
+	}, 15*time.Second, 500*time.Millisecond, "Container %s did not start in time", containerName)
 
 	return cleanupFunc
 }
