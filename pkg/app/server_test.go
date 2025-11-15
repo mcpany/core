@@ -266,6 +266,26 @@ func TestHealthCheck(t *testing.T) {
 		assert.Error(t, err)
 		assert.Empty(t, out.String(), "HealthCheck should not write to the writer on failure")
 	})
+
+	t.Run("health check respects context cancellation", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(200 * time.Millisecond) // Simulate a slow response
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() {
+			time.Sleep(50 * time.Millisecond) // Cancel the context before the server responds
+			cancel()
+		}()
+
+		err := HealthCheckWithContext(ctx, io.Discard, addr, 5*time.Second)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "context canceled")
+	})
 }
 
 func TestSetup(t *testing.T) {
