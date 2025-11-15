@@ -19,97 +19,117 @@ package memory
 import (
 	"context"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultBus(t *testing.T) {
-	t.Run("Publish and Subscribe", func(t *testing.T) {
-		bus := New[string]()
-		var wg sync.WaitGroup
-		wg.Add(1)
-
-		bus.Subscribe(context.Background(), "test", func(msg string) {
-			assert.Equal(t, "hello", msg)
-			wg.Done()
-		})
-
-		bus.Publish(context.Background(), "test", "hello")
-		wg.Wait()
-	})
-
-	t.Run("SubscribeOnce", func(t *testing.T) {
-		bus := New[string]()
-		var wg sync.WaitGroup
-		wg.Add(1)
-
-		bus.SubscribeOnce(context.Background(), "test", func(msg string) {
-			assert.Equal(t, "hello", msg)
-			wg.Done()
-		})
-
-		bus.Publish(context.Background(), "test", "hello")
-		wg.Wait()
-
-		// This second publish should not be received
-		bus.Publish(context.Background(), "test", "world")
-	})
-
-	t.Run("Unsubscribe", func(t *testing.T) {
-		bus := New[string]()
-		received := false
-
-		unsub := bus.Subscribe(context.Background(), "test", func(msg string) {
-			received = true
-		})
-
-		unsub()
-		bus.Publish(context.Background(), "test", "hello")
-		time.Sleep(10 * time.Millisecond) // Give it a moment to process
-		assert.False(t, received)
-	})
+func TestNew(t *testing.T) {
+	bus := New[any]()
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.subscribers)
+	assert.Equal(t, defaultPublishTimeout, bus.publishTimeout)
 }
 
-func TestDefaultBus_Concurrent(t *testing.T) {
-	bus := New[int]()
-	topic := "concurrent_topic"
-	numSubscribers := 10
-	numPublishers := 100
-	var receivedCount int32
-
+func TestPublishAndSubscribe(t *testing.T) {
+	bus := New[string]()
 	var wg sync.WaitGroup
-	expectedReceives := numSubscribers * numPublishers
-	wg.Add(expectedReceives)
+	wg.Add(1)
+
+	var receivedMsg string
+	bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		receivedMsg = msg
+		wg.Done()
+	})
+
+	bus.Publish(context.Background(), "test-topic", "hello")
+	wg.Wait()
+
+	assert.Equal(t, "hello", receivedMsg)
+}
+
+func TestPublishToDifferentTopic(t *testing.T) {
+	bus := New[string]()
+	var received bool
+	bus.Subscribe(context.Background(), "topic-a", func(msg string) {
+		received = true
+	})
+
+	bus.Publish(context.Background(), "topic-b", "hello")
+	time.Sleep(100 * time.Millisecond) // Allow time for potential message processing
+
+	assert.False(t, received, "should not receive message from a different topic")
+}
+
+func TestSubscribeOnce(t *testing.T) {
+	bus := New[string]()
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	var receivedMsgs []string
+	bus.SubscribeOnce(context.Background(), "test-topic", func(msg string) {
+		receivedMsgs = append(receivedMsgs, msg)
+		wg.Done()
+	})
+
+	bus.Publish(context.Background(), "test-topic", "hello")
+	bus.Publish(context.Background(), "test-topic", "world")
+	wg.Wait()
+
+	assert.Len(t, receivedMsgs, 1)
+	assert.Equal(t, "hello", receivedMsgs[0])
+}
+
+func TestUnsubscribe(t *testing.T) {
+	bus := New[string]()
+	var receivedMsgs []string
+	unsubscribe := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		receivedMsgs = append(receivedMsgs, msg)
+	})
+
+	bus.Publish(context.Background(), "test-topic", "hello")
+	time.Sleep(100 * time.Millisecond) // Allow time for message processing
+
+	unsubscribe()
+
+	bus.Publish(context.Background(), "test-topic", "world")
+	time.Sleep(100 * time.Millisecond) // Allow time for message processing
+
+	assert.Len(t, receivedMsgs, 1)
+	assert.Equal(t, "hello", receivedMsgs[0])
+}
+
+func TestConcurrentPublishAndSubscribe(t *testing.T) {
+	bus := New[string]()
+	numSubscribers := 10
+	numMessages := 100
+	var wg sync.WaitGroup
+	wg.Add(numSubscribers * numMessages)
+
+	var receivedMsgs = make([][]string, numSubscribers)
+	var readyWg sync.WaitGroup
+	readyWg.Add(numSubscribers)
 
 	for i := 0; i < numSubscribers; i++ {
-		unsub := bus.Subscribe(context.Background(), topic, func(msg int) {
-			atomic.AddInt32(&receivedCount, 1)
-			wg.Done()
-		})
-		defer unsub()
+		go func(i int) {
+			bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+				receivedMsgs[i] = append(receivedMsgs[i], msg)
+				wg.Done()
+			})
+			readyWg.Done()
+		}(i)
 	}
 
-	for i := 0; i < numPublishers; i++ {
-		go bus.Publish(context.Background(), topic, i)
+	readyWg.Wait()
+
+	for i := 0; i < numMessages; i++ {
+		bus.Publish(context.Background(), "test-topic", "hello")
 	}
 
-	// Wait for all messages to be received, with a timeout.
-	timeout := time.After(5 * time.Second)
-	done := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
+	wg.Wait()
 
-	select {
-	case <-done:
-		// All goroutines completed.
-	case <-timeout:
-		t.Fatalf("Timed out waiting for messages. Got %d of %d.", atomic.LoadInt32(&receivedCount), expectedReceives)
+	for i := 0; i < numSubscribers; i++ {
+		assert.Len(t, receivedMsgs[i], numMessages)
 	}
-
-	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount))
 }

@@ -66,19 +66,22 @@ func New[T any]() *DefaultBus[T] {
 //   - msg: The message to be sent.
 func (b *DefaultBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	b.mu.RLock()
-	defer b.mu.RUnlock()
 
-	if subs, ok := b.subscribers[topic]; ok {
-		for id, ch := range subs {
-			// Use a non-blocking send with a timeout to avoid blocking the
-			// publisher indefinitely.
-			select {
-			case ch <- msg:
-			case <-time.After(b.publishTimeout):
-				// It's important to have a logging strategy for dropped messages.
-				log := logging.GetLogger()
-				log.Warn("Message dropped on topic", "topic", topic, "subscriber_id", id, "timeout", b.publishTimeout)
-			}
+	subscribers := b.subscribers[topic]
+	channels := make([]chan T, 0, len(subscribers))
+	if subscribers != nil {
+		for _, ch := range subscribers {
+			channels = append(channels, ch)
+		}
+	}
+	b.mu.RUnlock()
+
+	for _, ch := range channels {
+		select {
+		case ch <- msg:
+		case <-time.After(b.publishTimeout):
+			log := logging.GetLogger()
+			log.Warn("Message dropped on topic", "topic", topic, "timeout", b.publishTimeout)
 		}
 	}
 	return nil
@@ -159,8 +162,10 @@ func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler
 	var unsub func()
 
 	unsub = b.Subscribe(ctx, topic, func(msg T) {
-		handler(msg)
-		once.Do(unsub)
+		once.Do(func() {
+			handler(msg)
+			unsub()
+		})
 	})
 	return unsub
 }
