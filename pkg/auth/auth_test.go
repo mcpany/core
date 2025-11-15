@@ -209,4 +209,12 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 		_, ok := authManager.GetAuthenticator("another-service")
 		assert.False(t, ok)
 	})
+
+	t.Run("failed_creation", func(t *testing.T) {
+		config := &OAuth2Config{
+			IssuerURL: "http://invalid-url",
+		}
+		err := authManager.AddOAuth2Authenticator(context.Background(), "failed-service", config)
+		assert.Error(t, err)
+	})
 }
