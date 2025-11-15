@@ -18,88 +18,75 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 	gogrpc "google.golang.org/grpc"
 )
 
-// TestGRPCServer_GracefulShutdownWithTimeout_Fix confirms that the gRPC server's graceful
-// shutdown times out as expected when a request is hanging, preventing the
-// server from blocking indefinitely.
-func TestGRPCServer_GracefulShutdownWithTimeout_Fix(t *testing.T) {
-	// Find a free port to run the test server on.
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err, "Failed to find a free port.")
-	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
-
+// TestStartGrpcServer_PanicHandling verifies that the startGrpcServer function
+// gracefully handles panics that occur during the gRPC server initialization
+// and registration phase.
+//
+// This test sets up a scenario where the registration function, which is
+// responsible for setting up the gRPC services, intentionally panics. The test
+// ensures that:
+//
+//  1. The panic is caught and does not crash the test process.
+//  2. An error, indicating the panic, is sent to the provided error channel.
+//  3. The function's WaitGroup counter is correctly decremented, signaling
+//     that the goroutine has completed its execution.
+//
+// This test is crucial for ensuring the robustness of the server, as it
+// validates that critical failures during startup are handled in a controlled
+// manner, allowing the main application to manage the failure gracefully.
+func TestStartGrpcServer_PanicHandling(t *testing.T) {
+	// 1. Setup
 	ctx, cancel := context.WithCancel(context.Background())
-	errChan := make(chan error, 1)
+	defer cancel()
 	var wg sync.WaitGroup
+	errChan := make(chan error, 1)
 
-	// Start the gRPC server with a mock service that hangs.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	require.NoError(t, err)
-	shutdownTimeout := 50 * time.Millisecond
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, shutdownTimeout, func(s *gogrpc.Server) {
-		// This service will hang for 10 seconds, which is much longer than our
-		// shutdown timeout.
-		hangService := &mockHangService{hangTime: 10 * time.Second}
-		desc := &gogrpc.ServiceDesc{
-			ServiceName: "testhang.HangService",
-			HandlerType: (*interface{})(nil),
-			Methods: []gogrpc.MethodDesc{
-				{
-					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
-						return srv.(*mockHangService).Hang(ctx, nil)
-					},
-				},
-			},
-			Streams:  []gogrpc.StreamDesc{},
-			Metadata: "testhang.proto",
-		}
-		s.RegisterService(desc, hangService)
-	})
+	// Create a dummy net.Listener
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("Failed to create listener: %v", err)
+	}
+	defer lis.Close()
 
-	// Give the server a moment to start up.
-	time.Sleep(100 * time.Millisecond)
+	// 2. Execution
+	// This registration function will panic, simulating a failure during service setup.
+	registerFunc := func(s *gogrpc.Server) {
+		panic("registration failed")
+	}
 
-	// In a separate goroutine, make a call to the hanging RPC.
-	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
-		if err != nil {
-			// If we can't connect, there's no point in continuing the test.
-			t.Logf("Failed to dial gRPC server: %v", err)
-			return
-		}
-		defer conn.Close()
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
 
-		// This call will hang until the server is forcefully shut down.
-		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
-	}()
-
-	// Allow the RPC call to be initiated.
-	time.Sleep(100 * time.Millisecond)
-
-	// Trigger the graceful shutdown.
-	shutdownStartTime := time.Now()
-	cancel()
-	wg.Wait()
-	shutdownDuration := time.Since(shutdownStartTime)
-	require.Less(t, shutdownDuration, 5*time.Second)
-
-	// The test should complete without error, as the timeout mechanism allows
-	// the server to shut down without waiting for the hanging connection.
+	// 3. Verification
 	select {
 	case err := <-errChan:
-		require.NoError(t, err, "The gRPC server should shut down gracefully without errors.")
-	default:
-		// Expected outcome.
+		// Check that the error indicates a panic occurred.
+		assert.Contains(t, err.Error(), "panic during gRPC service registration", "Expected error message to contain mention of a panic")
+		assert.Contains(t, err.Error(), "registration failed", "Expected error message to contain the panic message")
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test timed out, expected an error to be sent to the error channel")
+	}
+
+	// The WaitGroup should be done, as the goroutine should exit after the panic.
+	// We use a channel to wait for the WaitGroup to be done to avoid a race condition.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// The WaitGroup was correctly handled.
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test timed out, expected WaitGroup to be done")
 	}
 }
