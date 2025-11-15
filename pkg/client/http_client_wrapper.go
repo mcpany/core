@@ -35,6 +35,10 @@ type HttpClientWrapper struct {
 }
 
 // NewHttpClientWrapper creates a new HttpClientWrapper.
+//
+// Parameters:
+//   - client: The HTTP client to be wrapped.
+//   - config: The upstream service configuration, used for health checks.
 func NewHttpClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig) *HttpClientWrapper {
 	return &HttpClientWrapper{
 		Client: client,

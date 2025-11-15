@@ -31,12 +31,26 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Executor is an interface for executing commands.
+// Executor defines the interface for executing external commands, abstracting
+// the execution environment (e.g., local host or a Docker container). It
+// provides a standard way to run a command and stream its output.
 type Executor interface {
+	// Execute runs the specified command with the given arguments, environment
+	// variables, and working directory. It returns readers for the command's
+	// standard output and standard error, a channel for the exit code, and an
+	// error if the command fails to start.
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
-// NewExecutor creates a new command executor.
+// NewExecutor creates a new command executor based on the provided
+// configuration. If a container environment is specified, a Docker-based
+// executor is returned; otherwise, a local executor is used.
+//
+// Parameters:
+//   - containerEnv: The container environment configuration. If nil or if the
+//     image is empty, a local executor is returned.
+//
+// Returns an executor that can be used to run commands.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -44,8 +58,12 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	return &localExecutor{}
 }
 
+// localExecutor implements the Executor interface for running commands directly
+// on the local host. It uses the `os/exec` package to create and manage the
+// command's lifecycle.
 type localExecutor struct{}
 
+// Execute runs a command on the local host.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir

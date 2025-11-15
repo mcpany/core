@@ -54,6 +54,17 @@ type RegistrationServer struct {
 // RegistrationServer.
 var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
 
+// NewRegistrationServer creates a new RegistrationServer with a handle to the
+// event bus.
+//
+// The bus is used for communicating with the service registration workers,
+// allowing for an asynchronous, decoupled registration process.
+//
+// Parameters:
+//   - bus: The event bus used for communication.
+//
+// Returns a new instance of the RegistrationServer or an error if the bus is
+// nil.
 func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
@@ -174,6 +185,21 @@ func (s *RegistrationServer) GetServiceStatus(ctx context.Context, req *v1.GetSe
 
 func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 
+// ListServices handles a gRPC request to list all registered upstream services.
+// It sends a list request to the event bus and waits for a response from the
+// registration worker. This process is asynchronous, allowing the server to
+// remain responsive while the list is being compiled.
+//
+// A correlation ID is used to match the request with the corresponding result
+// from the worker. The method waits for the result, with a timeout, and returns
+// the list of services.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request to list services.
+//
+// Returns a response with the list of services, or an error if the request
+// fails or times out.
 func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)

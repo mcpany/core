@@ -850,25 +850,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout)
 		} else {
 			// Wait for the HTTP/JSON-RPC endpoint to be ready
-			require.Eventually(t, func() bool {
-				// Use a short timeout for the health check itself
-				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-				defer cancel()
-				req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
-				if err != nil {
-					t.Logf("Failed to create request for health check: %v", err)
-					return false
-				}
-				resp, err := httpClient.Do(req)
-				if err != nil {
-					t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
-					return false
-				}
-				defer resp.Body.Close()
-				// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
-				t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
-				return true
-			}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+			WaitForHTTPHealth(t, fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort), McpAnyServerStartupTimeout)
 		}
 	}
 

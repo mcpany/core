@@ -10,6 +10,17 @@ Why developing multiple MCP servers for each API when you can just have one to a
 
 MCP Any is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
 
+## Architecture Overview
+
+MCP Any is composed of a central server and a pluggable system of upstream services. The core components are:
+
+-   **`cmd/server`**: The main entry point for the MCP Any server. It handles command-line parsing, configuration loading, and the initialization of all other components.
+-   **`pkg/`**: This directory contains the core logic of the application, including:
+    -   **`serviceregistry`**: Manages the lifecycle of all upstream services.
+    -   **`bus`**: An event bus for asynchronous communication between components.
+    -   **`tool`**, **`prompt`**, and **`resource`**: Managers for the core MCP concepts that are exposed by upstream services.
+-   **Upstream Services**: These are the backend services that MCP Any connects to. Each upstream service type (e.g., gRPC, OpenAPI, HTTP) has a corresponding implementation in the `pkg/upstream` directory.
+
 ## Key Features
 
 - **Dynamic Tool Registration**: Automatically discover and register tools from various backend services, either through a dynamic gRPC API or a static configuration file.
@@ -48,7 +59,7 @@ Before you begin, ensure you have the following installed:
     ```
 
 2.  **Build the application:**
-    This command will install dependencies, generate code, and build the `mcpany` binary.
+    This command will install dependencies, generate code, and build the `server` binary.
 
     ```bash
     make build
@@ -72,7 +83,7 @@ You can run the MCP Any server directly or by using a `make` command.
   make run
   ```
 
-By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
+By default, the server will start and listen for JSON-RPC requests on port `50050`.
 
 ### Running with Docker
 
@@ -87,14 +98,14 @@ You can also run the server using Docker. The official image is available on Git
 2.  **Run the server:**
 
     ```bash
-    docker run --rm -p 50050:50050 -p 50051:50051 ghcr.io/mcpany/core:latest
+    docker run --rm -p 50050:50050 ghcr.io/mcpany/core:latest
     ```
 
     This will start the server and expose the JSON-RPC and gRPC ports to your local machine.
 
 ## Configuration
 
-MCP Any can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format.
+MCP Any can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format. For a detailed reference of all available configuration options, see the **[Configuration Reference](docs/configuration.md)**.
 
 ### Example Configuration
 
@@ -107,13 +118,10 @@ upstreamServices:
     httpService:
       address: "https://api.example.com"
       calls:
-        - operationId: "get_user"
+        - toolName: "get_user"
           description: "Get user by ID"
-          method: "HTTP_METHOD_GET"
+          method: "GET"
           endpointPath: "/users/{userId}"
-          parameterMappings:
-            - inputParameterName: "userId"
-              targetParameterName: "userId"
 ```
 
 To run the server with this configuration, use the following command:
@@ -124,52 +132,9 @@ make run ARGS="--config-paths ./config.yaml"
 
 The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPANY_JSONRPC_PORT=6000`.
 
-### Advanced Configuration
-
-MCP Any supports a variety of advanced configuration options, including:
-
-- **gRPC Services**: Register a gRPC service using reflection.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-grpc-service"
-      grpcService:
-        address: "localhost:50052"
-        reflection:
-          enabled: true
-  ```
-
-- **OpenAPI Services**: Register a service from an OpenAPI specification.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-openapi-service"
-      openapiService:
-        spec:
-          path: "./openapi.json"
-  ```
-
-- **Authentication**: Configure authentication for an upstream service.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-secure-service"
-      httpService:
-        address: "https://api.example.com"
-        # ...
-      upstreamAuthentication:
-        apiKey:
-          headerName: "X-API-Key"
-          apiKey: "my-secret-key"
-  ```
-
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
-
-## Examples
-
-For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
 
 ### Listing Tools
 
@@ -187,9 +152,33 @@ To execute a tool, send a `tools/call` request with the tool's name and argument
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service/-/get_user", "arguments": {"userId": "123"}}, "id": 2}' \
+  -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service.get_user", "arguments": {"userId": "123"}}, "id": 2}' \
   http://localhost:50050
 ```
+
+### Listing Prompts
+
+To see the list of all registered prompts, you can send a `prompts/list` request.
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"jsonrpc": "2.0", "method": "prompts/list", "id": 3}' \
+    http://localhost:50050
+```
+
+### Getting a Prompt
+
+To retrieve a specific prompt, send a `prompts/get` request with the prompt's name.
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"jsonrpc": "2.0", "method": "prompts/get", "params": {"name": "my-prompt-service.my_prompt"}, "id": 4}' \
+    http://localhost:50050
+```
+
+## Examples
+
+For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
 
 ## Running with Docker Compose
 
@@ -208,7 +197,7 @@ For a containerized setup, you can use the provided `docker-compose.yml` file. T
 
     ```bash
     curl -X POST -H "Content-Type: application/json" \
-      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
+      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo.echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
       http://localhost:50050
     ```
 

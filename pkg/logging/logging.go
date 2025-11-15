@@ -71,7 +71,14 @@ func GetLogger() *slog.Logger {
 	return defaultLogger
 }
 
-// ToSlogLevel converts a string log level to a slog.Level.
+// ToSlogLevel converts a `configv1.GlobalSettings_LogLevel` to a `slog.Level`.
+// This is useful for mapping the log level from the configuration to the
+// `slog` library's log level.
+//
+// Parameters:
+//   - level: The log level from the configuration.
+//
+// Returns the corresponding `slog.Level`.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

@@ -53,6 +53,10 @@ func Handler() http.Handler {
 }
 
 // SetGauge sets the value of a gauge.
+//
+// name is the name of the gauge.
+// val is the value to set.
+// labels are the labels to attach to the gauge.
 func SetGauge(name string, val float32, labels ...string) {
 	metrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
 		{Name: "service_name", Value: labels[0]},

@@ -33,6 +33,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// AddReceivingMiddlewareHook is a test hook that allows for inspecting the
+// middleware chain. It is called with the name of the middleware being added.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application. It orchestrates the handling of
@@ -337,34 +339,42 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
+// AddServiceInfo adds service information to the tool manager.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
 
+// GetTool retrieves a tool by its name from the tool manager.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
+// ListTools returns a list of all tools from the tool manager.
 func (s *Server) ListTools() []tool.Tool {
 	return s.toolManager.ListTools()
 }
 
+// CallTool executes a tool with the given request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return s.toolManager.ExecuteTool(ctx, req)
 }
 
+// SetMCPServer sets the MCP server provider for the tool manager.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
 
+// AddTool adds a tool to the tool manager.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
 
+// GetServiceInfo retrieves service information from the tool manager.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
 
+// ClearToolsForService clears all tools associated with a service from the tool manager.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }

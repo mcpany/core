@@ -43,6 +43,10 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
+//
+// Parameters:
+//   - conn: The gRPC client connection to be wrapped.
+//   - config: The upstream service configuration, used for health checks.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
 		Conn:   conn,

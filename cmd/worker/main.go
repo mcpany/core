@@ -30,6 +30,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
+// setup initializes the worker by configuring the message bus based on
+// environment variables. It defaults to an in-memory bus if no Redis address is
+// provided.
 func setup() (*worker.Worker, error) {
 	busConfig := &buspb.MessageBus{}
 	if redisAddr := os.Getenv("REDIS_ADDR"); redisAddr != "" {
@@ -42,6 +45,8 @@ func setup() (*worker.Worker, error) {
 	return setupWithConfig(busConfig)
 }
 
+// setupWithConfig creates and configures a new worker with the provided message
+// bus configuration. It validates the configuration and initializes the worker.
 func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 	// Validate the bus configuration
 	globalSettings := &configv1.GlobalSettings{}
@@ -69,6 +74,8 @@ func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 	return worker.New(busProvider, workerCfg), nil
 }
 
+// main is the entry point for the worker application. It sets up the worker,
+// starts it, and waits for a termination signal to gracefully shut down.
 func main() {
 	worker, err := setup()
 	if err != nil {

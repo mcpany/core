@@ -111,7 +111,12 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 	return nil
 }
 
-// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
+// ValidateOrError validates a single upstream service configuration and returns
+// an error if it's invalid.
+//
+// service is the service configuration to be validated.
+//
+// It returns an error if the service configuration is invalid.
 func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(service)
 }

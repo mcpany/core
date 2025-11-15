@@ -152,6 +152,10 @@ func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) 
 }
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
+//
+// Parameters:
+//   - serviceID: The identifier of the service for which to remove the
+//     authenticator.
 func (am *AuthManager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

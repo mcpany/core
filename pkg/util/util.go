@@ -168,7 +168,11 @@ func SanitizeOperationID(input string) string {
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker,
-// respecting the USE_SUDO_FOR_DOCKER environment variable.
+// respecting the USE_SUDO_FOR_DOCKER environment variable. This is useful for
+// running Docker commands in environments where `sudo` is required.
+//
+// Returns the command (e.g., "docker" or "sudo") and a slice of base arguments
+// (e.g., ["docker"]).
 func GetDockerCommand() (string, []string) {
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
 		return "sudo", []string{"docker"}
