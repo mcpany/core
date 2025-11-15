@@ -34,6 +34,11 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 		assert.Nil(t, authenticator)
 	})
 
+	t.Run("invalid_nil_config", func(t *testing.T) {
+		authenticator := NewAPIKeyAuthenticator(&configv1.APIKeyAuth{})
+		assert.Nil(t, authenticator)
+	})
+
 	t.Run("empty_param_name", func(t *testing.T) {
 		config := &configv1.APIKeyAuth{}
 		config.SetKeyValue("some-key")
@@ -140,6 +145,31 @@ func TestAuthManager(t *testing.T) {
 			_, err := authManager.Authenticate(context.Background(), "nil-service", req)
 			assert.NoError(t, err)
 		})
+	})
+
+	t.Run("remove_authenticator", func(t *testing.T) {
+		// Add an authenticator to remove
+		authManager.AddAuthenticator("service-to-remove", apiKeyAuth)
+
+		// Verify it was added
+		_, ok := authManager.GetAuthenticator("service-to-remove")
+		assert.True(t, ok)
+
+		// Remove the authenticator
+		authManager.RemoveAuthenticator("service-to-remove")
+
+		// Verify it was removed
+		_, ok = authManager.GetAuthenticator("service-to-remove")
+		assert.False(t, ok)
+	})
+
+	t.Run("add_authenticator_with_empty_service_id", func(t *testing.T) {
+		err := authManager.AddAuthenticator("", apiKeyAuth)
+		assert.NoError(t, err)
+
+		authenticator, ok := authManager.GetAuthenticator("")
+		assert.True(t, ok)
+		assert.Equal(t, apiKeyAuth, authenticator)
 	})
 }
 

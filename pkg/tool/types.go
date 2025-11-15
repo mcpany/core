@@ -22,7 +22,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -33,6 +35,8 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
@@ -44,28 +48,6 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 )
-
-// ToolManagerInterface defines the contract for a tool manager, which is
-// responsible for the lifecycle and execution of tools within the system.
-type ToolManagerInterface interface {
-	// GetTool retrieves a tool by its fully qualified name.
-	GetTool(toolName string) (Tool, bool)
-	// ListTools returns a slice of all registered tools.
-	ListTools() []Tool
-	// ExecuteTool runs a tool with the given request parameters.
-	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
-	// SetMCPServer provides the tool manager with a reference to the MCP server,
-	// allowing tools to make calls back to the server if needed.
-	SetMCPServer(mcpServer MCPServerProvider)
-	// AddTool registers a new tool with the manager.
-	AddTool(tool Tool) error
-	// GetServiceInfo retrieves metadata about a registered service.
-	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
-	// AddServiceInfo registers metadata for a service.
-	AddServiceInfo(serviceID string, info *ServiceInfo)
-	// ClearToolsForService removes all tools associated with a specific service.
-	ClearToolsForService(serviceID string)
-}
 
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
@@ -164,8 +146,10 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
+		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("no grpc pool found for service: %s", t.serviceID)
 	}
 
@@ -189,8 +173,10 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	methodName := fqn[lastDot+1:]
 	grpcMethodName := fmt.Sprintf("/%s/%s", serviceName, methodName)
 	if err := grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage); err != nil {
+		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
 	}
+	metrics.IncrCounter([]string{"grpc", "request", "success"}, 1)
 
 	responseJSON, err := protojson.Marshal(responseMessage)
 	if err != nil {
@@ -254,8 +240,10 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
+		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceID)
 	}
 
@@ -284,10 +272,17 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	for _, param := range t.parameters {
-		schema := param.GetSchema()
-		if val, ok := inputs[schema.GetName()]; ok {
-			url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
-			delete(inputs, schema.GetName())
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			url = strings.ReplaceAll(url, "{{"+param.GetSchema().GetName()+"}}", secretValue)
+		} else if schema := param.GetSchema(); schema != nil {
+			if val, ok := inputs[schema.GetName()]; ok {
+				url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
+				delete(inputs, schema.GetName())
+			}
 		}
 	}
 
@@ -341,15 +336,38 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		httpReq.URL.RawQuery = q.Encode()
 	}
 
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		reqDump, err := httputil.DumpRequestOut(httpReq, true)
+		if err != nil {
+			logging.GetLogger().Error("failed to dump http request", "error", err)
+		} else {
+			logging.GetLogger().Debug("sending http request", "request", string(reqDump))
+		}
+	}
+
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
+		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to execute http request: %w", err)
 	}
 	defer resp.Body.Close()
+	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
+	}
+
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		// Since we have already read the body, we need to create a new reader and assign it back to the response
+		// so that DumpResponse can read it.
+		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
+		respDump, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			logging.GetLogger().Error("failed to dump http response", "error", err)
+		} else {
+			logging.GetLogger().Debug("received http response", "response", string(respDump))
+		}
 	}
 
 	if resp.StatusCode >= 400 {
@@ -357,6 +375,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": respBody}, nil
+		}
+
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
@@ -478,6 +500,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": responseBytes}, nil
+		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules())
@@ -638,6 +663,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if t.outputTransformer != nil {
+		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
+			return map[string]any{"raw": respBody}, nil
+		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
 		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
@@ -709,10 +737,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	args := t.callDefinition.GetArgs()
+	args := []string{}
+	if t.callDefinition.GetArgs() != nil {
+		args = append(args, t.callDefinition.GetArgs()...)
+	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			if argsList, ok := argsVal.([]interface{}); ok {
+			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						args = append(args, argStr)
@@ -741,6 +772,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		env = append(env, fmt.Sprintf("%s=%v", key, value))
 	}
 
+	for _, param := range t.callDefinition.GetParameters() {
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", param.GetSchema().GetName(), secretValue))
+		}
+	}
+
 	startTime := time.Now()
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.command, args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
@@ -753,10 +794,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	go func() {
 		defer wg.Done()
+		if closer, ok := stdout.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
 		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
+		if closer, ok := stderr.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
 		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 

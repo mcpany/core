@@ -35,12 +35,14 @@ import (
 
 	"github.com/gorilla/websocket"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 
@@ -51,7 +53,7 @@ import (
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
-	mcpanyConfig := configv1.McpxServerConfig_builder{
+	mcpanyConfig := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
 	}.Build()
 
@@ -59,6 +61,32 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 	require.NoError(t, err)
 
 	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
+	require.NoError(t, err)
+
+	_, err = tempFile.Write(data)
+	require.NoError(t, err)
+
+	err = tempFile.Close()
+	require.NoError(t, err)
+
+	return tempFile.Name()
+}
+
+func CreateTempNatsConfigFile(t *testing.T) string {
+	t.Helper()
+
+	mcpanyConfig := configv1.McpAnyServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
+			MessageBus: bus.MessageBus_builder{
+				Nats: bus.NatsBus_builder{}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	data, err := yaml.Marshal(mcpanyConfig)
+	require.NoError(t, err)
+
+	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-nats-config-*.yaml")
 	require.NoError(t, err)
 
 	_, err = tempFile.Write(data)
@@ -108,13 +136,49 @@ const (
 	localHeaderMcpSessionID    = "Mcp-Session-Id"
 )
 
+var (
+	dockerCommand string
+	dockerArgs    []string
+	dockerOnce    sync.Once
+)
+
 // getDockerCommand returns the command and base arguments for running Docker,
-// respecting the USE_SUDO_FOR_DOCKER environment variable.
+// checking for direct access, then trying passwordless sudo. The result is
+// cached for subsequent calls.
 func getDockerCommand() (string, []string) {
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-		return "sudo", []string{"docker"}
-	}
-	return "docker", []string{}
+	dockerOnce.Do(func() {
+		// Environment variable overrides detection.
+		if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+			dockerCommand = "sudo"
+			dockerArgs = []string{"docker"}
+			return
+		}
+
+		// First, try running docker directly.
+		if _, err := exec.LookPath("docker"); err == nil {
+			cmd := exec.Command("docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "docker"
+				dockerArgs = []string{}
+				return
+			}
+		}
+
+		// If direct access fails, check for passwordless sudo.
+		if _, err := exec.LookPath("sudo"); err == nil {
+			cmd := exec.Command("sudo", "-n", "docker", "info")
+			if err := cmd.Run(); err == nil {
+				dockerCommand = "sudo"
+				dockerArgs = []string{"docker"}
+				return
+			}
+		}
+
+		// Fallback to plain docker if all else fails.
+		dockerCommand = "docker"
+		dockerArgs = []string{}
+	})
+	return dockerCommand, dockerArgs
 }
 
 // --- Binary Paths ---
@@ -474,6 +538,7 @@ type MCPANYTestServerInfo struct {
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
 	GrpcRegistrationEndpoint string
+	NatsURL                  string
 	SessionID                string
 	HTTPClient               *http.Client
 	GRPCRegConn              *grpc.ClientConn
@@ -553,11 +618,15 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 	require.NoError(t, err)
 	err = tmpFile.Close()
 	require.NoError(t, err)
-	return StartMCPANYServer(t, testName, "--config-paths", tmpFile.Name())
+	return StartMCPANYServer(t, testName, "--config-path", tmpFile.Name())
 }
 
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
-	return StartMCPANYServerWithClock(t, testName, extraArgs...)
+	return StartMCPANYServerWithClock(t, testName, true, extraArgs...)
+}
+
+func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
+	return StartMCPANYServerWithClock(t, testName, false, extraArgs...)
 }
 
 func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServerInfo {
@@ -572,6 +641,9 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 		grpcRegPort = FindFreePort(t)
 	}
 
+	jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
+	grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
+
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
@@ -580,9 +652,11 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 
 	go func() {
 		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf("%d", jsonrpcPort), fmt.Sprintf("%d", grpcRegPort), []string{}, 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, 5*time.Second)
 		require.NoError(t, err)
 	}()
+
+	WaitForHTTPHealth(t, fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort), McpAnyServerStartupTimeout)
 
 	var grpcRegConn *grpc.ClientConn
 	require.Eventually(t, func() bool {
@@ -627,7 +701,58 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 	}
 }
 
-func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
+func StartNatsServer(t *testing.T) (string, func()) {
+	t.Helper()
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+	natsServerBin := filepath.Join(root, "build/env/bin/nats-server")
+	_, err = os.Stat(natsServerBin)
+	require.NoError(t, err, "nats-server binary not found at %s. Run 'make prepare'.", natsServerBin)
+	natsPort := FindFreePort(t)
+	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
+	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
+	err = cmd.Start()
+	require.NoError(t, err)
+	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
+	cleanup := func() {
+		cmd.Process.Kill()
+	}
+	return natsURL, cleanup
+}
+
+// StartRedisContainer starts a Redis container for testing.
+func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
+	t.Helper()
+	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
+
+	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
+	redisPort := FindFreePort(t)
+	redisAddr = fmt.Sprintf("127.0.0.1:%d", redisPort)
+
+	dockerArgs := []string{
+		"-p", fmt.Sprintf("%d:6379", redisPort),
+	}
+
+	cleanup := StartDockerContainer(t, "docker.io/library/redis:alpine", containerName, dockerArgs...)
+
+	// Wait for Redis to be ready
+	require.Eventually(t, func() bool {
+		// Use redis-cli to ping the server
+		dockerExe, dockerBaseArgs := getDockerCommand()
+		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping")
+		cmd := exec.Command(dockerExe, pingArgs...)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
+			return false
+		}
+		return strings.Contains(string(output), "PONG")
+	}, 15*time.Second, 500*time.Millisecond, "Redis container did not become ready in time")
+
+	return redisAddr, cleanup
+}
+
+func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	root, err := GetProjectRoot()
@@ -642,12 +767,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		grpcRegPort = FindFreePort(t)
 	}
 
+	natsURL, natsCleanup := StartNatsServer(t)
+
 	args := []string{
-		"--jsonrpc-port", fmt.Sprintf("%d", jsonrpcPort),
-		"--grpc-port", fmt.Sprintf("%d", grpcRegPort),
+		"--jsonrpc-port", fmt.Sprintf("localhost:%d", jsonrpcPort),
+		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug"}
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
@@ -668,66 +795,69 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
 	httpClient := &http.Client{Timeout: 2 * time.Second}
 
-	t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
-
 	var grpcRegConn *grpc.ClientConn
-	require.Eventually(t, func() bool {
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-		var errDial error
-		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if errDial != nil {
-			t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
-			return false
-		}
-		state := grpcRegConn.GetState()
-		if state == connectivity.Ready || state == connectivity.Idle {
-			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
-			return true
-		}
-		if !grpcRegConn.WaitForStateChange(ctx, state) {
-			t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
-			grpcRegConn.Close()
-			return false
-		}
-		t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
-		return true
-	}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
+	var registrationClient apiv1.RegistrationServiceClient
 
-	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
-
-	// Wait for the server to be ready
-	isStdio := false
-	for _, arg := range extraArgs {
-		if arg == "--stdio" {
-			isStdio = true
-			break
-		}
-	}
-
-	if isStdio {
-		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout)
-	} else {
-		// Wait for the HTTP/JSON-RPC endpoint to be ready
+	if healthCheck {
+		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 		require.Eventually(t, func() bool {
-			// Use a short timeout for the health check itself
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 			defer cancel()
-			req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
-			if err != nil {
-				t.Logf("Failed to create request for health check: %v", err)
+			var errDial error
+			grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if errDial != nil {
+				t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
 				return false
 			}
-			resp, err := httpClient.Do(req)
-			if err != nil {
-				t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
+			state := grpcRegConn.GetState()
+			if state == connectivity.Ready || state == connectivity.Idle {
+				t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
+				return true
+			}
+			if !grpcRegConn.WaitForStateChange(ctx, state) {
+				t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
+				grpcRegConn.Close()
 				return false
 			}
-			defer resp.Body.Close()
-			// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
-			t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
+			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
 			return true
-		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
+
+		registrationClient = apiv1.NewRegistrationServiceClient(grpcRegConn)
+
+		// Wait for the server to be ready
+		isStdio := false
+		for _, arg := range extraArgs {
+			if arg == "--stdio" {
+				isStdio = true
+				break
+			}
+		}
+
+		if isStdio {
+			mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout)
+		} else {
+			// Wait for the HTTP/JSON-RPC endpoint to be ready
+			require.Eventually(t, func() bool {
+				// Use a short timeout for the health check itself
+				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+				defer cancel()
+				req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
+				if err != nil {
+					t.Logf("Failed to create request for health check: %v", err)
+					return false
+				}
+				resp, err := httpClient.Do(req)
+				if err != nil {
+					t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
+					return false
+				}
+				defer resp.Body.Close()
+				// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
+				t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
+				return true
+			}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+		}
 	}
 
 	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
@@ -740,12 +870,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, extraArgs ...stri
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
+		NatsURL:                  natsURL,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
 				grpcRegConn.Close()
 			}
 			mcpProcess.Stop()
+			natsCleanup()
 		},
 		T: t,
 	}
@@ -763,13 +895,13 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
-	toolSchema := configv1.ToolSchema_builder{
+	toolDef := configv1.ToolDefinition_builder{
 		Name: &operationID,
 	}.Build()
-	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolSchema, endpointPath, httpMethod, nil, authConfig)
+	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolDef, endpointPath, httpMethod, nil, authConfig)
 }
 
-func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolSchema *configv1.ToolSchema, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
 
@@ -779,18 +911,21 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	}
 	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
 
+	callID := "call-" + toolDef.GetName()
 	callDef := configv1.HttpCallDefinition_builder{
-		Schema:       toolSchema,
+		Id:           &callID,
 		EndpointPath: &endpointPath,
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
+	toolDef.SetCallId(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		HttpService: configv1.HttpUpstreamService_builder{
 			Address: &baseURL,
-			Calls:   []*configv1.HttpCallDefinition{callDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -810,15 +945,22 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
+	callID := "call-" + operationID
 	callDef := configv1.WebsocketCallDefinition_builder{
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		Id: &callID,
+	}.Build()
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &operationID,
+		CallId: &callID,
 	}.Build()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		WebsocketService: configv1.WebsocketUpstreamService_builder{
 			Address: &baseURL,
-			Calls:   []*configv1.WebsocketCallDefinition{callDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls:   map[string]*configv1.WebsocketCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -838,15 +980,22 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
+	callID := "call-" + operationID
 	callDef := configv1.WebrtcCallDefinition_builder{
-		Schema: configv1.ToolSchema_builder{Name: &operationID}.Build(),
+		Id: &callID,
+	}.Build()
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   &operationID,
+		CallId: &callID,
 	}.Build()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		WebrtcService: configv1.WebrtcUpstreamService_builder{
 			Address: &baseURL,
-			Calls:   []*configv1.WebrtcCallDefinition{callDef},
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls:   map[string]*configv1.WebrtcCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -869,11 +1018,23 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 		HttpAddress: &targetURL,
 	}.Build()
 
+	callID := "call-hello"
+	callDef := configv1.MCPCallDefinition_builder{
+		Id: &callID,
+	}.Build()
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name: proto.String("hello"),
+	}.Build()
+	toolDef.SetCallId(callID)
+
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
 		McpService: configv1.McpUpstreamService_builder{
 			ToolAutoDiscovery: &toolAutoDiscovery,
 			HttpConnection:    mcpStreamableHttpConnection,
+			Tools:             []*configv1.ToolDefinition{toolDef},
+			Calls:             map[string]*configv1.MCPCallDefinition{callID: callDef},
 		}.Build(),
 	}
 	if authConfig != nil {
@@ -990,6 +1151,75 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	t.Logf("OpenAPI Service '%s' registration request sent via API (spec: %s, intended server: %s)", serviceID, absSpecPath, serverURLOverride)
 }
 
+func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
+	t.Helper()
+	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
+
+	httpMethodEnumName := "HTTP_METHOD_" + strings.ToUpper(httpMethod)
+	if _, ok := configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName]; !ok {
+		t.Fatalf("Invalid HTTP method provided: %s", httpMethod)
+	}
+	method := configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value[httpMethodEnumName])
+
+	toolDef := configv1.ToolDefinition_builder{Name: &operationID}.Build()
+	callID := "call-" + toolDef.GetName()
+	callDef := configv1.HttpCallDefinition_builder{
+		Id:           &callID,
+		EndpointPath: &endpointPath,
+		Method:       &method,
+	}.Build()
+	toolDef.SetCallId(callID)
+
+	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
+		Name: &serviceID,
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: &baseURL,
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls:   map[string]*configv1.HttpCallDefinition{callID: callDef},
+		}.Build(),
+	}
+	if authConfig != nil {
+		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+	}
+	config := upstreamServiceConfigBuilder.Build()
+
+	req := apiv1.RegisterServiceRequest_builder{
+		Config: config,
+	}.Build()
+
+	// Use protojson to marshal the request to JSON
+	jsonBytes, err := protojson.Marshal(req)
+	require.NoError(t, err)
+
+	var params json.RawMessage = jsonBytes
+
+	jsonRPCReq := map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "registration/register",
+		"params":  params,
+		"id":      "1",
+	}
+
+	reqBody, err := json.Marshal(jsonRPCReq)
+	require.NoError(t, err)
+
+	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody))
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status OK")
+
+	var rpcResp struct {
+		Result json.RawMessage  `json:"result"`
+		Error  *MCPJSONRPCError `json:"error"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&rpcResp)
+	require.NoError(t, err, "Failed to decode JSON-RPC response")
+	require.Nil(t, rpcResp.Error, "Received JSON-RPC error: %v", rpcResp.Error)
+
+	t.Logf("HTTP Service '%s' registration request sent via JSON-RPC successfully.", serviceID)
+}
+
 type MCPJSONRPCError struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
@@ -1016,6 +1246,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1059,6 +1290,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {

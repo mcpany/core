@@ -4,15 +4,19 @@
       "name": "http-echo-from-json",
       "http_service": {
         "address": "http://localhost:8080",
-        "calls": [
+        "tools": [
           {
+            "name": "echo",
+            "call_id": "echo_call"
+          }
+        ],
+        "calls": {
+          "echo_call": {
+            "id": "echo_call",
             "endpoint_path": "/echo",
-            "schema": {
-              "name": "echo"
-            },
             "method": "HTTP_METHOD_POST"
           }
-        ]
+        }
       }
     }
   ]

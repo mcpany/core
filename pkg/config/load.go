@@ -17,13 +17,15 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LoadServices loads, validates, and processes the MCP-X server configuration
+// LoadServices loads, validates, and processes the MCP Any server configuration
 // from a given store. It orchestrates the reading of the configuration,
 // validates its contents, and returns a sanitized configuration object.
 //
@@ -33,9 +35,9 @@ import (
 // Parameters:
 //   - store: The configuration store from which to load the configuration.
 //
-// Returns a validated `McpxServerConfig` or an error if loading or validation
+// Returns a validated `McpAnyServerConfig` or an error if loading or validation
 // fails.
-func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
+func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
 	fileConfig, err := store.Load()
@@ -45,16 +47,34 @@ func LoadServices(store Store) (*configv1.McpxServerConfig, error) {
 
 	if fileConfig == nil {
 		log.Info("No configuration files found or all were empty, using default configuration.")
-		fileConfig = &configv1.McpxServerConfig{}
+		fileConfig = &configv1.McpAnyServerConfig{}
 	}
 
-	validatedConfig, err := Validate(fileConfig)
+	manager := NewUpstreamServiceManager()
+	services, err := manager.LoadAndMergeServices(context.Background(), fileConfig)
 	if err != nil {
-		return nil, fmt.Errorf("config validation failed: %w", err)
+		return nil, fmt.Errorf("failed to load and merge services: %w", err)
+	}
+	fileConfig.SetUpstreamServices(services)
+
+	var bt BinaryType
+	if binaryType == "server" {
+		bt = Server
+	} else if binaryType == "worker" {
+		bt = Worker
 	}
 
-	if len(validatedConfig.GetUpstreamServices()) > 0 {
-		log.Info("Successfully processed config file", "valid_services", len(validatedConfig.GetUpstreamServices()))
+	if validationErrors := Validate(fileConfig, bt); len(validationErrors) > 0 {
+		var errorMessages []string
+		for _, e := range validationErrors {
+			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
+		}
+		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
 	}
-	return validatedConfig, nil
+
+	if len(fileConfig.GetUpstreamServices()) > 0 {
+		log.Info("Successfully processed config file", "services", len(fileConfig.GetUpstreamServices()))
+	}
+	return fileConfig, nil
 }

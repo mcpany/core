@@ -30,14 +30,17 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func newCommandTool(command string) tool.Tool {
+func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
+	if callDef == nil {
+		callDef = &configv1.CommandLineCallDefinition{}
+	}
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String(command),
 	}).Build()
 	return tool.NewCommandTool(
 		&v1.Tool{},
 		service,
-		&configv1.CommandLineCallDefinition{},
+		callDef,
 	)
 }
 
@@ -65,16 +68,16 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("command not found", func(t *testing.T) {
-		cmdTool := newCommandTool("this-command-does-not-exist")
+		cmdTool := newCommandTool("this-command-does-not-exist", nil)
 		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 		_, err := cmdTool.Execute(context.Background(), req)
 		require.Error(t, err)
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
-		cmdTool := newCommandTool("sh")
+		cmdTool := newCommandTool("/usr/bin/env", nil)
 		inputData := map[string]interface{}{
-			"args":   []string{"-c", "echo $MY_VAR"},
+			"args":   []string{"bash", "-c", "echo $MY_VAR"},
 			"MY_VAR": "hello from env",
 		}
 		inputs, err := json.Marshal(inputData)
@@ -86,7 +89,7 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "sh", resultMap["command"])
+		assert.Equal(t, "/usr/bin/env", resultMap["command"])
 		assert.Equal(t, "hello from env\n", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
 		assert.Equal(t, "hello from env\n", resultMap["combined_output"])
@@ -97,8 +100,8 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("non-zero exit code", func(t *testing.T) {
-		cmdTool := newCommandTool("sh")
-		inputData := map[string]interface{}{"args": []string{"-c", "exit 1"}}
+		cmdTool := newCommandTool("/usr/bin/env", nil)
+		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -108,7 +111,7 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "sh", resultMap["command"])
+		assert.Equal(t, "/usr/bin/env", resultMap["command"])
 		assert.Equal(t, "", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
 		assert.Equal(t, "", resultMap["combined_output"])
@@ -119,7 +122,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
-		cmdTool := newCommandTool("echo")
+		cmdTool := newCommandTool("echo", nil)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
@@ -144,4 +147,22 @@ func TestCommandTool_Execute(t *testing.T) {
 		_, err := cmdTool.Execute(context.Background(), req)
 		assert.NoError(t, err)
 	})
+}
+
+func TestCommandTool_GetCacheConfig(t *testing.T) {
+	cacheConfig := &configv1.CacheConfig{}
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetCache(cacheConfig)
+	cmdTool := newCommandTool("echo", callDef)
+	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
+}
+
+func TestCommandTool_Tool(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("test-tool")
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+	}).Build()
+	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{})
+	assert.Equal(t, toolProto, cmdTool.Tool())
 }

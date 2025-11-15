@@ -154,7 +154,7 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 	err = tmpFile.Close()
 	require.NoError(t, err)
 
-	mcpanyServer := StartMCPANYServer(t, "transformer-e2e", "--config-paths", tmpFile.Name())
+	mcpanyServer := StartMCPANYServer(t, "transformer-e2e", "--config-path", tmpFile.Name())
 	defer func() {
 		t.Logf("MCPANY Server stdout:\n%s", mcpanyServer.Process.StdoutString())
 		t.Logf("MCPANY Server stderr:\n%s", mcpanyServer.Process.StderrString())

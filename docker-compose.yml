@@ -65,6 +65,13 @@ services:
     networks:
       - mcpany-net
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - mcpany-net
+
 networks:
   mcpany-net:
     driver: bridge

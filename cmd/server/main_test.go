@@ -98,16 +98,16 @@ func TestRootCmd(t *testing.T) {
 		"--stdio",
 		"--jsonrpc-port", "8081",
 		"--grpc-port", "8082",
-		"--config-paths", "/etc/config.yaml,/etc/conf.d",
+		"--config-path", "/etc/config.yaml,/etc/conf.d",
 		"--shutdown-timeout", "10s",
 	})
 	rootCmd.Execute()
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
+	assert.Equal(t, "localhost:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
-	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-paths should be captured")
+	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
@@ -146,4 +146,40 @@ func TestMainExecution(t *testing.T) {
 		err := cmd.Execute()
 		assert.NoError(t, err)
 	})
+}
+
+func TestHealthCmdFlagPrecedence(t *testing.T) {
+	// Start a mock HTTP server on a custom port
+	port := "8089"
+	server := &http.Server{
+		Addr: ":" + port,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}),
+	}
+	go func() {
+		_ = server.ListenAndServe()
+	}()
+	defer func() { _ = server.Shutdown(context.Background()) }()
+
+	// Wait for the server to start
+	time.Sleep(100 * time.Millisecond)
+
+	// Create a temporary config file with a different port
+	dir, err := os.MkdirTemp("", "test-config")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	configFile := dir + "/config.yaml"
+	err = os.WriteFile(configFile, []byte(`
+global_settings:
+  bind_address: "localhost:9090"
+`), 0644)
+	assert.NoError(t, err)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"health", "--config-path", configFile, "--jsonrpc-port", port})
+	err = rootCmd.Execute()
+
+	assert.NoError(t, err, "Health check should pass because the --jsonrpc-port flag should take precedence over the config file")
 }

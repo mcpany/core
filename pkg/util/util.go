@@ -82,6 +82,9 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 
 		if appendHash {
+			if sanitizedPrefix == "" {
+				sanitizedPrefix = "id"
+			}
 			sanitizedIDs = append(sanitizedIDs, fmt.Sprintf("%s_%s", sanitizedPrefix, hash))
 		} else {
 			sanitizedIDs = append(sanitizedIDs, sanitizedPrefix)
@@ -118,7 +121,7 @@ var (
 	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`)
+	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
 )
 
 // GenerateUUID creates a new version 4 UUID and returns it as a string.

@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/mcpany/core/pkg/bus/memory"
+	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/puzpuzpuz/xsync/v4"
@@ -74,9 +75,15 @@ type BusProvider struct {
 	config *bus.MessageBus
 }
 
+// NewBusProviderHook is a test hook for overriding the NewBusProvider logic.
+var NewBusProviderHook func(*bus.MessageBus) (*BusProvider, error)
+
 // NewBusProvider creates and returns a new BusProvider, which is used to manage
 // multiple topic-based bus instances.
 func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
+	if NewBusProviderHook != nil {
+		return NewBusProviderHook(messageBus)
+	}
 	provider := &BusProvider{
 		buses:  xsync.NewMap[string, any](),
 		config: messageBus,
@@ -86,15 +93,18 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 		provider.config = &bus.MessageBus{}
 	}
 
-	if provider.config.GetInMemory() == nil && provider.config.GetRedis() == nil {
+	if !provider.config.HasBusType() {
 		provider.config.SetInMemory(&bus.InMemoryBus{})
 	}
 
-	if provider.config.GetInMemory() != nil {
+	switch provider.config.WhichBusType() {
+	case bus.MessageBus_InMemory_case:
 		// In-memory bus requires no additional setup
-	} else if provider.config.GetRedis() != nil {
+	case bus.MessageBus_Redis_case:
 		// Redis client is now created within the RedisBus
-	} else {
+	case bus.MessageBus_Nats_case:
+		// NATS client is now created within the NatsBus
+	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
 
@@ -113,16 +123,32 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 //   - topic: The name of the topic for which to get the bus.
 //
 // Returns a Bus instance for the specified message type and topic.
+// GetBusHook is a test hook for overriding the bus retrieval logic.
+var GetBusHook func(p *BusProvider, topic string) any
+
 func GetBus[T any](p *BusProvider, topic string) Bus[T] {
+	if GetBusHook != nil {
+		if bus := GetBusHook(p, topic); bus != nil {
+			return bus.(Bus[T])
+		}
+	}
+
 	if bus, ok := p.buses.Load(topic); ok {
 		return bus.(Bus[T])
 	}
 
 	var newBus Bus[T]
-	if p.config.GetInMemory() != nil {
+	switch p.config.WhichBusType() {
+	case bus.MessageBus_InMemory_case:
 		newBus = memory.New[T]()
-	} else if p.config.GetRedis() != nil {
+	case bus.MessageBus_Redis_case:
 		newBus = redis.New[T](p.config.GetRedis())
+	case bus.MessageBus_Nats_case:
+		var err error
+		newBus, err = nats.New[T](p.config.GetNats())
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	bus, _ := p.buses.LoadOrStore(topic, newBus)

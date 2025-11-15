@@ -18,11 +18,22 @@ package validation
 
 import (
 	"fmt"
+	"net"
 	"net/url"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
+
+// IsValidBindAddress checks if a given string is a valid bind address.
+// A valid bind address is in the format "host:port".
+func IsValidBindAddress(s string) error {
+	_, _, err := net.SplitHostPort(s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // IsValidURL checks if a given string is a valid URL. This function performs
 // several checks, including for length, whitespace, the presence of a scheme,

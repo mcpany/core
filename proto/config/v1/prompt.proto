@@ -1,0 +1,87 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "proto/config/v1/resource.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+// PromptDefinition defines a prompt that can be used to interact with a language model.
+message PromptDefinition {
+  // The name of the prompt, which will be used to invoke it.
+  string name = 1;
+  // A human-readable title for the prompt.
+  string title = 2;
+  // A human-readable description of what the prompt does.
+  string description = 3;
+  // The arguments for the prompt.
+  repeated PromptArgument arguments = 4;
+  // The messages that make up the prompt.
+  repeated PromptMessage messages = 5;
+}
+
+// PromptArgument defines an argument for a prompt.
+message PromptArgument {
+  // The name of the argument.
+  string name = 1;
+  // A description of the argument.
+  string description = 2;
+  // Whether the argument is required.
+  bool required = 3;
+}
+
+// PromptMessage defines a message in a prompt.
+message PromptMessage {
+  // The role of the speaker.
+  enum Role {
+    USER = 0;
+    ASSISTANT = 1;
+  }
+  Role role = 1;
+  // The content of the message.
+  oneof content {
+    TextContent text = 2;
+    ImageContent image = 3;
+    AudioContent audio = 4;
+    ResourceContent resource = 5;
+  }
+}
+
+// TextContent defines a text content block.
+message TextContent {
+  // The text content.
+  string text = 1;
+  // Optional annotations for the content.
+  ResourceAnnotation annotations = 2;
+}
+
+// ImageContent defines an image content block.
+message ImageContent {
+  // The base64-encoded image data.
+  string data = 1;
+  // The MIME type of the image.
+  string mime_type = 2;
+  // Optional annotations for the content.
+  ResourceAnnotation annotations = 3;
+}
+
+// AudioContent defines an audio content block.
+message AudioContent {
+  // The base64-encoded audio data.
+  string data = 1;
+  // The MIME type of the audio.
+  string mime_type = 2;
+  // Optional annotations for the content.
+  ResourceAnnotation annotations = 3;
+}
+
+// ResourceContent defines a resource content block.
+message ResourceContent {
+  // The resource.
+  ResourceDefinition resource = 1;
+  // Optional annotations for the content.
+  ResourceAnnotation annotations = 2;
+}

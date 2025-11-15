@@ -402,16 +402,24 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetCalls()
-	callDefMap := make(map[string]*configv1.MCPCallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
+	configToolDefs := mcpService.GetTools()
+	calls := mcpService.GetCalls()
+	configToolMap := make(map[string]*configv1.ToolDefinition)
+	for _, toolDef := range configToolDefs {
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
-		callDef, ok := callDefMap[mcpSDKTool.Name]
-		if !ok {
+		var callDef *configv1.MCPCallDefinition
+		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if call, callOk := calls[configTool.GetCallId()]; callOk {
+				callDef = call
+			} else {
+				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
+				callDef = &configv1.MCPCallDefinition{}
+			}
+		} else {
 			callDef = &configv1.MCPCallDefinition{}
 		}
 
@@ -455,6 +463,11 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		}
 	}
 
+	for _, promptDef := range mcpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+	}
+
 	// Register resources
 	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
 	if err != nil {
@@ -474,6 +487,41 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 			},
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	log := logging.GetLogger()
+	callIDToName := make(map[string]string)
+	for _, d := range configToolDefs {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetMcpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return discoveredTools, discoveredResources, nil
@@ -552,16 +600,24 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	mcpService := serviceConfig.GetMcpService()
-	callDefs := mcpService.GetCalls()
-	callDefMap := make(map[string]*configv1.MCPCallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
+	configToolDefs := mcpService.GetTools()
+	calls := mcpService.GetCalls()
+	configToolMap := make(map[string]*configv1.ToolDefinition)
+	for _, toolDef := range configToolDefs {
+		configToolMap[toolDef.GetName()] = toolDef
 	}
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
-		callDef, ok := callDefMap[mcpSDKTool.Name]
-		if !ok {
+		var callDef *configv1.MCPCallDefinition
+		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if call, callOk := calls[configTool.GetCallId()]; callOk {
+				callDef = call
+			} else {
+				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
+				callDef = &configv1.MCPCallDefinition{}
+			}
+		} else {
 			callDef = &configv1.MCPCallDefinition{}
 		}
 
@@ -605,6 +661,11 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		}
 	}
 
+	for _, promptDef := range mcpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+	}
+
 	// Register resources
 	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
 	if err != nil {
@@ -624,6 +685,41 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			},
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
+	}
+
+	log := logging.GetLogger()
+	callIDToName := make(map[string]string)
+	for _, d := range configToolDefs {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetMcpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
 	}
 
 	return discoveredTools, discoveredResources, nil

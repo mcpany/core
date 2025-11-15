@@ -58,7 +58,7 @@ func NewEngine(path string) (Engine, error) {
 		return &jsonEngine{}, nil
 	case ".yaml", ".yml":
 		return &yamlEngine{}, nil
-	case ".textproto":
+	case ".textproto", ".prototxt", ".pb", ".pb.txt":
 		return &textprotoEngine{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported config file extension '%s' for file %s", ext, path)
@@ -111,14 +111,14 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 // Implementations of this interface provide a way to retrieve the complete
 // server configuration from a source, such as a file or a remote service.
 type Store interface {
-	// Load retrieves and returns the McpxServerConfig.
-	Load() (*configv1.McpxServerConfig, error)
+	// Load retrieves and returns the McpAnyServerConfig.
+	Load() (*configv1.McpAnyServerConfig, error)
 }
 
 // FileStore implements the `Store` interface for loading configurations from one
 // or more files or directories on a filesystem. It supports multiple file
 // formats (JSON, YAML, and textproto) and merges the configurations into a
-// single `McpxServerConfig`.
+// single `McpAnyServerConfig`.
 type FileStore struct {
 	fs    afero.Fs
 	paths []string
@@ -139,16 +139,16 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 
 // Load scans the configured paths for supported configuration files (JSON,
 // YAML, and textproto), reads them, unmarshals their contents, and merges them
-// into a single `McpxServerConfig`.
+// into a single `McpAnyServerConfig`.
 //
 // The files are processed in alphabetical order, and configurations from later
 // files are merged into earlier ones. This allows for a cascading configuration
 // setup where base configurations can be overridden by more specific ones.
 //
-// Returns the merged `McpxServerConfig` or an error if any part of the process
+// Returns the merged `McpAnyServerConfig` or an error if any part of the process
 // fails.
-func (s *FileStore) Load() (*configv1.McpxServerConfig, error) {
-	var mergedConfig *configv1.McpxServerConfig
+func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
+	var mergedConfig *configv1.McpAnyServerConfig
 
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -170,7 +170,7 @@ func (s *FileStore) Load() (*configv1.McpxServerConfig, error) {
 			return nil, err
 		}
 
-		cfg := &configv1.McpxServerConfig{}
+		cfg := &configv1.McpAnyServerConfig{}
 		if err := engine.Unmarshal(b, cfg); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
 		}

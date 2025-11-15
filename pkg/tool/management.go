@@ -38,6 +38,19 @@ type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
+// ToolManagerInterface defines the interface for a tool manager.
+type ToolManagerInterface interface {
+	AddTool(tool Tool) error
+	GetTool(toolName string) (Tool, bool)
+	ListTools() []Tool
+	ClearToolsForService(serviceID string)
+	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	SetMCPServer(mcpServer MCPServerProvider)
+	AddMiddleware(middleware ToolExecutionMiddleware)
+	AddServiceInfo(serviceID string, info *ServiceInfo)
+	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+}
+
 // ToolManager is a thread-safe manager for registering, retrieving, and
 // executing tools. It also handles the registration of tools with an MCP server,
 // making them available for remote execution.
@@ -84,13 +97,23 @@ func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
 func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	log := logging.GetLogger().With("toolName", req.ToolName)
+	log.Debug("Executing tool")
+
 	execute := func(ctx context.Context, req *ExecutionRequest) (any, error) {
 		t, ok := tm.GetTool(req.ToolName)
 		if !ok {
+			log.Error("Tool not found")
 			return nil, ErrToolNotFound
 		}
 		ctx = NewContextWithTool(ctx, t)
-		return t.Execute(ctx, req)
+		result, err := t.Execute(ctx, req)
+		if err != nil {
+			log.Error("Tool execution failed", "error", err)
+		} else {
+			log.Debug("Tool execution successful")
+		}
+		return result, err
 	}
 
 	chain := execute
@@ -98,11 +121,19 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 		m := tm.middlewares[i]
 		chain = func(next ToolExecutionFunc) ToolExecutionFunc {
 			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
+				log.Debug("Executing middleware", "middleware", i)
 				return m.Execute(ctx, req, next)
 			}
 		}(chain)
 	}
-	return chain(ctx, req)
+
+	result, err := chain(ctx, req)
+	if err != nil {
+		log.Error("Tool execution chain failed", "error", err)
+	} else {
+		log.Debug("Tool execution chain successful")
+	}
+	return result, err
 }
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.
@@ -134,6 +165,10 @@ func (tm *ToolManager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 func (tm *ToolManager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
+
+	if tool.Tool().GetServiceId() == "" {
+		return fmt.Errorf("tool service ID cannot be empty")
+	}
 
 	sanitizedToolName, err := util.SanitizeToolName(tool.Tool().GetName())
 	if err != nil {

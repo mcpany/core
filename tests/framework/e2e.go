@@ -54,6 +54,7 @@ type E2ETestCase struct {
 	RegistrationMethods    []RegistrationMethod
 	GenerateUpstreamConfig func(upstreamEndpoint string) string
 	StartMCPANYServer      func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
+	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
 func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
@@ -144,8 +145,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
 			if method == GRPCRegistration {
 				testCase.RegisterUpstream(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+			} else if method == JSONRPCRegistration {
+				testCase.RegisterUpstreamWithJSONRPC(t, mcpanyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
 			}
-			// TODO: JSONRPC registration
 			t.Logf("INFO: Upstream service registered.")
 
 			// --- 4. Validate Registered Tool ---
@@ -195,9 +197,11 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 
 func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_grpc_authed_weather"
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("test-bearer-token")
 	authConfig := configv1.UpstreamAuthentication_builder{
 		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
-			Token: proto.String("test-bearer-token"),
+			Token: secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterGRPCService(t, registrationClient, serviceID, upstreamEndpoint, authConfig)
@@ -331,10 +335,12 @@ paths:
 	require.NoError(t, err)
 	err = tmpfile.Close()
 	require.NoError(t, err)
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("test-api-key")
 	authConfig := configv1.UpstreamAuthentication_builder{
 		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     proto.String("test-api-key"),
+			ApiKey:     secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterOpenAPIService(t, registrationClient, serviceID, tmpfile.Name(), upstreamEndpoint, authConfig)

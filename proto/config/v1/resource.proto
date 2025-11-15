@@ -3,9 +3,26 @@
 
 edition = "2023";
 
-package mcpx.config.v1;
+package mcpany.config.v1;
+
+import "google/protobuf/timestamp.proto";
+import "proto/config/v1/call.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
+
+message ResourceAnnotation {
+    // An array indicating the intended audience(s) for this
+    // resource. Valid values are "user" and "assistant". For example,
+    // ["user", "assistant"] indicates content useful for both.
+    repeated string audience = 1;
+    // A number from 0.0 to 1.0 indicating the importance of
+    // this resource. A value of 1 means “most important” (effectively
+    // required), while 0 means “least important” (entirely optional).
+    double priority = 2;
+    // An ISO 8601 formatted timestamp indicating when the
+    // resource was last modified (e.g., "2025-01-12T15:00:58Z").
+    google.protobuf.Timestamp last_modified = 3;
+}
 
 message ResourceDefinition {
     string uri = 1;
@@ -14,4 +31,27 @@ message ResourceDefinition {
     string description = 4;
     string mime_type = 5;
     int64 size = 6;
+    ResourceAnnotation annotations = 7;
+    oneof resource_type {
+        StaticResource static = 8;
+        DynamicResource dynamic = 9;
+    }
+}
+
+message StaticResource {
+    oneof content_type {
+        string text_content = 1;
+        bytes binary_content = 2;
+    }
+}
+
+message DynamicResource {
+    oneof call_definition {
+        HttpCallDefinition http_call = 1;
+        GrpcCallDefinition grpc_call = 2;
+        WebsocketCallDefinition websocket_call = 3;
+        WebrtcCallDefinition webrtc_call = 4;
+        CommandLineCallDefinition command_line_call = 5;
+        MCPCallDefinition mcp_call = 6;
+    }
 }

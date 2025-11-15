@@ -20,18 +20,29 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 
 	"github.com/stretchr/testify/assert"
@@ -55,6 +66,44 @@ func (l *connCountingListener) Accept() (net.Conn, error) {
 }
 
 func TestHealthCheck(t *testing.T) {
+	t.Run("health check against specific IP address", func(t *testing.T) {
+		// This test is designed to fail if 'localhost' resolves to an IP
+		// address that the server is not listening on. For example, on an
+		// IPv6-enabled system, 'localhost' might resolve to '::1', but our
+		// test server below is explicitly listening on the IPv4 loopback
+		// '127.0.0.1'. The HealthCheck function, as written, assumes
+		// 'localhost', which makes it fragile.
+
+		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		// Forcing the server to listen on the IPv4 loopback address.
+		l, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		server.Listener = l
+		server.Start()
+		defer server.Close()
+
+		addr := server.Listener.Addr().String()
+
+		// This call should now succeed because we are providing the exact
+		// address of the listener.
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		assert.NoError(t, err, "HealthCheck should succeed when given the correct IP")
+	})
+
+	t.Run("health check timeout", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(100 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(io.Discard, addr, 50*time.Millisecond)
+		assert.Error(t, err, "HealthCheck should time out and return an error")
+	})
+
 	t.Run("successful health check", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/healthz", r.URL.Path)
@@ -63,10 +112,8 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		// Extract port from server URL
-		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
-		require.NoError(t, err)
-
-		err = HealthCheck(port)
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.NoError(t, err)
 	})
 
@@ -76,10 +123,8 @@ func TestHealthCheck(t *testing.T) {
 		}))
 		defer server.Close()
 
-		_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
-		require.NoError(t, err)
-
-		err = HealthCheck(port)
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed with status code: 500")
 	})
@@ -88,12 +133,30 @@ func TestHealthCheck(t *testing.T) {
 		// Find a free port, then close it, to ensure it's not listening
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
-		port := l.Addr().(*net.TCPAddr).Port
+		addr := l.Addr().String()
 		l.Close()
 
-		err = HealthCheck(fmt.Sprintf("%d", port))
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
+	})
+
+	t.Run("health check respects client timeout", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(7 * time.Second) // Sleep longer than the timeout
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+
+		start := time.Now()
+		err := HealthCheck(io.Discard, addr, 6*time.Second)
+		duration := time.Since(start)
+
+		require.Error(t, err, "HealthCheck should time out")
+		assert.GreaterOrEqual(t, duration, 6*time.Second, "Timeout should be at least the context timeout")
+		assert.Less(t, duration, 7*time.Second, "Timeout should be less than the server sleep time")
 	})
 
 	t.Run("connection is reused", func(t *testing.T) {
@@ -113,18 +176,72 @@ func TestHealthCheck(t *testing.T) {
 		}()
 		defer server.Close()
 
-		// Get the port from the listener's address.
-		_, port, err := net.SplitHostPort(countingLis.Addr().String())
-		require.NoError(t, err)
+		addr := countingLis.Addr().String()
 
 		// Perform the health check multiple times.
 		for i := 0; i < 3; i++ {
-			err := HealthCheck(port)
+			err := HealthCheck(io.Discard, addr, 5*time.Second)
 			require.NoError(t, err, "Health check should succeed on iteration %d", i)
 		}
 
 		// Verify that only one connection was made, proving that keep-alive is working.
 		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
+	})
+
+	t.Run("connection is reused across multiple health checks", func(t *testing.T) {
+		// Set up a listener that can count the number of connections.
+		rawLis, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		countingLis := &connCountingListener{Listener: rawLis}
+
+		// Configure and start a test server.
+		server := &http.Server{
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}),
+		}
+		go func() {
+			_ = server.Serve(countingLis)
+		}()
+		defer server.Close()
+
+		addr := countingLis.Addr().String()
+
+		// Perform the health check multiple times.
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on first call")
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on second call")
+		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		require.NoError(t, err, "Health check should succeed on third call")
+
+		// Verify that only one connection was made, proving that keep-alive is working.
+		assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.connCount), "Expected only one connection to be made.")
+	})
+
+	t.Run("successful health check writes to writer", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		var out bytes.Buffer
+		err := HealthCheck(&out, addr, 5*time.Second)
+		assert.NoError(t, err)
+		assert.Equal(t, "Health check successful: server is running and healthy.\n", out.String())
+	})
+
+	t.Run("failed health check writes to writer", func(t *testing.T) {
+		l, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		addr := l.Addr().String()
+		l.Close()
+
+		var out bytes.Buffer
+		err = HealthCheck(&out, addr, 1*time.Second)
+		assert.Error(t, err)
+		assert.Contains(t, out.String(), "health check failed")
 	})
 }
 
@@ -159,9 +276,12 @@ upstream_services:
   - name: "test-http-service"
     http_service:
       address: "http://localhost:8080"
+      tools:
+        - name: "echo"
+          call_id: "echo_call"
       calls:
-        - schema:
-            name: "echo"
+        echo_call:
+          id: "echo_call"
           endpoint_path: "/echo"
           method: "HTTP_METHOD_POST"
 `
@@ -174,7 +294,7 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -193,9 +313,29 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
+}
+
+func TestRun_BusProviderError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	bus.NewBusProviderHook = func(messageBus *bus_pb.MessageBus) (*bus.BusProvider, error) {
+		return nil, fmt.Errorf("injected bus provider error")
+	}
+	defer func() { bus.NewBusProviderHook = nil }()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
 }
 
 func TestRun_EmptyConfig(t *testing.T) {
@@ -209,7 +349,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic
-	err = app.Run(ctx, fs, false, "0", "0", []string{"/config.yaml"}, 5*time.Second)
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -228,7 +368,7 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "0", "0", nil, 5*time.Second)
+	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -242,7 +382,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "0", "", nil, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -296,6 +436,183 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	})
 }
 
+func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	// Occupy a port to ensure the HTTP server fails to start.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	httpPort := l.Addr().(*net.TCPAddr).Port
+
+	app := NewApplication()
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	runErr := app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", nil, 1*time.Second)
+
+	require.Error(t, runErr, "app.Run should return an error")
+	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
+
+	logs := buf.String()
+	assert.Contains(t, logs, "gRPC server listening", "The gRPC server should have started.")
+	assert.Contains(t, logs, "Attempting to gracefully shut down server...", "A graceful shutdown should be attempted.")
+	assert.Contains(t, logs, "Server shut down.", "The gRPC server should have been shut down gracefully.")
+}
+
+func TestRun_DefaultBindAddress(t *testing.T) {
+	defaultAddr := "localhost:8070"
+	// This test is intended to run in an environment where port 8070 is available.
+	// If it's not, we skip the test.
+	conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+	if err == nil {
+		conn.Close()
+		t.Skipf("port %s is already in use, skipping test", defaultAddr)
+	}
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
+		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, 5*time.Second)
+	}()
+
+	// Give the server time to start up.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "server should start listening on the default port")
+
+	// Server is up, now cancel and wait for shutdown.
+	cancel()
+	err = <-errChan
+
+	// On graceful shutdown, it should be nil.
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	// Final check: the port should be free again.
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return false
+		}
+		return true
+	}, 2*time.Second, 100*time.Millisecond, "port should be released after shutdown")
+}
+
+func TestRun_GrpcPortNumber(t *testing.T) {
+	// Find a free port to use for the test
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Run with a port number instead of a full address string
+		errChan <- app.Run(ctx, fs, false, "localhost:0", fmt.Sprintf("%d", port), nil, 5*time.Second)
+	}()
+
+	// Give the server time to start up.
+	grpcAddr := fmt.Sprintf("localhost:%d", port)
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start listening on port %d", port)
+
+	// Server is up, now cancel and wait for shutdown.
+	cancel()
+	err = <-errChan
+
+	// On graceful shutdown, it should be nil.
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+}
+
+func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	app := NewApplication()
+	// This context will be canceled to trigger the shutdown.
+	ctx, cancel := context.WithCancel(context.Background())
+
+	// Create dependencies
+	busProvider, err := bus.NewBusProvider(nil) // in-memory bus
+	require.NoError(t, err)
+
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	go func() {
+		// Use ephemeral ports to avoid conflicts.
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second)
+	}()
+
+	// Give the servers a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+
+	// Wait for runServerMode to exit.
+	err = <-errChan
+
+	// A clean shutdown should not return an error.
+	assert.NoError(t, err, "runServerMode should return nil on graceful shutdown")
+
+	// Check the logs to ensure the shutdown sequence was logged as expected.
+	logs := buf.String()
+	assert.Contains(t, logs, "Received shutdown signal, shutting down gracefully...")
+	assert.Contains(t, logs, "Waiting for HTTP and gRPC servers to shut down...")
+	assert.Contains(t, logs, "All servers have shut down.")
+}
+
 func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
 	lis, err := net.Listen("tcp", "localhost:0")
@@ -310,7 +627,9 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(s *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -353,7 +672,9 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {})
+			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			require.NoError(t, err)
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(s *gogrpc.Server) {})
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -379,22 +700,24 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
 	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
-	// Wait for the goroutine to finish. If the bug is present, this will hang.
-	wg.Wait()
-
-	// Check that an error was received.
+	// Wait for the startup error.
 	select {
 	case err := <-errChan:
 		assert.Error(t, err)
-	default:
-		t.Fatal("expected an error but got none")
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
 	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish, which it should now do gracefully.
+	wg.Wait()
 }
 
 func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
@@ -471,7 +794,9 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a service that will hang.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", fmt.Sprintf(":%d", port), 1*time.Second, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -548,7 +873,9 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", fmt.Sprintf(":%d", port), 50*time.Millisecond, func(s *gogrpc.Server) {
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
 		// This service will hang for 10 seconds, which is much longer than our
 		// shutdown timeout.
 		hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -614,37 +941,236 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	defer l.Close()
 	port := l.Addr().(*net.TCPAddr).Port
 
-	// This channel will be used to signal that the test is complete
-	done := make(chan bool)
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
+
+	// Wait for the startup error.
+	select {
+	case err := <-errChan:
+		require.Error(t, err)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
+	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish. With the fix, this should not hang.
+	wg.Wait()
+}
+
+func TestRunServerMode_ContextCancellation(t *testing.T) {
+	app := NewApplication()
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
+	require.NoError(t, err)
 
 	go func() {
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		errChan := make(chan error, 1)
-		var wg sync.WaitGroup
-
-		// This call should hang because wg.Done() is never called in the error case
-		startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
-
-		// The test will hang here waiting for the goroutine to finish
-		wg.Wait()
-		close(done)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second)
 	}()
 
+	// Allow some time for the servers to start up
+	time.Sleep(100 * time.Millisecond)
+
+	// Cancel the context to trigger shutdown
+	cancel()
+
 	select {
-	case <-done:
-		// The test completed without hanging, which is the expected behavior after the fix.
+	case err := <-errChan:
+		assert.NoError(t, err, "runServerMode should return nil on graceful shutdown")
 	case <-time.After(2 * time.Second):
-		t.Fatal("Test hung for 2 seconds. The bug is still present.")
+		t.Fatal("Test hung for 2 seconds, indicating a shutdown issue.")
 	}
 }
 
-func TestGRPCServer_GracefulShutdown(t *testing.T) {
+func TestRunStdioMode(t *testing.T) {
+	var called bool
+	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
+		called = true
+		return nil
+	}
+
+	app := &Application{
+		runStdioModeFunc: mockStdioFunc,
+	}
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, 5*time.Second)
+
+	assert.True(t, called, "runStdioMode should have been called")
+	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
+}
+
+func Test_runStdioMode_real(t *testing.T) {
+	oldStdin := os.Stdin
+	oldStdout := os.Stdout
+	defer func() {
+		os.Stdin = oldStdin
+		os.Stdout = oldStdout
+	}()
+
+	inR, inW, err := os.Pipe()
+	require.NoError(t, err)
+	os.Stdin = inR
+
+	outR, outW, err := os.Pipe()
+	require.NoError(t, err)
+	os.Stdout = outW
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- runStdioMode(ctx, mcpSrv)
+	}()
+
+	go func() {
+		defer inW.Close()
+		initRequest := `{"jsonrpc":"2.0","method":"initialize","id":0,"params":{"protocolVersion":"1.0"}}` + "\n"
+		_, err := inW.Write([]byte(initRequest))
+		require.NoError(t, err)
+		// Give the server a moment to process the request before the pipe is closed.
+		time.Sleep(100 * time.Millisecond)
+	}()
+
+	var buf bytes.Buffer
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_, _ = io.Copy(&buf, outR)
+	}()
+
+	// Give the server time to process the initialize request.
+	time.Sleep(300 * time.Millisecond)
+
+	cancel()
+	runErr := <-errChan
+	assert.NoError(t, runErr)
+	outW.Close()
+	wg.Wait()
+
+	response := buf.String()
+	assert.Contains(t, response, `"id":0`)
+	assert.Contains(t, response, `"result":{"capabilities":{`)
+}
+
+func TestRun_InMemoryBus(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// An empty config will result in an in-memory bus.
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+	// This should not panic and should exit gracefully.
+	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
+	require.NoError(t, err)
+}
+
+func TestRun_CachingMiddleware(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app := NewApplication()
+
+	// We need a way to inspect the middleware chain. We can use a test hook for this.
+	var middlewareNames []string
+	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		middlewareNames = append(middlewareNames, name)
+	}
+	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
+
+	err = app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
+	require.NoError(t, err)
+
+	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
+}
+
+func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
+	// Inject an error for mcpserver.NewRegistrationServer
+	mcpserver.NewRegistrationServerHook = func(bus interface{}) (*mcpserver.RegistrationServer, error) {
+		return nil, fmt.Errorf("injected registration server error")
+	}
+	defer func() { mcpserver.NewRegistrationServerHook = nil }()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", ":0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(s *gogrpc.Server) {
+		_, err := mcpserver.NewRegistrationServer(nil)
+		if err != nil {
+			errChan <- fmt.Errorf("failed to create API server: %w", err)
+			// Do not return here, let the goroutine exit normally after sending the error.
+		}
+	})
+
+	// We expect to receive the injected error on the channel.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to create API server: injected registration server error")
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for error from startGrpcServer")
+	}
+
+}
+
+func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", ":0", 5*time.Second, func(_ *gogrpc.Server) {})
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := lis.Addr().String()
+	lis.Close() // Close the listener immediately
+
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP", addr, nil, 5*time.Second)
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -656,6 +1182,61 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	default:
 		// No error, which is what we want
 	}
+}
+
+func TestGRPCServer_GracefulShutdown(t *testing.T) {
+	errChan := make(chan error, 1)
+	ctx, cancel := context.WithCancel(context.Background())
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {})
+
+	// Immediately cancel to trigger shutdown
+	cancel()
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		assert.NoError(t, err, "Graceful shutdown should not produce an error")
+	default:
+		// No error, which is what we want
+	}
+}
+
+func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
+	// Find a free port and create a listener that is already closed to force an error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	l.Close()
+
+	closedListener, err := net.Listen("tcp", addr)
+	require.NoError(t, err)
+	closedListener.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(s *gogrpc.Server) {
+		// No-op registration.
+	})
+
+	// Wait for the startup error.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
+	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish.
+	wg.Wait()
 }
 
 func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
@@ -673,7 +1254,9 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", fmt.Sprintf(":%d", port), 5*time.Second, func(s *gogrpc.Server) {})
+			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			require.NoError(t, err)
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(s *gogrpc.Server) {})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -690,5 +1273,297 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 				// This is the expected path.
 			}
 		})
+	}
+}
+
+func TestRun_ServiceRegistrationPublication(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	configContent := `
+upstream_services:
+ - name: "test-service"
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "test-call"
+         call_id: "test-call"
+     calls:
+        test-call:
+          id: "test-call"
+          endpoint_path: "/test"
+          method: "HTTP_METHOD_POST"
+ - name: "disabled-service"
+   disable: true
+   http_service:
+     address: "http://localhost:8081"
+     tools:
+       - name: "test-call"
+         call_id: "test-call"
+     calls:
+        test-call:
+          id: "test-call"
+          endpoint_path: "/test"
+          method: "HTTP_METHOD_POST"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	// Create a mock bus and set the hook.
+	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
+	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+		if topic == "service_registration_requests" {
+			return mockRegBus
+		}
+		return nil
+	}
+	defer func() { bus.GetBusHook = nil }()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	// Allow some time for the services to be published.
+	time.Sleep(100 * time.Millisecond)
+	cancel()
+
+	err = <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	// Verify that the correct number of messages were published.
+	mockRegBus.mu.Lock()
+	defer mockRegBus.mu.Unlock()
+	assert.Len(t, mockRegBus.publishedMessages, 1, "Expected one service registration request to be published.")
+	if len(mockRegBus.publishedMessages) == 1 {
+		publishedMsg := mockRegBus.publishedMessages[0]
+		assert.Equal(t, "test-service", publishedMsg.Config.GetName(), "The incorrect service was published.")
+	}
+}
+
+func TestRun_NoConfig(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
+	}()
+
+	runErr := <-errChan
+	assert.NoError(t, runErr, "app.Run should return nil on graceful shutdown")
+}
+
+func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err, "Failed to find a free port.")
+	port := lis.Addr().(*net.TCPAddr).Port
+	lis.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangService := &mockHangService{hangTime: 10 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	time.Sleep(100 * time.Millisecond)
+
+	go func() {
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			t.Logf("Failed to dial gRPC server: %v", err)
+			return
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+
+	cancel()
+	wg.Wait()
+
+	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
+	if l != nil {
+		l.Close()
+	}
+}
+
+// mockCloseCountingListener is a mock net.Listener that wraps a real
+// net.Listener and counts the number of times its Close method is called. This
+// is used to test for race conditions and double-close bugs in server shutdown
+// logic.
+type mockCloseCountingListener struct {
+	net.Listener
+	closeCount int32
+}
+
+// Close increments a counter and then calls the underlying listener's Close
+// method.
+func (l *mockCloseCountingListener) Close() error {
+	atomic.AddInt32(&l.closeCount, 1)
+	return l.Listener.Close()
+}
+
+func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
+	// This test ensures that the listener is not closed more than once, even
+	// when a graceful shutdown times out and the server is forcefully stopped.
+	rawLis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	countingLis := &mockCloseCountingListener{Listener: rawLis}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server with a mock service that hangs.
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangService := &mockHangService{hangTime: 5 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	// Give the server a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// In a separate goroutine, make a call to the hanging RPC.
+	go func() {
+		port := countingLis.Addr().(*net.TCPAddr).Port
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			return // Don't fail the test if the connection fails, as the server might be shutting down.
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	// Allow the RPC call to be initiated.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+	wg.Wait() // Wait for the server to shut down.
+
+	// The close count should be exactly 1.
+	assert.Equal(t, int32(1), atomic.LoadInt32(&countingLis.closeCount), "The listener's Close() method should be called exactly once.")
+}
+
+// mockBus is a mock implementation of the bus.Bus interface for testing.
+type mockBus[T any] struct {
+	// A slice to store published messages for later inspection.
+	publishedMessages []T
+	// A mutex to make the mock thread-safe, as it might be accessed from multiple goroutines.
+	mu sync.Mutex
+}
+
+// newMockBus creates a new mockBus instance.
+func newMockBus[T any]() *mockBus[T] {
+	return &mockBus[T]{
+		publishedMessages: make([]T, 0),
+	}
+}
+
+// Publish records the message in the publishedMessages slice.
+func (m *mockBus[T]) Publish(_ context.Context, _ string, msg T) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.publishedMessages = append(m.publishedMessages, msg)
+	return nil
+}
+
+// Subscribe is a no-op for this mock.
+func (m *mockBus[T]) Subscribe(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+	return func() {}
+}
+
+// SubscribeOnce is a no-op for this mock.
+func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsubscribe func()) {
+	return func() {}
+}
+
+func TestGRPCServer_PanicInRegistration(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", ":0")
+	require.NoError(t, err)
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
+		panic("test panic in registration")
+	})
+
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "panic during gRPC service registration")
+		assert.Contains(t, err.Error(), "test panic in registration")
+	default:
+		t.Fatal("expected an error from panic but got none")
+	}
+}
+
+func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
+	// This test is designed to fail by timing out if the bug is present.
+	// Occupy a port to force a listen error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer l.Close()
+	port := l.Addr().(*net.TCPAddr).Port
+
+	app := NewApplication()
+	// Use a context that will never be canceled.
+	ctx := context.Background()
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second)
+	}()
+
+	select {
+	case err := <-errChan:
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "gRPC server failed to listen")
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test hung for 2 seconds. The bug is still present.")
 	}
 }

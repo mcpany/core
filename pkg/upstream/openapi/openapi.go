@@ -132,7 +132,8 @@ func (u *OpenAPIUpstream) Register(
 		}.Build())
 	}
 
-	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, isReload, doc, serviceConfig)
+	numToolsAdded := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, toolManager, resourceManager, isReload, doc, serviceConfig)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered OpenAPI service", "serviceID", serviceID, "toolsAdded", numToolsAdded)
 
 	return serviceID, discoveredTools, nil, nil
@@ -179,7 +180,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -192,16 +193,32 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	}
 
 	openapiService := serviceConfig.GetOpenapiService()
-	callDefs := openapiService.GetCalls()
-	callDefMap := make(map[string]*configv1.OpenAPICallDefinition)
-	for _, def := range callDefs {
-		callDefMap[def.GetSchema().GetName()] = def
-	}
+	definitions := openapiService.GetTools()
+	calls := openapiService.GetCalls()
 
-	for _, t := range pbTools {
-		toolName := t.GetName()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
+		callDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			continue
+		}
 
-		newToolProto := proto.Clone(t).(*pb.Tool)
+		toolName := definition.GetName()
+
+		var pbTool *pb.Tool
+		for _, t := range pbTools {
+			if t.GetName() == toolName {
+				pbTool = t
+				break
+			}
+		}
+		if pbTool == nil {
+			log.Error("Tool not found in parsed OpenAPI spec", "tool_name", toolName)
+			continue
+		}
+
+		newToolProto := proto.Clone(pbTool).(*pb.Tool)
 		newToolProto.SetName(toolName)
 		newToolProto.SetServiceId(serviceID)
 
@@ -214,9 +231,9 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 			}
 		}
 
-		methodAndPath := strings.Fields(t.GetUnderlyingMethodFqn())
+		methodAndPath := strings.Fields(pbTool.GetUnderlyingMethodFqn())
 		if len(methodAndPath) != 2 {
-			log.Error("Invalid underlying method FQN", "fqn", t.GetUnderlyingMethodFqn())
+			log.Error("Invalid underlying method FQN", "fqn", pbTool.GetUnderlyingMethodFqn())
 			continue
 		}
 		method, path := methodAndPath[0], methodAndPath[1]
@@ -248,11 +265,6 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 		}
 		fullURL := serverURL + path
 
-		callDef, ok := callDefMap[toolName]
-		if !ok {
-			callDef = &configv1.OpenAPICallDefinition{}
-		}
-
 		newTool := tool.NewOpenAPITool(newToolProto, httpC, parameterDefs, method, fullURL, authenticator, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
@@ -262,5 +274,55 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 		log.Info("Registered OpenAPI tool", "tool_id", toolName, "is_reload", isReload)
 	}
 
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range openapiService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetHttpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return numToolsForThisService
+}
+
+func (u *OpenAPIUpstream) createAndRegisterPrompts(
+	ctx context.Context,
+	serviceID string,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	promptManager prompt.PromptManagerInterface,
+	isReload bool,
+) {
+	log := logging.GetLogger()
+	openapiService := serviceConfig.GetOpenapiService()
+	for _, promptDef := range openapiService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

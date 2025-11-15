@@ -35,9 +35,31 @@ import (
 
 // Mocks
 
+type mockBus[T any] struct {
+	bus.Bus[T]
+	publishFunc   func(ctx context.Context, topic string, msg T) error
+	subscribeFunc func(ctx context.Context, topic string, handler func(T)) func()
+}
+
+func (m *mockBus[T]) Publish(ctx context.Context, topic string, msg T) error {
+	if m.publishFunc != nil {
+		return m.publishFunc(ctx, topic, msg)
+	}
+	return nil
+}
+
+func (m *mockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) func() {
+	if m.subscribeFunc != nil {
+		return m.subscribeFunc(ctx, topic, handler)
+	}
+	// Return a no-op unsubscribe function
+	return func() {}
+}
+
 type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
-	registerFunc func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -45,6 +67,13 @@ func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 		return m.registerFunc(ctx, serviceConfig)
 	}
 	return "mock-service-key", nil, nil, nil
+}
+
+func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error {
+	if m.registerResFunc != nil {
+		return m.registerResFunc(ctx, resourceConfig)
+	}
+	return nil
 }
 
 type mockToolManager struct {
@@ -59,6 +88,34 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return "mock-result", nil
 }
 
+func (m *mockToolManager) AddTool(tool tool.Tool) error {
+	return nil
+}
+
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+	return nil, false
+}
+
+func (m *mockToolManager) ListTools() []tool.Tool {
+	return nil
+}
+
+func (m *mockToolManager) ClearToolsForService(serviceID string) {
+}
+
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+}
+
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+}
+
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return nil, false
+}
+
 func TestServiceRegistrationWorker(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -70,12 +127,10 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-				return "success-key", nil, nil, nil
+				return "success-key", nil, []*configv1.ResourceDefinition{}, nil
 			},
 		}
 
@@ -85,7 +140,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -93,7 +147,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
@@ -110,8 +163,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 		expectedErr := errors.New("registration failed")
 
 		registry := &mockServiceRegistry{
@@ -126,7 +177,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-fail", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -134,7 +184,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test-fail")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			require.Error(t, result.Error)
@@ -151,8 +200,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 
 		workerCtx, workerCancel := context.WithCancel(context.Background())
 		defer workerCancel()
@@ -176,7 +223,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -189,7 +235,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test-req-ctx")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
@@ -414,6 +459,72 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 		}(i)
 	}
 
+	wg.Wait()
+}
+
+func TestWorker_ContextPropagation(t *testing.T) {
+	t.Log("Running TestWorker_ContextPropagation")
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	bp, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+
+	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
+	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
+
+	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+		if topic == bus.ToolExecutionRequestTopic {
+			return reqBusMock
+		}
+		if topic == bus.ToolExecutionResultTopic {
+			return resBusMock
+		}
+		return nil
+	}
+	t.Cleanup(func() {
+		bus.GetBusHook = nil
+	})
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	readyToPublish := make(chan struct{})
+	var capturedHandler func(*bus.ToolExecutionRequest)
+
+	reqBusMock.subscribeFunc = func(ctx context.Context, topic string, handler func(*bus.ToolExecutionRequest)) func() {
+		capturedHandler = handler
+		close(readyToPublish)
+		return func() {}
+	}
+
+	resBusMock.publishFunc = func(ctx context.Context, topic string, msg *bus.ToolExecutionResult) error {
+		defer wg.Done()
+		// Block until context is canceled. This proves the correct context was passed.
+		// If context.Background() was passed, this will block forever and the test will time out.
+		<-ctx.Done()
+		require.Error(t, ctx.Err(), "Context should be canceled")
+		return nil
+	}
+
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	defer workerCancel()
+
+	worker := New(bp, &Config{MaxWorkers: 1, MaxQueueSize: 1})
+	worker.Start(workerCtx)
+
+	<-readyToPublish // Wait for subscription
+
+	req := &bus.ToolExecutionRequest{}
+	req.SetCorrelationID("test")
+	go capturedHandler(req) // Simulate message arrival
+
+	// Give the worker goroutine time to run and block inside publishFunc
+	time.Sleep(100 * time.Millisecond)
+
+	// Now, cancel the context
+	workerCancel()
+
+	// Wait for publishFunc to complete its checks
 	wg.Wait()
 }
 

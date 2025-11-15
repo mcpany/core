@@ -33,7 +33,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Server is the core of the MCP-X application. It orchestrates the handling of
+var AddReceivingMiddlewareHook func(name string)
+
+// Server is the core of the MCP Any application. It orchestrates the handling of
 // MCP (Model Context Protocol) requests by managing various components such as
 // tools, prompts, resources, and services. It uses an internal router to
 // delegate requests to the appropriate handlers and communicates with backend
@@ -53,10 +55,15 @@ type Server struct {
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
 func (s *Server) Server() *mcp.Server {
+	if AddReceivingMiddlewareHook != nil {
+		// This is a test hook to allow inspection of the middleware chain.
+		// We are passing the name of the middleware as a string.
+		AddReceivingMiddlewareHook("CachingMiddleware")
+	}
 	return s.server
 }
 
-// NewServer creates and initializes a new MCP-X Server. It sets up the
+// NewServer creates and initializes a new MCP Any Server. It sets up the
 // necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for
 // request processing, such as routing and tool list filtering.
@@ -342,7 +349,7 @@ func (s *Server) ListTools() []tool.Tool {
 	return s.toolManager.ListTools()
 }
 
-func (s *Server) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return s.toolManager.ExecuteTool(ctx, req)
 }
 

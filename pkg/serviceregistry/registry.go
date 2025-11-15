@@ -38,6 +38,7 @@ type ServiceRegistryInterface interface {
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 	UnregisterService(ctx context.Context, serviceName string) error
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
+	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -48,6 +49,7 @@ type ServiceRegistryInterface interface {
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
+	serviceInfo     map[string]*tool.ServiceInfo
 	factory         factory.Factory
 	toolManager     tool.ToolManagerInterface
 	promptManager   prompt.PromptManagerInterface
@@ -69,6 +71,7 @@ type ServiceRegistry struct {
 func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
+		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
@@ -131,6 +134,27 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	return serviceID, discoveredTools, discoveredResources, nil
 }
 
+// AddServiceInfo stores metadata about a service, indexed by its ID.
+//
+// serviceID is the unique identifier for the service.
+// info is the ServiceInfo struct containing the service's metadata.
+func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.serviceInfo[serviceID] = info
+}
+
+// GetServiceInfo retrieves the metadata for a service by its ID.
+//
+// serviceID is the unique identifier for the service.
+// It returns the ServiceInfo and a boolean indicating whether the service was found.
+func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	info, ok := r.serviceInfo[serviceID]
+	return info, ok
+}
+
 // GetServiceConfig returns the configuration for a given service key.
 //
 // Parameters:
@@ -155,6 +179,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	}
 
 	delete(r.serviceConfigs, serviceName)
+	delete(r.serviceInfo, serviceName)
 	r.toolManager.ClearToolsForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
 	return nil

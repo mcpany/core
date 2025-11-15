@@ -38,10 +38,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+type sanitizer func(string) (string, error)
+
 // WebrtcUpstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
 type WebrtcUpstream struct {
-	poolManager *pool.Manager
+	poolManager      *pool.Manager
+	toolNameSanitizer sanitizer
 }
 
 // NewWebrtcUpstream creates a new instance of WebrtcUpstream.
@@ -50,7 +53,8 @@ type WebrtcUpstream struct {
 // by the WebRTC upstream as connections are transient.
 func NewWebrtcUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &WebrtcUpstream{
-		poolManager: poolManager,
+		poolManager:      poolManager,
+		toolNameSanitizer: util.SanitizeToolName,
 	}
 }
 
@@ -95,7 +99,8 @@ func (u *WebrtcUpstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	address := webrtcService.GetAddress()
-	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered WebRTC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -104,10 +109,11 @@ func (u *WebrtcUpstream) Register(
 // createAndRegisterWebrtcTools iterates through the WebRTC call definitions in
 // the service configuration, creates a new WebrtcTool for each, and registers it
 // with the tool manager.
-func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
-	definitions := webrtcService.GetCalls()
+	definitions := webrtcService.GetTools()
+	calls := webrtcService.GetCalls()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(definitions))
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
@@ -116,11 +122,16 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		return nil
 	}
 
-	for i, wrtcDef := range definitions {
-		schema := wrtcDef.GetSchema()
-		toolNamePart := schema.GetName()
+	for i, definition := range definitions {
+		callID := definition.GetCallId()
+		wrtcDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			continue
+		}
+		toolNamePart := definition.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(definition.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -149,11 +160,11 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WEBRTC %s", address)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(schema.GetTitle()),
-				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
+				Title:           proto.String(definition.GetTitle()),
+				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
 			}.Build(),
 		}.Build()
@@ -170,9 +181,54 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(schema.GetName()),
-			Description: proto.String(schema.GetDescription()),
+			Name:        proto.String(definition.GetName()),
+			Description: proto.String(definition.GetDescription()),
 		}.Build())
 	}
+
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range webrtcService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetWebrtcCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := u.toolNameSanitizer(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools
+}
+
+func (u *WebrtcUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+	log := logging.GetLogger()
+	webrtcService := serviceConfig.GetWebrtcService()
+	for _, promptDef := range webrtcService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

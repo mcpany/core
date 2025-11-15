@@ -117,6 +117,9 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return nil, errors.New("not implemented")
 }
 
+func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
 func TestNewGRPCUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewGRPCUpstream(poolManager)
@@ -162,19 +165,19 @@ func TestGRPCUpstream_Register(t *testing.T) {
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		poolManager := pool.NewManager()
 		upstream := NewGRPCUpstream(poolManager)
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test")
-		grpcService := &configv1.GrpcUpstreamService{}
-		grpcService.SetAddress("localhost:50051")
-		serviceConfig.SetGrpcService(grpcService)
-		authConfig := (&configv1.UpstreamAuthentication_builder{
-			BearerToken: &configv1.UpstreamBearerTokenAuth{}, // Invalid config
+		serviceConfig := (&configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test"),
+			GrpcService: (&configv1.GrpcUpstreamService_builder{
+				Address: proto.String("localhost:50051"),
+			}).Build(),
+			UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+				BearerToken: (&configv1.UpstreamBearerTokenAuth_builder{}).Build(),
+			}).Build(),
 		}).Build()
-		serviceConfig.SetUpstreamAuthentication(authConfig)
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to create upstream authenticator")
+		assert.Contains(t, err.Error(), "bearer token authentication requires a token")
 	})
 
 	t.Run("reflection fails", func(t *testing.T) {
@@ -212,14 +215,14 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 	tm := NewMockToolManager()
 
 	t.Run("nil parsed data", func(t *testing.T) {
-		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, false, nil)
+		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, nil, false, nil)
 		require.NoError(t, err)
 		assert.Nil(t, tools)
 	})
 
 	t.Run("service info not found", func(t *testing.T) {
 		parsedData := &protobufparser.ParsedMcpAnnotations{}
-		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, false, nil)
+		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, nil)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service info not found")
 	})
@@ -228,7 +231,23 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 		poolManager := pool.NewManager()
 		upstream := NewGRPCUpstream(poolManager)
 		tm := NewMockToolManager()
-		tm.AddServiceInfo("test-service", &tool.ServiceInfo{})
+		tm.AddServiceInfo("test-service", &tool.ServiceInfo{
+			Config: configv1.UpstreamServiceConfig_builder{
+				GrpcService: configv1.GrpcUpstreamService_builder{
+					Tools: []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{
+							Name:   proto.String("test-tool"),
+							CallId: proto.String("test-call"),
+						}.Build(),
+					},
+					Calls: map[string]*configv1.GrpcCallDefinition{
+						"test-call": configv1.GrpcCallDefinition_builder{
+							Id: proto.String("test-call"),
+						}.Build(),
+					},
+				}.Build(),
+			}.Build(),
+		})
 
 		parsedData := &protobufparser.ParsedMcpAnnotations{
 			Tools: []protobufparser.McpTool{
@@ -245,7 +264,7 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 			},
 		}
 
-		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, false, fds)
+		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, fds)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create protodesc files")
 	})

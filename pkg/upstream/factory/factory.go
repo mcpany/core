@@ -63,6 +63,9 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager) Factory {
 // It returns a new upstream service instance or an error if the service type is
 // unknown.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+	if config == nil {
+		return nil, fmt.Errorf("upstream service config cannot be nil")
+	}
 	switch config.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		return grpc.NewGRPCUpstream(f.poolManager), nil

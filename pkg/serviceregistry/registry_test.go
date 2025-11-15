@@ -67,10 +67,6 @@ func (m *mockToolManager) AddTool(t tool.Tool) error                            
 func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return nil, false
-}
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
 func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
@@ -142,7 +138,8 @@ func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
 			return nil, factoryErr
 		},
 	}
-	registry := New(f, &mockToolManager{}, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -162,7 +159,8 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 			}, nil
 		},
 	}
-	registry := New(f, &mockToolManager{}, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")

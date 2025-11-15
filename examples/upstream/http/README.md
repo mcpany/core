@@ -1,58 +1,44 @@
 # Example: Exposing an HTTP Server
 
-This example demonstrates how to expose a simple, Go-based HTTP server as a tool through `mcpany`.
+This example demonstrates how to expose a public API as a tool through `MCP Any`.
 
 ## Overview
 
 This example consists of two main components:
 
-1. **`mcpany` Configuration**: A YAML file (`config/mcpany.yaml`) that tells `mcpany` how to connect to the upstream server and what tools to expose.
-2. **`mcpany` Server**: The `mcpany` instance that acts as a bridge between the AI assistant and the upstream server.
+1. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that tells `MCP Any` how to connect to the `ipinfo.io` API and what tools to expose.
+2. **`MCP Any` Server**: The `MCP Any` instance that acts as a bridge between the AI assistant and the `ipinfo.io` API.
 
 ## Running the Example
 
-### 1. Build the `mcpany` Binary
+### 1. Build the `MCP Any` Binary
 
-First, ensure the `mcpany` binary is built. From the root of the repository, run:
+First, ensure the `MCP Any` binary is built. From the root of the repository, run:
 
 ```bash
 make build
 ```
 
-### 2. Run the `mcpany` Server
+### 2. Run the `MCP Any` Server
 
-In another terminal, start the `mcpany` server using the provided shell script. This script points `mcpany` to the correct configuration file.
+In another terminal, start the `MCP Any` server using the provided shell script. This script points `MCP Any` to the correct configuration file.
 
 ```bash
-examples/upstream/http/start.sh
+./start.sh
 ```
 
-The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
+The `MCP Any` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can connect your AI assistant to `mcpany`.
+Once the server is running, you can interact with the tool using the `gemini` CLI.
 
-### Using Gemini CLI
+### Using the `gemini` CLI
 
-1. **Add `mcpany` as an MCP Server:**
-   Use the `gemini mcp add` command to register the running `mcpany` process. Note that the `start.sh` script must be running in another terminal.
+Now, you can call the `get_time_by_ip` tool by sending a `tools/call` request.
 
-   ```bash
-   gemini mcp add --transport http mcpany-server http://localhost:50050
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-http -p "call the tool ip-info-service.get_time_by_ip with ip 8.8.8.8"
+```
 
-   Confirm the addition is successful:
-
-   ```bash
-   gemini mcp list
-   ```
-
-2. **Call the Tools:**
-   Now, you can ask Gemini for the current time for a specific IP address.
-
-   ```bash
-   gemini -m gemini-2.5-flash -p 'what is the current time for IP 8.8.8.8'
-   ```
-
-This example showcases how `mcpany` can make any HTTP API available to an AI assistant with minimal configuration.
+This example showcases how `MCP Any` can make any HTTP API available to an AI assistant with minimal configuration.

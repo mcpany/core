@@ -22,6 +22,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -30,6 +31,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -38,13 +40,12 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
+	v1 "github.com/mcpany/core/proto/api/v1"
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	v1 "github.com/mcpany/core/proto/api/v1"
-	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -62,7 +63,14 @@ type Runner interface {
 	// configPaths is a slice of paths to configuration files.
 	//
 	// It returns an error if the application fails to start or run.
-	Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error
+	Run(
+		ctx context.Context,
+		fs afero.Fs,
+		stdio bool,
+		jsonrpcPort, grpcPort string,
+		configPaths []string,
+		shutdownTimeout time.Duration,
+	) error
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -104,7 +112,14 @@ func NewApplication() *Application {
 //     forcing termination.
 //
 // Returns an error if any part of the startup or execution fails.
-func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (a *Application) Run(
+	ctx context.Context,
+	fs afero.Fs,
+	stdio bool,
+	jsonrpcPort, grpcPort string,
+	configPaths []string,
+	shutdownTimeout time.Duration,
+) error {
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
@@ -114,29 +129,36 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	log.Info("Starting MCP Any Service...")
 
 	// Load initial services from config files
-	var cfg *config_v1.McpxServerConfig
+	var cfg *config_v1.McpAnyServerConfig
 	if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
-		cfg, err = config.LoadServices(store)
+		cfg, err = config.LoadServices(store, "server")
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
 	} else {
-		cfg = &config_v1.McpxServerConfig{}
+		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
-	busProvider, err := bus.NewBusProvider(cfg.GetGlobalSettings().GetMessageBus())
+	busConfig := cfg.GetGlobalSettings().GetMessageBus()
+	busProvider, err := bus.NewBusProvider(busConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager(busProvider)
+	var toolManager tool.ToolManagerInterface = tool.NewToolManager(busProvider)
 	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
@@ -146,8 +168,27 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	upstreamWorker.Start(ctx)
 	registrationWorker.Start(ctx)
 
+	// If we're using an in-memory bus, start the in-process worker
+	if busConfig == nil || busConfig.GetInMemory() != nil {
+		workerCfg := &worker.Config{
+			MaxWorkers:   10,
+			MaxQueueSize: 100,
+		}
+		inProcessWorker := worker.New(busProvider, workerCfg)
+		inProcessWorker.Start(ctx)
+		defer inProcessWorker.Stop()
+	}
+
 	// Initialize servers with the message bus
-	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	mcpSrv, err := mcpserver.NewServer(
+		ctx,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+		serviceRegistry,
+		busProvider,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
@@ -156,13 +197,20 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
-		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, "service_registration_requests")
+		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](
+			busProvider,
+			"service_registration_requests",
+		)
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
-			log.Info("Queueing service for registration from config", "service", serviceConfig.GetName())
+			log.Info(
+				"Queueing service for registration from config",
+				"service",
+				serviceConfig.GetName(),
+			)
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 			// We don't need a correlation ID since we are not waiting for a response here
 			registrationBus.Publish(ctx, "request", regReq)
@@ -172,7 +220,7 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
-	cachingMiddleware := middleware.NewCachingMiddleware(mcpSrv)
+	cachingMiddleware := middleware.NewCachingMiddleware(toolManager)
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
@@ -180,9 +228,13 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
-				result, err := cachingMiddleware.Execute(ctx, executionReq, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-					return next(ctx, method, r)
-				})
+				result, err := cachingMiddleware.Execute(
+					ctx,
+					executionReq,
+					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, r)
+					},
+				)
 				if err != nil {
 					return nil, err
 				}
@@ -198,7 +250,12 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 		return a.runStdioModeFunc(ctx, mcpSrv)
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, jsonrpcPort, grpcPort, shutdownTimeout)
+	bindAddress := jsonrpcPort
+	if cfg.GetGlobalSettings().GetBindAddress() != "" {
+		bindAddress = cfg.GetGlobalSettings().GetBindAddress()
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -210,7 +267,9 @@ func (a *Application) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcP
 func setup(fs afero.Fs) (afero.Fs, error) {
 	log := logging.GetLogger()
 	if fs == nil {
-		log.Error("setup called with nil afero.Fs. This is not allowed; an explicit afero.Fs must be provided.")
+		log.Error(
+			"setup called with nil afero.Fs. This is not allowed; an explicit afero.Fs must be provided.",
+		)
 		return nil, fmt.Errorf("filesystem not provided")
 	}
 	return fs, nil
@@ -230,38 +289,59 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
+var (
+	healthCheckClient = &http.Client{}
+)
+
 // HealthCheck performs a health check against a running server by sending an
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
 //
-// The function constructs the health check URL from the provided port and sends
-// an HTTP GET request. It expects a 200 OK status code for a successful health
-// check.
+// The function constructs the health check URL from the provided address and
+// sends an HTTP GET request. It expects a 200 OK status code for a successful
+// health check.
 //
 // Parameters:
-//   - port: The port on which the server is running.
+//   - out: The writer to which the success message will be written.
+//   - addr: The address (host:port) on which the server is running.
 //
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
-func HealthCheck(port string) error {
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/healthz", port))
+func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("http://%s/healthz", addr), nil)
 	if err != nil {
-		return fmt.Errorf("health check failed: %w", err)
+		err = fmt.Errorf("failed to create request for health check: %w", err)
+		fmt.Fprintln(out, err.Error())
+		return err
+	}
+
+	resp, err := healthCheckClient.Do(req)
+	if err != nil {
+		err = fmt.Errorf("health check failed: %w", err)
+		fmt.Fprintln(out, err.Error())
+		return err
 	}
 	defer resp.Body.Close()
 
 	// We must read the body and close it to ensure the underlying connection can be reused.
 	_, err = io.Copy(io.Discard, resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		err = fmt.Errorf("failed to read response body: %w", err)
+		fmt.Fprintln(out, err.Error())
+		return err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
+		err = fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
+		fmt.Fprintln(out, err.Error())
+		return err
 	}
 
-	fmt.Println("Health check successful: server is running and healthy.")
+	fmt.Fprintln(out, "Health check successful: server is running and healthy.")
 	return nil
 }
 
@@ -276,7 +356,18 @@ func HealthCheck(port string) error {
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Server, bus *bus.BusProvider, jsonrpcPort, grpcPort string, shutdownTimeout time.Duration) error {
+func (a *Application) runServerMode(
+	ctx context.Context,
+	mcpSrv *mcpserver.Server,
+	bus *bus.BusProvider,
+	bindAddress, grpcPort string,
+	shutdownTimeout time.Duration,
+) error {
+	// localCtx is used to manage the lifecycle of the servers started in this function.
+	// It's canceled when this function returns, ensuring that all servers are shut down.
+	localCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
@@ -290,32 +381,63 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
+	mux.Handle("/metrics", metrics.Handler())
 
-	startHTTPServer(ctx, &wg, errChan, "MCP Any HTTP", ":"+jsonrpcPort, mux, shutdownTimeout)
-
-	if grpcPort != "" {
-		startGrpcServer(ctx, &wg, errChan, "Registration", ":"+grpcPort, shutdownTimeout, func(s *gogrpc.Server) {
-			registrationServer, err := mcpserver.NewRegistrationServer(bus)
-			if err != nil {
-				errChan <- fmt.Errorf("failed to create API server: %w", err)
-				return
-			}
-			v1.RegisterRegistrationServiceServer(s, registrationServer)
-		})
+	if bindAddress == "" {
+		bindAddress = fmt.Sprintf("localhost:%d", 8070)
+	}
+	if !strings.Contains(bindAddress, ":") {
+		bindAddress = ":" + bindAddress
 	}
 
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
+
+	if grpcPort != "" {
+		if !strings.Contains(grpcPort, ":") {
+			grpcPort = ":" + grpcPort
+		}
+		lis, err := net.Listen("tcp", grpcPort)
+		if err != nil {
+			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
+		} else {
+			startGrpcServer(
+				localCtx,
+				&wg,
+				errChan,
+				"Registration",
+				lis,
+				shutdownTimeout,
+				func(s *gogrpc.Server) {
+					registrationServer, err := mcpserver.NewRegistrationServer(bus)
+					if err != nil {
+						errChan <- fmt.Errorf("failed to create API server: %w", err)
+						return
+					}
+					v1.RegisterRegistrationServiceServer(s, registrationServer)
+				},
+			)
+		}
+	}
+
+	var startupErr error
 	select {
 	case err := <-errChan:
-		return fmt.Errorf("failed to start a server: %w", err)
-	case <-ctx.Done():
+		startupErr = fmt.Errorf("failed to start a server: %w", err)
+		logging.GetLogger().Error("Server startup failed, initiating shutdown...", "error", startupErr)
+		// A server failed to start, so we need to trigger a shutdown of any other
+		// servers that may have started successfully.
+		cancel()
+	case <-localCtx.Done():
 		logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
 	}
 
+	// N.B. We wait for the servers to shut down regardless of whether there was a
+	// startup error or a shutdown signal.
 	logging.GetLogger().Info("Waiting for HTTP and gRPC servers to shut down...")
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
 
-	return nil
+	return startupErr
 }
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
@@ -327,7 +449,14 @@ func (a *Application) runServerMode(ctx context.Context, mcpSrv *mcpserver.Serve
 // name is a descriptive name for the server, used in logging.
 // addr is the address and port on which the server will listen.
 // handler is the HTTP handler for processing requests.
-func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, addr string, handler http.Handler, shutdownTimeout time.Duration) {
+func startHTTPServer(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	errChan chan<- error,
+	name, addr string,
+	handler http.Handler,
+	shutdownTimeout time.Duration,
+) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -338,24 +467,40 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
+			ConnState: func(conn net.Conn, state http.ConnState) {
+				switch state {
+				case http.StateNew:
+					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
+				case http.StateClosed:
+					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
+				}
+			},
 		}
+
+		// localCtx is used to signal the shutdown goroutine to exit.
+		localCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 
 		shutdownComplete := make(chan struct{})
 		go func() {
-			<-ctx.Done()
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-			defer cancel()
+			defer close(shutdownComplete)
+			select {
+			case <-ctx.Done():
+				// This is the normal shutdown path.
+			case <-localCtx.Done():
+				// This is the shutdown path for when the server fails to start.
+			}
+			shutdownCtx, cancelTimeout := context.WithTimeout(context.Background(), shutdownTimeout)
+			defer cancelTimeout()
 			serverLog.Info("Attempting to gracefully shut down server...")
 			if err := server.Shutdown(shutdownCtx); err != nil {
 				serverLog.Error("Shutdown error", "error", err)
 			}
-			close(shutdownComplete)
 		}()
 
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			return
 		}
 
 		<-shutdownComplete
@@ -370,42 +515,63 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- err
 // wg is a WaitGroup to signal when the server has shut down.
 // errChan is a channel for reporting errors during startup.
 // name is a descriptive name for the server, used in logging.
-// port is the port on which the server will listen.
+// lis is the net.Listener for the server.
 // register is a function that registers the gRPC services with the server.
-func startGrpcServer(ctx context.Context, wg *sync.WaitGroup, errChan chan<- error, name, port string, shutdownTimeout time.Duration, register func(*gogrpc.Server)) {
+func startGrpcServer(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	errChan chan<- error,
+	name string,
+	lis net.Listener,
+	shutdownTimeout time.Duration,
+	register func(*gogrpc.Server),
+) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		lis, err := net.Listen("tcp", port)
-		if err != nil {
-			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-			return
-		}
+		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
+		defer func() {
+			if r := recover(); r != nil {
+				serverLog.Error("Panic during gRPC service registration", "panic", r)
+				errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
+			}
+		}()
 
-		serverLog := logging.GetLogger().With("server", name, "port", port)
-		grpcServer := gogrpc.NewServer()
+		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
 		register(grpcServer)
 		reflection.Register(grpcServer)
 
+		// localCtx is used to signal the shutdown goroutine to exit.
+		localCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
 		shutdownComplete := make(chan struct{})
 		go func() {
-			<-ctx.Done()
-			serverLog.Info("Attempting to gracefully shut down server...")
+			defer close(shutdownComplete)
+			select {
+			case <-ctx.Done():
+				// This is the normal shutdown path.
+			case <-localCtx.Done():
+				// This is the shutdown path for when the server fails to start.
+			}
 
+			serverLog.Info("Attempting to gracefully shut down server...")
 			stopped := make(chan struct{})
 			go func() {
+				defer close(stopped)
 				grpcServer.GracefulStop()
-				close(stopped)
 			}()
 
+			timer := time.NewTimer(shutdownTimeout)
+			defer timer.Stop()
 			select {
-			case <-time.After(shutdownTimeout):
+			case <-stopped:
+				// Successful graceful shutdown.
+			case <-timer.C:
+				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
-			case <-stopped:
-				serverLog.Info("Server gracefully stopped.")
 			}
-			close(shutdownComplete)
 		}()
 
 		serverLog.Info("gRPC server listening")

@@ -3,7 +3,7 @@
 
 edition = "2023";
 
-package mcpx.mcp_router.v1;
+package mcpany.mcp_router.v1;
 
 option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
 
@@ -56,30 +56,85 @@ message ListToolsResponse {
     repeated Tool tools = 1;
 }
 
-message ExecuteToolRequest {
+message CallToolRequest {
      string tool_id = 1;                     // ID of the tool to execute
      google.protobuf.Struct inputs = 2;     // Actual inputs for the tool, as a JSON-like object
                                           // The fields should match the fields of the underlying gRPC method's request message
 }
 
-message ExecuteToolResponse {
+message CallToolResponse {
      google.protobuf.Struct outputs = 1;    // Actual outputs from the tool, as a JSON-like object
                                           // The fields will match the fields of the underlying gRPC method's response message
 }
 
 // A Prompt is a pre-defined template for interacting with a language model.
 message Prompt {
-     string id = 1;
-     string name = 2;
-     string description = 3;
-     string template = 4;
-     google.protobuf.Struct input_schema = 5;
+    string name = 1;
+    string title = 2;
+    string description = 3;
+    repeated PromptArgument arguments = 4;
 }
 
-message ListPromptsRequest {}
+message PromptArgument {
+    string name = 1;
+    string description = 2;
+    bool required = 3;
+}
+
+message ListPromptsRequest {
+    string cursor = 1;
+}
 
 message ListPromptsResponse {
     repeated Prompt prompts = 1;
+    string next_cursor = 2;
+}
+
+message GetPromptRequest {
+    string name = 1;
+    google.protobuf.Struct arguments = 2;
+}
+
+message GetPromptResponse {
+    string description = 1;
+    repeated PromptMessage messages = 2;
+}
+
+message PromptMessage {
+    enum Role {
+        USER = 0;
+        ASSISTANT = 1;
+    }
+    Role role = 1;
+    oneof content {
+        TextContent text = 2;
+        ImageContent image = 3;
+        AudioContent audio = 4;
+        ResourceContent resource = 5;
+    }
+}
+
+message TextContent {
+    string text = 1;
+}
+
+message ImageContent {
+    string data = 1;
+    string mime_type = 2;
+}
+
+message AudioContent {
+    string data = 1;
+    string mime_type = 2;
+}
+
+message ResourceContent {
+    string uri = 1;
+    string mime_type = 2;
+    oneof content {
+        string text = 3;
+        bytes blob = 4;
+    }
 }
 
 // A Resource is a piece of data that can be used by tools or prompts.
@@ -99,8 +154,9 @@ message ListResourcesResponse {
 
 service McpRouter {
     rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
-    rpc ExecuteTool(ExecuteToolRequest) returns (ExecuteToolResponse);
+    rpc CallTool(CallToolRequest) returns (CallToolResponse);
 
     rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+    rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
     rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
 }

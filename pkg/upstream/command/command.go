@@ -87,6 +87,7 @@ func (u *CommandUpstream) Register(
 		serviceID,
 		commandLineService,
 		toolManager,
+		resourceManager,
 		isReload,
 	)
 	if err != nil {
@@ -100,6 +101,8 @@ func (u *CommandUpstream) Register(
 		len(discoveredTools),
 	)
 
+	u.createAndRegisterPrompts(ctx, serviceID, commandLineService, promptManager, isReload)
+
 	return serviceID, discoveredTools, nil, nil
 }
 
@@ -111,16 +114,25 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
 	toolManager tool.ToolManagerInterface,
+	resourceManager resource.ResourceManagerInterface,
 	_ bool,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetCalls()))
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetTools()))
+	definitions := commandLineService.GetTools()
+	calls := commandLineService.GetCalls()
 
-	for _, toolDef := range commandLineService.GetCalls() {
-		schema := toolDef.GetSchema()
-		command := schema.GetName()
+	for _, definition := range definitions {
+		callID := definition.GetCallId()
+		callDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			continue
+		}
 
-		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(toolDef.GetParameters())
+		command := definition.GetName()
+
+		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert config schema to proto properties", "error", err)
 			continue
@@ -174,14 +186,14 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(command),
 			DisplayName:         proto.String(command),
-			Description:         proto.String(schema.GetDescription()),
+			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(command),
 			InputSchema:         inputSchema,
 			OutputSchema:        outputSchema,
 		}.Build()
 
-		newTool := tool.NewCommandTool(newToolProto, commandLineService, toolDef)
+		newTool := tool.NewCommandTool(newToolProto, commandLineService, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			return nil, err
@@ -191,5 +203,54 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		}.Build())
 	}
 
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range commandLineService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetCommandLineCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools, nil
+}
+
+func (u *CommandUpstream) createAndRegisterPrompts(
+	_ context.Context,
+	serviceID string,
+	commandLineService *configv1.CommandLineUpstreamService,
+	promptManager prompt.PromptManagerInterface,
+	_ bool,
+) {
+	log := logging.GetLogger()
+	for _, promptDef := range commandLineService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name)
+	}
 }

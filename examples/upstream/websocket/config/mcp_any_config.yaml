@@ -15,7 +15,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 global_settings:
-  bind_address: "0.0.0.0:8080"
+  bind_address: "0.0.0.0:8081"
 upstream_services:
 - name: echo-service
   websocket_service:
@@ -24,3 +24,9 @@ upstream_services:
     - schema:
         name: "echo"
         description: "Echoes a message back."
+      parameters:
+      - schema:
+          name: "message"
+          description: "The message to echo"
+          is_required: true
+          type: "STRING"

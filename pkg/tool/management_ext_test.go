@@ -17,12 +17,10 @@
 package tool
 
 import (
-	"context"
 	"testing"
 
-	"github.com/mcpany/core/pkg/bus"
-	bus_pb "github.com/mcpany/core/proto/bus"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -30,54 +28,25 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
-type MockToolExecutionMiddleware struct {
-	mock.Mock
-}
-
-func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
-	args := m.Called(ctx, req, next)
-	return args.Get(0), args.Error(1)
-}
-
-func TestToolManager_AddMiddleware(t *testing.T) {
+func TestToolManager_AddTool_EmptyServiceID(t *testing.T) {
 	tm := NewToolManager(nil)
-	middleware := new(MockToolExecutionMiddleware)
-	tm.AddMiddleware(middleware)
-	assert.Len(t, tm.middlewares, 1, "Should have one middleware")
-	assert.Equal(t, middleware, tm.middlewares[0], "The middleware should be the one that was added")
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("")
+	toolProto.SetName("test-tool")
+	mockTool.On("Tool").Return(toolProto)
+
+	err := tm.AddTool(mockTool)
+	assert.Error(t, err, "Should return an error for a tool with an empty service ID")
+	assert.Equal(t, "tool service ID cannot be empty", err.Error())
 }
 
 func TestToolManager_SetMCPServer(t *testing.T) {
 	tm := NewToolManager(nil)
 	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return((*mcp.Server)(nil))
 	tm.SetMCPServer(mockProvider)
-	assert.NotNil(t, tm.mcpServer, "mcpServer should be set")
-}
-
-func TestToolManager_AddToolWithMCPServer_InvalidToolName(t *testing.T) {
-	messageBus := bus_pb.MessageBus_builder{}.Build()
-	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	b, err := bus.NewBusProvider(messageBus)
-	require.NoError(t, err)
-	tm := NewToolManager(b)
-
-	toolProto := v1.Tool_builder{
-		ServiceId: proto.String("test-service"),
-		Name:      proto.String(""), // Invalid name
-	}.Build()
-
-	mockTool := new(MockTool)
-	mockTool.On("Tool").Return(toolProto)
-
-	mockServer := NewMockMCPToolServer()
-	mockProvider := new(MockMCPServerProvider)
-	mockProvider.On("Server").Return(mockServer.Server)
-
-	tm.SetMCPServer(mockProvider)
-
-	err = tm.AddTool(mockTool)
-	assert.Error(t, err, "Should return an error for an invalid tool name")
+	assert.Equal(t, mockProvider, tm.mcpServer, "MCPServerProvider should be set")
 }
 
 func TestToolManager_AddToolWithMCPServer_UnmarshalError(t *testing.T) {

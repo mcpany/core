@@ -83,6 +83,9 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
+func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
 func TestNewOpenAPIUpstream(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)
@@ -168,7 +171,19 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 	serviceID := "test-service"
 	doc := &openapi3.T{}
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		OpenapiService: &configv1.OpenapiUpstreamService{},
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("test-tool"),
+					CallId: proto.String("test-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.OpenAPICallDefinition{
+				"test-call": configv1.OpenAPICallDefinition_builder{
+					Id: proto.String("test-call"),
+				}.Build(),
+			},
+		}.Build(),
 	}.Build()
 
 	t.Run("invalid underlying method FQN", func(t *testing.T) {
@@ -180,7 +195,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 				UnderlyingMethodFqn: proto.String("invalid"),
 			}.Build(),
 		}
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -194,7 +209,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 			}.Build(),
 		}
 		doc.Paths = openapi3.NewPaths()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -211,7 +226,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		doc.Paths.Set("/test", &openapi3.PathItem{
 			Get: &openapi3.Operation{},
 		})
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 	})
 
@@ -230,7 +245,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 		})
 
 		mockToolManager.On("AddTool", mock.Anything).Return(fmt.Errorf("failed to add tool")).Once()
-		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, false, doc, serviceConfig)
+		count := u.addOpenAPIToolsToIndex(ctx, pbTools, serviceID, mockToolManager, nil, false, doc, serviceConfig)
 		assert.Equal(t, 0, count)
 		mockToolManager.AssertExpectations(t)
 	})
@@ -247,6 +262,17 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			Address:     proto.String("http://localhost"),
 			OpenapiSpec: proto.String(sampleOpenAPISpecJSONForCacheTest),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("getTest"),
+					CallId: proto.String("getTest-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.OpenAPICallDefinition{
+				"getTest-call": configv1.OpenAPICallDefinition_builder{
+					Id: proto.String("getTest-call"),
+				}.Build(),
+			},
 		}.Build(),
 	}.Build()
 
@@ -301,6 +327,17 @@ paths:
 		Name: proto.String("test-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			OpenapiSpec: proto.String(spec),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("getUser"),
+					CallId: proto.String("getUser-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.OpenAPICallDefinition{
+				"getUser-call": configv1.OpenAPICallDefinition_builder{
+					Id: proto.String("getUser-call"),
+				}.Build(),
+			},
 		}.Build(),
 	}.Build()
 

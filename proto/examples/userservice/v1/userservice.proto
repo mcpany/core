@@ -13,37 +13,37 @@ option go_package = "github.com/mcpany/core/proto/examples/userservice/v1";
 
 // --- Messages ---
 message EchoRequest {
-    string message = 1 [(mcpx.mcp_options.v1.field_description) = "The message to be echoed."];
+    string message = 1 [(mcpany.mcp_options.v1.field_description) = "The message to be echoed."];
 }
 
 message EchoResponse {
-    string echoed_message = 1 [(mcpx.mcp_options.v1.field_description) = "The echoed message."];
+    string echoed_message = 1 [(mcpany.mcp_options.v1.field_description) = "The echoed message."];
 }
 
 message GetDetailsRequest {
-    string item_id = 1 [(mcpx.mcp_options.v1.field_description) = "The ID of the item to fetch details for."];
+    string item_id = 1 [(mcpany.mcp_options.v1.field_description) = "The ID of the item to fetch details for."];
 }
 
 message GetDetailsResponse {
-    option (mcpx.mcp_options.v1.resource_name) = "ItemDetail";
-    option (mcpx.mcp_options.v1.resource_description) = "Represents detailed information about an item.";
+    option (mcpany.mcp_options.v1.resource_name) = "ItemDetail";
+    option (mcpany.mcp_options.v1.resource_description) = "Represents detailed information about an item.";
 
-    string item_id = 1 [(mcpx.mcp_options.v1.field_description) = "The ID of the item."];
-    string detail = 2 [(mcpx.mcp_options.v1.field_description) = "The detailed information about the item."];
-    map<string, string> attributes = 3 [(mcpx.mcp_options.v1.field_description) = "A map of attributes for the item."];
+    string item_id = 1 [(mcpany.mcp_options.v1.field_description) = "The ID of the item."];
+    string detail = 2 [(mcpany.mcp_options.v1.field_description) = "The detailed information about the item."];
+    map<string, string> attributes = 3 [(mcpany.mcp_options.v1.field_description) = "A map of attributes for the item."];
 }
 
 // --- Service Definition ---
 service EchoService {
     // This method will be an MCP tool
     rpc Echo(EchoRequest) returns (EchoResponse) {
-        option (mcpx.mcp_options.v1.tool_name) = "EchoTool";
-        option (mcpx.mcp_options.v1.tool_description) = "Echoes back the input message. Useful for testing.";
+        option (mcpany.mcp_options.v1.tool_name) = "EchoTool";
+        option (mcpany.mcp_options.v1.tool_description) = "Echoes back the input message. Useful for testing.";
     }
 
     // This method will also be an MCP tool
     rpc GetDetails(GetDetailsRequest) returns (GetDetailsResponse) {
-        option (mcpx.mcp_options.v1.tool_name) = "ItemDetailFetcher";
-        option (mcpx.mcp_options.v1.tool_description) = "Fetches details for a given item ID.";
+        option (mcpany.mcp_options.v1.tool_name) = "ItemDetailFetcher";
+        option (mcpany.mcp_options.v1.tool_description) = "Fetches details for a given item ID.";
     }
 }

@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required by applicable law of or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,63 +17,105 @@
 package util
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"sync"
 	"testing"
 
+	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsDockerSocketAccessible(t *testing.T) {
-	// We can't guarantee the Docker socket is available in the test environment,
-	// so we just check that it returns a boolean value without panicking.
-	// In a CI environment with Docker, this should be true. Without, it will be false.
-	assert.NotPanics(t, func() { IsDockerSocketAccessible() })
-}
+	originalFunc := IsDockerSocketAccessibleFunc
+	defer func() { IsDockerSocketAccessibleFunc = originalFunc }()
 
-func TestIsDockerSocketAccessible_StateChange(t *testing.T) {
-	// Restore the original function after the test
-	defer func() {
-		IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
-		// Reset the singleton for other tests
-		once = sync.Once{}
-		if dockerClient != nil {
-			dockerClient.Close()
-			dockerClient = nil
+	t.Run("accessible", func(t *testing.T) {
+		IsDockerSocketAccessibleFunc = func() bool {
+			return true
 		}
-	}()
+		assert.True(t, IsDockerSocketAccessible())
+	})
 
-	// Mock the function to return true
-	IsDockerSocketAccessibleFunc = func() bool { return true }
-	assert.True(t, IsDockerSocketAccessible(), "Should return true when Docker is accessible")
-
-	// Mock the function to return false
-	IsDockerSocketAccessibleFunc = func() bool { return false }
-	assert.False(t, IsDockerSocketAccessible(), "Should return false when Docker is not accessible")
+	t.Run("inaccessible", func(t *testing.T) {
+		IsDockerSocketAccessibleFunc = func() bool {
+			return false
+		}
+		assert.False(t, IsDockerSocketAccessible())
+	})
 }
 
-func TestDockerClient_Singleton(t *testing.T) {
-	// Restore the original init function and reset the singleton after the test
+func TestCloseDockerClient(t *testing.T) {
+	// This is a smoke test to ensure CloseDockerClient doesn't panic.
+	// A proper test would require refactoring to use interfaces.
+	originalClient := dockerClient
+	defer func() { dockerClient = originalClient }()
+
+	dockerClient = nil
+	CloseDockerClient() // Should not panic
+
+	var err error
+	dockerClient, err = client.NewClientWithOpts(client.FromEnv)
+	assert.NoError(t, err)
+	CloseDockerClient() // Should not panic
+}
+
+func TestIsDockerSocketAccessibleDefault(t *testing.T) {
+	originalClient := dockerClient
+	originalOnce := once
 	originalInit := initDockerClient
+
 	defer func() {
+		dockerClient = originalClient
+		once = originalOnce
 		initDockerClient = originalInit
-		once = sync.Once{}
-		if dockerClient != nil {
-			dockerClient.Close()
-			dockerClient = nil
-		}
 	}()
 
-	var initializationCount int
-	// Replace the init function with a mock that counts calls
-	initDockerClient = func() {
-		initializationCount++
-		originalInit() // Call the original init function to maintain behavior
-	}
+	t.Run("ping success", func(t *testing.T) {
+		once = sync.Once{}
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("API-Version", "1.41")
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
 
-	// Call the function multiple times
-	isDockerSocketAccessibleDefault()
-	isDockerSocketAccessibleDefault()
+		initDockerClient = func() {
+			var err error
+			dockerClient, err = client.NewClientWithOpts(
+				client.WithHost(server.URL),
+				client.WithHTTPClient(server.Client()),
+				client.WithAPIVersionNegotiation(),
+			)
+			assert.NoError(t, err)
+		}
 
-	// Check that the initialization function was called only once
-	assert.Equal(t, 1, initializationCount, "The Docker client should be initialized only once")
+		assert.True(t, isDockerSocketAccessibleDefault())
+	})
+
+	t.Run("ping failure", func(t *testing.T) {
+		once = sync.Once{}
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		initDockerClient = func() {
+			var err error
+			dockerClient, err = client.NewClientWithOpts(
+				client.WithHost(server.URL),
+				client.WithHTTPClient(server.Client()),
+				client.WithAPIVersionNegotiation(),
+			)
+			assert.NoError(t, err)
+		}
+		assert.False(t, isDockerSocketAccessibleDefault())
+	})
+
+	t.Run("client creation failure", func(t *testing.T) {
+		once = sync.Once{}
+		initDockerClient = func() {
+			dockerClient = nil
+		}
+		assert.False(t, isDockerSocketAccessibleDefault())
+	})
 }

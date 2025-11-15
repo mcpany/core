@@ -22,10 +22,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	McpRouter_ListTools_FullMethodName     = "/mcpx.mcp_router.v1.McpRouter/ListTools"
-	McpRouter_ExecuteTool_FullMethodName   = "/mcpx.mcp_router.v1.McpRouter/ExecuteTool"
-	McpRouter_ListPrompts_FullMethodName   = "/mcpx.mcp_router.v1.McpRouter/ListPrompts"
-	McpRouter_ListResources_FullMethodName = "/mcpx.mcp_router.v1.McpRouter/ListResources"
+	McpRouter_ListTools_FullMethodName     = "/mcpany.mcp_router.v1.McpRouter/ListTools"
+	McpRouter_CallTool_FullMethodName      = "/mcpany.mcp_router.v1.McpRouter/CallTool"
+	McpRouter_ListPrompts_FullMethodName   = "/mcpany.mcp_router.v1.McpRouter/ListPrompts"
+	McpRouter_GetPrompt_FullMethodName     = "/mcpany.mcp_router.v1.McpRouter/GetPrompt"
+	McpRouter_ListResources_FullMethodName = "/mcpany.mcp_router.v1.McpRouter/ListResources"
 )
 
 // McpRouterClient is the client API for McpRouter service.
@@ -33,8 +34,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type McpRouterClient interface {
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
-	ExecuteTool(ctx context.Context, in *ExecuteToolRequest, opts ...grpc.CallOption) (*ExecuteToolResponse, error)
+	CallTool(ctx context.Context, in *CallToolRequest, opts ...grpc.CallOption) (*CallToolResponse, error)
 	ListPrompts(ctx context.Context, in *ListPromptsRequest, opts ...grpc.CallOption) (*ListPromptsResponse, error)
+	GetPrompt(ctx context.Context, in *GetPromptRequest, opts ...grpc.CallOption) (*GetPromptResponse, error)
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
 }
 
@@ -56,10 +58,10 @@ func (c *mcpRouterClient) ListTools(ctx context.Context, in *ListToolsRequest, o
 	return out, nil
 }
 
-func (c *mcpRouterClient) ExecuteTool(ctx context.Context, in *ExecuteToolRequest, opts ...grpc.CallOption) (*ExecuteToolResponse, error) {
+func (c *mcpRouterClient) CallTool(ctx context.Context, in *CallToolRequest, opts ...grpc.CallOption) (*CallToolResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ExecuteToolResponse)
-	err := c.cc.Invoke(ctx, McpRouter_ExecuteTool_FullMethodName, in, out, cOpts...)
+	out := new(CallToolResponse)
+	err := c.cc.Invoke(ctx, McpRouter_CallTool_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +72,16 @@ func (c *mcpRouterClient) ListPrompts(ctx context.Context, in *ListPromptsReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListPromptsResponse)
 	err := c.cc.Invoke(ctx, McpRouter_ListPrompts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mcpRouterClient) GetPrompt(ctx context.Context, in *GetPromptRequest, opts ...grpc.CallOption) (*GetPromptResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPromptResponse)
+	err := c.cc.Invoke(ctx, McpRouter_GetPrompt_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +103,9 @@ func (c *mcpRouterClient) ListResources(ctx context.Context, in *ListResourcesRe
 // for forward compatibility.
 type McpRouterServer interface {
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
-	ExecuteTool(context.Context, *ExecuteToolRequest) (*ExecuteToolResponse, error)
+	CallTool(context.Context, *CallToolRequest) (*CallToolResponse, error)
 	ListPrompts(context.Context, *ListPromptsRequest) (*ListPromptsResponse, error)
+	GetPrompt(context.Context, *GetPromptRequest) (*GetPromptResponse, error)
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
 	mustEmbedUnimplementedMcpRouterServer()
 }
@@ -107,11 +120,14 @@ type UnimplementedMcpRouterServer struct{}
 func (UnimplementedMcpRouterServer) ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTools not implemented")
 }
-func (UnimplementedMcpRouterServer) ExecuteTool(context.Context, *ExecuteToolRequest) (*ExecuteToolResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExecuteTool not implemented")
+func (UnimplementedMcpRouterServer) CallTool(context.Context, *CallToolRequest) (*CallToolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CallTool not implemented")
 }
 func (UnimplementedMcpRouterServer) ListPrompts(context.Context, *ListPromptsRequest) (*ListPromptsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPrompts not implemented")
+}
+func (UnimplementedMcpRouterServer) GetPrompt(context.Context, *GetPromptRequest) (*GetPromptResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPrompt not implemented")
 }
 func (UnimplementedMcpRouterServer) ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
@@ -155,20 +171,20 @@ func _McpRouter_ListTools_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _McpRouter_ExecuteTool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExecuteToolRequest)
+func _McpRouter_CallTool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallToolRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(McpRouterServer).ExecuteTool(ctx, in)
+		return srv.(McpRouterServer).CallTool(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: McpRouter_ExecuteTool_FullMethodName,
+		FullMethod: McpRouter_CallTool_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(McpRouterServer).ExecuteTool(ctx, req.(*ExecuteToolRequest))
+		return srv.(McpRouterServer).CallTool(ctx, req.(*CallToolRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -187,6 +203,24 @@ func _McpRouter_ListPrompts_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(McpRouterServer).ListPrompts(ctx, req.(*ListPromptsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _McpRouter_GetPrompt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPromptRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(McpRouterServer).GetPrompt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: McpRouter_GetPrompt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(McpRouterServer).GetPrompt(ctx, req.(*GetPromptRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -213,7 +247,7 @@ func _McpRouter_ListResources_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var McpRouter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mcpx.mcp_router.v1.McpRouter",
+	ServiceName: "mcpany.mcp_router.v1.McpRouter",
 	HandlerType: (*McpRouterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -221,12 +255,16 @@ var McpRouter_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _McpRouter_ListTools_Handler,
 		},
 		{
-			MethodName: "ExecuteTool",
-			Handler:    _McpRouter_ExecuteTool_Handler,
+			MethodName: "CallTool",
+			Handler:    _McpRouter_CallTool_Handler,
 		},
 		{
 			MethodName: "ListPrompts",
 			Handler:    _McpRouter_ListPrompts_Handler,
+		},
+		{
+			MethodName: "GetPrompt",
+			Handler:    _McpRouter_GetPrompt_Handler,
 		},
 		{
 			MethodName: "ListResources",

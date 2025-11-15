@@ -18,8 +18,11 @@ upstream_services:
 - name: http-echo-from-yaml
   http_service:
     address: "http://localhost:8080"
+    tools:
+    - name: "echo"
+      call_id: "echo_call"
     calls:
-    - endpoint_path: "/echo"
-      schema:
-        name: "echo"
-      method: "HTTP_METHOD_POST"
+      echo_call:
+        id: "echo_call"
+        endpoint_path: "/echo"
+        method: "HTTP_METHOD_POST"

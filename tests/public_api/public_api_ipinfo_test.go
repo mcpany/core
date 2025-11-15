@@ -42,21 +42,20 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpxTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
-	defer mcpxTestServerInfo.CleanupFunc()
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
+	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Register IP Info Server with MCPANY ---
 	const ipInfoServiceID = "e2e_ipinfo"
 	ipInfoServiceEndpoint := "http://ip-api.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", ipInfoServiceID, ipInfoServiceEndpoint)
-	registrationGRPCClient := mcpxTestServerInfo.RegistrationClient
+	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
+	callID := "getIPInfo"
 	httpCall := configv1.HttpCallDefinition_builder{
+		Id:           proto.String(callID),
 		EndpointPath: proto.String("/json/{{ip}}"),
-		Schema: configv1.ToolSchema_builder{
-			Name: proto.String("getIPInfo"),
-		}.Build(),
-		Method: configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			configv1.HttpParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
@@ -66,9 +65,15 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 		},
 	}.Build()
 
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("getIPInfo"),
+		CallId: proto.String(callID),
+	}.Build()
+
 	httpService := configv1.HttpUpstreamService_builder{
 		Address: proto.String(ipInfoServiceEndpoint),
-		Calls:   []*configv1.HttpCallDefinition{httpCall},
+		Tools:   []*configv1.ToolDefinition{toolDef},
+		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
@@ -85,7 +90,7 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpxTestServerInfo.HTTPEndpoint}, nil)
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

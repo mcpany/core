@@ -1171,18 +1171,18 @@ var File_proto_api_v1_registration_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/api/v1/registration.proto\x12\vmcpx.api.v1\x1a\x1cproto/config/v1/config.proto\x1a\x1eproto/config/v1/resource.proto\"W\n" +
-	"\x16RegisterServiceRequest\x12=\n" +
-	"\x06config\x18\x01 \x01(\v2%.mcpx.config.v1.UpstreamServiceConfigR\x06config\"\xf6\x01\n" +
+	"\x1fproto/api/v1/registration.proto\x12\rmcpany.api.v1\x1a\x1cproto/config/v1/config.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\"Y\n" +
+	"\x16RegisterServiceRequest\x12?\n" +
+	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\"\xfa\x01\n" +
 	"\x17RegisterServiceResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\x12I\n" +
-	"\x10discovered_tools\x18\x02 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12\x1f\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\x12K\n" +
+	"\x10discovered_tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12\x1f\n" +
 	"\vservice_key\x18\x03 \x01(\tR\n" +
-	"serviceKey\x12U\n" +
-	"\x14discovered_resources\x18\x04 \x03(\v2\".mcpx.config.v1.ResourceDefinitionR\x13discoveredResources\"\x15\n" +
-	"\x13ListServicesRequest\"Y\n" +
-	"\x14ListServicesResponse\x12A\n" +
-	"\bservices\x18\x01 \x03(\v2%.mcpx.config.v1.UpstreamServiceConfigR\bservices\"X\n" +
+	"serviceKey\x12W\n" +
+	"\x14discovered_resources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\x13discoveredResources\"\x15\n" +
+	"\x13ListServicesRequest\"[\n" +
+	"\x14ListServicesResponse\x12C\n" +
+	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\"X\n" +
 	"\x19InitiateOAuth2FlowRequest\x12\x1d\n" +
 	"\n" +
 	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x1c\n" +
@@ -1194,70 +1194,70 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1c\n" +
 	"\tnamespace\x18\x02 \x01(\tR\tnamespace\"5\n" +
 	"\x19UnregisterServiceResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\x8d\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\x8f\x01\n" +
 	"\x14RegisterToolsRequest\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1c\n" +
-	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x124\n" +
-	"\x05tools\x18\x03 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x05tools\"\\\n" +
+	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x126\n" +
+	"\x05tools\x18\x03 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\"\\\n" +
 	"\x15RegisterToolsResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12)\n" +
 	"\x10tools_registered\x18\x02 \x01(\x05R\x0ftoolsRegistered\"Z\n" +
 	"\x17GetServiceStatusRequest\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12\x1c\n" +
-	"\tnamespace\x18\x02 \x01(\tR\tnamespace\"\xda\x01\n" +
-	"\x18GetServiceStatusResponse\x124\n" +
-	"\x05tools\x18\x01 \x03(\v2\x1e.mcpx.config.v1.ToolDefinitionR\x05tools\x12L\n" +
-	"\ametrics\x18\x02 \x03(\v22.mcpx.api.v1.GetServiceStatusResponse.MetricsEntryR\ametrics\x1a:\n" +
+	"\tnamespace\x18\x02 \x01(\tR\tnamespace\"\xde\x01\n" +
+	"\x18GetServiceStatusResponse\x126\n" +
+	"\x05tools\x18\x01 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12N\n" +
+	"\ametrics\x18\x02 \x03(\v24.mcpany.api.v1.GetServiceStatusResponse.MetricsEntryR\ametrics\x1a:\n" +
 	"\fMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xcc\x04\n" +
-	"\x13RegistrationService\x12\\\n" +
-	"\x0fRegisterService\x12#.mcpx.api.v1.RegisterServiceRequest\x1a$.mcpx.api.v1.RegisterServiceResponse\x12b\n" +
-	"\x11UnregisterService\x12%.mcpx.api.v1.UnregisterServiceRequest\x1a&.mcpx.api.v1.UnregisterServiceResponse\x12e\n" +
-	"\x12InitiateOAuth2Flow\x12&.mcpx.api.v1.InitiateOAuth2FlowRequest\x1a'.mcpx.api.v1.InitiateOAuth2FlowResponse\x12V\n" +
-	"\rRegisterTools\x12!.mcpx.api.v1.RegisterToolsRequest\x1a\".mcpx.api.v1.RegisterToolsResponse\x12_\n" +
-	"\x10GetServiceStatus\x12$.mcpx.api.v1.GetServiceStatusRequest\x1a%.mcpx.api.v1.GetServiceStatusResponse\x12S\n" +
-	"\fListServices\x12 .mcpx.api.v1.ListServicesRequest\x1a!.mcpx.api.v1.ListServicesResponseB%Z#github.com/mcpany/core/proto/api/v1b\beditionsp\xe8\a"
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xe4\x04\n" +
+	"\x13RegistrationService\x12`\n" +
+	"\x0fRegisterService\x12%.mcpany.api.v1.RegisterServiceRequest\x1a&.mcpany.api.v1.RegisterServiceResponse\x12f\n" +
+	"\x11UnregisterService\x12'.mcpany.api.v1.UnregisterServiceRequest\x1a(.mcpany.api.v1.UnregisterServiceResponse\x12i\n" +
+	"\x12InitiateOAuth2Flow\x12(.mcpany.api.v1.InitiateOAuth2FlowRequest\x1a).mcpany.api.v1.InitiateOAuth2FlowResponse\x12Z\n" +
+	"\rRegisterTools\x12#.mcpany.api.v1.RegisterToolsRequest\x1a$.mcpany.api.v1.RegisterToolsResponse\x12c\n" +
+	"\x10GetServiceStatus\x12&.mcpany.api.v1.GetServiceStatusRequest\x1a'.mcpany.api.v1.GetServiceStatusResponse\x12W\n" +
+	"\fListServices\x12\".mcpany.api.v1.ListServicesRequest\x1a#.mcpany.api.v1.ListServicesResponseB%Z#github.com/mcpany/core/proto/api/v1b\beditionsp\xe8\a"
 
 var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_api_v1_registration_proto_goTypes = []any{
-	(*RegisterServiceRequest)(nil),     // 0: mcpx.api.v1.RegisterServiceRequest
-	(*RegisterServiceResponse)(nil),    // 1: mcpx.api.v1.RegisterServiceResponse
-	(*ListServicesRequest)(nil),        // 2: mcpx.api.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),       // 3: mcpx.api.v1.ListServicesResponse
-	(*InitiateOAuth2FlowRequest)(nil),  // 4: mcpx.api.v1.InitiateOAuth2FlowRequest
-	(*InitiateOAuth2FlowResponse)(nil), // 5: mcpx.api.v1.InitiateOAuth2FlowResponse
-	(*UnregisterServiceRequest)(nil),   // 6: mcpx.api.v1.UnregisterServiceRequest
-	(*UnregisterServiceResponse)(nil),  // 7: mcpx.api.v1.UnregisterServiceResponse
-	(*RegisterToolsRequest)(nil),       // 8: mcpx.api.v1.RegisterToolsRequest
-	(*RegisterToolsResponse)(nil),      // 9: mcpx.api.v1.RegisterToolsResponse
-	(*GetServiceStatusRequest)(nil),    // 10: mcpx.api.v1.GetServiceStatusRequest
-	(*GetServiceStatusResponse)(nil),   // 11: mcpx.api.v1.GetServiceStatusResponse
-	nil,                                // 12: mcpx.api.v1.GetServiceStatusResponse.MetricsEntry
-	(*v1.UpstreamServiceConfig)(nil),   // 13: mcpx.config.v1.UpstreamServiceConfig
-	(*v1.ToolDefinition)(nil),          // 14: mcpx.config.v1.ToolDefinition
-	(*v1.ResourceDefinition)(nil),      // 15: mcpx.config.v1.ResourceDefinition
+	(*RegisterServiceRequest)(nil),     // 0: mcpany.api.v1.RegisterServiceRequest
+	(*RegisterServiceResponse)(nil),    // 1: mcpany.api.v1.RegisterServiceResponse
+	(*ListServicesRequest)(nil),        // 2: mcpany.api.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),       // 3: mcpany.api.v1.ListServicesResponse
+	(*InitiateOAuth2FlowRequest)(nil),  // 4: mcpany.api.v1.InitiateOAuth2FlowRequest
+	(*InitiateOAuth2FlowResponse)(nil), // 5: mcpany.api.v1.InitiateOAuth2FlowResponse
+	(*UnregisterServiceRequest)(nil),   // 6: mcpany.api.v1.UnregisterServiceRequest
+	(*UnregisterServiceResponse)(nil),  // 7: mcpany.api.v1.UnregisterServiceResponse
+	(*RegisterToolsRequest)(nil),       // 8: mcpany.api.v1.RegisterToolsRequest
+	(*RegisterToolsResponse)(nil),      // 9: mcpany.api.v1.RegisterToolsResponse
+	(*GetServiceStatusRequest)(nil),    // 10: mcpany.api.v1.GetServiceStatusRequest
+	(*GetServiceStatusResponse)(nil),   // 11: mcpany.api.v1.GetServiceStatusResponse
+	nil,                                // 12: mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
+	(*v1.UpstreamServiceConfig)(nil),   // 13: mcpany.config.v1.UpstreamServiceConfig
+	(*v1.ToolDefinition)(nil),          // 14: mcpany.config.v1.ToolDefinition
+	(*v1.ResourceDefinition)(nil),      // 15: mcpany.config.v1.ResourceDefinition
 }
 var file_proto_api_v1_registration_proto_depIdxs = []int32{
-	13, // 0: mcpx.api.v1.RegisterServiceRequest.config:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	14, // 1: mcpx.api.v1.RegisterServiceResponse.discovered_tools:type_name -> mcpx.config.v1.ToolDefinition
-	15, // 2: mcpx.api.v1.RegisterServiceResponse.discovered_resources:type_name -> mcpx.config.v1.ResourceDefinition
-	13, // 3: mcpx.api.v1.ListServicesResponse.services:type_name -> mcpx.config.v1.UpstreamServiceConfig
-	14, // 4: mcpx.api.v1.RegisterToolsRequest.tools:type_name -> mcpx.config.v1.ToolDefinition
-	14, // 5: mcpx.api.v1.GetServiceStatusResponse.tools:type_name -> mcpx.config.v1.ToolDefinition
-	12, // 6: mcpx.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpx.api.v1.GetServiceStatusResponse.MetricsEntry
-	0,  // 7: mcpx.api.v1.RegistrationService.RegisterService:input_type -> mcpx.api.v1.RegisterServiceRequest
-	6,  // 8: mcpx.api.v1.RegistrationService.UnregisterService:input_type -> mcpx.api.v1.UnregisterServiceRequest
-	4,  // 9: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpx.api.v1.InitiateOAuth2FlowRequest
-	8,  // 10: mcpx.api.v1.RegistrationService.RegisterTools:input_type -> mcpx.api.v1.RegisterToolsRequest
-	10, // 11: mcpx.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpx.api.v1.GetServiceStatusRequest
-	2,  // 12: mcpx.api.v1.RegistrationService.ListServices:input_type -> mcpx.api.v1.ListServicesRequest
-	1,  // 13: mcpx.api.v1.RegistrationService.RegisterService:output_type -> mcpx.api.v1.RegisterServiceResponse
-	7,  // 14: mcpx.api.v1.RegistrationService.UnregisterService:output_type -> mcpx.api.v1.UnregisterServiceResponse
-	5,  // 15: mcpx.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpx.api.v1.InitiateOAuth2FlowResponse
-	9,  // 16: mcpx.api.v1.RegistrationService.RegisterTools:output_type -> mcpx.api.v1.RegisterToolsResponse
-	11, // 17: mcpx.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpx.api.v1.GetServiceStatusResponse
-	3,  // 18: mcpx.api.v1.RegistrationService.ListServices:output_type -> mcpx.api.v1.ListServicesResponse
+	13, // 0: mcpany.api.v1.RegisterServiceRequest.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	14, // 1: mcpany.api.v1.RegisterServiceResponse.discovered_tools:type_name -> mcpany.config.v1.ToolDefinition
+	15, // 2: mcpany.api.v1.RegisterServiceResponse.discovered_resources:type_name -> mcpany.config.v1.ResourceDefinition
+	13, // 3: mcpany.api.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	14, // 4: mcpany.api.v1.RegisterToolsRequest.tools:type_name -> mcpany.config.v1.ToolDefinition
+	14, // 5: mcpany.api.v1.GetServiceStatusResponse.tools:type_name -> mcpany.config.v1.ToolDefinition
+	12, // 6: mcpany.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
+	0,  // 7: mcpany.api.v1.RegistrationService.RegisterService:input_type -> mcpany.api.v1.RegisterServiceRequest
+	6,  // 8: mcpany.api.v1.RegistrationService.UnregisterService:input_type -> mcpany.api.v1.UnregisterServiceRequest
+	4,  // 9: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpany.api.v1.InitiateOAuth2FlowRequest
+	8,  // 10: mcpany.api.v1.RegistrationService.RegisterTools:input_type -> mcpany.api.v1.RegisterToolsRequest
+	10, // 11: mcpany.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpany.api.v1.GetServiceStatusRequest
+	2,  // 12: mcpany.api.v1.RegistrationService.ListServices:input_type -> mcpany.api.v1.ListServicesRequest
+	1,  // 13: mcpany.api.v1.RegistrationService.RegisterService:output_type -> mcpany.api.v1.RegisterServiceResponse
+	7,  // 14: mcpany.api.v1.RegistrationService.UnregisterService:output_type -> mcpany.api.v1.UnregisterServiceResponse
+	5,  // 15: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpany.api.v1.InitiateOAuth2FlowResponse
+	9,  // 16: mcpany.api.v1.RegistrationService.RegisterTools:output_type -> mcpany.api.v1.RegisterToolsResponse
+	11, // 17: mcpany.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpany.api.v1.GetServiceStatusResponse
+	3,  // 18: mcpany.api.v1.RegistrationService.ListServices:output_type -> mcpany.api.v1.ListServicesResponse
 	13, // [13:19] is the sub-list for method output_type
 	7,  // [7:13] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name

@@ -422,3 +422,30 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		assert.Equal(t, "", result) // Expect empty string for No Content response
 	})
 }
+
+func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
+	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(http.StatusOK)
+		w.Write(rawBytesResponse)
+	})
+
+	format := configv1.OutputTransformer_RAW_BYTES
+	callDef := configv1.HttpCallDefinition_builder{
+		OutputTransformer: configv1.OutputTransformer_builder{
+			Format: &format,
+		}.Build(),
+	}.Build()
+
+	httpTool, server := setupHTTPToolTest(t, handler, callDef)
+	defer server.Close()
+
+	req := &tool.ExecutionRequest{}
+	result, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	resultMap, ok := result.(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, rawBytesResponse, resultMap["raw"])
+}

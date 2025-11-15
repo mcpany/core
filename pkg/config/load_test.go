@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -75,11 +76,28 @@ upstream_services: {
 	upstream_authentication: {
 		api_key: {
 			header_name: "X-Token"
-			api_key: "secretapikey"
+			api_key: { plain_text: "secretapikey" }
 		}
 	}
 	http_service: {
 		address: "http://api.example.com/v1"
+		tools: {
+			name: "get_user"
+			call_id: "get_user_call"
+		}
+		calls: {
+			key: "get_user_call"
+			value: {
+				id: "get_user_call"
+			}
+		}
+		resources: {
+			uri: "file:///test.txt"
+			name: "test.txt"
+			static: {
+				text_content: "hello world"
+			}
+		}
 	}
 }
 `,
@@ -95,7 +113,16 @@ upstream_services: {
 				apiKey := auth.GetApiKey()
 				require.NotNil(t, apiKey)
 				assert.Equal(t, "X-Token", apiKey.GetHeaderName())
-				assert.Equal(t, "secretapikey", apiKey.GetApiKey(), "API key should be plaintext")
+				apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+				require.NoError(t, err)
+				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
+				assert.Len(t, httpService.GetTools(), 1)
+				tool := httpService.GetTools()[0]
+				assert.Equal(t, "get_user", tool.GetName())
+				assert.Equal(t, "get_user_call", tool.GetCallId())
+				assert.Contains(t, httpService.GetCalls(), "get_user_call")
+				assert.Len(t, httpService.GetResources(), 1)
+				assert.Equal(t, "file:///test.txt", httpService.GetResources()[0].GetUri())
 			},
 		},
 		{
@@ -105,7 +132,7 @@ upstream_services: {
 	name: "http-svc-bearer"
 	upstream_authentication: {
 		bearer_token: {
-			token: "secretbearertoken"
+			token: { plain_text: "secretbearertoken" }
 		}
 	}
 	http_service: {
@@ -120,7 +147,9 @@ upstream_services: {
 				require.NotNil(t, auth)
 				bearerToken := auth.GetBearerToken()
 				require.NotNil(t, bearerToken)
-				assert.Equal(t, "secretbearertoken", bearerToken.GetToken())
+				tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+				require.NoError(t, err)
+				assert.Equal(t, "secretbearertoken", tokenValue)
 			},
 		},
 		{
@@ -131,7 +160,7 @@ upstream_services: {
 	upstream_authentication: {
 		basic_auth: {
 			username: "testuser"
-			password: "secretpassword"
+			password: { plain_text: "secretpassword" }
 		}
 	}
 	http_service: {
@@ -147,7 +176,9 @@ upstream_services: {
 				basicAuth := auth.GetBasicAuth()
 				require.NotNil(t, basicAuth)
 				assert.Equal(t, "testuser", basicAuth.GetUsername())
-				assert.Equal(t, "secretpassword", basicAuth.GetPassword())
+				passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+				require.NoError(t, err)
+				assert.Equal(t, "secretpassword", passwordValue)
 			},
 		},
 		{
@@ -164,13 +195,7 @@ upstream_services: {
     }
 }
 `,
-			expectedCount: 1, // Service should be loaded, but cache disabled
-			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "service-with-invalid-cache", s.GetName())
-				require.NotNil(t, s.GetCache())
-				assert.False(t, s.GetCache().GetIsEnabled(), "Cache should be disabled due to invalid TTL")
-			},
+			expectLoadError: true,
 		},
 		{
 			name: "duplicate service names",
@@ -188,7 +213,39 @@ upstream_services: {
 	}
 }
 `,
-			expectLoadError: true,
+			expectedCount: 1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "duplicate-name", s.GetName())
+				httpService := s.GetHttpService()
+				require.NotNil(t, httpService)
+				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+			},
+		},
+		{
+			name: "detailed error for duplicate service names",
+			textprotoContent: `
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v1"
+	}
+}
+upstream_services: {
+	name: "duplicate-name"
+	http_service: {
+		address: "http://api.example.com/v2"
+	}
+}
+`,
+			expectedCount: 1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "duplicate-name", s.GetName())
+				httpService := s.GetHttpService()
+				require.NotNil(t, httpService)
+				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+			},
 		},
 	}
 
@@ -197,10 +254,13 @@ upstream_services: {
 			filePath := createTempConfigFile(t, tt.textprotoContent)
 			fs := afero.NewOsFs()
 			fileStore := NewFileStore(fs, []string{filePath})
-			cfg, err := LoadServices(fileStore)
+			cfg, err := LoadServices(fileStore, "server")
 
 			if tt.expectLoadError {
 				assert.Error(t, err)
+				if tt.name == "detailed error for duplicate service names" {
+					assert.Contains(t, err.Error(), "service 'duplicate-name': duplicate service name found")
+				}
 				return
 			}
 			require.NoError(t, err)

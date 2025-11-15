@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
@@ -112,10 +111,18 @@ func (u *HTTPUpstream) Register(
 		return "", nil, nil, fmt.Errorf("http service config is nil")
 	}
 
+	address := httpService.GetAddress()
+	if address == "" {
+		return "", nil, nil, fmt.Errorf("http service address is required")
+	}
+	if _, err := url.ParseRequestURI(address); err != nil {
+		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
+	}
+
 	poolConfig := serviceConfig.GetConnectionPool()
-	maxConnections := 10
-	maxIdleConnections := 0
-	idleTimeout := 300
+	maxConnections := 100
+	maxIdleConnections := 10
+	idleTimeout := 90
 
 	if poolConfig != nil {
 		if poolConfig.GetMaxConnections() > 0 {
@@ -142,8 +149,9 @@ func (u *HTTPUpstream) Register(
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
 	toolManager.AddServiceInfo(serviceID, info)
 
-	address := httpService.GetAddress()
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, isReload)
+	address = httpService.GetAddress()
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -152,11 +160,12 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(serviceConfig.GetHttpService().GetCalls()))
 	httpService := serviceConfig.GetHttpService()
-	definitions := httpService.GetCalls()
+	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
+	definitions := httpService.GetTools()
+	calls := httpService.GetCalls()
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
@@ -164,11 +173,17 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		authenticator = nil
 	}
 
-	for i, httpDef := range definitions {
-		schema := httpDef.GetSchema()
-		toolNamePart := schema.GetName()
+	for i, definition := range definitions {
+		callID := definition.GetCallId()
+		httpDef, ok := calls[callID]
+		if !ok {
+			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			continue
+		}
+
+		toolNamePart := definition.GetName()
 		if toolNamePart == "" {
-			sanitizedSummary := util.SanitizeOperationID(schema.GetDescription())
+			sanitizedSummary := util.SanitizeOperationID(definition.GetDescription())
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
@@ -208,8 +223,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 
-		baseURL.Path = path.Join(baseURL.Path, endpointURL.Path)
-		fullURL := baseURL.String()
+		fullURL := baseURL.JoinPath(endpointURL.Path).String()
 
 		if properties == nil {
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -223,15 +237,15 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 
 		newToolProto := pb.Tool_builder{
 			Name:                proto.String(toolNamePart),
-			Description:         proto.String(schema.GetDescription()),
+			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(schema.GetTitle()),
-				ReadOnlyHint:    proto.Bool(schema.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(schema.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(schema.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(schema.GetOpenWorldHint()),
+				Title:           proto.String(definition.GetTitle()),
+				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
 			}.Build(),
 		}.Build()
@@ -244,9 +258,54 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(schema.GetName()),
-			Description: proto.String(schema.GetDescription()),
+			Name:        proto.String(definition.GetName()),
+			Description: proto.String(definition.GetDescription()),
 		}.Build())
 	}
+
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, resourceDef := range httpService.GetResources() {
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetHttpCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			resourceManager.AddResource(dynamicResource)
+		}
+	}
+
 	return discoveredTools
+}
+
+func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+	log := logging.GetLogger()
+	httpService := serviceConfig.GetHttpService()
+	for _, promptDef := range httpService.GetPrompts() {
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
 }

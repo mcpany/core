@@ -1,68 +1,58 @@
 # Example: Wrapping `kubectl`
 
-This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `mcpany`. This allows an AI assistant to interact with a Kubernetes cluster.
+This example demonstrates how to wrap the `kubectl` command-line tool and expose its functionality as tools through `MCP Any`. This allows an AI assistant to interact with a Kubernetes cluster.
 
 ## Overview
 
 This example consists of two main components:
 
-1. **`mcpany` Configuration**: A YAML file (`config/mcpany.yaml`) that defines how to translate `mcpany` tool calls into `kubectl` commands.
-2. **`mcpany` Server**: The `mcpany` instance that executes the `kubectl` commands.
+1. **`MCP Any` Configuration**: A YAML file (`config/mcp_any_config.yaml`) that defines how to translate `MCP Any` tool calls into `kubectl` commands.
+2. **`MCP Any` Server**: The `MCP Any` instance that executes the `kubectl` commands.
 
 ## Prerequisites
 
 - A running Kubernetes cluster.
 - `kubectl` installed and configured to connect to your cluster.
 
+> [!IMPORTANT]
+> This example will not work without `kubectl` installed and configured.
+
 ## Running the Example
 
-### 1. Build the `mcpany` Binary
+### 1. Build the `MCP Any` Binary
 
-Ensure the `mcpany` binary is built. From the root of the repository, run:
+Ensure the `MCP Any` binary is built. From the root of the repository, run:
 
 ```bash
 make build
 ```
 
-### 2. Run the `mcpany` Server
+### 2. Run the `MCP Any` Server
 
-Start the `mcpany` server using the provided shell script.
+Start the `MCP Any` server using the provided shell script.
 
 ```bash
 ./start.sh
 ```
 
-The `mcpany` server will start and listen for JSON-RPC requests on port `50050`.
+The `MCP Any` server will start and listen for JSON-RPC requests on port `8080`.
 
 ## Interacting with the Tool
 
-Once the server is running, you can connect your AI assistant to `mcpany`.
+Once the server is running, you can interact with the tools using the `gemini` CLI.
 
-### Using Gemini CLI
+### Using the `gemini` CLI
 
-1. **Add `mcpany` as an MCP Server:**
-   Register the running `mcpany` process with the Gemini CLI.
+Now, you can call the `get-pods` tool by sending a `tools/call` request.
 
-   ```bash
-   gemini mcp add mcpany-kubectl --address http://localhost:50050 --command "sleep" "infinity"
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-kubectl -p "call the tool kubectl.get-pods with namespace default"
+```
 
-2. **List Available Tools:**
-   Ask Gemini to list the tools.
+You can also call the `get-deployments` tool:
 
-   ```bash
-   gemini list tools
-   ```
+```bash
+gemini --allowed-mcp-server-names mcpany-kubectl -p "call the tool kubectl.get-deployments with namespace default"
+```
 
-   You should see tools like `kubectl/-/get-pods` and `kubectl/-/get-deployments`.
-
-3. **Call a Tool:**
-   Call the `get-pods` tool to list the pods in the `default` namespace.
-
-   ```bash
-   gemini call tool kubectl/-/get-pods '{"namespace": "default"}'
-   ```
-
-   You should receive a JSON response containing the list of pods.
-
-This example showcases how `mcpany` can be used to create powerful integrations with existing command-line tools, enabling AI assistants to perform complex tasks like managing a Kubernetes cluster.
+This example showcases how `MCP Any` can be used to create powerful integrations with existing command-line tools, enabling AI assistants to perform complex tasks like managing a Kubernetes cluster.

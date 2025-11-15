@@ -36,11 +36,13 @@ type RedisBus[T any] struct {
 
 // New creates a new RedisBus.
 func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
-	return NewWithClient[T](redis.NewClient(&redis.Options{
-		Addr:     redisConfig.GetAddress(),
-		Password: redisConfig.GetPassword(),
-		DB:       int(redisConfig.GetDb()),
-	}))
+	var options redis.Options
+	if redisConfig != nil {
+		options.Addr = redisConfig.GetAddress()
+		options.Password = redisConfig.GetPassword()
+		options.DB = int(redisConfig.GetDb())
+	}
+	return NewWithClient[T](redis.NewClient(&options))
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
@@ -62,34 +64,62 @@ func (b *RedisBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 
 // Subscribe subscribes to a Redis channel.
 func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+	if handler == nil {
+		panic("redis bus: handler cannot be nil")
+	}
 	b.mu.Lock()
-	defer b.mu.Unlock()
+	if ps, ok := b.pubsubs[topic]; ok {
+		ps.Close()
+	}
 
 	pubsub := b.client.Subscribe(ctx, topic)
 	b.pubsubs[topic] = pubsub
+	b.mu.Unlock()
+
+	var unsubscribeOnce sync.Once
+	unsubscribe = func() {
+		unsubscribeOnce.Do(func() {
+			b.mu.Lock()
+			defer b.mu.Unlock()
+			if ps, ok := b.pubsubs[topic]; ok && ps == pubsub {
+				ps.Close()
+				delete(b.pubsubs, topic)
+			}
+		})
+	}
 
 	go func() {
+		defer unsubscribe()
+		log := logging.GetLogger()
 		ch := pubsub.Channel()
-		for msg := range ch {
-			var message T
-			err := json.Unmarshal([]byte(msg.Payload), &message)
-			if err != nil {
-				log := logging.GetLogger()
-				log.Error("Failed to unmarshal message", "error", err)
-				continue
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case msg := <-ch:
+				if msg == nil {
+					return
+				}
+				var message T
+				err := json.Unmarshal([]byte(msg.Payload), &message)
+				if err != nil {
+					log.Error("Failed to unmarshal message", "error", err)
+					continue
+				}
+
+				func() {
+					defer func() {
+						if r := recover(); r != nil {
+							log.Error("panic in handler", "error", r)
+						}
+					}()
+					handler(message)
+				}()
 			}
-			handler(message)
 		}
 	}()
 
-	return func() {
-		b.mu.Lock()
-		defer b.mu.Unlock()
-		if ps, ok := b.pubsubs[topic]; ok {
-			ps.Close()
-			delete(b.pubsubs, topic)
-		}
-	}
+	return unsubscribe
 }
 
 // SubscribeOnce subscribes to a topic for a single message.

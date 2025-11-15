@@ -20,6 +20,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -56,18 +57,47 @@ func (w *muWriter) Write(p []byte) (int, error) {
 	return w.w.Write(p)
 }
 
+func canConnectToDocker(t *testing.T) bool {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		t.Logf("could not create docker client: %v", err)
+		return false
+	}
+	_, err = cli.Ping(context.Background())
+	if err != nil {
+		t.Logf("could not ping docker daemon: %v", err)
+		return false
+	}
+	return true
+}
+
 func TestLocalExecutor(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var stdoutBytes, stderrBytes []byte
+		var stdoutErr, stderrErr error
+
+		go func() {
+			defer wg.Done()
+			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+		}()
+
+		go func() {
+			defer wg.Done()
+			stderrBytes, stderrErr = io.ReadAll(stderr)
+		}()
+
+		wg.Wait()
+
+		require.NoError(t, stdoutErr)
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
-		stderrBytes, err := io.ReadAll(stderr)
-		require.NoError(t, err)
+		require.NoError(t, stderrErr)
 		assert.Empty(t, string(stderrBytes))
 
 		exitCode := <-exitCodeChan
@@ -113,7 +143,7 @@ func TestDockerExecutor(t *testing.T) {
 
 	t.Run("WithVolumeMount", func(t *testing.T) {
 		// Create a dummy file to mount
-		tmpfile, err := os.CreateTemp("", "test-volume-mount")
+		tmpfile, err := os.CreateTemp(".", "test-volume-mount")
 		require.NoError(t, err)
 		defer os.Remove(tmpfile.Name())
 
@@ -121,10 +151,13 @@ func TestDockerExecutor(t *testing.T) {
 		require.NoError(t, err)
 		tmpfile.Close()
 
+		absPath, err := filepath.Abs(tmpfile.Name())
+		require.NoError(t, err)
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/mnt/test": tmpfile.Name(),
+			"/mnt/test": absPath,
 		})
 		executor := NewExecutor(containerEnv)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -204,4 +237,14 @@ func TestCombinedOutput(t *testing.T) {
 	output := combined.String()
 	assert.Contains(t, output, "hello stdout")
 	assert.Contains(t, output, "hello stderr")
+}
+
+func TestNewDockerExecutorSuccess(t *testing.T) {
+	if !canConnectToDocker(t) {
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
+	containerEnv := &configv1.ContainerEnvironment{}
+	containerEnv.SetImage("alpine:latest")
+	executor := newDockerExecutor(containerEnv)
+	assert.NotNil(t, executor)
 }

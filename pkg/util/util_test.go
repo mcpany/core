@@ -17,6 +17,7 @@
 package util
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -80,6 +81,15 @@ func TestSanitizeID(t *testing.T) {
 			name:        "empty id",
 			ids:         []string{""},
 			expectError: true,
+		},
+		{
+			name:                     "id with only non-word characters",
+			ids:                      []string{"@@@"},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               8,
+			expected:                 "id_2ec847d8",
+			expectError:              false,
 		},
 	}
 
@@ -206,6 +216,11 @@ func TestSanitizeOperationID(t *testing.T) {
 			input:    "get user by id (new)",
 			expected: "get_36a9e7_user_36a9e7_by_36a9e7_id_36a9e7_(new)",
 		},
+		{
+			name:     "with consecutive disallowed characters",
+			input:    "get  user",
+			expected: "get_6c179f_user",
+		},
 	}
 
 	for _, tc := range testCases {
@@ -240,4 +255,69 @@ func TestGetDockerCommand(t *testing.T) {
 			t.Errorf("Expected arguments to be ['docker'], but got %v", args)
 		}
 	})
+}
+
+func TestGenerateUUID(t *testing.T) {
+	uuid := GenerateUUID()
+	match, err := regexp.MatchString(`^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$`, uuid)
+	if err != nil {
+		t.Fatalf("Error matching UUID regex: %v", err)
+	}
+	if !match {
+		t.Errorf("Generated UUID %q does not match the expected format", uuid)
+	}
+}
+
+func TestParseToolName(t *testing.T) {
+	testCases := []struct {
+		name               string
+		toolName           string
+		expectedService    string
+		expectedBareTool   string
+		expectError        bool
+	}{
+		{
+			name:             "valid tool name",
+			toolName:         "service.tool",
+			expectedService:  "service",
+			expectedBareTool: "tool",
+			expectError:      false,
+		},
+		{
+			name:             "no service name",
+			toolName:         "tool",
+			expectedService:  "",
+			expectedBareTool: "tool",
+			expectError:      false,
+		},
+		{
+			name:             "empty tool name",
+			toolName:         "",
+			expectedService:  "",
+			expectedBareTool: "",
+			expectError:      false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service, bareTool, err := ParseToolName(tc.toolName)
+
+			if tc.expectError {
+				if err == nil {
+					t.Errorf("Expected an error, but got none")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+				if service != tc.expectedService {
+					t.Errorf("Expected service %q, but got %q", tc.expectedService, service)
+				}
+				if bareTool != tc.expectedBareTool {
+					t.Errorf("Expected bare tool %q, but got %q", tc.expectedBareTool, bareTool)
+				}
+			}
+		})
+	}
 }

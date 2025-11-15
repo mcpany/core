@@ -1,14 +1,14 @@
 # 🧪 Examples
 
-This document provides examples of how to use the MCP-X. It includes instructions on how to run the example services and how to interact with the server.
+This document provides examples of how to use the MCP Any. It includes instructions on how to run the example services and how to interact with the server.
 
 ## Running the Examples
 
-The examples are located in the `proto/examples` directory. Each example includes a server that can be run to demonstrate how to use MCP-X with a different type of service.
+The examples are located in the `proto/examples` directory. Each example includes a server that can be run to demonstrate how to use MCP Any with a different type of service.
 
 ### Weather Example
 
-The weather example demonstrates how to use MCP-X with a gRPC service.
+The weather example demonstrates how to use MCP Any with a gRPC service.
 
 1. **Start the main server:**
 
@@ -25,7 +25,7 @@ The weather example demonstrates how to use MCP-X with a gRPC service.
 
 ### User Service Example
 
-The user service example demonstrates how to use MCP-X with a gRPC service that uses gRPC reflection.
+The user service example demonstrates how to use MCP Any with a gRPC service that uses gRPC reflection.
 
 1. **Start the main server:**
 
@@ -42,20 +42,20 @@ The user service example demonstrates how to use MCP-X with a gRPC service that 
 
 ## Interacting with the Server
 
-You can interact with the MCP-X server using any gRPC client. The following examples use `grpcurl`.
+You can interact with the MCP Any server using any gRPC client. The following examples use `grpcurl`.
 
 ### List Tools
 
 To list the available tools, run the following command:
 
 ```bash
-grpcurl -plaintext localhost:8080 mcpx.mcp_router.v1.McpRouter/ListTools
+grpcurl -plaintext localhost:8080 mcpany.mcp_router.v1.McpRouter/ListTools
 ```
 
-### Execute a Tool
+### Call a Tool
 
-To execute a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example, you would run the following command:
+To call a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example, you would run the following command:
 
 ```bash
-grpcurl -plaintext -d '{"tool_id": "weather/GetWeather", "inputs": {"location": "London"}}' localhost:8080 mcpx.mcp_router.v1.McpRouter/ExecuteTool
+grpcurl -plaintext -d '{"tool_id": "weather/GetWeather", "inputs": {"location": "London"}}' localhost:8080 mcpany.mcp_router.v1.McpRouter/CallTool
 ```

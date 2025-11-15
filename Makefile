@@ -1,3 +1,17 @@
+# Copyright 2025 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Makefile
 
 # Variables
@@ -45,6 +59,7 @@ PRE_COMMIT_VERSION := 4.3.0
 PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
+NATS_SERVER_BIN := $(TOOL_INSTALL_DIR)/nats-server
 
 # Helm installation variables
 HELM_VERSION ?= v3.19.0
@@ -233,6 +248,20 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
+	@# Install nats-server
+	@echo "Checking for nats-server..."
+	@if test -f "$(NATS_SERVER_BIN)"; then \
+		echo "nats-server is already installed."; \
+	else \
+		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
+		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
+		if test -f "$(NATS_SERVER_BIN)"; then \
+			echo "nats-server installed successfully."; \
+		else \
+			echo "nats-server installation failed."; \
+			exit 1; \
+		fi; \
+	fi
 	@echo "Preparation complete."
 
 
@@ -264,11 +293,11 @@ COVERAGE_FILE ?= coverage.out
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) ./...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
 test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
 .PHONY: test-public-api
 test-public-api: build

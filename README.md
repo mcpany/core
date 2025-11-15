@@ -40,21 +40,21 @@ Before you begin, ensure you have the following installed:
 
 ### Installation & Setup
 
-1. **Clone the repository:**
+1.  **Clone the repository:**
 
-   ```bash
-   git clone https://github.com/mcpany/core.git
-   cd core
-   ```
+    ```bash
+    git clone https://github.com/mcpany/core.git
+    cd core
+    ```
 
-2. **Build the application:**
-   This command will install dependencies, generate code, and build the `mcpany` binary.
+2.  **Build the application:**
+    This command will install dependencies, generate code, and build the `mcpany` binary.
 
-   ```bash
-   make build
-   ```
+    ```bash
+    make build
+    ```
 
-   The binary will be located at `./build/bin/server`.
+    The binary will be located at `./build/bin/server`.
 
 ### Running the Server
 
@@ -78,19 +78,19 @@ By default, the server will start and listen for JSON-RPC requests on port `5005
 
 You can also run the server using Docker. The official image is available on GitHub Container Registry.
 
-1. **Pull the latest image:**
+1.  **Pull the latest image:**
 
-   ```bash
-   docker pull ghcr.io/mcpany/core:latest
-   ```
+    ```bash
+    docker pull ghcr.io/mcpany/core:latest
+    ```
 
-2. **Run the server:**
+2.  **Run the server:**
 
-   ```bash
-   docker run --rm -p 50050:50050 -p 50051:50051 ghcr.io/mcpany/core:latest
-   ```
+    ```bash
+    docker run --rm -p 50050:50050 -p 50051:50051 ghcr.io/mcpany/core:latest
+    ```
 
-   This will start the server and expose the JSON-RPC and gRPC ports to your local machine.
+    This will start the server and expose the JSON-RPC and gRPC ports to your local machine.
 
 ## Configuration
 
@@ -195,35 +195,34 @@ curl -X POST -H "Content-Type: application/json" \
 
 For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpany` server along with a sample `http-echo-server` to demonstrate how `mcpany` connects to other services in a Docker network.
 
-1. **Start the services:**
+1.  **Start the services:**
 
-   ```bash
-   docker compose up --build
-   ```
+    ```bash
+    docker compose up --build
+    ```
 
-   This command will build the Docker images for both the `mcpany` server and the echo server, and then start them. The `mcpany` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
+    This command will build the Docker images for both the `mcpany` server and the echo server, and then start them. The `mcpany` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
 
-2. **Test the setup:**
-   Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpany` JSON-RPC API:
+2.  **Test the setup:**
+    Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpany` JSON-RPC API:
 
-   ```bash
-   curl -X POST -H "Content-Type: application/json" \
-     -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
-     http://localhost:50050
-   ```
+    ```bash
+    curl -X POST -H "Content-Type: application/json" \
+      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
+      http://localhost:50050
+    ```
 
-   You should receive a response echoing your message.
+    You should receive a response echoing your message.
 
-3. **Shut down the services:**
+3.  **Shut down the services:**
 
-   ```bash
-   docker compose down
-   ```
+    ```bash
+    docker compose down
+    ```
 
 ## Running with Helm
 
 For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` directory. See the [Helm chart README](helm/mcpany/README.md) for detailed instructions.
-
 
 ## Contributing
 

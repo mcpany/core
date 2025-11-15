@@ -23,6 +23,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	"google.golang.org/grpc/codes"
@@ -48,7 +49,16 @@ type RegistrationServer struct {
 //
 // Returns a new instance of the RegistrationServer or an error if the bus is
 // nil.
+
+// NewRegistrationServerHook is a test hook for overriding the creation of a
+// RegistrationServer.
+var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
+
 func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
+	if NewRegistrationServerHook != nil {
+		// The type assertion is safe because this is a test-only hook.
+		return NewRegistrationServerHook(bus)
+	}
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}
@@ -77,6 +87,10 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 	if req.GetConfig().GetName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "config.name is required")
+	}
+
+	if err := config.ValidateOrError(req.GetConfig()); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid config: %v", err)
 	}
 
 	correlationID := uuid.New().String()

@@ -3,11 +3,14 @@
 
 edition = "2023";
 
-package mcpx.config.v1;
+package mcpany.config.v1;
 
-import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 import "proto/bus/bus.proto";
+import "proto/config/v1/resource.proto";
+import "proto/config/v1/call.proto";
+import "proto/config/v1/auth.proto";
+import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -15,145 +18,26 @@ option go_package = "github.com/mcpany/core/proto/config/v1";
 // Root Server Configuration
 // ===================================================================
 
-// McpxServerConfig is the root configuration for the entire MCPANY server.
-message McpxServerConfig {
+// McpAnyServerConfig is the root configuration for the entire MCPANY server.
+message McpAnyServerConfig {
   // Server-wide operational parameters.
   GlobalSettings global_settings = 1;
-  // A list of all configured upstream services that mcpx can proxy to.
+  // A list of all configured upstream services that MCP Any can proxy to.
   repeated UpstreamServiceConfig upstream_services = 2;
+  // A list of upstream service collections to load from.
+  repeated UpstreamServiceCollection upstream_service_collections = 3;
 }
 
-// HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
-message HttpCallDefinition {
-  enum HttpMethod {
-    HTTP_METHOD_UNSPECIFIED = 0;
-    HTTP_METHOD_GET = 1;
-    HTTP_METHOD_POST = 2;
-    HTTP_METHOD_PUT = 3;
-    HTTP_METHOD_DELETE = 4;
-    HTTP_METHOD_PATCH = 5;
-  }
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 2;
-  // The HTTP method to use for the request.
-  HttpMethod method = 3;
-  // Defines the parameters for the HTTP request.
-  repeated HttpParameterMapping parameters = 5;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 6;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 7;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 8;
-}
-
-// WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
-message WebsocketCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the websocket message.
-  repeated WebsocketParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
-}
-
-// WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
-message WebrtcCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the webrtc message.
-  repeated WebrtcParameterMapping parameters = 3;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 6;
-}
-
-// CommandLineCallDefinition describes how to map an MCP call to a stdio command.
-message CommandLineCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // Defines the parameters for the stdio command.
-  repeated CommandLineParameterMapping parameters = 2;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 3;
-  // The arguments to pass to the command.
-  repeated string args = 4;
-}
-
-// InputTransformer defines how to render a template from input parameters.
-message InputTransformer {
-  // A text template to be rendered.
-  // This is used for generating the request body for POST/PUT requests.
-  // The template engine is compatible with Jinja2.
-  string template = 1;
-}
-
-// OutputTransformer defines how to parse an output text into structured data.
-message OutputTransformer {
-  enum OutputFormat {
-    JSON = 0; // The output is JSON, which will be parsed using JSONPath expressions.
-    XML = 1;  // The output is XML, which will be parsed using XPath expressions.
-    TEXT = 2; // The output is plain text, which will be parsed using regex.
-  }
-  // The format of the upstream service's output.
-  OutputFormat format = 1;
-  // A map of field names to the extraction expressions.
-  // The interpretation of the expression depends on the 'format':
-  // - JSON: JSONPath expressions.
-  // - XML: XPath expressions.
-  // - TEXT: Regular expressions (first capture group is used).
-  map<string, string> extraction_rules = 2;
-  // An optional template to render the extracted data into a final string.
-  // If this is not provided, the raw extracted data will be returned.
-  string template = 3;
-}
-
-// GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
-message GrpcCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // The fully-qualified gRPC service name.
-  string service = 2;
-  // The name of the gRPC method to call.
-  string method = 3;
-  // Note: For gRPC, parameter mapping is typically done by matching field names
-  // between the MCP input schema and the gRPC request message.
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
-}
-
-// OpenAPICallDefinition describes a call derived from an OpenAPI specification.
-// This is often used for discovery rather than manual configuration.
-message OpenAPICallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
-}
-
-// MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
-message MCPCallDefinition {
-  // Common tool schema.
-  ToolSchema schema = 1;
-  // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 2;
-  // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 3;
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 4;
+// UpstreamServiceCollection defines a collection of upstream services that can be loaded from a remote source.
+message UpstreamServiceCollection {
+  // The name of the collection.
+  string name = 1;
+  // The HTTP URL to load the collection from.
+  string http_url = 2;
+  // The priority of the collection. Lower numbers have higher priority.
+  int32 priority = 3;
+  // The authentication to use when fetching the collection.
+  UpstreamAuthentication authentication = 4;
 }
 
 // GlobalSettings contains server-wide operational parameters.
@@ -180,7 +64,7 @@ message GlobalSettings {
 // ===================================================================
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
-// that mcpx will proxy. It defines the service's identity, how to connect to it,
+// that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 message UpstreamServiceConfig {
   // The full SHA256 hash of the service name, used as a unique identifier.
@@ -196,7 +80,7 @@ message UpstreamServiceConfig {
   string sanitized_name = 18;
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 3;
-  // Authentication configuration for mcpx to use when connecting to the upstream service.
+  // Authentication configuration for mcpany to use when connecting to the upstream service.
   UpstreamAuthentication upstream_authentication = 4;
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
@@ -221,11 +105,13 @@ message UpstreamServiceConfig {
   // The version of the upstream service, if known (e.g., "v1.2.3").
   string version = 14;
 
-  // Authentication configuration for securing access to the MCPx service (incoming requests).
+  // Authentication configuration for securing access to the MCP Any service (incoming requests).
   AuthenticationConfig authentication = 15;
 
   // If true, this upstream service is disabled.
   bool disable = 19;
+  // The priority of the service. Lower numbers have higher priority.
+  int32 priority = 20;
 }
 
 // --- Upstream Service Types ---
@@ -234,18 +120,24 @@ message UpstreamServiceConfig {
 message GrpcUpstreamService {
   // The address of the gRPC server (e.g., "localhost:50051").
   string address = 1;
-  // If true, mcpx will use gRPC reflection to discover services and methods.
+  // If true, mcpany will use gRPC reflection to discover services and methods.
   bool use_reflection = 2;
   // TLS configuration for the gRPC connection.
   TLSConfig tls_config = 3;
   // Manually defined mappings from MCP tools to gRPC calls.
-  repeated GrpcCallDefinition calls = 4;
+  repeated ToolDefinition tools = 4;
   // Health check configuration.
   GrpcHealthCheck health_check = 5;
   // A list of protobuf definitions for the gRPC service.
   repeated ProtoDefinition proto_definitions = 6;
   // A collection of protobuf files to be discovered.
   repeated ProtoCollection proto_collection = 7;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 8;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, GrpcCallDefinition> calls = 9;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 10;
 }
 
 message ProtoDefinition {
@@ -281,11 +173,17 @@ message HttpUpstreamService {
   // The base URL of the HTTP service (e.g., "https://api.example.com").
   string address = 1;
   // Manually defined mappings from MCP tools to HTTP calls.
-  repeated HttpCallDefinition calls = 2;
+  repeated ToolDefinition tools = 2;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, HttpCallDefinition> calls = 6;
   // Configuration for checking the health of the HTTP service.
   HttpHealthCheck health_check = 3;
   // TLS configuration for the HTTP connection.
   TLSConfig tls_config = 4;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 7;
 }
 
 // WebsocketUpstreamService defines an upstream service that communicates over Websocket.
@@ -293,9 +191,15 @@ message WebsocketUpstreamService {
   // The URL of the Websocket service (e.g., "ws://api.example.com/ws").
   string address = 1;
   // Manually defined mappings from MCP tools to websocket calls.
-  repeated WebsocketCallDefinition calls = 2;
+  repeated ToolDefinition tools = 2;
   // TLS configuration for the Websocket connection.
   TLSConfig tls_config = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebsocketCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -303,9 +207,15 @@ message WebrtcUpstreamService {
   // The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
   string address = 1;
   // Manually defined mappings from MCP tools to webrtc calls.
-  repeated WebrtcCallDefinition calls = 2;
+  repeated ToolDefinition tools = 2;
   // TLS configuration for the signaling connection.
   TLSConfig tls_config = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebrtcCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
@@ -319,7 +229,13 @@ message OpenapiUpstreamService {
   // TLS configuration for the connection.
   TLSConfig tls_config = 4;
   // Optional: Overrides or specific configurations for calls discovered from the spec.
-  repeated OpenAPICallDefinition calls = 5;
+  repeated ToolDefinition tools = 5;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 6;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, OpenAPICallDefinition> calls = 7;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 8;
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
@@ -329,7 +245,7 @@ message CommandLineUpstreamService {
   // The working directory for the command.
   string working_directory = 3;
   // Manually defined mappings from MCP tools to command line commands.
-  repeated CommandLineCallDefinition calls = 4;
+  repeated ToolDefinition tools = 4;
   // Health check configuration.
   CommandLineHealthCheck health_check = 5;
   // Caching configuration to improve performance and reduce load on the upstream.
@@ -338,6 +254,12 @@ message CommandLineUpstreamService {
   ContainerEnvironment container_environment = 7;
   // Timeout for the command execution.
   google.protobuf.Duration timeout = 8;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 9;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, CommandLineCallDefinition> calls = 10;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 11;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
@@ -348,12 +270,16 @@ message McpUpstreamService {
     // Connect via a stdio process.
     McpStdioConnection stdio_connection = 2;
   }
-  // If true, mcpx will automatically discover and proxy all tools from the upstream.
+  // If true, mcpany will automatically discover and proxy all tools from the upstream.
   bool tool_auto_discovery = 3;
-  // Optional: Pre-defined tools to register, can be used to filter or augment discovered tools.
-  repeated ToolDefinition tools = 4;
   // Optional: Overrides or specific configurations for calls discovered from the service.
-  repeated MCPCallDefinition calls = 6;
+  repeated ToolDefinition tools = 6;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 7;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, MCPCallDefinition> calls = 8;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 9;
 }
 
 // McpStdioConnection defines the parameters for a stdio-based connection.
@@ -379,96 +305,6 @@ message McpStreamableHttpConnection {
 
 
 // --- Call & Tool Definitions ---
-
-// ToolSchema provides common metadata for a tool.
-message ToolSchema {
-  // A human-readable title for the tool.
-  string title = 1;
-  // If true, the tool does not modify its environment.
-  // Default: false
-  bool read_only_hint = 2;
-  // If true, the tool may perform destructive updates to its environment. If
-  // false, the tool performs only additive updates.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: true
-  bool destructive_hint = 3;
-  // If true, calling the tool repeatedly with the same arguments will have no
-  // additional effect on its environment.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: false
-  bool idempotent_hint = 4;
-  // If true, this tool may interact with an "open world" of external entities. If
-  // false, the tool's domain of interaction is closed. For example, the world of
-  // a web search tool is open, whereas that of a memory tool is not.
-  // Default: true
-  bool open_world_hint = 5;
-  // The name of the tool, which will be used to invoke it.
-  string name = 6;
-  // A human-readable description of what the tool does.
-  string description = 7;
-}
-
-// ParameterType defines the data type of a parameter.
-enum ParameterType {
-  STRING = 0;
-  NUMBER = 1;
-  INTEGER = 2;
-  BOOLEAN = 3;
-  ARRAY = 4;
-  OBJECT = 5;
-}
-
-// ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
-message ParameterSchema {
-  // The name of the input parameter from the MCP call.
-  string name = 1;
-  // A description of the parameter.
-  string description = 2;
-  // The data type of the parameter.
-  ParameterType type = 3;
-  // Whether the parameter is required.
-  bool is_required = 4;
-  // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
-}
-
-// ToolDefinition describes a single capability or "tool" offered by a service.
-message ToolDefinition {
-  // The name of the tool, which will be used to invoke it.
-  string name = 1;
-  // A human-readable description of what the tool does.
-  string description = 2;
-  // The schema for the input parameters required by the tool.
-  google.protobuf.Struct input_schema = 3;
-  // The schema for the output of the tool.
-  google.protobuf.Struct output_schema = 4;
-  // Indicates if the tool produces a continuous stream of responses.
-  bool is_stream = 5;
-}
-
-// HttpParameterMapping defines how to place an input parameter into an HTTP request.
-message HttpParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-}
-
-// WebsocketParameterMapping defines how to place an input parameter into a websocket message.
-message WebsocketParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-}
-
-// WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
-message WebrtcParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-}
-
-// CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
-message CommandLineParameterMapping {
-  // The schema for the parameter.
-  ParameterSchema schema = 1;
-}
 
 
 // --- Service Policies and Configs ---
@@ -559,15 +395,6 @@ message RateLimitConfig {
   int64 burst = 3;
 }
 
-// Configuration for caching responses from the upstream service.
-message CacheConfig {
-  // Whether caching is enabled.
-  bool is_enabled = 1;
-  // The duration for which a cached response is considered valid.
-  google.protobuf.Duration ttl = 2;
-  // Caching strategy (e.g., "lru", "lfu"). This allows for future expansion.
-  string strategy = 3;
-}
 
 // Configuration for service resilience features like circuit breakers and retries.
 message ResilienceConfig {
@@ -599,82 +426,6 @@ message RetryConfig {
   google.protobuf.Duration max_backoff = 3;
 }
 
-// AuthenticationConfig specifies the authentication method to use.
-message AuthenticationConfig {
-  oneof auth_method {
-    APIKeyAuth api_key = 1;
-    OAuth2Auth oauth2 = 2;
-    // Can be extended with other auth types like JWT, mTLS etc.
-  }
-}
-
-// APIKeyAuth defines authentication using an API key.
-message APIKeyAuth {
-  // The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
-  string param_name = 1;
-  // Where the API key is located.
-  enum Location {
-    HEADER = 0;
-    QUERY = 1;
-  }
-  Location in = 2;
-  // The actual API key value. It's recommended to use a secret management system.
-  string key_value = 3;
-}
-
-// OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-message OAuth2Auth {
-  string token_url = 3;
-  string authorization_url = 4;
-  // Space-delimited list of scopes.
-  string scopes = 5;
-  string issuer_url = 6;
-  string audience = 7;
-}
-
-// ===================================================================
-// Upstream Authentication Definitions
-// ===================================================================
-
-// UpstreamAuthentication defines the authentication method to use when mcpx communicates
-// with an upstream service.
-message UpstreamAuthentication {
-  oneof auth_method {
-    UpstreamAPIKeyAuth api_key = 1;
-    UpstreamBearerTokenAuth bearer_token = 2;
-    UpstreamBasicAuth basic_auth = 3;
-    UpstreamOAuth2Auth oauth2 = 5;
-  }
-  bool use_environment_variable = 4;
-}
-
-// UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.
-message UpstreamAPIKeyAuth {
-  // The name of the header to carry the API key (e.g., "X-API-Key").
-  string header_name = 1;
-  // The API key value.
-  string api_key = 2;
-}
-
-// UpstreamBearerTokenAuth defines authentication using a bearer token.
-message UpstreamBearerTokenAuth {
-  // The bearer token.
-  string token = 1;
-}
-
-// UpstreamBasicAuth defines authentication using a username and password.
-message UpstreamBasicAuth {
-  string username = 1;
-  string password = 2;
-}
-
-// UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-message UpstreamOAuth2Auth {
-  string token_url = 1;
-  string client_id = 2;
-  string client_secret = 3;
-  string scopes = 4;
-}
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
 message TLSConfig {
