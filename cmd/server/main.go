@@ -57,20 +57,26 @@ func newRootCmd() *cobra.Command {
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			osFs := afero.NewOsFs()
+			if err := config.Load(config.Options{Cmd: cmd, Fs: osFs}); err != nil {
+				return err
+			}
+
+			cfg := config.GlobalSettings
 			logLevel := slog.LevelInfo
-			if config.IsDebug() {
+			if cfg.Debug {
 				logLevel = slog.LevelDebug
 			}
 
 			var logOutput io.Writer = os.Stdout
-			if logfile := config.GetLogFile(); logfile != "" {
-				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if cfg.LogFile != "" {
+				f, err := os.OpenFile(cfg.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 				if err != nil {
 					return fmt.Errorf("failed to open logfile: %w", err)
 				}
 				defer f.Close()
 				logOutput = f
-			} else if config.GetStdio() {
+			} else if cfg.Stdio {
 				logOutput = io.Discard // Disable logging in stdio mode to keep the channel clean for JSON-RPC
 			}
 			logging.Init(logLevel, logOutput)
@@ -78,17 +84,12 @@ func newRootCmd() *cobra.Command {
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
 
-			osFs := afero.NewOsFs()
-			bindAddress, err := config.GetBindAddress(cmd, osFs)
-			if err != nil {
-				return err
-			}
+			bindAddress := cfg.BindAddress
+			grpcPort := cfg.GRPCPort
+			stdio := cfg.Stdio
+			configPaths := cfg.ConfigPaths
 
-			grpcPort := config.GetGRPCPort()
-			stdio := config.GetStdio()
-			configPaths := config.GetConfigPaths()
-
-			log.Info("Configuration", "jsonrpc-port", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
+			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
@@ -100,7 +101,7 @@ func newRootCmd() *cobra.Command {
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()
 
-			shutdownTimeout := config.GetShutdownTimeout()
+			shutdownTimeout := cfg.ShutdownTimeout
 
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
@@ -129,11 +130,10 @@ func newRootCmd() *cobra.Command {
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fs := afero.NewOsFs()
-			addr, err := config.GetBindAddress(cmd, fs)
-			if err != nil {
+			if err := config.Load(config.Options{Cmd: cmd, Fs: fs}); err != nil {
 				return err
 			}
-
+			addr := config.GlobalSettings.BindAddress
 			if !strings.Contains(addr, ":") {
 				addr = "localhost:" + addr
 			}

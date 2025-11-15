@@ -25,45 +25,55 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/config"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
+
+func setupTest(t *testing.T) {
+	t.Helper()
+	viper.Reset()
+	config.ResetForTesting()
+}
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
 	called                  bool
 	capturedStdio           bool
-	capturedJsonrpcPort     string
+	capturedMcpListenAddress string
 	capturedGrpcPort        string
 	capturedConfigPaths     []string
 	capturedShutdownTimeout time.Duration
 }
 
-func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, jsonrpcPort, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
 	m.called = true
 	m.capturedStdio = stdio
-	m.capturedJsonrpcPort = jsonrpcPort
+	m.capturedMcpListenAddress = mcpListenAddress
 	m.capturedGrpcPort = grpcPort
 	m.capturedConfigPaths = configPaths
 	m.capturedShutdownTimeout = shutdownTimeout
 	return nil
 }
 
-func (m *mockRunner) RunHealthServer(jsonrpcPort string) error {
+func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
 	return nil
 }
 
 func TestHealthCmd(t *testing.T) {
+	setupTest(t)
 	// This is a basic test to ensure the command runs without panicking.
 	// A more thorough test would involve setting up a mock HTTP server.
 	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"health", "--jsonrpc-port", "50051"})
+	rootCmd.SetArgs([]string{"health", "--mcp-listen-address", "50051"})
 	err := rootCmd.Execute()
 	// We expect an error because no server is running
 	assert.Error(t, err)
 }
 
 func TestHealthCmdWithCustomPort(t *testing.T) {
+	setupTest(t)
 	// Start a mock HTTP server on a custom port
 	port := "8088"
 	server := &http.Server{
@@ -81,13 +91,14 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"health", "--jsonrpc-port", port})
+	rootCmd.SetArgs([]string{"health", "--mcp-listen-address", port})
 	err := rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass when server is running on custom port")
 }
 
 func TestRootCmd(t *testing.T) {
+	setupTest(t)
 	mock := &mockRunner{}
 	originalRunner := appRunner
 	appRunner = mock
@@ -96,7 +107,7 @@ func TestRootCmd(t *testing.T) {
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"--stdio",
-		"--jsonrpc-port", "8081",
+		"--mcp-listen-address", "8081",
 		"--grpc-port", "8082",
 		"--config-path", "/etc/config.yaml,/etc/conf.d",
 		"--shutdown-timeout", "10s",
@@ -105,13 +116,14 @@ func TestRootCmd(t *testing.T) {
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "localhost:8081", mock.capturedJsonrpcPort, "jsonrpc-port should be captured")
+	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
 func TestVersionCmd(t *testing.T) {
+	setupTest(t)
 	originalStdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
@@ -135,6 +147,7 @@ func TestVersionCmd(t *testing.T) {
 // This test is for the main function, which is not easily testable.
 // We can, however, test the command execution.
 func TestMainExecution(t *testing.T) {
+	setupTest(t)
 	// This is a bit of a meta-test. We're just making sure that calling main()
 	// doesn't panic. We can't really inspect the output without more refactoring.
 	// We will rely on the other tests to validate the behavior of the commands.
@@ -149,6 +162,7 @@ func TestMainExecution(t *testing.T) {
 }
 
 func TestHealthCmdFlagPrecedence(t *testing.T) {
+	setupTest(t)
 	// Start a mock HTTP server on a custom port
 	port := "8089"
 	server := &http.Server{
@@ -178,8 +192,8 @@ global_settings:
 	assert.NoError(t, err)
 
 	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"health", "--config-path", configFile, "--jsonrpc-port", port})
+	rootCmd.SetArgs([]string{"health", "--config-path", configFile, "--mcp-listen-address", port})
 	err = rootCmd.Execute()
 
-	assert.NoError(t, err, "Health check should pass because the --jsonrpc-port flag should take precedence over the config file")
+	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
 }

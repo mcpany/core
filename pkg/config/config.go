@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	v1 "github.com/mcpany/core/proto/config/v1"
@@ -27,6 +28,64 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config holds all configuration for the application.
+type Config struct {
+	BindAddress     string
+	GRPCPort        string
+	Stdio           bool
+	ConfigPaths     []string
+	Debug           bool
+	LogFile         string
+	ShutdownTimeout time.Duration
+	fileConfig      *v1.McpAnyServerConfig
+}
+
+// GlobalSettings is a singleton instance of Config.
+var (
+	GlobalSettings *Config
+	once           sync.Once
+)
+
+// Options holds the options for loading the configuration.
+type Options struct {
+	Cmd *cobra.Command
+	Fs  afero.Fs
+}
+
+// Load initializes the global configuration.
+func Load(opts Options) error {
+	var err error
+	once.Do(func() {
+		bindAddress := viper.GetString("mcp-listen-address")
+		configPaths := viper.GetStringSlice("config-path")
+
+		var fileConfig *v1.McpAnyServerConfig
+		if !opts.Cmd.Flags().Changed("mcp-listen-address") && len(configPaths) > 0 {
+			store := NewFileStore(opts.Fs, configPaths)
+			fileConfig, err = LoadServices(store, "server")
+			if err != nil {
+				err = fmt.Errorf("failed to load services from config: %w", err)
+				return
+			}
+			if fileConfig.GetGlobalSettings().GetBindAddress() != "" {
+				bindAddress = fileConfig.GetGlobalSettings().GetBindAddress()
+			}
+		}
+
+		GlobalSettings = &Config{
+			BindAddress:     bindAddress,
+			GRPCPort:        viper.GetString("grpc-port"),
+			Stdio:           viper.GetBool("stdio"),
+			ConfigPaths:     configPaths,
+			Debug:           viper.GetBool("debug"),
+			LogFile:         viper.GetString("logfile"),
+			ShutdownTimeout: viper.GetDuration("shutdown-timeout"),
+			fileConfig:      fileConfig,
+		}
+	})
+	return err
+}
+
 // BindFlags binds the command line flags to viper.
 func BindFlags(cmd *cobra.Command) {
 	cobra.OnInitialize(func() {
@@ -34,10 +93,10 @@ func BindFlags(cmd *cobra.Command) {
 		viper.SetEnvPrefix("MCPANY")
 	})
 
-	cmd.PersistentFlags().String("jsonrpc-port", "50050", "Port for the JSON-RPC and HTTP registration server. Env: MCPANY_JSONRPC_PORT")
+	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
 	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
-	if err := viper.BindPFlag("jsonrpc-port", cmd.PersistentFlags().Lookup("jsonrpc-port")); err != nil {
-		fmt.Printf("Error binding jsonrpc-port flag: %v\n", err)
+	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
+		fmt.Printf("Error binding mcp-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
@@ -57,59 +116,21 @@ func BindFlags(cmd *cobra.Command) {
 	}
 }
 
-// GetBindAddress returns the bind address for the server.
-// It prioritizes the config file over the command line flag if the flag is not explicitly set.
-func GetBindAddress(cmd *cobra.Command, fs afero.Fs) (string, error) {
-	bindAddress := viper.GetString("jsonrpc-port")
-	configPaths := viper.GetStringSlice("config-path")
-
-	if !cmd.Flags().Changed("jsonrpc-port") && len(configPaths) > 0 {
-		store := NewFileStore(fs, configPaths)
-		cfg, err := LoadServices(store, "server")
-		if err != nil {
-			return "", fmt.Errorf("failed to load services from config: %w", err)
-		}
-		if cfg.GetGlobalSettings().GetBindAddress() != "" {
-			bindAddress = cfg.GetGlobalSettings().GetBindAddress()
-		}
-	}
-	return bindAddress, nil
-}
-
-// GetGRPCPort returns the gRPC port.
-func GetGRPCPort() string {
-	return viper.GetString("grpc-port")
-}
-
-// GetStdio returns whether stdio mode is enabled.
-func GetStdio() bool {
-	return viper.GetBool("stdio")
-}
-
-// GetConfigPaths returns the paths to the configuration files.
-func GetConfigPaths() []string {
-	return viper.GetStringSlice("config-path")
-}
-
-// IsDebug returns whether debug mode is enabled.
-func IsDebug() bool {
-	return viper.GetBool("debug")
-}
-
-// GetLogFile returns the path to the log file.
-func GetLogFile() string {
-	return viper.GetString("logfile")
-}
-
-// GetShutdownTimeout returns the graceful shutdown timeout.
-func GetShutdownTimeout() time.Duration {
-	return viper.GetDuration("shutdown-timeout")
-}
-
 // GetLogLevel returns the log level for the server.
-func GetLogLevel() v1.GlobalSettings_LogLevel {
-	if IsDebug() {
+func (c *Config) GetLogLevel() v1.GlobalSettings_LogLevel {
+	if c.Debug {
 		return v1.GlobalSettings_DEBUG
 	}
 	return v1.GlobalSettings_INFO
+}
+
+// GetFileConfig returns the configuration loaded from files.
+func (c *Config) GetFileConfig() *v1.McpAnyServerConfig {
+	return c.fileConfig
+}
+
+// ResetForTesting resets the singleton for testing purposes.
+func ResetForTesting() {
+	once = sync.Once{}
+	GlobalSettings = nil
 }
