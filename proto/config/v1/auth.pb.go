@@ -12,6 +12,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -1947,7 +1948,7 @@ var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\xd5\x01\n" +
+	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\"\xd5\x01\n" +
 	"\vSecretValue\x12\x1f\n" +
 	"\n" +
 	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
@@ -2008,7 +2009,7 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x06scopes\x18\x05 \x01(\tR\x06scopes\x12\x1d\n" +
 	"\n" +
 	"issuer_url\x18\x06 \x01(\tR\tissuerUrl\x12\x1a\n" +
-	"\baudience\x18\a \x01(\tR\baudienceB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\baudience\x18\a \x01(\tR\baudienceB;B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
