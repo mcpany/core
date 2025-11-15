@@ -274,3 +274,28 @@ upstream_services: {
 		})
 	}
 }
+
+func TestLoadServices_FileStoreError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	fileStore := NewFileStore(fs, []string{"/non-existent-file"})
+	_, err := LoadServices(fileStore, "server")
+	assert.Error(t, err)
+}
+
+func TestLoadServices_TextProto(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.textproto", []byte(`upstream_services: {name: "test", http_service: {address: "http://localhost:8080"}}`), 0644)
+	fileStore := NewFileStore(fs, []string{"/config.textproto"})
+	cfg, err := LoadServices(fileStore, "server")
+	assert.NoError(t, err)
+	assert.Len(t, cfg.GetUpstreamServices(), 1)
+}
+
+func TestLoadServices_NoServices(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.textproto", []byte(``), 0644)
+	fileStore := NewFileStore(fs, []string{"/config.textproto"})
+	cfg, err := LoadServices(fileStore, "server")
+	assert.NoError(t, err)
+	assert.Len(t, cfg.GetUpstreamServices(), 0)
+}

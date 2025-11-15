@@ -57,6 +57,9 @@ func newRootCmd() *cobra.Command {
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := config.BindFlags(cmd); err != nil {
+				return err
+			}
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {
@@ -146,7 +149,7 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
-	config.BindFlags(rootCmd)
+	config.DefineFlags(rootCmd)
 
 	return rootCmd
 }
