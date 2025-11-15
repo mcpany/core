@@ -397,15 +397,15 @@ func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
 
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
-	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BindAddress *string                 `protobuf:"bytes,1,opt,name=bind_address,json=bindAddress"`
-	xxx_hidden_McpBasepath *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel    GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_MessageBus  *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_McpListenAddress *string                 `protobuf:"bytes,1,opt,name=mcp_listen_address,json=mcpListenAddress"`
+	xxx_hidden_McpBasepath      *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
+	xxx_hidden_LogLevel         GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_MessageBus       *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -433,10 +433,10 @@ func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *GlobalSettings) GetBindAddress() string {
+func (x *GlobalSettings) GetMcpListenAddress() string {
 	if x != nil {
-		if x.xxx_hidden_BindAddress != nil {
-			return *x.xxx_hidden_BindAddress
+		if x.xxx_hidden_McpListenAddress != nil {
+			return *x.xxx_hidden_McpListenAddress
 		}
 		return ""
 	}
@@ -469,8 +469,8 @@ func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
 	return nil
 }
 
-func (x *GlobalSettings) SetBindAddress(v string) {
-	x.xxx_hidden_BindAddress = &v
+func (x *GlobalSettings) SetMcpListenAddress(v string) {
+	x.xxx_hidden_McpListenAddress = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
@@ -488,7 +488,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 	x.xxx_hidden_MessageBus = v
 }
 
-func (x *GlobalSettings) HasBindAddress() bool {
+func (x *GlobalSettings) HasMcpListenAddress() bool {
 	if x == nil {
 		return false
 	}
@@ -516,9 +516,9 @@ func (x *GlobalSettings) HasMessageBus() bool {
 	return x.xxx_hidden_MessageBus != nil
 }
 
-func (x *GlobalSettings) ClearBindAddress() {
+func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_BindAddress = nil
+	x.xxx_hidden_McpListenAddress = nil
 }
 
 func (x *GlobalSettings) ClearMcpBasepath() {
@@ -539,7 +539,7 @@ type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The address and port the server should bind to (e.g., "0.0.0.0:8080").
-	BindAddress *string
+	McpListenAddress *string
 	// The base path for all MCP API endpoints (e.g., "/mcp/v1").
 	McpBasepath *string
 	// The logging level for the server.
@@ -552,9 +552,9 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	m0 := &GlobalSettings{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.BindAddress != nil {
+	if b.McpListenAddress != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_BindAddress = b.BindAddress
+		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.McpBasepath != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
@@ -5585,9 +5585,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x86\x02\n" +
-	"\x0eGlobalSettings\x12!\n" +
-	"\fbind_address\x18\x01 \x01(\tR\vbindAddress\x12!\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x91\x02\n" +
+	"\x0eGlobalSettings\x12,\n" +
+	"\x12mcp_listen_address\x18\x01 \x01(\tR\x10mcpListenAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\n" +
