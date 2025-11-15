@@ -99,8 +99,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -114,7 +112,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -122,7 +119,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
@@ -139,8 +135,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 		expectedErr := errors.New("registration failed")
 
 		registry := &mockServiceRegistry{
@@ -155,7 +149,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-fail", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -163,7 +156,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test-fail")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			require.Error(t, result.Error)
@@ -180,8 +172,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
-		var wg sync.WaitGroup
-		wg.Add(1)
 
 		workerCtx, workerCancel := context.WithCancel(context.Background())
 		defer workerCancel()
@@ -205,7 +195,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
 			resultChan <- result
-			wg.Done()
 		})
 		defer unsubscribe()
 
@@ -218,7 +207,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		req.SetCorrelationID("test-req-ctx")
 		requestBus.Publish(ctx, "request", req)
 
-		wg.Wait()
 		select {
 		case result := <-resultChan:
 			assert.NoError(t, result.Error)
