@@ -700,22 +700,24 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
 	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
-	// Wait for the goroutine to finish. If the bug is present, this will hang.
-	wg.Wait()
-
-	// Check that an error was received.
+	// Wait for the startup error.
 	select {
 	case err := <-errChan:
 		assert.Error(t, err)
-	default:
-		t.Fatal("expected an error but got none")
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
 	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish, which it should now do gracefully.
+	wg.Wait()
 }
 
 func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
@@ -939,29 +941,25 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	defer l.Close()
 	port := l.Addr().(*net.TCPAddr).Port
 
-	// This channel will be used to signal that the test is complete
-	done := make(chan bool)
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
 
-	go func() {
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		errChan := make(chan error, 1)
-		var wg sync.WaitGroup
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
-		// This call should hang because wg.Done() is never called in the error case
-		startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
-
-		// The test will hang here waiting for the goroutine to finish
-		wg.Wait()
-		close(done)
-	}()
-
+	// Wait for the startup error.
 	select {
-	case <-done:
-		// The test completed without hanging, which is the expected behavior after the fix.
-	case <-time.After(2 * time.Second):
-		t.Fatal("Test hung for 2 seconds. The bug is still present.")
+	case err := <-errChan:
+		require.Error(t, err)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
 	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish. With the fix, this should not hang.
+	wg.Wait()
 }
 
 func TestRunServerMode_ContextCancellation(t *testing.T) {
@@ -1208,40 +1206,37 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 }
 
 func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
-	// This test ensures that the goroutine for startGrpcServer terminates even when
-	// grpcServer.Serve(lis) returns an error.
-
-	// Find a free port and occupy it to cause a bind error.
+	// Find a free port and create a listener that is already closed to force an error.
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
-	l.Close() // Immediately close it so we can try to use it.
+	l.Close()
 
-	// Attempt to start a server on a closed listener, which will cause an error.
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
-
-	// We create a listener that is already closed to force an error in grpcServer.Serve.
 	closedListener, err := net.Listen("tcp", addr)
 	require.NoError(t, err)
 	closedListener.Close()
 
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
 	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(s *gogrpc.Server) {
-		// No services need to be registered for this test.
+		// No-op registration.
 	})
 
-	// Wait for the goroutine to finish. If the bug is present, this will hang.
-	wg.Wait()
-
-	// Check that an error was received.
+	// Wait for the startup error.
 	select {
 	case err := <-errChan:
-		assert.Error(t, err, "An error should have been sent to the error channel.")
-	default:
-		t.Fatal("expected an error but got none")
+		assert.Error(t, err)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
 	}
+
+	// Now that we have the error, we can cancel the context to trigger the shutdown.
+	cancel()
+
+	// Wait for the goroutine to finish.
+	wg.Wait()
 }
 
 func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
