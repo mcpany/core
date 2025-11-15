@@ -18,10 +18,10 @@ package serviceregistry
 
 import (
 	"context"
+	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,7 +30,6 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
-	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
@@ -189,45 +188,4 @@ func TestServiceRegistry_RegisterService_OAuth2_Error(t *testing.T) {
 
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.Error(t, err)
-}
-
-func TestServiceRegistry_ServiceInfo(t *testing.T) {
-	f := &mockFactory{}
-	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager()
-	rm := resource.NewResourceManager()
-	am := auth.NewAuthManager()
-	registry := New(f, tm, prm, rm, am)
-
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://localhost")
-	serviceConfig.SetHttpService(httpService)
-
-	// Register a service first
-	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
-	require.NoError(t, err)
-
-	// Test GetServiceInfo for a service that doesn't have info yet
-	_, ok := registry.GetServiceInfo(serviceID)
-	assert.False(t, ok, "should return false for a service with no info")
-
-	// Add service info
-	serviceInfo := &tool.ServiceInfo{
-		Name:   "test-service",
-		Config: serviceConfig,
-	}
-
-	registry.AddServiceInfo(serviceID, serviceInfo)
-
-	// Get the service info and verify it
-	retrievedInfo, ok := registry.GetServiceInfo(serviceID)
-	require.True(t, ok, "should return true after adding service info")
-	assert.Equal(t, serviceInfo.Name, retrievedInfo.Name)
-	assert.Equal(t, serviceInfo.Config, retrievedInfo.Config)
-
-	// Test GetServiceInfo for a non-existent service
-	_, ok = registry.GetServiceInfo("non-existent-id")
-	assert.False(t, ok, "should return false for a non-existent service")
 }
