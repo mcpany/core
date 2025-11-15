@@ -396,4 +396,18 @@ func TestFindMethodDescriptor(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "method 'NonExistentMethod' not found in service")
 	})
+
+	t.Run("valid full method name", func(t *testing.T) {
+		methodDesc, err := findMethodDescriptor(files, "examples.weather.v1.WeatherService/GetWeather")
+		require.NoError(t, err)
+		assert.NotNil(t, methodDesc)
+		assert.Equal(t, "GetWeather", string(methodDesc.Name()))
+	})
+
+	t.Run("valid full method name with leading slash", func(t *testing.T) {
+		methodDesc, err := findMethodDescriptor(files, "/examples.weather.v1.WeatherService/GetWeather")
+		require.NoError(t, err)
+		assert.NotNil(t, methodDesc)
+		assert.Equal(t, "GetWeather", string(methodDesc.Name()))
+	})
 }
