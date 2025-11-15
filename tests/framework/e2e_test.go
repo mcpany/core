@@ -17,52 +17,97 @@
 package framework
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/tests/integration"
-	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/require"
 )
 
-func TestE2E(t *testing.T) {
-	t.Run("TestE2ERegistration", func(t *testing.T) {
-		RunE2ETest(t, &E2ETestCase{
-			Name:                "test-e2e-registration",
-			UpstreamServiceType: "http",
-			BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-				return BuildHTTPEchoServer(t)
-			},
-			RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
-				RegisterHTTPEchoService(t, registrationClient, upstreamEndpoint)
-			},
-			ValidateTool: func(t *testing.T, mcpanyEndpoint string) {
-				// No validation needed for this test
-			},
-			ValidateMiddlewares: func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string) {
-				// No validation needed for this test
-			},
-			InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
-				// No AI client invocation needed for this test
-			},
-			RegistrationMethods: []RegistrationMethod{GRPCRegistration},
-			GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-				return fmt.Sprintf(`
-services:
-- name: "e2e-http-echo"
-  http:
-    address: "%s"
-    tools:
-    - name: "echo"
-      call_id: "echo-call"
-    calls:
-      "echo-call":
-        endpoint_path: "/echo"
-        method: "POST"
-`, upstreamEndpoint)
-			},
-			RegisterUpstreamWithJSONRPC: func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
-				integration.RegisterHTTPServiceWithJSONRPC(t, mcpanyEndpoint, "e2e-http-echo", upstreamEndpoint, "echo", "/echo", "POST", nil)
-			},
-		})
+func TestGRPCHelperFunctions(t *testing.T) {
+	t.Run("unauthenticated", func(t *testing.T) {
+		t.Parallel()
+		proc := BuildGRPCWeatherServer(t)
+		require.NotNil(t, proc)
+		err := proc.Start()
+		require.NoError(t, err)
+		defer proc.Stop()
+
+		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
+		defer mcpanyTestServerInfo.CleanupFunc()
+
+		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
+		RegisterGRPCWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+		// Verify the tool is registered
+		ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+		defer cancel()
+
+		client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
+		transport := &mcp.StreamableClientTransport{
+			Endpoint: mcpanyTestServerInfo.HTTPEndpoint,
+		}
+		session, err := client.Connect(ctx, transport, nil)
+		require.NoError(t, err)
+		defer session.Close()
+
+		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
+		require.NoError(t, err)
+
+		found := false
+		for _, tool := range tools.Tools {
+			// The tool name is derived from the service name and the RPC method name.
+			if tool.Name == "e2e_grpc_weather.GetWeather" {
+				found = true
+				break
+			}
+		}
+		require.True(t, found, "GetWeather tool should be registered for unauthenticated service")
+	})
+
+	t.Run("authenticated", func(t *testing.T) {
+		t.Parallel()
+		proc := BuildGRPCAuthedWeatherServer(t)
+		require.NotNil(t, proc)
+		err := proc.Start()
+		require.NoError(t, err)
+		defer proc.Stop()
+
+		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")
+		defer mcpanyTestServerInfo.CleanupFunc()
+
+		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
+		RegisterGRPCAuthedWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+		// Verify the tool is registered
+		ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+		defer cancel()
+
+		client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
+		transport := &mcp.StreamableClientTransport{
+			Endpoint: mcpanyTestServerInfo.HTTPEndpoint,
+		}
+		session, err := client.Connect(ctx, transport, nil)
+		require.NoError(t, err)
+		defer session.Close()
+
+		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
+		require.NoError(t, err)
+
+		found := false
+		for _, tool := range tools.Tools {
+			// The tool name is derived from the service name and the RPC method name.
+			if tool.Name == "e2e_grpc_authed_weather.GetWeather" {
+				found = true
+				break
+			}
+		}
+		require.True(t, found, "GetWeather tool should be registered for authenticated service")
 	})
 }
