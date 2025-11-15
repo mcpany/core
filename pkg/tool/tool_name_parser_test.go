@@ -85,3 +85,40 @@ func TestParseToolName(t *testing.T) {
 		})
 	}
 }
+
+func TestGetFullyQualifiedToolName(t *testing.T) {
+	testCases := []struct {
+		name       string
+		serviceID  string
+		methodName string
+		want       string
+	}{
+		{
+			name:       "Valid service and method",
+			serviceID:  "my-service",
+			methodName: "my-method",
+			want:       "my-service" + consts.ToolNameServiceSeparator + "my-method",
+		},
+		{
+			name:       "Empty service ID",
+			serviceID:  "",
+			methodName: "my-method",
+			want:       consts.ToolNameServiceSeparator + "my-method",
+		},
+		{
+			name:       "Empty method name",
+			serviceID:  "my-service",
+			methodName: "",
+			want:       "my-service" + consts.ToolNameServiceSeparator,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := GetFullyQualifiedToolName(tc.serviceID, tc.methodName)
+			if got != tc.want {
+				t.Errorf("GetFullyQualifiedToolName() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}

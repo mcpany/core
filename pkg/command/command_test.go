@@ -21,14 +21,29 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
+	"github.com/docker/docker/client"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"sync"
 )
+
+func skipWithoutDocker(t *testing.T) {
+	t.Helper()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		t.Skip("Docker is not available, skipping test.")
+	}
+	if _, err := cli.Ping(context.Background()); err != nil {
+		if strings.Contains(err.Error(), "permission denied") {
+			t.Skip("Docker permission denied, skipping test.")
+		}
+		t.Skip("Docker is not available, skipping test.")
+	}
+}
 
 type muWriter struct {
 	w  io.Writer
@@ -76,6 +91,7 @@ func TestLocalExecutor(t *testing.T) {
 }
 
 func TestDockerExecutor(t *testing.T) {
+	skipWithoutDocker(t)
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
@@ -148,7 +164,20 @@ func TestDockerExecutor(t *testing.T) {
 	})
 }
 
+func TestDockerExecutor_Cancellation(t *testing.T) {
+	skipWithoutDocker(t)
+	containerEnv := &configv1.ContainerEnvironment{}
+	containerEnv.SetImage("alpine:latest")
+	executor := NewExecutor(containerEnv)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel the context immediately
+	_, _, _, err := executor.Execute(ctx, "sleep", []string{"5"}, "", nil)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "context canceled")
+}
+
 func TestCombinedOutput(t *testing.T) {
+	skipWithoutDocker(t)
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := NewExecutor(containerEnv)

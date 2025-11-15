@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -36,42 +37,6 @@ func TestConvertMCPToolToProto(t *testing.T) {
 	destructiveHint := true
 	openWorldHint := true
 
-	mcpTool := &mcp.Tool{
-		Name:        "test-tool",
-		Description: "A tool for testing",
-		Annotations: &mcp.ToolAnnotations{
-			Title:           "Test Tool",
-			ReadOnlyHint:    true,
-			DestructiveHint: &destructiveHint,
-			IdempotentHint:  true,
-			OpenWorldHint:   &openWorldHint,
-		},
-		InputSchema: map[string]any{
-			"type": "object",
-			"properties": map[string]any{
-				"arg1": map[string]any{
-					"type":        "string",
-					"description": "Argument 1",
-				},
-			},
-		},
-		OutputSchema: map[string]any{
-			"type": "object",
-			"properties": map[string]any{
-				"result": map[string]any{
-					"type":        "string",
-					"description": "The result",
-				},
-			},
-		},
-	}
-
-	protoTool, err := ConvertMCPToolToProto(mcpTool)
-	if err != nil {
-		t.Fatalf("ConvertMCPToolToProto() failed: %v", err)
-	}
-
-	// Helper to create a structpb.Struct from a map
 	mustNewStruct := func(m map[string]any) *structpb.Struct {
 		s, err := structpb.NewStruct(m)
 		if err != nil {
@@ -80,79 +45,155 @@ func TestConvertMCPToolToProto(t *testing.T) {
 		return s
 	}
 
-	expectedTool := pb.Tool_builder{
-		Name:        proto.String("test-tool"),
-		Description: proto.String("A tool for testing"),
-		DisplayName: proto.String("Test Tool"),
-		Annotations: pb.ToolAnnotations_builder{
-			Title:           proto.String("Test Tool"),
-			ReadOnlyHint:    proto.Bool(true),
-			DestructiveHint: proto.Bool(true),
-			IdempotentHint:  proto.Bool(true),
-			OpenWorldHint:   proto.Bool(true),
-			InputSchema: mustNewStruct(map[string]any{
-				"type": "object",
-				"properties": map[string]any{
-					"arg1": map[string]any{
-						"type":        "string",
-						"description": "Argument 1",
+	testCases := []struct {
+		name        string
+		mcpTool     *mcp.Tool
+		expected    *pb.Tool
+		expectError bool
+	}{
+		{
+			name: "full conversion",
+			mcpTool: &mcp.Tool{
+				Name:        "test-tool",
+				Description: "A tool for testing",
+				Annotations: &mcp.ToolAnnotations{
+					Title:           "Test Tool",
+					ReadOnlyHint:    true,
+					DestructiveHint: &destructiveHint,
+					IdempotentHint:  true,
+					OpenWorldHint:   &openWorldHint,
+				},
+				InputSchema: map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"arg1": map[string]any{"type": "string", "description": "Argument 1"},
 					},
 				},
-			}),
-			OutputSchema: mustNewStruct(map[string]any{
-				"type": "object",
-				"properties": map[string]any{
-					"result": map[string]any{
-						"type":        "string",
-						"description": "The result",
+				OutputSchema: map[string]any{
+					"type": "object",
+					"properties": map[string]any{
+						"result": map[string]any{"type": "string", "description": "The result"},
 					},
 				},
-			}),
-		}.Build(),
-	}.Build()
+			},
+			expected: pb.Tool_builder{
+				Name:        proto.String("test-tool"),
+				Description: proto.String("A tool for testing"),
+				DisplayName: proto.String("Test Tool"),
+				Annotations: pb.ToolAnnotations_builder{
+					Title:           proto.String("Test Tool"),
+					ReadOnlyHint:    proto.Bool(true),
+					DestructiveHint: proto.Bool(true),
+					IdempotentHint:  proto.Bool(true),
+					OpenWorldHint:   proto.Bool(true),
+					InputSchema:     mustNewStruct(map[string]any{"type": "object", "properties": map[string]any{"arg1": map[string]any{"type": "string", "description": "Argument 1"}}}),
+					OutputSchema:    mustNewStruct(map[string]any{"type": "object", "properties": map[string]any{"result": map[string]any{"type": "string", "description": "The result"}}}),
+				}.Build(),
+			}.Build(),
+		},
+		{
+			name: "nil input schema",
+			mcpTool: &mcp.Tool{
+				Name: "test-tool-no-schema",
+			},
+			expected: pb.Tool_builder{
+				Name:        proto.String("test-tool-no-schema"),
+				Description: proto.String(""),
+				DisplayName: proto.String("test-tool-no-schema"),
+				Annotations: pb.ToolAnnotations_builder{
+					InputSchema: mustNewStruct(map[string]any{"type": "object", "properties": map[string]any{}}),
+				}.Build(),
+			}.Build(),
+		},
+		{
+			name: "nil annotations",
+			mcpTool: &mcp.Tool{
+				Name: "test-tool-no-annotations",
+			},
+			expected: pb.Tool_builder{
+				Name:        proto.String("test-tool-no-annotations"),
+				Description: proto.String(""),
+				DisplayName: proto.String("test-tool-no-annotations"),
+				Annotations: pb.ToolAnnotations_builder{
+					InputSchema: mustNewStruct(map[string]any{"type": "object", "properties": map[string]any{}}),
+				}.Build(),
+			}.Build(),
+		},
+		{
+			name:        "nil tool",
+			mcpTool:     nil,
+			expectError: true,
+		},
+	}
 
-	if diff := cmp.Diff(expectedTool, protoTool, protocmp.Transform()); diff != "" {
-		t.Errorf("convertMCPToolToProto() returned diff (-want +got):\n%s", diff)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			protoTool, err := ConvertMCPToolToProto(tc.mcpTool)
+			if (err != nil) != tc.expectError {
+				t.Fatalf("ConvertMCPToolToProto() error = %v, wantErr %v", err, tc.expectError)
+			}
+			if diff := cmp.Diff(tc.expected, protoTool, protocmp.Transform()); diff != "" {
+				t.Errorf("ConvertMCPToolToProto() returned diff (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
 
 func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
-	// t.Parallel() // Removed to debug potential race conditions
-	fields := []*protobufparser.McpField{
+	t.Parallel()
+	testCases := []struct {
+		name          string
+		fields        []*protobufparser.McpField
+		expected      *structpb.Struct
+		expectError   bool
+		expectedError string
+	}{
 		{
-			Name:        "field1",
-			Type:        "TYPE_STRING",
-			Description: "string field",
+			name: "successful conversion",
+			fields: []*protobufparser.McpField{
+				{Name: "field1", Type: "TYPE_STRING", Description: "string field"},
+				{Name: "field2", Type: "TYPE_INT32", Description: "int32 field"},
+			},
+			expected: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"field1": structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type":        structpb.NewStringValue("string"),
+							"description": structpb.NewStringValue("string field"),
+						},
+					}),
+					"field2": structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type":        structpb.NewStringValue("integer"),
+							"description": structpb.NewStringValue("int32 field"),
+						},
+					}),
+				},
+			},
 		},
 		{
-			Name:        "field2",
-			Type:        "TYPE_INT32",
-			Description: "int32 field",
+			name: "unsupported type",
+			fields: []*protobufparser.McpField{
+				{Name: "field1", Type: "UNSUPPORTED_TYPE", Description: "unsupported"},
+			},
+			expectError:   true,
+			expectedError: "unsupported scalar type: unsupported_type",
 		},
 	}
 
-	properties, err := convertMcpFieldsToInputSchemaProperties(fields)
-	if err != nil {
-		t.Fatalf("convertMcpFieldsToInputSchemaProperties() failed: %v", err)
-	}
-	expectedProperties := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"field1": structpb.NewStructValue(&structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue("string"),
-					"description": structpb.NewStringValue("string field"),
-				},
-			}),
-			"field2": structpb.NewStructValue(&structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"type":        structpb.NewStringValue("integer"),
-					"description": structpb.NewStringValue("int32 field"),
-				},
-			}),
-		},
-	}
-	if diff := cmp.Diff(expectedProperties, properties, protocmp.Transform()); diff != "" {
-		t.Errorf("convertMcpFieldsToInputSchemaProperties() returned diff (-want +got):\n%s", diff)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			properties, err := convertMcpFieldsToInputSchemaProperties(tc.fields)
+			if (err != nil) != tc.expectError {
+				t.Fatalf("convertMcpFieldsToInputSchemaProperties() error = %v, wantErr %v", err, tc.expectError)
+			}
+			if tc.expectError {
+				assert.Contains(t, err.Error(), tc.expectedError)
+			}
+			if diff := cmp.Diff(tc.expected, properties, protocmp.Transform()); diff != "" {
+				t.Errorf("convertMcpFieldsToInputSchemaProperties() returned diff (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
 

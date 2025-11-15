@@ -125,4 +125,63 @@ func TestMCPTool_Execute(t *testing.T) {
 		_, err := mcpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 	})
+
+	t.Run("non-text content", func(t *testing.T) {
+		mockClient := &mockMCPClient{
+			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+				return &mcp.CallToolResult{
+					Content: []mcp.Content{
+						&mcp.ImageContent{Data: []byte("imagedata"), MIMEType: "image/png"},
+					},
+				}, nil
+			},
+		}
+
+		toolProto := &v1.Tool{}
+		toolProto.SetName("test-tool")
+		toolProto.SetServiceId("service")
+		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+
+		inputs := json.RawMessage(`{}`)
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: inputs,
+		}
+
+		result, err := mcpTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		var resultMap []map[string]interface{}
+		err = json.Unmarshal([]byte(result.(string)), &resultMap)
+		require.NoError(t, err)
+
+		assert.Equal(t, map[string]interface{}{"data": "aW1hZ2VkYXRh", "mimeType": "image/png", "type": "image"}, resultMap[0])
+	})
+
+	t.Run("unmarshal error", func(t *testing.T) {
+		mockClient := &mockMCPClient{
+			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+				return &mcp.CallToolResult{
+					Content: []mcp.Content{
+						&mcp.TextContent{Text: `{"output": "result"`}, // Malformed JSON
+					},
+				}, nil
+			},
+		}
+
+		toolProto := &v1.Tool{}
+		toolProto.SetName("test-tool")
+		toolProto.SetServiceId("service")
+		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+
+		inputs := json.RawMessage(`{}`)
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: inputs,
+		}
+
+		result, err := mcpTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+		assert.Equal(t, `{"output": "result"`, result)
+	})
 }

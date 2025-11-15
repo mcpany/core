@@ -19,6 +19,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
 	"testing"
 
@@ -28,6 +29,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
@@ -86,6 +89,99 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 	retrievedTool, ok := tm.GetTool(toolID)
 	assert.True(t, ok, "Tool should be found")
 	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
+
+	// Test with MCP server
+	mockServer := NewMockMCPToolServer()
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mockServer.Server)
+	tm.SetMCPServer(mockProvider)
+
+	// Add a dummy schema to satisfy the MCP server
+	schema, err := structpb.NewStruct(map[string]interface{}{"type": "object"})
+	require.NoError(t, err)
+	toolProto.SetInputSchema(schema)
+
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+}
+
+func TestToolManager_AddTool_ErrorCases(t *testing.T) {
+	t.Run("invalid_tool_name", func(t *testing.T) {
+		tm := NewToolManager(nil)
+		mockTool := new(MockTool)
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("test-service")
+		toolProto.SetName("") // Invalid name
+		mockTool.On("Tool").Return(toolProto)
+
+		err := tm.AddTool(mockTool)
+		assert.Error(t, err)
+	})
+
+	t.Run("input_schema_marshal_error", func(t *testing.T) {
+		tm := NewToolManager(nil)
+		mockServer := NewMockMCPToolServer()
+		mockProvider := new(MockMCPServerProvider)
+		mockProvider.On("Server").Return(mockServer.Server)
+		tm.SetMCPServer(mockProvider)
+
+		mockTool := new(MockTool)
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("test-service")
+		toolProto.SetName("test-tool")
+
+		// Create a struct with an invalid value that cannot be marshaled
+		invalidStruct := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"key": {
+					Kind: &structpb.Value_NumberValue{
+						NumberValue: math.Inf(1), // Marshaling this will fail
+					},
+				},
+			},
+		}
+		toolProto.SetInputSchema(invalidStruct)
+		mockTool.On("Tool").Return(toolProto)
+
+		err := tm.AddTool(mockTool)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to marshal input schema")
+	})
+
+	t.Run("output_schema_marshal_error", func(t *testing.T) {
+		tm := NewToolManager(nil)
+		mockServer := NewMockMCPToolServer()
+		mockProvider := new(MockMCPServerProvider)
+		mockProvider.On("Server").Return(mockServer.Server)
+		tm.SetMCPServer(mockProvider)
+
+		mockTool := new(MockTool)
+		toolProto := &v1.Tool{}
+		toolProto.SetServiceId("test-service")
+		toolProto.SetName("test-tool")
+
+		// Create a valid input schema
+		inputSchema, err := structpb.NewStruct(map[string]interface{}{"type": "object"})
+		require.NoError(t, err)
+		toolProto.SetInputSchema(inputSchema)
+
+		// Create an invalid output schema
+		invalidStruct := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"key": {
+					Kind: &structpb.Value_NumberValue{
+						NumberValue: math.Inf(1), // Marshaling this will fail
+					},
+				},
+			},
+		}
+		toolProto.SetOutputSchema(invalidStruct)
+		mockTool.On("Tool").Return(toolProto)
+
+		err = tm.AddTool(mockTool)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to marshal output schema")
+	})
 }
 
 func TestToolManager_ListTools(t *testing.T) {

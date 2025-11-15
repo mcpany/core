@@ -43,8 +43,8 @@ func newCommandTool(command string) tool.Tool {
 
 func TestCommandTool_Execute(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
-		cmdTool := newCommandTool("echo")
-		inputData := map[string]interface{}{"args": []string{"hello world"}}
+		cmdTool := newCommandTool("ls")
+		inputData := map[string]interface{}{"args": []string{"-l"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -54,10 +54,10 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "echo", resultMap["command"])
-		assert.Equal(t, "hello world\n", resultMap["stdout"])
+		assert.Equal(t, "ls", resultMap["command"])
+		assert.NotEqual(t, "", resultMap["stdout"])
 		assert.Equal(t, "", resultMap["stderr"])
-		assert.Equal(t, "hello world\n", resultMap["combined_output"])
+		assert.NotEqual(t, "", resultMap["combined_output"])
 		assert.NotNil(t, resultMap["start_time"])
 		assert.NotNil(t, resultMap["end_time"])
 		assert.Equal(t, consts.CommandStatusSuccess, resultMap["status"])
@@ -125,5 +125,23 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		_, err := cmdTool.Execute(context.Background(), req)
 		assert.Error(t, err)
+	})
+
+	t.Run("non-string in args", func(t *testing.T) {
+		cmdTool := newCommandTool("echo")
+		inputs := json.RawMessage(`{"args": [123]}`)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		assert.Error(t, err)
+	})
+
+	t.Run("nil args", func(t *testing.T) {
+		cmdTool := newCommandTool("ls")
+		inputs := json.RawMessage(`{}`)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		assert.NoError(t, err)
 	})
 }

@@ -152,7 +152,12 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			return fmt.Errorf("failed to convert proto tool to mcp tool: %w", err)
 		}
 
-		if tool.Tool().GetInputSchema() != nil {
+		if tool.Tool().GetInputSchema() == nil {
+			mcpTool.InputSchema = map[string]interface{}{
+				"type":       "object",
+				"properties": map[string]interface{}{},
+			}
+		} else {
 			b, err := tool.Tool().GetInputSchema().MarshalJSON()
 			if err != nil {
 				return fmt.Errorf("failed to marshal input schema: %w", err)

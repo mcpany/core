@@ -300,3 +300,93 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	require.Error(t, err)
 	assert.Equal(t, context.DeadlineExceeded, err)
 }
+
+func TestWebrtcTool_Execute_DataChannelFail(t *testing.T) {
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
+		require.NoError(t, err)
+
+		var offer webrtc.SessionDescription
+		err = json.NewDecoder(r.Body).Decode(&offer)
+		require.NoError(t, err)
+		err = pc.SetRemoteDescription(offer)
+		require.NoError(t, err)
+		// Close the peer connection before creating an answer to cause a failure
+		pc.Close()
+		_, err = pc.CreateAnswer(nil)
+		require.Error(t, err)
+	}))
+	defer signalingServer.Close()
+
+	tool := &v1.Tool{}
+	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+	wt, err := NewWebrtcTool(tool, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
+	_, err = wt.Execute(context.Background(), req)
+	require.Error(t, err)
+}
+
+func TestWebrtcTool_Execute_OnMessageFail(t *testing.T) {
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
+		require.NoError(t, err)
+
+		pc.OnDataChannel(func(d *webrtc.DataChannel) {
+			d.OnMessage(func(msg webrtc.DataChannelMessage) {
+				// Malformed JSON response
+				err := d.SendText(`{"malformed"}`)
+				require.NoError(t, err)
+			})
+		})
+
+		var offer webrtc.SessionDescription
+		err = json.NewDecoder(r.Body).Decode(&offer)
+		require.NoError(t, err)
+		err = pc.SetRemoteDescription(offer)
+		require.NoError(t, err)
+		answer, err := pc.CreateAnswer(nil)
+		require.NoError(t, err)
+		gatherComplete := webrtc.GatheringCompletePromise(pc)
+		err = pc.SetLocalDescription(answer)
+		require.NoError(t, err)
+		<-gatherComplete
+		response, err := json.Marshal(*pc.LocalDescription())
+		require.NoError(t, err)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(response)
+		go func() {
+			wg.Wait()
+			pc.Close()
+		}()
+	}))
+	defer signalingServer.Close()
+	defer wg.Done()
+
+	tool := &v1.Tool{}
+	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+	wt, err := NewWebrtcTool(tool, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{ToolInputs: []byte(`{"message":"hello"}`)}
+	_, err = wt.Execute(context.Background(), req)
+	require.NoError(t, err)
+}
+
+func TestWebrtcTool_Execute_InputTransformerFail(t *testing.T) {
+	tool := &v1.Tool{}
+	tool.SetUnderlyingMethodFqn("WEBRTC http://localhost:12345")
+	callDef := &configv1.WebrtcCallDefinition{}
+	callDef.SetInputTransformer(&configv1.InputTransformer{})
+	callDef.GetInputTransformer().SetTemplate(`{{.invalid}`) // Invalid template
+	wt, err := NewWebrtcTool(tool, nil, "", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
+	_, err = wt.Execute(context.Background(), req)
+	require.Error(t, err)
+}

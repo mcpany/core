@@ -27,6 +27,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
@@ -77,4 +78,104 @@ func TestToolManager_AddToolWithMCPServer_InvalidToolName(t *testing.T) {
 
 	err = tm.AddTool(mockTool)
 	assert.Error(t, err, "Should return an error for an invalid tool name")
+}
+
+func TestToolManager_AddToolWithMCPServer_UnmarshalError(t *testing.T) {
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	b, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	tm := NewToolManager(b)
+
+	toolProto := v1.Tool_builder{
+		ServiceId: proto.String("test-service"),
+		Name:      proto.String("test-tool"),
+	}.Build()
+
+	// This will cause the unmarshal to fail
+	toolProto.SetInputSchema(&structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"key": {
+				Kind: &structpb.Value_StringValue{
+					StringValue: string([]byte{0xff}),
+				},
+			},
+		},
+	})
+
+	mockTool := new(MockTool)
+	mockTool.On("Tool").Return(toolProto)
+
+	mockServer := NewMockMCPToolServer()
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mockServer.Server)
+
+	tm.SetMCPServer(mockProvider)
+
+	err = tm.AddTool(mockTool)
+	assert.Error(t, err, "Should return an error for an unmarshal error")
+}
+
+func TestToolManager_AddToolWithMCPServer_NilInputSchema(t *testing.T) {
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	b, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	tm := NewToolManager(b)
+
+	toolProto := v1.Tool_builder{
+		ServiceId: proto.String("test-service"),
+		Name:      proto.String("test-tool"),
+	}.Build()
+
+	mockTool := new(MockTool)
+	mockTool.On("Tool").Return(toolProto)
+
+	mockServer := NewMockMCPToolServer()
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mockServer.Server)
+
+	tm.SetMCPServer(mockProvider)
+
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+}
+
+func TestToolManager_AddToolWithMCPServer_OutputUnmarshalError(t *testing.T) {
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	b, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	tm := NewToolManager(b)
+
+	toolProto := v1.Tool_builder{
+		ServiceId: proto.String("test-service"),
+		Name:      proto.String("test-tool"),
+	}.Build()
+
+	// Valid input schema
+	toolProto.SetInputSchema(&structpb.Struct{})
+
+	// This will cause the unmarshal to fail
+	toolProto.SetOutputSchema(&structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"key": {
+				Kind: &structpb.Value_StringValue{
+					StringValue: string([]byte{0xff}),
+				},
+			},
+		},
+	})
+
+	mockTool := new(MockTool)
+	mockTool.On("Tool").Return(toolProto)
+
+	mockServer := NewMockMCPToolServer()
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mockServer.Server)
+
+	tm.SetMCPServer(mockProvider)
+
+	err = tm.AddTool(mockTool)
+	assert.Error(t, err, "Should return an error for an unmarshal error")
 }
