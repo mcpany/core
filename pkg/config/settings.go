@@ -126,18 +126,18 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 // LogLevel returns the log level for the server.
 func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
-		return v1.GlobalSettings_DEBUG
+		return v1.GlobalSettings_LOG_LEVEL_DEBUG
 	}
 	switch strings.ToLower(s.logLevel) {
 	case "debug":
-		return v1.GlobalSettings_DEBUG
+		return v1.GlobalSettings_LOG_LEVEL_DEBUG
 	case "info":
-		return v1.GlobalSettings_INFO
+		return v1.GlobalSettings_LOG_LEVEL_INFO
 	case "warn":
-		return v1.GlobalSettings_WARN
+		return v1.GlobalSettings_LOG_LEVEL_WARN
 	case "error":
-		return v1.GlobalSettings_ERROR
+		return v1.GlobalSettings_LOG_LEVEL_ERROR
 	default:
-		return v1.GlobalSettings_INFO
+		return v1.GlobalSettings_LOG_LEVEL_INFO
 	}
 }

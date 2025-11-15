@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.config.v1;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/go_features.proto";
 import "proto/bus/bus.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/call.proto";
@@ -13,6 +14,8 @@ import "proto/config/v1/auth.proto";
 import "proto/config/v1/prompt.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "ConfigProto";
+option features.(pb.go).api_level = API_OPAQUE;
 
 // ===================================================================
 // Root Server Configuration
@@ -43,10 +46,11 @@ message UpstreamServiceCollection {
 // GlobalSettings contains server-wide operational parameters.
 message GlobalSettings {
   enum LogLevel {
-    INFO = 0;
-    WARN = 1;
-    ERROR = 2;
-    DEBUG = 3;
+    LOG_LEVEL_UNSPECIFIED = 0;
+    LOG_LEVEL_INFO = 1;
+    LOG_LEVEL_WARN = 2;
+    LOG_LEVEL_ERROR = 3;
+    LOG_LEVEL_DEBUG = 4;
   }
   // The address and port the server should bind to (e.g., "0.0.0.0:8080").
   string mcp_listen_address = 1;

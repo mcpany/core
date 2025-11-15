@@ -13,6 +13,7 @@ import (
 	v1 "github.com/mcpany/core/proto/config/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -1171,7 +1172,7 @@ var File_proto_api_v1_registration_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/api/v1/registration.proto\x12\rmcpany.api.v1\x1a\x1cproto/config/v1/config.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\"Y\n" +
+	"\x1fproto/api/v1/registration.proto\x12\rmcpany.api.v1\x1a!google/protobuf/go_features.proto\x1a\x1cproto/config/v1/config.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\"Y\n" +
 	"\x16RegisterServiceRequest\x12?\n" +
 	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\"\xfa\x01\n" +
 	"\x17RegisterServiceResponse\x12\x18\n" +
@@ -1217,7 +1218,7 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\x12InitiateOAuth2Flow\x12(.mcpany.api.v1.InitiateOAuth2FlowRequest\x1a).mcpany.api.v1.InitiateOAuth2FlowResponse\x12Z\n" +
 	"\rRegisterTools\x12#.mcpany.api.v1.RegisterToolsRequest\x1a$.mcpany.api.v1.RegisterToolsResponse\x12c\n" +
 	"\x10GetServiceStatus\x12&.mcpany.api.v1.GetServiceStatusRequest\x1a'.mcpany.api.v1.GetServiceStatusResponse\x12W\n" +
-	"\fListServices\x12\".mcpany.api.v1.ListServicesRequest\x1a#.mcpany.api.v1.ListServicesResponseB%Z#github.com/mcpany/core/proto/api/v1b\beditionsp\xe8\a"
+	"\fListServices\x12\".mcpany.api.v1.ListServicesRequest\x1a#.mcpany.api.v1.ListServicesResponseB@B\x11RegistrationProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_api_v1_registration_proto_goTypes = []any{

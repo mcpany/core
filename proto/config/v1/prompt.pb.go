@@ -12,6 +12,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -1174,7 +1175,7 @@ var File_proto_config_v1_prompt_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a\x1eproto/config/v1/resource.proto\"\xdb\x01\n" +
+	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1eproto/config/v1/resource.proto\"\xdb\x01\n" +
 	"\x10PromptDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
@@ -1208,7 +1209,7 @@ const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\vannotations\x18\x03 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotations\"\x9b\x01\n" +
 	"\x0fResourceContent\x12@\n" +
 	"\bresource\x18\x01 \x01(\v2$.mcpany.config.v1.ResourceDefinitionR\bresource\x12F\n" +
-	"\vannotations\x18\x02 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotationsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\vannotations\x18\x02 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotationsB=B\vPromptProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_prompt_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_prompt_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
