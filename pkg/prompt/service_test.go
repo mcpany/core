@@ -203,3 +203,15 @@ func TestService_GetPrompt_GetError(t *testing.T) {
 
 	assert.Error(t, err)
 }
+
+func TestService_SetMCPServer(t *testing.T) {
+	mockPromptManager := new(MockPromptManager)
+	service := prompt.NewService(mockPromptManager)
+	server := &mcp.Server{}
+
+	mockPromptManager.On("SetMCPServer", mock.Anything).Return()
+
+	service.SetMCPServer(server)
+
+	mockPromptManager.AssertExpectations(t)
+}
