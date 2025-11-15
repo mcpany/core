@@ -74,13 +74,13 @@ func GetLogger() *slog.Logger {
 // ToSlogLevel converts a string log level to a slog.Level.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
-	case configv1.GlobalSettings_DEBUG:
+	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:
 		return slog.LevelDebug
-	case configv1.GlobalSettings_INFO:
+	case configv1.GlobalSettings_LOG_LEVEL_INFO:
 		return slog.LevelInfo
-	case configv1.GlobalSettings_WARN:
+	case configv1.GlobalSettings_LOG_LEVEL_WARN:
 		return slog.LevelWarn
-	case configv1.GlobalSettings_ERROR:
+	case configv1.GlobalSettings_LOG_LEVEL_ERROR:
 		return slog.LevelError
 	default:
 		return slog.LevelInfo
