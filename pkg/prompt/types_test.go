@@ -58,4 +58,29 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 	textContent, ok := result.Messages[0].Content.(*mcp.TextContent)
 	require.True(t, ok)
 	assert.Equal(t, "Hello, world!", textContent.Text)
+
+	t.Run("missing argument", func(t *testing.T) {
+		args := map[string]string{}
+		argsBytes, err := json.Marshal(args)
+		require.NoError(t, err)
+
+		_, err = prompt.Get(context.Background(), argsBytes)
+		assert.Error(t, err)
+	})
+}
+
+func TestTemplatedPrompt_Prompt(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name: proto.String("test-prompt"),
+	}.Build()
+	prompt := NewTemplatedPrompt(definition, "test-service")
+	assert.Equal(t, "test-service.test-prompt", prompt.Prompt().Name)
+}
+
+func TestTemplatedPrompt_Service(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name: proto.String("test-prompt"),
+	}.Build()
+	prompt := NewTemplatedPrompt(definition, "test-service")
+	assert.Equal(t, "test-service", prompt.Service())
 }

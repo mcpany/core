@@ -76,6 +76,10 @@ func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
 }
 
+func (m *MockPrompt) SetMCPServer(mcpServer *mcp.Server) {
+	m.Called(mcpServer)
+}
+
 func TestPromptManager(t *testing.T) {
 	promptManager := NewPromptManager()
 
@@ -129,4 +133,19 @@ func TestPromptManager(t *testing.T) {
 		assert.Equal(t, "service2.prompt2", prompts[0].Prompt().Name)
 	})
 
+	t.Run("set mcp server", func(t *testing.T) {
+		// Clear existing prompts
+		promptManager.prompts.Clear()
+
+		mockPrompt := new(MockPrompt)
+		mockPrompt.On("Prompt").Return(&mcp.Prompt{Name: "test-prompt"})
+		promptManager.AddPrompt(mockPrompt)
+
+		mockMCPServer := &mcp.Server{}
+		provider := NewMCPServerProvider(mockMCPServer)
+		mockPrompt.On("SetMCPServer", mockMCPServer).Return()
+
+		promptManager.SetMCPServer(provider)
+		assert.Equal(t, mockMCPServer, promptManager.mcpServer.Server())
+	})
 }

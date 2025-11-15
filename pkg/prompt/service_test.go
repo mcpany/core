@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package prompt_test
+package prompt
 
 import (
 	"context"
@@ -22,34 +22,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-type MockPrompt struct {
-	mock.Mock
-}
-
-func (m *MockPrompt) Prompt() *mcp.Prompt {
-	args := m.Called()
-	return args.Get(0).(*mcp.Prompt)
-}
-
-func (m *MockPrompt) Service() string {
-	args := m.Called()
-	return args.String(0)
-}
-
-func (m *MockPrompt) Get(
-	ctx context.Context,
-	args json.RawMessage,
-) (*mcp.GetPromptResult, error) {
-	calledArgs := m.Called(ctx, args)
-	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
-}
 
 type MockErrorPrompt struct {
 	MockPrompt
@@ -66,12 +43,12 @@ type MockPromptManager struct {
 	mock.Mock
 }
 
-func (m *MockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+func (m *MockPromptManager) GetPrompt(name string) (Prompt, bool) {
 	args := m.Called(name)
-	return args.Get(0).(prompt.Prompt), args.Bool(1)
+	return args.Get(0).(Prompt), args.Bool(1)
 }
 
-func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
+func (m *MockPromptManager) AddPrompt(p Prompt) {
 	m.Called(p)
 }
 
@@ -79,12 +56,12 @@ func (m *MockPromptManager) RemovePrompt(name string) {
 	m.Called(name)
 }
 
-func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
+func (m *MockPromptManager) ListPrompts() []Prompt {
 	args := m.Called()
-	return args.Get(0).([]prompt.Prompt)
+	return args.Get(0).([]Prompt)
 }
 
-func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
+func (m *MockPromptManager) SetMCPServer(mcpServer MCPServerProvider) {
 	m.Called(mcpServer)
 }
 
@@ -102,9 +79,9 @@ func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo,
 
 func TestService_ListPrompts(t *testing.T) {
 	mockPromptManager := new(MockPromptManager)
-	service := prompt.NewService(mockPromptManager)
+	service := NewService(mockPromptManager)
 
-	mockPrompts := []prompt.Prompt{
+	mockPrompts := []Prompt{
 		&MockPrompt{},
 	}
 	mockMCPPrompt := &mcp.Prompt{Name: "test_prompt"}
@@ -134,7 +111,7 @@ type TestTextContent struct {
 
 func TestService_GetPrompt(t *testing.T) {
 	mockPromptManager := new(MockPromptManager)
-	service := prompt.NewService(mockPromptManager)
+	service := NewService(mockPromptManager)
 
 	mockPrompt := new(MockPrompt)
 	mockPromptResult := &mcp.GetPromptResult{
@@ -169,7 +146,7 @@ func TestService_GetPrompt(t *testing.T) {
 
 func TestService_GetPrompt_NotFound(t *testing.T) {
 	mockPromptManager := new(MockPromptManager)
-	service := prompt.NewService(mockPromptManager)
+	service := NewService(mockPromptManager)
 
 	mockPromptManager.On("GetPrompt", "not_found_prompt").Return((*MockPrompt)(nil), false)
 
@@ -179,13 +156,13 @@ func TestService_GetPrompt_NotFound(t *testing.T) {
 		},
 	})
 
-	assert.ErrorIs(t, err, prompt.ErrPromptNotFound)
+	assert.ErrorIs(t, err, ErrPromptNotFound)
 	mockPromptManager.AssertExpectations(t)
 }
 
 func TestService_GetPrompt_GetError(t *testing.T) {
 	mockPromptManager := new(MockPromptManager)
-	service := prompt.NewService(mockPromptManager)
+	service := NewService(mockPromptManager)
 
 	mockPrompt := new(MockErrorPrompt)
 	rawArgs := json.RawMessage(`{"key":"value"}`)
@@ -202,4 +179,16 @@ func TestService_GetPrompt_GetError(t *testing.T) {
 	})
 
 	assert.Error(t, err)
+}
+
+func TestService_SetMCPServer(t *testing.T) {
+	mockPromptManager := new(MockPromptManager)
+	service := NewService(mockPromptManager)
+	mockMCPServer := &mcp.Server{}
+	provider := NewMCPServerProvider(mockMCPServer)
+
+	mockPromptManager.On("SetMCPServer", provider).Return()
+	service.SetMCPServer(mockMCPServer)
+
+	mockPromptManager.AssertExpectations(t)
 }
