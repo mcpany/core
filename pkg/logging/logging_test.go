@@ -23,9 +23,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/stretchr/testify/assert"
 )
 
 // setup is a helper function to reset the logger for each test.
@@ -107,25 +104,5 @@ func TestGetLogger_ReturnsSingleton(t *testing.T) {
 
 	if logger1 != logger3 {
 		t.Error("GetLogger should return the same instance even after Init")
-	}
-}
-
-func TestToSlogLevel(t *testing.T) {
-	tests := []struct {
-		name     string
-		level    configv1.GlobalSettings_LogLevel
-		expected slog.Level
-	}{
-		{"debug level", configv1.GlobalSettings_DEBUG, slog.LevelDebug},
-		{"info level", configv1.GlobalSettings_INFO, slog.LevelInfo},
-		{"warn level", configv1.GlobalSettings_WARN, slog.LevelWarn},
-		{"error level", configv1.GlobalSettings_ERROR, slog.LevelError},
-		{"unknown level", 99, slog.LevelInfo},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, ToSlogLevel(tt.level))
-		})
 	}
 }

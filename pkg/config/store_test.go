@@ -50,14 +50,14 @@ func TestJsonEngine_Unmarshal(t *testing.T) {
 		validJSON := []byte(`{
 			"global_settings": {
 				"mcp_listen_address": "0.0.0.0:8080",
-				"log_level": "INFO"
+				"log_level": "LOG_LEVEL_INFO"
 			}
 		}`)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validJSON, cfg)
 		require.NoError(t, err)
 		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetMcpListenAddress())
-		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
+		assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 
 	t.Run("InvalidJSON", func(t *testing.T) {
@@ -94,13 +94,13 @@ global_settings:
 		validYAML := []byte(`
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  log_level: "INFO"
+  log_level: "LOG_LEVEL_INFO"
 `)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validYAML, cfg)
 		require.NoError(t, err)
 		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetMcpListenAddress())
-		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
+		assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 }
 
@@ -140,7 +140,7 @@ func TestFileStore_Load(t *testing.T) {
 	afero.WriteFile(fs, "configs/01_base.yaml", []byte(`
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  log_level: "INFO"
+  log_level: "LOG_LEVEL_INFO"
 upstream_services:
 - id: "service-1"
   name: "first-service"
