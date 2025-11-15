@@ -305,6 +305,9 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
+	if strings.HasPrefix(addr, ":") {
+		addr = "localhost" + addr
+	}
 	healthCheckClient := &http.Client{
 		Timeout: timeout,
 	}
@@ -387,14 +390,14 @@ func (a *Application) runServerMode(
 	if bindAddress == "" {
 		bindAddress = fmt.Sprintf("localhost:%d", 8070)
 	}
-	if !strings.Contains(bindAddress, ":") {
+	if strings.Trim(bindAddress, "0123456789") == "" {
 		bindAddress = ":" + bindAddress
 	}
 
 	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
 
 	if grpcPort != "" {
-		if !strings.Contains(grpcPort, ":") {
+		if strings.Trim(grpcPort, "0123456789") == "" {
 			grpcPort = ":" + grpcPort
 		}
 		lis, err := net.Listen("tcp", grpcPort)

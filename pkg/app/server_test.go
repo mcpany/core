@@ -266,6 +266,22 @@ func TestHealthCheck(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, out.String(), "health check failed")
 	})
+
+	t.Run("should handle addresses with a colon prefix", func(t *testing.T) {
+		t.Parallel()
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		var out bytes.Buffer
+		addr := server.Listener.Addr().String()
+		parts := strings.Split(addr, ":")
+		port := parts[len(parts)-1]
+		err := HealthCheck(&out, fmt.Sprintf(":%s", port), 1*time.Second)
+		require.NoError(t, err)
+		assert.Contains(t, out.String(), "Health check successful")
+	})
 }
 
 func TestSetup(t *testing.T) {
