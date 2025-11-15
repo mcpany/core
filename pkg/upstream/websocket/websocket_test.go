@@ -99,8 +99,11 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return nil, false
 }
 
-func (m *MockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
+}
+
+func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
 }
 
 func TestNewWebsocketUpstream(t *testing.T) {

@@ -57,6 +57,16 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+}
+
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	t, ok := m.tools[name]
 	return t, ok
@@ -81,7 +91,7 @@ func TestNewCommandUpstream(t *testing.T) {
 
 func TestCommandUpstream_Register(t *testing.T) {
 	tm := newMockToolManager()
-	prm := prompt.NewPromptManager(tm)
+	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	u := NewCommandUpstream()
 

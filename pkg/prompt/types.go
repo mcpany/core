@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -31,16 +30,6 @@ import (
 var (
 	ErrPromptNotFound = errors.New("prompt not found")
 )
-
-// PromptManagerInterface defines the contract for a prompt manager.
-type PromptManagerInterface interface {
-	GetPrompt(name string) (Prompt, bool)
-	ListPrompts() []Prompt
-	AddPrompt(prompt Prompt)
-	ClearPromptsForService(serviceID string)
-	SetMCPServer(mcpServer MCPServerProvider)
-	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
-}
 
 // Prompt is the fundamental interface for any executable prompt in the system.
 type Prompt interface {

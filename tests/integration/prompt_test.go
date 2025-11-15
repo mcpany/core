@@ -77,7 +77,7 @@ func TestPromptIntegration(t *testing.T) {
 	require.NoError(t, err)
 	poolManager := pool.NewManager()
 	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(
