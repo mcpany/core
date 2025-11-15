@@ -67,12 +67,8 @@ func (m *mockToolManager) AddTool(t tool.Tool) error                            
 func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return nil, false
-}
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
-func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 
@@ -80,7 +76,7 @@ func TestNew(t *testing.T) {
 	pm := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(pm)
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager(tm)
+	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 
@@ -97,7 +93,7 @@ func TestNew(t *testing.T) {
 func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	f := &mockFactory{}
 	tm := &mockToolManager{}
-	prm := prompt.NewPromptManager(tm)
+	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
 	registry := New(f, tm, prm, rm, am)
@@ -143,7 +139,7 @@ func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
 		},
 	}
 	tm := &mockToolManager{}
-	registry := New(f, tm, prompt.NewPromptManager(tm), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -164,7 +160,7 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 		},
 	}
 	tm := &mockToolManager{}
-	registry := New(f, tm, prompt.NewPromptManager(tm), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -185,7 +181,7 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 		},
 	}
 	tm := &mockToolManager{}
-	registry := New(f, tm, prompt.NewPromptManager(tm), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	serviceConfig1.SetName("test-service")

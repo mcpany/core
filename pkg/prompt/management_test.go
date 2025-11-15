@@ -22,54 +22,38 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-// MockToolManager is a mock implementation of the ToolManagerInterface.
-type MockToolManager struct {
+// MockServiceRegistry is a mock implementation of the ServiceRegistryInterface.
+type MockServiceRegistry struct {
 	mock.Mock
 }
 
-func (m *MockToolManager) GetTool(toolName string) (tool.Tool, bool) {
-	args := m.Called(toolName)
-	return args.Get(0).(tool.Tool), args.Bool(1)
+func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+	args := m.Called(ctx, serviceConfig)
+	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-func (m *MockToolManager) ListTools() []tool.Tool {
-	args := m.Called()
-	return args.Get(0).([]tool.Tool)
-}
-
-func (m *MockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	args := m.Called(ctx, req)
-	return args.Get(0), args.Error(1)
-}
-
-func (m *MockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
-	m.Called(mcpServer)
-}
-
-func (m *MockToolManager) AddTool(t tool.Tool) error {
-	args := m.Called(t)
+func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+	args := m.Called()
+	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
+}
+
+func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {
 		return nil, args.Bool(1)
 	}
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
-}
-
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.Called(serviceID, info)
-}
-
-func (m *MockToolManager) ClearToolsForService(serviceID string) {
-	m.Called(serviceID)
 }
 
 // MockPrompt is a mock implementation of the Prompt interface.
@@ -93,8 +77,7 @@ func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 }
 
 func TestPromptManager(t *testing.T) {
-	toolManager := new(MockToolManager)
-	promptManager := NewPromptManager(toolManager)
+	promptManager := NewPromptManager()
 
 	t.Run("add and get prompt", func(t *testing.T) {
 		mockPrompt := new(MockPrompt)
@@ -146,14 +129,4 @@ func TestPromptManager(t *testing.T) {
 		assert.Equal(t, "service2.prompt2", prompts[0].Prompt().Name)
 	})
 
-	t.Run("get service info", func(t *testing.T) {
-		serviceInfo := &tool.ServiceInfo{}
-		toolManager.On("GetServiceInfo", "test-service").Return(serviceInfo, true)
-
-		info, ok := promptManager.GetServiceInfo("test-service")
-		assert.True(t, ok)
-		assert.Equal(t, serviceInfo, info)
-
-		toolManager.AssertExpectations(t)
-	})
 }
