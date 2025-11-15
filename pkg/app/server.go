@@ -305,11 +305,36 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
+	return HealthCheckWithContext(context.Background(), out, addr, timeout)
+}
+
+// HealthCheckWithContext performs a health check against a running server by
+// sending an HTTP GET request to its /healthz endpoint. This is useful for
+// monitoring and ensuring the server is operational.
+//
+// The function constructs the health check URL from the provided address and
+// sends an HTTP GET request. It expects a 200 OK status code for a successful
+// health check.
+//
+// Parameters:
+//   - ctx: The context for managing the health check's lifecycle.
+//   - out: The writer to which the success message will be written.
+//   - addr: The address (host:port) on which the server is running.
+//
+// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
+// error if the health check fails for any reason (e.g., connection error,
+// non-200 status code).
+func HealthCheckWithContext(
+	ctx context.Context,
+	out io.Writer,
+	addr string,
+	timeout time.Duration,
+) error {
 	healthCheckClient := &http.Client{
 		Timeout: timeout,
 	}
 	req, err := http.NewRequestWithContext(
-		context.Background(),
+		ctx,
 		http.MethodGet,
 		fmt.Sprintf("http://%s/healthz", addr),
 		nil,
