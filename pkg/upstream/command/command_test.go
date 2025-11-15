@@ -57,6 +57,16 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+}
+
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+}
+
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	t, ok := m.tools[name]
 	return t, ok
@@ -81,7 +91,7 @@ func TestNewCommandUpstream(t *testing.T) {
 
 func TestCommandUpstream_Register(t *testing.T) {
 	tm := newMockToolManager()
-	prm := prompt.NewPromptManager(tm)
+	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	u := NewCommandUpstream()
 
@@ -143,6 +153,106 @@ func TestCommandUpstream_Register(t *testing.T) {
 		require.True(t, ok)
 		assert.Equal(t, "hello from test", resultMap["stdout"])
 		assert.Equal(t, "/bin/echo", resultMap["command"])
+	})
+
+	t.Run("successful prompt registration", func(t *testing.T) {
+		tm := newMockToolManager()
+		prm := prompt.NewPromptManager()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-prompt-service")
+		cmdService := &configv1.CommandLineUpstreamService{}
+		promptDef := configv1.PromptDefinition_builder{
+			Name: proto.String("test-prompt"),
+		}.Build()
+		cmdService.SetPrompts([]*configv1.PromptDefinition{promptDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		serviceID, _, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+
+		sanitizedName, _ := util.SanitizeServiceName("test-prompt-service")
+		assert.Equal(t, sanitizedName, serviceID)
+
+		p, ok := prm.GetPrompt(serviceID + ".test-prompt")
+		require.True(t, ok)
+		assert.Equal(t, serviceID+".test-prompt", p.Prompt().Name)
+	})
+
+	t.Run("successful dynamic resource registration", func(t *testing.T) {
+		tm := newMockToolManager()
+		rm := resource.NewResourceManager()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-dynamic-resource-service")
+		cmdService := &configv1.CommandLineUpstreamService{}
+
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("list-files"),
+			CallId: proto.String("list-files-call"),
+		}.Build()
+		callDef := configv1.CommandLineCallDefinition_builder{
+			Id: proto.String("list-files-call"),
+		}.Build()
+		calls := make(map[string]*configv1.CommandLineCallDefinition)
+		calls["list-files-call"] = callDef
+		cmdService.SetCalls(calls)
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("files")
+		resourceDef.SetUri("test-dynamic-resource-service.files")
+		dynamicResource := &configv1.DynamicResource{}
+		commandLineCall := &configv1.CommandLineCallDefinition{}
+		commandLineCall.SetId("list-files-call")
+		dynamicResource.SetCommandLineCall(commandLineCall)
+		resourceDef.SetDynamic(dynamicResource)
+
+		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		serviceID, _, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+		assert.Len(t, rm.ListResources(), 1)
+		dynResource, ok := rm.GetResource(serviceID + ".files")
+		require.True(t, ok)
+		assert.Equal(t, "files", dynResource.Resource().Name)
+	})
+
+	t.Run("missing call definition", func(t *testing.T) {
+		tm := newMockToolManager()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-missing-call-def")
+		cmdService := &configv1.CommandLineUpstreamService{}
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("echo"),
+			CallId: proto.String("echo-call-missing"),
+		}.Build()
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		_, _, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+		assert.Len(t, tm.ListTools(), 0)
 	})
 
 	t.Run("nil command line service config", func(t *testing.T) {

@@ -148,8 +148,8 @@ func (a *Application) Run(
 	}
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager(toolManager)
+	var toolManager tool.ToolManagerInterface = tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(
@@ -220,7 +220,7 @@ func (a *Application) Run(
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
-	cachingMiddleware := middleware.NewCachingMiddleware(mcpSrv)
+	cachingMiddleware := middleware.NewCachingMiddleware(toolManager)
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
@@ -501,7 +501,6 @@ func startHTTPServer(
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 
 		<-shutdownComplete
@@ -578,7 +577,6 @@ func startGrpcServer(
 		serverLog.Info("gRPC server listening")
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
-			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")

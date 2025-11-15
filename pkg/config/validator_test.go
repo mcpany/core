@@ -264,6 +264,27 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "dup-svc": duplicate service name found`,
 		},
 		{
+			name: "duplicate service name and another error",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("dup-svc"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+					}).Build(),
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("dup-svc"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String(""),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  2,
+			expectedErrorString: `service "dup-svc": duplicate service name found`,
+		},
+		{
 			name: "invalid basic auth - empty password",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
@@ -285,6 +306,29 @@ func TestValidate(t *testing.T) {
 			}).Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "basic-auth-svc-1": basic auth 'password' is empty`,
+		},
+		{
+			name: "invalid api key auth - empty header name",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("api-key-svc-1"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+						UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+							ApiKey: (&configv1.UpstreamAPIKeyAuth_builder{
+								HeaderName: proto.String(""),
+								ApiKey: (&configv1.SecretValue_builder{
+									PlainText: proto.String("some-key"),
+								}).Build(),
+							}).Build(),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "api-key-svc-1": api key 'header_name' is empty`,
 		},
 	}
 
