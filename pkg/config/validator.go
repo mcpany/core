@@ -78,7 +78,6 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 				ServiceName: service.GetName(),
 				Err:         fmt.Errorf("duplicate service name found"),
 			})
-			continue // Continue to find other errors
 		}
 		serviceNames[service.GetName()] = true
 
