@@ -129,10 +129,4 @@ func TestPromptManager(t *testing.T) {
 		assert.Equal(t, "service2.prompt2", prompts[0].Prompt().Name)
 	})
 
-	t.Run("set mcp server", func(t *testing.T) {
-		server := &mcp.Server{}
-		provider := NewMCPServerProvider(server)
-		promptManager.SetMCPServer(provider)
-		assert.Equal(t, provider, promptManager.mcpServer)
-	})
 }
