@@ -501,7 +501,6 @@ func startHTTPServer(
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 
 		<-shutdownComplete
@@ -578,7 +577,6 @@ func startGrpcServer(
 		serverLog.Info("gRPC server listening")
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
-			return // This will trigger the defer cancel() and clean up the goroutine.
 		}
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
