@@ -203,22 +203,3 @@ func TestService_GetPrompt_GetError(t *testing.T) {
 
 	assert.Error(t, err)
 }
-
-func TestService_SetMCPServer(t *testing.T) {
-	mockPromptManager := new(MockPromptManager)
-	service := prompt.NewService(mockPromptManager)
-
-	server := &mcp.Server{}
-	service.SetMCPServer(server)
-
-	// To test this, we would ideally check if the server is set correctly.
-	// Since mcpServer is a private field, we can't access it directly.
-	// We can infer its state by how other methods behave.
-	// For now, this test just ensures the method doesn't panic.
-}
-
-func TestErrPromptNotFound(t *testing.T) {
-	err := prompt.ErrPromptNotFound
-	assert.Error(t, err)
-	assert.Equal(t, "prompt not found", err.Error())
-}

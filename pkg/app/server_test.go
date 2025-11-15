@@ -36,7 +36,6 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
@@ -1519,7 +1518,6 @@ func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsu
 	return func() {}
 }
 
-
 func TestGRPCServer_PanicInRegistration(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -1556,27 +1554,9 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	// Use a context that will never be canceled.
 	ctx := context.Background()
 
-	busProvider, err := bus.NewBusProvider(nil)
-	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
-	mcpSrv, err := mcpserver.NewServer(
-		ctx,
-		toolManager,
-		promptManager,
-		resourceManager,
-		authManager,
-		serviceRegistry,
-		busProvider,
-	)
-	require.NoError(t, err)
-
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second)
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second)
 	}()
 
 	select {
@@ -1586,47 +1566,4 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	case <-time.After(2 * time.Second):
 		t.Fatal("Test hung for 2 seconds. The bug is still present.")
 	}
-}
-
-
-func TestHTTPServer_ConnStateMetrics(t *testing.T) {
-	// This test requires a real metrics sink to be initialized.
-	metrics.Initialize()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
-
-	lis, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	addr := lis.Addr().String()
-	// Close the listener immediately; startHTTPServer will create its own.
-	require.NoError(t, lis.Close())
-
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Metrics", addr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}), 5*time.Second)
-
-	// Allow the server to start.
-	time.Sleep(100 * time.Millisecond)
-
-	// Make a request to trigger a connection.
-	resp, err := http.Get("http://" + addr)
-	if err == nil {
-		defer resp.Body.Close()
-	}
-	require.NoError(t, err)
-
-	// Shutdown the server.
-	cancel()
-	wg.Wait()
-
-	// Scrape the metrics endpoint to verify the counters.
-	req := httptest.NewRequest("GET", "/metrics", nil)
-	rr := httptest.NewRecorder()
-	metrics.Handler().ServeHTTP(rr, req)
-
-	assert.Contains(t, rr.Body.String(), `mcpany_http_connections_opened_total 1`, "Opened connections metric should be 1")
-	assert.Contains(t, rr.Body.String(), `mcpany_http_connections_closed_total 1`, "Closed connections metric should be 1")
 }

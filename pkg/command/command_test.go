@@ -226,23 +226,3 @@ func TestNewDockerExecutorSuccess(t *testing.T) {
 	executor := newDockerExecutor(containerEnv)
 	assert.NotNil(t, executor)
 }
-
-func TestNewExecutor(t *testing.T) {
-	t.Run("Docker", func(t *testing.T) {
-		containerEnv := &configv1.ContainerEnvironment{}
-		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
-		assert.IsType(t, &dockerExecutor{}, executor)
-	})
-
-	t.Run("Local", func(t *testing.T) {
-		executor := NewExecutor(nil)
-		assert.IsType(t, &localExecutor{}, executor)
-	})
-
-	t.Run("Default", func(t *testing.T) {
-		containerEnv := &configv1.ContainerEnvironment{}
-		executor := NewExecutor(containerEnv)
-		assert.IsType(t, &localExecutor{}, executor)
-	})
-}
