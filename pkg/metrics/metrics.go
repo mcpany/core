@@ -28,11 +28,11 @@ import (
 // Initialize prepares the metrics system with a Prometheus sink.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
-func Initialize() error {
+func Initialize() {
 	// Create a Prometheus sink
 	sink, err := prometheus.NewPrometheusSink()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	// Create a metrics configuration
@@ -41,10 +41,8 @@ func Initialize() error {
 
 	// Initialize the metrics system
 	if _, err := metrics.NewGlobal(conf, sink); err != nil {
-		return err
+		panic(err)
 	}
-
-	return nil
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.

@@ -55,9 +55,7 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // targetAddress is the address of the gRPC service to connect to.
 // It returns a new *grpc.ClientConn or an error if the connection fails.
 func (f *ConnectionFactory) NewConnection(ctx context.Context, targetAddress string) (*grpc.ClientConn, error) {
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	if f.dialer != nil {
 		opts = append(opts, grpc.WithContextDialer(f.dialer))
 	}

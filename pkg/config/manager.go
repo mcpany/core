@@ -159,16 +159,6 @@ func (m *UpstreamServiceManager) unmarshalProtoJSON(data []byte, services *[]*co
 		return fmt.Errorf("failed to unmarshal services: %w", err)
 	}
 
-	if len(serviceList.GetServices()) == 0 {
-		var singleService configv1.UpstreamServiceConfig
-		if err := protojson.Unmarshal(data, &singleService); err == nil {
-			if singleService.GetName() != "" {
-				*services = append(*services, &singleService)
-				return nil
-			}
-		}
-	}
-
 	// Validate semver
 	if version := serviceList.GetVersion(); version != "" {
 		if _, err := semver.NewVersion(version); err != nil {

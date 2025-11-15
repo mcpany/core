@@ -27,9 +27,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	if err := Initialize(); err != nil {
-		os.Exit(1)
-	}
+	Initialize()
 	os.Exit(m.Run())
 }
 
@@ -68,14 +66,5 @@ func TestMetrics(t *testing.T) {
 	// Check the response body for the expected metrics
 	if !strings.Contains(string(body), "mcpany_test_counter 1") {
 		t.Errorf("Expected metric mcpany_test_counter not found in response body")
-	}
-}
-
-func TestInitialize_Error(t *testing.T) {
-	// The global metrics system is already initialized in TestMain,
-	// so calling it again should return an error.
-	err := Initialize()
-	if err == nil {
-		t.Errorf("Expected an error when calling Initialize twice, but got nil")
 	}
 }

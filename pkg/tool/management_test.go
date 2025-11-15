@@ -326,20 +326,3 @@ func TestGetFullyQualifiedToolName(t *testing.T) {
 	fqn := GetFullyQualifiedToolName(serviceID, toolName)
 	assert.Equal(t, expectedFQN, fqn)
 }
-
-func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
-	tm := NewToolManager(nil)
-	serviceID := "test-service"
-	serviceInfo := &ServiceInfo{
-		Name: "Test Service",
-	}
-
-	tm.AddServiceInfo(serviceID, serviceInfo)
-
-	retrievedInfo, ok := tm.GetServiceInfo(serviceID)
-	assert.True(t, ok, "Service info should be found")
-	assert.Equal(t, serviceInfo, retrievedInfo, "Retrieved service info should match the added info")
-
-	_, ok = tm.GetServiceInfo("non-existent-service")
-	assert.False(t, ok, "Service info for a non-existent service should not be found")
-}

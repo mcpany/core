@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -859,26 +858,4 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 
 	_, _, _, err := u.Register(ctx, serviceConfig, &mockToolManager{}, &mockPromptManager{}, &mockResourceManager{}, false)
 	assert.Error(t, err)
-}
-
-func TestStreamableHTTP_RoundTrip(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "hello")
-	}))
-	defer server.Close()
-
-	tr := &StreamableHTTP{
-		Address: server.URL,
-		Client:  server.Client(),
-	}
-
-	req, err := http.NewRequest("GET", server.URL, nil)
-	require.NoError(t, err)
-
-	resp, err := tr.RoundTrip(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }

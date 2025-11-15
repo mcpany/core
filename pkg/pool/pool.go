@@ -228,17 +228,6 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 					p.sem.Release(1)
 					return zero, err
 				}
-
-				// Check again if the pool was closed while we were creating a client.
-				p.mu.Lock()
-				if p.closed {
-					p.mu.Unlock()
-					lo.Try(client.Close)
-					p.sem.Release(1)
-					return zero, ErrPoolClosed
-				}
-				p.mu.Unlock()
-
 				return client, nil
 			}
 		}

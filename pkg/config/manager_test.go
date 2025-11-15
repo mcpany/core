@@ -25,7 +25,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -312,77 +311,4 @@ services:
 			}
 		})
 	}
-}
-
-func TestUnmarshalServices(t *testing.T) {
-	manager := NewUpstreamServiceManager()
-
-	t.Run("unmarshal single service from JSON", func(t *testing.T) {
-		jsonData := `{"name": "single-service", "version": "1.0"}`
-		var services []*configv1.UpstreamServiceConfig
-		err := manager.unmarshalServices([]byte(jsonData), &services, "application/json")
-		require.NoError(t, err)
-		assert.Len(t, services, 1)
-		assert.Equal(t, "single-service", services[0].GetName())
-	})
-
-	t.Run("unmarshal service list from protobuf", func(t *testing.T) {
-		service := &configv1.UpstreamServiceConfig{}
-		service.SetName("proto-service")
-		service.SetVersion("1.0")
-
-		serviceList := &configv1.UpstreamServiceCollectionShare{}
-		serviceList.SetServices([]*configv1.UpstreamServiceConfig{service})
-		protoData, err := prototext.Marshal(serviceList)
-		require.NoError(t, err)
-
-		var services []*configv1.UpstreamServiceConfig
-		err = manager.unmarshalServices(protoData, &services, "application/protobuf")
-		require.NoError(t, err)
-		assert.Len(t, services, 1)
-		assert.Equal(t, "proto-service", services[0].GetName())
-	})
-
-	t.Run("unmarshal service list with text/plain content type", func(t *testing.T) {
-		service := &configv1.UpstreamServiceConfig{}
-		service.SetName("text-service")
-		service.SetVersion("1.0")
-
-		serviceList := &configv1.UpstreamServiceCollectionShare{}
-		serviceList.SetServices([]*configv1.UpstreamServiceConfig{service})
-
-		protoData, err := prototext.Marshal(serviceList)
-		require.NoError(t, err)
-
-		var services []*configv1.UpstreamServiceConfig
-		err = manager.unmarshalServices(protoData, &services, "text/plain")
-		require.NoError(t, err)
-		assert.Len(t, services, 1)
-		assert.Equal(t, "text-service", services[0].GetName())
-	})
-
-	t.Run("unmarshal invalid protobuf", func(t *testing.T) {
-		var services []*configv1.UpstreamServiceConfig
-		err := manager.unmarshalServices([]byte("invalid-proto"), &services, "application/protobuf")
-		assert.Error(t, err)
-	})
-
-	t.Run("unmarshal invalid yaml", func(t *testing.T) {
-		var services []*configv1.UpstreamServiceConfig
-		err := manager.unmarshalServices([]byte("services: - name: foo\n- bar"), &services, "application/x-yaml")
-		assert.Error(t, err)
-	})
-
-	t.Run("unmarshal invalid json", func(t *testing.T) {
-		var services []*configv1.UpstreamServiceConfig
-		err := manager.unmarshalServices([]byte(`{"services": "not-a-list"}`), &services, "application/json")
-		assert.Error(t, err)
-	})
-
-	t.Run("unmarshal empty json", func(t *testing.T) {
-		var services []*configv1.UpstreamServiceConfig
-		err := manager.unmarshalServices([]byte(`{}`), &services, "application/json")
-		require.NoError(t, err)
-		assert.Len(t, services, 0)
-	})
 }

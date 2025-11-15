@@ -79,9 +79,9 @@ func TestDockerHelpers(t *testing.T) {
 	}
 
 	// Test StartDockerContainer
-	imageName := "public.ecr.aws/nginx/nginx:alpine"
+	imageName := "redis:alpine"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
-	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"})
+	cleanup := StartDockerContainer(t, imageName, containerName, "-d")
 	defer cleanup()
 
 	// Verify the container is running

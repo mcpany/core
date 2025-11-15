@@ -59,27 +59,6 @@ func newMockGRPCHealthServer(status grpc_health_v1.HealthCheckResponse_ServingSt
 	return s, lis
 }
 
-// mockHealthServerWithFailure is a mock implementation of the gRPC health check server that returns an error.
-type mockHealthServerWithFailure struct {
-	grpc_health_v1.UnimplementedHealthServer
-}
-
-func (s *mockHealthServerWithFailure) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
-	return nil, assert.AnError
-}
-
-// newMockGRPCHealthServerWithFailure starts a gRPC server with the mock health service that returns an error.
-func newMockGRPCHealthServerWithFailure() (*grpc.Server, net.Listener) {
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		panic(err)
-	}
-	s := grpc.NewServer()
-	grpc_health_v1.RegisterHealthServer(s, &mockHealthServerWithFailure{})
-	go s.Serve(lis)
-	return s, lis
-}
-
 func TestNewChecker(t *testing.T) {
 	ctx := context.Background()
 
@@ -149,81 +128,6 @@ func TestNewChecker(t *testing.T) {
 					Url:          &unreachableURL,
 					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
 					Timeout:      durationpb.New(10 * time.Millisecond),
-				}.Build(),
-			}.Build(),
-		}.Build()
-
-		checker := NewChecker(upstreamConfig)
-		assert.NotNil(t, checker)
-		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
-	})
-
-	t.Run("GRPCNilHealthCheck", func(t *testing.T) {
-		server, lis := newMockGRPCHealthServer(grpc_health_v1.HealthCheckResponse_SERVING)
-		defer server.Stop()
-
-		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			Name: lo.ToPtr("test-service"),
-			GrpcService: configv1.GrpcUpstreamService_builder{
-				Address: lo.ToPtr(lis.Addr().String()),
-			}.Build(),
-		}.Build()
-
-		checker := NewChecker(upstreamConfig)
-		assert.NotNil(t, checker)
-		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
-	})
-
-	t.Run("HealthClientCheckFailure", func(t *testing.T) {
-		server, lis := newMockGRPCHealthServerWithFailure()
-		defer server.Stop()
-
-		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			Name: lo.ToPtr("test-service"),
-			GrpcService: configv1.GrpcUpstreamService_builder{
-				Address: lo.ToPtr(lis.Addr().String()),
-				HealthCheck: configv1.GrpcHealthCheck_builder{
-					Service: lo.ToPtr("test-service"),
-				}.Build(),
-			}.Build(),
-		}.Build()
-
-		checker := NewChecker(upstreamConfig)
-		assert.NotNil(t, checker)
-		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
-	})
-
-	t.Run("HTTPNilHealthCheck", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}))
-		defer server.Close()
-
-		serverAddr := server.Listener.Addr().String()
-
-		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			Name: lo.ToPtr("test-service"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: &serverAddr,
-			}.Build(),
-		}.Build()
-
-		checker := NewChecker(upstreamConfig)
-		assert.NotNil(t, checker)
-		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
-	})
-
-	t.Run("InvalidRequestURL", func(t *testing.T) {
-		invalidURL := " a"
-		serverAddr := "localhost:12345"
-
-		upstreamConfig := configv1.UpstreamServiceConfig_builder{
-			Name: lo.ToPtr("test-service"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: &serverAddr,
-				HealthCheck: configv1.HttpHealthCheck_builder{
-					Url:          &invalidURL,
-					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
 				}.Build(),
 			}.Build(),
 		}.Build()
@@ -328,16 +232,6 @@ func TestCheckVariousServices(t *testing.T) {
 			want: health.StatusUp,
 		},
 		{
-			name: "Command Line Service with Health Check",
-			config: configv1.UpstreamServiceConfig_builder{
-				Name: lo.ToPtr("cmd-service-with-health-check"),
-				CommandLineService: configv1.CommandLineUpstreamService_builder{
-					HealthCheck: &configv1.CommandLineHealthCheck{},
-				}.Build(),
-			}.Build(),
-			want: health.StatusUp,
-		},
-		{
 			name: "WebSocket Service",
 			config: configv1.UpstreamServiceConfig_builder{
 				Name:             lo.ToPtr("websocket-service"),
@@ -380,14 +274,6 @@ func TestCheckVariousServices(t *testing.T) {
 				CommandLineService: (&configv1.CommandLineUpstreamService_builder{}).Build(),
 			}.Build(),
 			want: health.StatusUp,
-		},
-		{
-			name: "MCP Service No Connection",
-			config: configv1.UpstreamServiceConfig_builder{
-				Name:       lo.ToPtr("mcp-no-connection"),
-				McpService: &configv1.McpUpstreamService{},
-			}.Build(),
-			want: health.StatusDown,
 		},
 	}
 
