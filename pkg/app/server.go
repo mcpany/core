@@ -530,16 +530,25 @@ func startGrpcServer(
 	go func() {
 		defer wg.Done()
 		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
-		defer func() {
-			if r := recover(); r != nil {
-				serverLog.Error("Panic during gRPC service registration", "panic", r)
-				errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
-			}
-		}()
+		registerSafe := func() *gogrpc.Server {
+			defer func() {
+				if r := recover(); r != nil {
+					serverLog.Error("Panic during gRPC service registration", "panic", r)
+					errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
+				}
+			}()
+			grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+			register(grpcServer)
+			reflection.Register(grpcServer)
+			return grpcServer
+		}
 
-		grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
-		register(grpcServer)
-		reflection.Register(grpcServer)
+		grpcServer := registerSafe()
+		if grpcServer == nil {
+			// A panic occurred during registration, and the error has been sent to the channel.
+			// We can just return here.
+			return
+		}
 
 		// localCtx is used to signal the shutdown goroutine to exit.
 		localCtx, cancel := context.WithCancel(context.Background())
