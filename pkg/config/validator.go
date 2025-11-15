@@ -94,9 +94,9 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	if binaryType == Server {
-		if gs.GetBindAddress() != "" {
-			if err := validation.IsValidBindAddress(gs.GetBindAddress()); err != nil {
-				return fmt.Errorf("invalid bind_address: %w", err)
+		if gs.GetMcpListenAddress() != "" {
+			if err := validation.IsValidBindAddress(gs.GetMcpListenAddress()); err != nil {
+				return fmt.Errorf("invalid mcp_listen_address: %w", err)
 			}
 		}
 	}

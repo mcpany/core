@@ -49,7 +49,7 @@ message GlobalSettings {
     DEBUG = 3;
   }
   // The address and port the server should bind to (e.g., "0.0.0.0:8080").
-  string bind_address = 1;
+  string mcp_listen_address = 1;
   // The base path for all MCP API endpoints (e.g., "/mcp/v1").
   string mcp_basepath = 2;
   // The logging level for the server.

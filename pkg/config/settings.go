@@ -18,6 +18,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -34,6 +35,7 @@ type Settings struct {
 	stdio           bool
 	configPaths     []string
 	debug           bool
+	logLevel        string
 	logFile         string
 	shutdownTimeout time.Duration
 	fs              afero.Fs
@@ -64,6 +66,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.stdio = viper.GetBool("stdio")
 	s.configPaths = viper.GetStringSlice("config-path")
 	s.debug = viper.GetBool("debug")
+	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 
@@ -75,11 +78,11 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
-		if cfg.GetGlobalSettings().GetBindAddress() != "" {
-			mcpListenAddress = cfg.GetGlobalSettings().GetBindAddress()
+		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
+			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
 	}
-	s.proto.SetBindAddress(mcpListenAddress)
+	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
 
 	return nil
@@ -92,7 +95,7 @@ func (s *Settings) GRPCPort() string {
 
 // MCPListenAddress returns the MCP listen address.
 func (s *Settings) MCPListenAddress() string {
-	return s.proto.GetBindAddress()
+	return s.proto.GetMcpListenAddress()
 }
 
 // Stdio returns whether stdio mode is enabled.
@@ -125,5 +128,16 @@ func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return v1.GlobalSettings_DEBUG
 	}
-	return v1.GlobalSettings_INFO
+	switch strings.ToLower(s.logLevel) {
+	case "debug":
+		return v1.GlobalSettings_DEBUG
+	case "info":
+		return v1.GlobalSettings_INFO
+	case "warn":
+		return v1.GlobalSettings_WARN
+	case "error":
+		return v1.GlobalSettings_ERROR
+	default:
+		return v1.GlobalSettings_INFO
+	}
 }

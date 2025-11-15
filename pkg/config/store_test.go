@@ -49,14 +49,14 @@ func TestJsonEngine_Unmarshal(t *testing.T) {
 	t.Run("ValidJSON", func(t *testing.T) {
 		validJSON := []byte(`{
 			"global_settings": {
-				"bind_address": "0.0.0.0:8080",
+				"mcp_listen_address": "0.0.0.0:8080",
 				"log_level": "INFO"
 			}
 		}`)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validJSON, cfg)
 		require.NoError(t, err)
-		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
+		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetMcpListenAddress())
 		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 
@@ -93,13 +93,13 @@ global_settings:
 	t.Run("ValidYAML", func(t *testing.T) {
 		validYAML := []byte(`
 global_settings:
-  bind_address: "0.0.0.0:8080"
+  mcp_listen_address: "0.0.0.0:8080"
   log_level: "INFO"
 `)
 		cfg := &configv1.McpAnyServerConfig{}
 		err := engine.Unmarshal(validYAML, cfg)
 		require.NoError(t, err)
-		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
+		assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetMcpListenAddress())
 		assert.Equal(t, configv1.GlobalSettings_INFO, cfg.GetGlobalSettings().GetLogLevel())
 	})
 }
@@ -139,7 +139,7 @@ func TestFileStore_Load(t *testing.T) {
 	require.NoError(t, fs.MkdirAll("configs/subdir", 0o755))
 	afero.WriteFile(fs, "configs/01_base.yaml", []byte(`
 global_settings:
-  bind_address: "0.0.0.0:8080"
+  mcp_listen_address: "0.0.0.0:8080"
   log_level: "INFO"
 upstream_services:
 - id: "service-1"
@@ -148,7 +148,7 @@ upstream_services:
 
 	afero.WriteFile(fs, "configs/02_override.yaml", []byte(`
 global_settings:
-  bind_address: "127.0.0.1:9090"
+  mcp_listen_address: "127.0.0.1:9090"
 upstream_services:
 - id: "service-2"
   name: "second-service"
@@ -170,7 +170,7 @@ upstream_services:
 			name:  "Load single file",
 			paths: []string{"configs/01_base.yaml"},
 			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
-				assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetBindAddress())
+				assert.Equal(t, "0.0.0.0:8080", cfg.GetGlobalSettings().GetMcpListenAddress())
 				assert.Len(t, cfg.GetUpstreamServices(), 1)
 			},
 		},
@@ -179,7 +179,7 @@ upstream_services:
 			paths: []string{"configs/01_base.yaml", "configs/02_override.yaml"},
 			checkResult: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
 				// Last one wins for scalar fields
-				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetBindAddress())
+				assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetMcpListenAddress())
 				// Repeated fields are appended
 				assert.Len(t, cfg.GetUpstreamServices(), 2)
 				assert.Equal(t, "service-1", cfg.GetUpstreamServices()[0].GetId())
