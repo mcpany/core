@@ -1239,6 +1239,49 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	wg.Wait()
 }
 
+func TestGRPCServer_ServeErrorDoesNotHang(t *testing.T) {
+	// Find a free port and create a listener that is already closed to force an error.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	l.Close()
+
+	closedListener, err := net.Listen("tcp", addr)
+	require.NoError(t, err)
+	closedListener.Close()
+
+	// Use a context that is never cancelled to expose the hang.
+	ctx := context.Background()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoHangOnError", closedListener, 5*time.Second, func(s *gogrpc.Server) {
+		// No-op registration.
+	})
+
+	// Wait for the startup error.
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for startup error")
+	}
+
+	// Now check that the goroutine terminates correctly without hanging.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Success! The goroutine finished.
+	case <-time.After(2 * time.Second):
+		t.Fatal("wg.Wait() timed out, the goroutine hung.")
+	}
+}
+
 func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	// This test is designed to fail if the double-close issue is present.
 	// It runs the shutdown sequence multiple times to ensure stability.
