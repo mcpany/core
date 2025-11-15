@@ -258,6 +258,32 @@ func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
 	assert.Contains(t, logBuffer.String(), "Failed to unmarshal message")
 }
 
+func TestRedisBus_Subscribe_NullPayload(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[*string](client)
+	topic := "test-null-payload"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg *string) {
+		assert.Nil(t, msg)
+		wg.Done()
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Publish a "null" JSON payload
+	err := client.Publish(context.Background(), topic, "null").Err()
+	assert.NoError(t, err)
+
+	wg.Wait()
+}
+
 // TestRedisBus_SubscribeOnce tests that a handler for a topic is only called once.
 // Note: Go's coverage tool may report 0% coverage for this function. This is a
 // known issue with the tool's ability to track coverage in goroutines,
@@ -374,6 +400,22 @@ func TestRedisBus_New(t *testing.T) {
 	assert.Equal(t, 1, options.DB)
 }
 
+func TestRedisBus_New_WithValidConfig(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address:  proto.String("localhost:6380"),
+		Password: proto.String("testpassword"),
+		Db:       proto.Int32(2),
+	}.Build()
+
+	bus := New[string](redisBus)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6380", options.Addr)
+	assert.Equal(t, "testpassword", options.Password)
+	assert.Equal(t, 2, options.DB)
+}
+
 func TestRedisBus_New_NilConfig(t *testing.T) {
 	var bus *RedisBus[string]
 	assert.NotPanics(t, func() {
@@ -443,6 +485,52 @@ func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *tes
 	unsub1()
 }
 
+func TestRedisBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-resubscribe-stop-receiving"
+
+	handler1Called := make(chan bool, 1)
+	handler2Called := make(chan bool, 1)
+
+	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {
+		handler1Called <- true
+	})
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
+
+	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {
+		handler2Called <- true
+	})
+	defer unsub2()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "second subscriber did not replace the first")
+
+	// This message should only be received by the second subscriber
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	// The second handler should be called
+	<-handler2Called
+
+	// The first handler should not be called
+	select {
+	case <-handler1Called:
+		t.Fatal("first handler should not have been called after resubscribe")
+	case <-time.After(100 * time.Millisecond):
+		// Test passed
+	}
+
+	// Clean up the first subscription
+	unsub1()
+}
+
 func TestRedisBus_Subscribe_NilHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -486,6 +574,40 @@ func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
 
 	// Allow some time for the goroutine to exit.
 	time.Sleep(100 * time.Millisecond)
+}
+
+func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "once-unsubscribe-before-message"
+
+	handlerCalled := make(chan bool, 1)
+
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		handlerCalled <- true
+	})
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear")
+
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	select {
+	case <-handlerCalled:
+		t.Fatal("handler should not have been called after unsubscribe")
+	case <-time.After(200 * time.Millisecond):
+		// Test passed
+	}
 }
 
 func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
