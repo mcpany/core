@@ -312,3 +312,155 @@ services:
 		})
 	}
 }
+
+func TestUnmarshalServices_Protobuf(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	var services []*configv1.UpstreamServiceConfig
+	err := manager.unmarshalServices([]byte("services: {name: \"test\"}"), &services, "application/protobuf")
+	assert.NoError(t, err)
+}
+
+func TestUnmarshalServices_TextPlain(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	var services []*configv1.UpstreamServiceConfig
+	err := manager.unmarshalServices([]byte("services: {name: \"test\"}"), &services, "text/plain")
+	assert.NoError(t, err)
+}
+
+func TestUnmarshalProtoJSON_SingleService(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	var services []*configv1.UpstreamServiceConfig
+	err := manager.unmarshalProtoJSON([]byte("{\"name\": \"test\"}"), &services)
+	assert.NoError(t, err)
+}
+
+func TestLoadAndMergeCollection_ErrorCases(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	manager := NewUpstreamServiceManager()
+
+	t.Run("http request fails", func(t *testing.T) {
+		collection := (configv1.UpstreamServiceCollection_builder{
+			HttpUrl: proto.String("http://invalid-url"),
+		}).Build()
+		err := manager.loadAndMergeCollection(context.Background(), collection)
+		assert.Error(t, err)
+	})
+
+	t.Run("server error", func(t *testing.T) {
+		collection := (configv1.UpstreamServiceCollection_builder{
+			HttpUrl: proto.String(server.URL),
+		}).Build()
+		err := manager.loadAndMergeCollection(context.Background(), collection)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid version", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"version": "invalid"}`))
+		}))
+		defer server.Close()
+		collection := (configv1.UpstreamServiceCollection_builder{
+			HttpUrl: proto.String(server.URL),
+		}).Build()
+		err := manager.loadAndMergeCollection(context.Background(), collection)
+		assert.Error(t, err)
+	})
+
+	t.Run("bad status code", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer server.Close()
+		collection := (configv1.UpstreamServiceCollection_builder{
+			HttpUrl: proto.String(server.URL),
+		}).Build()
+		err := manager.loadAndMergeCollection(context.Background(), collection)
+		assert.Error(t, err)
+	})
+}
+
+func TestApplyAuthentication_ErrorCases(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	req, _ := http.NewRequest("GET", "http://localhost", nil)
+
+	t.Run("api key resolve error", func(t *testing.T) {
+		auth := (configv1.UpstreamAuthentication_builder{
+			ApiKey: (configv1.UpstreamAPIKeyAuth_builder{
+				ApiKey: (configv1.SecretValue_builder{
+					FilePath: proto.String("/non-existent-file"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := manager.applyAuthentication(req, auth)
+		assert.Error(t, err)
+	})
+
+	t.Run("bearer token resolve error", func(t *testing.T) {
+		auth := (configv1.UpstreamAuthentication_builder{
+			BearerToken: (configv1.UpstreamBearerTokenAuth_builder{
+				Token: (configv1.SecretValue_builder{
+					FilePath: proto.String("/non-existent-file"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := manager.applyAuthentication(req, auth)
+		assert.Error(t, err)
+	})
+
+	t.Run("basic auth resolve error", func(t *testing.T) {
+		auth := (configv1.UpstreamAuthentication_builder{
+			BasicAuth: (configv1.UpstreamBasicAuth_builder{
+				Password: (configv1.SecretValue_builder{
+					FilePath: proto.String("/non-existent-file"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := manager.applyAuthentication(req, auth)
+		assert.Error(t, err)
+	})
+}
+
+func TestUnmarshalServices_ErrorCases(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	var services []*configv1.UpstreamServiceConfig
+
+	t.Run("unsupported content type", func(t *testing.T) {
+		err := manager.unmarshalServices([]byte(""), &services, "application/xml")
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid yaml", func(t *testing.T) {
+		err := manager.unmarshalServices([]byte(":"), &services, "application/x-yaml")
+		assert.Error(t, err)
+	})
+}
+
+func TestUnmarshalProtoJSON_ErrorCases(t *testing.T) {
+	manager := NewUpstreamServiceManager()
+	var services []*configv1.UpstreamServiceConfig
+
+	t.Run("invalid json", func(t *testing.T) {
+		err := manager.unmarshalProtoJSON([]byte("{"), &services)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid semver", func(t *testing.T) {
+		err := manager.unmarshalProtoJSON([]byte("{\"version\": \"invalid\"}"), &services)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid semver in collection", func(t *testing.T) {
+		err := manager.unmarshalProtoJSON([]byte("{\"services\": [], \"version\": \"invalid\"}"), &services)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid json and invalid single object", func(t *testing.T) {
+		err := manager.unmarshalProtoJSON([]byte("{\"services\": [{]}"), &services)
+		assert.Error(t, err)
+	})
+}

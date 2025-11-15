@@ -19,10 +19,12 @@ package config
 import (
 	"testing"
 
+	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestValidate(t *testing.T) {
@@ -423,6 +425,13 @@ func TestValidateOrError(t *testing.T) {
 			}).Build(),
 			expectError: true,
 		},
+		{
+			name: "no service config",
+			service: (&configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("no-service-config"),
+			}).Build(),
+			expectError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -435,4 +444,140 @@ func TestValidateOrError(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateMessageBus(t *testing.T) {
+	t.Run("valid redis", func(t *testing.T) {
+		gs := (configv1.GlobalSettings_builder{
+			MessageBus: (bus.MessageBus_builder{
+				Redis: (bus.RedisBus_builder{
+					Address: proto.String("localhost:6379"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := validateGlobalSettings(gs, Server)
+		assert.NoError(t, err)
+	})
+
+	t.Run("invalid redis", func(t *testing.T) {
+		gs := (configv1.GlobalSettings_builder{
+			MessageBus: (bus.MessageBus_builder{
+				Redis: (bus.RedisBus_builder{
+					Address: proto.String(""),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := validateGlobalSettings(gs, Server)
+		assert.Error(t, err)
+	})
+}
+
+func TestInvalidCache(t *testing.T) {
+	service := (configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: (configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://localhost:8080"),
+		}).Build(),
+		Cache: (configv1.CacheConfig_builder{
+			Ttl: (&durationpb.Duration{
+				Seconds: -1,
+			}),
+		}).Build(),
+	}).Build()
+	err := validateUpstreamService(service)
+	assert.Error(t, err)
+}
+
+func TestInvalidAPIKey(t *testing.T) {
+	service := (configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: (configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://localhost:8080"),
+		}).Build(),
+		UpstreamAuthentication: (configv1.UpstreamAuthentication_builder{
+			ApiKey: (configv1.UpstreamAPIKeyAuth_builder{
+				ApiKey: (configv1.SecretValue_builder{
+					PlainText: proto.String(""),
+				}).Build(),
+			}).Build(),
+		}).Build(),
+	}).Build()
+	err := validateUpstreamService(service)
+	assert.Error(t, err)
+}
+
+func TestInvalidBearer(t *testing.T) {
+	service := (configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: (configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://localhost:8080"),
+		}).Build(),
+		UpstreamAuthentication: (configv1.UpstreamAuthentication_builder{
+			BearerToken: (configv1.UpstreamBearerTokenAuth_builder{
+				Token: (configv1.SecretValue_builder{
+					PlainText: proto.String(""),
+				}).Build(),
+			}).Build(),
+		}).Build(),
+	}).Build()
+	err := validateUpstreamService(service)
+	assert.Error(t, err)
+}
+
+func TestEmptyUsernameBasicAuth(t *testing.T) {
+	service := (configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: (configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://localhost:8080"),
+		}).Build(),
+		UpstreamAuthentication: (configv1.UpstreamAuthentication_builder{
+			BasicAuth: (configv1.UpstreamBasicAuth_builder{
+				Username: proto.String(""),
+				Password: (configv1.SecretValue_builder{
+					PlainText: proto.String("password"),
+				}).Build(),
+			}).Build(),
+		}).Build(),
+	}).Build()
+	err := validateUpstreamService(service)
+	assert.NoError(t, err)
+}
+
+func TestCommandLineService(t *testing.T) {
+	service := (configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		CommandLineService: (configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+		}).Build(),
+	}).Build()
+	err := validateUpstreamService(service)
+	assert.NoError(t, err)
+}
+
+func TestInvalidMcpService(t *testing.T) {
+	t.Run("invalid http address", func(t *testing.T) {
+		service := (configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("mcp-svc-1"),
+			McpService: (configv1.McpUpstreamService_builder{
+				HttpConnection: (configv1.McpStreamableHttpConnection_builder{
+					HttpAddress: proto.String("invalid-url"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := validateUpstreamService(service)
+		assert.Error(t, err)
+	})
+
+	t.Run("empty http address", func(t *testing.T) {
+		service := (configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("mcp-svc-1"),
+			McpService: (configv1.McpUpstreamService_builder{
+				HttpConnection: (configv1.McpStreamableHttpConnection_builder{
+					HttpAddress: proto.String(""),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		err := validateUpstreamService(service)
+		assert.Error(t, err)
+	})
 }
