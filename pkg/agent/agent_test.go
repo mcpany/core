@@ -37,7 +37,7 @@ func TestGetCompletion(t *testing.T) {
 	os.Setenv("OPENROUTER_API_KEY", "test-key")
 	defer os.Unsetenv("OPENROUTER_API_KEY")
 
-	completion, err := GetCompletion("test prompt")
+	completion, err := GetCompletion("test prompt", "test-model")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

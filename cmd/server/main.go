@@ -159,7 +159,11 @@ func newRootCmd() *cobra.Command {
 			if prompt == "" {
 				return errors.New("prompt is required")
 			}
-			completion, err := agent.GetCompletion(prompt)
+			model, err := cmd.Flags().GetString("model")
+			if err != nil {
+				return err
+			}
+			completion, err := agent.GetCompletion(prompt, model)
 			if err != nil {
 				return err
 			}
@@ -168,6 +172,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	agentCmd.Flags().String("prompt", "", "The prompt to send to the agent")
+	agentCmd.Flags().String("model", "openai/gpt-4o", "The model to use for the agent")
 	rootCmd.AddCommand(agentCmd)
 
 	config.BindFlags(rootCmd)

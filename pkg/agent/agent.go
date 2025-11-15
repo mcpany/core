@@ -45,14 +45,14 @@ type openRouterResponse struct {
 	} `json:"choices"`
 }
 
-func GetCompletion(prompt string) (string, error) {
+func GetCompletion(prompt, model string) (string, error) {
 	apiKey := os.Getenv("OPENROUTER_API_KEY")
 	if apiKey == "" {
 		return "", fmt.Errorf("OPENROUTER_API_KEY is not set")
 	}
 
 	reqBody := openRouterRequest{
-		Model: "openai/gpt-4o",
+		Model: model,
 		Messages: []struct {
 			Role    string `json:"role"`
 			Content string `json:"content"`
