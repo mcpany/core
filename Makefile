@@ -84,7 +84,7 @@ PLATFORMS ?= linux/amd64 linux/386 linux/arm64 linux/arm
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find proto -name "*.proto")
 
-.PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
+.PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker e2e-public-api
 
 all: build
 
@@ -287,7 +287,7 @@ build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
-test: test-fast e2e test-public-api
+test: test-fast e2e test-public-api lint e2e-public-api
 
 COVERAGE_FILE ?= coverage.out
 
@@ -303,6 +303,8 @@ test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
 test-public-api: build
 	@echo "Running public API E2E Go tests with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
+
+e2e-public-api: test-public-api
 
 # ==============================================================================
 # Example Binaries Build
