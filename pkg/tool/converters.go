@@ -104,8 +104,14 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 		return nil, nil
 	}
 
+	// First, check if the schema is a map, which is expected for a JSON object.
+	schemaMap, ok := schema.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("schema is not a valid JSON object")
+	}
+
 	// Marshal the provided schema to JSON.
-	jsonBytes, err := json.Marshal(schema)
+	jsonBytes, err := json.Marshal(schemaMap)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal schema to json: %w", err)
 	}
