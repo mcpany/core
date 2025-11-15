@@ -315,31 +315,23 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 		nil,
 	)
 	if err != nil {
-		err = fmt.Errorf("failed to create request for health check: %w", err)
-		fmt.Fprintln(out, err.Error())
-		return err
+		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
 	resp, err := healthCheckClient.Do(req)
 	if err != nil {
-		err = fmt.Errorf("health check failed: %w", err)
-		fmt.Fprintln(out, err.Error())
-		return err
+		return fmt.Errorf("health check failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	// We must read the body and close it to ensure the underlying connection can be reused.
 	_, err = io.Copy(io.Discard, resp.Body)
 	if err != nil {
-		err = fmt.Errorf("failed to read response body: %w", err)
-		fmt.Fprintln(out, err.Error())
-		return err
+		return fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
-		fmt.Fprintln(out, err.Error())
-		return err
+		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
 	fmt.Fprintln(out, "Health check successful: server is running and healthy.")
