@@ -47,8 +47,6 @@ type ToolManagerInterface interface {
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	SetMCPServer(mcpServer MCPServerProvider)
 	AddMiddleware(middleware ToolExecutionMiddleware)
-	AddServiceInfo(serviceID string, info *ServiceInfo)
-	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
 // ToolManager is a thread-safe manager for registering, retrieving, and
@@ -60,7 +58,6 @@ type ToolExecutionMiddleware interface {
 
 type ToolManager struct {
 	tools       *xsync.Map[string, Tool]
-	serviceInfo *xsync.Map[string, *ServiceInfo]
 	mcpServer   MCPServerProvider
 	bus         *bus.BusProvider
 	mu          sync.RWMutex
@@ -70,9 +67,8 @@ type ToolManager struct {
 // NewToolManager creates and returns a new, empty ToolManager.
 func NewToolManager(bus *bus.BusProvider) *ToolManager {
 	return &ToolManager{
-		bus:         bus,
-		tools:       xsync.NewMap[string, Tool](),
-		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
+		bus:   bus,
+		tools: xsync.NewMap[string, Tool](),
 	}
 }
 
@@ -136,25 +132,6 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 	return result, err
 }
 
-// AddServiceInfo stores metadata about a service, indexed by its ID.
-//
-// serviceID is the unique identifier for the service.
-// info is the ServiceInfo struct containing the service's metadata.
-func (tm *ToolManager) AddServiceInfo(serviceID string, info *ServiceInfo) {
-	tm.serviceInfo.Store(serviceID, info)
-}
-
-// GetServiceInfo retrieves the metadata for a service by its ID.
-//
-// serviceID is the unique identifier for the service.
-// It returns the ServiceInfo and a boolean indicating whether the service was found.
-func (tm *ToolManager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
-	info, ok := tm.serviceInfo.Load(serviceID)
-	if !ok {
-		return nil, false
-	}
-	return info, true
-}
 
 // AddTool registers a new tool with the manager. It generates a unique tool ID
 // and, if an MCP server is configured, registers a handler for the tool with

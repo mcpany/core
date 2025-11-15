@@ -50,6 +50,7 @@ func NewCommandUpstream() upstream.Upstream {
 func (u *CommandUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -80,7 +81,7 @@ func (u *CommandUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	discoveredTools, err := u.createAndRegisterCommandTools(
 		ctx,

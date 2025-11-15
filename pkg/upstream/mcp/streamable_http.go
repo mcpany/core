@@ -181,6 +181,7 @@ func (r *mcpResource) Subscribe(ctx context.Context) error {
 func (u *MCPUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -201,7 +202,7 @@ func (u *MCPUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	var discoveredTools []*configv1.ToolDefinition
 	var discoveredResources []*configv1.ResourceDefinition
@@ -280,9 +281,9 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	return f(cs)
 }
 
-// CallTool executes a tool on the downstream MCP service by establishing a
+// ExecuteTool executes a tool on the downstream MCP service by establishing a
 // session and forwarding the tool call.
-func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+func (c *mcpConnection) ExecuteTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
 		var err error

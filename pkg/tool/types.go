@@ -83,6 +83,7 @@ type ExecutionRequest struct {
 type ServiceRegistry interface {
 	GetTool(toolName string) (Tool, bool)
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+	AddServiceInfo(serviceID string, info *ServiceInfo)
 }
 
 // ToolExecutionFunc represents the next middleware in the chain.
@@ -479,7 +480,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		Arguments: arguments,
 	}
 
-	result, err := t.client.CallTool(ctx, callToolParams)
+	result, err := t.client.ExecuteTool(ctx, callToolParams)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute tool %q: %w", req.ToolName, err)
 	}

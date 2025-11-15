@@ -34,12 +34,12 @@ import (
 // mockMCPClient for testing
 type mockMCPClient struct {
 	client.MCPClient
-	callToolFunc func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
+	executeToolFunc func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }
 
-func (m *mockMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
-	if m.callToolFunc != nil {
-		return m.callToolFunc(ctx, params)
+func (m *mockMCPClient) ExecuteTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+	if m.executeToolFunc != nil {
+		return m.executeToolFunc(ctx, params)
 	}
 	return nil, errors.New("not implemented")
 }
@@ -47,7 +47,7 @@ func (m *mockMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams
 func TestMCPTool_Execute(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			executeToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				assert.Equal(t, "test-tool", params.Name)
 				args, ok := params.Arguments.(json.RawMessage)
 				require.True(t, ok)
@@ -79,7 +79,7 @@ func TestMCPTool_Execute(t *testing.T) {
 	t.Run("execution error", func(t *testing.T) {
 		expectedErr := errors.New("mcp error")
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			executeToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				return nil, expectedErr
 			},
 		}
@@ -101,7 +101,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 	t.Run("with input transformation", func(t *testing.T) {
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			executeToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				args, ok := params.Arguments.(json.RawMessage)
 				require.True(t, ok)
 				assert.JSONEq(t, `{"transformed":true}`, string(args))

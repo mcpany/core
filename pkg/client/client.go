@@ -62,12 +62,12 @@ type HttpClient interface {
 // MCPClient defines the interface for a client that interacts with an MCP
 // service. It provides a standard method for executing tools.
 type MCPClient interface {
-	// CallTool executes a tool on the MCP service, sending the tool name and
+	// ExecuteTool executes a tool on the MCP service, sending the tool name and
 	// inputs and returning the result.
 	//
 	// Parameters:
 	//   - ctx: The context for the call.
 	//   - params: The parameters for the tool call, including the tool name and
 	//     arguments.
-	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
+	ExecuteTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }

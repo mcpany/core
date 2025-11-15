@@ -114,7 +114,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		// Verify that the service info was added to the tool manager
 		serviceID := resp.GetServiceKey()
 		require.NotEmpty(t, serviceID)
-		serviceInfo, ok := toolManager.GetServiceInfo(serviceID)
+		serviceInfo, ok := serviceRegistry.GetServiceInfo(serviceID)
 		require.True(t, ok)
 		require.NotNil(t, serviceInfo)
 		assert.Equal(t, "testservice", serviceInfo.Name)

@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	config "github.com/mcpany/core/proto/config/v1"
+	"github.com/puzpuzpuz/xsync/v4"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -48,8 +49,8 @@ type ServiceRegistryInterface interface {
 // each service.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
-	serviceConfigs  map[string]*config.UpstreamServiceConfig
-	serviceInfo     map[string]*tool.ServiceInfo
+	serviceConfigs  *xsync.Map[string, *config.UpstreamServiceConfig]
+	serviceInfo     *xsync.Map[string, *tool.ServiceInfo]
 	factory         factory.Factory
 	toolManager     tool.ToolManagerInterface
 	promptManager   prompt.PromptManagerInterface
@@ -70,8 +71,8 @@ type ServiceRegistry struct {
 // Returns a new instance of `ServiceRegistry`.
 func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
 	return &ServiceRegistry{
-		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
-		serviceInfo:     make(map[string]*tool.ServiceInfo),
+		serviceConfigs:  xsync.NewMap[string, *config.UpstreamServiceConfig](),
+		serviceInfo:     xsync.NewMap[string, *tool.ServiceInfo](),
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
@@ -103,17 +104,17 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	if _, ok := r.serviceConfigs[serviceID]; ok {
+	if _, ok := r.serviceConfigs.Load(serviceID); ok {
 		r.toolManager.ClearToolsForService(serviceID) // Clean up the just-registered tools
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
-	r.serviceConfigs[serviceID] = serviceConfig
+	r.serviceConfigs.Store(serviceID, serviceConfig)
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
@@ -139,9 +140,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // serviceID is the unique identifier for the service.
 // info is the ServiceInfo struct containing the service's metadata.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.serviceInfo[serviceID] = info
+	r.serviceInfo.Store(serviceID, info)
 }
 
 // GetServiceInfo retrieves the metadata for a service by its ID.
@@ -149,9 +148,7 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // serviceID is the unique identifier for the service.
 // It returns the ServiceInfo and a boolean indicating whether the service was found.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	info, ok := r.serviceInfo[serviceID]
+	info, ok := r.serviceInfo.Load(serviceID)
 	return info, ok
 }
 
@@ -163,9 +160,7 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Returns the service configuration and a boolean indicating whether the service
 // was found.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	serviceConfig, ok := r.serviceConfigs[serviceID]
+	serviceConfig, ok := r.serviceConfigs.Load(serviceID)
 	return serviceConfig, ok
 }
 
@@ -174,15 +169,20 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, ok := r.serviceConfigs[serviceName]; !ok {
+	if _, ok := r.serviceConfigs.Load(serviceName); !ok {
 		return fmt.Errorf("service %q not found", serviceName)
 	}
 
-	delete(r.serviceConfigs, serviceName)
-	delete(r.serviceInfo, serviceName)
+	r.serviceConfigs.Delete(serviceName)
+	r.serviceInfo.Delete(serviceName)
 	r.toolManager.ClearToolsForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
 	return nil
+}
+
+// GetTool retrieves a tool by its name.
+func (r *ServiceRegistry) GetTool(toolName string) (tool.Tool, bool) {
+	return r.toolManager.GetTool(toolName)
 }
 
 // GetAllServices returns a list of all registered services.
@@ -190,9 +190,10 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
-	for _, service := range r.serviceConfigs {
-		services = append(services, service)
-	}
+	var services []*config.UpstreamServiceConfig
+	r.serviceConfigs.Range(func(key string, value *config.UpstreamServiceConfig) bool {
+		services = append(services, value)
+		return true
+	})
 	return services, nil
 }

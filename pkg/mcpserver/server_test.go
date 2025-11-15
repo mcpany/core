@@ -219,7 +219,7 @@ func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
-func TestServer_CallTool(t *testing.T) {
+func TestServer_ExecuteTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -506,18 +506,12 @@ func TestServer_Getters(t *testing.T) {
 
 type mockToolManager struct {
 	tool.ToolManager
-	addServiceInfoCalled       bool
 	getToolCalled              bool
 	listToolsCalled            bool
 	executeToolCalled          bool
 	setMCPServerCalled         bool
 	addToolCalled              bool
-	getServiceInfoCalled       bool
 	clearToolsForServiceCalled bool
-}
-
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.addServiceInfoCalled = true
 }
 
 func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
@@ -547,11 +541,6 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	m.getServiceInfoCalled = true
-	return &tool.ServiceInfo{}, true
-}
-
 func (m *mockToolManager) ClearToolsForService(serviceKey string) {
 	m.clearToolsForServiceCalled = true
 }
@@ -573,16 +562,13 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
 	require.NoError(t, err)
 
-	server.AddServiceInfo("test-service", &tool.ServiceInfo{})
-	assert.True(t, mockToolManager.addServiceInfoCalled)
-
 	_, _ = server.GetTool("test-tool")
 	assert.True(t, mockToolManager.getToolCalled)
 
 	_ = server.ListTools()
 	assert.True(t, mockToolManager.listToolsCalled)
 
-	_, _ = server.CallTool(ctx, &tool.ExecutionRequest{})
+	_, _ = server.ExecuteTool(ctx, &tool.ExecutionRequest{})
 	assert.True(t, mockToolManager.executeToolCalled)
 
 	server.SetMCPServer(nil)
@@ -590,9 +576,6 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 
 	_ = server.AddTool(&mockTool{})
 	assert.True(t, mockToolManager.addToolCalled)
-
-	_, _ = server.GetServiceInfo("test-service")
-	assert.True(t, mockToolManager.getServiceInfoCalled)
 
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)

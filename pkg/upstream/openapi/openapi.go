@@ -69,6 +69,7 @@ func NewOpenAPIUpstream() upstream.Upstream {
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -99,7 +100,7 @@ func (u *OpenAPIUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	specContent := openapiService.GetOpenapiSpec()
 	if specContent == "" {

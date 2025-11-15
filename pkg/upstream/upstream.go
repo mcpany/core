@@ -35,6 +35,7 @@ type Upstream interface {
 	//
 	// ctx is the context for the registration process.
 	// serviceConfig contains the configuration for the upstream service.
+	// serviceRegistry is the registry where service info will be stored.
 	// toolManager is the manager where discovered tools will be registered.
 	// promptManager is the manager where discovered prompts will be registered.
 	// resourceManager is the manager where discovered resources will be registered.
@@ -45,6 +46,7 @@ type Upstream interface {
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
+		serviceRegistry tool.ServiceRegistry,
 		toolManager tool.ToolManagerInterface,
 		promptManager prompt.PromptManagerInterface,
 		resourceManager resource.ResourceManagerInterface,

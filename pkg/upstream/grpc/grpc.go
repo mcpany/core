@@ -78,6 +78,7 @@ func NewGRPCUpstream(poolManager *pool.Manager) upstream.Upstream {
 func (u *GRPCUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -141,7 +142,7 @@ func (u *GRPCUpstream) Register(
 		}
 	}
 
-	toolManager.AddServiceInfo(serviceID, &tool.ServiceInfo{
+	serviceRegistry.AddServiceInfo(serviceID, &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 		Fds:    fds,
@@ -152,24 +153,24 @@ func (u *GRPCUpstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceID, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds)
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, serviceRegistry, toolManager, resourceManager, isReload, fds)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
 
-	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, resourceManager, isReload, fds)
+	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, serviceRegistry, toolManager, resourceManager, isReload, fds)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
 
-	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds)
+	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, serviceRegistry, toolManager, resourceManager, isReload, fds)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from config for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromConfig...)
 
-	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload)
+	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, serviceRegistry, promptManager, isReload)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register prompts from config for %s: %w", serviceID, err)
 	}
@@ -186,6 +187,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	ctx context.Context,
 	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
+	serviceRegistry tool.ServiceRegistry,
 	tm tool.ToolManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
@@ -196,7 +198,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		return nil, nil
 	}
 
-	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	serviceInfo, ok := serviceRegistry.GetServiceInfo(serviceID)
 	if !ok {
 		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
 	}
@@ -338,6 +340,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	ctx context.Context,
 	serviceID string,
+	serviceRegistry tool.ServiceRegistry,
 	tm tool.ToolManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
@@ -348,7 +351,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 		return nil, nil
 	}
 
-	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	serviceInfo, ok := serviceRegistry.GetServiceInfo(serviceID)
 	if !ok {
 		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
 	}
@@ -519,6 +522,7 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	ctx context.Context,
 	serviceID string,
+	serviceRegistry tool.ServiceRegistry,
 	tm tool.ToolManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
 	isReload bool,
@@ -529,7 +533,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 		return nil, nil
 	}
 
-	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	serviceInfo, ok := serviceRegistry.GetServiceInfo(serviceID)
 	if !ok {
 		return nil, fmt.Errorf("service info not found for service: %s", serviceID)
 	}
@@ -605,11 +609,12 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 func (u *GRPCUpstream) createAndRegisterPromptsFromConfig(
 	ctx context.Context,
 	serviceID string,
+	serviceRegistry tool.ServiceRegistry,
 	promptManager prompt.PromptManagerInterface,
 	isReload bool,
 ) error {
 	log := logging.GetLogger()
-	serviceInfo, ok := u.toolManager.GetServiceInfo(serviceID)
+	serviceInfo, ok := serviceRegistry.GetServiceInfo(serviceID)
 	if !ok {
 		return fmt.Errorf("service info not found for service: %s", serviceID)
 	}

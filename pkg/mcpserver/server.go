@@ -338,7 +338,7 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 }
 
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	s.toolManager.AddServiceInfo(serviceID, info)
+	s.serviceRegistry.AddServiceInfo(serviceID, info)
 }
 
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
@@ -349,7 +349,7 @@ func (s *Server) ListTools() []tool.Tool {
 	return s.toolManager.ListTools()
 }
 
-func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (s *Server) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return s.toolManager.ExecuteTool(ctx, req)
 }
 
@@ -362,7 +362,7 @@ func (s *Server) AddTool(t tool.Tool) error {
 }
 
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return s.toolManager.GetServiceInfo(serviceID)
+	return s.serviceRegistry.GetServiceInfo(serviceID)
 }
 
 func (s *Server) ClearToolsForService(serviceKey string) {

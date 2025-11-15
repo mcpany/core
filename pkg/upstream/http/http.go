@@ -81,6 +81,7 @@ func NewHTTPUpstream(poolManager *pool.Manager) upstream.Upstream {
 func (u *HTTPUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -147,7 +148,7 @@ func (u *HTTPUpstream) Register(
 		Config: serviceConfig,
 	}
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	address = httpService.GetAddress()
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)

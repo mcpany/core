@@ -59,6 +59,7 @@ func NewWebrtcUpstream(poolManager *pool.Manager) upstream.Upstream {
 func (u *WebrtcUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -92,7 +93,7 @@ func (u *WebrtcUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	address := webrtcService.GetAddress()
 	discoveredTools := u.createAndRegisterWebrtcTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)

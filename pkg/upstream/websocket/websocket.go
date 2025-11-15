@@ -62,6 +62,7 @@ func NewWebsocketUpstream(poolManager *pool.Manager) upstream.Upstream {
 func (u *WebsocketUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceRegistry tool.ServiceRegistry,
 	toolManager tool.ToolManagerInterface,
 	promptManager prompt.PromptManagerInterface,
 	resourceManager resource.ResourceManagerInterface,
@@ -102,7 +103,7 @@ func (u *WebsocketUpstream) Register(
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
 	}
-	toolManager.AddServiceInfo(serviceID, info)
+	serviceRegistry.AddServiceInfo(serviceID, info)
 
 	discoveredTools := u.createAndRegisterWebsocketTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)

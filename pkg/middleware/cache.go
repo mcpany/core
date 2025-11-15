@@ -32,17 +32,17 @@ import (
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache       *cache.Cache[any]
-	toolManager tool.ToolManagerInterface
+	cache           *cache.Cache[any]
+	serviceRegistry tool.ServiceRegistry
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddleware {
+func NewCachingMiddleware(serviceRegistry tool.ServiceRegistry) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
 	return &CachingMiddleware{
-		cache:       cacheManager,
-		toolManager: toolManager,
+		cache:           cacheManager,
+		serviceRegistry: serviceRegistry,
 	}
 }
 
@@ -77,7 +77,7 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 		return callCacheConfig
 	}
 
-	serviceInfo, ok := m.toolManager.GetServiceInfo(t.Tool().GetServiceId())
+	serviceInfo, ok := m.serviceRegistry.GetServiceInfo(t.Tool().GetServiceId())
 	if !ok {
 		return nil
 	}

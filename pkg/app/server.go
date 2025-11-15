@@ -220,7 +220,7 @@ func (a *Application) Run(
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
-	cachingMiddleware := middleware.NewCachingMiddleware(toolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(serviceRegistry)
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {

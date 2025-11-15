@@ -43,7 +43,7 @@ type MockMCPClient struct {
 	mock.Mock
 }
 
-func (m *MockMCPClient) CallTool(ctx context.Context, req *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+func (m *MockMCPClient) ExecuteTool(ctx context.Context, req *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	args := m.Called(ctx, req)
 	return args.Get(0).(*mcp.CallToolResult), args.Error(1)
 }
@@ -171,7 +171,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	mockResult := &mcp.CallToolResult{
 		Content: []mcp.Content{&mcp.TextContent{Text: `{"key":"value"}`}},
 	}
-	mockClient.On("CallTool", mock.Anything, mock.Anything).Return(mockResult, nil)
+	mockClient.On("ExecuteTool", mock.Anything, mock.Anything).Return(mockResult, nil)
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
