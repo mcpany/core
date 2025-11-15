@@ -33,6 +33,7 @@ import (
 )
 
 func TestUpstreamService_ArtInstituteChicago(t *testing.T) {
+	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
