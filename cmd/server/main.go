@@ -18,6 +18,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -27,6 +28,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/mcpany/core/pkg/agent"
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/config"
@@ -145,6 +147,28 @@ func newRootCmd() *cobra.Command {
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
+
+	agentCmd := &cobra.Command{
+		Use:   "agent",
+		Short: "Run the agent",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			prompt, err := cmd.Flags().GetString("prompt")
+			if err != nil {
+				return err
+			}
+			if prompt == "" {
+				return errors.New("prompt is required")
+			}
+			completion, err := agent.GetCompletion(prompt)
+			if err != nil {
+				return err
+			}
+			fmt.Println(completion)
+			return nil
+		},
+	}
+	agentCmd.Flags().String("prompt", "", "The prompt to send to the agent")
+	rootCmd.AddCommand(agentCmd)
 
 	config.BindFlags(rootCmd)
 
