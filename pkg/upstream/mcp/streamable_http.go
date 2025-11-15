@@ -757,3 +757,19 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	}
 	return base.RoundTrip(req)
 }
+
+// StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+type StreamableHTTP struct {
+	// Address is the HTTP address of the MCP service.
+	Address string
+	// Client is the HTTP client to use for the connection.
+	Client *http.Client
+}
+
+// RoundTrip executes an HTTP request and returns the response.
+func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
+	if t.Client == nil {
+		t.Client = http.DefaultClient
+	}
+	return t.Client.Do(req)
+}
