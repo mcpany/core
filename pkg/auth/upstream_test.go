@@ -254,3 +254,83 @@ func TestBasicAuth_Authenticate(t *testing.T) {
 	assert.Equal(t, "testuser", user)
 	assert.Equal(t, "testpassword", pass)
 }
+
+func TestAPIKeyAuth_Authenticate_Error(t *testing.T) {
+	auth := &APIKeyAuth{
+		HeaderName:  "X-Custom-Auth",
+		HeaderValue: nil,
+	}
+	req, _ := http.NewRequest("GET", "/", nil)
+	err := auth.Authenticate(req)
+	assert.Error(t, err)
+}
+
+func TestBearerTokenAuth_Authenticate_Error(t *testing.T) {
+	auth := &BearerTokenAuth{
+		Token: nil,
+	}
+	req, _ := http.NewRequest("GET", "/", nil)
+	err := auth.Authenticate(req)
+	assert.Error(t, err)
+}
+
+func TestBasicAuth_Authenticate_Error(t *testing.T) {
+	auth := &BasicAuth{
+		Username: "testuser",
+		Password: nil,
+	}
+	req, _ := http.NewRequest("GET", "/", nil)
+	err := auth.Authenticate(req)
+	assert.Error(t, err)
+}
+
+func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
+	clientID := (&configv1.SecretValue_builder{
+		PlainText: proto.String("id"),
+	}).Build()
+	clientSecret := (&configv1.SecretValue_builder{
+		PlainText: proto.String("secret"),
+	}).Build()
+
+	t.Run("bad_token_url", func(t *testing.T) {
+		auth := &OAuth2Auth{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			TokenURL:     "not-a-url",
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.Error(t, err)
+	})
+
+	t.Run("token_fetch_error", func(t *testing.T) {
+		auth := &OAuth2Auth{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			TokenURL:     "http://localhost:12345/token",
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.Error(t, err)
+	})
+
+	t.Run("client_id_secret_error", func(t *testing.T) {
+		auth := &OAuth2Auth{
+			ClientID:     nil,
+			ClientSecret: clientSecret,
+			TokenURL:     "http://localhost",
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.Error(t, err)
+
+		auth = &OAuth2Auth{
+			ClientID:     clientID,
+			ClientSecret: nil,
+			TokenURL:     "http://localhost",
+		}
+		req, _ = http.NewRequest("GET", "/", nil)
+		err = auth.Authenticate(req)
+		assert.Error(t, err)
+	})
+}

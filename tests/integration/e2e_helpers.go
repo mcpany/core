@@ -485,7 +485,7 @@ func IsDockerSocketAccessible() bool {
 
 // --- Mock Service Start Helpers (External Processes) ---
 
-func StartDockerContainer(t *testing.T, imageName, containerName string, args ...string) (cleanupFunc func()) {
+func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
@@ -506,27 +506,33 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, args ..
 	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
 	_ = rmCmd.Run() // Ignore error, it might not exist
 
-	runArgs := []string{"run", "--name", containerName, "--rm"}
-	runArgs = append(runArgs, args...)
-	runArgs = append(runArgs, imageName)
+	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
+	dockerRunArgs = append(dockerRunArgs, runArgs...)
+	dockerRunArgs = append(dockerRunArgs, imageName)
+	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.Command(dockerExe, buildArgs(runArgs...)...)
-	startCmd.Stdout = os.Stdout
-	startCmd.Stderr = os.Stderr
+	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...)
+	// Capture stderr for better error reporting
+	var stderr bytes.Buffer
+	startCmd.Stderr = &stderr
 
-	err := startCmd.Start()
-	require.NoError(t, err, "failed to start docker container %s", imageName)
+	// Use Run instead of Start for 'docker run -d' to ensure the command completes
+	// and the container is running before proceeding.
+	err := startCmd.Run()
+	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
 		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
 		err := stopCleanupCmd.Run()
 		if err != nil {
-			t.Logf("Failed to stop docker container %s: %v", containerName, err)
+			// Log as error, but don't fail the test, as cleanup failure is secondary.
+			t.Errorf("Failed to stop docker container %s: %v", containerName, err)
 		}
 	}
 
-	// Give the container a moment to initialize
+	// Give the container a moment to initialize. This is still a good idea even
+	// after using Run, as the service inside the container needs time to start up.
 	time.Sleep(3 * time.Second)
 
 	return cleanupFunc
@@ -729,12 +735,18 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	redisPort := FindFreePort(t)
 	redisAddr = fmt.Sprintf("127.0.0.1:%d", redisPort)
 
-	dockerArgs := []string{
+	runArgs := []string{
+		"-d", // detached mode
 		"-p", fmt.Sprintf("%d:6379", redisPort),
 	}
 
-	cleanup := StartDockerContainer(t, "redis:alpine", containerName, dockerArgs...)
-	time.Sleep(5 * time.Second)
+	command := []string{
+		"redis-server",
+		"--bind", "0.0.0.0",
+	}
+
+	cleanup := StartDockerContainer(t, "public.ecr.aws/bitnami/redis:latest", containerName, runArgs, command...)
+
 	// Wait for Redis to be ready
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
