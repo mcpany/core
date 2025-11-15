@@ -25,6 +25,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/stretchr/testify/assert"
 )
 
 // setup is a helper function to reset the logger for each test.
@@ -115,18 +116,16 @@ func TestToSlogLevel(t *testing.T) {
 		level    configv1.GlobalSettings_LogLevel
 		expected slog.Level
 	}{
-		{"Debug", configv1.GlobalSettings_DEBUG, slog.LevelDebug},
-		{"Info", configv1.GlobalSettings_INFO, slog.LevelInfo},
-		{"Warn", configv1.GlobalSettings_WARN, slog.LevelWarn},
-		{"Error", configv1.GlobalSettings_ERROR, slog.LevelError},
-		{"Default", configv1.GlobalSettings_LogLevel(99), slog.LevelInfo},
+		{"debug level", configv1.GlobalSettings_DEBUG, slog.LevelDebug},
+		{"info level", configv1.GlobalSettings_INFO, slog.LevelInfo},
+		{"warn level", configv1.GlobalSettings_WARN, slog.LevelWarn},
+		{"error level", configv1.GlobalSettings_ERROR, slog.LevelError},
+		{"unknown level", 99, slog.LevelInfo},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ToSlogLevel(tt.level); got != tt.expected {
-				t.Errorf("ToSlogLevel() = %v, want %v", got, tt.expected)
-			}
+			assert.Equal(t, tt.expected, ToSlogLevel(tt.level))
 		})
 	}
 }
