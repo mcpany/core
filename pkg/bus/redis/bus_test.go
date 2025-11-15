@@ -429,6 +429,20 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
+func TestRedisBus_New_PartialConfig(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address: proto.String("localhost:6381"),
+	}.Build()
+
+	bus := New[string](redisBus)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6381", options.Addr)
+	assert.Equal(t, "", options.Password)
+	assert.Equal(t, 0, options.DB)
+}
+
 func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -801,6 +815,66 @@ func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
 		}
 		return true
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
+}
+
+func TestRedisBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-stale-unsubscribe"
+
+	handler1Called := make(chan bool, 1)
+	handler2Called := make(chan bool, 1)
+
+	// First subscription
+	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {
+		handler1Called <- true
+	})
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
+
+	// Second subscription (re-subscribe)
+	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {
+		handler2Called <- true
+	})
+	defer unsub2()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "second subscriber did not replace the first")
+
+	// Call the first (stale) unsubscribe function
+	unsub1()
+
+	// Allow some time for the unsubscribe to be processed
+	time.Sleep(100 * time.Millisecond)
+
+	// The second subscription should still be active
+	subs := client.PubSubNumSub(context.Background(), topic).Val()
+	assert.EqualValues(t, 1, subs[topic], "second subscription should still be active")
+
+	// Publish a message, only the second handler should be called
+	err := bus.Publish(context.Background(), topic, "hello")
+	assert.NoError(t, err)
+
+	// The second handler should be called
+	select {
+	case <-handler2Called:
+		// Test passed
+	case <-time.After(200 * time.Millisecond):
+		t.Fatal("second handler should have been called")
+	}
+
+	// The first handler should not have been called
+	select {
+	case <-handler1Called:
+		t.Fatal("first handler should not have been called")
+	case <-time.After(100 * time.Millisecond):
+		// Test passed
+	}
 }
 
 func TestRedisBus_SubscribeOnce_CancelledContext(t *testing.T) {
