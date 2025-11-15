@@ -293,7 +293,52 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		assert.Equal(t, 10, capturedMinSize)
 		assert.Equal(t, 50, capturedMaxSize)
-		assert.Equal(t, 300, capturedIdleTimeout)
+		assert.Equal(t, 90, capturedIdleTimeout)
+	})
+
+	t.Run("registration with default connection pool config", func(t *testing.T) {
+		pm := pool.NewManager()
+		tm := tool.NewToolManager(nil)
+		upstream := NewHTTPUpstream(pm)
+
+		configJSON := `{
+			"name": "test-service-with-default-pool",
+			"http_service": {
+				"address": "http://localhost",
+				"tools": [{
+					"name": "test-op",
+					"call_id": "test-op-call"
+				}],
+				"calls": {
+					"test-op-call": {
+						"id": "test-op-call",
+						"method": "HTTP_METHOD_GET",
+						"endpoint_path": "/test"
+					}
+				}
+			}
+		}`
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+		// We need to replace the NewHttpPool function with a mock to check the parameters.
+		originalNewHttpPool := NewHttpPool
+		defer func() { NewHttpPool = originalNewHttpPool }()
+
+		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
+		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HttpClientWrapper], error) {
+			capturedMinSize = minSize
+			capturedMaxSize = maxSize
+			capturedIdleTimeout = idleTimeout
+			return originalNewHttpPool(minSize, maxSize, idleTimeout, config)
+		}
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		assert.NoError(t, err)
+
+		assert.Equal(t, 10, capturedMinSize)
+		assert.Equal(t, 100, capturedMaxSize)
+		assert.Equal(t, 90, capturedIdleTimeout)
 	})
 }
 

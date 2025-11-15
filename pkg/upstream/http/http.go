@@ -120,9 +120,9 @@ func (u *HTTPUpstream) Register(
 	}
 
 	poolConfig := serviceConfig.GetConnectionPool()
-	maxConnections := 10
-	maxIdleConnections := 0
-	idleTimeout := 300
+	maxConnections := 100
+	maxIdleConnections := 10
+	idleTimeout := 90
 
 	if poolConfig != nil {
 		if poolConfig.GetMaxConnections() > 0 {
