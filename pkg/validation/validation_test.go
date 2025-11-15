@@ -51,7 +51,7 @@ func TestIsValidURL(t *testing.T) {
 		{"only spaces", "   ", false},
 		{"just scheme http", "http:", false},
 		{"just scheme https with slashes", "https://", false}, // common web scheme, requires host
-		{"missing scheme", "example.com", false},
+		{"missing scheme", "example.com", true},
 		{"missing host for http", "http://", false}, // common web scheme, requires host
 		{"http scheme with empty authority", "http:///", false},
 		{"http scheme with empty authority and path", "http:///path", false},

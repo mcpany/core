@@ -53,6 +53,9 @@ func IsValidURL(s string) bool {
 	}
 
 	if u.Scheme == "" {
+		if u.Host == "" && strings.Contains(u.Path, ".") {
+			return true
+		}
 		return false
 	}
 
