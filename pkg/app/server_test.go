@@ -1567,3 +1567,51 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 		t.Fatal("Test hung for 2 seconds. The bug is still present.")
 	}
 }
+
+func TestStartGrpcServer_PanicHandling(t *testing.T) {
+	// 1. Setup
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var wg sync.WaitGroup
+	errChan := make(chan error, 1)
+
+	// Create a dummy net.Listener
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("Failed to create listener: %v", err)
+	}
+	defer lis.Close()
+
+	// 2. Execution
+	// This registration function will panic, simulating a failure during service setup.
+	registerFunc := func(s *gogrpc.Server) {
+		panic("registration failed")
+	}
+
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+
+	// 3. Verification
+	select {
+	case err := <-errChan:
+		// Check that the error indicates a panic occurred.
+		assert.Contains(t, err.Error(), "panic during gRPC service registration", "Expected error message to contain mention of a panic")
+		assert.Contains(t, err.Error(), "registration failed", "Expected error message to contain the panic message")
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test timed out, expected an error to be sent to the error channel")
+	}
+
+	// The WaitGroup should be done, as the goroutine should exit after the panic.
+	// We use a channel to wait for the WaitGroup to be done to avoid a race condition.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// The WaitGroup was correctly handled.
+	case <-time.After(2 * time.Second):
+		t.Fatal("Test timed out, expected WaitGroup to be done")
+	}
+}
