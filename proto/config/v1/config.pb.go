@@ -13,6 +13,7 @@ import (
 	bus "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -76,25 +77,28 @@ func (x LoadBalancingStrategy) Number() protoreflect.EnumNumber {
 type GlobalSettings_LogLevel int32
 
 const (
-	GlobalSettings_INFO  GlobalSettings_LogLevel = 0
-	GlobalSettings_WARN  GlobalSettings_LogLevel = 1
-	GlobalSettings_ERROR GlobalSettings_LogLevel = 2
-	GlobalSettings_DEBUG GlobalSettings_LogLevel = 3
+	GlobalSettings_LOG_LEVEL_UNSPECIFIED GlobalSettings_LogLevel = 0
+	GlobalSettings_LOG_LEVEL_INFO        GlobalSettings_LogLevel = 1
+	GlobalSettings_LOG_LEVEL_WARN        GlobalSettings_LogLevel = 2
+	GlobalSettings_LOG_LEVEL_ERROR       GlobalSettings_LogLevel = 3
+	GlobalSettings_LOG_LEVEL_DEBUG       GlobalSettings_LogLevel = 4
 )
 
 // Enum value maps for GlobalSettings_LogLevel.
 var (
 	GlobalSettings_LogLevel_name = map[int32]string{
-		0: "INFO",
-		1: "WARN",
-		2: "ERROR",
-		3: "DEBUG",
+		0: "LOG_LEVEL_UNSPECIFIED",
+		1: "LOG_LEVEL_INFO",
+		2: "LOG_LEVEL_WARN",
+		3: "LOG_LEVEL_ERROR",
+		4: "LOG_LEVEL_DEBUG",
 	}
 	GlobalSettings_LogLevel_value = map[string]int32{
-		"INFO":  0,
-		"WARN":  1,
-		"ERROR": 2,
-		"DEBUG": 3,
+		"LOG_LEVEL_UNSPECIFIED": 0,
+		"LOG_LEVEL_INFO":        1,
+		"LOG_LEVEL_WARN":        2,
+		"LOG_LEVEL_ERROR":       3,
+		"LOG_LEVEL_DEBUG":       4,
 	}
 )
 
@@ -459,7 +463,7 @@ func (x *GlobalSettings) GetLogLevel() GlobalSettings_LogLevel {
 			return x.xxx_hidden_LogLevel
 		}
 	}
-	return GlobalSettings_INFO
+	return GlobalSettings_LOG_LEVEL_UNSPECIFIED
 }
 
 func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
@@ -528,7 +532,7 @@ func (x *GlobalSettings) ClearMcpBasepath() {
 
 func (x *GlobalSettings) ClearLogLevel() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_LogLevel = GlobalSettings_INFO
+	x.xxx_hidden_LogLevel = GlobalSettings_LOG_LEVEL_UNSPECIFIED
 }
 
 func (x *GlobalSettings) ClearMessageBus() {
@@ -5576,7 +5580,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1cproto/config/v1/prompt.proto\"\xa4\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/call.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1cproto/config/v1/prompt.proto\"\xa4\x02\n" +
 	"\x12McpAnyServerConfig\x12I\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0eglobalSettings\x12T\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x10upstreamServices\x12m\n" +
@@ -5585,18 +5589,19 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\x91\x02\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xd4\x02\n" +
 	"\x0eGlobalSettings\x12,\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x10mcpListenAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\n" +
-	"messageBus\"4\n" +
-	"\bLogLevel\x12\b\n" +
-	"\x04INFO\x10\x00\x12\b\n" +
-	"\x04WARN\x10\x01\x12\t\n" +
-	"\x05ERROR\x10\x02\x12\t\n" +
-	"\x05DEBUG\x10\x03\"\xa9\n" +
+	"messageBus\"w\n" +
+	"\bLogLevel\x12\x19\n" +
+	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
+	"\x0eLOG_LEVEL_WARN\x10\x02\x12\x13\n" +
+	"\x0fLOG_LEVEL_ERROR\x10\x03\x12\x13\n" +
+	"\x0fLOG_LEVEL_DEBUG\x10\x04\"\xa9\n" +
 	"\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
@@ -5813,7 +5818,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +
 	"\n" +
-	"\x06RANDOM\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x06RANDOM\x10\x02B=B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 35)

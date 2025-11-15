@@ -12,6 +12,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -1056,7 +1057,7 @@ var File_proto_config_v1_resource_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\"\x8d\x01\n" +
+	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\"\x8d\x01\n" +
 	"\x12ResourceAnnotation\x12\x1a\n" +
 	"\baudience\x18\x01 \x03(\tR\baudience\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x01R\bpriority\x12?\n" +
@@ -1084,7 +1085,7 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"webrtcCall\x12Y\n" +
 	"\x11command_line_call\x18\x05 \x01(\v2+.mcpany.config.v1.CommandLineCallDefinitionH\x00R\x0fcommandLineCall\x12@\n" +
 	"\bmcp_call\x18\x06 \x01(\v2#.mcpany.config.v1.MCPCallDefinitionH\x00R\amcpCallB\x11\n" +
-	"\x0fcall_definitionB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x0fcall_definitionB?B\rResourceProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_config_v1_resource_proto_goTypes = []any{
