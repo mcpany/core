@@ -15,8 +15,8 @@
 package integration
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
@@ -79,7 +79,7 @@ func TestDockerHelpers(t *testing.T) {
 	}
 
 	// Test StartDockerContainer
-	imageName := "public.ecr.aws/nginx/nginx:alpine"
+	imageName := "nginx:alpine"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
 	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"})
 	defer cleanup()

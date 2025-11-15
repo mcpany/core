@@ -745,7 +745,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		"--bind", "0.0.0.0",
 	}
 
-	cleanup := StartDockerContainer(t, "public.ecr.aws/bitnami/redis:latest", containerName, runArgs, command...)
+	cleanup := StartDockerContainer(t, "redis:latest", containerName, runArgs, command...)
 
 	// Wait for Redis to be ready
 	require.Eventually(t, func() bool {
