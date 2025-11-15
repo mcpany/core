@@ -88,7 +88,9 @@ func TestHealthCheck(t *testing.T) {
 
 		// This call should now succeed because we are providing the exact
 		// address of the listener.
-		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err = HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.NoError(t, err, "HealthCheck should succeed when given the correct IP")
 	})
 
@@ -100,7 +102,9 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(io.Discard, addr, 50*time.Millisecond)
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.Error(t, err, "HealthCheck should time out and return an error")
 	})
 
@@ -113,7 +117,9 @@ func TestHealthCheck(t *testing.T) {
 
 		// Extract port from server URL
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(io.Discard, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.NoError(t, err)
 	})
 
@@ -124,7 +130,9 @@ func TestHealthCheck(t *testing.T) {
 		defer server.Close()
 
 		addr := strings.TrimPrefix(server.URL, "http://")
-		err := HealthCheck(io.Discard, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed with status code: 500")
 	})
@@ -136,7 +144,9 @@ func TestHealthCheck(t *testing.T) {
 		addr := l.Addr().String()
 		l.Close()
 
-		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err = HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "health check failed:")
 	})
@@ -152,7 +162,9 @@ func TestHealthCheck(t *testing.T) {
 		timeout := 50 * time.Millisecond
 
 		start := time.Now()
-		err := HealthCheck(io.Discard, addr, timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		duration := time.Since(start)
 
 		// The health check should fail with an error because of the timeout.
@@ -174,7 +186,9 @@ func TestHealthCheck(t *testing.T) {
 		addr := strings.TrimPrefix(server.URL, "http://")
 
 		start := time.Now()
-		err := HealthCheck(io.Discard, addr, 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		duration := time.Since(start)
 
 		require.Error(t, err, "HealthCheck should time out")
@@ -203,7 +217,9 @@ func TestHealthCheck(t *testing.T) {
 
 		// Perform the health check multiple times.
 		for i := 0; i < 3; i++ {
-			err := HealthCheck(io.Discard, addr, 5*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			err := HealthCheckWithContext(ctx, io.Discard, addr)
 			require.NoError(t, err, "Health check should succeed on iteration %d", i)
 		}
 
@@ -231,11 +247,13 @@ func TestHealthCheck(t *testing.T) {
 		addr := countingLis.Addr().String()
 
 		// Perform the health check multiple times.
-		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err = HealthCheckWithContext(ctx, io.Discard, addr)
 		require.NoError(t, err, "Health check should succeed on first call")
-		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		err = HealthCheckWithContext(ctx, io.Discard, addr)
 		require.NoError(t, err, "Health check should succeed on second call")
-		err = HealthCheck(io.Discard, addr, 5*time.Second)
+		err = HealthCheckWithContext(ctx, io.Discard, addr)
 		require.NoError(t, err, "Health check should succeed on third call")
 
 		// Verify that only one connection was made, proving that keep-alive is working.
@@ -250,7 +268,9 @@ func TestHealthCheck(t *testing.T) {
 
 		addr := strings.TrimPrefix(server.URL, "http://")
 		var out bytes.Buffer
-		err := HealthCheck(&out, addr, 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, &out, addr)
 		assert.NoError(t, err)
 		assert.Equal(t, "Health check successful: server is running and healthy.\n", out.String())
 	})
@@ -262,7 +282,9 @@ func TestHealthCheck(t *testing.T) {
 		l.Close()
 
 		var out bytes.Buffer
-		err = HealthCheck(&out, addr, 1*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		err = HealthCheckWithContext(ctx, &out, addr)
 		assert.Error(t, err)
 		assert.Empty(t, out.String(), "HealthCheck should not write to the writer on failure")
 	})
@@ -282,9 +304,26 @@ func TestHealthCheck(t *testing.T) {
 			cancel()
 		}()
 
-		err := HealthCheckWithContext(ctx, io.Discard, addr, 5*time.Second)
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "context canceled")
+	})
+
+	t.Run("health check respects timeout from context", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(100 * time.Millisecond) // Simulate a slow response.
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+		defer cancel()
+
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
+		assert.Error(t, err, "HealthCheck should time out and return an error")
+		assert.Contains(t, err.Error(), "context deadline exceeded")
 	})
 }
 
