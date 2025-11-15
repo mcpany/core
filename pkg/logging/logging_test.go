@@ -23,6 +23,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // setup is a helper function to reset the logger for each test.
@@ -104,5 +106,27 @@ func TestGetLogger_ReturnsSingleton(t *testing.T) {
 
 	if logger1 != logger3 {
 		t.Error("GetLogger should return the same instance even after Init")
+	}
+}
+
+func TestToSlogLevel(t *testing.T) {
+	tests := []struct {
+		name     string
+		level    configv1.GlobalSettings_LogLevel
+		expected slog.Level
+	}{
+		{"Debug", configv1.GlobalSettings_DEBUG, slog.LevelDebug},
+		{"Info", configv1.GlobalSettings_INFO, slog.LevelInfo},
+		{"Warn", configv1.GlobalSettings_WARN, slog.LevelWarn},
+		{"Error", configv1.GlobalSettings_ERROR, slog.LevelError},
+		{"Default", configv1.GlobalSettings_LogLevel(99), slog.LevelInfo},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ToSlogLevel(tt.level); got != tt.expected {
+				t.Errorf("ToSlogLevel() = %v, want %v", got, tt.expected)
+			}
+		})
 	}
 }
