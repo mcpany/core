@@ -59,3 +59,60 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, "Hello, world!", textContent.Text)
 }
+
+func TestTemplatedPrompt_Prompt(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name:        proto.String("test-prompt"),
+		Title:       proto.String("Test Prompt"),
+		Description: proto.String("This is a test prompt"),
+		Arguments: []*configv1.PromptArgument{
+			configv1.PromptArgument_builder{
+				Name:        proto.String("arg1"),
+				Description: proto.String("Argument 1"),
+				Required:    proto.Bool(true),
+			}.Build(),
+		},
+	}.Build()
+	prompt := NewTemplatedPrompt(definition, "test-service")
+
+	mcpPrompt := prompt.Prompt()
+	assert.Equal(t, "test-service.test-prompt", mcpPrompt.Name)
+	assert.Equal(t, "Test Prompt", mcpPrompt.Title)
+	assert.Equal(t, "This is a test prompt", mcpPrompt.Description)
+	assert.Len(t, mcpPrompt.Arguments, 1)
+	assert.Equal(t, "arg1", mcpPrompt.Arguments[0].Name)
+}
+
+func TestTemplatedPrompt_Service(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name: proto.String("test-prompt"),
+	}.Build()
+	prompt := NewTemplatedPrompt(definition, "test-service")
+	assert.Equal(t, "test-service", prompt.Service())
+}
+
+func TestTemplatedPrompt_Get_Error(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name: proto.String("test-prompt"),
+		Messages: []*configv1.PromptMessage{
+			func() *configv1.PromptMessage {
+				role := configv1.PromptMessage_USER
+				return configv1.PromptMessage_builder{
+					Role: &role,
+					Text: configv1.TextContent_builder{
+						Text: proto.String("Hello, {{name}}!"),
+					}.Build(),
+				}.Build()
+			}(),
+		},
+	}.Build()
+	prompt := NewTemplatedPrompt(definition, "test-service")
+
+	// Invalid JSON
+	_, err := prompt.Get(context.Background(), []byte("invalid json"))
+	assert.Error(t, err)
+
+	// Missing variable
+	_, err = prompt.Get(context.Background(), []byte(`{"other": "value"}`))
+	assert.Error(t, err)
+}
