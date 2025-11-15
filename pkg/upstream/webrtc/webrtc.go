@@ -38,10 +38,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+type sanitizer func(string) (string, error)
+
 // WebrtcUpstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
 type WebrtcUpstream struct {
-	poolManager *pool.Manager
+	poolManager      *pool.Manager
+	toolNameSanitizer sanitizer
 }
 
 // NewWebrtcUpstream creates a new instance of WebrtcUpstream.
@@ -50,7 +53,8 @@ type WebrtcUpstream struct {
 // by the WebRTC upstream as connections are transient.
 func NewWebrtcUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &WebrtcUpstream{
-		poolManager: poolManager,
+		poolManager:      poolManager,
+		toolNameSanitizer: util.SanitizeToolName,
 	}
 }
 
@@ -197,7 +201,7 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
 				continue
 			}
-			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			sanitizedToolName, err := u.toolNameSanitizer(toolName)
 			if err != nil {
 				log.Error("Failed to sanitize tool name", "error", err)
 				continue
