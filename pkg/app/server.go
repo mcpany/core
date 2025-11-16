@@ -331,7 +331,11 @@ func HealthCheckWithContext(
 	out io.Writer,
 	addr string,
 ) error {
-	healthCheckClient := &http.Client{}
+	healthCheckClient := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,

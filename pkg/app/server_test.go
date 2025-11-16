@@ -325,6 +325,25 @@ func TestHealthCheck(t *testing.T) {
 		assert.Error(t, err, "HealthCheck should time out and return an error")
 		assert.Contains(t, err.Error(), "context deadline exceeded")
 	})
+
+	t.Run("health check does not follow redirects", func(t *testing.T) {
+		// This server will redirect to a healthy endpoint.
+		healthyServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer healthyServer.Close()
+
+		redirectingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, healthyServer.URL, http.StatusFound)
+		}))
+		defer redirectingServer.Close()
+
+		addr := strings.TrimPrefix(redirectingServer.URL, "http://")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := HealthCheckWithContext(ctx, io.Discard, addr)
+		assert.Error(t, err, "HealthCheck should fail because it should not follow redirects")
+	})
 }
 
 func TestSetup(t *testing.T) {
