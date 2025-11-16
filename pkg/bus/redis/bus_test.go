@@ -728,6 +728,33 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_Publish_ContextCancelled(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel the context immediately
+
+	err := bus.Publish(ctx, "test-publish-cancelled", "hello")
+	assert.Error(t, err)
+	assert.Equal(t, context.Canceled, err)
+}
+
+func TestRedisBus_Publish_WithInvalidClientAddress(t *testing.T) {
+	// This test doesn't need a running Redis server
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:9999", // An unlikely port for a real Redis server
+	})
+	bus := NewWithClient[string](client)
+
+	// Use a context with a timeout to avoid waiting indefinitely
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	err := bus.Publish(ctx, "test-invalid-address", "hello")
+	assert.Error(t, err)
+}
+
 func TestRedisBus_PublishAndSubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
