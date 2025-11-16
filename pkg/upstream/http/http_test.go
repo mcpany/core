@@ -92,6 +92,37 @@ func TestHttpMethodToString(t *testing.T) {
 	}
 }
 
+func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	configJSON := `{
+		"name": "test-service-missing-tool-name",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [{
+				"call_id": "test-op-call"
+			}],
+			"calls": {
+				"test-op-call": {
+					"id": "test-op-call",
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "/test"
+				}
+			}
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.NoError(t, err)
+	assert.Len(t, discoveredTools, 1)
+	assert.Equal(t, "op_0", discoveredTools[0].GetName())
+	assert.Len(t, tm.ListTools(), 1)
+}
+
 func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
