@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -138,6 +139,14 @@ func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	case "error":
 		return v1.GlobalSettings_LOG_LEVEL_ERROR
 	default:
+		if s.logLevel != "" {
+			logging.GetLogger().Warn(
+				fmt.Sprintf(
+					"Invalid log level specified: '%s'. Defaulting to INFO.",
+					s.logLevel,
+				),
+			)
+		}
 		return v1.GlobalSettings_LOG_LEVEL_INFO
 	}
 }
