@@ -344,6 +344,19 @@ func TestHealthCheck(t *testing.T) {
 		err := HealthCheckWithContext(ctx, io.Discard, addr)
 		assert.Error(t, err, "HealthCheck should fail because it should not follow redirects")
 	})
+
+	t.Run("health check with hanging server should timeout", func(t *testing.T) {
+		// This handler will hang, simulating a non-responsive server.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(100 * time.Millisecond)
+			w.WriteHeader(http.StatusNoContent)
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		err := HealthCheck(io.Discard, addr, 50*time.Millisecond)
+		assert.Error(t, err, "HealthCheck should time out and return an error")
+	})
 }
 
 func TestSetup(t *testing.T) {
