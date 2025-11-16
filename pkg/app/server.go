@@ -48,6 +48,12 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+var healthCheckClient = &http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	},
+}
+
 // Runner defines the interface for running the MCP Any application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
 // for testing purposes.
@@ -331,11 +337,6 @@ func HealthCheckWithContext(
 	out io.Writer,
 	addr string,
 ) error {
-	healthCheckClient := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
