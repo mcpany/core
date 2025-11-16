@@ -209,7 +209,10 @@ func GetProjectRoot() (string, error) {
 			dir = filepath.Dir(dir)
 		}
 	})
-	return projectRoot, err
+	if err != nil {
+		return "", err
+	}
+	return filepath.Abs(projectRoot)
 }
 
 // --- Helper: Find Free Port ---
