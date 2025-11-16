@@ -518,6 +518,7 @@ func startHTTPServer(
 		serverLog.Info("HTTP server listening")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
+			cancel() // Signal shutdown goroutine to exit
 		}
 
 		<-shutdownComplete
