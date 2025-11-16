@@ -128,7 +128,7 @@ func ProjectRoot(t *testing.T) string {
 
 const (
 	McpAnyServerStartupTimeout = 30 * time.Second
-	ServiceStartupTimeout      = 30 * time.Second
+	ServiceStartupTimeout      = 15 * time.Second
 	TestWaitTimeShort          = 60 * time.Second
 	TestWaitTimeMedium         = 240 * time.Second
 	TestWaitTimeLong           = 5 * time.Minute
