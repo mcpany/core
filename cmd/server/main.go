@@ -158,6 +158,7 @@ func newRootCmd() *cobra.Command {
 // The application will exit with a non-zero status code if an error occurs
 // during the execution of the command.
 func main() {
+	config.InitConfig()
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
 	}

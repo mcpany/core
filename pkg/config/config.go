@@ -19,29 +19,24 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
+// InitConfig initializes viper.
+func InitConfig() {
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("MCPANY")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+}
+
 // BindFlags binds the command line flags to viper.
 func BindFlags(cmd *cobra.Command) {
-	cobra.OnInitialize(func() {
-		viper.AutomaticEnv()
-		viper.SetEnvPrefix("MCPANY")
-	})
-
 	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
-	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
-	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
-		fmt.Printf("Error binding mcp-listen-address flag: %v\n", err)
-		os.Exit(1)
-	}
-	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
-		fmt.Printf("Error binding config-path flag: %v\n", err)
-		os.Exit(1)
-	}
+	cmd.PersistentFlags().StringSlice("config-paths", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATHS")
 
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -50,8 +45,15 @@ func BindFlags(cmd *cobra.Command) {
 	cmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
 	cmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 
+	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+		fmt.Printf("Error binding persistent command line flags: %v\n", err)
+		os.Exit(1)
+	}
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
 		os.Exit(1)
+	}
+	if paths := os.Getenv("MCPANY_CONFIG_PATHS"); paths != "" {
+		viper.Set("config-paths", strings.Split(paths, ","))
 	}
 }

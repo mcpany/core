@@ -17,6 +17,7 @@
 package config
 
 import (
+	"os"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -25,6 +26,8 @@ import (
 )
 
 func TestBindFlags(t *testing.T) {
+	viper.Reset()
+	InitConfig()
 	cmd := &cobra.Command{}
 	BindFlags(cmd)
 
@@ -39,4 +42,22 @@ func TestBindFlags(t *testing.T) {
 
 	cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))
+}
+
+func TestBindFlags_ConfigPaths_FromEnv(t *testing.T) {
+	viper.Reset()
+	InitConfig()
+
+	// Backup and defer restore of environment variable
+	const envVar = "MCPANY_CONFIG_PATHS"
+	originalEnv := os.Getenv(envVar)
+	defer os.Setenv(envVar, originalEnv)
+
+	os.Setenv(envVar, "/etc/mcpany/config.yaml,/opt/mcpany/config.d")
+
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+
+	paths := viper.GetStringSlice("config-paths")
+	assert.Equal(t, []string{"/etc/mcpany/config.yaml", "/opt/mcpany/config.d"}, paths)
 }
