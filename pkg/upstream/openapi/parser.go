@@ -212,13 +212,19 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 
 		// Determine response body schema for output
 		var outputSchemaRef *openapi3.SchemaRef
-		if responseContent, ok := op.ResponseSchemas["200"]; ok {
+		responseContent := op.ResponseSchemas["200"]
+		if responseContent == nil {
+			responseContent = op.ResponseSchemas["201"]
+		}
+
+		if responseContent != nil {
 			if ref, ok := responseContent["application/json"]; ok {
 				outputSchemaRef = ref
-			}
-		} else if responseContent, ok := op.ResponseSchemas["201"]; ok {
-			if ref, ok := responseContent["application/json"]; ok {
-				outputSchemaRef = ref
+			} else if len(responseContent) > 0 { // Pick first available if no json
+				for _, sr := range responseContent {
+					outputSchemaRef = sr
+					break
+				}
 			}
 		}
 
@@ -389,11 +395,12 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 					props.Fields[propName] = val
 				}
 			} else {
-				val, err := convertSingleSchema("response_body", bodySchemaRef, bodyActualSchema.Description)
+				// If the request body is not an object, wrap its schema under "value".
+				val, err := convertSingleSchema("value", bodySchemaRef, bodyActualSchema.Description)
 				if err != nil {
 					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
 				} else {
-					props.Fields["response_body"] = val
+					props.Fields["value"] = val
 				}
 			}
 		}

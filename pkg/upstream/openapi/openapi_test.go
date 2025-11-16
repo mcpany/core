@@ -398,3 +398,70 @@ const sampleOpenAPISpecJSONForCacheTest = `{
     }
   }
 }`
+
+func TestOutputSchemaGenerationForNonObjectResponse(t *testing.T) {
+	ctx := context.Background()
+	mockToolManager := new(MockToolManager)
+	upstream := NewOpenAPIUpstream()
+
+	spec := `
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /plain-text:
+    get:
+      operationId: getPlainText
+      responses:
+        '200':
+          description: A plain text response
+          content:
+            text/plain:
+              schema:
+                type: string
+`
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			OpenapiSpec: proto.String(spec),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("getPlainText"),
+					CallId: proto.String("getPlainText-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.OpenAPICallDefinition{
+				"getPlainText-call": configv1.OpenAPICallDefinition_builder{
+					Id: proto.String("getPlainText-call"),
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
+
+	expectedKey, _ := util.SanitizeServiceName("test-service")
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+
+	var addedTool tool.Tool
+	mockToolManager.On("AddTool", mock.Anything).Run(func(args mock.Arguments) {
+		addedTool = args.Get(0).(tool.Tool)
+	}).Return(nil)
+
+	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+	assert.NoError(t, err)
+
+	mockToolManager.AssertCalled(t, "AddTool", mock.Anything)
+	require.NotNil(t, addedTool)
+
+	outputSchema := addedTool.Tool().GetAnnotations().GetOutputSchema()
+	assert.NotNil(t, outputSchema)
+	assert.Equal(t, "object", outputSchema.GetFields()["type"].GetStringValue())
+
+	properties := outputSchema.GetFields()["properties"].GetStructValue().GetFields()
+	assert.Contains(t, properties, "value")
+	assert.NotContains(t, properties, "response_body")
+
+	valueProp := properties["value"].GetStructValue().GetFields()
+	assert.Equal(t, "string", valueProp["type"].GetStringValue())
+}
