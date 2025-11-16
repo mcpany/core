@@ -17,10 +17,13 @@
 package prompt
 
 import (
+	"fmt"
 	"sync"
 
+	"github.com/mcpany/core/pkg/logging"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
+
 // PromptManagerInterface defines the interface for a prompt manager.
 type PromptManagerInterface interface {
 	AddPrompt(prompt Prompt)
@@ -51,9 +54,17 @@ func (pm *PromptManager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mcpServer = mcpServer
 }
 
-// AddPrompt registers a new prompt with the manager.
+// AddPrompt registers a new prompt with the manager. If a prompt with the same
+// name already exists, it will not be overwritten, and a warning will be logged.
 func (pm *PromptManager) AddPrompt(prompt Prompt) {
-	pm.prompts.Store(prompt.Prompt().Name, prompt)
+	promptName := prompt.Prompt().Name
+	if existingPrompt, loaded := pm.prompts.LoadOrStore(promptName, prompt); loaded {
+		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Ignoring. promptName=%s, newPromptService=%s, existingPromptService=%s",
+			promptName,
+			prompt.Service(),
+			existingPrompt.Service(),
+		))
+	}
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
