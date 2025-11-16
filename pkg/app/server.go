@@ -588,6 +588,7 @@ func startGrpcServer(
 			}
 
 			serverLog.Info("Attempting to gracefully shut down server...")
+			serverLog.Info("Attempting to gracefully shut down server...")
 			stopped := make(chan struct{})
 			go func() {
 				defer close(stopped)
