@@ -258,7 +258,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(definition.GetName()),
+			Name:        proto.String(toolNamePart),
 			Description: proto.String(definition.GetDescription()),
 		}.Build())
 	}

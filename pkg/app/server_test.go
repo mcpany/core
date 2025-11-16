@@ -1441,6 +1441,69 @@ func TestRun_NoConfig(t *testing.T) {
 }
 
 
+// closableListener is a mock net.Listener that wraps a real net.Listener and
+// tracks whether its Close method has been called. This is used to verify
+// that server shutdown logic correctly closes the listener.
+type closableListener struct {
+	net.Listener
+	closed bool
+	mu     sync.Mutex
+}
+
+func (l *closableListener) Close() error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.closed = true
+	return l.Listener.Close()
+}
+
+func (l *closableListener) isClosed() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.closed
+}
+
+func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
+	// This test verifies that the network listener is closed even when a
+	// graceful shutdown of the gRPC server times out and is forced to stop.
+	rawLis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	mockLis := &closableListener{Listener: rawLis}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server with a service that will hang, preventing a graceful shutdown.
+	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangService := &mockHangService{hangTime: 5 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods:     []gogrpc.MethodDesc{{MethodName: "Hang", Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) { return srv.(*mockHangService).Hang(ctx, nil) }}},
+		}
+		s.RegisterService(desc, hangService)
+	})
+
+	// Make a call to the hanging RPC to ensure the server is busy.
+	go func() {
+		conn, err := gogrpc.Dial(mockLis.Addr().String(), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err == nil {
+			defer conn.Close()
+			_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+		}
+	}()
+
+	time.Sleep(100 * time.Millisecond) // Allow time for the RPC to start.
+
+	// Trigger the shutdown. The server will attempt a graceful stop, time out, and then force stop.
+	cancel()
+	wg.Wait() // Wait for the server goroutine to terminate.
+
+	// Assert that the listener's Close() method was called, even though the shutdown was forced.
+	assert.True(t, mockLis.isClosed(), "The listener should be closed even on a forced shutdown.")
+}
+
 // mockCloseCountingListener is a mock net.Listener that wraps a real
 // net.Listener and counts the number of times its Close method is called. This
 // is used to test for race conditions and double-close bugs in server shutdown
