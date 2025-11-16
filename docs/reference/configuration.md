@@ -8,33 +8,77 @@ This document provides a comprehensive reference for configuring the MCP Any ser
 
 The `McpAnyServerConfig` is the top-level configuration object for the entire MCP Any server.
 
-| Field               | Type                             | Description                                                                                                                          |
-| ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `global_settings`   | `GlobalSettings`                 | Defines server-wide operational parameters, such as the bind address and log level.                                                  |
-| `upstream_services` | `repeated UpstreamServiceConfig` | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
-| `upstream_service_collections` | `repeated UpstreamServiceCollection` | A list of upstream service collections to load from remote sources. |
+| Field                          | Type                                 | Description                                                                                                                          |
+| ------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `global_settings`              | `GlobalSettings`                     | Defines server-wide operational parameters, such as the bind address and log level.                                                  |
+| `upstream_services`            | `repeated UpstreamServiceConfig`     | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
+| `upstream_service_collections` | `repeated UpstreamServiceCollection` | A list of upstream service collections to load from remote sources.                                                                  |
+
+### Use Case and Example
+
+A top-level configuration for an MCP Any server that connects to a local gRPC service and a remote HTTP service.
+
+```yaml
+global_settings:
+  mcp_listen_address: "0.0.0.0:8080"
+  log_level: "INFO"
+upstream_services:
+  - name: "user-service"
+    service_config:
+      grpc_service:
+        address: "localhost:50051"
+        use_reflection: true
+  - name: "weather-api"
+    service_config:
+      http_service:
+        address: "https://api.weather.com"
+```
 
 ### `UpstreamServiceCollection`
 
 Defines a collection of upstream services that can be loaded from a remote source.
 
-| Field          | Type                     | Description                                                          |
-| -------------- | ------------------------ | -------------------------------------------------------------------- |
-| `name`         | `string`                 | The name of the collection.                                          |
-| `http_url`     | `string`                 | The HTTP URL to load the collection from.                            |
-| `priority`     | `int32`                  | The priority of the collection. Lower numbers have higher priority.  |
-| `authentication` | `UpstreamAuthentication` | The authentication to use when fetching the collection.              |
+| Field            | Type                     | Description                                                         |
+| ---------------- | ------------------------ | ------------------------------------------------------------------- |
+| `name`           | `string`                 | The name of the collection.                                         |
+| `http_url`       | `string`                 | The HTTP URL to load the collection from.                           |
+| `priority`       | `int32`                  | The priority of the collection. Lower numbers have higher priority. |
+| `authentication` | `UpstreamAuthentication` | The authentication to use when fetching the collection.             |
+
+### Use Case and Example
+
+Dynamically load a collection of upstream services from a remote URL. This is useful for managing a large number of services or for updating service configurations without restarting the MCP Any server.
+
+```yaml
+upstream_service_collections:
+  - name: "shared-services"
+    http_url: "https://config.example.com/services.yaml"
+    priority: 1
+    authentication:
+      bearer_token:
+        token:
+          environment_variable: "CONFIG_SERVER_AUTH_TOKEN"
+```
 
 ### `GlobalSettings`
 
 Contains server-wide operational parameters.
 
-| Field                | Type            | Description                                                                   |
-| -------------------- | --------------- | ----------------------------------------------------------------------------- |
-| `mcp_listen_address` | `string`        | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
-| `mcp_basepath`       | `string`        | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
-| `log_level`          | `enum`          | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
-| `message_bus`        | `MessageBus`    | The message bus configuration.                                                |
+| Field                | Type         | Description                                                                   |
+| -------------------- | ------------ | ----------------------------------------------------------------------------- |
+| `mcp_listen_address` | `string`     | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
+| `mcp_basepath`       | `string`     | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
+| `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
+| `message_bus`        | `MessageBus` | The message bus configuration.                                                |
+
+### Use Case and Example
+
+```yaml
+global_settings:
+  mcp_listen_address: "0.0.0.0:8080"
+  mcp_basepath: "/mcp/v1"
+  log_level: "DEBUG"
+```
 
 ## Upstream Service Configuration (`UpstreamServiceConfig`)
 
@@ -53,8 +97,38 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `service_config`          | `oneof`                  | The specific configuration for the type of upstream service (gRPC, HTTP, OpenAPI, etc.).      |
 | `version`                 | `string`                 | The version of the upstream service, if known (e.g., "v1.2.3").                               |
 | `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).  |
-| `disable`                 | `bool`                   | If true, this upstream service is disabled.                                                  |
-| `priority`                | `int32`                  | The priority of the service. Lower numbers have higher priority.                             |
+| `disable`                 | `bool`                   | If true, this upstream service is disabled.                                                   |
+| `priority`                | `int32`                  | The priority of the service. Lower numbers have higher priority.                              |
+
+### Use Case and Example
+
+A gRPC service with a connection pool, rate limiting, a circuit breaker, and API key authentication for the upstream.
+
+```yaml
+upstream_services:
+  - name: "product-catalog-service"
+    connection_pool:
+      max_connections: 100
+      max_idle_connections: 10
+      idle_timeout: "30s"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 1000
+      burst: 100
+    resilience:
+      circuit_breaker:
+        failure_rate_threshold: 0.5
+        open_duration: "5s"
+    upstream_authentication:
+      api_key:
+        header_name: "X-API-Key"
+        api_key:
+          environment_variable: "PRODUCT_CATALOG_API_KEY"
+    service_config:
+      grpc_service:
+        address: "grpc.product-catalog.svc.cluster.local:50051"
+        use_reflection: true
+```
 
 ### Upstream Service Types
 
@@ -68,93 +142,192 @@ The `service_config` oneof field can contain one of the following service types:
 
 #### `GrpcUpstreamService`
 
-| Field              | Type                              | Description                                                    |
-| ------------------ | --------------------------------- | -------------------------------------------------------------- |
-| `address`          | `string`                          | The address of the gRPC server.                                |
-| `use_reflection`   | `bool`                            | If true, MCP Any will use gRPC reflection to discover services.|
-| `tls_config`       | `TLSConfig`                       | TLS configuration for the connection.                          |
-| `tools`            | `repeated ToolDefinition`         | Manually defined mappings from MCP tools.                      |
-| `health_check`     | `GrpcHealthCheck`                 | Health check configuration.                                    |
-| `proto_definitions`| `repeated ProtoDefinition`        | A list of protobuf definitions for the gRPC service.           |
-| `proto_collection` | `repeated ProtoCollection`        | A collection of protobuf files to be discovered.               |
-| `resources`        | `repeated ResourceDefinition`     | A list of resources served by this service.                    |
-| `calls`            | `map<string, GrpcCallDefinition>`   | A map of call definitions, keyed by their unique ID.           |
-| `prompts`          | `repeated PromptDefinition`       | A list of prompts served by this service.                      |
+| Field               | Type                              | Description                                                     |
+| ------------------- | --------------------------------- | --------------------------------------------------------------- |
+| `address`           | `string`                          | The address of the gRPC server.                                 |
+| `use_reflection`    | `bool`                            | If true, MCP Any will use gRPC reflection to discover services. |
+| `tls_config`        | `TLSConfig`                       | TLS configuration for the connection.                           |
+| `tools`             | `repeated ToolDefinition`         | Manually defined mappings from MCP tools.                       |
+| `health_check`      | `GrpcHealthCheck`                 | Health check configuration.                                     |
+| `proto_definitions` | `repeated ProtoDefinition`        | A list of protobuf definitions for the gRPC service.            |
+| `proto_collection`  | `repeated ProtoCollection`        | A collection of protobuf files to be discovered.                |
+| `resources`         | `repeated ResourceDefinition`     | A list of resources served by this service.                     |
+| `calls`             | `map<string, GrpcCallDefinition>` | A map of call definitions, keyed by their unique ID.            |
+| `prompts`           | `repeated PromptDefinition`       | A list of prompts served by this service.                       |
+
+##### Use Case and Example
+
+Expose a gRPC service that requires TLS and has its protobuf definitions stored locally.
+
+```yaml
+service_config:
+  grpc_service:
+    address: "user-service.internal:50051"
+    tls_config:
+      ca_cert_path: "/certs/ca.pem"
+    proto_definitions:
+      - proto_file:
+          file_name: "user.proto"
+          file_path: "/proto/user.proto"
+```
 
 #### `HttpUpstreamService`
 
-| Field          | Type                              | Description                                                    |
-| -------------- | --------------------------------- | -------------------------------------------------------------- |
-| `address`      | `string`                          | The base URL of the HTTP service.                              |
-| `tools`        | `repeated ToolDefinition`         | Manually defined mappings from MCP tools.                      |
-| `health_check` | `HttpHealthCheck`                 | Health check configuration.                                    |
-| `tls_config`   | `TLSConfig`                       | TLS configuration for the connection.                          |
-| `resources`    | `repeated ResourceDefinition`     | A list of resources served by this service.                    |
-| `calls`        | `map<string, HttpCallDefinition>`   | A map of call definitions, keyed by their unique ID.           |
-| `prompts`      | `repeated PromptDefinition`       | A list of prompts served by this service.                      |
+| Field          | Type                              | Description                                          |
+| -------------- | --------------------------------- | ---------------------------------------------------- |
+| `address`      | `string`                          | The base URL of the HTTP service.                    |
+| `tools`        | `repeated ToolDefinition`         | Manually defined mappings from MCP tools.            |
+| `health_check` | `HttpHealthCheck`                 | Health check configuration.                          |
+| `tls_config`   | `TLSConfig`                       | TLS configuration for the connection.                |
+| `resources`    | `repeated ResourceDefinition`     | A list of resources served by this service.          |
+| `calls`        | `map<string, HttpCallDefinition>` | A map of call definitions, keyed by their unique ID. |
+| `prompts`      | `repeated PromptDefinition`       | A list of prompts served by this service.            |
+
+##### Use Case and Example
+
+Proxy an external HTTP API and add a health check.
+
+```yaml
+service_config:
+  http_service:
+    address: "https://api.example.com"
+    health_check:
+      url: "https://api.example.com/health"
+      expected_code: 200
+      interval: "10s"
+```
 
 #### `OpenapiUpstreamService`
 
-| Field          | Type                                | Description                                                    |
-| -------------- | ----------------------------------- | -------------------------------------------------------------- |
-| `address`      | `string`                            | The base URL of the API.                                       |
-| `openapi_spec` | `string`                            | The OpenAPI specification content.                             |
-| `health_check` | `HttpHealthCheck`                   | Health check configuration.                                    |
-| `tls_config`   | `TLSConfig`                         | TLS configuration for the connection.                          |
-| `tools`        | `repeated ToolDefinition`           | Overrides for calls discovered from the spec.                  |
-| `resources`    | `repeated ResourceDefinition`       | A list of resources served by this service.                    |
-| `calls`        | `map<string, OpenAPICallDefinition>`  | A map of call definitions, keyed by their unique ID.           |
-| `prompts`      | `repeated PromptDefinition`         | A list of prompts served by this service.                      |
+| Field          | Type                                 | Description                                          |
+| -------------- | ------------------------------------ | ---------------------------------------------------- |
+| `address`      | `string`                             | The base URL of the API.                             |
+| `openapi_spec` | `string`                             | The OpenAPI specification content.                   |
+| `health_check` | `HttpHealthCheck`                    | Health check configuration.                          |
+| `tls_config`   | `TLSConfig`                          | TLS configuration for the connection.                |
+| `tools`        | `repeated ToolDefinition`            | Overrides for calls discovered from the spec.        |
+| `resources`    | `repeated ResourceDefinition`        | A list of resources served by this service.          |
+| `calls`        | `map<string, OpenAPICallDefinition>` | A map of call definitions, keyed by their unique ID. |
+| `prompts`      | `repeated PromptDefinition`          | A list of prompts served by this service.            |
+
+##### Use Case and Example
+
+Automatically discover and expose an OpenAPI-defined service.
+
+```yaml
+service_config:
+  openapi_service:
+    address: "https://petstore.swagger.io/v2"
+    openapi_spec: |
+      swagger: "2.0"
+      info:
+        version: "1.0.0"
+        title: "Swagger Petstore"
+      # ... rest of the spec
+```
 
 #### `CommandLineUpstreamService`
 
-| Field                   | Type                                      | Description                                                    |
-| ----------------------- | ----------------------------------------- | -------------------------------------------------------------- |
-| `command`               | `string`                                  | The command to execute the service.                            |
-| `working_directory`     | `string`                                  | The working directory for the command.                         |
-| `tools`                 | `repeated ToolDefinition`                 | Manually defined mappings from MCP tools.                      |
-| `health_check`          | `CommandLineHealthCheck`                  | Health check configuration.                                    |
-| `cache`                 | `CacheConfig`                             | Caching configuration.                                         |
-| `container_environment` | `ContainerEnvironment`                    | Container environment to run the command in.                   |
-| `timeout`               | `duration`                                | Timeout for the command execution.                             |
-| `resources`             | `repeated ResourceDefinition`             | A list of resources served by this service.                    |
-| `calls`                 | `map<string, CommandLineCallDefinition>`    | A map of call definitions, keyed by their unique ID.           |
-| `prompts`               | `repeated PromptDefinition`               | A list of prompts served by this service.                      |
+| Field                   | Type                                     | Description                                          |
+| ----------------------- | ---------------------------------------- | ---------------------------------------------------- |
+| `command`               | `string`                                 | The command to execute the service.                  |
+| `working_directory`     | `string`                                 | The working directory for the command.               |
+| `tools`                 | `repeated ToolDefinition`                | Manually defined mappings from MCP tools.            |
+| `health_check`          | `CommandLineHealthCheck`                 | Health check configuration.                          |
+| `cache`                 | `CacheConfig`                            | Caching configuration.                               |
+| `container_environment` | `ContainerEnvironment`                   | Container environment to run the command in.         |
+| `timeout`               | `duration`                               | Timeout for the command execution.                   |
+| `resources`             | `repeated ResourceDefinition`            | A list of resources served by this service.          |
+| `calls`                 | `map<string, CommandLineCallDefinition>` | A map of call definitions, keyed by their unique ID. |
+| `prompts`               | `repeated PromptDefinition`              | A list of prompts served by this service.            |
+
+##### Use Case and Example
+
+Wrap a command-line tool, run it in a container, and cache the results.
+
+```yaml
+service_config:
+  command_line_service:
+    command: "python /scripts/process.py"
+    working_directory: "/data"
+    container_environment:
+      image: "python:3.9-slim"
+      volumes:
+        "/local/data": "/data"
+    cache:
+      is_enabled: true
+      ttl: "1h"
+```
 
 #### `McpUpstreamService`
 
-| Field                 | Type                            | Description                                                    |
-| --------------------- | ------------------------------- | -------------------------------------------------------------- |
-| `connection_type`     | `oneof`                         | The connection details for the upstream MCP service.           |
-| `tool_auto_discovery` | `bool`                          | If true, auto-discover and proxy all tools from upstream.      |
-| `tools`               | `repeated ToolDefinition`       | Overrides for calls discovered from the service.               |
-| `resources`           | `repeated ResourceDefinition`   | A list of resources served by this service.                    |
-| `calls`               | `map<string, MCPCallDefinition>`  | A map of call definitions, keyed by their unique ID.           |
-| `prompts`             | `repeated PromptDefinition`     | A list of prompts served by this service.                      |
+| Field                 | Type                             | Description                                               |
+| --------------------- | -------------------------------- | --------------------------------------------------------- |
+| `connection_type`     | `oneof`                          | The connection details for the upstream MCP service.      |
+| `tool_auto_discovery` | `bool`                           | If true, auto-discover and proxy all tools from upstream. |
+| `tools`               | `repeated ToolDefinition`        | Overrides for calls discovered from the service.          |
+| `resources`           | `repeated ResourceDefinition`    | A list of resources served by this service.               |
+| `calls`               | `map<string, MCPCallDefinition>` | A map of call definitions, keyed by their unique ID.      |
+| `prompts`             | `repeated PromptDefinition`      | A list of prompts served by this service.                 |
+
+##### Use Case and Example
+
+Proxy another MCP Any instance and automatically discover its tools.
+
+```yaml
+service_config:
+  mcp_service:
+    http_connection:
+      http_address: "mcp-internal.example.com:8080"
+    tool_auto_discovery: true
+```
+
 - **`WebsocketUpstreamService`**: For services that communicate over Websocket.
 - **`WebrtcUpstreamService`**: For services that communicate over WebRTC data channels.
 
 #### `WebsocketUpstreamService`
 
-| Field       | Type                                | Description                                           |
-| ----------- | ----------------------------------- | ----------------------------------------------------- |
-| `address`   | `string`                            | The URL of the Websocket service.                     |
-| `tools`     | `repeated ToolDefinition`           | Manually defined mappings from MCP tools.             |
-| `tls_config`| `TLSConfig`                         | TLS configuration for the connection.                 |
-| `resources` | `repeated ResourceDefinition`       | A list of resources served by this service.           |
-| `calls`     | `map<string, WebsocketCallDefinition>` | A map of call definitions, keyed by their unique ID.  |
-| `prompts`   | `repeated PromptDefinition`         | A list of prompts served by this service.             |
+| Field        | Type                                   | Description                                          |
+| ------------ | -------------------------------------- | ---------------------------------------------------- |
+| `address`    | `string`                               | The URL of the Websocket service.                    |
+| `tools`      | `repeated ToolDefinition`              | Manually defined mappings from MCP tools.            |
+| `tls_config` | `TLSConfig`                            | TLS configuration for the connection.                |
+| `resources`  | `repeated ResourceDefinition`          | A list of resources served by this service.          |
+| `calls`      | `map<string, WebsocketCallDefinition>` | A map of call definitions, keyed by their unique ID. |
+| `prompts`    | `repeated PromptDefinition`            | A list of prompts served by this service.            |
+
+##### Use Case and Example
+
+Connect to a real-time data streaming service over a secure Websocket.
+
+```yaml
+service_config:
+  websocket_service:
+    address: "wss://streaming.example.com/data"
+    tls_config:
+      server_name: "streaming.example.com"
+```
 
 #### `WebrtcUpstreamService`
 
-| Field       | Type                              | Description                                           |
-| ----------- | --------------------------------- | ----------------------------------------------------- |
-| `address`   | `string`                          | The URL of the WebRTC signaling service.              |
-| `tools`     | `repeated ToolDefinition`         | Manually defined mappings from MCP tools.             |
-| `tls_config`| `TLSConfig`                       | TLS configuration for the signaling connection.       |
-| `resources` | `repeated ResourceDefinition`     | A list of resources served by this service.           |
-| `calls`     | `map<string, WebrtcCallDefinition>` | A map of call definitions, keyed by their unique ID.  |
-| `prompts`   | `repeated PromptDefinition`       | A list of prompts served by this service.             |
+| Field        | Type                                | Description                                          |
+| ------------ | ----------------------------------- | ---------------------------------------------------- |
+| `address`    | `string`                            | The URL of the WebRTC signaling service.             |
+| `tools`      | `repeated ToolDefinition`           | Manually defined mappings from MCP tools.            |
+| `tls_config` | `TLSConfig`                         | TLS configuration for the signaling connection.      |
+| `resources`  | `repeated ResourceDefinition`       | A list of resources served by this service.          |
+| `calls`      | `map<string, WebrtcCallDefinition>` | A map of call definitions, keyed by their unique ID. |
+| `prompts`    | `repeated PromptDefinition`         | A list of prompts served by this service.            |
+
+##### Use Case and Example
+
+Expose a WebRTC service for real-time communication, connecting to its signaling server.
+
+```yaml
+service_config:
+  webrtc_service:
+    address: "https://signaling.example.com"
+```
 
 ### Service Policies and Advanced Configuration
 
@@ -168,6 +341,17 @@ MCP Any supports several advanced policies that can be applied to upstream servi
 | `max_idle_connections` | `int32`    | The maximum number of idle connections to keep in the pool.                |
 | `idle_timeout`         | `duration` | The duration a connection can remain idle in the pool before being closed. |
 
+##### Use Case and Example
+
+Manage connections to a high-traffic database proxy.
+
+```yaml
+connection_pool:
+  max_connections: 200
+  max_idle_connections: 20
+  idle_timeout: "60s"
+```
+
 #### `RateLimitConfig`
 
 | Field                 | Type     | Description                                                  |
@@ -176,6 +360,17 @@ MCP Any supports several advanced policies that can be applied to upstream servi
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
 
+##### Use Case and Example
+
+Protect a public API from excessive use.
+
+```yaml
+rate_limit:
+  is_enabled: true
+  requests_per_second: 100
+  burst: 20
+```
+
 #### `CacheConfig`
 
 | Field        | Type       | Description                                                   |
@@ -183,9 +378,34 @@ MCP Any supports several advanced policies that can be applied to upstream servi
 | `is_enabled` | `bool`     | Whether caching is enabled.                                   |
 | `ttl`        | `duration` | The duration for which a cached response is considered valid. |
 
+##### Use Case and Example
+
+Cache responses from a slow, data-intensive service.
+
+```yaml
+cache:
+  is_enabled: true
+  ttl: "5m"
+```
+
 #### `ResilienceConfig`
 
 Contains configurations for circuit breakers and retries.
+
+##### Use Case and Example
+
+Improve the reliability of a connection to a occasionally unstable upstream service.
+
+```yaml
+resilience:
+  circuit_breaker:
+    failure_rate_threshold: 0.5
+    consecutive_failures: 3
+    open_duration: "10s"
+  retry_policy:
+    number_of_retries: 3
+    base_backoff: "100ms"
+```
 
 - **`circuit_breaker` (`CircuitBreakerConfig`)**:
   - `failure_rate_threshold`: The failure rate threshold to open the circuit (e.g., 0.5 for 50%).
@@ -203,35 +423,35 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 
 #### `HttpHealthCheck`
 
-| Field                             | Type       | Description                                                                |
-| --------------------------------- | ---------- | -------------------------------------------------------------------------- |
-| `url`                             | `string`   | The full URL to send the health check request to.                          |
-| `expected_code`                   | `int32`    | The expected HTTP status code for a successful health check. Defaults to 200.|
-| `expected_response_body_contains` | `string`   | A substring that must be present in the response body for the check to pass. |
-| `interval`                        | `duration` | How often to perform the health check.                                     |
-| `timeout`                         | `duration` | The timeout for each health check attempt.                                 |
+| Field                             | Type       | Description                                                                   |
+| --------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| `url`                             | `string`   | The full URL to send the health check request to.                             |
+| `expected_code`                   | `int32`    | The expected HTTP status code for a successful health check. Defaults to 200. |
+| `expected_response_body_contains` | `string`   | A substring that must be present in the response body for the check to pass.  |
+| `interval`                        | `duration` | How often to perform the health check.                                        |
+| `timeout`                         | `duration` | The timeout for each health check attempt.                                    |
 
 #### `GrpcHealthCheck`
 
-| Field               | Type       | Description                                                                |
-| ------------------- | ---------- | -------------------------------------------------------------------------- |
-| `service`           | `string`   | The gRPC service name to check (e.g., "grpc.health.v1.Health").            |
-| `method`            | `string`   | The gRPC method to call.                                                   |
-| `request`           | `string`   | A JSON string representing the request message.                            |
-| `expected_response` | `string`   | A JSON string representing the expected response message.                  |
-| `insecure`          | `bool`     | Set to true if connecting to the gRPC service without TLS.                 |
-| `interval`          | `duration` | How often to perform the health check.                                     |
-| `timeout`           | `duration` | The timeout for each health check attempt.                                 |
+| Field               | Type       | Description                                                     |
+| ------------------- | ---------- | --------------------------------------------------------------- |
+| `service`           | `string`   | The gRPC service name to check (e.g., "grpc.health.v1.Health"). |
+| `method`            | `string`   | The gRPC method to call.                                        |
+| `request`           | `string`   | A JSON string representing the request message.                 |
+| `expected_response` | `string`   | A JSON string representing the expected response message.       |
+| `insecure`          | `bool`     | Set to true if connecting to the gRPC service without TLS.      |
+| `interval`          | `duration` | How often to perform the health check.                          |
+| `timeout`           | `duration` | The timeout for each health check attempt.                      |
 
 #### `CommandLineHealthCheck`
 
-| Field                        | Type       | Description                                                                |
-| ---------------------------- | ---------- | -------------------------------------------------------------------------- |
-| `method`                     | `string`   | The method or command to send to the command line service.                 |
-| `prompt`                     | `string`   | The input/prompt to send to the service.                                   |
-| `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass.        |
-| `interval`                   | `duration` | How often to perform the health check.                                     |
-| `timeout`                    | `duration` | The timeout for each health check attempt.                                 |
+| Field                        | Type       | Description                                                         |
+| ---------------------------- | ---------- | ------------------------------------------------------------------- |
+| `method`                     | `string`   | The method or command to send to the command line service.          |
+| `prompt`                     | `string`   | The input/prompt to send to the service.                            |
+| `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass. |
+| `interval`                   | `duration` | How often to perform the health check.                              |
+| `timeout`                    | `duration` | The timeout for each health check attempt.                          |
 
 ### Authentication
 
@@ -246,74 +466,101 @@ Configures the authentication method for incoming requests to the MCP Any server
 | `api_key` | `APIKeyAuth` | API key in a header or query parameter.         |
 | `oauth2`  | `OAuth2Auth` | OAuth 2.0 client credentials or JWT validation. |
 
+##### Use Case and Example
+
+Secure the MCP Any server with API key authentication.
+
+```yaml
+authentication:
+  api_key:
+    param_name: "X-Mcp-Api-Key"
+    in: "HEADER"
+    key_value: "my-secret-key"
+```
+
 ##### `APIKeyAuth`
 
-| Field       | Type       | Description                                                 |
-| ----------- | ---------- | ----------------------------------------------------------- |
-| `param_name`| `string`   | The name of the parameter carrying the key (e.g., "X-API-Key"). |
-| `in`        | `enum`     | Where the API key is located (`HEADER` or `QUERY`).         |
-| `key_value` | `string`   | The actual API key value.                                   |
+| Field        | Type     | Description                                                     |
+| ------------ | -------- | --------------------------------------------------------------- |
+| `param_name` | `string` | The name of the parameter carrying the key (e.g., "X-API-Key"). |
+| `in`         | `enum`   | Where the API key is located (`HEADER` or `QUERY`).             |
+| `key_value`  | `string` | The actual API key value.                                       |
 
 ##### `OAuth2Auth`
 
-| Field               | Type     | Description                                               |
-| ------------------- | -------- | --------------------------------------------------------- |
-| `token_url`         | `string` | The URL to the OAuth 2.0 token endpoint.                  |
-| `authorization_url` | `string` | The URL to the OAuth 2.0 authorization endpoint.          |
-| `scopes`            | `string` | A space-delimited list of scopes.                         |
-| `issuer_url`        | `string` | The URL of the JWT issuer for token validation.           |
-| `audience`          | `string` | The audience for JWT token validation.                    |
+| Field               | Type     | Description                                      |
+| ------------------- | -------- | ------------------------------------------------ |
+| `token_url`         | `string` | The URL to the OAuth 2.0 token endpoint.         |
+| `authorization_url` | `string` | The URL to the OAuth 2.0 authorization endpoint. |
+| `scopes`            | `string` | A space-delimited list of scopes.                |
+| `issuer_url`        | `string` | The URL of the JWT issuer for token validation.  |
+| `audience`          | `string` | The audience for JWT token validation.           |
 
 #### `UpstreamAuthentication` (Outgoing)
 
 Configures the authentication method for MCP Any to use when connecting to an upstream service.
 
-| Field          | Type                        | Description                                     |
-| -------------- | --------------------------- | ----------------------------------------------- |
-| `api_key`      | `UpstreamAPIKeyAuth`        | API key sent in a header.                       |
-| `bearer_token` | `UpstreamBearerTokenAuth`   | Bearer token in the `Authorization` header.     |
-| `basic_auth`   | `UpstreamBasicAuth`         | Basic authentication with a username and password.|
-| `oauth2`       | `UpstreamOAuth2Auth`        | OAuth 2.0 client credentials flow.              |
+| Field          | Type                      | Description                                        |
+| -------------- | ------------------------- | -------------------------------------------------- |
+| `api_key`      | `UpstreamAPIKeyAuth`      | API key sent in a header.                          |
+| `bearer_token` | `UpstreamBearerTokenAuth` | Bearer token in the `Authorization` header.        |
+| `basic_auth`   | `UpstreamBasicAuth`       | Basic authentication with a username and password. |
+| `oauth2`       | `UpstreamOAuth2Auth`      | OAuth 2.0 client credentials flow.                 |
+
+##### Use Case and Example
+
+Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
+
+```yaml
+upstream_authentication:
+  oauth2:
+    token_url: "https://auth.example.com/oauth2/token"
+    client_id:
+      environment_variable: "UPSTREAM_CLIENT_ID"
+    client_secret:
+      file_path: "/secrets/upstream_client_secret"
+    scopes: "read:data write:data"
+```
 
 ##### `UpstreamAPIKeyAuth`
 
-| Field         | Type          | Description                                           |
-| ------------- | ------------- | ----------------------------------------------------- |
-| `header_name` | `string`      | The name of the header to carry the API key.          |
-| `api_key`     | `SecretValue` | The API key value, managed as a secret.               |
+| Field         | Type          | Description                                  |
+| ------------- | ------------- | -------------------------------------------- |
+| `header_name` | `string`      | The name of the header to carry the API key. |
+| `api_key`     | `SecretValue` | The API key value, managed as a secret.      |
 
 ##### `UpstreamBearerTokenAuth`
 
-| Field   | Type          | Description                                           |
-| ------- | ------------- | ----------------------------------------------------- |
-| `token` | `SecretValue` | The bearer token, managed as a secret.                |
+| Field   | Type          | Description                            |
+| ------- | ------------- | -------------------------------------- |
+| `token` | `SecretValue` | The bearer token, managed as a secret. |
 
 ##### `UpstreamBasicAuth`
 
-| Field      | Type          | Description                                           |
-| ---------- | ------------- | ----------------------------------------------------- |
-| `username` | `string`      | The username for basic authentication.                |
-| `password` | `SecretValue` | The password, managed as a secret.                    |
+| Field      | Type          | Description                            |
+| ---------- | ------------- | -------------------------------------- |
+| `username` | `string`      | The username for basic authentication. |
+| `password` | `SecretValue` | The password, managed as a secret.     |
 
 ##### `UpstreamOAuth2Auth`
 
-| Field           | Type          | Description                                           |
-| --------------- | ------------- | ----------------------------------------------------- |
-| `token_url`     | `string`      | The URL to the OAuth 2.0 token endpoint.              |
-| `client_id`     | `SecretValue` | The client ID for the OAuth 2.0 flow.                 |
-| `client_secret` | `SecretValue` | The client secret for the OAuth 2.0 flow.             |
-| `scopes`        | `string`      | A space-delimited list of scopes.                     |
+| Field           | Type          | Description                               |
+| --------------- | ------------- | ----------------------------------------- |
+| `token_url`     | `string`      | The URL to the OAuth 2.0 token endpoint.  |
+| `client_id`     | `SecretValue` | The client ID for the OAuth 2.0 flow.     |
+| `client_secret` | `SecretValue` | The client secret for the OAuth 2.0 flow. |
+| `scopes`        | `string`      | A space-delimited list of scopes.         |
 
 ##### `SecretValue`
 
 The `SecretValue` message provides a secure way to manage sensitive information like API keys, passwords, and tokens. It can be defined in one of the following ways:
 
-| Field                  | Type            | Description                                                     |
-| ---------------------- | --------------- | --------------------------------------------------------------- |
-| `plain_text`           | `string`        | The secret value as a plain text string. **(Not Recommended)**    |
-| `environment_variable` | `string`        | The name of an environment variable containing the secret.      |
-| `file_path`            | `string`        | The path to a file containing the secret.                       |
-| `remote_content`       | `RemoteContent` | Fetches the secret from a remote URL.                           |
+| Field                  | Type            | Description                                                    |
+| ---------------------- | --------------- | -------------------------------------------------------------- |
+| `plain_text`           | `string`        | The secret value as a plain text string. **(Not Recommended)** |
+| `environment_variable` | `string`        | The name of an environment variable containing the secret.     |
+| `file_path`            | `string`        | The path to a file containing the secret.                      |
+| `remote_content`       | `RemoteContent` | Fetches the secret from a remote URL.                          |
 
 ### TLS Configuration (`TLSConfig`)
 
@@ -326,3 +573,15 @@ Defines TLS settings for connecting to an upstream service.
 | `client_cert_path`     | `string` | Path to the client certificate file for mTLS.                                             |
 | `client_key_path`      | `string` | Path to the client private key file for mTLS.                                             |
 | `insecure_skip_verify` | `bool`   | If true, the client will not verify the server's certificate chain. **Use with caution.** |
+
+### Use Case and Example
+
+Connect to an upstream service that requires mutual TLS (mTLS) authentication.
+
+```yaml
+tls_config:
+  server_name: "secure.internal.service"
+  ca_cert_path: "/etc/ssl/certs/ca-bundle.crt"
+  client_cert_path: "/etc/ssl/private/client.pem"
+  client_key_path: "/etc/ssl/private/client.key"
+```
