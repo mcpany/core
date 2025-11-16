@@ -337,6 +337,15 @@ func HealthCheckWithContext(
 	out io.Writer,
 	addr string,
 ) error {
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	if deadline, ok := ctx.Deadline(); ok {
+		client.Timeout = time.Until(deadline)
+	}
+
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
@@ -347,7 +356,7 @@ func HealthCheckWithContext(
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := healthCheckClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
