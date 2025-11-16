@@ -1444,6 +1444,76 @@ upstream_services:
 	}
 }
 
+func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	configContent := `
+upstream_services:
+ - name: "enabled-service"
+   disable: false
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "test-call"
+         call_id: "test-call"
+ - name: "disabled-service"
+   disable: true
+   http_service:
+     address: "http://localhost:8081"
+     tools:
+       - name: "test-call"
+         call_id: "test-call"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
+	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+		if topic == "service_registration_requests" {
+			return mockRegBus
+		}
+		return nil
+	}
+	defer func() { bus.GetBusHook = nil }()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	time.Sleep(100 * time.Millisecond) // Allow time for publication.
+	cancel()                           // Trigger shutdown.
+
+	err = <-errChan
+	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	mockRegBus.mu.Lock()
+	defer mockRegBus.mu.Unlock()
+	assert.Len(t, mockRegBus.publishedMessages, 1, "Expected only one service registration request.")
+	if len(mockRegBus.publishedMessages) == 1 {
+		assert.Equal(t, "enabled-service", mockRegBus.publishedMessages[0].Config.GetName(), "Only the enabled service should be published.")
+	}
+}
+
+func TestRun_NoConfigDoesNotBlock(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 5*time.Second)
+	}()
+
+	err := <-errChan
+	assert.NoError(t, err, "app.Run should not return an error on graceful shutdown")
+}
+
 func TestRun_NoConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -1723,6 +1793,45 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 		// The WaitGroup was correctly handled.
 	case <-time.After(2 * time.Second):
 		t.Fatal("Test timed out, expected WaitGroup to be done")
+	}
+}
+
+func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer lis.Close()
+
+	registerFunc := func(s *gogrpc.Server) {
+		panic("panic during registration")
+	}
+
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+
+	select {
+	case err := <-errChan:
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "panic during gRPC service registration")
+	case <-time.After(1 * time.Second):
+		t.Fatal("did not receive error from panic")
+	}
+
+	// wg.Wait() should not block
+	waitCh := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(waitCh)
+	}()
+
+	select {
+	case <-waitCh:
+		// all good
+	case <-time.After(1 * time.Second):
+		t.Fatal("wg.Wait() blocked")
 	}
 }
 
