@@ -59,7 +59,7 @@ func IsValidURL(s string) bool {
 		return false
 	}
 	// According to RFC 6068, mailto URLs should not have a host.
-	if u.Scheme == "mailto" && u.Host != "" {
+	if u.Scheme == "mailto" && (u.Host != "" || strings.HasPrefix(s, "mailto://")) {
 		return false
 	}
 	// If a host is NOT present, the scheme must be one that allows an opaque part.
