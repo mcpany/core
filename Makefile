@@ -39,7 +39,7 @@ PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 PROTOC_ZIP := protoc.zip
 TOOL_INSTALL_DIR := $(CURDIR)/build/env/bin
-PROTOC_VERSION := v33.0
+PROTOC_VERSION := v33.1
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
@@ -79,7 +79,7 @@ endif
 RELEASE_DIR := $(CURDIR)/build/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-PLATFORMS ?= linux/amd64 linux/386 linux/arm64 linux/arm
+PLATFORMS ?= linux/amd64 linux/s390x linux/arm64 linux/arm linux/ppc64le
 
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find proto -name "*.proto")
@@ -265,14 +265,14 @@ prepare:
 	@echo "Preparation complete."
 
 
-gen: prepare
+gen: clean prepare
 	@echo "Removing old protobuf files..."
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
 		mkdir -p ./build; \
-		find proto -name "*.proto" -exec protoc --experimental_editions=true \
+		find proto -name "*.proto" -exec protoc \
 			--proto_path=. \
 			--descriptor_set_out=$(CURDIR)/build/all.protoset \
 			--include_imports \
@@ -295,7 +295,7 @@ e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
-test-fast: gen build build-examples build-e2e-mocks build-e2e-timeserver-docker
+test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
