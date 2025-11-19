@@ -92,6 +92,43 @@ func TestHttpMethodToString(t *testing.T) {
 	}
 }
 
+func TestDeterminismInToolNaming(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	configJSON := `{
+		"name": "test-determinism",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [
+				{"call_id": "call2"},
+				{"call_id": "call1"}
+			],
+			"calls": {
+				"call1": {
+					"id": "call1",
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "/test1"
+				},
+				"call2": {
+					"id": "call2",
+					"method": "HTTP_METHOD_POST",
+					"endpoint_path": "/test2"
+				}
+			}
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.NoError(t, err)
+	assert.Len(t, discoveredTools, 2)
+	assert.Equal(t, "op_call1", discoveredTools[0].GetName())
+	assert.Equal(t, "op_call2", discoveredTools[1].GetName())
+}
+
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewToolManager(nil)
@@ -119,7 +156,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 1)
-	assert.Equal(t, "op_0", discoveredTools[0].GetName())
+	assert.Equal(t, "op_test-op-call", discoveredTools[0].GetName())
 	assert.Len(t, tm.ListTools(), 1)
 }
 
@@ -238,7 +275,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		sanitizedName2, _ := util.SanitizeToolName("op_1")
+		sanitizedName2, _ := util.SanitizeToolName("op_test-op-2")
 		toolID2 := serviceID + "." + sanitizedName2
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)
