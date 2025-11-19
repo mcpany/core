@@ -153,6 +153,7 @@ require (
 	gotest.tools/v3 v3.5.2 // indirect
 )
 
+replace github.com/mcpany/core/proto => ./proto
 replace github.comcom/gorilla/websocket => github.com/gorilla/websocket v1.5.0
 
 replace github.comcom/mcpany/core/pkg/client => /app/pkg/client
