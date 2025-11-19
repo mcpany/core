@@ -82,7 +82,7 @@ RELEASE_DIR := $(CURDIR)/build/release
 PLATFORMS ?= linux/amd64 linux/s390x linux/arm64 linux/arm linux/ppc64le
 
 # Find all .proto files, excluding vendor/cache directories
-PROTO_FILES := $(shell find proto -name "*.proto")
+PROTO_FILES := $(shell find . -path ./vendor -prune -o -name "*.proto" -print)
 
 .PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
 
