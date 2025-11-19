@@ -616,6 +616,18 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			endpointPath: "api/v1/test/",
 			expectedFqn:  "GET http://localhost:8080/api/v1/test/",
 		},
+		{
+			name:         "endpoint with query parameters",
+			address:      "http://localhost:8080",
+			endpointPath: "api/v1/test?foo=bar",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test?foo=bar",
+		},
+		{
+			name:         "endpoint with query parameters",
+			address:      "http://localhost:8080",
+			endpointPath: "api/v1/test?foo=bar",
+			expectedFqn:  "GET http://localhost:8080/api/v1/test?foo=bar",
+		},
 	}
 
 	for _, tc := range testCases {
