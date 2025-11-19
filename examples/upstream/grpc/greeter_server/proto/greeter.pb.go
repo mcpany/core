@@ -5,7 +5,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v6.33.1
-// source: proto/greeter.proto
+// source: examples/upstream/grpc/greeter_server/proto/greeter.proto
 
 package proto
 
@@ -34,7 +34,7 @@ type HelloRequest struct {
 
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
-	mi := &file_proto_greeter_proto_msgTypes[0]
+	mi := &file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -46,7 +46,7 @@ func (x *HelloRequest) String() string {
 func (*HelloRequest) ProtoMessage() {}
 
 func (x *HelloRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_greeter_proto_msgTypes[0]
+	mi := &file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +59,7 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
 func (*HelloRequest) Descriptor() ([]byte, []int) {
-	return file_proto_greeter_proto_rawDescGZIP(), []int{0}
+	return file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HelloRequest) GetName() string {
@@ -79,7 +79,7 @@ type HelloReply struct {
 
 func (x *HelloReply) Reset() {
 	*x = HelloReply{}
-	mi := &file_proto_greeter_proto_msgTypes[1]
+	mi := &file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -91,7 +91,7 @@ func (x *HelloReply) String() string {
 func (*HelloReply) ProtoMessage() {}
 
 func (x *HelloReply) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_greeter_proto_msgTypes[1]
+	mi := &file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
 func (*HelloReply) Descriptor() ([]byte, []int) {
-	return file_proto_greeter_proto_rawDescGZIP(), []int{1}
+	return file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HelloReply) GetMessage() string {
@@ -114,11 +114,11 @@ func (x *HelloReply) GetMessage() string {
 	return ""
 }
 
-var File_proto_greeter_proto protoreflect.FileDescriptor
+var File_examples_upstream_grpc_greeter_server_proto_greeter_proto protoreflect.FileDescriptor
 
-const file_proto_greeter_proto_rawDesc = "" +
+const file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/greeter.proto\x12\agreeter\"\"\n" +
+	"9examples/upstream/grpc/greeter_server/proto/greeter.proto\x12\agreeter\"\"\n" +
 	"\fHelloRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
 	"\n" +
@@ -128,23 +128,23 @@ const file_proto_greeter_proto_rawDesc = "" +
 	"\bSayHello\x12\x15.greeter.HelloRequest\x1a\x13.greeter.HelloReply\"\x00BDZBgithub.com/mcpany/core/examples/upstream/grpc/greeter_server/protob\x06proto3"
 
 var (
-	file_proto_greeter_proto_rawDescOnce sync.Once
-	file_proto_greeter_proto_rawDescData []byte
+	file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescOnce sync.Once
+	file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescData []byte
 )
 
-func file_proto_greeter_proto_rawDescGZIP() []byte {
-	file_proto_greeter_proto_rawDescOnce.Do(func() {
-		file_proto_greeter_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_greeter_proto_rawDesc), len(file_proto_greeter_proto_rawDesc)))
+func file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescGZIP() []byte {
+	file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescOnce.Do(func() {
+		file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDesc), len(file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDesc)))
 	})
-	return file_proto_greeter_proto_rawDescData
+	return file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDescData
 }
 
-var file_proto_greeter_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_proto_greeter_proto_goTypes = []any{
+var file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_examples_upstream_grpc_greeter_server_proto_greeter_proto_goTypes = []any{
 	(*HelloRequest)(nil), // 0: greeter.HelloRequest
 	(*HelloReply)(nil),   // 1: greeter.HelloReply
 }
-var file_proto_greeter_proto_depIdxs = []int32{
+var file_examples_upstream_grpc_greeter_server_proto_greeter_proto_depIdxs = []int32{
 	0, // 0: greeter.Greeter.SayHello:input_type -> greeter.HelloRequest
 	1, // 1: greeter.Greeter.SayHello:output_type -> greeter.HelloReply
 	1, // [1:2] is the sub-list for method output_type
@@ -154,26 +154,26 @@ var file_proto_greeter_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_proto_greeter_proto_init() }
-func file_proto_greeter_proto_init() {
-	if File_proto_greeter_proto != nil {
+func init() { file_examples_upstream_grpc_greeter_server_proto_greeter_proto_init() }
+func file_examples_upstream_grpc_greeter_server_proto_greeter_proto_init() {
+	if File_examples_upstream_grpc_greeter_server_proto_greeter_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_greeter_proto_rawDesc), len(file_proto_greeter_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDesc), len(file_examples_upstream_grpc_greeter_server_proto_greeter_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_greeter_proto_goTypes,
-		DependencyIndexes: file_proto_greeter_proto_depIdxs,
-		MessageInfos:      file_proto_greeter_proto_msgTypes,
+		GoTypes:           file_examples_upstream_grpc_greeter_server_proto_greeter_proto_goTypes,
+		DependencyIndexes: file_examples_upstream_grpc_greeter_server_proto_greeter_proto_depIdxs,
+		MessageInfos:      file_examples_upstream_grpc_greeter_server_proto_greeter_proto_msgTypes,
 	}.Build()
-	File_proto_greeter_proto = out.File
-	file_proto_greeter_proto_goTypes = nil
-	file_proto_greeter_proto_depIdxs = nil
+	File_examples_upstream_grpc_greeter_server_proto_greeter_proto = out.File
+	file_examples_upstream_grpc_greeter_server_proto_greeter_proto_goTypes = nil
+	file_examples_upstream_grpc_greeter_server_proto_greeter_proto_depIdxs = nil
 }

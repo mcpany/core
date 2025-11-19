@@ -152,9 +152,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 )
-
-replace github.comcom/gorilla/websocket => github.com/gorilla/websocket v1.5.0
-
-replace github.comcom/mcpany/core/pkg/client => /app/pkg/client
-
-replace github.com/mcpany/core/examples => ./examples

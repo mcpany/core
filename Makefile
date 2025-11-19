@@ -282,6 +282,12 @@ gen: clean prepare
 			--go-grpc_opt=module=github.com/mcpany/core \
 			{} +
 	@echo "Protobuf generation complete."
+	@protoc --proto_path=. \
+		--go_out=. \
+		--go_opt=module=github.com/mcpany/core \
+		--go-grpc_out=. \
+		--go-grpc_opt=module=github.com/mcpany/core \
+		./examples/upstream/grpc/greeter_server/proto/greeter.proto
 
 build: gen
 	@echo "Building Go project locally..."
