@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	apiv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,7 +43,24 @@ type mockUpstream struct {
 
 func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if m.registerFunc != nil {
-		return m.registerFunc()
+		serviceID, discoveredTools, discoveredResources, err := m.registerFunc()
+		if err != nil {
+			return "", nil, nil, err
+		}
+		for _, toolDef := range discoveredTools {
+			toolName := toolDef.GetName()
+			t := tool.NewTool(
+				apiv1.Tool_builder{
+					Name:      &toolName,
+					ServiceId: &serviceID,
+				}.Build(),
+				func(ctx context.Context, req *tool.ExecutionRequest) (any, error) { return nil, nil },
+			)
+			if err := toolManager.AddTool(t); err != nil {
+				return "", nil, nil, err
+			}
+		}
+		return serviceID, discoveredTools, discoveredResources, nil
 	}
 	return "mock-service-key", nil, nil, nil
 }

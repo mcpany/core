@@ -18,10 +18,10 @@ package serviceregistry
 
 import (
 	"context"
-	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
@@ -188,4 +189,35 @@ func TestServiceRegistry_RegisterService_OAuth2_Error(t *testing.T) {
 
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.Error(t, err)
+}
+
+func TestServiceRegistry_RegisterService_DuplicateNameDoesNotAffectOriginal(t *testing.T) {
+	tm := tool.NewToolManager(nil)
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					toolName := "test-tool"
+					return "test-service", []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{
+							Name: &toolName,
+						}.Build(),
+					}, nil, nil
+				},
+			}, nil
+		},
+	}
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service")
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err, "First registration should succeed")
+	assert.Len(t, tm.ListTools(), 1, "One tool should be registered")
+
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.Error(t, err, "Second registration with the same name should fail")
+	assert.Len(t, tm.ListTools(), 1, "Original tool should still be registered after failed duplicate registration")
 }

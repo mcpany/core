@@ -106,6 +106,38 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
+// baseTool is a basic implementation of the Tool interface.
+type baseTool struct {
+	tool     *v1.Tool
+	executor Executor
+}
+
+// NewTool creates a new Tool instance for testing purposes.
+func NewTool(tool *v1.Tool, executor Executor) Tool {
+	return &baseTool{tool: tool, executor: executor}
+}
+
+// Tool returns the protobuf definition of the tool.
+func (t *baseTool) Tool() *v1.Tool {
+	return t.tool
+}
+
+// Execute is a no-op for the base tool.
+func (t *baseTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.executor != nil {
+		return t.executor(ctx, req)
+	}
+	return nil, nil
+}
+
+// GetCacheConfig returns nil for the base tool.
+func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
+}
+
+// Executor defines the function signature for executing a tool.
+type Executor func(ctx context.Context, req *ExecutionRequest) (any, error)
+
 type GRPCTool struct {
 	tool           *v1.Tool
 	poolManager    *pool.Manager
