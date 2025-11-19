@@ -35,6 +35,8 @@ import (
 	"github.com/mcpany/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"sort"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -164,8 +166,11 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
-	definitions := httpService.GetTools()
 	calls := httpService.GetCalls()
+	callIDToDefinition := make(map[string]*configv1.ToolDefinition)
+	for _, d := range httpService.GetTools() {
+		callIDToDefinition[d.GetCallId()] = d
+	}
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
 	if err != nil {
@@ -173,11 +178,18 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		authenticator = nil
 	}
 
-	for i, definition := range definitions {
-		callID := definition.GetCallId()
-		httpDef, ok := calls[callID]
+	// Sort call IDs for deterministic ordering
+	sortedCallIDs := make([]string, 0, len(calls))
+	for callID := range calls {
+		sortedCallIDs = append(sortedCallIDs, callID)
+	}
+	sort.Strings(sortedCallIDs)
+
+	for _, callID := range sortedCallIDs {
+		httpDef := calls[callID]
+		definition, ok := callIDToDefinition[callID]
 		if !ok {
-			log.Error("Call definition not found for tool", "call_id", callID, "tool_name", definition.GetName())
+			log.Error("Tool definition not found for call", "call_id", callID)
 			continue
 		}
 
@@ -187,7 +199,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			if sanitizedSummary != "" {
 				toolNamePart = sanitizedSummary
 			} else {
-				toolNamePart = fmt.Sprintf("op_%d", i)
+				toolNamePart = fmt.Sprintf("op_%s", callID)
 			}
 		}
 
@@ -264,6 +276,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	}
 
 	callIDToName := make(map[string]string)
+	definitions := httpService.GetTools()
 	for _, d := range definitions {
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
