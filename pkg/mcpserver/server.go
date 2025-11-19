@@ -189,6 +189,8 @@ func NewServer(
 								logging.GetLogger().
 									Info("Refreshing tool in MCP tool list", "toolName", mcpTool.Name, "tool", freshMCPTool)
 								if err != nil {
+									logging.GetLogger().
+										Error("Failed to convert tool to MCP tool", "toolName", mcpTool.Name, "error", err)
 									continue // Skip tools that fail to convert
 								}
 								refreshedTools = append(refreshedTools, freshMCPTool)

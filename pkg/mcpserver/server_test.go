@@ -17,14 +17,17 @@
 package mcpserver_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"testing"
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -596,4 +599,155 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
+}
+
+type mockInvalidTool struct{}
+
+func (m *mockInvalidTool) Tool() *v1.Tool {
+	return v1.Tool_builder{
+		Name:      proto.String("invalid-tool"),
+		ServiceId: proto.String("test-service"),
+	}.Build()
+}
+
+type mockNilToolProvider struct{}
+
+func (m *mockNilToolProvider) Tool() *v1.Tool {
+	return nil
+}
+
+func (m *mockNilToolProvider) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return "success", nil
+}
+
+func (m *mockNilToolProvider) GetCacheConfig() *configv1.CacheConfig {
+	return nil
+}
+
+type mockToolManagerForErrorTest struct {
+	originalToolManager tool.ToolManagerInterface
+	nilToolProvider     tool.Tool
+}
+
+func (m *mockToolManagerForErrorTest) GetTool(toolName string) (tool.Tool, bool) {
+	if toolName == "test-service.invalid-tool" {
+		return m.nilToolProvider, true
+	}
+	return m.originalToolManager.GetTool(toolName)
+}
+
+func (m *mockToolManagerForErrorTest) AddTool(t tool.Tool) error {
+	return m.originalToolManager.AddTool(t)
+}
+
+func (m *mockToolManagerForErrorTest) ListTools() []tool.Tool {
+	return m.originalToolManager.ListTools()
+}
+
+func (m *mockToolManagerForErrorTest) ClearToolsForService(serviceKey string) {
+	m.originalToolManager.ClearToolsForService(serviceKey)
+}
+
+func (m *mockToolManagerForErrorTest) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.originalToolManager.AddServiceInfo(serviceID, info)
+}
+
+func (m *mockToolManagerForErrorTest) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	return m.originalToolManager.GetServiceInfo(serviceID)
+}
+
+func (m *mockToolManagerForErrorTest) SetMCPServer(mcpServer tool.MCPServerProvider) {
+	m.originalToolManager.SetMCPServer(mcpServer)
+}
+
+func (m *mockToolManagerForErrorTest) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return m.originalToolManager.ExecuteTool(ctx, req)
+}
+
+func (m *mockToolManagerForErrorTest) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+	// This is a mock, so we don't need to do anything here.
+}
+
+func (m *mockInvalidTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return "success", nil
+}
+
+func (m *mockInvalidTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
+}
+
+func TestToolListFilteringWithError(t *testing.T) {
+	// 1. Setup logging to capture output
+	var logBuffer bytes.Buffer
+	// Replace the default logger with one that writes to our buffer
+	logging.ForTestsOnlyResetLogger()
+	logging.Init(slog.LevelDebug, &logBuffer)
+
+	// 2. Setup server and dependencies
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// 3. Add a tool that will cause a conversion error
+	// This tool is added to the tool manager, but the mockToolManager will return the mockNilToolProvider
+	// when GetTool("invalid-tool") is called. This simulates a tool that is registered but fails to be
+	// converted to an MCP tool.
+	tm.AddTool(&mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String("invalid-tool"),
+			ServiceId: proto.String("test-service"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	})
+
+	// Replace the real tool manager with a mock one that returns the nil tool provider
+	mockToolManager := &mockToolManagerForErrorTest{
+		originalToolManager: toolManager,
+		nilToolProvider:     &mockNilToolProvider{},
+	}
+	server, err = mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	// 4. Create client-server connection
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// 5. Call tools/list and assert
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	// The invalid tool should be filtered out
+	assert.Len(t, listResult.Tools, 0)
+
+	// 6. Check the log output
+	logOutput := logBuffer.String()
+	assert.Contains(t, logOutput, "Failed to convert tool to MCP tool")
+	assert.Contains(t, logOutput, "invalid-tool")
 }
