@@ -597,3 +597,89 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
 }
+
+func TestToolListFiltering_ToolUpdate(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add a test tool
+	serviceID := "test-service"
+	toolName := "test-tool"
+	sanitizedToolName, err := util.SanitizeToolName(toolName)
+	require.NoError(t, err)
+	compositeName := serviceID + "." + sanitizedToolName
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:        proto.String(toolName),
+			ServiceId:   proto.String(serviceID),
+			Description: proto.String("Initial Description"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	tm.AddTool(testTool)
+
+	// Create client-server connection
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// Initial tools/list check
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+	assert.Equal(t, "Initial Description", listResult.Tools[0].Description)
+
+	// Update the tool's description
+	updatedTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:        proto.String(toolName),
+			ServiceId:   proto.String(serviceID),
+			Description: proto.String("Updated Description"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	tm.AddTool(updatedTool) // This will overwrite the existing tool
+
+	// Test tools/list again to see if the description is updated
+	listResult, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+	assert.Equal(t, "Updated Description", listResult.Tools[0].Description)
+}
