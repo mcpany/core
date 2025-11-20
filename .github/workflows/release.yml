@@ -1,20 +1,5 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# SPDX-License-Identifier: Apache-2.0
-
 name: Release
 
 on:
@@ -24,8 +9,19 @@ on:
         description: 'The release version (e.g., v1.2.3)'
         required: true
 
+env:
+  # Define registries and image names centrally
+  # We support both Docker Hub and GHCR as per your original script
+  DOCKERHUB_IMAGE: mcpany/server
+  GHCR_IMAGE: ghcr.io/${{ github.repository }}
+
 jobs:
-  release:
+  # ==============================================================================
+  # JOB 1: BUILD BINARIES (Go Cross-Compilation)
+  # Builds .zip files for Windows/Mac/Linux
+  # ==============================================================================
+  build-binaries:
+    name: Build Binaries (${{ matrix.platform }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -58,57 +54,33 @@ jobs:
           echo "goos=${GOOS}" >> $GITHUB_OUTPUT
           echo "goarch=${GOARCH}" >> $GITHUB_OUTPUT
           echo "platform_name=$(echo ${{ matrix.platform }} | tr '/' '-')" >> $GITHUB_OUTPUT
+          
           BINARY_NAME=server-$GOOS-$GOARCH
           if [ "$GOOS" = "windows" ]; then
             BINARY_NAME=$BINARY_NAME.exe
           fi
           zip -j $RELEASE_DIR/$BINARY_NAME.zip $RELEASE_DIR/$BINARY_NAME
 
-      - name: Upload binaries
+      - name: Upload binaries artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-binaries-${{ steps.package.outputs.platform_name }}
           path: ./build/release/*.zip
 
-  publish:
+  # ==============================================================================
+  # JOB 2: CREATE GITHUB RELEASE
+  # Aggregates the binaries and creates the release page
+  # ==============================================================================
+  create-release:
+    needs: build-binaries
     runs-on: ubuntu-latest
-    needs: release
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-          cache: true
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download release binaries
+      - name: Download all binaries
         uses: actions/download-artifact@v4
         with:
-          path: ./build/release
           pattern: release-binaries-*
           merge-multiple: true
+          path: ./build/release
 
       - name: Create Release
         id: create_release
@@ -131,14 +103,124 @@ jobs:
           asset_path: ./build/release/*.zip
           asset_content_type: application/zip
 
-      - name: Get Date
-        id: date
-        run: echo "week=$(date +'%Y-%U')" >> $GITHUB_OUTPUT
+  # ==============================================================================
+  # JOB 3: DOCKER BUILD (MATRIX)
+  # Runs in parallel with binary builds.
+  # Uses Native ARM runners for speed.
+  # ==============================================================================
+  docker-build:
+    name: Docker Build ${{ matrix.platform }}
+    # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
 
-      - name: Build and push Docker image
-        env:
-          CACHE_TO: type=gha,mode=max,scope=release-cache-${{ steps.date.outputs.week }}
-          CACHE_FROM: type=gha,scope=release-cache-${{ steps.date.outputs.week }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
+      # Since we are using native runners, this is mostly a fallback/safety.
+      - name: Set up QEMU
+        if: ${{ matrix.runner == 'ubuntu-latest' && matrix.platform != 'linux/amd64' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          # IMPORTANT: We do NOT tag here. We push by digest.
+          # We output to BOTH registries (Docker Hub + GHCR)
+          outputs: type=image,name=${{ env.DOCKERHUB_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          # Minimal caching to prevent "No space left"
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=min,scope=${{ matrix.platform }}
+
+      - name: Export digest
         run: |
-          TAGS="ghcr.io/${{ github.repository }}:${{ github.event.inputs.release_version }} ghcr.io/${{ github.repository }}:latest"
-          make build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 SERVER_IMAGE_TAGS="$$TAGS"
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ strategy.job-index }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # ==============================================================================
+  # JOB 4: DOCKER MERGE
+  # Combines the AMD64 and ARM64 digests into one "latest" tag
+  # ==============================================================================
+  docker-merge:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          pattern: digests-*
+          merge-multiple: true
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          # 1. Create tags for Docker Hub
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_IMAGE }}:latest \
+            -t ${{ env.DOCKERHUB_IMAGE }}:${{ github.event.inputs.release_version }} \
+            $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)
+
+          # 2. Create tags for GHCR
+          # We reuse the same digests because we pushed to both in the build step
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_IMAGE }}:latest \
+            -t ${{ env.GHCR_IMAGE }}:${{ github.event.inputs.release_version }} \
+            $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:latest
