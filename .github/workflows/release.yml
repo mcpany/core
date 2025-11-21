@@ -112,6 +112,9 @@ jobs:
     name: Docker Build ${{ matrix.platform }}
     # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix:
