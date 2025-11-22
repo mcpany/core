@@ -413,6 +413,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	for _, mcpSDKTool := range listToolsResult.Tools {
 		var callDef *configv1.MCPCallDefinition
 		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if configTool.GetDisable() {
+				logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
+				continue
+			}
 			if call, callOk := calls[configTool.GetCallId()]; callOk {
 				callDef = call
 			} else {
@@ -447,11 +451,23 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 
 	// Register prompts
 	listPromptsResult, err := cs.ListPrompts(ctx, &mcp.ListPromptsParams{})
+
+	configPromptMap := make(map[string]*configv1.PromptDefinition)
+	for _, p := range mcpService.GetPrompts() {
+		configPromptMap[p.GetName()] = p
+	}
+
 	if err != nil {
 		// Do not fail if prompts are not supported
 		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
+			if configPrompt, ok := configPromptMap[mcpSDKPrompt.Name]; ok {
+				if configPrompt.GetDisable() {
+					logging.GetLogger().Info("Skipping disabled prompt (auto-discovered)", "promptName", mcpSDKPrompt.Name)
+					continue
+				}
+			}
 			promptManager.AddPrompt(&mcpPrompt{
 				mcpPrompt: mcpSDKPrompt,
 				service:   serviceID,
@@ -464,6 +480,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	for _, promptDef := range mcpService.GetPrompts() {
+		if promptDef.GetDisable() {
+			logging.GetLogger().Info("Skipping disabled prompt (config)", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 	}
@@ -476,8 +496,19 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		return discoveredTools, nil, nil
 	}
 
+	configResourceMap := make(map[string]*configv1.ResourceDefinition)
+	for _, r := range mcpService.GetResources() {
+		configResourceMap[r.GetName()] = r
+	}
+
 	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(listResourcesResult.Resources))
 	for _, mcpSDKResource := range listResourcesResult.Resources {
+		if configResource, ok := configResourceMap[mcpSDKResource.Name]; ok {
+			if configResource.GetDisable() {
+				logging.GetLogger().Info("Skipping disabled resource (auto-discovered)", "resourceName", mcpSDKResource.Name)
+				continue
+			}
+		}
 		resourceManager.AddResource(&mcpResource{
 			mcpResource: mcpSDKResource,
 			service:     serviceID,
@@ -495,6 +526,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource (config)", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetMcpCall()
 			if call == nil {
@@ -611,6 +646,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	for _, mcpSDKTool := range listToolsResult.Tools {
 		var callDef *configv1.MCPCallDefinition
 		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
+			if configTool.GetDisable() {
+				logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
+				continue
+			}
 			if call, callOk := calls[configTool.GetCallId()]; callOk {
 				callDef = call
 			} else {
@@ -645,10 +684,22 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 
 	// Register prompts
 	listPromptsResult, err := cs.ListPrompts(ctx, &mcp.ListPromptsParams{})
+
+	configPromptMap := make(map[string]*configv1.PromptDefinition)
+	for _, p := range mcpService.GetPrompts() {
+		configPromptMap[p.GetName()] = p
+	}
+
 	if err != nil {
 		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
+			if configPrompt, ok := configPromptMap[mcpSDKPrompt.Name]; ok {
+				if configPrompt.GetDisable() {
+					logging.GetLogger().Info("Skipping disabled prompt (auto-discovered)", "promptName", mcpSDKPrompt.Name)
+					continue
+				}
+			}
 			promptManager.AddPrompt(&mcpPrompt{
 				mcpPrompt: mcpSDKPrompt,
 				service:   serviceID,
@@ -662,6 +713,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	for _, promptDef := range mcpService.GetPrompts() {
+		if promptDef.GetDisable() {
+			logging.GetLogger().Info("Skipping disabled prompt (config)", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 	}
@@ -673,8 +728,19 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		return discoveredTools, nil, nil
 	}
 
+	configResourceMap := make(map[string]*configv1.ResourceDefinition)
+	for _, r := range mcpService.GetResources() {
+		configResourceMap[r.GetName()] = r
+	}
+
 	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(listResourcesResult.Resources))
 	for _, mcpSDKResource := range listResourcesResult.Resources {
+		if configResource, ok := configResourceMap[mcpSDKResource.Name]; ok {
+			if configResource.GetDisable() {
+				logging.GetLogger().Info("Skipping disabled resource (auto-discovered)", "resourceName", mcpSDKResource.Name)
+				continue
+			}
+		}
 		resourceManager.AddResource(&mcpResource{
 			mcpResource: mcpSDKResource,
 			service:     serviceID,
@@ -693,6 +759,10 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range mcpService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource (config)", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetMcpCall()
 			if call == nil {

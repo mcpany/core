@@ -123,6 +123,11 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	}
 
 	for i, definition := range definitions {
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool", "toolName", definition.GetName())
+			continue
+		}
+
 		callID := definition.GetCallId()
 		wrtcDef, ok := calls[callID]
 		if !ok {
@@ -191,6 +196,10 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range webrtcService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetWebrtcCall()
 			if call == nil {
@@ -227,6 +236,10 @@ func (u *WebrtcUpstream) createAndRegisterPrompts(ctx context.Context, serviceID
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	for _, promptDef := range webrtcService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
