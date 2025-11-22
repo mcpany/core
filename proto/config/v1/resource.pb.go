@@ -157,6 +157,7 @@ type ResourceDefinition struct {
 	xxx_hidden_Size         int64                             `protobuf:"varint,6,opt,name=size"`
 	xxx_hidden_Annotations  *ResourceAnnotation               `protobuf:"bytes,7,opt,name=annotations"`
 	xxx_hidden_ResourceType isResourceDefinition_ResourceType `protobuf_oneof:"resource_type"`
+	xxx_hidden_Disable      bool                              `protobuf:"varint,10,opt,name=disable"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -270,34 +271,41 @@ func (x *ResourceDefinition) GetDynamic() *DynamicResource {
 	return nil
 }
 
+func (x *ResourceDefinition) GetDisable() bool {
+	if x != nil {
+		return x.xxx_hidden_Disable
+	}
+	return false
+}
+
 func (x *ResourceDefinition) SetUri(v string) {
 	x.xxx_hidden_Uri = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *ResourceDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *ResourceDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *ResourceDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
 }
 
 func (x *ResourceDefinition) SetMimeType(v string) {
 	x.xxx_hidden_MimeType = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
 }
 
 func (x *ResourceDefinition) SetSize(v int64) {
 	x.xxx_hidden_Size = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
 }
 
 func (x *ResourceDefinition) SetAnnotations(v *ResourceAnnotation) {
@@ -318,6 +326,11 @@ func (x *ResourceDefinition) SetDynamic(v *DynamicResource) {
 		return
 	}
 	x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{v}
+}
+
+func (x *ResourceDefinition) SetDisable(v bool) {
+	x.xxx_hidden_Disable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
 }
 
 func (x *ResourceDefinition) HasUri() bool {
@@ -392,6 +405,13 @@ func (x *ResourceDefinition) HasDynamic() bool {
 	return ok
 }
 
+func (x *ResourceDefinition) HasDisable() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
 func (x *ResourceDefinition) ClearUri() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Uri = nil
@@ -442,6 +462,11 @@ func (x *ResourceDefinition) ClearDynamic() {
 	}
 }
 
+func (x *ResourceDefinition) ClearDisable() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Disable = false
+}
+
 const ResourceDefinition_ResourceType_not_set_case case_ResourceDefinition_ResourceType = 0
 const ResourceDefinition_Static_case case_ResourceDefinition_ResourceType = 8
 const ResourceDefinition_Dynamic_case case_ResourceDefinition_ResourceType = 9
@@ -474,6 +499,8 @@ type ResourceDefinition_builder struct {
 	Static  *StaticResource
 	Dynamic *DynamicResource
 	// -- end of xxx_hidden_ResourceType
+	// If true, this resource is disabled.
+	Disable *bool
 }
 
 func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
@@ -481,27 +508,27 @@ func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Uri != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
 		x.xxx_hidden_Uri = b.Uri
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.MimeType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
 		x.xxx_hidden_MimeType = b.MimeType
 	}
 	if b.Size != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
 		x.xxx_hidden_Size = *b.Size
 	}
 	x.xxx_hidden_Annotations = b.Annotations
@@ -510,6 +537,10 @@ func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
 	}
 	if b.Dynamic != nil {
 		x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{b.Dynamic}
+	}
+	if b.Disable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		x.xxx_hidden_Disable = *b.Disable
 	}
 	return m0
 }
@@ -1061,7 +1092,7 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\x12ResourceAnnotation\x12\x1a\n" +
 	"\baudience\x18\x01 \x03(\tR\baudience\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x01R\bpriority\x12?\n" +
-	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xf7\x02\n" +
+	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\x91\x03\n" +
 	"\x12ResourceDefinition\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -1071,7 +1102,9 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\x04size\x18\x06 \x01(\x03R\x04size\x12F\n" +
 	"\vannotations\x18\a \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotations\x12:\n" +
 	"\x06static\x18\b \x01(\v2 .mcpany.config.v1.StaticResourceH\x00R\x06static\x12=\n" +
-	"\adynamic\x18\t \x01(\v2!.mcpany.config.v1.DynamicResourceH\x00R\adynamicB\x0f\n" +
+	"\adynamic\x18\t \x01(\v2!.mcpany.config.v1.DynamicResourceH\x00R\adynamic\x12\x18\n" +
+	"\adisable\x18\n" +
+	" \x01(\bR\adisableB\x0f\n" +
 	"\rresource_type\"n\n" +
 	"\x0eStaticResource\x12#\n" +
 	"\ftext_content\x18\x01 \x01(\tH\x00R\vtextContent\x12'\n" +

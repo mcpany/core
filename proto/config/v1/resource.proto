@@ -39,6 +39,8 @@ message ResourceDefinition {
         StaticResource static = 8;
         DynamicResource dynamic = 9;
     }
+    // If true, this resource is disabled.
+    bool disable = 10;
 }
 
 message StaticResource {
