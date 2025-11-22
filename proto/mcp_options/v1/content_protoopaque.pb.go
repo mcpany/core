@@ -7,7 +7,7 @@
 // 	protoc        v6.33.1
 // source: proto/mcp_options/v1/content.proto
 
-//go:build !protoopaque
+//go:build protoopaque
 
 package v1
 
@@ -26,11 +26,13 @@ const (
 )
 
 type Content struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Content       *string                `protobuf:"bytes,1,opt,name=content,proto3,oneof" json:"content,omitempty"`
-	Role          *string                `protobuf:"bytes,2,opt,name=role,proto3,oneof" json:"role,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Content     *string                `protobuf:"bytes,1,opt,name=content,proto3,oneof"`
+	xxx_hidden_Role        *string                `protobuf:"bytes,2,opt,name=role,proto3,oneof"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Content) Reset() {
@@ -59,47 +61,57 @@ func (x *Content) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Content) GetContent() string {
-	if x != nil && x.Content != nil {
-		return *x.Content
+	if x != nil {
+		if x.xxx_hidden_Content != nil {
+			return *x.xxx_hidden_Content
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Content) GetRole() string {
-	if x != nil && x.Role != nil {
-		return *x.Role
+	if x != nil {
+		if x.xxx_hidden_Role != nil {
+			return *x.xxx_hidden_Role
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Content) SetContent(v string) {
-	x.Content = &v
+	x.xxx_hidden_Content = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *Content) SetRole(v string) {
-	x.Role = &v
+	x.xxx_hidden_Role = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *Content) HasContent() bool {
 	if x == nil {
 		return false
 	}
-	return x.Content != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *Content) HasRole() bool {
 	if x == nil {
 		return false
 	}
-	return x.Role != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *Content) ClearContent() {
-	x.Content = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Content = nil
 }
 
 func (x *Content) ClearRole() {
-	x.Role = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Role = nil
 }
 
 type Content_builder struct {
@@ -113,8 +125,14 @@ func (b0 Content_builder) Build() *Content {
 	m0 := &Content{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Content = b.Content
-	x.Role = b.Role
+	if b.Content != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Content = b.Content
+	}
+	if b.Role != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Role = b.Role
+	}
 	return m0
 }
 
