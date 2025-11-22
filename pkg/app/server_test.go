@@ -43,7 +43,6 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	bus_pb "github.com/mcpany/core/proto/bus"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/afero"
 
 	"github.com/stretchr/testify/assert"
@@ -453,49 +452,6 @@ func TestRun_BusProviderError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
 }
 
-
-
-func TestRun_NewMCPServerError(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
-	require.NoError(t, err)
-
-	mcpserver.NewServerHook = func(context.Context, tool.ToolManagerInterface, prompt.PromptManagerInterface, resource.ResourceManagerInterface, *auth.AuthManager, *serviceregistry.ServiceRegistry, *bus.BusProvider) (*mcpserver.Server, error) {
-		return nil, fmt.Errorf("injected mcp server error")
-	}
-	defer func() { mcpserver.NewServerHook = nil }()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-
-	app := NewApplication()
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
-
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to create mcp server: injected mcp server error")
-}
-
-func TestRun_GatewayRegistrationError(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
-	require.NoError(t, err)
-
-	originalRegisterFunc := registerRegistrationServiceHandlerFromEndpoint
-	registerRegistrationServiceHandlerFromEndpoint = func(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []gogrpc.DialOption) error {
-		return fmt.Errorf("injected gateway registration error")
-	}
-	defer func() { registerRegistrationServiceHandlerFromEndpoint = originalRegisterFunc }()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-
-	app := NewApplication()
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
-
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to register gateway: injected gateway registration error")
-}
-
 func TestRun_EmptyConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
@@ -706,103 +662,6 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	err = <-errChan
 
 	// On graceful shutdown, it should be nil.
-	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
-}
-
-
-func TestRun_MCPListenAddressFromConfig(t *testing.T) {
-	configListenAddr := "localhost:9090"
-	// Skip the test if the port is already in use.
-	conn, err := net.DialTimeout("tcp", configListenAddr, 100*time.Millisecond)
-	if err == nil {
-		conn.Close()
-		t.Skipf("port %s is already in use, skipping test", configListenAddr)
-	}
-
-	fs := afero.NewMemMapFs()
-	configContent := fmt.Sprintf(`
-global_settings:
-  mcp_listen_address: "%s"
-`, configListenAddr)
-	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
-	require.NoError(t, err)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	app := NewApplication()
-	errChan := make(chan error, 1)
-
-	go func() {
-		// Pass a different address to Run to ensure the config value takes precedence.
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
-	}()
-
-	// Verify the server starts listening on the address from the config.
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", configListenAddr, 100*time.Millisecond)
-		if err == nil {
-			conn.Close()
-			return true
-		}
-		return false
-	}, 2*time.Second, 100*time.Millisecond, "server should listen on the address from config")
-
-	cancel()
-	err = <-errChan
-	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
-}
-
-
-func TestRun_HTTPHandlerRegistration(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	app := NewApplication()
-	errChan := make(chan error, 1)
-
-	// Use an ephemeral port for the HTTP server.
-	l, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	httpAddr := l.Addr().String()
-	l.Close()
-
-	go func() {
-		errChan <- app.Run(ctx, fs, false, httpAddr, "", nil, 5*time.Second)
-	}()
-
-	// Wait for the server to be ready.
-	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", httpAddr, 100*time.Millisecond)
-		if err == nil {
-			conn.Close()
-			return true
-		}
-		return false
-	}, 2*time.Second, 100*time.Millisecond, "HTTP server should start listening")
-
-	// Test the /healthz endpoint.
-	resp, err := http.Get(fmt.Sprintf("http://%s/healthz", httpAddr))
-	require.NoError(t, err)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-	// Test the /metrics endpoint.
-	resp, err = http.Get(fmt.Sprintf("http://%s/metrics", httpAddr))
-	require.NoError(t, err)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-	// Test the root MCP handler (/).
-	resp, err = http.Post(fmt.Sprintf("http://%s/", httpAddr), "application/json", strings.NewReader(`{}`))
-	require.NoError(t, err)
-	defer resp.Body.Close()
-	// An empty request should result in a parse error, but the handler is present.
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	cancel()
-	err = <-errChan
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 

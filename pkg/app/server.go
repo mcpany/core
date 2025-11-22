@@ -50,9 +50,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// For testing purposes, allow overriding the registration function.
-var registerRegistrationServiceHandlerFromEndpoint = v1.RegisterRegistrationServiceHandlerFromEndpoint
-
 var healthCheckClient = &http.Client{
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
@@ -426,7 +423,7 @@ func (a *Application) runServerMode(
 		if strings.HasPrefix(endpoint, ":") {
 			endpoint = "localhost" + endpoint
 		}
-		if err := registerRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 			return fmt.Errorf("failed to register gateway: %w", err)
 		}
 		mux.Handle("/v1/", gwmux)

@@ -519,9 +519,21 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
 
+	// Check if the image exists locally
+	checkCmd := exec.Command(dockerExe, buildArgs("images", "-q", imageName)...)
+	output, err := checkCmd.Output()
+	require.NoError(t, err, "failed to check for docker image %s", imageName)
+
+	// If the image doesn't exist, pull it
+	if len(strings.TrimSpace(string(output))) == 0 {
+		pullCmd := exec.Command(dockerExe, buildArgs("pull", imageName)...)
+		pullOutput, err := pullCmd.CombinedOutput()
+		require.NoError(t, err, "failed to pull docker image %s. Output: %s", imageName, string(pullOutput))
+	}
+
 	// Use Run instead of Start for 'docker run -d' to ensure the command completes
 	// and the container is running before proceeding.
-	err := startCmd.Run()
+	err = startCmd.Run()
 	require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderr.String())
 
 	cleanupFunc = func() {

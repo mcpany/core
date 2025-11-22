@@ -40,8 +40,6 @@ var AddReceivingMiddlewareHook func(name string)
 // tools, prompts, resources, and services. It uses an internal router to
 // delegate requests to the appropriate handlers and communicates with backend
 // workers via an event bus.
-var NewServerHook func(context.Context, tool.ToolManagerInterface, prompt.PromptManagerInterface, resource.ResourceManagerInterface, *auth.AuthManager, *serviceregistry.ServiceRegistry, *bus.BusProvider) (*Server, error)
-
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -92,10 +90,6 @@ func NewServer(
 	serviceRegistry *serviceregistry.ServiceRegistry,
 	bus *bus.BusProvider,
 ) (*Server, error) {
-	if NewServerHook != nil {
-		return NewServerHook(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, bus)
-	}
-
 	s := &Server{
 		router:          NewRouter(),
 		toolManager:     toolManager,

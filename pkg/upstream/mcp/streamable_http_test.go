@@ -566,23 +566,43 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 
 func TestAuthenticatedRoundTripper(t *testing.T) {
-	var authenticatorCalled bool
-	mockAuthenticator := &mockAuthenticator{
-		AuthenticateFunc: func(req *http.Request) error {
-			authenticatorCalled = true
-			return nil
-		},
-	}
+	t.Run("success", func(t *testing.T) {
+		var authenticatorCalled bool
+		mockAuthenticator := &mockAuthenticator{
+			AuthenticateFunc: func(req *http.Request) error {
+				authenticatorCalled = true
+				return nil
+			},
+		}
 
-	rt := &authenticatedRoundTripper{
-		authenticator: mockAuthenticator,
-		base:          &mockRoundTripper{},
-	}
+		rt := &authenticatedRoundTripper{
+			authenticator: mockAuthenticator,
+			base:          &mockRoundTripper{},
+		}
 
-	req, _ := http.NewRequest("GET", "http://localhost", nil)
-	_, err := rt.RoundTrip(req)
-	assert.NoError(t, err)
-	assert.True(t, authenticatorCalled)
+		req, _ := http.NewRequest("GET", "http://localhost", nil)
+		_, err := rt.RoundTrip(req)
+		assert.NoError(t, err)
+		assert.True(t, authenticatorCalled)
+	})
+
+	t.Run("authenticator error", func(t *testing.T) {
+		mockAuthenticator := &mockAuthenticator{
+			AuthenticateFunc: func(req *http.Request) error {
+				return assert.AnError
+			},
+		}
+
+		rt := &authenticatedRoundTripper{
+			authenticator: mockAuthenticator,
+			base:          &mockRoundTripper{},
+		}
+
+		req, _ := http.NewRequest("GET", "http://localhost", nil)
+		_, err := rt.RoundTrip(req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), assert.AnError.Error())
+	})
 }
 
 func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
