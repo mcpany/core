@@ -4,11 +4,18 @@
 [![GoReportCard](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 [![codecov](https://codecov.io/gh/mcpany/core/branch/main/graph/badge.svg)](https://codecov.io/gh/mcpany/core)
 
-# MCP Any: Convert Anything to MCP Server
+# MCP Any: Configuration-Driven MCP Server
 
-Why developing multiple MCP servers for each API when you can just have one to adapt to all?
+**Eliminate the need to build and maintain custom MCP servers for every API.**
 
-MCP Any is a powerful and flexible server that acts as a universal adapter for backend services. It dynamically discovers and registers capabilities from various sources—such as gRPC services, RESTful APIs (via OpenAPI specifications), and even command-line tools—and exposes them as standardized "Tools." These tools can then be listed and executed through a unified API, simplifying the integration of diverse services into a single, coherent system.
+MCP Any empowers you to create robust Model Context Protocol (MCP) servers using **simple configurations**. Instead of writing code, compiling binaries, and managing complex deployments, you define your tools, resources, and prompts in portable configuration files.
+
+## Why MCP Any?
+
+- **No Code Required**: Create fully functional MCP servers for your APIs just by writing a config file.
+- **Shareable Configurations**: Share your MCP server setups publicly. Users don't need to download unsafe binaries or set up complex environments—they just load your config.
+- **Local & Secure**: Host your MCP server locally. Connect to your private or public APIs without sending sensitive data through third-party remote servers. Perfect for both personal and enterprise use.
+- **Universal Adapter**: Dynamically acts as a bridge for gRPC services, RESTful APIs (via OpenAPI), and command-line tools, exposing them as standardized MCP tools.
 
 ## Key Features
 
