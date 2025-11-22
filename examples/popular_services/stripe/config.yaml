@@ -1,0 +1,50 @@
+# Copyright 2024 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+- name: stripe
+  http_service:
+    address: "https://api.stripe.com"
+    authentication:
+      token: "${STRIPE_API_KEY}"
+    calls:
+    - endpoint_path: "/v1/charges"
+      schema:
+        name: "create_charge"
+        input_schema:
+          type: "object"
+          properties:
+            amount:
+              type: "integer"
+              description: "Amount intended to be collected by this payment. A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency)."
+            currency:
+              type: "string"
+              description: "Three-letter ISO currency code, in lowercase."
+            source:
+              type: "string"
+              description: "A payment source to charge."
+        output_schema:
+          type: "object"
+          properties:
+            id:
+              type: "string"
+            amount:
+              type: "integer"
+            currency:
+              type: "string"
+            status:
+              type: "string"
+      method: "HTTP_METHOD_POST"
