@@ -54,7 +54,7 @@ jobs:
           echo "goos=${GOOS}" >> $GITHUB_OUTPUT
           echo "goarch=${GOARCH}" >> $GITHUB_OUTPUT
           echo "platform_name=$(echo ${{ matrix.platform }} | tr '/' '-')" >> $GITHUB_OUTPUT
-          
+
           BINARY_NAME=server-$GOOS-$GOARCH
           if [ "$GOOS" = "windows" ]; then
             BINARY_NAME=$BINARY_NAME.exe
