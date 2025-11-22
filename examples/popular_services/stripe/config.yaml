@@ -19,68 +19,65 @@ upstream_services:
   http_service:
     address: "https://api.stripe.com"
     authentication:
-      token: "${STRIPE_API_TOKEN}"
+      token: "${STRIPE_API_KEY}"
     calls:
     - endpoint_path: "/v1/customers"
       schema:
-        name: "list_customers"
-        description: "List all customers."
+        name: "create_customer"
+        input_schema:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              description: "The customer's full name or business name."
+            email:
+              type: "string"
+              description: "The customer's email address."
         output_schema:
           type: "object"
           properties:
+            id:
+              type: "string"
             object:
               type: "string"
-            url:
+            address:
+              type: "object"
+            balance:
+              type: "integer"
+            created:
+              type: "integer"
+            currency:
               type: "string"
-            has_more:
+            default_source:
+              type: "string"
+            delinquent:
               type: "boolean"
-            data:
+            description:
+              type: "string"
+            discount:
+              type: "object"
+            email:
+              type: "string"
+            invoice_prefix:
+              type: "string"
+            invoice_settings:
+              type: "object"
+            livemode:
+              type: "boolean"
+            metadata:
+              type: "object"
+            name:
+              type: "string"
+            next_invoice_sequence:
+              type: "integer"
+            phone:
+              type: "string"
+            preferred_locales:
               type: "array"
               items:
-                type: "object"
-                properties:
-                  id:
-                    type: "string"
-                  object:
-                    type: "string"
-                  address:
-                    type: "object"
-                  balance:
-                    type: "integer"
-                  created:
-                    type: "integer"
-                  currency:
-                    type: "string"
-                  default_source:
-                    type: "string"
-                  delinquent:
-                    type: "boolean"
-                  description:
-                    type: "string"
-                  discount:
-                    type: "object"
-                  email:
-                    type: "string"
-                  invoice_prefix:
-                    type: "string"
-                  invoice_settings:
-                    type: "object"
-                  livemode:
-                    type: "boolean"
-                  metadata:
-                    type: "object"
-                  name:
-                    type: "string"
-                  next_invoice_sequence:
-                    type: "integer"
-                  phone:
-                    type: "string"
-                  preferred_locales:
-                    type: "array"
-                    items:
-                      type: "string"
-                  shipping:
-                    type: "object"
-                  tax_exempt:
-                    type: "string"
-      method: "HTTP_METHOD_GET"
+                type: "string"
+            shipping:
+              type: "object"
+            tax_exempt:
+              type: "string"
+      method: "HTTP_METHOD_POST"
