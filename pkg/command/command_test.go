@@ -104,6 +104,27 @@ func TestLocalExecutor(t *testing.T) {
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 1, exitCode)
 	})
+
+	t.Run("ContextCancellation", func(t *testing.T) {
+		executor := NewExecutor(nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Start a long-running command
+		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
+		require.NoError(t, err)
+
+		// Cancel the context almost immediately
+		cancel()
+
+		// Expect the command to be terminated and receive a non-zero exit code
+		select {
+		case exitCode := <-exitCodeChan:
+			assert.NotEqual(t, 0, exitCode, "Expected a non-zero exit code due to context cancellation")
+		case <-time.After(2 * time.Second):
+			t.Fatal("Test timed out waiting for command to exit")
+		}
+	})
 }
 
 func TestDockerExecutor(t *testing.T) {
@@ -182,6 +203,43 @@ func TestDockerExecutor(t *testing.T) {
 
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 1, exitCode)
+	})
+
+	t.Run("ContextCancellation", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := NewExecutor(containerEnv)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
+		require.NoError(t, err)
+
+		cancel()
+
+		select {
+		case exitCode := <-exitCodeChan:
+			assert.NotEqual(t, 0, exitCode, "Expected a non-zero exit code due to context cancellation")
+		case <-time.After(5 * time.Second):
+			t.Fatal("Test timed out waiting for command to exit")
+		}
+	})
+
+	t.Run("ContainerIsRemoved", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		containerEnv.SetName("test-container-removal")
+		executor := NewExecutor(containerEnv)
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		require.NoError(t, err)
+
+		<-exitCodeChan
+
+		// Check if container is removed
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		require.NoError(t, err)
+		_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
+		assert.True(t, client.IsErrNotFound(err), "Expected container to be removed")
 	})
 }
 
