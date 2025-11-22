@@ -15,29 +15,31 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: wikipedia
+- name: qurancloud.com
   http_service:
-    address: "https://en.wikipedia.org"
+    address: "https://api.alquran.cloud"
     calls:
-    - endpoint_path: "/w/api.php?action=parse&page={{title}}&prop=text&formatversion=2&format=json"
+    - endpoint_path: "/v1/ayah/{{ayah}}/en.sahih"
       schema:
-        name: "wikipedia"
+        name: "getAyah"
         input_schema:
           type: "object"
           properties:
-            title:
+            ayah:
               type: "string"
-              description: "The title of the page to look up."
+              description: "The ayah to look up."
         output_schema:
           type: "object"
+      method: "HTTP_METHOD_GET"
+    - endpoint_path: "/v1/surah/{{surah}}"
+      schema:
+        name: "getSurah"
+        input_schema:
+          type: "object"
           properties:
-            parse:
-              type: "object"
-              properties:
-                title:
-                  type: "string"
-                pageid:
-                  type: "integer"
-                text:
-                  type: "string"
+            surah:
+              type: "string"
+              description: "The surah to look up."
+        output_schema:
+          type: "object"
       method: "HTTP_METHOD_GET"
