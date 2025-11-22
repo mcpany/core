@@ -7,7 +7,7 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/collection.proto
 
-//go:build !protoopaque
+//go:build protoopaque
 
 package v1
 
@@ -26,13 +26,15 @@ const (
 )
 
 type UpstreamServiceCollectionShare struct {
-	state         protoimpl.MessageState   `protogen:"hybrid.v1"`
-	Services      []*UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
-	Version       *string                  `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
-	Description   *string                  `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`
-	Name          *string                  `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Services    *[]*UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
+	xxx_hidden_Version     *string                   `protobuf:"bytes,2,opt,name=version"`
+	xxx_hidden_Description *string                   `protobuf:"bytes,3,opt,name=description"`
+	xxx_hidden_Name        *string                   `protobuf:"bytes,4,opt,name=name"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpstreamServiceCollectionShare) Reset() {
@@ -62,79 +64,96 @@ func (x *UpstreamServiceCollectionShare) ProtoReflect() protoreflect.Message {
 
 func (x *UpstreamServiceCollectionShare) GetServices() []*UpstreamServiceConfig {
 	if x != nil {
-		return x.Services
+		if x.xxx_hidden_Services != nil {
+			return *x.xxx_hidden_Services
+		}
 	}
 	return nil
 }
 
 func (x *UpstreamServiceCollectionShare) GetVersion() string {
-	if x != nil && x.Version != nil {
-		return *x.Version
+	if x != nil {
+		if x.xxx_hidden_Version != nil {
+			return *x.xxx_hidden_Version
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpstreamServiceCollectionShare) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpstreamServiceCollectionShare) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpstreamServiceCollectionShare) SetServices(v []*UpstreamServiceConfig) {
-	x.Services = v
+	x.xxx_hidden_Services = &v
 }
 
 func (x *UpstreamServiceCollectionShare) SetVersion(v string) {
-	x.Version = &v
+	x.xxx_hidden_Version = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *UpstreamServiceCollectionShare) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *UpstreamServiceCollectionShare) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
 }
 
 func (x *UpstreamServiceCollectionShare) HasVersion() bool {
 	if x == nil {
 		return false
 	}
-	return x.Version != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *UpstreamServiceCollectionShare) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *UpstreamServiceCollectionShare) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *UpstreamServiceCollectionShare) ClearVersion() {
-	x.Version = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Version = nil
 }
 
 func (x *UpstreamServiceCollectionShare) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *UpstreamServiceCollectionShare) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Name = nil
 }
 
 type UpstreamServiceCollectionShare_builder struct {
@@ -150,10 +169,19 @@ func (b0 UpstreamServiceCollectionShare_builder) Build() *UpstreamServiceCollect
 	m0 := &UpstreamServiceCollectionShare{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Services = b.Services
-	x.Version = b.Version
-	x.Description = b.Description
-	x.Name = b.Name
+	x.xxx_hidden_Services = &b.Services
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Version = b.Version
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_Name = b.Name
+	}
 	return m0
 }
 

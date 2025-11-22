@@ -5,7 +5,7 @@ edition = "2023";
 
 package mcpany.api.v1;
 
-import "google/protobuf/go_features.proto";
+import "google/api/annotations.proto";
 import "proto/config/v1/config.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/call.proto";
@@ -13,7 +13,7 @@ import "proto/config/v1/call.proto";
 
 option go_package = "github.com/mcpany/core/proto/api/v1";
 option java_outer_classname = "RegistrationProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.field_presence = IMPLICIT;
 
 message RegisterServiceRequest {
     mcpany.config.v1.UpstreamServiceConfig config = 1;
@@ -27,12 +27,40 @@ message RegisterServiceResponse {
 }
 
 service RegistrationService {
-    rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse);
-    rpc UnregisterService(UnregisterServiceRequest) returns (UnregisterServiceResponse);
-    rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse);
-    rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse);
-    rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse);
-    rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+    rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse) {
+        option (google.api.http) = {
+            post: "/v1/services/register"
+            body: "*"
+        };
+    }
+    rpc UnregisterService(UnregisterServiceRequest) returns (UnregisterServiceResponse) {
+        option (google.api.http) = {
+            post: "/v1/services/unregister"
+            body: "*"
+        };
+    }
+    rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse) {
+        option (google.api.http) = {
+            post: "/v1/services/oauth2/initiate"
+            body: "*"
+        };
+    }
+    rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse) {
+        option (google.api.http) = {
+            post: "/v1/services/tools/register"
+            body: "*"
+        };
+    }
+    rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse) {
+        option (google.api.http) = {
+            get: "/v1/services/{service_name}/status"
+        };
+    }
+    rpc ListServices(ListServicesRequest) returns (ListServicesResponse) {
+        option (google.api.http) = {
+            get: "/v1/services"
+        };
+    }
 }
 
 message ListServicesRequest {}
