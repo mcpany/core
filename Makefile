@@ -25,11 +25,11 @@ ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_CMD := docker
 	DOCKER_BUILDX_CMD := docker buildx
 	SUDO_MSG := " (no sudo)"
-	NEEDS_SUDO_FOR_DOCKER := 0
+	NEEDS_SUDO_FOR_DOCKER := false
 else
 	DOCKER_CMD := sudo docker
 	DOCKER_BUILDX_CMD := sudo docker buildx
-	NEEDS_SUDO_FOR_DOCKER := 1
+	NEEDS_SUDO_FOR_DOCKER := true
 endif
 
 # Variables for protoc installation
