@@ -28,12 +28,14 @@ import (
 
 type mockToolManager struct {
 	tool.ToolManagerInterface
-	tools map[string]tool.Tool
+	tools       map[string]tool.Tool
+	serviceInfo map[string]*tool.ServiceInfo
 }
 
 func newMockToolManager() *mockToolManager {
 	return &mockToolManager{
-		tools: make(map[string]tool.Tool),
+		tools:       make(map[string]tool.Tool),
+		serviceInfo: make(map[string]*tool.ServiceInfo),
 	}
 }
 func (m *mockToolManager) AddTool(t tool.Tool) error {
@@ -46,7 +48,14 @@ func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.serviceInfo[serviceID] = info
+}
+
+func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+	info, ok := m.serviceInfo[serviceID]
+	return info, ok
+}
 
 type mockPromptManager struct {
 	prompt.PromptManagerInterface

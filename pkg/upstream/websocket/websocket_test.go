@@ -41,14 +41,16 @@ import (
 
 // MockToolManager is a mock implementation of the ToolManagerInterface.
 type MockToolManager struct {
-	mu      sync.Mutex
-	tools   map[string]tool.Tool
-	lastErr error
+	mu          sync.Mutex
+	tools       map[string]tool.Tool
+	serviceInfo map[string]*tool.ServiceInfo
+	lastErr     error
 }
 
 func NewMockToolManager(bus *bus.BusProvider) *MockToolManager {
 	return &MockToolManager{
-		tools: make(map[string]tool.Tool),
+		tools:       make(map[string]tool.Tool),
+		serviceInfo: make(map[string]*tool.ServiceInfo),
 	}
 }
 
@@ -93,10 +95,17 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 
 func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.serviceInfo[serviceID] = info
+}
 
 func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	return nil, false
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	info, ok := m.serviceInfo[serviceID]
+	return info, ok
 }
 
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {

@@ -23,10 +23,13 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // MockClientSession is a mock implementation of the ClientSession interface
@@ -36,26 +39,41 @@ type MockClientSession struct {
 
 func (m *MockClientSession) ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mcp.ListToolsResult), args.Error(1)
 }
 
 func (m *MockClientSession) ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mcp.ListPromptsResult), args.Error(1)
 }
 
 func (m *MockClientSession) ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mcp.ListResourcesResult), args.Error(1)
 }
 
 func (m *MockClientSession) GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
 	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mcp.GetPromptResult), args.Error(1)
 }
 
 func (m *MockClientSession) ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
 	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*mcp.ReadResourceResult), args.Error(1)
 }
 
@@ -178,4 +196,236 @@ func TestMcpResource_Subscribe(t *testing.T) {
 	err := resource.Subscribe(context.Background())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "not yet implemented")
+}
+
+func TestMcpPrompt_Get(t *testing.T) {
+	conn := &mcpConnection{
+		stdioConfig: &configv1.McpStdioConnection{},
+	}
+	p := &mcpPrompt{
+		mcpPrompt: &mcp.Prompt{Name: "test-prompt"},
+		service:   "test-service",
+		mcpConnection: conn,
+	}
+
+	ctx := context.Background()
+
+	originalConnect := connectForTesting
+	SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		mockSession := new(MockClientSession)
+		mockSession.On("GetPrompt", ctx, mock.Anything).Return(&mcp.GetPromptResult{
+			Description: "desc",
+		}, nil)
+		mockSession.On("Close").Return(nil)
+		return mockSession, nil
+	})
+	defer func() { connectForTesting = originalConnect }()
+
+	res, err := p.Get(ctx, nil)
+	require.NoError(t, err)
+	assert.Equal(t, "desc", res.Description)
+}
+
+func TestMcpResource_Read(t *testing.T) {
+	conn := &mcpConnection{
+		stdioConfig: &configv1.McpStdioConnection{},
+	}
+	r := &mcpResource{
+		mcpResource: &mcp.Resource{URI: "uri1"},
+		service:     "test-service",
+		mcpConnection: conn,
+	}
+
+	ctx := context.Background()
+
+	originalConnect := connectForTesting
+	SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		mockSession := new(MockClientSession)
+		mockSession.On("ReadResource", ctx, mock.Anything).Return(&mcp.ReadResourceResult{
+			Contents: []*mcp.ResourceContents{},
+		}, nil)
+		mockSession.On("Close").Return(nil)
+		return mockSession, nil
+	})
+	defer func() { connectForTesting = originalConnect }()
+
+	res, err := r.Read(ctx)
+	require.NoError(t, err)
+	assert.NotNil(t, res)
+}
+
+func TestMCPUpstream_createAndRegisterMCPItemsFromStdio(t *testing.T) {
+	tm := newMockToolManager()
+	pm := newMockPromptManager()
+	rm := newMockResourceManager()
+
+	stdio := &configv1.McpStdioConnection{}
+	stdio.SetCommand("echo")
+	mcpService := &configv1.McpUpstreamService{}
+	mcpService.SetStdioConnection(stdio)
+	mcpService.SetToolAutoDiscovery(true)
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetMcpService(mcpService)
+
+	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig})
+
+	upstream := &MCPUpstream{}
+
+	originalConnect := connectForTesting
+	SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		mockSession := new(MockClientSession)
+		mockSession.On("ListTools", ctx, mock.Anything).Return(&mcp.ListToolsResult{
+			Tools: []*mcp.Tool{
+				{Name: "tool1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListPrompts", ctx, mock.Anything).Return(&mcp.ListPromptsResult{
+			Prompts: []*mcp.Prompt{
+				{Name: "prompt1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListResources", ctx, mock.Anything).Return(&mcp.ListResourcesResult{
+			Resources: []*mcp.Resource{
+				{Name: "resource1", URI: "uri1"},
+			},
+		}, nil)
+		mockSession.On("Close").Return(nil)
+		return mockSession, nil
+	})
+	defer func() { connectForTesting = originalConnect }()
+
+	tools, resources, err := upstream.createAndRegisterMCPItemsFromStdio(context.Background(), "test-service", stdio, tm, pm, rm, false, serviceConfig)
+	require.NoError(t, err)
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "tool1", tools[0].GetName())
+	assert.Len(t, resources, 1)
+	assert.Equal(t, "resource1", resources[0].GetName())
+
+	// Check if added to managers
+	_, ok := tm.GetTool("tool1")
+	assert.True(t, ok)
+	_, ok = pm.GetPrompt("prompt1")
+	assert.True(t, ok)
+}
+
+func TestMCPUpstream_createAndRegisterMCPItemsFromStreamableHTTP(t *testing.T) {
+	tm := newMockToolManager()
+	pm := newMockPromptManager()
+	rm := newMockResourceManager()
+
+	httpConn := &configv1.McpStreamableHttpConnection{}
+	httpConn.SetHttpAddress("http://localhost:8080")
+	mcpService := &configv1.McpUpstreamService{}
+	mcpService.SetHttpConnection(httpConn)
+	mcpService.SetToolAutoDiscovery(true)
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetMcpService(mcpService)
+
+	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig})
+
+	upstream := &MCPUpstream{}
+
+	originalConnect := connectForTesting
+	SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		mockSession := new(MockClientSession)
+		mockSession.On("ListTools", ctx, mock.Anything).Return(&mcp.ListToolsResult{
+			Tools: []*mcp.Tool{
+				{Name: "tool1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListPrompts", ctx, mock.Anything).Return(&mcp.ListPromptsResult{
+			Prompts: []*mcp.Prompt{
+				{Name: "prompt1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListResources", ctx, mock.Anything).Return(&mcp.ListResourcesResult{
+			Resources: []*mcp.Resource{
+				{Name: "resource1", URI: "uri1"},
+			},
+		}, nil)
+		mockSession.On("Close").Return(nil)
+		return mockSession, nil
+	})
+	defer func() { connectForTesting = originalConnect }()
+
+	tools, resources, err := upstream.createAndRegisterMCPItemsFromStreamableHTTP(context.Background(), "test-service", httpConn, tm, pm, rm, false, serviceConfig)
+	require.NoError(t, err)
+	assert.Len(t, tools, 1)
+	assert.Len(t, resources, 1)
+}
+
+func TestMCPUpstream_DisabledItems(t *testing.T) {
+	tm := newMockToolManager()
+	pm := newMockPromptManager()
+	rm := newMockResourceManager()
+
+	stdio := &configv1.McpStdioConnection{}
+	stdio.SetCommand("echo")
+	mcpService := &configv1.McpUpstreamService{}
+	mcpService.SetStdioConnection(stdio)
+	mcpService.SetToolAutoDiscovery(true)
+
+	// Disabled Tool Config
+	toolDef := configv1.ToolDefinition_builder{
+		Name:    proto.String("tool1"),
+		CallId:  proto.String("call1"),
+		Disable: proto.Bool(true),
+	}.Build()
+	mcpService.SetTools([]*configv1.ToolDefinition{toolDef})
+
+	// Disabled Prompt Config
+	promptDef := configv1.PromptDefinition_builder{
+		Name:    proto.String("prompt1"),
+		Disable: proto.Bool(true),
+	}.Build()
+	mcpService.SetPrompts([]*configv1.PromptDefinition{promptDef})
+
+	// Disabled Resource Config
+	resourceDef := configv1.ResourceDefinition_builder{
+		Name:    proto.String("resource1"),
+		Disable: proto.Bool(true),
+	}.Build()
+	mcpService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetMcpService(mcpService)
+
+	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig})
+
+	upstream := NewMCPUpstream().(*MCPUpstream)
+
+	originalConnect := connectForTesting
+	SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		mockSession := new(MockClientSession)
+		// Return items that match disabled config
+		mockSession.On("ListTools", ctx, mock.Anything).Return(&mcp.ListToolsResult{
+			Tools: []*mcp.Tool{
+				{Name: "tool1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListPrompts", ctx, mock.Anything).Return(&mcp.ListPromptsResult{
+			Prompts: []*mcp.Prompt{
+				{Name: "prompt1", Description: "desc1"},
+			},
+		}, nil)
+		mockSession.On("ListResources", ctx, mock.Anything).Return(&mcp.ListResourcesResult{
+			Resources: []*mcp.Resource{
+				{Name: "resource1", URI: "uri1"},
+			},
+		}, nil)
+		mockSession.On("Close").Return(nil)
+		return mockSession, nil
+	})
+	defer func() { connectForTesting = originalConnect }()
+
+	_, tools, resources, err := upstream.Register(context.Background(), serviceConfig, tm, pm, rm, false)
+	require.NoError(t, err)
+	assert.Empty(t, tools)
+	assert.Empty(t, resources)
+
+	// Verify nothing added to managers
+	_, ok := tm.GetTool("tool1")
+	assert.False(t, ok)
+	_, ok = pm.GetPrompt("prompt1")
+	assert.False(t, ok)
 }
