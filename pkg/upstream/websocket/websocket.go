@@ -128,6 +128,11 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	}
 
 	for i, definition := range definitions {
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool", "toolName", definition.GetName())
+			continue
+		}
+
 		callID := definition.GetCallId()
 		wsDef, ok := calls[callID]
 		if !ok {
@@ -192,6 +197,10 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range websocketService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetWebsocketCall()
 			if call == nil {
@@ -228,6 +237,10 @@ func (u *WebsocketUpstream) createAndRegisterPrompts(ctx context.Context, servic
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	for _, promptDef := range websocketService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
