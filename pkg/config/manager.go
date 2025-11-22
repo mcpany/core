@@ -23,6 +23,7 @@ import (
 	"log/slog"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/logging"
@@ -78,7 +79,48 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 }
 
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, collection.GetHttpUrl(), nil)
+	if isGitHubURL(collection.GetHttpUrl()) {
+		g, err := NewGitHub(ctx, collection.GetHttpUrl())
+		if err != nil {
+			return fmt.Errorf("failed to parse github url: %w", err)
+		}
+
+		if g.URLType == "blob" {
+			return m.loadFromURL(ctx, g.ToRawContentURL(), collection)
+		}
+
+		contents, err := g.List(ctx, collection.GetAuthentication())
+		if err != nil {
+			return fmt.Errorf("failed to list github directory: %w", err)
+		}
+
+		for _, content := range contents {
+			if content.Type == "dir" {
+				newCollection := &configv1.UpstreamServiceCollection{}
+				newCollection.SetName(collection.GetName())
+				newCollection.SetHttpUrl(content.HTMLURL)
+				newCollection.SetPriority(collection.GetPriority())
+				newCollection.SetAuthentication(collection.GetAuthentication())
+				if err := m.loadAndMergeCollection(ctx, newCollection); err != nil {
+					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
+				}
+			} else if content.Type == "file" {
+				if !(strings.HasSuffix(content.HTMLURL, ".yaml") || strings.HasSuffix(content.HTMLURL, ".yml") || strings.HasSuffix(content.HTMLURL, ".json")) {
+					continue
+				}
+				if err := m.loadFromURL(ctx, content.DownloadURL, collection); err != nil {
+					m.log.Warn("Failed to load from github url", "url", content.DownloadURL, "error", err)
+				}
+			}
+		}
+		return nil
+	}
+
+	return m.loadFromURL(ctx, collection.GetHttpUrl(), collection)
+}
+
+func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, collection *configv1.UpstreamServiceCollection) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create http request: %w", err)
 	}
@@ -91,12 +133,12 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to fetch collection from url %s: %w", collection.GetHttpUrl(), err)
+		return fmt.Errorf("failed to fetch collection from url %s: %w", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to fetch collection from url %s: status code %d", collection.GetHttpUrl(), resp.StatusCode)
+		return fmt.Errorf("failed to fetch collection from url %s: status code %d", url, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -118,7 +160,7 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 		m.addService(service, priority)
 	}
 
-	m.log.Info("Successfully loaded and merged upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "services_loaded", len(services))
+	m.log.Info("Successfully loaded and merged upstream service collection", "name", collection.GetName(), "url", url, "services_loaded", len(services))
 	return nil
 }
 
