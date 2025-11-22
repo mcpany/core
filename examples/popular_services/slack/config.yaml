@@ -1,0 +1,54 @@
+# Copyright 2024 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+- name: slack
+  http_service:
+    address: "https://slack.com/api"
+    authentication:
+      token: "Bearer ${SLACK_API_TOKEN}"
+    calls:
+    - endpoint_path: "/chat.postMessage"
+      schema:
+        name: "send_message"
+        input_schema:
+          type: "object"
+          properties:
+            channel:
+              type: "string"
+              description: "The channel to send the message to."
+            text:
+              type: "string"
+              description: "The message to send."
+        output_schema:
+          type: "object"
+          properties:
+            ok:
+              type: "boolean"
+            channel:
+              type: "string"
+            ts:
+              type: "string"
+            message:
+              type: "object"
+              properties:
+                text:
+                  type: "string"
+                user:
+                  type: "string"
+                ts:
+                  type: "string"
+      method: "HTTP_METHOD_POST"
