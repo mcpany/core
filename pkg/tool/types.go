@@ -449,10 +449,8 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	_, bareToolName, err := util.ParseToolName(req.ToolName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse tool name: %w", err)
-	}
+	// Use the tool name from the definition, as the request tool name might be sanitized/modified
+	bareToolName := t.tool.GetName()
 
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
