@@ -7,7 +7,7 @@
 // 	protoc        v6.33.1
 // source: proto/mcp_options/v1/mcp_options.proto
 
-//go:build !protoopaque
+//go:build protoopaque
 
 package v1
 
