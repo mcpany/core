@@ -15,36 +15,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-  - name: stripe
-    http_service:
-      address: "https://api.stripe.com"
-      authentication:
-        token: "${STRIPE_API_KEY}"
-      calls:
-        - endpoint_path: "/v1/charges"
-          method: "HTTP_METHOD_POST"
-          schema:
-            name: "create_charge"
-            input_schema:
+- name: reddit
+  http_service:
+    address: "https://www.reddit.com"
+    calls:
+    - endpoint_path: "/r/{{subreddit}}/about.json"
+      schema:
+        name: "get_subreddit_info"
+        description: "Get information about a subreddit."
+        input_schema:
+          type: "object"
+          properties:
+            subreddit:
+              type: "string"
+              description: "The name of the subreddit."
+        output_schema:
+          type: "object"
+          properties:
+            kind:
+              type: "string"
+            data:
               type: "object"
               properties:
-                amount:
+                display_name:
+                  type: "string"
+                subscribers:
                   type: "integer"
-                  description: "The amount to charge."
-                currency:
+                title:
                   type: "string"
-                  description: "The currency of the charge."
-                source:
+                url:
                   type: "string"
-                  description: "The payment source."
-            output_schema:
-              type: "object"
-              properties:
-                id:
-                  type: "string"
-                amount:
-                  type: "integer"
-                currency:
-                  type: "string"
-                status:
-                  type: "string"
+      method: "HTTP_METHOD_GET"

@@ -16,7 +16,7 @@
 
 //go:build e2e
 
-package stripe_test
+package airtable_test
 
 import (
 	"context"
@@ -29,19 +29,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Stripe(t *testing.T) {
-	if os.Getenv("STRIPE_API_KEY") == "" {
-		t.Skip("Skipping Stripe test because STRIPE_API_KEY is not set")
+func TestUpstreamService_Airtable(t *testing.T) {
+	if os.Getenv("AIRTABLE_API_TOKEN") == "" || os.Getenv("AIRTABLE_BASE_ID") == "" || os.Getenv("AIRTABLE_TABLE_ID") == "" || os.Getenv("AIRTABLE_RECORD_ID") == "" {
+		t.Skip("Skipping Airtable test because AIRTABLE_API_TOKEN, AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID, or AIRTABLE_RECORD_ID is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Stripe Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Airtable Server...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EStripeServerTest", "--config-path", "../../../../examples/popular_services/stripe")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAirtableServerTest", "--config-path", "../../../../examples/popular_services/airtable")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---
@@ -56,8 +56,8 @@ func TestUpstreamService_Stripe(t *testing.T) {
 	registeredToolName := listToolsResult.Tools[0].Name
 	t.Logf("Discovered tool from MCPANY: %s", registeredToolName)
 
-	// --- 3. Test Case ---
-	args := json.RawMessage(`{"amount": 1000, "currency": "usd", "source": "tok_visa"}`)
+	// --- 3. Call Tool ---
+	args := json.RawMessage(`{"base_id": "` + os.Getenv("AIRTABLE_BASE_ID") + `", "table_id": "` + os.Getenv("AIRTABLE_TABLE_ID") + `", "record_id": "` + os.Getenv("AIRTABLE_RECORD_ID") + `"}`)
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: registeredToolName, Arguments: args})
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -67,13 +67,12 @@ func TestUpstreamService_Stripe(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var chargeResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &chargeResponse)
+	var airtableResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &airtableResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.Contains(t, chargeResponse, "id", "The response should contain a charge ID")
-	require.Contains(t, chargeResponse, "status", "The response should contain a status")
-	require.Equal(t, "succeeded", chargeResponse["status"], "The charge status should be 'succeeded'")
+	require.Contains(t, airtableResponse, "id", "The response should contain an id")
+	require.Equal(t, os.Getenv("AIRTABLE_RECORD_ID"), airtableResponse["id"], "The id should match the expected value")
 
-	t.Log("INFO: E2E Test Scenario for Stripe Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Airtable Server Completed Successfully!")
 }

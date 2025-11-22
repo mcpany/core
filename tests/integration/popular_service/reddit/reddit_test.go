@@ -16,12 +16,11 @@
 
 //go:build e2e
 
-package twilio_test
+package reddit_test
 
 import (
 	"context"
 	"encoding/json"
-	"os"
 	"testing"
 
 	"github.com/mcpany/core/tests/integration"
@@ -29,19 +28,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_Twilio(t *testing.T) {
-	if os.Getenv("TWILIO_ACCOUNT_SID") == "" || os.Getenv("TWILIO_AUTH_TOKEN") == "" {
-		t.Skip("Skipping Twilio test because TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN is not set")
-	}
-
+func TestUpstreamService_Reddit(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Twilio Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Reddit Server...")
 	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETwilioServerTest", "--config-path", "../../../../examples/popular_services/twilio")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ERedditServerTest", "--config-path", "../../../../examples/popular_services/reddit")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---
@@ -56,8 +51,8 @@ func TestUpstreamService_Twilio(t *testing.T) {
 	registeredToolName := listToolsResult.Tools[0].Name
 	t.Logf("Discovered tool from MCPANY: %s", registeredToolName)
 
-	// --- 3. Test Case ---
-	args := json.RawMessage(`{"To": "+15005550006", "From": "+15005550006", "Body": "Hello from Twilio!"}`)
+	// --- 3. Call Tool ---
+	args := json.RawMessage(`{"subreddit": "golang"}`)
 	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: registeredToolName, Arguments: args})
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -67,13 +62,17 @@ func TestUpstreamService_Twilio(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var smsResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &smsResponse)
+	var redditResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &redditResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.Contains(t, smsResponse, "sid", "The response should contain a message SID")
-	require.Contains(t, smsResponse, "status", "The response should contain a status")
-	require.Equal(t, "queued", smsResponse["status"], "The message status should be 'queued'")
+	require.Contains(t, redditResponse, "kind", "The response should contain a kind")
+	require.Contains(t, redditResponse, "data", "The response should contain data")
 
-	t.Log("INFO: E2E Test Scenario for Twilio Server Completed Successfully!")
+	data, ok := redditResponse["data"].(map[string]interface{})
+	require.True(t, ok, "The data should be a map")
+
+	require.Equal(t, "golang", data["display_name"], "The display_name should be golang")
+
+	t.Log("INFO: E2E Test Scenario for Reddit Server Completed Successfully!")
 }
