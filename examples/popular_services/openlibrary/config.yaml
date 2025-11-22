@@ -15,29 +15,31 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: wikipedia
+- name: openlibrary.org
   http_service:
-    address: "https://en.wikipedia.org"
+    address: "https://openlibrary.org"
     calls:
-    - endpoint_path: "/w/api.php?action=parse&page={{title}}&prop=text&formatversion=2&format=json"
+    - endpoint_path: "/api/books?bibkeys=ISBN:{{isbn}}&format=json&jscmd=data"
       schema:
-        name: "wikipedia"
+        name: "getBookByISBN"
         input_schema:
           type: "object"
           properties:
-            title:
+            isbn:
               type: "string"
-              description: "The title of the page to look up."
+              description: "The ISBN of the book to look up."
         output_schema:
           type: "object"
+      method: "HTTP_METHOD_GET"
+    - endpoint_path: "/search/authors.json?q={{author_name}}"
+      schema:
+        name: "searchAuthors"
+        input_schema:
+          type: "object"
           properties:
-            parse:
-              type: "object"
-              properties:
-                title:
-                  type: "string"
-                pageid:
-                  type: "integer"
-                text:
-                  type: "string"
+            author_name:
+              type: "string"
+              description: "The name of the author to search for."
+        output_schema:
+          type: "object"
       method: "HTTP_METHOD_GET"
