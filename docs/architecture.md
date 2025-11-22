@@ -2,7 +2,9 @@
 
 ## Introduction
 
-MCP Any (Model Context Protocol Anything) is a versatile server designed to dynamically register and expose capabilities from various backend services as standardized "Tools." These tools can then be listed and executed through a unified interface. It supports a wide range of service types, including gRPC, RESTful APIs (via OpenAPI), generic HTTP services, and command-line tools that communicate over standard I/O.
+MCP Any (Model Context Protocol Anything) acts as a universal runtime for Model Context Protocol servers. Its architecture is designed to allow users to create and run MCP servers purely through configuration, eliminating the need to write custom server code for every new integration.
+
+It dynamically registers and exposes capabilities from various backend services as standardized "Tools" based on these configurations. These tools can then be listed and executed through a unified interface. It supports a wide range of service types, including gRPC, RESTful APIs (via OpenAPI), generic HTTP services, and command-line tools that communicate over standard I/O.
 
 ## System Diagram
 
