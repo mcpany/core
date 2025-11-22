@@ -2253,9 +2253,7 @@ type ToolDefinition struct {
 	// Default: true
 	OpenWorldHint *bool `protobuf:"varint,10,opt,name=open_world_hint,json=openWorldHint" json:"open_world_hint,omitempty"`
 	// The ID of the call definition to use for this tool.
-	CallId *string `protobuf:"bytes,11,opt,name=call_id,json=callId" json:"call_id,omitempty"`
-	// If true, this tool is disabled.
-	Disable       *bool `protobuf:"varint,12,opt,name=disable" json:"disable,omitempty"`
+	CallId        *string `protobuf:"bytes,11,opt,name=call_id,json=callId" json:"call_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2363,8 +2361,8 @@ func (x *ToolDefinition) GetCallId() string {
 }
 
 func (x *ToolDefinition) GetDisable() bool {
-	if x != nil && x.Disable != nil {
-		return *x.Disable
+	if x != nil {
+		return x.xxx_hidden_Disable
 	}
 	return false
 }
@@ -2411,10 +2409,6 @@ func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.CallId = &v
-}
-
-func (x *ToolDefinition) SetDisable(v bool) {
-	x.Disable = &v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -2498,7 +2492,7 @@ func (x *ToolDefinition) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return x.Disable != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
 }
 
 func (x *ToolDefinition) ClearName() {
@@ -2546,7 +2540,8 @@ func (x *ToolDefinition) ClearCallId() {
 }
 
 func (x *ToolDefinition) ClearDisable() {
-	x.Disable = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Disable = false
 }
 
 type ToolDefinition_builder struct {
@@ -2603,7 +2598,6 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	x.IdempotentHint = b.IdempotentHint
 	x.OpenWorldHint = b.OpenWorldHint
 	x.CallId = b.CallId
-	x.Disable = b.Disable
 	return m0
 }
 

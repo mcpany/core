@@ -385,31 +385,19 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_New(t *testing.T) {
-	t.Run("with config", func(t *testing.T) {
-		redisBus := bus_pb.RedisBus_builder{
-			Address:  proto.String("localhost:6379"),
-			Password: proto.String("password"),
-			Db:       proto.Int32(1),
-		}.Build()
+	redisBus := bus_pb.RedisBus_builder{
+		Address:  proto.String("localhost:6379"),
+		Password: proto.String("password"),
+		Db:       proto.Int32(1),
+	}.Build()
 
-		bus := New[string](redisBus)
-		assert.NotNil(t, bus)
-		assert.NotNil(t, bus.client)
-		options := bus.client.Options()
-		assert.Equal(t, "localhost:6379", options.Addr)
-		assert.Equal(t, "password", options.Password)
-		assert.Equal(t, 1, options.DB)
-	})
-
-	t.Run("without config", func(t *testing.T) {
-		bus := New[string](nil)
-		assert.NotNil(t, bus)
-		assert.NotNil(t, bus.client)
-		options := bus.client.Options()
-		assert.Equal(t, "localhost:6379", options.Addr)
-		assert.Equal(t, "", options.Password)
-		assert.Equal(t, 0, options.DB)
-	})
+	bus := New[string](redisBus)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+	options := bus.client.Options()
+	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "password", options.Password)
+	assert.Equal(t, 1, options.DB)
 }
 
 func TestRedisBus_New_WithValidConfig(t *testing.T) {

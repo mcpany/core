@@ -2355,7 +2355,6 @@ type ToolDefinition struct {
 	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,9,opt,name=idempotent_hint,json=idempotentHint"`
 	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,10,opt,name=open_world_hint,json=openWorldHint"`
 	xxx_hidden_CallId          *string                `protobuf:"bytes,11,opt,name=call_id,json=callId"`
-	xxx_hidden_Disable         bool                   `protobuf:"varint,12,opt,name=disable"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -2476,21 +2475,14 @@ func (x *ToolDefinition) GetCallId() string {
 	return ""
 }
 
-func (x *ToolDefinition) GetDisable() bool {
-	if x != nil {
-		return x.xxx_hidden_Disable
-	}
-	return false
-}
-
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -2503,42 +2495,37 @@ func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 11)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 11)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 11)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
-}
-
-func (x *ToolDefinition) SetDisable(v bool) {
-	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -2618,13 +2605,6 @@ func (x *ToolDefinition) HasCallId() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
-func (x *ToolDefinition) HasDisable() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
-}
-
 func (x *ToolDefinition) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -2678,11 +2658,6 @@ func (x *ToolDefinition) ClearCallId() {
 	x.xxx_hidden_CallId = nil
 }
 
-func (x *ToolDefinition) ClearDisable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
-	x.xxx_hidden_Disable = false
-}
-
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2718,8 +2693,6 @@ type ToolDefinition_builder struct {
 	OpenWorldHint *bool
 	// The ID of the call definition to use for this tool.
 	CallId *string
-	// If true, this tool is disabled.
-	Disable *bool
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -2727,46 +2700,42 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
 		x.xxx_hidden_Description = b.Description
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_OutputSchema = b.OutputSchema
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 11)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 11)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 11)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
 		x.xxx_hidden_CallId = b.CallId
-	}
-	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
-		x.xxx_hidden_Disable = *b.Disable
 	}
 	return m0
 }
@@ -2869,7 +2838,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xc8\x03\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xae\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -2882,8 +2851,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
 	"\x0fopen_world_hint\x18\n" +
 	" \x01(\bR\ropenWorldHint\x12\x17\n" +
-	"\acall_id\x18\v \x01(\tR\x06callId\x12\x18\n" +
-	"\adisable\x18\f \x01(\bR\adisable*X\n" +
+	"\acall_id\x18\v \x01(\tR\x06callId*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +

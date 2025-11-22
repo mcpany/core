@@ -42,13 +42,17 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	v1 "github.com/mcpany/core/proto/api/v1"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 )
+
+var RegisterRegistrationServiceHandlerFromEndpoint = v1.RegisterRegistrationServiceHandlerFromEndpoint
 
 // connCountingListener is a net.Listener that wraps another net.Listener and
 // counts the number of accepted connections.
@@ -450,6 +454,114 @@ func TestRun_BusProviderError(t *testing.T) {
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
+}
+
+func TestRun_CustomListenAddress(t *testing.T) {
+	customAddr := "localhost:9876"
+	conn, err := net.DialTimeout("tcp", customAddr, 100*time.Millisecond)
+	if err == nil {
+		conn.Close()
+		t.Skipf("port %s is already in use, skipping test", customAddr)
+	}
+
+	fs := afero.NewMemMapFs()
+	configContent := fmt.Sprintf(`
+global_settings:
+  mcp_listen_address: "%s"
+`, customAddr)
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", customAddr, 100*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "server should start listening on the custom port")
+
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err)
+}
+
+func TestRun_Logs(t *testing.T) {
+	t.Run("logs disabled services", func(t *testing.T) {
+		logging.ForTestsOnlyResetLogger()
+		var buf bytes.Buffer
+		logging.Init(slog.LevelInfo, &buf)
+
+		fs := afero.NewMemMapFs()
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		configContent := `
+upstream_services:
+ - name: "disabled-service"
+   disable: true
+   http_service:
+      address: "http://localhost:8080"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		app := NewApplication()
+		err = app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
+		assert.NoError(t, err)
+
+		assert.Contains(t, buf.String(), "Skipping disabled service", "service", "disabled-service")
+	})
+
+	t.Run("logs no services", func(t *testing.T) {
+		logging.ForTestsOnlyResetLogger()
+		var buf bytes.Buffer
+		logging.Init(slog.LevelInfo, &buf)
+
+		fs := afero.NewMemMapFs()
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		configContent := ``
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		app := NewApplication()
+		err = app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
+		assert.NoError(t, err)
+
+		assert.Contains(t, buf.String(), "No services found in config, skipping service registration.")
+	})
+}
+
+func TestRun_GRPCGatewayRegistrationFailure(t *testing.T) {
+	originalRegisterFunc := RegisterRegistrationServiceHandlerFromEndpoint
+	RegisterRegistrationServiceHandlerFromEndpoint = func(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []gogrpc.DialOption) error {
+		return fmt.Errorf("injected gateway registration error")
+	}
+	defer func() {
+		RegisterRegistrationServiceHandlerFromEndpoint = originalRegisterFunc
+	}()
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	err := app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 5*time.Second)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to register gateway: injected gateway registration error")
 }
 
 func TestRun_EmptyConfig(t *testing.T) {
