@@ -193,6 +193,11 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool", "toolName", definition.GetName())
+			continue
+		}
+
 		toolNamePart := definition.GetName()
 		if toolNamePart == "" {
 			sanitizedSummary := util.SanitizeOperationID(definition.GetDescription())
@@ -281,6 +286,10 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range httpService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetHttpCall()
 			if call == nil {
@@ -317,6 +326,10 @@ func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID s
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	for _, promptDef := range httpService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
