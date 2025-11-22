@@ -1,43 +1,1296 @@
-# Copyright 2024 Author(s) of MCP Any
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# SPDX-License-Identifier: Apache-2.0
-
 upstream_services:
 - name: wikipedia
   http_service:
-    address: "https://en.wikipedia.org"
+    address: https://en.wikipedia.org/api/rest_v1
     calls:
-    - endpoint_path: "/w/api.php?action=parse&page={{title}}&prop=text&formatversion=2&format=json"
-      schema:
-        name: "wikipedia"
-        input_schema:
-          type: "object"
-          properties:
-            title:
-              type: "string"
-              description: "The title of the page to look up."
-        output_schema:
-          type: "object"
-          properties:
-            parse:
-              type: "object"
+      get_page:
+        id: get_page
+        endpoint_path: /page/
+        method: HTTP_METHOD_GET
+      get_page_title_title:
+        id: get_page_title_title
+        endpoint_path: /page/title/{{title}}
+        method: HTTP_METHOD_GET
+      get_page_title_title_revision:
+        id: get_page_title_title_revision
+        endpoint_path: /page/title/{{title}}/{{revision}}
+        method: HTTP_METHOD_GET
+      get_page_html_title:
+        id: get_page_html_title
+        endpoint_path: /page/html/{{title}}?redirect={{redirect}}&stash={{stash}}
+        method: HTTP_METHOD_GET
+      getFormatRevision:
+        id: getFormatRevision
+        endpoint_path: /page/html/{{title}}/{{revision}}?redirect={{redirect}}&stash={{stash}}
+        method: HTTP_METHOD_GET
+      get_page_data_parsoid_title_revision_tid:
+        id: get_page_data_parsoid_title_revision_tid
+        endpoint_path: /page/data-parsoid/{{title}}/{{revision}}/{{tid}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      get_page_lint_title:
+        id: get_page_lint_title
+        endpoint_path: /page/lint/{{title}}
+        method: HTTP_METHOD_GET
+      get_page_lint_title_revision:
+        id: get_page_lint_title_revision
+        endpoint_path: /page/lint/{{title}}/{{revision}}
+        method: HTTP_METHOD_GET
+      get_page_summary_title:
+        id: get_page_summary_title
+        endpoint_path: /page/summary/{{title}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      getContent-media-list:
+        id: getContent-media-list
+        endpoint_path: /page/media-list/{{title}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      getContentWithRevision-media-list:
+        id: getContentWithRevision-media-list
+        endpoint_path: /page/media-list/{{title}}/{{revision}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      getContent-mobile-html:
+        id: getContent-mobile-html
+        endpoint_path: /page/mobile-html/{{title}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      getContentWithRevision-mobile-html:
+        id: getContentWithRevision-mobile-html
+        endpoint_path: /page/mobile-html/{{title}}/{{revision}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      get_page_mobile_html_offline_resources_title:
+        id: get_page_mobile_html_offline_resources_title
+        endpoint_path: /page/mobile-html-offline-resources/{{title}}
+        method: HTTP_METHOD_GET
+      get_page_mobile_html_offline_resources_title_revision:
+        id: get_page_mobile_html_offline_resources_title_revision
+        endpoint_path: /page/mobile-html-offline-resources/{{title}}/{{revision}}
+        method: HTTP_METHOD_GET
+      get_page_talk_title:
+        id: get_page_talk_title
+        endpoint_path: /page/talk/{{title}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      get_page_talk_title_revision:
+        id: get_page_talk_title_revision
+        endpoint_path: /page/talk/{{title}}/{{revision}}?redirect={{redirect}}
+        method: HTTP_METHOD_GET
+      post_transform_html_to_wikitext:
+        id: post_transform_html_to_wikitext
+        endpoint_path: /transform/html/to/wikitext
+        method: HTTP_METHOD_POST
+      post_transform_html_to_wikitext_title:
+        id: post_transform_html_to_wikitext_title
+        endpoint_path: /transform/html/to/wikitext/{{title}}
+        method: HTTP_METHOD_POST
+      post_transform_html_to_wikitext_title_revision:
+        id: post_transform_html_to_wikitext_title_revision
+        endpoint_path: /transform/html/to/wikitext/{{title}}/{{revision}}
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_html:
+        id: post_transform_wikitext_to_html
+        endpoint_path: /transform/wikitext/to/html
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_html_title:
+        id: post_transform_wikitext_to_html_title
+        endpoint_path: /transform/wikitext/to/html/{{title}}
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_html_title_revision:
+        id: post_transform_wikitext_to_html_title_revision
+        endpoint_path: /transform/wikitext/to/html/{{title}}/{{revision}}
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_lint:
+        id: post_transform_wikitext_to_lint
+        endpoint_path: /transform/wikitext/to/lint
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_lint_title:
+        id: post_transform_wikitext_to_lint_title
+        endpoint_path: /transform/wikitext/to/lint/{{title}}
+        method: HTTP_METHOD_POST
+      post_transform_wikitext_to_lint_title_revision:
+        id: post_transform_wikitext_to_lint_title_revision
+        endpoint_path: /transform/wikitext/to/lint/{{title}}/{{revision}}
+        method: HTTP_METHOD_POST
+      transformWikitextToMobileHtml:
+        id: transformWikitextToMobileHtml
+        endpoint_path: /transform/wikitext/to/mobile-html/{{title}}
+        method: HTTP_METHOD_POST
+      post_media_math_check_type:
+        id: post_media_math_check_type
+        endpoint_path: /media/math/check/{{type}}
+        method: HTTP_METHOD_POST
+      get_media_math_formula_hash:
+        id: get_media_math_formula_hash
+        endpoint_path: /media/math/formula/{{hash}}
+        method: HTTP_METHOD_GET
+      get_media_math_render_format_hash:
+        id: get_media_math_render_format_hash
+        endpoint_path: /media/math/render/{{format}}/{{hash}}
+        method: HTTP_METHOD_GET
+      getCitation:
+        id: getCitation
+        endpoint_path: /data/citation/{{format}}/{{query}}
+        method: HTTP_METHOD_GET
+      post_data_lists_setup:
+        id: post_data_lists_setup
+        endpoint_path: /data/lists/setup?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      post_data_lists_teardown:
+        id: post_data_lists_teardown
+        endpoint_path: /data/lists/teardown?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      get_data_lists:
+        id: get_data_lists
+        endpoint_path: /data/lists/?next={{next}}&sort={{sort}}
+        method: HTTP_METHOD_GET
+      post_data_lists:
+        id: post_data_lists
+        endpoint_path: /data/lists/?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      put_data_lists_id:
+        id: put_data_lists_id
+        endpoint_path: /data/lists/{{id}}?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_PUT
+      delete_data_lists_id:
+        id: delete_data_lists_id
+        endpoint_path: /data/lists/{{id}}
+        method: HTTP_METHOD_DELETE
+      post_data_lists_batch:
+        id: post_data_lists_batch
+        endpoint_path: /data/lists/batch?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      getListEntries:
+        id: getListEntries
+        endpoint_path: /data/lists/{{id}}/entries/?next={{next}}&sort={{sort}}
+        method: HTTP_METHOD_GET
+      post_data_lists_id_entries:
+        id: post_data_lists_id_entries
+        endpoint_path: /data/lists/{{id}}/entries/?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      delete_data_lists_id_entries_entry_id:
+        id: delete_data_lists_id_entries_entry_id
+        endpoint_path: /data/lists/{{id}}/entries/{{entry_id}}
+        method: HTTP_METHOD_DELETE
+      post_data_lists_id_entries_batch:
+        id: post_data_lists_id_entries_batch
+        endpoint_path: /data/lists/{{id}}/entries/batch?csrf_token={{csrf_token}}
+        method: HTTP_METHOD_POST
+      get_data_lists_pages_project_title:
+        id: get_data_lists_pages_project_title
+        endpoint_path: /data/lists/pages/{{project}}/{{title}}?next={{next}}
+        method: HTTP_METHOD_GET
+      get_data_lists_changes_since_date:
+        id: get_data_lists_changes_since_date
+        endpoint_path: /data/lists/changes/since/{{date}}?next={{next}}
+        method: HTTP_METHOD_GET
+      get_data_recommendation_article_creation_translation_from_lang:
+        id: get_data_recommendation_article_creation_translation_from_lang
+        endpoint_path: /data/recommendation/article/creation/translation/{{from_lang}}?count={{count}}
+        method: HTTP_METHOD_GET
+      get_data_recommendation_article_creation_translation_from_lang_seed_article:
+        id: get_data_recommendation_article_creation_translation_from_lang_seed_article
+        endpoint_path: /data/recommendation/article/creation/translation/{{from_lang}}/{{seed_article}}?count={{count}}
+        method: HTTP_METHOD_GET
+      get_data_recommendation_article_creation_morelike_seed_article:
+        id: get_data_recommendation_article_creation_morelike_seed_article
+        endpoint_path: /data/recommendation/article/creation/morelike/{{seed_article}}
+        method: HTTP_METHOD_GET
+      get_data_css_mobile_type:
+        id: get_data_css_mobile_type
+        endpoint_path: /data/css/mobile/{{type}}
+        method: HTTP_METHOD_GET
+      get_data_javascript_mobile_type:
+        id: get_data_javascript_mobile_type
+        endpoint_path: /data/javascript/mobile/{{type}}
+        method: HTTP_METHOD_GET
+      get_data_i18n_type:
+        id: get_data_i18n_type
+        endpoint_path: /data/i18n/{{type}}
+        method: HTTP_METHOD_GET
+    tools:
+    - name: get_page
+      call_id: get_page
+      input_schema:
+        type: object
+        properties: {}
+      output_schema:
+        type: object
+        description: The result format for listings
+        properties:
+          items:
+            type: array
+            items:
+              type: string
+          _links:
+            type: object
+            properties:
+              next:
+                type: object
+                properties:
+                  href:
+                    type: string
+                    description: Relative link to next result page.
+        required:
+        - items
+    - name: get_page_title_title
+      call_id: get_page_title_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+        required:
+        - title
+      output_schema:
+        type: object
+        description: Result format for revision items
+        properties:
+          count:
+            type: integer
+          items:
+            type: object
+            description: Complete information about the revision
+            properties:
+              title:
+                type: string
+              page_id:
+                type: integer
+              rev:
+                type: integer
+              tid:
+                type: string
+              comment:
+                type: string
+              restrictions:
+                type: array
+                items:
+                  type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              user_id:
+                type: integer
+              user_text:
+                type: string
+              timestamp:
+                type: string
+              redirect:
+                type: boolean
+              page_language:
+                type: string
+        required: &id001
+        - count
+        - items
+    - name: get_page_title_title_revision
+      call_id: get_page_title_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The revision id
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        description: Result format for revision items
+        properties:
+          count:
+            type: integer
+          items:
+            type: object
+            description: Complete information about the revision
+            properties:
+              title:
+                type: string
+              page_id:
+                type: integer
+              rev:
+                type: integer
+              tid:
+                type: string
+              comment:
+                type: string
+              restrictions:
+                type: array
+                items:
+                  type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              user_id:
+                type: integer
+              user_text:
+                type: string
+              timestamp:
+                type: string
+              redirect:
+                type: boolean
+              page_language:
+                type: string
+        required: *id001
+    - name: get_page_html_title
+      call_id: get_page_html_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+          stash:
+            type: boolean
+            description: 'Whether to temporary stash data-parsoid in order to support
+              transforming the
+
+              modified content later. If this parameter is set, requests are rate-limited
+              on
+
+              a per-client basis (max 5 requests per second per client)
+
+              '
+          Accept-Language:
+            type: string
+            description: 'The desired language variant code for wikis where LanguageConverter
+              is enabled. Example: `sr-el` for Latin transcription of the Serbian
+              language.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+    - name: getFormatRevision
+      call_id: getFormatRevision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The revision
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+          stash:
+            type: boolean
+            description: 'Whether to temporary stash data-parsoid in order to support
+              transforming the
+
+              modified content later. If this parameter is set, requests are rate-limited
+              on
+
+              a per-client basis (max 5 requests per second per client)
+
+              '
+          Accept-Language:
+            type: string
+            description: 'The desired language variant code for wikis where LanguageConverter
+              is enabled. Example: `sr-el` for Latin transcription of the Serbian
+              language.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+    - name: get_page_data_parsoid_title_revision_tid
+      call_id: get_page_data_parsoid_title_revision_tid
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The revision
+          tid:
+            type: string
+            description: The revision's time ID
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - tid
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_page_lint_title
+      call_id: get_page_lint_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+        required:
+        - title
+      output_schema:
+        type: object
+    - name: get_page_lint_title_revision
+      call_id: get_page_lint_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The revision
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+    - name: get_page_summary_title
+      call_id: get_page_summary_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+          Accept-Language:
+            type: string
+            description: 'The desired language variant code for wikis where LanguageConverter
+              is enabled. Example: `sr-el` for Latin transcription of the Serbian
+              language.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: getContent-media-list
+      call_id: getContent-media-list
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: getContentWithRevision-media-list
+      call_id: getContentWithRevision-media-list
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: 'Optional page revision. Note that older revisions are not
+              stored, so request latency with the revision would be higher.
+
+              '
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: getContent-mobile-html
+      call_id: getContent-mobile-html
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: getContentWithRevision-mobile-html
+      call_id: getContentWithRevision-mobile-html
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: 'Optional page revision. Note that older revisions are not
+              stored, so request latency with the revision would be higher.
+
+              '
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_page_mobile_html_offline_resources_title
+      call_id: get_page_mobile_html_offline_resources_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_page_mobile_html_offline_resources_title_revision
+      call_id: get_page_mobile_html_offline_resources_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: 'Optional page revision. Note that older revisions are not
+              stored, so request latency with the revision would be higher.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_page_talk_title
+      call_id: get_page_talk_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_page_talk_title_revision
+      call_id: get_page_talk_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: 'Optional page revision. Note that older revisions are not
+              stored, so request latency with the revision would be higher.
+
+              '
+          redirect:
+            type: boolean
+            description: 'Requests for [redirect pages](https://www.mediawiki.org/wiki/Help:Redirects)
+              return HTTP 302 with a redirect target in `Location` header and content
+              in the body.
+
+              To get a 200 response instead, supply `false` to the `redirect` parameter.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_html_to_wikitext
+      call_id: post_transform_html_to_wikitext
+      input_schema:
+        type: object
+        properties:
+          if-match:
+            type: string
+            description: 'The `ETag` header of the original render indicating it''s
+              revision and timeuuid.
+
+              Required if both `title` and `revision` parameters are present.
+
+              '
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_html_to_wikitext_title
+      call_id: post_transform_html_to_wikitext_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          if-match:
+            type: string
+            description: 'The `ETag` header of the original render indicating it''s
+              revision and timeuuid.
+
+              Required if both `title` and `revision` parameters are present.
+
+              '
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_html_to_wikitext_title_revision
+      call_id: post_transform_html_to_wikitext_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The page revision
+          if-match:
+            type: string
+            description: 'The `ETag` header of the original render indicating it''s
+              revision and timeuuid.
+
+              Required if both `title` and `revision` parameters are present.
+
+              '
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_wikitext_to_html
+      call_id: post_transform_wikitext_to_html
+      input_schema:
+        type: object
+        properties: {}
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_wikitext_to_html_title
+      call_id: post_transform_wikitext_to_html_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_wikitext_to_html_title_revision
+      call_id: post_transform_wikitext_to_html_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The page revision
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_transform_wikitext_to_lint
+      call_id: post_transform_wikitext_to_lint
+      input_schema:
+        type: object
+        properties: {}
+      output_schema:
+        type: object
+    - name: post_transform_wikitext_to_lint_title
+      call_id: post_transform_wikitext_to_lint_title
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+        required:
+        - title
+      output_schema:
+        type: object
+    - name: post_transform_wikitext_to_lint_title_revision
+      call_id: post_transform_wikitext_to_lint_title_revision
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          revision:
+            type: integer
+            description: The page revision
+        required:
+        - revision
+        - title
+      output_schema:
+        type: object
+    - name: transformWikitextToMobileHtml
+      call_id: transformWikitextToMobileHtml
+      input_schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: 'Page title. Use underscores instead of spaces. Use percent-encoding.
+              Example: `Main_Page`.'
+          Accept-Language:
+            type: string
+            description: 'The desired language variant code for wikis where LanguageConverter
+              is enabled. Example: `sr-el` for Latin transcription of the Serbian
+              language.
+
+              '
+          output-mode:
+            type: string
+            description: Output mode for mobile-html. Default is `editPreview`.
+        required:
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_media_math_check_type
+      call_id: post_media_math_check_type
+      input_schema:
+        type: object
+        properties:
+          type:
+            type: string
+            description: The input type of the given formula; can be tex or inline-tex
+        required:
+        - type
+      output_schema:
+        type: object
+    - name: get_media_math_formula_hash
+      call_id: get_media_math_formula_hash
+      input_schema:
+        type: object
+        properties:
+          hash:
+            type: string
+            description: The hash string of the previous POST data
+        required:
+        - hash
+      output_schema:
+        type: object
+    - name: get_media_math_render_format_hash
+      call_id: get_media_math_render_format_hash
+      input_schema:
+        type: object
+        properties:
+          format:
+            type: string
+            description: The output format; can be svg or mml
+          hash:
+            type: string
+            description: The hash string of the previous POST data
+        required:
+        - hash
+        - format
+      output_schema:
+        type: object
+        properties: {}
+    - name: getCitation
+      call_id: getCitation
+      input_schema:
+        type: object
+        properties:
+          format:
+            type: string
+            description: The format to use for the resulting citation data
+          query:
+            type: string
+            description: 'URL of an article, DOI, PMCID or PMID in the URL-encoded
+              format. Note that on the Swagger-UI doc page you don''t need to URI-encode
+              the parameter manually, it will be done by the docs engine.
+
+              '
+          Accept-Language:
+            type: string
+            description: 'For some articles the result depends on the `Accept-Language`
+              header, so provide it if localized content is required.
+
+              '
+        required:
+        - query
+        - format
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists_setup
+      call_id: post_data_lists_setup
+      input_schema:
+        type: object
+        properties:
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists_teardown
+      call_id: post_data_lists_teardown
+      input_schema:
+        type: object
+        properties:
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_lists
+      call_id: get_data_lists
+      input_schema:
+        type: object
+        properties:
+          next:
+            type: string
+            description: Continuation parameter from previous request
+          sort:
+            type: string
+            description: 'Sort order
+
+              - `name`: by name, ascending;
+
+              - `updated`: by last modification date, descending.
+
+              '
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists
+      call_id: post_data_lists
+      input_schema:
+        type: object
+        properties:
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+      output_schema:
+        type: object
+        properties: {}
+    - name: put_data_lists_id
+      call_id: put_data_lists_id
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: delete_data_lists_id
+      call_id: delete_data_lists_id
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+        required:
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists_batch
+      call_id: post_data_lists_batch
+      input_schema:
+        type: object
+        properties:
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+      output_schema:
+        type: object
+        properties: {}
+    - name: getListEntries
+      call_id: getListEntries
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+          next:
+            type: string
+            description: Continuation parameter from previous request
+          sort:
+            type: string
+            description: 'Sort order
+
+              - `name`: by page title, ascending;
+
+              - `updated`: by last modification date, descending.
+
+              '
+        required:
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists_id_entries
+      call_id: post_data_lists_id_entries
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: delete_data_lists_id_entries_entry_id
+      call_id: delete_data_lists_id_entries_entry_id
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+          entry_id:
+            type: integer
+            description: ''
+        required:
+        - entry_id
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: post_data_lists_id_entries_batch
+      call_id: post_data_lists_id_entries_batch
+      input_schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ''
+          csrf_token:
+            type: string
+            description: The CRSF edit token provided by the MediaWiki API
+        required:
+        - csrf_token
+        - id
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_lists_pages_project_title
+      call_id: get_data_lists_pages_project_title
+      input_schema:
+        type: object
+        properties:
+          project:
+            type: string
+            description: ''
+          title:
+            type: string
+            description: ''
+          next:
+            type: string
+            description: Continuation parameter from previous request
+        required:
+        - project
+        - title
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_lists_changes_since_date
+      call_id: get_data_lists_changes_since_date
+      input_schema:
+        type: object
+        properties:
+          date:
+            type: string
+            description: 'Cutoff date (in ISO 8601). To ensure reliable synchronization,
+              the API
+
+              might return changes which are slightly older than the cutoff date.
+
+              '
+          next:
+            type: string
+            description: Continuation parameter from previous request
+        required:
+        - date
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_recommendation_article_creation_translation_from_lang
+      call_id: get_data_recommendation_article_creation_translation_from_lang
+      input_schema:
+        type: object
+        properties:
+          from_lang:
+            type: string
+            description: The source language code
+          count:
+            type: integer
+            description: The max number of articles to return
+        required:
+        - from_lang
+      output_schema:
+        type: object
+        properties:
+          count:
+            type: integer
+            description: the number of recommendations returned
+          items:
+            type: array
+            description: the list of articles recommended for translation
+            items:
+              type: object
               properties:
+                wikidata_id:
+                  type: string
+                  description: wikidata id for the item
                 title:
-                  type: "string"
-                pageid:
-                  type: "integer"
-                text:
-                  type: "string"
-      method: "HTTP_METHOD_GET"
+                  type: string
+                  description: title of the article in the source language
+                sitelink_count:
+                  type: integer
+                  description: count of sites the wikidata item is linked to
+    - name: get_data_recommendation_article_creation_translation_from_lang_seed_article
+      call_id: get_data_recommendation_article_creation_translation_from_lang_seed_article
+      input_schema:
+        type: object
+        properties:
+          from_lang:
+            type: string
+            description: The source language code
+          seed_article:
+            type: string
+            description: The article to use as a search seed
+          count:
+            type: integer
+            description: The max number of articles to return
+        required:
+        - seed_article
+        - from_lang
+      output_schema:
+        type: object
+        properties:
+          count:
+            type: integer
+            description: the number of recommendations returned
+          items:
+            type: array
+            description: the list of articles recommended for translation
+            items:
+              type: object
+              properties:
+                wikidata_id:
+                  type: string
+                  description: wikidata id for the item
+                title:
+                  type: string
+                  description: title of the article in the source language
+                sitelink_count:
+                  type: integer
+                  description: count of sites the wikidata item is linked to
+    - name: get_data_recommendation_article_creation_morelike_seed_article
+      call_id: get_data_recommendation_article_creation_morelike_seed_article
+      input_schema:
+        type: object
+        properties:
+          seed_article:
+            type: string
+            description: The article title used to search similar but missing articles
+        required:
+        - seed_article
+      output_schema:
+        type: array
+        description: the prioritized list of Wikidata IDs recommended for creation
+          as Wikipedia articles
+        items:
+          type: object
+          properties:
+            wikidata_id:
+              type: string
+              description: Wikidata ID for the item
+            score:
+              type: number
+              description: Score of the recommendation. The higher the score, the
+                more important the recommendation is.
+            source_language:
+              type: string
+              description: Source of the recommendation -- which wiki is recommending
+                the current article.
+    - name: get_data_css_mobile_type
+      call_id: get_data_css_mobile_type
+      input_schema:
+        type: object
+        properties:
+          type:
+            type: string
+            description: The desired CSS bundle
+        required:
+        - type
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_javascript_mobile_type
+      call_id: get_data_javascript_mobile_type
+      input_schema:
+        type: object
+        properties:
+          type:
+            type: string
+            description: The desired JavaScript bundle
+        required:
+        - type
+      output_schema:
+        type: object
+        properties: {}
+    - name: get_data_i18n_type
+      call_id: get_data_i18n_type
+      input_schema:
+        type: object
+        properties:
+          type:
+            type: string
+            description: The desired internationalization bundle
+        required:
+        - type
+      output_schema:
+        type: object
+        properties: {}
