@@ -15,35 +15,31 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: airtable
+- name: openlibrary.org
   http_service:
-    address: "https://api.airtable.com"
-    authentication:
-      token: "${AIRTABLE_API_TOKEN}"
+    address: "https://openlibrary.org"
     calls:
-    - endpoint_path: "/v0/{{base_id}}/{{table_id}}/{{record_id}}"
+    - endpoint_path: "/api/books?bibkeys=ISBN:{{isbn}}&format=json&jscmd=data"
       schema:
-        name: "get_record"
-        description: "Get a record from an Airtable table."
+        name: "getBookByISBN"
         input_schema:
           type: "object"
           properties:
-            base_id:
+            isbn:
               type: "string"
-              description: "The ID of the Airtable base."
-            table_id:
-              type: "string"
-              description: "The ID of the Airtable table."
-            record_id:
-              type: "string"
-              description: "The ID of the record to retrieve."
+              description: "The ISBN of the book to look up."
         output_schema:
           type: "object"
+      method: "HTTP_METHOD_GET"
+    - endpoint_path: "/search/authors.json?q={{author_name}}"
+      schema:
+        name: "searchAuthors"
+        input_schema:
+          type: "object"
           properties:
-            id:
+            author_name:
               type: "string"
-            fields:
-              type: "object"
-            createdTime:
-              type: "string"
+              description: "The name of the author to search for."
+        output_schema:
+          type: "object"
       method: "HTTP_METHOD_GET"

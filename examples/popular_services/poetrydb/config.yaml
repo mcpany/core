@@ -15,34 +15,31 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: reddit
+- name: poetrydb.org
   http_service:
-    address: "https://www.reddit.com"
+    address: "https://poetrydb.org"
     calls:
-    - endpoint_path: "/r/{{subreddit}}/about.json"
+    - endpoint_path: "/author/{{author_name}}"
       schema:
-        name: "get_subreddit_info"
-        description: "Get information about a subreddit."
+        name: "getPoemsByAuthor"
         input_schema:
           type: "object"
           properties:
-            subreddit:
+            author_name:
               type: "string"
-              description: "The name of the subreddit."
+              description: "The name of the author to search for."
         output_schema:
+          type: "array"
+      method: "HTTP_METHOD_GET"
+    - endpoint_path: "/title/{{title}}"
+      schema:
+        name: "getPoemByTitle"
+        input_schema:
           type: "object"
           properties:
-            kind:
+            title:
               type: "string"
-            data:
-              type: "object"
-              properties:
-                display_name:
-                  type: "string"
-                subscribers:
-                  type: "integer"
-                title:
-                  type: "string"
-                url:
-                  type: "string"
+              description: "The title of the poem to search for."
+        output_schema:
+          type: "array"
       method: "HTTP_METHOD_GET"
