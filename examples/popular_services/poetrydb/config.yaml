@@ -15,29 +15,31 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: wikipedia
+- name: poetrydb.org
   http_service:
-    address: "https://en.wikipedia.org"
+    address: "https://poetrydb.org"
     calls:
-    - endpoint_path: "/w/api.php?action=parse&page={{title}}&prop=text&formatversion=2&format=json"
+    - endpoint_path: "/author/{{author_name}}"
       schema:
-        name: "wikipedia"
+        name: "getPoemsByAuthor"
+        input_schema:
+          type: "object"
+          properties:
+            author_name:
+              type: "string"
+              description: "The name of the author to search for."
+        output_schema:
+          type: "array"
+      method: "HTTP_METHOD_GET"
+    - endpoint_path: "/title/{{title}}"
+      schema:
+        name: "getPoemByTitle"
         input_schema:
           type: "object"
           properties:
             title:
               type: "string"
-              description: "The title of the page to look up."
+              description: "The title of the poem to search for."
         output_schema:
-          type: "object"
-          properties:
-            parse:
-              type: "object"
-              properties:
-                title:
-                  type: "string"
-                pageid:
-                  type: "integer"
-                text:
-                  type: "string"
+          type: "array"
       method: "HTTP_METHOD_GET"
