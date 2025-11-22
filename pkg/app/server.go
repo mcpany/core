@@ -43,8 +43,10 @@ import (
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -413,6 +415,19 @@ func (a *Application) runServerMode(
 		fmt.Fprintln(w, "OK")
 	})
 	mux.Handle("/metrics", metrics.Handler())
+
+	if grpcPort != "" {
+		gwmux := runtime.NewServeMux()
+		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+		endpoint := grpcPort
+		if strings.HasPrefix(endpoint, ":") {
+			endpoint = "localhost" + endpoint
+		}
+		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+			return fmt.Errorf("failed to register gateway: %w", err)
+		}
+		mux.Handle("/v1/", gwmux)
+	}
 
 	if bindAddress == "" {
 		bindAddress = fmt.Sprintf("localhost:%d", 8070)
