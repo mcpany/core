@@ -1,12 +1,17 @@
 upstreamServices:
   - name: "airtable"
     httpService:
-      address: "https://api.airtable.com"
+      address: "https://api.airtable.com/v0"
       calls:
-        - operationId: "list_bases"
-          description: "List Airtable bases"
+        - operationId: "list_records"
+          description: "List records from a table"
           method: "HTTP_METHOD_GET"
-          endpointPath: "/v0/meta/bases"
+          endpointPath: "/{baseId}/{tableIdOrName}"
+          parameterMappings:
+            - inputParameterName: "baseId"
+              targetParameterName: "baseId"
+            - inputParameterName: "tableIdOrName"
+              targetParameterName: "tableIdOrName"
     upstreamAuthentication:
       bearerToken:
-        token: "YOUR_AIRTABLE_API_TOKEN"
+        token: "${AIRTABLE_API_KEY}"
