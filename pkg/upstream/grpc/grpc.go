@@ -202,6 +202,13 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	}
 	grpcService := serviceInfo.Config.GetGrpcService()
 
+	disabledTools := make(map[string]bool)
+	for _, t := range grpcService.GetTools() {
+		if t.GetDisable() {
+			disabledTools[t.GetName()] = true
+		}
+	}
+
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create protodesc files: %w", err)
@@ -209,6 +216,11 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(parsedData.Tools))
 	for _, toolDef := range parsedData.Tools {
+		if disabledTools[toolDef.Name] {
+			log.Info("Skipping disabled tool (annotation)", "toolName", toolDef.Name)
+			continue
+		}
+
 		toolName := toolDef.Name
 		if toolName == "" {
 			toolName = toolDef.MethodName
@@ -303,6 +315,10 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 		}
 	}
 	for _, resourceDef := range grpcService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetGrpcCall()
 			if call == nil {
@@ -354,6 +370,13 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	}
 	grpcService := serviceInfo.Config.GetGrpcService()
 
+	disabledTools := make(map[string]bool)
+	for _, t := range grpcService.GetTools() {
+		if t.GetDisable() {
+			disabledTools[t.GetName()] = true
+		}
+	}
+
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create protodesc files: %w", err)
@@ -367,6 +390,11 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 			methods := serviceDesc.Methods()
 			for j := 0; j < methods.Len(); j++ {
 				methodDesc := methods.Get(j)
+
+				if disabledTools[string(methodDesc.Name())] {
+					log.Info("Skipping disabled tool (descriptor)", "toolName", methodDesc.Name())
+					continue
+				}
 
 				// Check if the tool is already registered
 				toolID := fmt.Sprintf("%s.%s", serviceID, methodDesc.Name())
@@ -545,6 +573,10 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	calls := grpcService.GetCalls()
 
 	for _, definition := range definitions {
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool (config)", "toolName", definition.GetName())
+			continue
+		}
 		callID := definition.GetCallId()
 		grpcDef, ok := calls[callID]
 		if !ok {
@@ -616,6 +648,10 @@ func (u *GRPCUpstream) createAndRegisterPromptsFromConfig(
 	grpcService := serviceInfo.Config.GetGrpcService()
 
 	for _, promptDef := range grpcService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)

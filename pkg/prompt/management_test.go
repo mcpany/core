@@ -137,4 +137,23 @@ func TestPromptManager(t *testing.T) {
 
 		assert.Equal(t, provider, promptManager.mcpServer)
 	})
+
+	t.Run("add duplicate prompt", func(t *testing.T) {
+		// Clear existing prompts
+		promptManager.prompts.Clear()
+
+		mockPrompt1 := new(MockPrompt)
+		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "duplicate-prompt"})
+		mockPrompt1.On("Service").Return("service1")
+		promptManager.AddPrompt(mockPrompt1)
+
+		mockPrompt2 := new(MockPrompt)
+		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "duplicate-prompt"})
+		mockPrompt2.On("Service").Return("service2")
+		promptManager.AddPrompt(mockPrompt2)
+
+		p, ok := promptManager.GetPrompt("duplicate-prompt")
+		assert.True(t, ok)
+		assert.Equal(t, "service1", p.Service())
+	})
 }

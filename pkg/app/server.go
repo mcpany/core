@@ -43,10 +43,18 @@ import (
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
+
+var healthCheckClient = &http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	},
+}
 
 // Runner defines the interface for running the MCP Any application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
@@ -331,11 +339,15 @@ func HealthCheckWithContext(
 	out io.Writer,
 	addr string,
 ) error {
-	healthCheckClient := &http.Client{
+	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
 	}
+	if deadline, ok := ctx.Deadline(); ok {
+		client.Timeout = time.Until(deadline)
+	}
+
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
@@ -346,7 +358,7 @@ func HealthCheckWithContext(
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := healthCheckClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
@@ -403,6 +415,19 @@ func (a *Application) runServerMode(
 		fmt.Fprintln(w, "OK")
 	})
 	mux.Handle("/metrics", metrics.Handler())
+
+	if grpcPort != "" {
+		gwmux := runtime.NewServeMux()
+		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+		endpoint := grpcPort
+		if strings.HasPrefix(endpoint, ":") {
+			endpoint = "localhost" + endpoint
+		}
+		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+			return fmt.Errorf("failed to register gateway: %w", err)
+		}
+		mux.Handle("/v1/", gwmux)
+	}
 
 	if bindAddress == "" {
 		bindAddress = fmt.Sprintf("localhost:%d", 8070)

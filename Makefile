@@ -37,9 +37,10 @@ PROTOC_VERSION_URL := https://api.github.com/repos/protocolbuffers/protobuf/rele
 PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases/download
 PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
+GRPC_GATEWAY_VERSION ?= v2.27.3
 PROTOC_ZIP := protoc.zip
 TOOL_INSTALL_DIR := $(CURDIR)/build/env/bin
-PROTOC_VERSION := v33.0
+PROTOC_VERSION := v33.1
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
@@ -51,6 +52,8 @@ endif
 LOCAL_BIN_DIR := $(CURDIR)/build/bin
 PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
+PROTOC_GEN_GRPC_GATEWAY := $(TOOL_INSTALL_DIR)/protoc-gen-grpc-gateway
+PROTOC_GEN_OPENAPIV2 := $(TOOL_INSTALL_DIR)/protoc-gen-openapiv2
 PROTOC_BIN := $(TOOL_INSTALL_DIR)/protoc
 GOLANGCI_LINT_BIN := $(TOOL_INSTALL_DIR)/golangci-lint
 GOFUMPT_BIN := $(TOOL_INSTALL_DIR)/gofumpt
@@ -79,10 +82,10 @@ endif
 RELEASE_DIR := $(CURDIR)/build/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-PLATFORMS ?= linux/amd64 linux/386 linux/arm64 linux/arm
+PLATFORMS ?= linux/amd64 linux/s390x linux/arm64 linux/arm linux/ppc64le
 
 # Find all .proto files, excluding vendor/cache directories
-PROTO_FILES := $(shell find proto -name "*.proto")
+PROTO_FILES := $(shell find . -path ./vendor -prune -o -name "*.proto" -print)
 
 .PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
 
@@ -142,6 +145,8 @@ prepare:
 	@echo "Installing Go protobuf plugins..."
 	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
 	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
+	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION)
+	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION)
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -151,7 +156,28 @@ prepare:
 		echo "protoc-gen-go-grpc not found at $(PROTOC_GEN_GO_GRPC) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
 		exit 1; \
 	fi
+	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then \
+		echo "protoc-gen-grpc-gateway not found at $(PROTOC_GEN_GRPC_GATEWAY) after attempting install."; \
+		exit 1; \
+	fi
 	@echo "Go protobuf plugins installation check complete."
+	@# Download grpc-gateway source for protos
+	@if ! test -d "$(CURDIR)/build/grpc-gateway"; then \
+		echo "Downloading grpc-gateway protos..."; \
+		curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
+		unzip -q grpc-gateway.zip -d $(CURDIR)/build; \
+		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//'); \
+		mv $(CURDIR)/build/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(CURDIR)/build/grpc-gateway; \
+		rm grpc-gateway.zip; \
+	fi
+	@# Download googleapis
+	@if ! test -d "$(CURDIR)/build/googleapis"; then \
+		echo "Downloading googleapis..."; \
+		curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
+		unzip -q googleapis.zip -d $(CURDIR)/build; \
+		mv $(CURDIR)/build/googleapis-master $(CURDIR)/build/googleapis; \
+		rm googleapis.zip; \
+	fi
 	@# Install Python dependencies and pre-commit hooks
 	@echo "Checking for Python to install dependencies and pre-commit hooks..."
 	@if command -v python3 >/dev/null 2>&1; then \
@@ -265,21 +291,25 @@ prepare:
 	@echo "Preparation complete."
 
 
-gen: prepare
+gen: clean prepare
 	@echo "Removing old protobuf files..."
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
 		mkdir -p ./build; \
-		find proto -name "*.proto" -exec protoc --experimental_editions=true \
+		find proto -name "*.proto" -exec protoc \
 			--proto_path=. \
+			--proto_path=$(CURDIR)/build/grpc-gateway \
+			--proto_path=$(CURDIR)/build/googleapis \
 			--descriptor_set_out=$(CURDIR)/build/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_OPAQUE \
+			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
 			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpany/core \
+			--grpc-gateway_out=. \
+			--grpc-gateway_opt=module=github.com/mcpany/core \
 			{} +
 	@echo "Protobuf generation complete."
 
@@ -295,7 +325,7 @@ e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
-test-fast: gen build build-examples build-e2e-mocks
+test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 

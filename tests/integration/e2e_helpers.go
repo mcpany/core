@@ -1248,7 +1248,7 @@ func (e *MCPJSONRPCError) Error() string {
 func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
-		"method":  "listTools",
+		"method":  "tools/list",
 		"params":  map[string]interface{}{},
 		"id":      1,
 	})
@@ -1278,8 +1278,9 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		Result *mcp.ListToolsResult `json:"result"`
 		Error  *MCPJSONRPCError     `json:"error"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
 	}
 
 	if rpcResp.Error != nil {
@@ -1292,7 +1293,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
-		"method":  "callTool",
+		"method":  "tools/call",
 		"params":  params,
 		"id":      1,
 	})

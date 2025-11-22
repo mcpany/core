@@ -92,6 +92,131 @@ func TestHttpMethodToString(t *testing.T) {
 	}
 }
 
+func TestHTTPUpstream_Register_Disabled(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	configJSON := `{
+		"name": "disabled-tool-test",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [
+				{"name": "op1", "call_id": "op1-call", "disable": true},
+				{"name": "op2", "call_id": "op2-call", "disable": false}
+			],
+			"calls": {
+				"op1-call": {
+					"id": "op1-call",
+					"method": "HTTP_METHOD_GET"
+				},
+				"op2-call": {
+					"id": "op2-call",
+					"method": "HTTP_METHOD_GET"
+				}
+			},
+			"prompts": [
+				{"name": "prompt1", "disable": true},
+				{"name": "prompt2", "disable": false}
+			],
+			"resources": [
+				{
+					"name": "res1",
+					"uri": "http://test1",
+					"disable": true,
+					"dynamic": {
+						"http_call": {"id": "op2-call"}
+					}
+				},
+				{
+					"name": "res2",
+					"uri": "http://test2",
+					"disable": false,
+					"dynamic": {
+						"http_call": {"id": "op2-call"}
+					}
+				}
+			]
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+
+	serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	// Check Tools
+	assert.Len(t, discoveredTools, 1)
+	assert.Equal(t, "op2", discoveredTools[0].GetName())
+
+	sanitizedToolName1, _ := util.SanitizeToolName("op1")
+	toolID1 := serviceID + "." + sanitizedToolName1
+	_, ok := tm.GetTool(toolID1)
+	assert.False(t, ok, "Disabled tool should not be registered")
+
+	sanitizedToolName2, _ := util.SanitizeToolName("op2")
+	toolID2 := serviceID + "." + sanitizedToolName2
+	_, ok = tm.GetTool(toolID2)
+	assert.True(t, ok, "Enabled tool should be registered")
+
+	// Check Prompts
+	sanitizedPromptName1, _ := util.SanitizeToolName("prompt1")
+	promptID1 := serviceID + "." + sanitizedPromptName1
+	_, ok = promptManager.GetPrompt(promptID1)
+	assert.False(t, ok, "Disabled prompt should not be registered")
+
+	sanitizedPromptName2, _ := util.SanitizeToolName("prompt2")
+	promptID2 := serviceID + "." + sanitizedPromptName2
+	_, ok = promptManager.GetPrompt(promptID2)
+	assert.True(t, ok, "Enabled prompt should be registered")
+
+	// Check Resources
+	_, ok = resourceManager.GetResource("http://test1")
+	assert.False(t, ok, "Disabled resource should not be registered")
+	_, ok = resourceManager.GetResource("http://test2")
+	assert.True(t, ok, "Enabled resource should be registered")
+}
+
+func TestDeterminismInToolNaming(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	configJSON := `{
+		"name": "test-determinism",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [
+				{"call_id": "call2"},
+				{"call_id": "call1"}
+			],
+			"calls": {
+				"call1": {
+					"id": "call1",
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "/test1"
+				},
+				"call2": {
+					"id": "call2",
+					"method": "HTTP_METHOD_POST",
+					"endpoint_path": "/test2"
+				}
+			}
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.NoError(t, err)
+	assert.Len(t, discoveredTools, 2)
+	assert.Equal(t, "op_call1", discoveredTools[0].GetName())
+	assert.Equal(t, "op_call2", discoveredTools[1].GetName())
+}
+
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewToolManager(nil)
@@ -119,7 +244,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 1)
-	assert.Equal(t, "op_0", discoveredTools[0].GetName())
+	assert.Equal(t, "op_test-op-call", discoveredTools[0].GetName())
 	assert.Len(t, tm.ListTools(), 1)
 }
 
@@ -238,7 +363,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		assert.True(t, ok, "Tool with sanitized description should be found, expected %s", toolID1)
 
 		// Check for default fallback name
-		sanitizedName2, _ := util.SanitizeToolName("op_1")
+		sanitizedName2, _ := util.SanitizeToolName("op_test-op-2")
 		toolID2 := serviceID + "." + sanitizedName2
 		_, ok = tm.GetTool(toolID2)
 		assert.True(t, ok, "Tool with default fallback name should be found, expected %s", toolID2)

@@ -20,9 +20,7 @@ package all_test
 
 import (
 	"context"
-	"io/ioutil"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/mcpany/core/pkg/config"
@@ -71,8 +69,8 @@ func TestLoadAllPopularServices(t *testing.T) {
 	var expectedToolNames []string
 	for _, service := range cfg.GetUpstreamServices() {
 		sanitizedServiceName, _ := util.SanitizeServiceName(service.GetName())
-		for _, call := range service.GetHttpService().GetCalls() {
-			sanitizedToolName, _ := util.SanitizeToolName(call.GetSchema().GetName())
+		for _, tool := range service.GetHttpService().GetTools() {
+			sanitizedToolName, _ := util.SanitizeToolName(tool.GetName())
 			expectedToolNames = append(expectedToolNames, sanitizedServiceName+"."+sanitizedToolName)
 		}
 	}

@@ -243,4 +243,6 @@ message ToolDefinition {
   bool open_world_hint = 10;
   // The ID of the call definition to use for this tool.
   string call_id = 11;
+  // If true, this tool is disabled.
+  bool disable = 12;
 }

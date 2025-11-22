@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2024 Author(s) of MCP Any
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import (
 )
 
 func TestUpstreamService_Wikipedia(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Wikipedia Server...")
@@ -47,21 +47,32 @@ func TestUpstreamService_Wikipedia(t *testing.T) {
 
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
-	require.Len(t, listToolsResult.Tools, 1, "Expected exactly one tool to be registered")
-	registeredToolName := listToolsResult.Tools[0].Name
-	t.Logf("Discovered tool from MCPANY: %s", registeredToolName)
+	require.Greater(t, len(listToolsResult.Tools), 40, "Expected many tools to be registered (>40)")
+
+	// Find the summary tool
+	targetToolName := "get_page_summary_title"
+	var foundTool bool
+	for _, tool := range listToolsResult.Tools {
+		if tool.Name == targetToolName {
+			foundTool = true
+			break
+		}
+	}
+	require.True(t, foundTool, "Expected to find tool: %s", targetToolName)
+
+	t.Logf("Found tool: %s", targetToolName)
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name          string
-		title         string
-		expectedTitle string
+		name           string
+		title          string
+		expectedTitle  string
 		expectedPageID int
 	}{
 		{
-			name:          "Pet Door",
-			title:         "Pet_door",
-			expectedTitle: "Pet door",
+			name:           "Pet Door",
+			title:          "Pet_door",
+			expectedTitle:  "Pet door",
 			expectedPageID: 3276454,
 		},
 	}
@@ -70,7 +81,7 @@ func TestUpstreamService_Wikipedia(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// --- 4. Call Tool ---
 			args := json.RawMessage(`{"title": "` + tc.title + `"}`)
-			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: registeredToolName, Arguments: args})
+			res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: targetToolName, Arguments: args})
 			require.NoError(t, err)
 			require.NotNil(t, res)
 
@@ -83,17 +94,15 @@ func TestUpstreamService_Wikipedia(t *testing.T) {
 			err = json.Unmarshal([]byte(textContent.Text), &wikipediaResponse)
 			require.NoError(t, err, "Failed to unmarshal JSON response")
 
-			require.Contains(t, wikipediaResponse, "parse", "The response should contain a parse object")
+			// REST API v1 returns the summary object directly
+			require.Contains(t, wikipediaResponse, "title", "The response should contain a title")
+			require.Contains(t, wikipediaResponse, "pageid", "The response should contain a pageid")
+			require.Contains(t, wikipediaResponse, "extract", "The response should contain extract")
 
-			parse, ok := wikipediaResponse["parse"].(map[string]interface{})
-			require.True(t, ok, "Expected parse to be a map")
-
-			require.Contains(t, parse, "title", "The response should contain a title")
-			require.Contains(t, parse, "pageid", "The response should contain a pageid")
-			require.Contains(t, parse, "text", "The response should contain text")
-
-			require.Equal(t, tc.expectedTitle, parse["title"], "The title should match the expected value")
-			require.Equal(t, float64(tc.expectedPageID), parse["pageid"], "The pageid should match the expected value")
+			require.Equal(t, tc.expectedTitle, wikipediaResponse["title"], "The title should match the expected value")
+			// pageid might be float64 in json, require.EqualValues handles int/float comparison automatically?
+			// Actually require.EqualValues is better for type conversion
+			require.EqualValues(t, tc.expectedPageID, wikipediaResponse["pageid"], "The pageid should match the expected value")
 		})
 	}
 
