@@ -24,6 +24,8 @@ message PromptDefinition {
   repeated PromptArgument arguments = 4;
   // The messages that make up the prompt.
   repeated PromptMessage messages = 5;
+  // If true, this prompt is disabled.
+  bool disable = 6;
 }
 
 // PromptArgument defines an argument for a prompt.

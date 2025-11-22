@@ -123,6 +123,11 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	calls := commandLineService.GetCalls()
 
 	for _, definition := range definitions {
+		if definition.GetDisable() {
+			log.Info("Skipping disabled tool", "toolName", definition.GetName())
+			continue
+		}
+
 		callID := definition.GetCallId()
 		callDef, ok := calls[callID]
 		if !ok {
@@ -208,6 +213,10 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 	for _, resourceDef := range commandLineService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetCommandLineCall()
 			if call == nil {
@@ -249,6 +258,10 @@ func (u *CommandUpstream) createAndRegisterPrompts(
 ) {
 	log := logging.GetLogger()
 	for _, promptDef := range commandLineService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name)
