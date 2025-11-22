@@ -16,35 +16,14 @@
 
 upstream_services:
 - name: twilio
-  http_service:
-    address: "https://api.twilio.com"
-    authentication:
-      basic_auth:
-        username: "${TWILIO_ACCOUNT_SID}"
-        password: "${TWILIO_AUTH_TOKEN}"
-    calls:
-    - endpoint_path: "/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json"
-      schema:
-        name: "send_message"
-        input_schema:
-          type: "object"
-          properties:
-            To:
-              type: "string"
-              description: "The destination phone number."
-            From:
-              type: "string"
-              description: "The phone number that the message should come from."
-            Body:
-              type: "string"
-              description: "The text of the message you want to send."
-        output_schema:
-          type: "object"
-          properties:
-            sid:
-              type: "string"
-            status:
-              type: "string"
-            error_message:
-              type: "string"
-      method: "HTTP_METHOD_POST"
+  mcp_service:
+    stdio_connection:
+      command: "npx"
+      args:
+        - "-y"
+        - "@twilio-alpha/mcp"
+        - "${TWILIO_ACCOUNT_SID}/${TWILIO_API_KEY}:${TWILIO_API_SECRET}"
+        # Uncomment and modify the following lines to filter services to load
+        # - "--services"
+        # - "api"
+    tool_auto_discovery: true
