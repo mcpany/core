@@ -15,36 +15,36 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-  - name: twilio
+  - name: google-translate
     http_service:
-      address: "https://api.twilio.com"
-      authentication:
-        basic:
-          username: "${TWILIO_ACCOUNT_SID}"
-          password: "${TWILIO_AUTH_TOKEN}"
+      address: "https://translation.googleapis.com"
       calls:
-        - endpoint_path: "/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json"
+        - endpoint_path: "/language/translate/v2?key=${GOOGLE_API_KEY}"
           method: "HTTP_METHOD_POST"
           schema:
-            name: "send_sms"
+            name: "translate"
             input_schema:
               type: "object"
               properties:
-                To:
+                q:
                   type: "string"
-                  description: "The recipient's phone number."
-                From:
+                  description: "The text to translate."
+                source:
                   type: "string"
-                  description: "The sender's Twilio phone number."
-                Body:
+                  description: "The source language."
+                target:
                   type: "string"
-                  description: "The message to send."
+                  description: "The target language."
             output_schema:
               type: "object"
               properties:
-                sid:
-                  type: "string"
-                status:
-                  type: "string"
-                error_message:
-                  type: "string"
+                data:
+                  type: "object"
+                  properties:
+                    translations:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          translatedText:
+                            type: "string"

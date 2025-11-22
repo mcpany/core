@@ -15,36 +15,36 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-  - name: twilio
+  - name: stripe
     http_service:
-      address: "https://api.twilio.com"
+      address: "https://api.stripe.com"
       authentication:
-        basic:
-          username: "${TWILIO_ACCOUNT_SID}"
-          password: "${TWILIO_AUTH_TOKEN}"
+        token: "${STRIPE_API_KEY}"
       calls:
-        - endpoint_path: "/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json"
+        - endpoint_path: "/v1/charges"
           method: "HTTP_METHOD_POST"
           schema:
-            name: "send_sms"
+            name: "create_charge"
             input_schema:
               type: "object"
               properties:
-                To:
+                amount:
+                  type: "integer"
+                  description: "The amount to charge."
+                currency:
                   type: "string"
-                  description: "The recipient's phone number."
-                From:
+                  description: "The currency of the charge."
+                source:
                   type: "string"
-                  description: "The sender's Twilio phone number."
-                Body:
-                  type: "string"
-                  description: "The message to send."
+                  description: "The payment source."
             output_schema:
               type: "object"
               properties:
-                sid:
+                id:
+                  type: "string"
+                amount:
+                  type: "integer"
+                currency:
                   type: "string"
                 status:
-                  type: "string"
-                error_message:
                   type: "string"
