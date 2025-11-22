@@ -1,0 +1,45 @@
+# Copyright 2025 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+- name: twilio
+  http_service:
+    address: "https://api.twilio.com/2010-04-01"
+    authentication:
+      basic:
+        username: "${TWILIO_ACCOUNT_SID}"
+        password: "${TWILIO_AUTH_TOKEN}"
+    calls:
+    - endpoint_path: "/Accounts/{{account_sid}}/Messages.json"
+      method: "HTTP_METHOD_POST"
+      content_type: "application/x-www-form-urlencoded"
+      schema:
+        name: "send_sms"
+        input_schema:
+          type: "object"
+          properties:
+            account_sid:
+              type: "string"
+              description: "The SID of the Account that will create the resource."
+            To:
+              type: "string"
+              description: "The destination phone number in E.164 format."
+            From:
+              type: "string"
+              description: "A Twilio phone number in E.164 format, an alphanumeric sender ID, or a Channel Endpoint address that is enabled for the type of message you want to send."
+            Body:
+              type: "string"
+              description: "The text of the message you want to send."
