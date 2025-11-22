@@ -15,43 +15,36 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: zoom
+- name: airtable
   http_service:
-    address: "https://api.zoom.us"
+    address: "https://api.airtable.com"
     authentication:
-      token: "${ZOOM_API_KEY}"
+      token: "Bearer ${AIRTABLE_API_TOKEN}"
     calls:
-    - endpoint_path: "/v2/users"
+    - endpoint_path: "/v0/{{baseId}}/{{tableId}}"
       schema:
-        name: "create_user"
+        name: "list_records"
         input_schema:
           type: "object"
           properties:
-            action:
+            baseId:
               type: "string"
-              description: "The action to perform."
-            user_info:
-              type: "object"
-              properties:
-                email:
-                  type: "string"
-                type:
-                  type: "integer"
-                first_name:
-                  type: "string"
-                last_name:
-                  type: "string"
+              description: "The ID of the base."
+            tableId:
+              type: "string"
+              description: "The ID of the table."
         output_schema:
           type: "object"
           properties:
-            id:
-              type: "string"
-            first_name:
-              type: "string"
-            last_name:
-              type: "string"
-            email:
-              type: "string"
-            type:
-              type: "integer"
-      method: "HTTP_METHOD_POST"
+            records:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  id:
+                    type: "string"
+                  createdTime:
+                    type: "string"
+                  fields:
+                    type: "object"
+      method: "HTTP_METHOD_GET"
