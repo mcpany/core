@@ -667,3 +667,88 @@ func TestConvertMcpOperationsToTools_NonObjectRequestBody(t *testing.T) {
 	assert.Equal(t, "array", propSchema["type"].GetStringValue(), "The wrapper property should be of type 'array'")
 	assert.NotNil(t, propSchema["items"], "The array property should have an 'items' schema")
 }
+
+func TestConvertMcpOperationsToTools_AllOfAndNested(t *testing.T) {
+	spec := `
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Test", "version": "1.0" },
+  "components": {
+    "schemas": {
+      "Base": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "common": { "type": "string", "description": "base common" }
+        }
+      },
+      "Extended": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Base" },
+          {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "common": { "type": "string", "description": "extended common" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/complex": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                 "type": "object",
+                 "properties": {
+                    "ext": { "$ref": "#/components/schemas/Extended" },
+                    "nested": {
+                       "type": "object",
+                       "properties": {
+                          "deep": { "type": "string" }
+                       }
+                    }
+                 }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}`
+	loader := openapi3.NewLoader()
+	doc, err := loader.LoadFromData([]byte(spec))
+	assert.NoError(t, err)
+
+	ops := extractMcpOperationsFromOpenAPI(doc)
+	tools := convertMcpOperationsToTools(ops, doc, "test-service")
+
+	assert.Len(t, tools, 1)
+	inputSchema := tools[0].GetAnnotations().GetInputSchema()
+	props := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
+
+	// Check nested object 'nested'
+	assert.Contains(t, props, "nested")
+	nestedVal := props["nested"].GetStructValue() // Should not fail if correctly converted
+	assert.NotNil(t, nestedVal)
+	assert.Contains(t, nestedVal.GetFields()["properties"].GetStructValue().GetFields(), "deep")
+
+	// Check AllOf object 'ext'
+	assert.Contains(t, props, "ext")
+	extVal := props["ext"].GetStructValue()
+	extProps := extVal.GetFields()["properties"].GetStructValue().GetFields()
+
+	assert.Contains(t, extProps, "id", "Should inherit id from Base")
+	assert.Contains(t, extProps, "name", "Should have name from Extended")
+
+	// Check override
+	assert.Contains(t, extProps, "common")
+	commonDesc := extProps["common"].GetStructValue().GetFields()["description"].GetStringValue()
+	assert.Equal(t, "extended common", commonDesc, "Local property should override inherited one")
+}

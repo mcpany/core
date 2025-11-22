@@ -2360,6 +2360,13 @@ func (x *ToolDefinition) GetCallId() string {
 	return ""
 }
 
+func (x *ToolDefinition) GetDisable() bool {
+	if x != nil {
+		return x.xxx_hidden_Disable
+	}
+	return false
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
@@ -2481,6 +2488,13 @@ func (x *ToolDefinition) HasCallId() bool {
 	return x.CallId != nil
 }
 
+func (x *ToolDefinition) HasDisable() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
@@ -2525,6 +2539,11 @@ func (x *ToolDefinition) ClearCallId() {
 	x.CallId = nil
 }
 
+func (x *ToolDefinition) ClearDisable() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Disable = false
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2560,6 +2579,8 @@ type ToolDefinition_builder struct {
 	OpenWorldHint *bool
 	// The ID of the call definition to use for this tool.
 	CallId *string
+	// If true, this tool is disabled.
+	Disable *bool
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -2678,7 +2699,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xae\x03\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xc8\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
@@ -2691,7 +2712,8 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
 	"\x0fopen_world_hint\x18\n" +
 	" \x01(\bR\ropenWorldHint\x12\x17\n" +
-	"\acall_id\x18\v \x01(\tR\x06callId*X\n" +
+	"\acall_id\x18\v \x01(\tR\x06callId\x12\x18\n" +
+	"\adisable\x18\f \x01(\bR\adisable*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
