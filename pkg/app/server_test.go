@@ -773,6 +773,32 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	}
 }
 
+func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 1*time.Second)
+	}()
+
+	err := <-errChan
+	require.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	logs := buf.String()
+	t.Log(logs)
+	assert.Contains(t, logs, "HTTP server listening", "Should log HTTP server startup.")
+	assert.Contains(t, logs, "gRPC server listening", "Should log gRPC server startup.")
+	assert.NotContains(t, logs, "port:localhost:0", "Should not log the configured port '0'.")
+}
+
 func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	// This test is designed to be flaky if the race condition exists.
 	// We run it multiple times to increase the chance of catching it.
@@ -1047,6 +1073,62 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	default:
 		// Expected outcome.
 	}
+}
+
+func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
+	// This test ensures that the listener is not closed more than once, even
+	// when a graceful shutdown times out and the server is forcefully stopped.
+	rawlis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	countinglis := &mockCloseCountingListener{Listener: rawlis}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errchan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server with a mock service that hangs.
+	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangservice := &mockHangService{hangTime: 5 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangservice)
+	})
+
+	// Give the server a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// In a separate goroutine, make a call to the hanging RPC.
+	go func() {
+		port := countinglis.Addr().(*net.TCPAddr).Port
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			return // Don't fail the test if the connection fails, as the server might be shutting down.
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	// Allow the RPC call to be initiated.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+	wg.Wait() // Wait for the server to shut down.
+
+	// The close count should be exactly 1.
+	assert.Equal(t, int32(1), atomic.LoadInt32(&countinglis.closeCount), "The listener's Close() method should be called exactly once.")
 }
 
 func TestHTTPServer_HangOnListenError(t *testing.T) {
