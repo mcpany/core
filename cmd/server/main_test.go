@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -199,4 +200,28 @@ func TestRootCmdHandlesAddressWithoutPort(t *testing.T) {
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.Equal(t, "127.0.0.1:50050", mock.capturedMcpListenAddress, "mcp-listen-address should be correctly formatted with default port")
+}
+
+func TestLogFile(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+  
+	// Create a temporary log file
+	logFile, err := os.CreateTemp("", "test.log")
+	assert.NoError(t, err)
+	defer os.Remove(logFile.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"--logfile", logFile.Name(),
+	})
+	rootCmd.Execute()
+
+	// Check if the log file contains the expected output
+	logContent, err := io.ReadAll(logFile)
+	assert.NoError(t, err)
+	assert.Contains(t, string(logContent), "Configuration")
 }
