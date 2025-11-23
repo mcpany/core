@@ -551,3 +551,78 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	assert.True(t, ok)
 	assert.NotNil(t, retrievedTool)
 }
+
+func TestWebsocketUpstream_Register_DisabledItems(t *testing.T) {
+	poolManager := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	pm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	upstream := NewWebsocketUpstream(poolManager)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer server.Close()
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	enabledTool := configv1.ToolDefinition_builder{
+		Name:   proto.String("enabled-tool"),
+		CallId: proto.String("enabled-call"),
+	}.Build()
+	disabledTool := configv1.ToolDefinition_builder{
+		Name:    proto.String("disabled-tool"),
+		CallId:  proto.String("disabled-call"),
+		Disable: proto.Bool(true),
+	}.Build()
+
+	enabledPrompt := &configv1.PromptDefinition{}
+	enabledPrompt.SetName("enabled-prompt")
+	disabledPrompt := &configv1.PromptDefinition{}
+	disabledPrompt.SetName("disabled-prompt")
+	disabledPrompt.SetDisable(true)
+
+	wsService := &configv1.WebsocketUpstreamService{}
+	wsService.SetAddress(wsURL)
+	wsService.SetTools([]*configv1.ToolDefinition{enabledTool, disabledTool})
+	wsService.SetCalls(map[string]*configv1.WebsocketCallDefinition{
+		"enabled-call":  configv1.WebsocketCallDefinition_builder{Id: proto.String("enabled-call")}.Build(),
+		"disabled-call": configv1.WebsocketCallDefinition_builder{Id: proto.String("disabled-call")}.Build(),
+	})
+	wsService.SetPrompts([]*configv1.PromptDefinition{enabledPrompt, disabledPrompt})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("disabled-items-test")
+	serviceConfig.SetWebsocketService(wsService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, pm, rm, false)
+	require.NoError(t, err)
+
+	assert.Len(t, tm.ListTools(), 1, "Only enabled tools should be registered")
+	assert.Len(t, pm.ListPrompts(), 1, "Only enabled prompts should be registered")
+}
+
+func TestWebsocketUpstream_Register_MissingCallDefinition(t *testing.T) {
+	poolManager := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewWebsocketUpstream(poolManager)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer server.Close()
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	toolWithMissingCall := configv1.ToolDefinition_builder{
+		Name:   proto.String("tool-missing-call"),
+		CallId: proto.String("missing-call"),
+	}.Build()
+
+	wsService := &configv1.WebsocketUpstreamService{}
+	wsService.SetAddress(wsURL)
+	wsService.SetTools([]*configv1.ToolDefinition{toolWithMissingCall})
+	wsService.SetCalls(map[string]*configv1.WebsocketCallDefinition{})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("missing-call-def-test")
+	serviceConfig.SetWebsocketService(wsService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+	assert.Empty(t, tm.ListTools(), "No tools should be registered if call definition is missing")
+}
