@@ -138,3 +138,19 @@ func TestHttpPool_PoolFull(t *testing.T) {
 	_, err = p.Get(ctx)
 	assert.Error(t, err)
 }
+
+func TestHttpPool_KeepAliveEnabled(t *testing.T) {
+	p, err := NewHttpPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
+	require.NoError(t, err)
+	require.NotNil(t, p)
+	defer p.Close()
+
+	client, err := p.Get(context.Background())
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	transport, ok := client.Client.Transport.(*http.Transport)
+	require.True(t, ok, "Transport is not an *http.Transport")
+
+	assert.False(t, transport.DisableKeepAlives, "KeepAlives should be enabled")
+}
