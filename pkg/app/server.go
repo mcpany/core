@@ -628,11 +628,6 @@ func startGrpcServer(
 				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
-				// N.B. grpcServer.Stop() does not close the listener, so we need to
-				// do it here to release the port.
-				if err := lis.Close(); err != nil {
-					serverLog.Error("Failed to close listener", "error", err)
-				}
 			}
 		}()
 

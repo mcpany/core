@@ -1049,6 +1049,62 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	}
 }
 
+func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
+	// This test ensures that the listener is not closed more than once, even
+	// when a graceful shutdown times out and the server is forcefully stopped.
+	rawlis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	countinglis := &mockCloseCountingListener{Listener: rawlis}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	errchan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Start the gRPC server with a mock service that hangs.
+	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, func(s *gogrpc.Server) {
+		hangservice := &mockHangService{hangTime: 5 * time.Second}
+		desc := &gogrpc.ServiceDesc{
+			ServiceName: "testhang.HangService",
+			HandlerType: (*interface{})(nil),
+			Methods: []gogrpc.MethodDesc{
+				{
+					MethodName: "Hang",
+					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+						return srv.(*mockHangService).Hang(ctx, nil)
+					},
+				},
+			},
+			Streams:  []gogrpc.StreamDesc{},
+			Metadata: "testhang.proto",
+		}
+		s.RegisterService(desc, hangservice)
+	})
+
+	// Give the server a moment to start up.
+	time.Sleep(100 * time.Millisecond)
+
+	// In a separate goroutine, make a call to the hanging RPC.
+	go func() {
+		port := countinglis.Addr().(*net.TCPAddr).Port
+		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		if err != nil {
+			return // Don't fail the test if the connection fails, as the server might be shutting down.
+		}
+		defer conn.Close()
+		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
+	}()
+
+	// Allow the RPC call to be initiated.
+	time.Sleep(100 * time.Millisecond)
+
+	// Trigger the graceful shutdown.
+	cancel()
+	wg.Wait() // Wait for the server to shut down.
+
+	// The close count should be exactly 1.
+	assert.Equal(t, int32(1), atomic.LoadInt32(&countinglis.closeCount), "The listener's Close() method should be called exactly once.")
+}
+
 func TestHTTPServer_HangOnListenError(t *testing.T) {
 	// Find a free port and occupy it
 	l, err := net.Listen("tcp", "localhost:0")
