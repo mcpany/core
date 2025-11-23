@@ -53,17 +53,17 @@ repos:
     hooks:
     -   id: markdownlint
         args: [--fix, --disable, MD013]
--   repo: https://github.com/ansys/pre-commit-hooks
-    rev: v0.5.2
+-   repo: https://github.com/google/addlicense
+    rev: v1.2.0
     hooks:
-    -   id: add-license-headers
-        files: .
-        types_or: [go, python, shell, yaml, proto, makefile]
+    -   id: addlicense
         args:
-        - --custom_copyright
+        - -c
         - "Author(s) of MCP Any"
-        - --custom_license
-        - "Apache-2.0"
+        - -l
+        - apache
+        - -s
+        types_or: [go, python, shell, yaml, proto, makefile]
         exclude: |
             (?x)^(
                  Makefile|
