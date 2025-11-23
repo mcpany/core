@@ -80,6 +80,17 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
+	// Preprocess the map to handle enum string variations
+	if gs, ok := yamlMap["globalSettings"].(map[string]interface{}); ok {
+		// Preprocess logLevel to allow user-friendly short names (e.g., "warn")
+		if ll, ok := gs["logLevel"].(string); ok {
+			upperLogLevel := strings.ToUpper(ll)
+			if !strings.HasPrefix(upperLogLevel, "LOG_LEVEL_") {
+				gs["logLevel"] = "LOG_LEVEL_" + upperLogLevel
+			}
+		}
+	}
+
 	// Then, marshal the map to JSON. This is a common way to convert YAML to JSON.
 	jsonData, err := json.Marshal(yamlMap)
 	if err != nil {

@@ -23,6 +23,7 @@ import (
 
 	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -60,4 +61,50 @@ func TestBindFlags(t *testing.T) {
 
 	cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))
+}
+
+func TestLogLevelFromFile(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	_ = afero.WriteFile(fs, "config.yaml", []byte(`
+globalSettings:
+  logLevel: "warn"
+`), 0644)
+
+	store := NewFileStore(fs, []string{"config.yaml"})
+	cfg, err := LoadServices(store, "test")
+	assert.NoError(t, err)
+	assert.NotNil(t, cfg)
+
+	settings := GlobalSettings()
+	viper.Set("config-path", []string{"config.yaml"})
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+	err = settings.Load(cmd, fs)
+	assert.NoError(t, err)
+
+	assert.Equal(t, v1.GlobalSettings_LOG_LEVEL_WARN, settings.LogLevel())
+	assert.Equal(t, v1.GlobalSettings_LOG_LEVEL_WARN, settings.Proto().GetLogLevel())
+}
+
+func TestLogLevelFromFileWithFullName(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	_ = afero.WriteFile(fs, "config.yaml", []byte(`
+globalSettings:
+  logLevel: "LOG_LEVEL_WARN"
+`), 0644)
+
+	store := NewFileStore(fs, []string{"config.yaml"})
+	cfg, err := LoadServices(store, "test")
+	assert.NoError(t, err)
+	assert.NotNil(t, cfg)
+
+	settings := GlobalSettings()
+	viper.Set("config-path", []string{"config.yaml"})
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+	err = settings.Load(cmd, fs)
+	assert.NoError(t, err)
+
+	assert.Equal(t, v1.GlobalSettings_LOG_LEVEL_WARN, settings.LogLevel())
+	assert.Equal(t, v1.GlobalSettings_LOG_LEVEL_WARN, settings.Proto().GetLogLevel())
 }

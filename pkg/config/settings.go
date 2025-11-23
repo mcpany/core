@@ -82,6 +82,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
+		if cfg.GetGlobalSettings().GetLogLevel() != v1.GlobalSettings_LOG_LEVEL_UNSPECIFIED {
+			s.logLevel = strings.ToLower(strings.TrimPrefix(cfg.GetGlobalSettings().GetLogLevel().String(), "LOG_LEVEL_"))
+		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
@@ -122,6 +125,11 @@ func (s *Settings) LogFile() string {
 // ShutdownTimeout returns the graceful shutdown timeout.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
+}
+
+// Proto returns the underlying proto message.
+func (s *Settings) Proto() *v1.GlobalSettings {
+	return s.proto
 }
 
 // LogLevel returns the log level for the server.
