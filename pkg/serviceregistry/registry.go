@@ -108,8 +108,33 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, err
 	}
 
-	if _, ok := r.serviceConfigs[serviceID]; ok {
-		r.toolManager.ClearToolsForService(serviceID) // Clean up the just-registered tools
+	if originalServiceConfig, ok := r.serviceConfigs[serviceID]; ok {
+		// A service with the same name already exists. The tools from the new,
+		// duplicate service have just been registered, potentially overwriting or
+		// adding to the original tools. We need to restore the original state.
+
+		// Re-create the original upstream from its configuration.
+		originalUpstream, upstreamErr := r.factory.NewUpstream(originalServiceConfig)
+		if upstreamErr != nil {
+			// If we fail to create the original upstream, we can't restore it.
+			// The service is now in an inconsistent state. We clear all tools to
+			// prevent unpredictable behavior.
+			r.toolManager.ClearToolsForService(serviceID)
+			return "", nil, nil, fmt.Errorf("service with name %q already registered, and failed to create upstream to restore original service: %w", serviceConfig.GetName(), upstreamErr)
+		}
+
+		// Re-register the original service. The `force` parameter is set to true
+		// to ensure that any tools from the duplicate service are cleared and
+		// replaced with the original ones.
+		if _, _, _, registerErr := originalUpstream.Register(ctx, originalServiceConfig, r.toolManager, r.promptManager, r.resourceManager, true); registerErr != nil {
+			// We failed to re-register the original service. The state is inconsistent.
+			// Clear all tools to be safe.
+			r.toolManager.ClearToolsForService(serviceID)
+			return "", nil, nil, fmt.Errorf("service with name %q already registered, and failed to restore original service: %w", serviceConfig.GetName(), registerErr)
+		}
+
+		// The original service's tools have been restored. Now we can return the
+		// "already registered" error to the caller.
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 

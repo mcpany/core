@@ -18,27 +18,35 @@ package serviceregistry
 
 import (
 	"context"
-	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/go-jose/go-jose/v4"
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	busv1 "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestServiceRegistry_UnregisterService(t *testing.T) {
-	f := &mockFactory{}
-	tm := &mockToolManager{}
+	pm := pool.NewManager()
+	f := factory.NewUpstreamServiceFactory(pm)
+	bp, err := bus.NewBusProvider(&busv1.MessageBus{})
+	require.NoError(t, err)
+	tm := tool.NewToolManager(bp)
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
@@ -79,7 +87,9 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 			}, nil
 		},
 	}
-	tm := &mockToolManager{}
+	bp, err := bus.NewBusProvider(&busv1.MessageBus{})
+	require.NoError(t, err)
+	tm := tool.NewToolManager(bp)
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
@@ -97,7 +107,7 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 	httpService2.SetAddress("http://localhost")
 	serviceConfig2.SetHttpService(httpService2)
 
-	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err)
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.NoError(t, err)
@@ -138,8 +148,11 @@ func TestServiceRegistry_RegisterService_OAuth2(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	f := &mockFactory{}
-	tm := &mockToolManager{}
+	pm := pool.NewManager()
+	f := factory.NewUpstreamServiceFactory(pm)
+	bp, err := bus.NewBusProvider(&busv1.MessageBus{})
+	require.NoError(t, err)
+	tm := tool.NewToolManager(bp)
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
@@ -167,8 +180,11 @@ func TestServiceRegistry_RegisterService_OAuth2(t *testing.T) {
 }
 
 func TestServiceRegistry_RegisterService_OAuth2_Error(t *testing.T) {
-	f := &mockFactory{}
-	tm := &mockToolManager{}
+	pm := pool.NewManager()
+	f := factory.NewUpstreamServiceFactory(pm)
+	bp, err := bus.NewBusProvider(&busv1.MessageBus{})
+	require.NoError(t, err)
+	tm := tool.NewToolManager(bp)
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
 	am := auth.NewAuthManager()
@@ -186,6 +202,78 @@ func TestServiceRegistry_RegisterService_OAuth2_Error(t *testing.T) {
 	authConfig.SetOauth2(oauth2Config)
 	serviceConfig.SetAuthentication(authConfig)
 
-	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig)
 	require.Error(t, err)
+}
+
+func TestServiceRegistry_RegisterDuplicateService_RestoresOriginalTools(t *testing.T) {
+	pm := pool.NewManager()
+	f := factory.NewUpstreamServiceFactory(pm)
+	bp, err := bus.NewBusProvider(&busv1.MessageBus{})
+	require.NoError(t, err)
+	tm := tool.NewToolManager(bp)
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	// Define the original service with one tool
+	originalServiceConfig := &configv1.UpstreamServiceConfig{}
+	originalServiceConfig.SetName("test-service")
+	originalHttpService := &configv1.HttpUpstreamService{}
+	originalHttpService.SetAddress("http://localhost")
+	originalHttpService.SetCalls(map[string]*configv1.HttpCallDefinition{
+		"original_tool": {
+			Id:     func() *string { s := "original_tool"; return &s }(),
+			Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		},
+	})
+	originalHttpService.SetTools([]*configv1.ToolDefinition{
+		{
+			Name:   func() *string { s := "original_tool"; return &s }(),
+			CallId: func() *string { s := "original_tool"; return &s }(),
+		},
+	})
+	originalServiceConfig.SetHttpService(originalHttpService)
+
+	// Register the original service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), originalServiceConfig)
+	require.NoError(t, err)
+	assert.Equal(t, "test-service", serviceID)
+
+	// Verify the original tool is registered
+	originalTools := tm.ListTools()
+	require.Len(t, originalTools, 1)
+	assert.Equal(t, "original_tool", originalTools[0].Tool().GetName())
+
+	// Define a duplicate service with the same name but a different tool
+	duplicateServiceConfig := &configv1.UpstreamServiceConfig{}
+	duplicateServiceConfig.SetName("test-service")
+	duplicateHttpService := &configv1.HttpUpstreamService{}
+	duplicateHttpService.SetAddress("http://anotherhost")
+	duplicateHttpService.SetCalls(map[string]*configv1.HttpCallDefinition{
+		"duplicate_tool": {
+			Id:     func() *string { s := "duplicate_tool"; return &s }(),
+			Method: configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		},
+	})
+	duplicateHttpService.SetTools([]*configv1.ToolDefinition{
+		{
+			Name:   func() *string { s := "duplicate_tool"; return &s }(),
+			CallId: func() *string { s := "duplicate_tool"; return &s }(),
+		},
+	})
+	duplicateServiceConfig.SetHttpService(duplicateHttpService)
+
+	// Attempt to register the duplicate service
+	_, _, _, err = registry.RegisterService(context.Background(), duplicateServiceConfig)
+
+	// Verify that the registration failed as expected
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+
+	// Verify the original tool is still present and the duplicate tool was not added
+	finalTools := tm.ListTools()
+	require.Len(t, finalTools, 1, "The number of tools for the original service should not have changed")
+	assert.Equal(t, "original_tool", finalTools[0].Tool().GetName(), "The original tool should still be registered")
 }
