@@ -174,17 +174,10 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Cache Docker Images
-        id: cache-docker-images
-        uses: actions/cache@v4
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.5.0
         with:
-          path: ~/docker-images
           key: docker-images-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
-
-      - name: Load Cached Docker Images
-        run: |
-          chmod +x scripts/cache_docker_images.sh
-          ./scripts/cache_docker_images.sh
 
       # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
       # Since we are using native runners, this is mostly a fallback/safety.
