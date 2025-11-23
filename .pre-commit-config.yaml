@@ -57,6 +57,8 @@ repos:
     rev: v0.5.2
     hooks:
     -   id: add-license-headers
+        files: .
+        types_or: [go, python, shell, yaml, proto, makefile]
         args:
         - --custom_copyright
         - "Author(s) of MCP Any"
