@@ -56,7 +56,7 @@ func TestBindFlags(t *testing.T) {
 
 	// Check that the values are correctly bound to viper
 	cmd.Flags().Set("grpc-port", "8081")
-	assert.Equal(t, "8081", viper.GetString("grpc-port"))
+	assert.Equal(t, 8081, viper.GetInt("grpc-port"))
 
 	cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))

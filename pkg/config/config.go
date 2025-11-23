@@ -43,7 +43,7 @@ func BindFlags(cmd *cobra.Command) {
 		os.Exit(1)
 	}
 
-	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
+	cmd.Flags().Int("grpc-port", 0, "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
 	cmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	cmd.Flags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
