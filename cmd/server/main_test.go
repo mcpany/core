@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -183,4 +184,28 @@ global_settings:
 	err = rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
+}
+
+func TestLogFile(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+
+	// Create a temporary log file
+	logFile, err := os.CreateTemp("", "test.log")
+	assert.NoError(t, err)
+	defer os.Remove(logFile.Name())
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"--logfile", logFile.Name(),
+	})
+	rootCmd.Execute()
+
+	// Check if the log file contains the expected output
+	logContent, err := io.ReadAll(logFile)
+	assert.NoError(t, err)
+	assert.Contains(t, string(logContent), "Configuration")
 }
