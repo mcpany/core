@@ -175,7 +175,7 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 			return &mockUpstream{
 				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 					// Both services will have the same key because they have the same name
-					return "test-service_e3b0c442", nil, nil, nil
+					return "test-service", nil, nil, nil
 				},
 			}, nil
 		},
