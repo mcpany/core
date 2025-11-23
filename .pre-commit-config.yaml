@@ -37,12 +37,14 @@ repos:
     hooks:
     -   id: prettier
         types: [markdown]
--   repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.30
-    hooks:
-    -   id: helmlint
 -   repo: local
     hooks:
+    -   id: helm-lint
+        name: helm-lint
+        entry: helm lint helm/mcpany
+        language: system
+        files: ^helm/
+        pass_filenames: false
     -   id: shellcheck
         name: ShellCheck
         entry: shellcheck

@@ -73,3 +73,42 @@ func TestGRPCPortEnvVar(t *testing.T) {
 
 	assert.Equal(t, "9090", viper.GetString("grpc-port"))
 }
+
+func TestMCPListenAddress(t *testing.T) {
+	tests := []struct {
+		name     string
+		address  string
+		expected string
+	}{
+		{
+			name:     "port only",
+			address:  "50050",
+			expected: "localhost:50050",
+		},
+		{
+			name:     "address with port",
+			address:  "127.0.0.1:50050",
+			expected: "127.0.0.1:50050",
+		},
+		{
+			name:     "hostname with port",
+			address:  "mcpany.internal:50050",
+			expected: "mcpany.internal:50050",
+		},
+		{
+			name:     "hostname without port",
+			address:  "mcpany.internal",
+			expected: "localhost:mcpany.internal",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			settings := &Settings{
+				proto: &v1.GlobalSettings{},
+			}
+			settings.proto.SetMcpListenAddress(tt.address)
+			assert.Equal(t, tt.expected, settings.MCPListenAddress())
+		})
+	}
+}
