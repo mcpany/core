@@ -19,6 +19,7 @@ package config
 import (
 	"bytes"
 	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/mcpany/core/pkg/logging"
@@ -60,4 +61,15 @@ func TestBindFlags(t *testing.T) {
 
 	cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))
+}
+
+func TestGRPCPortEnvVar(t *testing.T) {
+	viper.Reset() // Reset viper to avoid state leakage from other tests.
+	os.Setenv("MCPANY_GRPC_PORT", "9090")
+	defer os.Unsetenv("MCPANY_GRPC_PORT")
+
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+
+	assert.Equal(t, "9090", viper.GetString("grpc-port"))
 }
