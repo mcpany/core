@@ -350,6 +350,17 @@ build-weather-server:
 	@mkdir -p $(EXAMPLE_BIN_DIR)
 	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream/http/server/weather_server/weather_server.go
 
+# Target to update the list of Docker images used in the project
+.PHONY: update-docker-images-list
+update-docker-images-list:
+	@echo "Updating .github/docker-images-list.txt..."
+	@{ \
+		find . -name "Dockerfile*" -not -path "./vendor/*" -not -path "./.git/*" -not -path "./build/*" -print0 | xargs -0 grep -h "^FROM" | awk '{print $$2}'; \
+		grep -rhoE '"redis:[^"]+"' tests | tr -d '"'; \
+		grep -rho "fullstorydev/grpcurl" tests; \
+	} | sort | uniq > .github/docker-images-list.txt
+	@echo "Updated .github/docker-images-list.txt"
+
 # ==============================================================================
 # Other Commands
 # ==============================================================================

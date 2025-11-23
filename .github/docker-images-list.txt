@@ -1,6 +1,8 @@
-python:3.11-slim
-golang:latest
-gcr.io/distroless/base-debian12
-node:lts-alpine
 alpine:latest
+fullstorydev/grpcurl
+gcr.io/distroless/base-debian12
 golang:1.24-alpine
+golang:latest
+node:lts-alpine
+python:3.11-slim
+redis:latest
