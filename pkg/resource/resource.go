@@ -58,6 +58,8 @@ type ResourceManagerInterface interface {
 	// OnListChanged registers a callback function to be called when the list of
 	// resources changes.
 	OnListChanged(func())
+	// ClearResourcesForService removes all resources associated with a given service ID.
+	ClearResourcesForService(serviceID string)
 }
 
 // ResourceManager is a thread-safe implementation of the
@@ -151,4 +153,18 @@ func (rm *ResourceManager) Subscribe(ctx context.Context, uri string) error {
 		return ErrResourceNotFound
 	}
 	return resource.Subscribe(ctx)
+}
+
+// ClearResourcesForService removes all resources associated with a given service ID.
+func (rm *ResourceManager) ClearResourcesForService(serviceID string) {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	for uri, resource := range rm.resources {
+		if resource.Service() == serviceID {
+			delete(rm.resources, uri)
+		}
+	}
+	if rm.onListChangedFunc != nil {
+		rm.onListChangedFunc()
+	}
 }
