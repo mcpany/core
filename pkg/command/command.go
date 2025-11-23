@@ -51,11 +51,15 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	cmd.Dir = workingDir
 	cmd.Env = env
 
-	stdoutReader, stdoutWriter := io.Pipe()
-	stderrReader, stderrWriter := io.Pipe()
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to get stdout pipe: %w", err)
+	}
 
-	cmd.Stdout = stdoutWriter
-	cmd.Stderr = stderrWriter
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to get stderr pipe: %w", err)
+	}
 
 	if err := cmd.Start(); err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
@@ -64,8 +68,6 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
-		defer stdoutWriter.Close()
-		defer stderrWriter.Close()
 
 		err := cmd.Wait()
 		if err != nil {
@@ -80,7 +82,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 		}
 	}()
 
-	return stdoutReader, stderrReader, exitCodeChan, nil
+	return stdout, stderr, exitCodeChan, nil
 }
 
 type dockerExecutor struct {

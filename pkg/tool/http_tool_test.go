@@ -421,6 +421,43 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "", result) // Expect empty string for No Content response
 	})
+
+	t.Run("optional_path_parameter", func(t *testing.T) {
+		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/json", r.URL.Path)
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status": "ok"}`))
+		})
+		server := httptest.NewServer(pathHandler)
+		defer server.Close()
+
+		poolManager := pool.NewManager()
+		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		}, 1, 1, 0, true)
+		poolManager.Register("test-service", p)
+
+		methodAndURL := "GET " + server.URL + "/{{ip}}/json"
+		mcpTool := v1.Tool_builder{
+			UnderlyingMethodFqn: &methodAndURL,
+		}.Build()
+
+		paramMapping := configv1.HttpParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("ip"),
+			}.Build(),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			Parameters: []*configv1.HttpParameterMapping{paramMapping},
+		}.Build()
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+
+		inputs := json.RawMessage(`{}`)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+		_, err := httpTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+	})
 }
 
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
