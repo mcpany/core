@@ -80,7 +80,6 @@ func TestToolListFiltering(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	// Start the worker to handle tool execution
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
@@ -596,4 +595,102 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
+}
+
+func TestToolListFiltering_AddNewTool(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	// Start the worker to handle tool execution
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker.Start(ctx)
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add a test tool
+	serviceID := "test-service"
+	toolName1 := "test-tool-1"
+	sanitizedToolName1, err := util.SanitizeToolName(toolName1)
+	require.NoError(t, err)
+	compositeName1 := serviceID + "." + sanitizedToolName1
+
+	testTool1 := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(toolName1),
+			ServiceId: proto.String(serviceID),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	tm.AddTool(testTool1)
+
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, compositeName1, listResult.Tools[0].Name)
+
+	// Add a second tool
+	toolName2 := "test-tool-2"
+	sanitizedToolName2, err := util.SanitizeToolName(toolName2)
+	require.NoError(t, err)
+	compositeName2 := serviceID + "." + sanitizedToolName2
+
+	testTool2 := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(toolName2),
+			ServiceId: proto.String(serviceID),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+
+	// Simulate a tool being added to the manager but not the mcp.Server, creating a desync
+	tm.SetMCPServer(nil)
+	err = tm.AddTool(testTool2)
+	require.NoError(t, err)
+	tm.SetMCPServer(server)
+
+	// Test tools/list again
+	listResult, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 2)
+
+	toolNames := []string{listResult.Tools[0].Name, listResult.Tools[1].Name}
+	assert.Contains(t, toolNames, compositeName1)
+	assert.Contains(t, toolNames, compositeName2)
 }
