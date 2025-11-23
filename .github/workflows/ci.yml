@@ -93,6 +93,18 @@ jobs:
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
 
+    - name: Cache Docker Images
+      id: cache-docker-images
+      uses: actions/cache@v4
+      with:
+        path: ~/docker-images
+        key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+
+    - name: Load Cached Docker Images
+      run: |
+        chmod +x scripts/cache_docker_images.sh
+        ./scripts/cache_docker_images.sh
+
     - name: Cache Tools
       uses: actions/cache@v4
       with:
@@ -172,6 +184,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
+
+    - name: Cache Docker Images
+      id: cache-docker-images
+      uses: actions/cache@v4
+      with:
+        path: ~/docker-images
+        key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+
+    - name: Load Cached Docker Images
+      run: |
+        chmod +x scripts/cache_docker_images.sh
+        ./scripts/cache_docker_images.sh
 
     - name: Cache Tools
       uses: actions/cache@v4
@@ -260,6 +284,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
           ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
+
+    - name: Cache Docker Images
+      id: cache-docker-images
+      uses: actions/cache@v4
+      with:
+        path: ~/docker-images
+        key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+
+    - name: Load Cached Docker Images
+      run: |
+        chmod +x scripts/cache_docker_images.sh
+        ./scripts/cache_docker_images.sh
 
     - name: Cache Tools
       uses: actions/cache@v4
@@ -376,6 +412,24 @@ jobs:
     needs: [lint]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache Docker Images
+        id: cache-docker-images
+        uses: actions/cache@v4
+        with:
+          path: ~/docker-images
+          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+
+      - name: Load Cached Docker Images
+        run: |
+          chmod +x scripts/cache_docker_images.sh
+          ./scripts/cache_docker_images.sh
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
