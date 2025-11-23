@@ -8,19 +8,56 @@ on:
       release_version:
         description: 'The release version (e.g., v1.2.3)'
         required: true
+  push:
+    branches:
+      - main
 
 env:
   # Define registries and image names centrally
-  # We support both Docker Hub and GHCR as per your original script
   DOCKERHUB_IMAGE: mcpany/server
   GHCR_IMAGE: ghcr.io/mcpany/server
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.vars.outputs.version }}
+      is_release: ${{ steps.vars.outputs.is_release }}
+      tags_dockerhub: ${{ steps.vars.outputs.tags_dockerhub }}
+      tags_ghcr: ${{ steps.vars.outputs.tags_ghcr }}
+    steps:
+      - name: Set variables
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.release_version }}"
+            IS_RELEASE="true"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            # Tags for Docker Hub
+            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:latest" >> $GITHUB_OUTPUT
+            # Tags for GHCR
+            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:latest" >> $GITHUB_OUTPUT
+          else
+            # Generate timestamp
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+            VERSION="dev.${TIMESTAMP}"
+            IS_RELEASE="false"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "is_release=false" >> $GITHUB_OUTPUT
+            # Tags
+            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION}" >> $GITHUB_OUTPUT
+            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
   # ==============================================================================
   # JOB 1: BUILD BINARIES (Go Cross-Compilation)
   # Builds .zip files for Windows/Mac/Linux
+  # Only runs on manual release
   # ==============================================================================
   build-binaries:
+    needs: setup
+    if: needs.setup.outputs.is_release == 'true'
     name: Build Binaries (${{ matrix.platform }})
     runs-on: ubuntu-latest
     strategy:
@@ -70,9 +107,11 @@ jobs:
   # ==============================================================================
   # JOB 2: CREATE GITHUB RELEASE
   # Aggregates the binaries and creates the release page
+  # Only runs on manual release
   # ==============================================================================
   create-release:
-    needs: build-binaries
+    needs: [setup, build-binaries]
+    if: needs.setup.outputs.is_release == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Download all binaries
@@ -88,8 +127,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.release_version }}
-          release_name: Release ${{ github.event.inputs.release_version }}
+          tag_name: ${{ needs.setup.outputs.version }}
+          release_name: Release ${{ needs.setup.outputs.version }}
           generate_release_notes: true
           draft: false
           prerelease: false
@@ -109,6 +148,7 @@ jobs:
   # Uses Native ARM runners for speed.
   # ==============================================================================
   docker-build:
+    needs: setup
     name: Docker Build ${{ matrix.platform }}
     # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
     runs-on: ${{ matrix.runner }}
@@ -157,11 +197,12 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           tags: |
-            ${{ env.DOCKER_IMAGE }}
+            ${{ env.DOCKERHUB_IMAGE }}
             ${{ env.GHCR_IMAGE }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=${{ matrix.platform }}
-          cache-to: type=gha,mode=min,scope=${{ matrix.platform }}
+          # Optimized cache: use mode=max to cache layers
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
 
       - name: Export digest
         run: |
@@ -183,7 +224,7 @@ jobs:
   # ==============================================================================
   docker-merge:
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: [setup, docker-build]
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -211,19 +252,32 @@ jobs:
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          # 1. Create tags for Docker Hub
-          docker buildx imagetools create \
-            -t ${{ env.DOCKERHUB_IMAGE }}:latest \
-            -t ${{ env.DOCKERHUB_IMAGE }}:${{ github.event.inputs.release_version }} \
-            $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)
+          # Parse tags from setup output
+          # Docker Hub
+          TAGS_DH="${{ needs.setup.outputs.tags_dockerhub }}"
+          CMD_DH="docker buildx imagetools create"
+          IFS=',' read -ra ADDR <<< "$TAGS_DH"
+          for i in "${ADDR[@]}"; do
+             CMD_DH="$CMD_DH -t $i"
+          done
+          # Add sources
+          CMD_DH="$CMD_DH $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)"
 
-          # 2. Create tags for GHCR
-          # We reuse the same digests because we pushed to both in the build step
-          docker buildx imagetools create \
-            -t ${{ env.GHCR_IMAGE }}:latest \
-            -t ${{ env.GHCR_IMAGE }}:${{ github.event.inputs.release_version }} \
-            $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)
+          echo "Running: $CMD_DH"
+          eval "$CMD_DH"
+
+          # GHCR
+          TAGS_GH="${{ needs.setup.outputs.tags_ghcr }}"
+          CMD_GH="docker buildx imagetools create"
+          IFS=',' read -ra ADDR <<< "$TAGS_GH"
+          for i in "${ADDR[@]}"; do
+             CMD_GH="$CMD_GH -t $i"
+          done
+          CMD_GH="$CMD_GH $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)"
+
+          echo "Running: $CMD_GH"
+          eval "$CMD_GH"
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:latest
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
