@@ -773,6 +773,32 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	}
 }
 
+func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf bytes.Buffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, 1*time.Second)
+	}()
+
+	err := <-errChan
+	require.NoError(t, err, "app.Run should return nil on graceful shutdown")
+
+	logs := buf.String()
+	t.Log(logs)
+	assert.Contains(t, logs, "HTTP server listening", "Should log HTTP server startup.")
+	assert.Contains(t, logs, "gRPC server listening", "Should log gRPC server startup.")
+	assert.NotContains(t, logs, "port:localhost:0", "Should not log the configured port '0'.")
+}
+
 func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	// This test is designed to be flaky if the race condition exists.
 	// We run it multiple times to increase the chance of catching it.
