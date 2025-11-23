@@ -597,3 +597,97 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
 }
+
+func TestToolListFilteringWithDiscrepancy(t *testing.T) {
+	// Setup
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add tool 1 - it will be registered with the underlying MCP server
+	serviceID := "test-service"
+	tool1Name := "test-tool-1"
+	sanitizedTool1Name, err := util.SanitizeToolName(tool1Name)
+	require.NoError(t, err)
+	compositeName1 := serviceID + "." + sanitizedTool1Name
+	testTool1 := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(tool1Name),
+			ServiceId: proto.String(serviceID),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	tm.AddTool(testTool1)
+
+	// Create a discrepancy: Add tool2 to the ToolManager but not the underlying MCP server
+	tm.SetMCPServer(nil) // Temporarily detach from MCP server
+
+	tool2Name := "test-tool-2"
+	sanitizedTool2Name, err := util.SanitizeToolName(tool2Name)
+	require.NoError(t, err)
+	compositeName2 := serviceID + "." + sanitizedTool2Name
+	testTool2 := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(tool2Name),
+			ServiceId: proto.String(serviceID),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	err = tm.AddTool(testTool2)
+	require.NoError(t, err)
+
+	tm.SetMCPServer(server) // Re-attach the MCP server
+
+	// Connect client and server
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// Call ListTools
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+
+	// The ToolManager has 2 tools, but the underlying server only has 1.
+	// The test will fail with the old buggy code because it only refreshes the 1 tool from the server.
+	// The test will pass with the new code because it gets the full list from the ToolManager.
+	assert.Len(t, listResult.Tools, 2, "Should return all tools from ToolManager, even if underlying server's list is stale")
+	refreshedToolNames := []string{}
+	for _, tool := range listResult.Tools {
+		refreshedToolNames = append(refreshedToolNames, tool.Name)
+	}
+	assert.Contains(t, refreshedToolNames, compositeName1)
+	assert.Contains(t, refreshedToolNames, compositeName2)
+}
