@@ -597,3 +597,72 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
 }
+
+func TestToolListFilteringWithMissingTool(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add a test tool
+	serviceID := "test-service"
+	toolName := "test-tool"
+	sanitizedToolName, err := util.SanitizeToolName(toolName)
+	require.NoError(t, err)
+	compositeName := serviceID + "." + sanitizedToolName
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(toolName),
+			ServiceId: proto.String(serviceID),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	tm.AddTool(testTool)
+
+	// Create client-server connection for demonstration
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	// Connect server and client
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// Test tools/list
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+
+	// Remove the tool from the tool manager, but not from the mcp server's list
+	tm.ClearToolsForService(serviceID)
+
+	// Test tools/list again
+	listResult, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+	assert.Len(t, listResult.Tools, 0)
+}

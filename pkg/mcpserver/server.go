@@ -192,6 +192,9 @@ func NewServer(
 									continue // Skip tools that fail to convert
 								}
 								refreshedTools = append(refreshedTools, freshMCPTool)
+						} else {
+							logging.GetLogger().
+								Warn("Tool from MCP tool list not found in tool manager, skipping", "toolName", mcpTool.Name)
 							}
 						}
 						result = &mcp.ListToolsResult{Tools: refreshedTools}
