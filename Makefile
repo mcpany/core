@@ -359,6 +359,13 @@ lint: gen
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	$(PYTHON_EXEC) -m pre_commit run --all-files
 
+.PHONY: fix-license-header
+fix-license-header:
+	@echo "Removing license headers..."
+	@$(GO_CMD) run tools/license-header-remover/main.go
+	@echo "Running make lint to restore headers..."
+	@$(MAKE) lint
+
 clean:
 	@echo "Cleaning generated protobuf files and build artifacts..."
 	@-find . -name "*.pb.go" -delete
