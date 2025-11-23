@@ -21,27 +21,52 @@ set -e
 CACHE_DIR=~/docker-images
 mkdir -p "$CACHE_DIR"
 
-# List of images to cache
-# Add images used in CI/CD pipelines here
-IMAGES=(
-  "redis:latest"
-  "python:3.11-slim"
-  "golang:latest"
-  "gcr.io/distroless/base-debian12"
-)
+usage() {
+  echo "Usage: $0 [load|save]"
+  echo "  load: Load images from cache directory to Docker"
+  echo "  save: Save all current Docker images to cache directory"
+  exit 1
+}
 
-for img in "${IMAGES[@]}"; do
-  # Sanitize image name for file path (replace : and / with _)
-  sanitized_name=$(echo "$img" | tr ':/' '__')
-  filepath="${CACHE_DIR}/${sanitized_name}.tar"
+MODE=${1:-load}
 
-  if [ -f "$filepath" ]; then
-    echo "Loading $img from cache ($filepath)..."
-    docker load -i "$filepath"
-  else
-    echo "Image $img not found in cache. Pulling..."
-    docker pull "$img"
-    echo "Saving $img to cache ($filepath)..."
-    docker save "$img" -o "$filepath"
+if [ "$MODE" == "load" ]; then
+  echo "Loading images from $CACHE_DIR..."
+  if [ -d "$CACHE_DIR" ]; then
+    shopt -s nullglob
+    files=("$CACHE_DIR"/*.tar)
+    if [ ${#files[@]} -eq 0 ]; then
+      echo "No cached images found in $CACHE_DIR."
+    else
+      for filepath in "${files[@]}"; do
+        echo "Loading $filepath..."
+        docker load -i "$filepath" || echo "Warning: Failed to load $filepath"
+      done
+    fi
   fi
-done
+
+elif [ "$MODE" == "save" ]; then
+  echo "Saving images to $CACHE_DIR..."
+
+  # Get list of all images, excluding dangling ones
+  mapfile -t IMAGES < <(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" || true)
+
+  if [ ${#IMAGES[@]} -eq 0 ]; then
+    echo "No images to save."
+    exit 0
+  fi
+
+  echo "Found ${#IMAGES[@]} images to save."
+
+  # Clear cache directory to remove old individual tars and avoid duplicates
+  # Use :? to ensure CACHE_DIR is set
+  rm -rf "${CACHE_DIR:?}"/*
+
+  # Save all images to a single tarball for layer deduplication
+  # We verify space separated list works for docker save
+  echo "Saving ${#IMAGES[@]} images to ${CACHE_DIR}/all_images.tar..."
+  docker save -o "${CACHE_DIR}/all_images.tar" "${IMAGES[@]}"
+
+else
+  usage
+fi
