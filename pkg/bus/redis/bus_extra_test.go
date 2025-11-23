@@ -80,3 +80,47 @@ func TestRedisBus_Subscribe_NilMessage(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestRedisBus_New_ConnectionFailure(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address: proto.String("localhost:9999"), // Use a non-existent port
+	}.Build()
+
+	bus := New[string](redisBus)
+	err := bus.client.Ping(context.Background()).Err()
+	assert.Error(t, err, "Expected an error when connecting to a non-existent Redis server")
+}
+
+func TestRedisBus_Subscribe_ReceiveError(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-receive-error"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		// This handler should not be called.
+		t.Error("handler called unexpectedly")
+	})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Close the underlying connection to simulate a receive error.
+	bus.client.Close()
+
+	// Allow some time for the error to be processed.
+	time.Sleep(100 * time.Millisecond)
+
+	// We expect the handler not to be called, so we don't wait for a WaitGroup.
+	// Instead, we just wait a bit to see if the handler is called.
+	time.Sleep(100 * time.Millisecond)
+}
