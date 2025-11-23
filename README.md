@@ -4,6 +4,10 @@
 [![GoReportCard](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 [![codecov](https://codecov.io/gh/mcpany/core/branch/main/graph/badge.svg)](https://codecov.io/gh/mcpany/core)
 
+<p align="center">
+  <img src="docs/images/logo.png" alt="MCP Any Logo" width="200"/>
+</p>
+
 # MCP Any: Configuration-Driven MCP Server
 
 **Eliminate the need to build and maintain custom MCP servers for every API.**
