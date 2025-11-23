@@ -442,18 +442,18 @@ ifdef HAS_DOCKER
 		if [ -n "$(CACHE_FROM)" ]; then \
 			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
 		fi; \
-		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/^/-t /' -e 's/ / -t /g'); \
-		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server ."; \
+		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
+		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
-			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push; \
+			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
 		else \
 			if echo "$${PLATFORMS}" | grep -q ','; then \
 				echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS}; \
+				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
 			else \
 				echo "Building single-platform image locally and loading to docker images..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load; \
+				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load .; \
 			fi; \
 		fi; \
 	}
