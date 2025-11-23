@@ -6,7 +6,7 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
+# Unless required by applicable law_or_agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
@@ -18,10 +18,8 @@ upstream_services:
 - name: nasa-gibs
   http_service:
     address: "https://gibs.earthdata.nasa.gov"
-    authentication:
-      token: "${NASA_OPEN_API_KEY}"
     calls:
-    - endpoint_path: "/wmts/epsg4326/best/{{LayerIdentifier}}/default/{{Time}}/{{TileMatrixSet}}/{{TileMatrix}}/{{TileRow}}/{{TileCol}}.jpg"
+    - endpoint_path: "/wmts/epsg4326/best/{LayerIdentifier}/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpg"
       schema:
         name: "get_tile"
         description: "NASA Global Imagery Browse Services"

@@ -158,3 +158,5 @@ require (
 replace github.com/mcpany/core/proto => ./proto
 
 replace github.com/mcpany/core/examples => ./examples
+
+replace github.com/mcpany/core/tests => ./tests
