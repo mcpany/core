@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -43,30 +44,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
 		RegisterGRPCWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
 
-		// Verify the tool is registered
-		ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-		defer cancel()
-
-		client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
-		transport := &mcp.StreamableClientTransport{
-			Endpoint: mcpanyTestServerInfo.HTTPEndpoint,
-		}
-		session, err := client.Connect(ctx, transport, nil)
-		require.NoError(t, err)
-		defer session.Close()
-
-		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
-		require.NoError(t, err)
-
-		found := false
-		for _, tool := range tools.Tools {
-			// The tool name is derived from the service name and the RPC method name.
-			if tool.Name == "e2e_grpc_weather.GetWeather" {
-				found = true
-				break
-			}
-		}
-		require.True(t, found, "GetWeather tool should be registered for unauthenticated service")
+		verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_grpc_weather.GetWeather", "GetWeather tool should be registered for unauthenticated service")
 	})
 
 	t.Run("authenticated", func(t *testing.T) {
@@ -85,29 +63,184 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
 		RegisterGRPCAuthedWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
 
-		// Verify the tool is registered
+		verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_grpc_authed_weather.GetWeather", "GetWeather tool should be registered for authenticated service")
+	})
+}
+
+func TestWebsocketHelperFunctions(t *testing.T) {
+	t.Parallel()
+	proc := BuildWebsocketWeatherServer(t)
+	require.NotNil(t, proc)
+	err := proc.Start()
+	require.NoError(t, err)
+	defer proc.Stop()
+
+	integration.WaitForTCPPort(t, 8091, integration.ServiceStartupTimeout)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "websocket-weather-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	upstreamEndpoint := fmt.Sprintf("ws://localhost:%d/echo", 8091)
+	RegisterWebsocketWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_websocket_weather.GetWeather", "GetWeather tool should be registered for websocket service")
+}
+
+func TestWebrtcHelperFunctions(t *testing.T) {
+	t.Parallel()
+	proc := BuildWebrtcWeatherServer(t)
+	require.NotNil(t, proc)
+	err := proc.Start()
+	require.NoError(t, err)
+	defer proc.Stop()
+
+	integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "webrtc-weather-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	upstreamEndpoint := fmt.Sprintf("http://localhost:%d/signal", proc.Port)
+	RegisterWebrtcWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_webrtc_weather.GetWeather", "GetWeather tool should be registered for webrtc service")
+}
+
+func TestStdioHelperFunctions(t *testing.T) {
+	t.Parallel()
+	BuildStdioServer(t)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "stdio-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	RegisterStdioService(t, mcpanyTestServerInfo.RegistrationClient, "")
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_everything_server_stdio.time.getTime", "getTime tool should be registered for stdio service")
+}
+
+func TestStdioDockerHelperFunctions(t *testing.T) {
+	t.Parallel()
+	BuildStdioDockerServer(t)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "stdio-docker-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	RegisterStdioDockerService(t, mcpanyTestServerInfo.RegistrationClient, "")
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e-cowsay-server.cowsay", "cowsay tool should be registered for stdio docker service")
+}
+
+func TestOpenAPIHelperFunctions(t *testing.T) {
+	t.Parallel()
+	proc := BuildOpenAPIWeatherServer(t)
+	require.NotNil(t, proc)
+	err := proc.Start()
+	require.NoError(t, err)
+	defer proc.Stop()
+
+	integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "openapi-weather-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	upstreamEndpoint := fmt.Sprintf("http://localhost:%d", proc.Port)
+	RegisterOpenAPIWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_openapi_weather.getWeather", "getWeather tool should be registered for openapi service")
+}
+
+func TestOpenAPIAuthedHelperFunctions(t *testing.T) {
+	t.Parallel()
+	proc := BuildOpenAPIAuthedServer(t)
+	require.NotNil(t, proc)
+	err := proc.Start()
+	require.NoError(t, err)
+	defer proc.Stop()
+
+	integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "openapi-authed-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	upstreamEndpoint := fmt.Sprintf("http://localhost:%d", proc.Port)
+	RegisterOpenAPIAuthedService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_openapi_authed_echo.echo", "echo tool should be registered for openapi authed service")
+}
+
+func TestStreamableHTTPHelperFunctions(t *testing.T) {
+	t.Parallel()
+	proc := BuildStreamableHTTPServer(t)
+	require.NotNil(t, proc)
+	err := proc.Start()
+	require.NoError(t, err)
+	defer proc.Stop()
+
+	integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "streamable-http-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	upstreamEndpoint := fmt.Sprintf("http://localhost:%d/mcp", proc.Port)
+	RegisterStreamableHTTPService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
+
+	verifyToolRegistered(t, mcpanyTestServerInfo.HTTPEndpoint, "e2e_everything_server_streamable.time.getTime", "getTime tool should be registered for streamable http service")
+}
+
+func TestValidateRegisteredTool(t *testing.T) {
+	t.Parallel()
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "validate-tool-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	// Use a simple stdio service for testing
+	RegisterStdioService(t, mcpanyTestServerInfo.RegistrationClient, "")
+
+	expectedTool := &mcp.Tool{
+		Name:        "e2e_everything_server_stdio.time.getTime",
+		Description: "Returns the current time",
+		InputSchema: map[string]interface{}{
+			"type":       "object",
+			"properties": map[string]interface{}{},
+		},
+	}
+	ValidateRegisteredTool(t, mcpanyTestServerInfo.HTTPEndpoint, expectedTool)
+}
+
+func TestVerifyMCPClient(t *testing.T) {
+	t.Parallel()
+	mcpanyTestServerInfo := integration.StartMCPANYServer(t, "verify-mcp-client-test")
+	defer mcpanyTestServerInfo.CleanupFunc()
+
+	// Use a simple stdio service for testing
+	RegisterStdioService(t, mcpanyTestServerInfo.RegistrationClient, "")
+
+	VerifyMCPClient(t, mcpanyTestServerInfo.HTTPEndpoint)
+}
+
+func verifyToolRegistered(t *testing.T, mcpanyEndpoint, toolName, message string) {
+	require.Eventually(t, func() bool {
 		ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 		defer cancel()
 
 		client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
 		transport := &mcp.StreamableClientTransport{
-			Endpoint: mcpanyTestServerInfo.HTTPEndpoint,
+			Endpoint: mcpanyEndpoint,
 		}
 		session, err := client.Connect(ctx, transport, nil)
-		require.NoError(t, err)
+		if err != nil {
+			return false
+		}
 		defer session.Close()
 
 		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
-		require.NoError(t, err)
+		if err != nil {
+			return false
+		}
 
-		found := false
 		for _, tool := range tools.Tools {
-			// The tool name is derived from the service name and the RPC method name.
-			if tool.Name == "e2e_grpc_authed_weather.GetWeather" {
-				found = true
-				break
+			if tool.Name == toolName {
+				return true
 			}
 		}
-		require.True(t, found, "GetWeather tool should be registered for authenticated service")
-	})
+		return false
+	}, integration.TestWaitTimeMedium, 1*time.Second, message)
 }
