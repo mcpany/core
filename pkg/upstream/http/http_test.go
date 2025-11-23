@@ -19,6 +19,8 @@ package http
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/mcpany/core/pkg/client"
@@ -90,6 +92,50 @@ func TestHttpMethodToString(t *testing.T) {
 			assert.Equal(t, tc.expected, actual)
 		})
 	}
+}
+
+func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
+	// Create a test HTTPS server with a self-signed certificate
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	pm := pool.NewManager()
+	tm := tool.NewToolManager(nil)
+	upstream := NewHTTPUpstream(pm)
+
+	configJSON := `{
+		"name": "insecure-test",
+		"http_service": {
+			"address": "` + server.URL + `",
+			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
+			"calls": {
+				"test-op-call": {
+					"id": "test-op-call",
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "/"
+				}
+			},
+			"tls_config": {
+				"insecure_skip_verify": true
+			}
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	// Verify that the tool can be called successfully, which proves the TLS handshake worked.
+	sanitizedToolName, _ := util.SanitizeToolName("test-op")
+	toolID := serviceID + "." + sanitizedToolName
+	registeredTool, ok := tm.GetTool(toolID)
+	require.True(t, ok)
+
+	_, err = registeredTool.Execute(context.Background(), &tool.ExecutionRequest{})
+	require.NoError(t, err)
 }
 
 func TestHTTPUpstream_Register_Disabled(t *testing.T) {

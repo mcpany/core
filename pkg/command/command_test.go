@@ -90,6 +90,41 @@ func TestLocalExecutor(t *testing.T) {
 		assert.Equal(t, 0, exitCode)
 	})
 
+	t.Run("GoroutineExecution", func(t *testing.T) {
+		t.Parallel()
+		for i := 0; i < 10; i++ {
+			executor := NewExecutor(nil)
+			stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+			require.NoError(t, err)
+
+			var wg sync.WaitGroup
+			wg.Add(2)
+			var stdoutBytes, stderrBytes []byte
+			var stdoutErr, stderrErr error
+
+			go func() {
+				defer wg.Done()
+				stdoutBytes, stdoutErr = io.ReadAll(stdout)
+			}()
+
+			go func() {
+				defer wg.Done()
+				stderrBytes, stderrErr = io.ReadAll(stderr)
+			}()
+
+			wg.Wait()
+
+			require.NoError(t, stdoutErr)
+			assert.Equal(t, "hello\n", string(stdoutBytes))
+
+			require.NoError(t, stderrErr)
+			assert.Empty(t, string(stderrBytes))
+
+			exitCode := <-exitCodeChan
+			assert.Equal(t, 0, exitCode)
+		}
+	})
+
 	t.Run("CommandNotFound", func(t *testing.T) {
 		executor := NewExecutor(nil)
 		_, _, _, err := executor.Execute(context.Background(), "non-existent-command", nil, "", nil)
