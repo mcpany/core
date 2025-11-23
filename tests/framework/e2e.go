@@ -211,7 +211,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
