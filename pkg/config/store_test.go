@@ -230,3 +230,31 @@ upstream_services:
 		})
 	}
 }
+
+func TestYamlEngine_Unmarshal_TypeConversion(t *testing.T) {
+	engine := &yamlEngine{}
+
+	t.Run("YAML with snake_case keys", func(t *testing.T) {
+		// This YAML is valid, but the original unmarshaler would fail
+		// because it did not convert snake_case keys to camelCase.
+		yamlWithSnakeCase := []byte(`
+upstream_services:
+- name: "my-service"
+  http_service:
+    address: "http://localhost:8080"
+    health_check:
+      url: "http://localhost:8080/health"
+      expected_code: 200
+`)
+		cfg := &configv1.McpAnyServerConfig{}
+		err := engine.Unmarshal(yamlWithQuotedNumber, cfg)
+		// With the fix, this should now pass.
+		require.NoError(t, err)
+		require.NotNil(t, cfg.GetUpstreamServices())
+		require.Len(t, cfg.GetUpstreamServices(), 1)
+		service := cfg.GetUpstreamServices()[0]
+		require.NotNil(t, service.GetHttpService().GetHealthCheck())
+		assert.Equal(t, "http://localhost:8080/health", service.GetHttpService().GetHealthCheck().GetUrl())
+		assert.Equal(t, int32(200), service.GetHttpService().GetHealthCheck().GetExpectedCode())
+	})
+}

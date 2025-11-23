@@ -74,20 +74,49 @@ type yamlEngine struct{}
 // This two-step process is a common pattern for converting YAML to a protobuf
 // message.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
-	// First, unmarshal YAML into a generic map.
-	var yamlMap map[string]interface{}
-	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
-	// Then, marshal the map to JSON. This is a common way to convert YAML to JSON.
-	jsonData, err := json.Marshal(yamlMap)
-	if err != nil {
-		return fmt.Errorf("failed to marshal map to JSON: %w", err)
-	}
+	convertToCamelCase(&node)
 
-	// Finally, unmarshal the JSON into the protobuf message.
+	jsonData, err := yamlNodeToJSON(&node)
+	if err != nil {
+		return fmt.Errorf("failed to convert YAML to JSON: %w", err)
+	}
 	return protojson.Unmarshal(jsonData, v)
+}
+
+func convertToCamelCase(node *yaml.Node) {
+	if node.Kind == yaml.MappingNode {
+		for i := 0; i < len(node.Content); i += 2 {
+			keyNode := node.Content[i]
+			valueNode := node.Content[i+1]
+			keyNode.Value = toCamelCase(keyNode.Value)
+			convertToCamelCase(valueNode)
+		}
+	} else if node.Kind == yaml.SequenceNode {
+		for _, itemNode := range node.Content {
+			convertToCamelCase(itemNode)
+		}
+	}
+}
+
+func toCamelCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i := 1; i < len(parts); i++ {
+		parts[i] = strings.Title(parts[i])
+	}
+	return strings.Join(parts, "")
+}
+
+func yamlNodeToJSON(node *yaml.Node) ([]byte, error) {
+	var data interface{}
+	if err := node.Decode(&data); err != nil {
+		return nil, err
+	}
+	return json.Marshal(data)
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration
