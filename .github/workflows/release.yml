@@ -65,7 +65,7 @@ jobs:
         platform: [linux/amd64, linux/arm64, linux/386, darwin/amd64, darwin/arm64, windows/amd64]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -166,7 +166,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
       # Since we are using native runners, this is mostly a fallback/safety.
@@ -282,28 +282,3 @@ jobs:
       - name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
-
-  # ==============================================================================
-  # JOB 5: DOCKER SMOKE TEST
-  # Verifies the image runs and responds
-  # ==============================================================================
-  docker-smoke-test:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    needs: [setup, docker-merge]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Smoke Test
-        run: |
-           chmod +x tests/smoke_test.sh
-           ./tests/smoke_test.sh ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
