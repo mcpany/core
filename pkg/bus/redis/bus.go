@@ -124,6 +124,9 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 
 // SubscribeOnce subscribes to a topic for a single message.
 func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+	if handler == nil {
+		panic("redis bus: handler cannot be nil")
+	}
 	var once sync.Once
 	var unsub func()
 
