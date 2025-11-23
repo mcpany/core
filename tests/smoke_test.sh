@@ -50,7 +50,7 @@ fi
 
 # Check gRPC Health
 echo "Checking gRPC health..."
-if docker run --network host --rm fullstorydev/grpcurl -plaintext localhost:50051 list; then
+if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:50051 list; then
   echo "gRPC Health Check Passed"
 else
   echo "gRPC Health Check Failed"
