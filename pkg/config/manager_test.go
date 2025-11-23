@@ -168,7 +168,7 @@ services:
 			},
 		},
 		{
-			name: "same priority, first one wins",
+			name: "duplicate service with same priority",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1},
 				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
@@ -179,9 +179,7 @@ services:
 					}).Build(),
 				},
 			}).Build(),
-			expectedServiceNamesAndVersions: map[string]string{
-				"service1": "1.0",
-			},
+			expectLoadError: true,
 		},
 		{
 			name: "invalid semver",
@@ -195,7 +193,7 @@ services:
 				},
 			}).Build(),
 			expectedServiceNamesAndVersions: map[string]string{},
-			expectLoadError:                 false, // The manager logs a warning but doesn't return an error
+			expectLoadError:                 false,
 		},
 		{
 			name: "yaml content type",

@@ -61,7 +61,6 @@ func (e *ValidationError) Error() string {
 // configuration is valid.
 func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
-	serviceNames := make(map[string]bool)
 
 	if gs := config.GetGlobalSettings(); gs != nil {
 		if err := validateGlobalSettings(gs, binaryType); err != nil {
@@ -73,14 +72,6 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 	}
 
 	for _, service := range config.GetUpstreamServices() {
-		if _, exists := serviceNames[service.GetName()]; exists {
-			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: service.GetName(),
-				Err:         fmt.Errorf("duplicate service name found"),
-			})
-		}
-		serviceNames[service.GetName()] = true
-
 		if err := validateUpstreamService(service); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: service.GetName(),

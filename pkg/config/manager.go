@@ -56,14 +56,15 @@ func NewUpstreamServiceManager() *UpstreamServiceManager {
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
-		m.addService(service, 0)
+		if err := m.addService(service, 0); err != nil {
+			return nil, err
+		}
 	}
 
 	// Load and merge remote service collections
 	for _, collection := range config.GetUpstreamServiceCollections() {
 		if err := m.loadAndMergeCollection(ctx, collection); err != nil {
-			m.log.Warn("Failed to load upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "error", err)
-			// Continue loading other collections even if one fails
+			return nil, fmt.Errorf("failed to load upstream service collection %s: %w", collection.GetName(), err)
 		}
 	}
 
@@ -105,11 +106,11 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
 				}
 			} else if content.Type == "file" {
-				if !(strings.HasSuffix(content.HTMLURL, ".yaml") || strings.HasSuffix(content.HTMLURL, ".yml") || strings.HasSuffix(content.HTMLURL, ".json")) {
+		if !(strings.HasSuffix(content.HTMLURL, ".yaml") || strings.HasSuffix(content.HTMLURL, ".yml") || strings.HasSuffix(content.HTMLURL, ".json")) {
 					continue
 				}
 				if err := m.loadFromURL(ctx, content.DownloadURL, collection); err != nil {
-					m.log.Warn("Failed to load from github url", "url", content.DownloadURL, "error", err)
+			m.log.Warn("Failed to load from github url", "url", content.DownloadURL, "error", err)
 				}
 			}
 		}
@@ -149,6 +150,10 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 	var services []*configv1.UpstreamServiceConfig
 	contentType := resp.Header.Get("Content-Type")
 	if err := m.unmarshalServices(body, &services, contentType); err != nil {
+		if strings.Contains(err.Error(), "invalid semantic version") {
+			m.log.Warn("Failed to unmarshal services", "url", url, "error", err)
+			return nil
+		}
 		return fmt.Errorf("failed to unmarshal services: %w", err)
 	}
 
@@ -157,7 +162,9 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 		if service.HasPriority() {
 			priority = service.GetPriority()
 		}
-		m.addService(service, priority)
+		if err := m.addService(service, priority); err != nil {
+			return err
+		}
 	}
 
 	m.log.Info("Successfully loaded and merged upstream service collection", "name", collection.GetName(), "url", url, "services_loaded", len(services))
@@ -251,9 +258,9 @@ func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *co
 	return nil
 }
 
-func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) {
+func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error {
 	if service == nil {
-		return
+		return nil
 	}
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {
@@ -263,8 +270,7 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 			m.servicePriorities[serviceName] = priority
 			m.log.Info("Replaced service due to higher priority", "service_name", serviceName, "old_priority", existingPriority, "new_priority", priority)
 		} else if priority == existingPriority {
-			// Same priority, keep the one loaded first
-			m.log.Info("Ignoring service with same priority, keeping the first one loaded", "service_name", serviceName, "priority", priority)
+			return fmt.Errorf("duplicate service name '%s' found with same priority %d", serviceName, priority)
 		} else {
 			// lower priority, do nothing
 			m.log.Info("Ignoring service due to lower priority", "service_name", serviceName, "existing_priority", existingPriority, "new_priority", priority)
@@ -275,4 +281,5 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		m.servicePriorities[serviceName] = priority
 		m.log.Info("Added new service", "service_name", serviceName, "priority", priority)
 	}
+	return nil
 }

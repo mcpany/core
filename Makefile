@@ -27,8 +27,8 @@ ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	SUDO_MSG := " (no sudo)"
 	NEEDS_SUDO_FOR_DOCKER := 0
 else
-	DOCKER_CMD := sudo docker
-	DOCKER_BUILDX_CMD := sudo docker buildx
+	DOCKER_CMD := sudo -E docker
+	DOCKER_BUILDX_CMD := sudo -E docker buildx
 	NEEDS_SUDO_FOR_DOCKER := 1
 endif
 
@@ -317,7 +317,12 @@ build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
-test: test-fast e2e test-public-api
+test: pull-test-images test-fast e2e test-public-api
+
+pull-test-images:
+	@echo "Pulling test images..."
+	@$(DOCKER_CMD) pull python:3.11-slim
+	@$(DOCKER_CMD) pull redis:latest
 
 COVERAGE_FILE ?= coverage.out
 

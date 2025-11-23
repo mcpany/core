@@ -243,48 +243,6 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "mcp-svc-2": mcp service with stdio_connection has empty command`,
 		},
 		{
-			name: "duplicate service name",
-			config: (&configv1.McpAnyServerConfig_builder{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					(&configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("dup-svc"),
-						HttpService: (&configv1.HttpUpstreamService_builder{
-							Address: proto.String("http://localhost:8080"),
-						}).Build(),
-					}).Build(),
-					(&configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("dup-svc"),
-						HttpService: (&configv1.HttpUpstreamService_builder{
-							Address: proto.String("http://localhost:8081"),
-						}).Build(),
-					}).Build(),
-				},
-			}).Build(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "dup-svc": duplicate service name found`,
-		},
-		{
-			name: "duplicate service name and another error",
-			config: (&configv1.McpAnyServerConfig_builder{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					(&configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("dup-svc"),
-						HttpService: (&configv1.HttpUpstreamService_builder{
-							Address: proto.String("http://localhost:8080"),
-						}).Build(),
-					}).Build(),
-					(&configv1.UpstreamServiceConfig_builder{
-						Name: proto.String("dup-svc"),
-						HttpService: (&configv1.HttpUpstreamService_builder{
-							Address: proto.String(""),
-						}).Build(),
-					}).Build(),
-				},
-			}).Build(),
-			expectedErrorCount:  2,
-			expectedErrorString: `service "dup-svc": duplicate service name found`,
-		},
-		{
 			name: "invalid basic auth - empty password",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
