@@ -181,21 +181,21 @@ func NewServer(
 
 			if method == consts.MethodToolsList {
 				if err == nil {
-					if listToolsResult, ok := result.(*mcp.ListToolsResult); ok {
-						refreshedTools := make([]*mcp.Tool, 0, len(listToolsResult.Tools))
-						for _, mcpTool := range listToolsResult.Tools {
-							if toolInstance, toolExists := s.toolManager.GetTool(mcpTool.Name); toolExists {
-								freshMCPTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
-								logging.GetLogger().
-									Info("Refreshing tool in MCP tool list", "toolName", mcpTool.Name, "tool", freshMCPTool)
-								if err != nil {
-									continue // Skip tools that fail to convert
-								}
-								refreshedTools = append(refreshedTools, freshMCPTool)
-							}
+					// The tool manager is the authoritative source of tools. We iterate over the
+					// tools in the manager to ensure that the list is always up-to-date and
+					// reflects the current state of the system.
+					managedTools := s.toolManager.ListTools()
+					refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
+					for _, toolInstance := range managedTools {
+						mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+						if err != nil {
+							logging.GetLogger().
+								Error("Failed to convert tool to MCP format, skipping", "toolName", toolInstance.Tool().GetName(), "error", err)
+							continue
 						}
-						result = &mcp.ListToolsResult{Tools: refreshedTools}
+						refreshedTools = append(refreshedTools, mcpTool)
 					}
+					result = &mcp.ListToolsResult{Tools: refreshedTools}
 				}
 			}
 
