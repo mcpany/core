@@ -147,6 +147,14 @@ func TestValidateHTTPServiceDefinition(t *testing.T) {
 			expectedError: "path is required",
 		},
 		{
+			name: "path with only whitespace",
+			def: configv1.HttpCallDefinition_builder{
+				EndpointPath: lo.ToPtr("   "),
+				Method:       &methodGet,
+			}.Build(),
+			expectedError: "path is required",
+		},
+		{
 			name: "path does not start with slash",
 			def: configv1.HttpCallDefinition_builder{
 				EndpointPath: lo.ToPtr("v1/users"),
