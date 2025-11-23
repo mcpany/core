@@ -301,7 +301,8 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 
 	// If the command is 'docker', handle it directly, including sudo if needed.
 	if command == "docker" {
-		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
+		val := os.Getenv("USE_SUDO_FOR_DOCKER")
+		useSudo := val == "1" || val == "true"
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
 			return exec.Command("sudo", fullArgs...)
