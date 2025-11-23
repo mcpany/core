@@ -138,7 +138,11 @@ func newRootCmd() *cobra.Command {
 			addr := cfg.MCPListenAddress()
 
 			if !strings.Contains(addr, ":") {
-				addr = "localhost:" + addr
+				// If the address is a number, assume it's a port and prepend
+				// "localhost:". Otherwise, assume it's a valid hostname.
+				if _, err := fmt.Sscanf(addr, "%d", new(int)); err == nil {
+					addr = "localhost:" + addr
+				}
 			}
 			timeout, _ := cmd.Flags().GetDuration("timeout")
 			return app.HealthCheck(cmd.OutOrStdout(), addr, timeout)

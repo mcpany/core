@@ -184,3 +184,15 @@ global_settings:
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
 }
+
+func TestHealthCmdWithHostname(t *testing.T) {
+	// This test is to ensure that when a hostname is provided, the health check
+	// does not incorrectly prepend "localhost:".
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"health", "--mcp-listen-address", "example.com"})
+	err := rootCmd.Execute()
+	// We expect an error because no server is running at example.com, but the
+	// error should be a connection error, not an error from an invalid address.
+	assert.Error(t, err)
+	assert.NotContains(t, err.Error(), "invalid port", "The error should not be about an invalid port")
+}
