@@ -41,13 +41,13 @@ jobs:
           else
             # Generate timestamp
             TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            VERSION="dev.${TIMESTAMP}"
+            VERSION="dev-${TIMESTAMP}"
             IS_RELEASE="false"
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
             echo "is_release=false" >> $GITHUB_OUTPUT
             # Tags
-            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION}" >> $GITHUB_OUTPUT
-            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION}" >> $GITHUB_OUTPUT
+            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:dev-latest" >> $GITHUB_OUTPUT
+            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:dev-latest" >> $GITHUB_OUTPUT
           fi
 
   # ==============================================================================
