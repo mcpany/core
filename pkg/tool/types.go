@@ -27,6 +27,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -279,12 +280,22 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 			urlString = strings.ReplaceAll(urlString, "{{"+param.GetSchema().GetName()+"}}", secretValue)
 		} else if schema := param.GetSchema(); schema != nil {
+			placeholder := "{{" + schema.GetName() + "}}"
 			if val, ok := inputs[schema.GetName()]; ok {
-				urlString = strings.ReplaceAll(urlString, "{{"+schema.GetName()+"}}", url.PathEscape(fmt.Sprintf("%v", val)))
+				urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(fmt.Sprintf("%v", val)))
 				delete(inputs, schema.GetName())
+			} else {
+				urlString = strings.ReplaceAll(urlString, "/"+placeholder, "")
 			}
 		}
 	}
+
+	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+	parsedURL.Path = path.Clean(parsedURL.Path)
+	urlString = parsedURL.String()
 
 	var body io.Reader
 	var contentType string

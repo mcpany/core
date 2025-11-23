@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -117,7 +116,6 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 }
 
 func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
-	log := logging.GetLogger().With("component", "configValidator")
 	if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
 		return fmt.Errorf("service has no service_config")
 	}
@@ -204,7 +202,7 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		case configv1.UpstreamAuthentication_BasicAuth_case:
 			basicAuth := authConfig.GetBasicAuth()
 			if basicAuth.GetUsername() == "" {
-				log.Warn("Basic auth 'username' is empty. Authentication may fail.")
+				return fmt.Errorf("basic auth 'username' is empty")
 			}
 			passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
 			if err != nil {
