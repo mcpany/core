@@ -24,7 +24,7 @@ mkdir -p "$CACHE_DIR"
 usage() {
   echo "Usage: $0 [load|save]"
   echo "  load: Load images from cache directory to Docker"
-  echo "  save: Save all current Docker images to cache directory"
+  echo "  save: Save all current Docker images to cache directory (compressed)"
   exit 1
 }
 
@@ -34,7 +34,7 @@ if [ "$MODE" == "load" ]; then
   echo "Loading images from $CACHE_DIR..."
   if [ -d "$CACHE_DIR" ]; then
     shopt -s nullglob
-    files=("$CACHE_DIR"/*.tar)
+    files=("$CACHE_DIR"/*.tar "$CACHE_DIR"/*.tar.gz "$CACHE_DIR"/*.tgz)
     if [ ${#files[@]} -eq 0 ]; then
       echo "No cached images found in $CACHE_DIR."
     else
@@ -59,13 +59,11 @@ elif [ "$MODE" == "save" ]; then
   echo "Found ${#IMAGES[@]} images to save."
 
   # Clear cache directory to remove old individual tars and avoid duplicates
-  # Use :? to ensure CACHE_DIR is set
   rm -rf "${CACHE_DIR:?}"/*
 
-  # Save all images to a single tarball for layer deduplication
-  # We verify space separated list works for docker save
-  echo "Saving ${#IMAGES[@]} images to ${CACHE_DIR}/all_images.tar..."
-  docker save -o "${CACHE_DIR}/all_images.tar" "${IMAGES[@]}"
+  # Save all images to a single tarball compressed with gzip
+  echo "Saving ${#IMAGES[@]} images to ${CACHE_DIR}/all_images.tar.gz..."
+  docker save "${IMAGES[@]}" | gzip > "${CACHE_DIR}/all_images.tar.gz"
 
 else
   usage
