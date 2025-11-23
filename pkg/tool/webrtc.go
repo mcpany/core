@@ -35,6 +35,21 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
+type peerConnectionWrapper struct {
+	*webrtc.PeerConnection
+}
+
+func (w *peerConnectionWrapper) Close() error {
+	if w.PeerConnection == nil {
+		return nil
+	}
+	return w.PeerConnection.Close()
+}
+
+func (w *peerConnectionWrapper) IsHealthy(ctx context.Context) bool {
+	return w.PeerConnection != nil && w.ICEConnectionState() == webrtc.ICEConnectionStateConnected
+}
+
 // WebrtcTool implements the Tool interface for a tool that is exposed via a
 // WebRTC data channel. It handles the signaling and establishment of a peer
 // connection to communicate with the remote service. This is useful for
@@ -42,7 +57,7 @@ import (
 // server.
 type WebrtcTool struct {
 	tool              *v1.Tool
-	poolManager       *pool.Manager
+	webrtcPool        pool.Pool[*peerConnectionWrapper]
 	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
 	parameters        []*configv1.WebrtcParameterMapping
@@ -66,16 +81,45 @@ func NewWebrtcTool(
 	authenticator auth.UpstreamAuthenticator,
 	callDefinition *configv1.WebrtcCallDefinition,
 ) (*WebrtcTool, error) {
-	return &WebrtcTool{
+	t := &WebrtcTool{
 		tool:              tool,
-		poolManager:       poolManager,
 		serviceID:         serviceID,
 		authenticator:     authenticator,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-	}, nil
+	}
+
+	if poolManager != nil {
+		p, found := pool.Get[*peerConnectionWrapper](poolManager, serviceID)
+		if !found {
+			var err error
+			p, err = pool.New(t.newPeerConnection, 5, 20, int(1*time.Minute), false)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create webrtc pool: %w", err)
+			}
+			poolManager.Register(serviceID, p)
+		}
+		t.webrtcPool = p
+	}
+
+	return t, nil
+}
+
+func (t *WebrtcTool) newPeerConnection(ctx context.Context) (*peerConnectionWrapper, error) {
+	config := webrtc.Configuration{
+		ICEServers: []webrtc.ICEServer{
+			{
+				URLs: []string{"stun:stun.l.google.com:19302"},
+			},
+		},
+	}
+	pc, err := webrtc.NewPeerConnection(config)
+	if err != nil {
+		return nil, err
+	}
+	return &peerConnectionWrapper{PeerConnection: pc}, nil
 }
 
 // Tool returns the protobuf definition of the WebRTC tool.
@@ -92,6 +136,31 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // connection, negotiates the session via an HTTP signaling server, sends the
 // tool inputs over the data channel, and waits for a response.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.webrtcPool == nil {
+		// Fallback to creating a new connection if the pool is not initialized
+		return t.executeWithoutPool(ctx, req)
+	}
+
+	wrapper, err := t.webrtcPool.Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get peer connection from pool: %w", err)
+	}
+	defer t.webrtcPool.Put(wrapper)
+
+	return t.executeWithPeerConnection(ctx, req, wrapper.PeerConnection)
+}
+
+func (t *WebrtcTool) executeWithoutPool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	pc, err := t.newPeerConnection(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create peer connection: %w", err)
+	}
+	defer pc.Close()
+
+	return t.executeWithPeerConnection(ctx, req, pc.PeerConnection)
+}
+
+func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *ExecutionRequest, pc *webrtc.PeerConnection) (any, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -127,19 +196,6 @@ func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, e
 	}
 
 	address := strings.TrimPrefix(t.tool.GetUnderlyingMethodFqn(), "WEBRTC ")
-
-	config := webrtc.Configuration{
-		ICEServers: []webrtc.ICEServer{
-			{
-				URLs: []string{"stun:stun.l.google.com:19302"},
-			},
-		},
-	}
-	pc, err := webrtc.NewPeerConnection(config)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create peer connection: %w", err)
-	}
-	defer pc.Close()
 
 	responseChan := make(chan string)
 	var wg sync.WaitGroup
@@ -228,5 +284,8 @@ func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, e
 // Close is a placeholder for any cleanup logic. Currently, it is a no-op as the
 // peer connection is created and closed within the Execute method.
 func (t *WebrtcTool) Close() error {
+	if t.webrtcPool != nil {
+		t.webrtcPool.Close()
+	}
 	return nil
 }

@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/pion/webrtc/v3"
@@ -61,6 +62,66 @@ func TestWebrtcTool_Close(t *testing.T) {
 	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
+}
+
+func TestWebrtcTool_PoolInteraction(t *testing.T) {
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
+		require.NoError(t, err)
+
+		pc.OnDataChannel(func(d *webrtc.DataChannel) {
+			d.OnMessage(func(msg webrtc.DataChannelMessage) {
+				err := d.SendText(string(msg.Data))
+				require.NoError(t, err)
+			})
+		})
+
+		var offer webrtc.SessionDescription
+		err = json.NewDecoder(r.Body).Decode(&offer)
+		require.NoError(t, err)
+		err = pc.SetRemoteDescription(offer)
+		require.NoError(t, err)
+		answer, err := pc.CreateAnswer(nil)
+		require.NoError(t, err)
+		gatherComplete := webrtc.GatheringCompletePromise(pc)
+		err = pc.SetLocalDescription(answer)
+		require.NoError(t, err)
+		<-gatherComplete
+		response, err := json.Marshal(*pc.LocalDescription())
+		require.NoError(t, err)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(response)
+
+		go func() {
+			wg.Wait()
+			pc.Close()
+		}()
+	}))
+	defer signalingServer.Close()
+
+	tool := &v1.Tool{}
+	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
+	require.NoError(t, err)
+
+	p, ok := pool.Get[*peerConnectionWrapper](poolManager, "webrtc-service")
+	require.True(t, ok)
+
+	// Execute twice to test pooling
+	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: []byte(`{"message":"test1"}`)})
+	require.NoError(t, err)
+	assert.Equal(t, 1, p.Len())
+
+	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: []byte(`{"message":"test2"}`)})
+	require.NoError(t, err)
+	assert.Equal(t, 1, p.Len())
+
+	wg.Done()
+	wg.Done()
 }
 
 func TestWebrtcTool_Execute_Success(t *testing.T) {
@@ -115,7 +176,8 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 
-	wt, err := NewWebrtcTool(tool, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	inputJSON := `{"message":"hello"}`
@@ -175,6 +237,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
 	callDef.SetInputTransformer(&configv1.InputTransformer{})
 	callDef.GetInputTransformer().SetTemplate(`{"transformed_message":"input_{{message}}"}`)
@@ -184,7 +247,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 		"extracted_message": "{.data.final_message}",
 	})
 
-	wt, err := NewWebrtcTool(tool, nil, "", nil, callDef)
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, callDef)
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{"message":"hello"}`)}
@@ -232,10 +295,11 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+	poolManager := pool.NewManager()
 	authenticator := &MockAuthenticator{
 		Header: http.Header{"Authorization": {authHeader}},
 	}
-	wt, err := NewWebrtcTool(tool, nil, "", authenticator, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", authenticator, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -252,7 +316,8 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
-	wt, err := NewWebrtcTool(tool, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -288,7 +353,8 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
-	wt, err := NewWebrtcTool(tool, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -313,11 +379,12 @@ func TestWebrtcTool_GetCacheConfig(t *testing.T) {
 
 func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
 	toolDef := &v1.Tool{}
+	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{ .invalid }}")
 	callDef.SetInputTransformer(inputTransformer)
-	wt, err := NewWebrtcTool(toolDef, nil, "", nil, callDef)
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{
