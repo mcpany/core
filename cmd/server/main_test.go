@@ -184,3 +184,19 @@ global_settings:
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
 }
+
+func TestRootCmdHandlesAddressWithoutPort(t *testing.T) {
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"--mcp-listen-address", "127.0.0.1",
+	})
+	rootCmd.Execute()
+
+	assert.True(t, mock.called, "app.Run should have been called")
+	assert.Equal(t, "127.0.0.1:50050", mock.capturedMcpListenAddress, "mcp-listen-address should be correctly formatted with default port")
+}

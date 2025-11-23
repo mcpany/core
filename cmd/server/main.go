@@ -23,6 +23,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"net"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -95,8 +96,12 @@ func newRootCmd() *cobra.Command {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
 
-			if !strings.Contains(bindAddress, ":") {
-				bindAddress = "localhost:" + bindAddress
+			if _, _, err := net.SplitHostPort(bindAddress); err != nil {
+				if ip := net.ParseIP(bindAddress); ip != nil {
+					bindAddress = net.JoinHostPort(bindAddress, "50050")
+				} else {
+					bindAddress = "localhost:" + bindAddress
+				}
 			}
 
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
