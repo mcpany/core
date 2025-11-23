@@ -72,6 +72,7 @@ repos:
                  go.sum|
                  go.work.sum|
                 .*\.pb\.go|
+                .*\.pb\.gw\.go|
                 vendor/.*|
                 examples/.*|
                 build/.*|

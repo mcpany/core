@@ -1,3 +1,6 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
@@ -7,7 +10,7 @@ import (
 
 func TestRefineEndIndex(t *testing.T) {
 	// Setup regexes as they are global in main.go
-	spdxRegex = regexp.MustCompile(`SPDX-License-Identifier`)
+	spdxRegex = regexp.MustCompile(`SPDX-` + `License-Identifier`)
 	limitationsRegex = regexp.MustCompile(`limitations under the License`)
 
 	tests := []struct {
@@ -31,7 +34,7 @@ func TestRefineEndIndex(t *testing.T) {
 			name: "With SPDX",
 			lines: []string{
 				"// Copyright",
-				"// SPDX-License-Identifier: Apache-2.0",
+				"// " + "SPDX-" + "License-Identifier: Apache-2.0",
 				"// Trailing comment",
 			},
 			start:    0,
@@ -42,7 +45,7 @@ func TestRefineEndIndex(t *testing.T) {
 			name: "With Limitations",
 			lines: []string{
 				"// Copyright",
-				"// limitations under the License.",
+				"// " + "limitations under the License.",
 				"// Trailing comment",
 			},
 			start:    0,
@@ -53,9 +56,9 @@ func TestRefineEndIndex(t *testing.T) {
 			name: "With Both, SPDX last",
 			lines: []string{
 				"// Copyright",
-				"// limitations under the License.",
+				"// " + "limitations under the License.",
 				"//",
-				"// SPDX-License-Identifier: Apache-2.0",
+				"// " + "SPDX-" + "License-Identifier: Apache-2.0",
 				"// Trailing",
 			},
 			start:    0,
@@ -66,6 +69,7 @@ func TestRefineEndIndex(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Logf("Testing %s", tt.name)
 			got := refineEndIndex(tt.lines, tt.start, tt.end)
 			if got != tt.expected {
 				t.Errorf("refineEndIndex() = %v, want %v", got, tt.expected)

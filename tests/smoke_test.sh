@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Copyright (C) 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 set -e
 
 # Default to the image name used in local dev if not provided
@@ -14,7 +18,7 @@ docker rm -f $CONTAINER_NAME > /dev/null 2>&1 || true
 # We pass flags to override default listen addresses
 docker run -d --name $CONTAINER_NAME \
   -p 50050:50050 -p 50051:50051 \
-  $IMAGE_NAME \
+  "$IMAGE_NAME" \
   --mcp-listen-address :50050 \
   --grpc-port :50051
 
