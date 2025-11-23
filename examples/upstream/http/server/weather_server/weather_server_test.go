@@ -1,11 +1,10 @@
-// Copyright 2024 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
-// You may
-// obtain a copy of the License at
+// You may obtain a copy of the License at
 //
-//	http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,143 +13,156 @@
 // limitations under the License.
 //
 // SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHealthHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/health", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(healthHandler)
 
 	handler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	expected := "OK\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "OK\n", rr.Body.String())
 }
 
-func TestWeatherHandler(t *testing.T) {
-	// Test GET request
+func TestWeatherHandler_GET(t *testing.T) {
 	req, err := http.NewRequest("GET", "/weather?location=london", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(weatherHandler)
+
 	handler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	expected := `{"location":"london","weather":"Cloudy, 15°C"}` + "\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
-
-	// Test POST request
-	req, err = http.NewRequest("POST", "/weather",
-		bytes.NewBuffer([]byte(`{"location": "tokyo"}`)))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr = httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	expected = `{"location":"tokyo","weather":"Rainy, 20°C"}` + "\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
-
-	// Test missing location
-	req, err = http.NewRequest("GET", "/weather", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr = httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusBadRequest)
-	}
-}
-
-func TestWsHandler(t *testing.T) {
-	s := httptest.NewServer(http.HandlerFunc(wsHandler))
-	defer s.Close()
-
-	wsURL := "ws" + s.URL[4:]
-	ws, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
-	if err != nil {
-		t.Fatalf("Failed to connect to WebSocket: %v", err)
-	}
-	defer ws.Close()
-
-	// Test single message
-	err = ws.WriteJSON(map[string]string{"location": "new york"})
-	if err != nil {
-		t.Fatalf("Failed to write message: %v", err)
-	}
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
 	var resp map[string]string
-	err = ws.ReadJSON(&resp)
-	if err != nil {
-		t.Fatalf("Failed to read message: %v", err)
-	}
+	err = json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
 
-	expected := map[string]string{"location": "new york", "weather": "Sunny, 25°C"}
-	if resp["location"] != expected["location"] || resp["weather"] != expected["weather"] {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			resp, expected)
-	}
+	assert.Equal(t, "london", resp["location"])
+	assert.Equal(t, "Cloudy, 15°C", resp["weather"])
+}
 
-	// Test multiple messages
-	for i := 0; i < 3; i++ {
-		err = ws.WriteJSON(map[string]string{"location": "london"})
-		if err != nil {
-			t.Fatalf("Failed to write message: %v", err)
-		}
+func TestWeatherHandler_POST(t *testing.T) {
+	reqBody := map[string]string{"location": "tokyo"}
+	jsonBody, err := json.Marshal(reqBody)
+	require.NoError(t, err)
 
-		err = ws.ReadJSON(&resp)
-		if err != nil {
-			t.Fatalf("Failed to read message: %v", err)
-		}
+	req, err := http.NewRequest("POST", "/weather", bytes.NewBuffer(jsonBody))
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
 
-		expected = map[string]string{"location": "london", "weather": "Cloudy, 15°C"}
-		if resp["location"] != expected["location"] || resp["weather"] != expected["weather"] {
-			t.Errorf("handler returned unexpected body: got %v want %v",
-				resp, expected)
-		}
-	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(weatherHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	var resp map[string]string
+	err = json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	assert.Equal(t, "tokyo", resp["location"])
+	assert.Equal(t, "Rainy, 20°C", resp["weather"])
+}
+
+func TestWeatherHandler_MissingLocation(t *testing.T) {
+	req, err := http.NewRequest("GET", "/weather", nil)
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(weatherHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestWeatherHandler_LocationNotFound(t *testing.T) {
+	req, err := http.NewRequest("GET", "/weather?location=paris", nil)
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(weatherHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestWeatherHandler_InvalidMethod(t *testing.T) {
+	req, err := http.NewRequest("PUT", "/weather", nil)
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(weatherHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+}
+
+func TestWSHandler(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(wsHandler))
+	defer server.Close()
+
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	require.NoError(t, err)
+	defer conn.Close()
+
+	reqBody := map[string]string{"location": "new york"}
+	err = conn.WriteJSON(reqBody)
+	require.NoError(t, err)
+
+	var resp map[string]string
+	err = conn.ReadJSON(&resp)
+	require.NoError(t, err)
+
+	assert.Equal(t, "new york", resp["location"])
+	assert.Equal(t, "Sunny, 25°C", resp["weather"])
+}
+
+func TestWSHandler_LocationNotFound(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(wsHandler))
+	defer server.Close()
+
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	require.NoError(t, err)
+	defer conn.Close()
+
+	reqBody := map[string]string{"location": "berlin"}
+	err = conn.WriteJSON(reqBody)
+	require.NoError(t, err)
+
+	var resp map[string]string
+	err = conn.ReadJSON(&resp)
+	require.NoError(t, err)
+
+	assert.Equal(t, "berlin", resp["location"])
+	assert.Equal(t, "Location not found", resp["weather"])
 }

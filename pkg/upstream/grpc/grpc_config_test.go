@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -156,4 +157,29 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 		assert.Len(t, tm.ListTools(), 1)
 		assert.Equal(t, "GetWeather", discoveredTools[0].GetName())
 	})
+}
+
+func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewGRPCUpstream(poolManager)
+	tm := NewMockToolManager()
+
+	promptManager := prompt.NewPromptManager()
+	serviceConfig := &configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GrpcService: configv1.GrpcUpstreamService_builder{
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name: proto.String("test-prompt"),
+				}.Build(),
+			},
+		}.Build(),
+	}
+	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig.Build()})
+	upstream.(*GRPCUpstream).toolManager = tm
+
+	err := upstream.(*GRPCUpstream).createAndRegisterPromptsFromConfig(context.Background(), "test-service", promptManager, false)
+	require.NoError(t, err)
+	_, ok := promptManager.GetPrompt("test-service.test-prompt")
+	assert.True(t, ok)
 }
