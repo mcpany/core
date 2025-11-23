@@ -106,6 +106,40 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
 }
 
+func TestWebsocketUpstream_Register_DisabledTool(t *testing.T) {
+	toolManager := NewMockToolManager(nil)
+	poolManager := pool.NewManager()
+	var promptManager prompt.PromptManagerInterface
+	var resourceManager resource.ResourceManagerInterface
+	upstream := NewWebsocketUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:        proto.String("echo"),
+		Description: proto.String("Echoes a message"),
+		CallId:      proto.String("echo-call"),
+		Disable:     proto.Bool(true),
+	}.Build()
+
+	websocketService := &configv1.WebsocketUpstreamService{}
+	websocketService.SetAddress("ws://localhost:8080/echo")
+	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+	calls := make(map[string]*configv1.WebsocketCallDefinition)
+	calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+		Id: proto.String("echo-call"),
+	}.Build()
+	websocketService.SetCalls(calls)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-websocket-service")
+	serviceConfig.SetWebsocketService(websocketService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	tools := toolManager.ListTools()
+	assert.Len(t, tools, 0)
+}
+
 func TestNewWebsocketUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewWebsocketUpstream(poolManager)
