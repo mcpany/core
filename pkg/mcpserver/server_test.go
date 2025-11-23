@@ -597,3 +597,66 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	server.ClearToolsForService("test-service")
 	assert.True(t, mockToolManager.clearToolsForServiceCalled)
 }
+
+func TestToolListFilteringIsAuthoritative(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	// Add a tool to the manager *before* the server is created.
+	// This creates a state where the tool manager has a tool that the underlying
+	// mcp.Server does not know about yet.
+	preExistingTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String("pre-existing-tool"),
+			ServiceId: proto.String("test-service"),
+			Annotations: v1.ToolAnnotations_builder{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			}.Build(),
+		}.Build(),
+	}
+	err = toolManager.AddTool(preExistingTool)
+	require.NoError(t, err)
+
+	// Now create the server. It will receive the toolManager with the pre-existing tool.
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	// Create client-server connection
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// The filtering middleware should use the ToolManager as the source of truth,
+	// not the (potentially stale) list from the underlying mcp.Server.
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	assert.NoError(t, err)
+
+	// The bug is that the middleware iterates the list from the underlying server,
+	// which is empty, so this assertion will fail.
+	assert.Len(t, listResult.Tools, 1, "The tool list should be authoritative from the ToolManager")
+	if len(listResult.Tools) > 0 {
+		sanitizedToolName, _ := util.SanitizeToolName("pre-existing-tool")
+		expectedToolName := "test-service" + "." + sanitizedToolName
+		assert.Equal(t, expectedToolName, listResult.Tools[0].Name)
+	}
+}
