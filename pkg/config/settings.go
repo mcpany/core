@@ -96,7 +96,11 @@ func (s *Settings) GRPCPort() string {
 
 // MCPListenAddress returns the MCP listen address.
 func (s *Settings) MCPListenAddress() string {
-	return s.proto.GetMcpListenAddress()
+	addr := s.proto.GetMcpListenAddress()
+	if !strings.Contains(addr, ":") {
+		addr = "localhost:" + addr
+	}
+	return addr
 }
 
 // Stdio returns whether stdio mode is enabled.
