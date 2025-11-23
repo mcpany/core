@@ -288,6 +288,8 @@ jobs:
   # Verifies the image runs and responds
   # ==============================================================================
   docker-smoke-test:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     needs: [setup, docker-merge]
     steps:
