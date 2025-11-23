@@ -449,3 +449,42 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, rawBytesResponse, resultMap["raw"])
 }
+
+func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
+	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := "/users/test%2Fuser"
+		assert.Equal(t, expectedPath, r.URL.RequestURI(), "URL path should be properly escaped")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "ok"}`))
+	})
+	server := httptest.NewServer(pathHandler)
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	p, err := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 0, true)
+	require.NoError(t, err)
+	poolManager.Register("test-service", p)
+
+	methodAndURL := "GET " + server.URL + "/users/{{username}}"
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("username"),
+		}.Build(),
+	}.Build()
+	callDef := configv1.HttpCallDefinition_builder{
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+
+	inputs := json.RawMessage(`{"username": "test/user"}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+	_, err = httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+}

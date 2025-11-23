@@ -259,7 +259,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	method, rawURL := methodAndURL[0], methodAndURL[1]
 
-	url, err := url.PathUnescape(rawURL)
+	urlString, err := url.PathUnescape(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unescape url: %w", err)
 	}
@@ -277,10 +277,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
-			url = strings.ReplaceAll(url, "{{"+param.GetSchema().GetName()+"}}", secretValue)
+			urlString = strings.ReplaceAll(urlString, "{{"+param.GetSchema().GetName()+"}}", secretValue)
 		} else if schema := param.GetSchema(); schema != nil {
 			if val, ok := inputs[schema.GetName()]; ok {
-				url = strings.ReplaceAll(url, "{{"+schema.GetName()+"}}", fmt.Sprintf("%v", val))
+				urlString = strings.ReplaceAll(urlString, "{{"+schema.GetName()+"}}", url.PathEscape(fmt.Sprintf("%v", val)))
 				delete(inputs, schema.GetName())
 			}
 		}
@@ -311,7 +311,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, method, url, body)
+	httpReq, err := http.NewRequestWithContext(ctx, method, urlString, body)
 	if err != nil {
 		return "", fmt.Errorf("failed to create http request: %w", err)
 	}
