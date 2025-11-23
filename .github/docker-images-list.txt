@@ -1,0 +1,6 @@
+python:3.11-slim
+golang:latest
+gcr.io/distroless/base-debian12
+node:lts-alpine
+alpine:latest
+golang:1.24-alpine
