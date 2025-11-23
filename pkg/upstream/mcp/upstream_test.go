@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *

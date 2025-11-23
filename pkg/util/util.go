@@ -1,3 +1,5 @@
+// Copyright (C) 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
 
 package util
 
@@ -155,7 +157,8 @@ func SanitizeOperationID(input string) string {
 // GetDockerCommand returns the command and base arguments for running Docker,
 // respecting the USE_SUDO_FOR_DOCKER environment variable.
 func GetDockerCommand() (string, []string) {
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+	val := os.Getenv("USE_SUDO_FOR_DOCKER")
+	if val == "true" || val == "1" {
 		return "sudo", []string{"docker"}
 	}
 	return "docker", []string{}
