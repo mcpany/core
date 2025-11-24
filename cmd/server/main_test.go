@@ -19,9 +19,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
+	"os/exec"
+	"syscall"
 	"testing"
 	"time"
 
@@ -183,4 +187,59 @@ global_settings:
 	err = rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
+}
+
+func findFreePort(t *testing.T) int {
+	t.Helper()
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("failed to resolve tcp addr: %v", err)
+	}
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		t.Fatalf("failed to listen on tcp addr: %v", err)
+	}
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
+}
+
+func TestGracefulShutdown(t *testing.T) {
+	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
+		port := findFreePort(t)
+		cmd := newRootCmd()
+		cmd.SetArgs([]string{"--mcp-listen-address", fmt.Sprintf("localhost:%d", port)})
+		go func() {
+			err := cmd.Execute()
+			assert.NoError(t, err)
+		}()
+		// Wait for the server to start by polling the health check endpoint.
+		assert.Eventually(t, func() bool {
+			resp, err := http.Get(fmt.Sprintf("http://localhost:%d/healthz", port))
+			if err != nil {
+				return false
+			}
+			defer resp.Body.Close()
+			return resp.StatusCode == http.StatusOK
+		}, 5*time.Second, 100*time.Millisecond)
+		return
+	}
+
+	cmd := exec.Command(os.Args[0], "-test.run=^TestGracefulShutdown$")
+	cmd.Env = append(os.Environ(), "GO_TEST_GRACEFUL_SHUTDOWN=1")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
+	err := cmd.Start()
+	assert.NoError(t, err)
+
+	// This is a bit of a hack, but we need to wait for the server to start
+	// before we can get its port.
+	time.Sleep(500 * time.Millisecond)
+
+	// Send the interrupt signal to the child process group.
+	err = syscall.Kill(-cmd.Process.Pid, syscall.SIGINT)
+	assert.NoError(t, err)
+
+	err = cmd.Wait()
+	assert.NoError(t, err)
 }
