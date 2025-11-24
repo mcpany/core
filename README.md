@@ -174,6 +174,18 @@ MCP Any supports a variety of advanced configuration options, including:
           apiKey: "my-secret-key"
   ```
 
+### Remote Configurations
+
+In addition to loading configuration files from the local filesystem, MCP Any can also load configurations from remote URLs. This allows you to easily share and reuse configurations without having to manually copy and paste files.
+
+To load a remote configuration, simply provide the URL as a value to the `--config-paths` flag:
+
+```bash
+make run ARGS="--config-paths https://example.com/my-config.yaml"
+```
+
+**Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
