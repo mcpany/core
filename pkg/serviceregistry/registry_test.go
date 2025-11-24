@@ -19,6 +19,7 @@ package serviceregistry
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -91,7 +92,17 @@ func TestNew(t *testing.T) {
 }
 
 func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
-	f := &mockFactory{}
+	var serviceCounter int
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceCounter++
+					return fmt.Sprintf("service-%d", serviceCounter), nil, nil, nil
+				},
+			}, nil
+		},
+	}
 	tm := &mockToolManager{}
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
@@ -113,22 +124,41 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	// Successful registration
 	serviceID, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
-	assert.Equal(t, "mock-service-key", serviceID)
+	assert.Equal(t, "service-1", serviceID)
 	assert.Nil(t, tools)
 	assert.Nil(t, resources)
 
 	// Get the config
-	retrievedConfig, ok := registry.GetServiceConfig("mock-service-key")
+	retrievedConfig, ok := registry.GetServiceConfig(serviceID)
 	require.True(t, ok)
 	assert.Equal(t, serviceConfig, retrievedConfig)
 
 	// Check authenticator
-	_, ok = am.GetAuthenticator("mock-service-key")
+	_, ok = am.GetAuthenticator(serviceID)
 	assert.True(t, ok, "Authenticator should have been added")
 
 	// Get non-existent config
 	_, ok = registry.GetServiceConfig("non-existent")
 	assert.False(t, ok)
+
+	t.Run("with OAuth2 authenticator", func(t *testing.T) {
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("oauth2-service")
+		httpService := &configv1.HttpUpstreamService{}
+		httpService.SetAddress("http://localhost")
+		serviceConfig.SetHttpService(httpService)
+		authConfig := &configv1.AuthenticationConfig{}
+		oauth2Config := &configv1.OAuth2Auth{}
+		oauth2Config.SetIssuerUrl("https://accounts.google.com")
+		oauth2Config.SetAudience("test-audience")
+		authConfig.SetOauth2(oauth2Config)
+		serviceConfig.SetAuthentication(authConfig)
+		serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+		require.NoError(t, err)
+
+		_, ok := am.GetAuthenticator(serviceID)
+		assert.True(t, ok, "OAuth2 authenticator should have been added")
+	})
 }
 
 func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
@@ -194,4 +224,99 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
 	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+}
+
+func TestServiceRegistry_UnregisterService(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					return "test-service", nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+
+	// Register the service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+	assert.Equal(t, "test-service", serviceID)
+
+	// Verify it's registered
+	_, ok := registry.GetServiceConfig(serviceID)
+	require.True(t, ok, "Service should be registered before unregistering")
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err)
+
+	// Verify it's no longer registered
+	_, ok = registry.GetServiceConfig(serviceID)
+	assert.False(t, ok, "Service should not be registered after unregistering")
+
+	// Try to unregister a non-existent service
+	err = registry.UnregisterService(context.Background(), "non-existent-service")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), `service "non-existent-service" not found`)
+}
+
+func TestServiceRegistry_GetAllServices(t *testing.T) {
+	var serviceCounter int
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceCounter++
+					return fmt.Sprintf("service-%d", serviceCounter), nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	// Initially, no services
+	services, err := registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Empty(t, services)
+
+	// Register two services
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("service1")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err)
+
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("service2")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.NoError(t, err)
+
+	// Get all services
+	services, err = registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Len(t, services, 2)
+}
+
+func TestServiceRegistry_ServiceInfo(t *testing.T) {
+	registry := New(nil, nil, nil, nil, nil)
+
+	// Get non-existent service info
+	_, ok := registry.GetServiceInfo("non-existent")
+	assert.False(t, ok)
+
+	// Add and get service info
+	serviceInfo := &tool.ServiceInfo{Name: "test-service"}
+	registry.AddServiceInfo("service-id", serviceInfo)
+
+	retrievedInfo, ok := registry.GetServiceInfo("service-id")
+	require.True(t, ok)
+	assert.Equal(t, serviceInfo, retrievedInfo)
 }
