@@ -61,11 +61,16 @@ func (m *mockFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstr
 
 type mockToolManager struct {
 	tool.ToolManagerInterface
+	ClearToolsForServiceFunc func(serviceID string)
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
-func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
+func (m *mockToolManager) AddTool(t tool.Tool) error { return nil }
+func (m *mockToolManager) ClearToolsForService(serviceID string) {
+	if m.ClearToolsForServiceFunc != nil {
+		m.ClearToolsForServiceFunc(serviceID)
+	}
+}
+func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
 func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {

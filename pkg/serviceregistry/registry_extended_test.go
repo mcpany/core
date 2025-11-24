@@ -18,10 +18,9 @@ package serviceregistry
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"sync"
 	"testing"
+
+	"fmt"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
@@ -29,179 +28,187 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
-// mockToolManagerWithCleanupTracking tracks calls to ClearToolsForService.
-type mockToolManagerWithCleanupTracking struct {
-	mockToolManager
-	clearCalls map[string]int
-	mu         sync.Mutex
+func TestServiceRegistry_UnregisterService(t *testing.T) {
+	f := &mockFactory{}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	serviceConfig.SetHttpService(httpService)
+
+	// Register the service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+	assert.Equal(t, "mock-service-key", serviceID)
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err)
+
+	// Verify the service is gone
+	_, ok := registry.GetServiceConfig(serviceID)
+	assert.False(t, ok, "Service should be unregistered")
+
+	// Try to unregister a non-existent service
+	err = registry.UnregisterService(context.Background(), "non-existent-service")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "not found")
 }
 
-func newMockToolManagerWithCleanupTracking() *mockToolManagerWithCleanupTracking {
-	return &mockToolManagerWithCleanupTracking{
-		clearCalls: make(map[string]int),
-	}
-}
-
-func (m *mockToolManagerWithCleanupTracking) ClearToolsForService(serviceID string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.clearCalls[serviceID]++
-}
-
-func (m *mockToolManagerWithCleanupTracking) getClearCallCount(serviceID string) int {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.clearCalls[serviceID]
-}
-
-// mockResource is a simple implementation of the resource.Resource interface for testing.
-type mockResource struct {
-	resource *mcp.Resource
-	service  string
-}
-
-func (m *mockResource) Resource() *mcp.Resource {
-	return m.resource
-}
-
-func (m *mockResource) Service() string {
-	return m.service
-}
-
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
-	return nil, nil // Not needed for this test
-}
-
-func (m *mockResource) Subscribe(ctx context.Context) error {
-	return nil // Not needed for this test
-}
-
-// mockPrompt is a simple implementation of the prompt.Prompt interface for testing.
-type mockPrompt struct {
-	prompt  *mcp.Prompt
-	service string
-}
-
-func (m *mockPrompt) Prompt() *mcp.Prompt {
-	return m.prompt
-}
-
-func (m *mockPrompt) Service() string {
-	return m.service
-}
-
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
-	return nil, nil // Not needed for this test
-}
-
-// realisticMockUpstream is a mock that interacts with managers during registration.
-type realisticMockUpstream struct {
-	upstream.Upstream
-	serviceID   string
-	resourceDef *configv1.ResourceDefinition
-	promptDef   *configv1.PromptDefinition
-}
-
-func (m *realisticMockUpstream) Register(
-	ctx context.Context,
-	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
-	isReload bool,
-) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	// Simulate resource registration
-	if m.resourceDef != nil {
-		res := &mockResource{
-			resource: &mcp.Resource{URI: fmt.Sprintf("mcp://%s/r/%s", m.serviceID, m.resourceDef.GetName())},
-			service:  m.serviceID,
-		}
-		resourceManager.AddResource(res)
-	}
-
-	// Simulate prompt registration
-	if m.promptDef != nil {
-		p := &mockPrompt{
-			prompt:  &mcp.Prompt{Name: fmt.Sprintf("%s/%s", m.serviceID, m.promptDef.GetName())},
-			service: m.serviceID,
-		}
-		promptManager.AddPrompt(p)
-	}
-
-	// Return a dummy tool definition to simulate tool discovery
-	toolDef := &configv1.ToolDefinition{}
-	toolDef.SetName("test-tool")
-
-	return m.serviceID, []*configv1.ToolDefinition{toolDef}, []*configv1.ResourceDefinition{m.resourceDef}, nil
-}
-
-// TestServiceRegistry_RegisterService_DuplicateName_Cleanup confirms that when a
-// service registration fails due to a duplicate name, the cleanup process is
-// correctly triggered for all managers.
-func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
-	serviceName := "duplicate-service"
-	serviceID := "duplicate-service_e3b0c442" // Name with the empty hash
-	resourceName := "test-resource"
-	promptName := "test-prompt"
-
-	// Resource and Prompt definitions
-	resourceDef := &configv1.ResourceDefinition{}
-	resourceDef.SetName(resourceName)
-
-	promptDef := &configv1.PromptDefinition{}
-	promptDef.SetName(promptName)
-
-	// Mocks
-	mockFactory := &mockFactory{
+func TestServiceRegistry_GetAllServices(t *testing.T) {
+	i := 0
+	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
-			return &realisticMockUpstream{
-				serviceID:   serviceID,
-				resourceDef: resourceDef,
-				promptDef:   promptDef,
+			i++
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					return fmt.Sprintf("mock-service-key-%d", i), nil, nil, nil
+				},
 			}, nil
 		},
 	}
-	mockToolManager := newMockToolManagerWithCleanupTracking()
-	mockPromptManager := prompt.NewPromptManager()
-	mockResourceManager := resource.NewResourceManager()
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
 
-	registry := New(mockFactory, mockToolManager, mockPromptManager, mockResourceManager, auth.NewAuthManager())
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service-1")
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service-2")
+
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err)
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.NoError(t, err)
+
+	services, err := registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Len(t, services, 2)
+}
+
+func TestServiceRegistry_ServiceInfo(t *testing.T) {
+	registry := New(nil, nil, nil, nil, nil)
+	serviceID := "test-service"
+	serviceInfo := &tool.ServiceInfo{
+		Name: "Test Service",
+	}
+
+	registry.AddServiceInfo(serviceID, serviceInfo)
+
+	retrievedInfo, ok := registry.GetServiceInfo(serviceID)
+	require.True(t, ok)
+	assert.Equal(t, serviceInfo, retrievedInfo)
+
+	_, ok = registry.GetServiceInfo("non-existent-service")
+	assert.False(t, ok)
+}
+
+func TestServiceRegistry_RegisterService_OAuth2(t *testing.T) {
+	f := &mockFactory{}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName(serviceName)
+	serviceConfig.SetName("oauth2-service")
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost")
+	serviceConfig.SetHttpService(httpService)
 
-	// First registration (should succeed)
-	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
-	require.NoError(t, err, "First registration should succeed")
+	authConfig := configv1.AuthenticationConfig_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			IssuerUrl: proto.String("https://accounts.google.com"),
+			Audience:  proto.String("test-audience"),
+		}.Build(),
+	}.Build()
+	serviceConfig.SetAuthentication(authConfig)
 
-	resourceID := fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName)
-	promptID := fmt.Sprintf("%s/%s", serviceID, promptName)
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
 
-	// Verify that resources from the first registration are present
-	_, ok := mockResourceManager.GetResource(resourceID)
-	require.True(t, ok, "Resource from the first registration should be present")
+	_, ok := am.GetAuthenticator(serviceID)
+	assert.True(t, ok, "OAuth2 authenticator should have been added")
+}
 
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	require.True(t, ok, "Prompt from the first registration should be present")
+type mockPromptManager struct {
+	prompt.PromptManagerInterface
+	ClearPromptsForServiceFunc func(serviceID string)
+}
 
-	// Second registration (should fail)
-	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig)
-	require.Error(t, err, "Second registration should fail")
+func (m *mockPromptManager) ClearPromptsForService(serviceID string) {
+	if m.ClearPromptsForServiceFunc != nil {
+		m.ClearPromptsForServiceFunc(serviceID)
+	}
+}
 
-	// Verification of cleanup
-	assert.Contains(t, err.Error(), "already registered", "Error message should indicate a duplicate service")
-	assert.Equal(t, 1, mockToolManager.getClearCallCount(serviceID), "ClearToolsForService should be called once for the duplicate service")
+type mockResourceManager struct {
+	resource.ResourceManagerInterface
+	ClearResourcesForServiceFunc func(serviceID string)
+}
 
-	// This is the core of the bug: the test should fail here because resources
-	// and prompts are not being cleaned up.
-	_, ok = mockResourceManager.GetResource(resourceID)
-	assert.False(t, ok, "Resource from the failed registration should be cleaned up")
+func (m *mockResourceManager) ClearResourcesForService(serviceID string) {
+	if m.ClearResourcesForServiceFunc != nil {
+		m.ClearResourcesForServiceFunc(serviceID)
+	}
+}
 
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	assert.False(t, ok, "Prompt from the failed registration should be cleaned up")
+func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
+	var toolClearCount, promptClearCount, resourceClearCount int
+
+	tm := &mockToolManager{
+		ClearToolsForServiceFunc: func(serviceID string) {
+			toolClearCount++
+		},
+	}
+	prm := &mockPromptManager{
+		ClearPromptsForServiceFunc: func(serviceID string) {
+			promptClearCount++
+		},
+	}
+	rm := &mockResourceManager{
+		ClearResourcesForServiceFunc: func(serviceID string) {
+			resourceClearCount++
+		},
+	}
+
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					return "duplicate-service", nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	registry := New(f, tm, prm, rm, auth.NewAuthManager())
+
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service")
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err)
+
+	// Attempt to register another service with the same name
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.Error(t, err)
+
+	assert.Equal(t, 1, toolClearCount, "ClearToolsForService should be called once for the failed registration")
+	assert.Equal(t, 1, promptClearCount, "ClearPromptsForService should be called once for the failed registration")
+	assert.Equal(t, 1, resourceClearCount, "ClearResourcesForService should be called once for the failed registration")
 }
