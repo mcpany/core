@@ -282,7 +282,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := "{{" + schema.GetName() + "}}"
 			if val, ok := inputs[schema.GetName()]; ok {
-				urlString = strings.ReplaceAll(urlString, placeholder, fmt.Sprintf("%v", val))
+				urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(fmt.Sprintf("%v", val)))
 				delete(inputs, schema.GetName())
 			} else {
 				urlString = strings.ReplaceAll(urlString, "/"+placeholder, "")
