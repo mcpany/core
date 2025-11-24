@@ -205,3 +205,71 @@ func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
 	_, ok = mockPromptManager.GetPrompt(promptID)
 	assert.False(t, ok, "Prompt from the failed registration should be cleaned up")
 }
+
+func TestServiceRegistry_AddAndGetServiceInfo(t *testing.T) {
+	registry := New(nil, nil, nil, nil, nil)
+	serviceID := "test-service"
+	serviceInfo := &tool.ServiceInfo{
+		Name: "Test service",
+	}
+
+	registry.AddServiceInfo(serviceID, serviceInfo)
+
+	retrievedInfo, ok := registry.GetServiceInfo(serviceID)
+	require.True(t, ok)
+	assert.Equal(t, serviceInfo, retrievedInfo)
+
+	_, ok = registry.GetServiceInfo("non-existent")
+	assert.False(t, ok)
+}
+
+func TestServiceRegistry_UnregisterService(t *testing.T) {
+	f := &mockFactory{}
+	tm := newMockToolManagerWithCleanupTracking()
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceID := "test-service_e3b0c442"
+
+	registry.serviceConfigs[serviceID] = serviceConfig
+	registry.AddServiceInfo(serviceID, &tool.ServiceInfo{})
+	am.AddAuthenticator(serviceID, &auth.APIKeyAuthenticator{})
+
+	err := registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err)
+
+	_, ok := registry.GetServiceConfig(serviceID)
+	assert.False(t, ok, "Service config should be removed")
+
+	_, ok = registry.GetServiceInfo(serviceID)
+	assert.False(t, ok, "Service info should be removed")
+
+	assert.Equal(t, 1, tm.getClearCallCount(serviceID), "ClearToolsForService should be called")
+
+	_, ok = am.GetAuthenticator(serviceID)
+	assert.False(t, ok, "Authenticator should be removed")
+
+	err = registry.UnregisterService(context.Background(), "non-existent")
+	require.Error(t, err)
+}
+
+func TestServiceRegistry_GetAllServices(t *testing.T) {
+	registry := New(nil, nil, nil, nil, nil)
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("service1")
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("service2")
+
+	registry.serviceConfigs["service1"] = serviceConfig1
+	registry.serviceConfigs["service2"] = serviceConfig2
+
+	services, err := registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Len(t, services, 2)
+	assert.Contains(t, services, serviceConfig1)
+	assert.Contains(t, services, serviceConfig2)
+}

@@ -74,6 +74,47 @@ func TestRefineEndIndex(t *testing.T) {
 	}
 }
 
+func TestFindBlockComment(t *testing.T) {
+	tests := []struct {
+		name      string
+		lines     []string
+		idx       int
+		wantStart int
+		wantEnd   int
+	}{
+		{
+			name:      "Simple block",
+			lines:     []string{"/*", " * Copyright", " */", "code"},
+			idx:       1,
+			wantStart: 0,
+			wantEnd:   2,
+		},
+		{
+			name:      "No start comment",
+			lines:     []string{" * Copyright", " */", "code"},
+			idx:       0,
+			wantStart: -1,
+			wantEnd:   -1,
+		},
+		{
+			name:      "No end comment",
+			lines:     []string{"/*", " * Copyright", "code"},
+			idx:       1,
+			wantStart: -1,
+			wantEnd:   -1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotStart, gotEnd := findBlockComment(tt.lines, tt.idx)
+			if gotStart != tt.wantStart || gotEnd != tt.wantEnd {
+				t.Errorf("findBlockComment() = (%v, %v), want (%v, %v)", gotStart, gotEnd, tt.wantStart, tt.wantEnd)
+			}
+		})
+	}
+}
+
 func TestIsHeaderBlock(t *testing.T) {
 	shebangRegex = regexp.MustCompile(`^#!`)
 
@@ -119,6 +160,33 @@ func TestIsHeaderBlock(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := isHeaderBlock(tt.lines, tt.startIdx); got != tt.want {
 				t.Errorf("isHeaderBlock() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsSourceFile(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want bool
+	}{
+		{"Go file", "main.go", true},
+		{"Python file", "script.py", true},
+		{"Shell script", "run.sh", true},
+		{"YAML file", "config.yaml", true},
+		{"YML file", "config.yml", true},
+		{"Proto file", "service.proto", true},
+		{"Makefile", "Makefile", true},
+		{"Dockerfile", "Dockerfile", true},
+		{"Text file", "notes.txt", false},
+		{"No extension", "README", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isSourceFile(tt.path); got != tt.want {
+				t.Errorf("isSourceFile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
