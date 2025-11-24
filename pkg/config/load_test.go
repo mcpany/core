@@ -17,6 +17,8 @@
 package config
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -40,6 +42,109 @@ func createTempConfigFile(t *testing.T, content string) string {
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
 func TestLoadServices_ValidConfigs(t *testing.T) {
+	t.Run("Load from URL", func(t *testing.T) {
+		// Create a mock HTTP server to serve the config file
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`
+upstream_services: {
+	name: "http-svc-from-url"
+	http_service: {
+		address: "http://api.example.com/from-url"
+	}
+}
+`))
+		}))
+		defer server.Close()
+		originalClient := httpClient
+		t.Cleanup(func() {
+			httpClient = originalClient
+		})
+		httpClient = server.Client()
+
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
+		cfg, err := LoadServices(fileStore, "server")
+		require.NoError(t, err)
+		require.NotNil(t, cfg)
+		assert.Len(t, cfg.GetUpstreamServices(), 1)
+		s := cfg.GetUpstreamServices()[0]
+		assert.Equal(t, "http-svc-from-url", s.GetName())
+		httpService := s.GetHttpService()
+		require.NotNil(t, httpService)
+		assert.Equal(t, "http://api.example.com/from-url", httpService.GetAddress())
+	})
+
+	t.Run("Load from URL with 404 error", func(t *testing.T) {
+		// Create a mock HTTP server to serve the config file
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer server.Close()
+		originalClient := httpClient
+		t.Cleanup(func() {
+			httpClient = originalClient
+		})
+		httpClient = server.Client()
+
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "status code 404")
+	})
+
+	t.Run("Load from URL with malformed content", func(t *testing.T) {
+		// Create a mock HTTP server to serve the config file
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`
+upstream_services: {
+	name: "http-svc-from-url"
+	http_service: {
+		address: "http://api.example.com/from-url"
+`))
+		}))
+		defer server.Close()
+		originalClient := httpClient
+		t.Cleanup(func() {
+			httpClient = originalClient
+		})
+		httpClient = server.Client()
+
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to unmarshal config")
+	})
+
+	t.Run("Load from URL with response larger than 1MB", func(t *testing.T) {
+		// Create a mock HTTP server to serve the config file
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Length", "1048577")
+			_, _ = w.Write(make([]byte, 1048577))
+		}))
+		defer server.Close()
+		originalClient := httpClient
+		t.Cleanup(func() {
+			httpClient = originalClient
+		})
+		httpClient = server.Client()
+
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "request body too large")
+	})
+
+	t.Run("Load from URL with loopback address", func(t *testing.T) {
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{"http://127.0.0.1:8080/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	})
+
 	t.Run("unknown binary type", func(t *testing.T) {
 		filePath := createTempConfigFile(t, "")
 		fs := afero.NewOsFs()
