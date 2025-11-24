@@ -184,3 +184,19 @@ global_settings:
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
 }
+
+func TestRootCmd_GrpcPortFromEnv(t *testing.T) {
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+
+	t.Setenv("MCPANY_GRPC_PORT", "9090")
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{})
+	rootCmd.Execute()
+
+	assert.True(t, mock.called, "app.Run should have been called")
+	assert.Equal(t, "9090", mock.capturedGrpcPort, "grpc-port should be captured from environment variable")
+}

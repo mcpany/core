@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -30,6 +31,7 @@ func BindFlags(cmd *cobra.Command) {
 	cobra.OnInitialize(func() {
 		viper.AutomaticEnv()
 		viper.SetEnvPrefix("MCPANY")
+		viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	})
 
 	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
