@@ -99,8 +99,17 @@ func newRootCmd() *cobra.Command {
 				bindAddress = "localhost:" + bindAddress
 			}
 
-			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-			defer stop()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			go func() {
+				// Wait for an interrupt signal
+				sigChan := make(chan os.Signal, 1)
+				signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+				<-sigChan
+				log.Info("Received interrupt signal, shutting down...")
+				cancel()
+			}()
 
 			shutdownTimeout := cfg.ShutdownTimeout()
 
