@@ -174,6 +174,20 @@ MCP Any supports a variety of advanced configuration options, including:
           apiKey: "my-secret-key"
   ```
 
+- **Rate Limiting**: Configure rate limiting for an upstream service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-rate-limited-service"
+      httpService:
+        address: "https://api.example.com"
+        # ...
+      rateLimit:
+        isEnabled: true
+        requestsPerSecond: 10
+        burst: 5
+  ```
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.

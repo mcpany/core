@@ -42,7 +42,8 @@ For a complete list of all available configuration options, please see the [Conf
 
 Our immediate focus is on implementing the features that are already defined in the configuration schema.
 
-- [ ] **Implement Advanced Service Policies**: Build the server-side logic to enforce the `CacheConfig`, `RateLimitConfig`, and `ResilienceConfig` policies.
+- [x] **Implement Rate Limiting**: The `RateLimitConfig` policy is now enforced by the server.
+- [ ] **Implement Advanced Service Policies**: Build the server-side logic to enforce the `CacheConfig` and `ResilienceConfig` policies.
 - [ ] **Implement Health Checking**: Build the logic for performing service health checks and routing traffic accordingly.
 - [ ] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.

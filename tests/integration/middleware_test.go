@@ -97,3 +97,61 @@ upstream_services:
 	// Check that the upstream service was only called once
 	assert.Equal(t, 1, requestCount, "Upstream service should have been called only once")
 }
+
+func TestRateLimitMiddlewareIntegration(t *testing.T) {
+	// Start a mock upstream service
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, `{"status": "ok"}`)
+	}))
+	defer upstream.Close()
+
+	// Create a config file for the server with rate limiting enabled
+	configContent := fmt.Sprintf(`
+upstream_services:
+  - name: "rate-limited-service"
+    http_service:
+      address: "%s"
+      calls:
+        - schema:
+            name: "test-tool"
+          endpoint_path: "/"
+          method: "HTTP_METHOD_GET"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 1
+      burst: 1
+`, upstream.URL)
+
+	// Start the MCP Any server
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "rate-limit-test", configContent)
+	defer serverInfo.CleanupFunc()
+
+	// Wait for the tool to be registered
+	require.Eventually(t, func() bool {
+		listToolsResult, err := serverInfo.ListTools(context.Background())
+		if err != nil {
+			return false
+		}
+		for _, tool := range listToolsResult.Tools {
+			if tool.Name == "rate-limited-service.test-tool" {
+				return true
+			}
+		}
+		return false
+	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+
+	callToolParams := &mcp.CallToolParams{
+		Name:      "rate-limited-service.test-tool",
+		Arguments: json.RawMessage(`{}`),
+	}
+
+	// First call should succeed
+	_, err := serverInfo.CallTool(context.Background(), callToolParams)
+	require.NoError(t, err)
+
+	// Second call should fail due to rate limiting
+	_, err = serverInfo.CallTool(context.Background(), callToolParams)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "ResourceExhausted")
+}
