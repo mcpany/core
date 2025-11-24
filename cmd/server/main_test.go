@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
-	"github.com/mcpany/core/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
