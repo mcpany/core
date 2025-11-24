@@ -35,13 +35,21 @@ docker run -d --name "$CONTAINER_NAME" \
   --grpc-port :50051
 
 echo "Waiting for container to be ready..."
-sleep 5
 
 # Check HTTP Health
 echo "Checking HTTP health..."
-if curl --fail --silent http://localhost:50050/healthz > /dev/null; then
-  echo "HTTP Health Check Passed"
-else
+RETRIES=30
+while [ $RETRIES -gt 0 ]; do
+  if curl --fail --silent http://localhost:50050/healthz > /dev/null; then
+    echo "HTTP Health Check Passed"
+    break
+  fi
+  echo "Waiting for HTTP health check... ($RETRIES retries left)"
+  sleep 1
+  RETRIES=$((RETRIES-1))
+done
+
+if [ $RETRIES -eq 0 ]; then
   echo "HTTP Health Check Failed"
   docker logs "$CONTAINER_NAME"
   docker rm -f "$CONTAINER_NAME"
@@ -50,9 +58,18 @@ fi
 
 # Check gRPC Health
 echo "Checking gRPC health..."
-if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:50051 list; then
-  echo "gRPC Health Check Passed"
-else
+RETRIES=30
+while [ $RETRIES -gt 0 ]; do
+  if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:50051 list > /dev/null 2>&1; then
+    echo "gRPC Health Check Passed"
+    break
+  fi
+  echo "Waiting for gRPC health check... ($RETRIES retries left)"
+  sleep 1
+  RETRIES=$((RETRIES-1))
+done
+
+if [ $RETRIES -eq 0 ]; then
   echo "gRPC Health Check Failed"
   docker logs "$CONTAINER_NAME"
   docker rm -f "$CONTAINER_NAME"
