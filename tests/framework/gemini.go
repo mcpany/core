@@ -49,10 +49,7 @@ func (g *GeminiCLI) Install() {
 
 func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	g.t.Helper()
-	root, err := integration.GetProjectRoot()
-	require.NoError(g.t, err)
-	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
-	return exec.Command(geminiPath, args...)
+	return exec.Command("gemini", args...)
 }
 
 func (g *GeminiCLI) AddMCP(name, endpoint string) {

@@ -298,4 +298,66 @@ func TestCachingMiddleware(t *testing.T) {
 		assert.Equal(t, "new result", result)
 		assert.True(t, nextCalled, "next should be called when service info is not found")
 	})
+
+	t.Run("multi-tool cache", func(t *testing.T) {
+		mockToolManager := &mockToolManager{}
+		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+
+		// Tool 1 with caching enabled
+		tool1Proto := &v1.Tool{}
+		tool1Proto.SetServiceId("service1")
+		mockTool1 := &mockTool{toolProto: tool1Proto}
+		cacheConfig1 := &configv1.CacheConfig{}
+		cacheConfig1.SetIsEnabled(true)
+		cacheConfig1.SetTtl(durationpb.New(10 * time.Second))
+		mockTool1.On("GetCacheConfig").Return(cacheConfig1)
+
+		// Tool 2 with caching disabled
+		tool2Proto := &v1.Tool{}
+		tool2Proto.SetServiceId("service2")
+		mockTool2 := &mockTool{toolProto: tool2Proto}
+		cacheConfig2 := &configv1.CacheConfig{}
+		cacheConfig2.SetIsEnabled(false)
+		mockTool2.On("GetCacheConfig").Return(cacheConfig2)
+
+		req1 := &tool.ExecutionRequest{
+			ToolName:   "service1.test-tool1",
+			ToolInputs: json.RawMessage(`{"input":"value1"}`),
+		}
+		ctx1 := tool.NewContextWithTool(context.Background(), mockTool1)
+
+		req2 := &tool.ExecutionRequest{
+			ToolName:   "service2.test-tool2",
+			ToolInputs: json.RawMessage(`{"input":"value2"}`),
+		}
+		ctx2 := tool.NewContextWithTool(context.Background(), mockTool2)
+
+		// Prime cache for tool 1
+		cachingMiddleware.Execute(ctx1, req1, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return "cached result1", nil
+		})
+
+		// First call for tool 2
+		nextCalled2 := 0
+		next2 := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			nextCalled2++
+			return "new result2", nil
+		}
+		cachingMiddleware.Execute(ctx2, req2, next2)
+
+		// Verify cache hit for tool 1
+		next1 := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			t.Fatal("next should not be called for tool1")
+			return nil, nil
+		}
+		result1, err1 := cachingMiddleware.Execute(ctx1, req1, next1)
+		assert.NoError(t, err1)
+		assert.Equal(t, "cached result1", result1)
+
+		// Verify cache miss for tool 2
+		result2, err2 := cachingMiddleware.Execute(ctx2, req2, next2)
+		assert.NoError(t, err2)
+		assert.Equal(t, "new result2", result2)
+		assert.Equal(t, 2, nextCalled2, "next should be called twice for tool2")
+	})
 }
