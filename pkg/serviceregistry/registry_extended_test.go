@@ -205,3 +205,70 @@ func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
 	_, ok = mockPromptManager.GetPrompt(promptID)
 	assert.False(t, ok, "Prompt from the failed registration should be cleaned up")
 }
+
+func TestServiceRegistry_UnregisterService(t *testing.T) {
+	f := &mockFactory{}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+
+	// Register the service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+	assert.Equal(t, "mock-service-key", serviceID)
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err)
+
+	// Verify the service is removed
+	_, ok := registry.GetServiceConfig(serviceID)
+	assert.False(t, ok)
+
+	// Try to unregister a non-existent service
+	err = registry.UnregisterService(context.Background(), "non-existent-service")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "not found")
+}
+
+func TestServiceRegistry_GetAllServices(t *testing.T) {
+	f := &mockFactory{}
+	tm := &mockToolManager{}
+	prm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	am := auth.NewAuthManager()
+	registry := New(f, tm, prm, rm, am)
+
+	// Get all services when empty
+	services, err := registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Empty(t, services)
+
+	// Register two services
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service-1")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err)
+
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service-2")
+	f.newUpstreamFunc = func() (upstream.Upstream, error) {
+		return &mockUpstream{
+			registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+				return "mock-service-key-2", nil, nil, nil
+			},
+		}, nil
+	}
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.NoError(t, err)
+
+	// Get all services
+	services, err = registry.GetAllServices()
+	require.NoError(t, err)
+	assert.Len(t, services, 2)
+}
