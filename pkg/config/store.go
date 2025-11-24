@@ -17,9 +17,14 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net"
+	"net/http"
 	"os"
+	"time"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -156,9 +161,18 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	}
 
 	for _, path := range filePaths {
-		b, err := afero.ReadFile(s.fs, path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+		var b []byte
+		var err error
+		if isURL(path) {
+			b, err = readURL(path)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read config from URL %s: %w", path, err)
+			}
+		} else {
+			b, err = afero.ReadFile(s.fs, path)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+			}
 		}
 
 		if len(b) == 0 {
@@ -185,10 +199,60 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	return mergedConfig, nil
 }
 
+var httpClient = &http.Client{
+	Timeout: 5 * time.Second,
+	Transport: &http.Transport{
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, _, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, err
+			}
+
+			ips, err := net.LookupIP(host)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, ip := range ips {
+				if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
+					return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
+				}
+			}
+
+			return (&net.Dialer{}).DialContext(ctx, network, addr)
+		},
+	},
+}
+
+func readURL(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for url %s: %w", url, err)
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get config from url %s: status code %d", url, resp.StatusCode)
+	}
+
+	// Limit the size of the response to 1MB to prevent DoS attacks.
+	resp.Body = http.MaxBytesReader(nil, resp.Body, 1024*1024)
+	return io.ReadAll(resp.Body)
+}
+
 // collectFilePaths recursively scans the configured paths and returns a list of valid config files.
 func (s *FileStore) collectFilePaths() ([]string, error) {
 	var files []string
 	for _, path := range s.paths {
+		if isURL(path) {
+			files = append(files, path)
+			continue
+		}
 		info, err := s.fs.Stat(path)
 		if err != nil {
 			return nil, fmt.Errorf("failed to stat path %s: %w", path, err)
@@ -217,4 +281,8 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 	}
 	sort.Strings(files)
 	return files, nil
+}
+
+func isURL(path string) bool {
+	return strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
 }

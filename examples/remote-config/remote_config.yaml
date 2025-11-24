@@ -1,0 +1,12 @@
+upstreamServices:
+  - name: "hello-remote"
+    httpService:
+      address: "http://localhost:8081"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+          parameterMappings:
+            - inputParameterName: "userId"
+              targetParameterName: "userId"
