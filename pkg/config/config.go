@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -27,10 +28,9 @@ import (
 
 // BindFlags binds the command line flags to viper.
 func BindFlags(cmd *cobra.Command) {
-	cobra.OnInitialize(func() {
-		viper.AutomaticEnv()
-		viper.SetEnvPrefix("MCPANY")
-	})
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("MCPANY")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
 	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
@@ -44,6 +44,10 @@ func BindFlags(cmd *cobra.Command) {
 	}
 
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
+	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {
+		fmt.Printf("Error binding grpc-port flag: %v\n", err)
+		os.Exit(1)
+	}
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
 	cmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	cmd.Flags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
