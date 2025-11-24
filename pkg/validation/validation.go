@@ -99,7 +99,7 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")
 	}
-	if def.GetEndpointPath() == "" {
+	if strings.TrimSpace(def.GetEndpointPath()) == "" {
 		return fmt.Errorf("path is required")
 	}
 	if !strings.HasPrefix(def.GetEndpointPath(), "/") {

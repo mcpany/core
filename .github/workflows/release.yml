@@ -65,7 +65,7 @@ jobs:
         platform: [linux/amd64, linux/arm64, linux/386, darwin/amd64, darwin/arm64, windows/amd64]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -166,7 +166,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-images-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
 
       # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
       # Since we are using native runners, this is mostly a fallback/safety.

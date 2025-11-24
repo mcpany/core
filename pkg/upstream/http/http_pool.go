@@ -46,8 +46,10 @@ var NewHttpPool = func(
 		return client.NewHttpClientWrapper(
 			&http.Client{
 				Transport: &http.Transport{
-					DisableKeepAlives: true,
-					TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
+					TLSClientConfig: &tls.Config{
+						MinVersion:         tls.VersionTLS12,
+						InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(),
+					},
 					DialContext: (&net.Dialer{
 						Timeout: 30 * time.Second,
 					}).DialContext,

@@ -19,6 +19,7 @@ package config
 import (
 	"bytes"
 	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/mcpany/core/pkg/logging"
@@ -60,4 +61,54 @@ func TestBindFlags(t *testing.T) {
 
 	cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))
+}
+
+func TestGRPCPortEnvVar(t *testing.T) {
+	viper.Reset() // Reset viper to avoid state leakage from other tests.
+	os.Setenv("MCPANY_GRPC_PORT", "9090")
+	defer os.Unsetenv("MCPANY_GRPC_PORT")
+
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+
+	assert.Equal(t, "9090", viper.GetString("grpc-port"))
+}
+
+func TestMCPListenAddress(t *testing.T) {
+	tests := []struct {
+		name     string
+		address  string
+		expected string
+	}{
+		{
+			name:     "port only",
+			address:  "50050",
+			expected: "localhost:50050",
+		},
+		{
+			name:     "address with port",
+			address:  "127.0.0.1:50050",
+			expected: "127.0.0.1:50050",
+		},
+		{
+			name:     "hostname with port",
+			address:  "mcpany.internal:50050",
+			expected: "mcpany.internal:50050",
+		},
+		{
+			name:     "hostname without port",
+			address:  "mcpany.internal",
+			expected: "localhost:mcpany.internal",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			settings := &Settings{
+				proto: &v1.GlobalSettings{},
+			}
+			settings.proto.SetMcpListenAddress(tt.address)
+			assert.Equal(t, tt.expected, settings.MCPListenAddress())
+		})
+	}
 }

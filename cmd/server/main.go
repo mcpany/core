@@ -95,9 +95,6 @@ func newRootCmd() *cobra.Command {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
 
-			if !strings.Contains(bindAddress, ":") {
-				bindAddress = "localhost:" + bindAddress
-			}
 
 			ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 			defer stop()

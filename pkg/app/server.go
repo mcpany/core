@@ -340,15 +340,6 @@ func HealthCheckWithContext(
 	out io.Writer,
 	addr string,
 ) error {
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-	if deadline, ok := ctx.Deadline(); ok {
-		client.Timeout = time.Until(deadline)
-	}
-
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
@@ -359,7 +350,7 @@ func HealthCheckWithContext(
 		return fmt.Errorf("failed to create request for health check: %w", err)
 	}
 
-	resp, err := client.Do(req)
+	resp, err := healthCheckClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
@@ -430,20 +421,21 @@ func (a *Application) runServerMode(
 		mux.Handle("/v1/", gwmux)
 	}
 
-	if bindAddress == "" {
-		bindAddress = fmt.Sprintf("localhost:%d", 8070)
-	}
-	if !strings.Contains(bindAddress, ":") {
-		bindAddress = ":" + bindAddress
+	httpBindAddress := bindAddress
+	if httpBindAddress == "" {
+		httpBindAddress = "localhost:8070"
+	} else if !strings.Contains(httpBindAddress, ":") {
+		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", bindAddress, mux, shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, mux, shutdownTimeout)
 
-	if grpcPort != "" {
-		if !strings.Contains(grpcPort, ":") {
-			grpcPort = ":" + grpcPort
+	grpcBindAddress := grpcPort
+	if grpcBindAddress != "" {
+		if !strings.Contains(grpcBindAddress, ":") {
+			grpcBindAddress = ":" + grpcBindAddress
 		}
-		lis, err := net.Listen("tcp", grpcPort)
+		lis, err := net.Listen("tcp", grpcBindAddress)
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
@@ -507,9 +499,17 @@ func startHTTPServer(
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		serverLog := logging.GetLogger().With("server", name, "port", addr)
+		serverLog := logging.GetLogger().With("server", name)
+		lis, err := net.Listen("tcp", addr)
+		if err != nil {
+			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
+			return
+		}
+		defer lis.Close()
+
+		serverLog = serverLog.With("port", lis.Addr().String())
+
 		server := &http.Server{
-			Addr:    addr,
 			Handler: handler,
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
@@ -546,7 +546,7 @@ func startHTTPServer(
 		}()
 
 		serverLog.Info("HTTP server listening")
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
 		}
@@ -577,7 +577,7 @@ func startGrpcServer(
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		serverLog := logging.GetLogger().With("server", name, "port", lis.Addr().String())
+		serverLog := logging.GetLogger().With("server", name)
 		registerSafe := func() *gogrpc.Server {
 			defer func() {
 				if r := recover(); r != nil {
@@ -628,15 +628,10 @@ func startGrpcServer(
 				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
 				grpcServer.Stop()
-				// N.B. grpcServer.Stop() does not close the listener, so we need to
-				// do it here to release the port.
-				if err := lis.Close(); err != nil {
-					serverLog.Error("Failed to close listener", "error", err)
-				}
 			}
 		}()
 
-		serverLog.Info("gRPC server listening")
+		serverLog.Info("gRPC server listening", "port", lis.Addr().String())
 		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
