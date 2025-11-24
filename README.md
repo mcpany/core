@@ -29,6 +29,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
+- **Advanced Service Policies**: Configure Caching and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
@@ -174,19 +175,6 @@ MCP Any supports a variety of advanced configuration options, including:
           apiKey: "my-secret-key"
   ```
 
-- **Rate Limiting**: Configure rate limiting for an upstream service.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-rate-limited-service"
-      httpService:
-        address: "https://api.example.com"
-        # ...
-      rateLimit:
-        isEnabled: true
-        requestsPerSecond: 10
-        burst: 5
-  ```
 ### Remote Configurations
 
 In addition to loading configuration files from the local filesystem, MCP Any can also load configurations from remote URLs. This allows you to easily share and reuse configurations without having to manually copy and paste files.

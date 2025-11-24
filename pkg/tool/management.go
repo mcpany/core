@@ -27,7 +27,6 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/policy/ratelimit"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -169,13 +168,6 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 
 	if tool.Tool().GetServiceId() == "" {
 		return fmt.Errorf("tool service ID cannot be empty")
-	}
-
-	serviceInfo, ok := tm.GetServiceInfo(tool.Tool().GetServiceId())
-	if ok && serviceInfo.Config.GetRateLimit().GetIsEnabled() {
-		rateLimitConfig := serviceInfo.Config.GetRateLimit()
-		limiter := ratelimit.NewInMemoryLimiter(rateLimitConfig.GetRequestsPerSecond(), int(rateLimitConfig.GetBurst()))
-		tool = NewRateLimitedTool(tool, limiter)
 	}
 
 	sanitizedToolName, err := util.SanitizeToolName(tool.Tool().GetName())
