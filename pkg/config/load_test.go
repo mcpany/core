@@ -40,6 +40,14 @@ func createTempConfigFile(t *testing.T, content string) string {
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
 func TestLoadServices_ValidConfigs(t *testing.T) {
+	t.Run("unknown binary type", func(t *testing.T) {
+		filePath := createTempConfigFile(t, "")
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{filePath})
+		_, err := LoadServices(fileStore, "unknown")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unknown binary type: unknown")
+	})
 	tests := []struct {
 		name             string
 		textprotoContent string
