@@ -24,6 +24,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/cookiejar"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -554,6 +555,7 @@ type MCPANYTestServerInfo struct {
 	RegistrationClient       apiv1.RegistrationServiceClient
 	CleanupFunc              func()
 	T                        *testing.T
+	SSEBody                  io.ReadCloser
 }
 
 // --- Websocket Echo Server Helper ---
@@ -655,7 +657,7 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
-	mcpRequestURL := jsonrpcEndpoint + "/mcp"
+	mcpRequestURL := jsonrpcEndpoint + "/"
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -807,8 +809,13 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
 
-	mcpRequestURL := jsonrpcEndpoint + "/mcp"
-	httpClient := &http.Client{Timeout: 2 * time.Second}
+	mcpRequestURL := jsonrpcEndpoint + "/"
+	jar, err := cookiejar.New(nil)
+	require.NoError(t, err)
+	httpClient := &http.Client{
+		Timeout: 2 * time.Second,
+		Jar:     jar,
+	}
 
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
@@ -1280,7 +1287,9 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	}
 	bodyBytes, _ := io.ReadAll(resp.Body)
 	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
+		if errSSE := parseSSEResponse(bodyBytes, &rpcResp); errSSE != nil {
+			return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
+		}
 	}
 
 	if rpcResp.Error != nil {
@@ -1323,8 +1332,11 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		Result *mcp.CallToolResult `json:"result"`
 		Error  *MCPJSONRPCError    `json:"error"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
+		if errSSE := parseSSEResponse(bodyBytes, &rpcResp); errSSE != nil {
+			return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
+		}
 	}
 
 	if rpcResp.Error != nil {
@@ -1332,4 +1344,98 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 	}
 
 	return rpcResp.Result, nil
+}
+
+func parseSSEResponse(body []byte, v interface{}) error {
+	lines := strings.Split(string(body), "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, "data: ") {
+			jsonStr := strings.TrimPrefix(line, "data: ")
+			return json.Unmarshal([]byte(jsonStr), v)
+		}
+	}
+	return fmt.Errorf("no data field found in SSE response: %s", string(body))
+}
+
+func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
+	reqBody, err := json.Marshal(map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "initialize",
+		"params": map[string]interface{}{
+			"protocolVersion": "2024-11-05",
+			"capabilities":    map[string]interface{}{},
+			"clientInfo": map[string]interface{}{
+				"name":    "test-client",
+				"version": "1.0.0",
+			},
+		},
+		"id": 1,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to marshal initialize request: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return fmt.Errorf("failed to create initialize request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+
+	resp, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return fmt.Errorf("failed to send initialize request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	s.T.Logf("Initialize response body: %s", string(bodyBytes))
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	var rpcResp struct {
+		Result interface{}      `json:"result"`
+		Error  *MCPJSONRPCError `json:"error"`
+	}
+
+	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
+		if errSSE := parseSSEResponse(bodyBytes, &rpcResp); errSSE != nil {
+			return fmt.Errorf("failed to decode initialize response: %w. Body: %s", err, string(bodyBytes))
+		}
+	}
+
+	if rpcResp.Error != nil {
+		return rpcResp.Error
+	}
+
+	// Send initialized notification
+	reqBody, err = json.Marshal(map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "notifications/initialized",
+		"params":  map[string]interface{}{},
+	})
+	if err != nil {
+		return fmt.Errorf("failed to marshal initialized notification: %w", err)
+	}
+
+	httpReq, err = http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return fmt.Errorf("failed to create initialized notification: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+
+	resp, err = s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return fmt.Errorf("failed to send initialized notification: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Notification does not expect response, but usually 200 OK.
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
+		// Log warning or ignore
+	}
+
+	return nil
 }

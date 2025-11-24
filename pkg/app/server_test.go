@@ -51,6 +51,23 @@ import (
 	gogrpc "google.golang.org/grpc"
 )
 
+type ThreadSafeBuffer struct {
+	b bytes.Buffer
+	m sync.Mutex
+}
+
+func (b *ThreadSafeBuffer) Write(p []byte) (n int, err error) {
+	b.m.Lock()
+	defer b.m.Unlock()
+	return b.b.Write(p)
+}
+
+func (b *ThreadSafeBuffer) String() string {
+	b.m.Lock()
+	defer b.m.Unlock()
+	return b.b.String()
+}
+
 // connCountingListener is a net.Listener that wraps another net.Listener and
 // counts the number of accepted connections.
 type connCountingListener struct {
@@ -553,7 +570,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
+	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
 	// Occupy a port to ensure the HTTP server fails to start.
@@ -775,7 +792,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
+	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
 	fs := afero.NewMemMapFs()

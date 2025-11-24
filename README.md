@@ -187,6 +187,7 @@ MCP Any supports a variety of advanced configuration options, including:
         requestsPerSecond: 10
         burst: 5
   ```
+
 ### Remote Configurations
 
 In addition to loading configuration files from the local filesystem, MCP Any can also load configurations from remote URLs. This allows you to easily share and reuse configurations without having to manually copy and paste files.
