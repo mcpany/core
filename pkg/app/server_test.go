@@ -66,6 +66,24 @@ func (l *connCountingListener) Accept() (net.Conn, error) {
 	return conn, err
 }
 
+// ThreadSafeBuffer is a bytes.Buffer that is safe for concurrent use.
+type ThreadSafeBuffer struct {
+	b bytes.Buffer
+	m sync.Mutex
+}
+
+func (b *ThreadSafeBuffer) Write(p []byte) (n int, err error) {
+	b.m.Lock()
+	defer b.m.Unlock()
+	return b.b.Write(p)
+}
+
+func (b *ThreadSafeBuffer) String() string {
+	b.m.Lock()
+	defer b.m.Unlock()
+	return b.b.String()
+}
+
 func TestHealthCheck(t *testing.T) {
 	t.Run("health check against specific IP address", func(t *testing.T) {
 		// This test is designed to fail if 'localhost' resolves to an IP
@@ -363,7 +381,7 @@ func TestHealthCheck(t *testing.T) {
 func TestSetup(t *testing.T) {
 	t.Run("with nil fs", func(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
-		var buf bytes.Buffer
+		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelError, &buf)
 
 		fs, err := setup(nil)
@@ -553,7 +571,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
+	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
 	// Occupy a port to ensure the HTTP server fails to start.
@@ -668,7 +686,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
+	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
 	app := NewApplication()
@@ -775,7 +793,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
-	var buf bytes.Buffer
+	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
 	fs := afero.NewMemMapFs()
