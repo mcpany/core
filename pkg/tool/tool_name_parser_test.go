@@ -65,6 +65,13 @@ func TestParseToolName(t *testing.T) {
 			toolName: "namespace" + consts.ToolNameServiceSeparator,
 			wantErr:  true,
 		},
+		{
+			name:          "Valid tool name with -- prefix",
+			toolName:      "my-service" + consts.ToolNameServiceSeparator + "--my-tool",
+			wantNamespace: "my-service",
+			wantMethod:    "my-tool",
+			wantErr:       false,
+		},
 	}
 
 	for _, tc := range testCases {
