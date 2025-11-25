@@ -26,8 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/docker/client"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/moby/moby/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

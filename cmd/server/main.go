@@ -19,6 +19,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -31,6 +32,8 @@ import (
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/config/loader"
+	"github.com/mcpany/core/pkg/config/validation"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/spf13/afero"
@@ -152,6 +155,36 @@ func newRootCmd() *cobra.Command {
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
+
+	validateCmd := &cobra.Command{
+		Use:   "validate",
+		Short: "Validate the configuration file(s)",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, fs); err != nil {
+				return err
+			}
+			configPaths := cfg.ConfigPaths()
+
+			l := loader.New(afero.NewOsFs())
+			serverConfig, err := l.Load(configPaths...)
+			if err != nil {
+				return fmt.Errorf("failed to load configuration: %w", err)
+			}
+
+			validationErrors := validation.Validate(serverConfig)
+			if len(validationErrors) > 0 {
+				for _, validationError := range validationErrors {
+					_, _ = fmt.Fprintln(cmd.ErrOrStderr(), validationError)
+				}
+				return errors.New("configuration validation failed")
+			}
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
+			return nil
+		},
+	}
+	rootCmd.AddCommand(validateCmd)
 
 	config.BindFlags(rootCmd)
 
