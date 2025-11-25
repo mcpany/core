@@ -28,6 +28,10 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
+	"bytes"
+	"os/exec"
+	"strings"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -154,12 +158,53 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	return health.Check{
 		Name: name,
 		Check: func(ctx context.Context) error {
-			// For command line services, we assume it's healthy if not otherwise configured.
-			// A more sophisticated check would involve running a specific command and checking the output.
-			if c.GetHealthCheck() == nil {
+			hc := c.GetHealthCheck()
+			if hc == nil {
+				// For command line services, we assume it's healthy if not otherwise configured.
 				return nil
 			}
-			// NOTE: StdioHealthCheck is not implemented yet.
+
+			// Set a timeout for the health check.
+			timeout := 5 * time.Second
+			if hc.GetTimeout() != nil {
+				timeout = hc.GetTimeout().AsDuration()
+			}
+			ctx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+
+			// The 'method' field in the health check config specifies the command to run.
+			// If it's empty, the check is a no-op.
+			if hc.GetMethod() == "" {
+				return nil
+			}
+
+			// Prepare the command.
+			parts := strings.Fields(hc.GetMethod())
+			cmd := exec.CommandContext(ctx, parts[0], parts[1:]...)
+			cmd.Dir = c.GetWorkingDirectory()
+
+			// If a prompt is provided, write it to the command's stdin.
+			if hc.GetPrompt() != "" {
+				cmd.Stdin = strings.NewReader(hc.GetPrompt())
+			}
+
+			// Capture the output of the command.
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			cmd.Stderr = &out
+
+			// Run the command.
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("health check command for '%s' failed: %w; output: %s", name, err, out.String())
+			}
+
+			// If an expected response is provided, check if the output contains it.
+			if hc.GetExpectedResponseContains() != "" {
+				if !strings.Contains(out.String(), hc.GetExpectedResponseContains()) {
+					return fmt.Errorf("health check for '%s' failed: output does not contain expected string '%s'; output: %s", name, hc.GetExpectedResponseContains(), out.String())
+				}
+			}
+
 			return nil
 		},
 	}
