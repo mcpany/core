@@ -243,3 +243,42 @@ func TestGracefulShutdown(t *testing.T) {
 	err = cmd.Wait()
 	assert.NoError(t, err)
 }
+
+func TestValidateCmd(t *testing.T) {
+	// Create a temporary directory for config files
+	dir, err := os.MkdirTemp("", "test-validate-config")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	// Create a valid config file
+	validConfigFile := dir + "/valid_config.yaml"
+	err = os.WriteFile(validConfigFile, []byte(`
+upstream_services:
+  - name: "my-service"
+    http_service:
+      address: "http://localhost:8080"
+`), 0644)
+	assert.NoError(t, err)
+
+	// Create an invalid config file
+	invalidConfigFile := dir + "/invalid_config.yaml"
+	err = os.WriteFile(invalidConfigFile, []byte(`
+upstream_services:
+  - name: "my-service"
+    http_service:
+      address: "invalid-url"
+`), 0644)
+	assert.NoError(t, err)
+
+	// Test with a valid config file
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"validate", "--config-path", validConfigFile})
+	err = rootCmd.Execute()
+	assert.NoError(t, err, "Validation should pass for a valid config file")
+
+	// Test with an invalid config file
+	rootCmd = newRootCmd()
+	rootCmd.SetArgs([]string{"validate", "--config-path", invalidConfigFile})
+	err = rootCmd.Execute()
+	assert.Error(t, err, "Validation should fail for an invalid config file")
+}
