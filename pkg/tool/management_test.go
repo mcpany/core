@@ -351,3 +351,28 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 	tm.SetMCPServer(mockProvider)
 	assert.Equal(t, mockProvider, tm.mcpServer, "MCPServerProvider should be set")
 }
+
+func TestToolManager_AddTool_Handler(t *testing.T) {
+	tm := NewToolManager(nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	mockProvider := new(MockMCPServerProvider)
+	mockProvider.On("Server").Return(mcpServer)
+	tm.SetMCPServer(mockProvider)
+
+	mockTool := new(MockTool)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("test-tool")
+	// Add an input schema to test the conversion logic and prevent a panic in the MCP server
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+	})
+	assert.NoError(t, err)
+	annotations := &v1.ToolAnnotations{}
+	annotations.SetInputSchema(inputSchema)
+	toolProto.SetAnnotations(annotations)
+	mockTool.On("Tool").Return(toolProto)
+
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+}
