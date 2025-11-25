@@ -709,7 +709,6 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // environment variables.
 type CommandTool struct {
 	tool           *v1.Tool
-	command        string
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
 }
@@ -718,10 +717,13 @@ type CommandTool struct {
 //
 // tool is the protobuf definition of the tool.
 // command is the command to be executed.
-func NewCommandTool(tool *v1.Tool, service *configv1.CommandLineUpstreamService, callDefinition *configv1.CommandLineCallDefinition) *CommandTool {
+func NewCommandTool(
+	tool *v1.Tool,
+	service *configv1.CommandLineUpstreamService,
+	callDefinition *configv1.CommandLineCallDefinition,
+) Tool {
 	return &CommandTool{
 		tool:           tool,
-		command:        service.GetCommand(),
 		service:        service,
 		callDefinition: callDefinition,
 	}
@@ -734,6 +736,9 @@ func (t *CommandTool) Tool() *v1.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
+	if t.callDefinition == nil {
+		return nil
+	}
 	return t.callDefinition.GetCache()
 }
 
@@ -792,7 +797,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	startTime := time.Now()
-	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.command, args, t.service.GetWorkingDirectory(), env)
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
@@ -829,7 +834,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	result := map[string]interface{}{
-		"command":         t.command,
+		"command":         t.service.GetCommand(),
 		"args":            args,
 		"stdout":          stdoutBuf.String(),
 		"stderr":          stderrBuf.String(),
@@ -838,10 +843,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		"end_time":        endTime,
 		"return_code":     exitCode,
 		"status":          status,
-	}
-
-	if err != nil {
-		return result, err
 	}
 
 	return result, nil
