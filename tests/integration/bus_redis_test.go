@@ -66,3 +66,42 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode.")
+	}
+
+	redisAddr, cleanup := StartRedisContainer(t)
+	defer cleanup()
+
+	client := goredis.NewClient(&goredis.Options{
+		Addr: redisAddr,
+	})
+
+	bus := redis.NewWithClient[string](client)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	topic := "test-topic-once"
+	msg := "hello once"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	handler := func(m string) {
+		assert.Equal(t, msg, m)
+		wg.Done()
+	}
+
+	unsubscribe := bus.SubscribeOnce(ctx, topic, handler)
+	defer unsubscribe()
+
+	// Give subscriber a moment to connect
+	time.Sleep(100 * time.Millisecond)
+
+	bus.Publish(ctx, topic, msg)
+
+	wg.Wait()
+}
