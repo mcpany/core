@@ -95,7 +95,6 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			defer cancel()
 
 			t.Logf("INFO: Starting E2E Test Scenario for %s with %s registration...", testCase.Name, method)
-			t.Parallel()
 
 			// --- 1. Start Upstream Service ---
 			var upstreamServerProc *integration.ManagedProcess

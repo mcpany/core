@@ -18,6 +18,7 @@
 GO = go
 GO_CMD := $(GO)
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
+export PATH := $(CURDIR)/build/env/bin:$(PATH)
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -291,7 +292,7 @@ prepare:
 	@echo "Preparation complete."
 
 
-gen: clean prepare
+gen: prepare
 	@echo "Removing old protobuf files..."
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
@@ -300,8 +301,9 @@ gen: clean prepare
 		mkdir -p ./build; \
 		find proto -name "*.proto" -exec protoc \
 			--proto_path=. \
-			--proto_path=$(CURDIR)/build/grpc-gateway \
-			--proto_path=$(CURDIR)/build/googleapis \
+			--proto_path=./build/grpc-gateway \
+			--proto_path=./build/googleapis \
+			--proto_path=./build/env/include \
 			--descriptor_set_out=$(CURDIR)/build/all.protoset \
 			--include_imports \
 			--go_out=. \
