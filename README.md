@@ -29,6 +29,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
+- **Advanced Service Policies**: Configure Caching and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
