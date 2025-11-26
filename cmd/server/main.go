@@ -155,7 +155,7 @@ func newRootCmd() *cobra.Command {
 
 	validateCmd := &cobra.Command{
 		Use:   "validate",
-		Short: "Validate the configuration file(s).",
+		Short: "Validate the configuration file(s)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
@@ -165,33 +165,17 @@ func newRootCmd() *cobra.Command {
 
 			configPaths := cfg.ConfigPaths()
 			if len(configPaths) == 0 {
-				_, err := fmt.Fprintln(cmd.OutOrStdout(), "No configuration files provided to validate.")
-				if err != nil {
-					return err
-				}
-				return nil
+				return fmt.Errorf("no configuration paths provided")
 			}
 
 			store := config.NewFileStore(fs, configPaths)
-			serverConfig, err := config.LoadServices(store, "server")
-			if err != nil {
-				return fmt.Errorf("failed to load configuration for validation: %w", err)
+			if _, err := config.LoadServices(store, "server"); err != nil {
+				return fmt.Errorf("configuration validation failed: %w", err)
 			}
 
-			validationErrors := config.Validate(serverConfig, config.Server)
-			if len(validationErrors) > 0 {
-				for _, err := range validationErrors {
-					_, printErr := fmt.Fprintf(cmd.ErrOrStderr(), "Validation error: %s\n", err.Error())
-					if printErr != nil {
-						return printErr
-					}
-				}
-				return fmt.Errorf("configuration validation failed")
-			}
-
-			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
+			_, err := fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
 			if err != nil {
-				return err
+				return fmt.Errorf("failed to print validation message: %w", err)
 			}
 			return nil
 		},
