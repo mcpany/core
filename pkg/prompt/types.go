@@ -115,3 +115,8 @@ func (p *TemplatedPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.G
 		Messages:    messages,
 	}, nil
 }
+
+// NewPromptFromConfig creates a new Prompt from a configuration definition.
+func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
+	return NewTemplatedPrompt(definition, serviceID), nil
+}

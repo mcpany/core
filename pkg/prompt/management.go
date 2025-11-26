@@ -27,6 +27,7 @@ import (
 // PromptManagerInterface defines the interface for a prompt manager.
 type PromptManagerInterface interface {
 	AddPrompt(prompt Prompt)
+	UpdatePrompt(prompt Prompt)
 	GetPrompt(name string) (Prompt, bool)
 	ListPrompts() []Prompt
 	ClearPromptsForService(serviceID string)
@@ -65,6 +66,12 @@ func (pm *PromptManager) AddPrompt(prompt Prompt) {
 			existingPrompt.Service(),
 		))
 	}
+}
+
+// UpdatePrompt updates an existing prompt in the manager. If the prompt does not
+// exist, it will be added.
+func (pm *PromptManager) UpdatePrompt(prompt Prompt) {
+	pm.prompts.Store(prompt.Prompt().Name, prompt)
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
