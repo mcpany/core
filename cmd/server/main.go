@@ -109,8 +109,9 @@ func newRootCmd() *cobra.Command {
 			}()
 
 			shutdownTimeout := cfg.ShutdownTimeout()
+			watch := cfg.Watch()
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, watch, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

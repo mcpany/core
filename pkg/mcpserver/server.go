@@ -368,3 +368,26 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
+
+// Reload reloads the MCP server with a new configuration.
+func (s *Server) Reload(
+	ctx context.Context,
+	toolManager tool.ToolManagerInterface,
+	promptManager prompt.PromptManagerInterface,
+	resourceManager resource.ResourceManagerInterface,
+	authManager *auth.AuthManager,
+	serviceRegistry *serviceregistry.ServiceRegistry,
+	bus *bus.BusProvider,
+) error {
+	s.toolManager = toolManager
+	s.promptManager = promptManager
+	s.resourceManager = resourceManager
+	s.authManager = authManager
+	s.serviceRegistry = serviceRegistry
+	s.bus = bus
+
+	s.toolManager.SetMCPServer(s)
+	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
+
+	return nil
+}

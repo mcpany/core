@@ -661,7 +661,7 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 
 	go func() {
 		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, false, jsonrpcAddress, grpcRegAddress, []string{}, 5*time.Second)
 		require.NoError(t, err)
 	}()
 

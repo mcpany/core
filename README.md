@@ -231,6 +231,20 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 **Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
 
+### Watching for Configuration Changes
+
+MCP Any can automatically reload its configuration when it detects changes to the configuration files. This is useful for development, as it allows you to make changes to your configuration without having to restart the server.
+
+To enable this feature, use the `--watch` flag:
+
+```bash
+make run ARGS="--config-paths ./config.yaml --watch"
+```
+
+When you start the server with the `--watch` flag, it will monitor the specified configuration files and directories for changes. When a change is detected, the server will automatically reload the configuration and update its registered services.
+
+**Note:** Currently, the `--watch` flag only supports reloading of `upstreamServices`. Changes to global settings (e.g., `message_bus`, `log_level`) will be ignored.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.

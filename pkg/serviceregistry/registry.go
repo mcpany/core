@@ -198,3 +198,16 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	}
 	return services, nil
 }
+
+// Clear removes all registered services from the registry.
+func (r *ServiceRegistry) Clear() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for serviceID := range r.serviceConfigs {
+		delete(r.serviceConfigs, serviceID)
+		delete(r.serviceInfo, serviceID)
+		r.toolManager.ClearToolsForService(serviceID)
+		r.authManager.RemoveAuthenticator(serviceID)
+	}
+}

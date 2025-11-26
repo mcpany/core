@@ -36,7 +36,7 @@ type mockFailingRunner struct{}
 func (m *mockFailingRunner) Run(
 	ctx context.Context,
 	fs afero.Fs,
-	stdio bool,
+	stdio, watch bool,
 	jsonrpcPort string,
 	registrationPort string,
 	configPaths []string,
@@ -46,10 +46,6 @@ func (m *mockFailingRunner) Run(
 		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", shutdownTimeout)
 	}
 	return errors.New("mock run failure")
-}
-
-func (m *mockFailingRunner) RunHealthServer(jsonrpcPort string) error {
-	return nil
 }
 
 var _ app.Runner = &mockFailingRunner{}

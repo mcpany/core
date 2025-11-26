@@ -42,6 +42,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
 	v1 "github.com/mcpany/core/proto/api/v1"
+	bus_pb "github.com/mcpany/core/proto/bus"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -75,7 +76,7 @@ type Runner interface {
 	Run(
 		ctx context.Context,
 		fs afero.Fs,
-		stdio bool,
+		stdio, watch bool,
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
 		shutdownTimeout time.Duration,
@@ -88,6 +89,55 @@ type Runner interface {
 // method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	mcpSrv           *mcpserver.Server
+}
+
+// coreServices holds the core components of the MCP Any server.
+type coreServices struct {
+	busProvider     *bus.BusProvider
+	toolManager     tool.ToolManagerInterface
+	promptManager   *prompt.PromptManager
+	resourceManager *resource.ResourceManager
+	authManager     *auth.AuthManager
+	serviceRegistry *serviceregistry.ServiceRegistry
+}
+
+// initializeCoreServices creates and initializes the core services for the server.
+func initializeCoreServices(busConfig *bus_pb.MessageBus) (*coreServices, error) {
+	busProvider, err := bus.NewBusProvider(busConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create bus provider: %w", err)
+	}
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	var toolManager tool.ToolManagerInterface = tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
+
+	return &coreServices{
+		busProvider:     busProvider,
+		toolManager:     toolManager,
+		promptManager:   promptManager,
+		resourceManager: resourceManager,
+		authManager:     authManager,
+		serviceRegistry: serviceRegistry,
+	}, nil
+}
+
+// ListTools returns a list of registered tools.
+func (a *Application) ListTools() []tool.Tool {
+	if a.mcpSrv == nil {
+		return nil
+	}
+	return a.mcpSrv.ListTools()
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -124,7 +174,7 @@ func NewApplication() *Application {
 func (a *Application) Run(
 	ctx context.Context,
 	fs afero.Fs,
-	stdio bool,
+	stdio, watch bool,
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
 	shutdownTimeout time.Duration,
@@ -151,27 +201,20 @@ func (a *Application) Run(
 	}
 
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
-	busProvider, err := bus.NewBusProvider(busConfig)
+	services, err := initializeCoreServices(busConfig)
 	if err != nil {
-		return fmt.Errorf("failed to create bus provider: %w", err)
+		return err
 	}
-	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	var toolManager tool.ToolManagerInterface = tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
-	serviceRegistry := serviceregistry.New(
-		upstreamFactory,
-		toolManager,
-		promptManager,
-		resourceManager,
-		authManager,
-	)
+	busProvider := services.busProvider
+	toolManager := services.toolManager
+	promptManager := services.promptManager
+	resourceManager := services.resourceManager
+	authManager := services.authManager
+	serviceRegistry := services.serviceRegistry
 
 	// New message bus and workers
-	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
-	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	upstreamWorker := worker.NewUpstreamWorker(services.busProvider, services.toolManager)
+	registrationWorker := worker.NewServiceRegistrationWorker(services.busProvider, services.serviceRegistry)
 
 	// Start background workers
 	upstreamWorker.Start(ctx)
@@ -189,7 +232,7 @@ func (a *Application) Run(
 	}
 
 	// Initialize servers with the message bus
-	mcpSrv, err := mcpserver.NewServer(
+	a.mcpSrv, err = mcpserver.NewServer(
 		ctx,
 		toolManager,
 		promptManager,
@@ -201,6 +244,7 @@ func (a *Application) Run(
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
+	mcpSrv := a.mcpSrv
 
 	toolManager.SetMCPServer(mcpSrv)
 
@@ -261,6 +305,66 @@ func (a *Application) Run(
 	})
 	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
 	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
+
+	if watch {
+		cw, err := config.NewConfigWatcher(configPaths, func() error {
+			log.Info("Reloading configuration...")
+			// Create a new context for the reload
+			reloadCtx, cancel := context.WithCancel(ctx)
+			defer cancel()
+
+			// Load services from the updated config files
+			store := config.NewFileStore(fs, configPaths)
+			reloadedCfg, err := config.LoadServices(store, "server")
+			if err != nil {
+				// If loading fails, log the error but don't stop the server.
+				// The server will continue with the old configuration.
+				log.Error("failed to reload services from config", "error", err)
+				return nil
+			}
+
+			// Publish the reloaded services to the existing bus.
+			if reloadedCfg.GetUpstreamServices() != nil {
+				registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](
+					busProvider,
+					"service_registration_requests",
+				)
+
+				// Clear existing services before registering new ones
+				serviceRegistry.Clear()
+
+				for _, serviceConfig := range reloadedCfg.GetUpstreamServices() {
+					if serviceConfig.GetDisable() {
+						log.Info("Skipping disabled service", "service", serviceConfig.GetName())
+						continue
+					}
+					log.Info("Queueing service for registration from reloaded config", "service", serviceConfig.GetName())
+					regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
+					registrationBus.Publish(reloadCtx, "request", regReq)
+				}
+			}
+
+			// The Reload method is now a no-op, but we'll keep it for now to avoid breaking the interface.
+			// The actual reload is handled by the registration worker.
+			if err := mcpSrv.Reload(
+				reloadCtx,
+				toolManager,
+				promptManager,
+				resourceManager,
+				authManager,
+				serviceRegistry,
+				busProvider,
+			); err != nil {
+				return fmt.Errorf("failed to reload mcp server: %w", err)
+			}
+			return nil
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create config watcher: %w", err)
+		}
+		cw.Start(ctx)
+		defer cw.Stop()
+	}
 
 	if stdio {
 		return a.runStdioModeFunc(ctx, mcpSrv)

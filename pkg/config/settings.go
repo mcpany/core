@@ -118,6 +118,11 @@ func (s *Settings) IsDebug() bool {
 	return s.debug
 }
 
+// Watch returns whether watch mode is enabled.
+func (s *Settings) Watch() bool {
+	return viper.GetBool("watch")
+}
+
 // LogFile returns the path to the log file.
 func (s *Settings) LogFile() string {
 	return s.logFile
