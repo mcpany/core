@@ -28,13 +28,17 @@ import (
 	"syscall"
 	"time"
 
+	"path/filepath"
+
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/spf13/afero"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var appRunner app.Runner = app.NewApplication()
@@ -60,8 +64,26 @@ func newRootCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
-			if err := cfg.Load(cmd, osFs); err != nil {
+			v := viper.New()
+			v.SetFs(osFs)
+			v.SetEnvPrefix(strings.ToUpper(appconsts.Name))
+			v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+			v.AutomaticEnv()
+
+			if err := v.BindPFlags(cmd.Flags()); err != nil {
+				return fmt.Errorf("failed to bind flags: %w", err)
+			}
+			if err := cfg.Load(v); err != nil {
 				return err
+			}
+
+			for _, path := range cfg.ConfigPaths() {
+				v.SetConfigFile(path)
+				if err := v.MergeInConfig(); err != nil {
+					// This error is ignored because viper returns an error when the file does not exist.
+					// We want to allow the user to specify a file that may not exist yet, and we will watch for it.
+				}
+				v.AddConfigPath(filepath.Dir(path))
 			}
 
 			logLevel := slog.LevelInfo
@@ -110,6 +132,18 @@ func newRootCmd() *cobra.Command {
 
 			shutdownTimeout := cfg.ShutdownTimeout()
 
+			v.WatchConfig()
+			v.OnConfigChange(func(e fsnotify.Event) {
+				log.Info("Configuration file changed", "file", e.Name)
+				if err := cfg.Load(v); err != nil {
+					log.Error("Failed to reload config", "error", err)
+					return
+				}
+				if err := appRunner.UpdateServices(ctx, osFs, cfg.ConfigPaths()); err != nil {
+					log.Error("Failed to update services", "error", err)
+				}
+			})
+
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
@@ -136,13 +170,19 @@ func newRootCmd() *cobra.Command {
 		Use:   "health",
 		Short: "Run a health check against a running server",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
-			if err := cfg.Load(cmd, fs); err != nil {
+			v := viper.New()
+			v.SetEnvPrefix(strings.ToUpper(appconsts.Name))
+			v.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+			v.AutomaticEnv()
+			if err := v.BindPFlags(cmd.Flags()); err != nil {
+				return fmt.Errorf("failed to bind flags: %w", err)
+			}
+			if err := cfg.Load(v); err != nil {
 				return err
 			}
-			addr := cfg.MCPListenAddress()
 
+			addr := cfg.MCPListenAddress()
 			if !strings.Contains(addr, ":") {
 				addr = "localhost:" + addr
 			}

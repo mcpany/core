@@ -48,6 +48,14 @@ func (m *mockFailingRunner) Run(
 	return errors.New("mock run failure")
 }
 
+func (m *mockFailingRunner) UpdateServices(
+	ctx context.Context,
+	fs afero.Fs,
+	configPaths []string,
+) error {
+	return nil
+}
+
 func (m *mockFailingRunner) RunHealthServer(jsonrpcPort string) error {
 	return nil
 }

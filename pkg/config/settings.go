@@ -24,23 +24,12 @@ import (
 
 	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 // Settings defines the global configuration for the application.
 type Settings struct {
-	proto           *v1.GlobalSettings
-	grpcPort        string
-	stdio           bool
-	configPaths     []string
-	debug           bool
-	logLevel        string
-	logFile         string
-	shutdownTimeout time.Duration
-	fs              afero.Fs
-	cmd             *cobra.Command
+	v *viper.Viper
 }
 
 var (
@@ -51,52 +40,25 @@ var (
 // GlobalSettings returns the singleton instance of the global settings.
 func GlobalSettings() *Settings {
 	once.Do(func() {
-		globalSettings = &Settings{
-			proto: &v1.GlobalSettings{},
-		}
+		globalSettings = &Settings{}
 	})
 	return globalSettings
 }
 
-// Load initializes the global settings from the command line and config files.
-func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
-	s.cmd = cmd
-	s.fs = fs
-
-	s.grpcPort = viper.GetString("grpc-port")
-	s.stdio = viper.GetBool("stdio")
-	s.configPaths = viper.GetStringSlice("config-path")
-	s.debug = viper.GetBool("debug")
-	s.logLevel = viper.GetString("log-level")
-	s.logFile = viper.GetString("logfile")
-	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
-
-	// Special handling for MCPListenAddress to respect config file precedence
-	mcpListenAddress := viper.GetString("mcp-listen-address")
-	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
-		store := NewFileStore(fs, s.configPaths)
-		cfg, err := LoadServices(store, "server")
-		if err != nil {
-			return fmt.Errorf("failed to load services from config: %w", err)
-		}
-		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
-			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
-		}
-	}
-	s.proto.SetMcpListenAddress(mcpListenAddress)
-	s.proto.SetLogLevel(s.LogLevel())
-
+// Load initializes the global settings from a viper instance.
+func (s *Settings) Load(v *viper.Viper) error {
+	s.v = v
 	return nil
 }
 
 // GRPCPort returns the gRPC port.
 func (s *Settings) GRPCPort() string {
-	return s.grpcPort
+	return s.v.GetString("grpc-port")
 }
 
 // MCPListenAddress returns the MCP listen address.
 func (s *Settings) MCPListenAddress() string {
-	addr := s.proto.GetMcpListenAddress()
+	addr := s.v.GetString("mcp-listen-address")
 	if !strings.Contains(addr, ":") {
 		addr = "localhost:" + addr
 	}
@@ -105,27 +67,27 @@ func (s *Settings) MCPListenAddress() string {
 
 // Stdio returns whether stdio mode is enabled.
 func (s *Settings) Stdio() bool {
-	return s.stdio
+	return s.v.GetBool("stdio")
 }
 
 // ConfigPaths returns the paths to the configuration files.
 func (s *Settings) ConfigPaths() []string {
-	return s.configPaths
+	return s.v.GetStringSlice("config-path")
 }
 
 // IsDebug returns whether debug mode is enabled.
 func (s *Settings) IsDebug() bool {
-	return s.debug
+	return s.v.GetBool("debug")
 }
 
 // LogFile returns the path to the log file.
 func (s *Settings) LogFile() string {
-	return s.logFile
+	return s.v.GetString("logfile")
 }
 
 // ShutdownTimeout returns the graceful shutdown timeout.
 func (s *Settings) ShutdownTimeout() time.Duration {
-	return s.shutdownTimeout
+	return s.v.GetDuration("shutdown-timeout")
 }
 
 // LogLevel returns the log level for the server.
@@ -133,7 +95,8 @@ func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return v1.GlobalSettings_LOG_LEVEL_DEBUG
 	}
-	switch strings.ToLower(s.logLevel) {
+	logLevel := s.v.GetString("log-level")
+	switch strings.ToLower(logLevel) {
 	case "debug":
 		return v1.GlobalSettings_LOG_LEVEL_DEBUG
 	case "info":
@@ -143,11 +106,11 @@ func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	case "error":
 		return v1.GlobalSettings_LOG_LEVEL_ERROR
 	default:
-		if s.logLevel != "" {
+		if logLevel != "" {
 			logging.GetLogger().Warn(
 				fmt.Sprintf(
 					"Invalid log level specified: '%s'. Defaulting to INFO.",
-					s.logLevel,
+					logLevel,
 				),
 			)
 		}

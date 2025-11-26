@@ -61,17 +61,6 @@ var healthCheckClient = &http.Client{
 // the application's entry point, allowing for different implementations or mocks
 // for testing purposes.
 type Runner interface {
-	// Run starts the MCP Any application with the given context, filesystem, and
-	// configuration. It is the primary entry point for the server.
-	//
-	// ctx is the context that controls the application's lifecycle.
-	// fs is the filesystem interface for reading configurations.
-	// stdio specifies whether to run in standard I/O mode.
-	// jsonrpcPort is the port for the JSON-RPC server.
-	// grpcPort is the port for the gRPC registration server.
-	// configPaths is a slice of paths to configuration files.
-	//
-	// It returns an error if the application fails to start or run.
 	Run(
 		ctx context.Context,
 		fs afero.Fs,
@@ -80,25 +69,77 @@ type Runner interface {
 		configPaths []string,
 		shutdownTimeout time.Duration,
 	) error
+	UpdateServices(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and
-// logic for the MCP Any server. It encapsulates the components required to run
-// the server, such as the stdio mode handler, and provides the main `Run`
-// method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	serviceRegistry  serviceregistry.ServiceRegistryInterface
+	mu               sync.Mutex
 }
 
-// NewApplication creates a new Application with default dependencies.
-// It initializes the application with the standard implementation of the stdio
-// mode runner, making it ready to be configured and started.
-//
-// Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	return &Application{
 		runStdioModeFunc: runStdioMode,
 	}
+}
+
+func (a *Application) UpdateServices(
+	ctx context.Context,
+	fs afero.Fs,
+	configPaths []string,
+) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	log := logging.GetLogger()
+	log.Info("Updating services from new configuration...")
+
+	store := config.NewFileStore(fs, configPaths)
+	newCfg, err := config.LoadServices(store, "server")
+	if err != nil {
+		return fmt.Errorf("failed to load new services configuration: %w", err)
+	}
+
+	currentServices := a.serviceRegistry.GetAllServices()
+	newServices := newCfg.GetUpstreamServices()
+
+	currentServiceMap := make(map[string]*config_v1.UpstreamServiceConfig)
+	for _, s := range currentServices {
+		currentServiceMap[s.GetName()] = s
+	}
+
+	newServiceMap := make(map[string]*config_v1.UpstreamServiceConfig)
+	for _, s := range newServices {
+		newServiceMap[s.GetName()] = s
+	}
+
+	// Unregister services that are no longer in the config
+	for _, s := range currentServices {
+		if _, ok := newServiceMap[s.GetName()]; !ok {
+			log.Info("Unregistering service", "service", s.GetName())
+			if err := a.serviceRegistry.UnregisterService(ctx, s.GetName()); err != nil {
+				log.Error("Failed to unregister service", "service", s.GetName(), "error", err)
+			}
+		}
+	}
+
+	// Register new services and update existing ones
+	for _, s := range newServices {
+		if _, ok := currentServiceMap[s.GetName()]; !ok {
+			log.Info("Registering new service", "service", s.GetName())
+			if _, _, _, err := a.serviceRegistry.RegisterService(ctx, s); err != nil {
+				log.Error("Failed to register new service", "service", s.GetName(), "error", err)
+			}
+		} else {
+			log.Info("Updating existing service", "service", s.GetName())
+			if err := a.serviceRegistry.UpdateService(ctx, s); err != nil {
+				log.Error("Failed to update service", "service", s.GetName(), "error", err)
+			}
+		}
+	}
+
+	return nil
 }
 
 // Run starts the MCP Any server and all its components. It initializes the core
@@ -168,6 +209,7 @@ func (a *Application) Run(
 		resourceManager,
 		authManager,
 	)
+	a.serviceRegistry = serviceRegistry
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)

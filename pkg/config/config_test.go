@@ -34,11 +34,11 @@ func TestLogLevel_InvalidLevelWarning(t *testing.T) {
 	var buf bytes.Buffer
 	logging.Init(slog.LevelInfo, &buf)
 
-	settings := &Settings{
-		logLevel: "invalid-level",
-		debug:    false,
-	}
+	v := viper.New()
+	v.Set("log-level", "invalid-level")
+	v.Set("debug", false)
 
+	settings := &Settings{v: v}
 	logLevel := settings.LogLevel()
 
 	assert.Equal(t, v1.GlobalSettings_LOG_LEVEL_INFO, logLevel)
@@ -104,10 +104,9 @@ func TestMCPListenAddress(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			settings := &Settings{
-				proto: &v1.GlobalSettings{},
-			}
-			settings.proto.SetMcpListenAddress(tt.address)
+			v := viper.New()
+			v.Set("mcp-listen-address", tt.address)
+			settings := &Settings{v: v}
 			assert.Equal(t, tt.expected, settings.MCPListenAddress())
 		})
 	}

@@ -102,10 +102,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 
 	listUnsubscribe := listRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceListRequest) {
 		log.Info("Received service list request", "correlationID", req.CorrelationID())
-		services, err := w.serviceRegistry.GetAllServices()
+		services := w.serviceRegistry.GetAllServices()
 		res := &bus.ServiceListResult{
 			Services: services,
-			Error:    err,
+			Error:    nil,
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		listResultBus.Publish(ctx, req.CorrelationID(), res)

@@ -284,24 +284,22 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
 	// Initially, no services
-	services, err := registry.GetAllServices()
-	require.NoError(t, err)
+	services := registry.GetAllServices()
 	assert.Empty(t, services)
 
 	// Register two services
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	serviceConfig1.SetName("service1")
-	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig1)
-	require.NoError(t, err)
+	_, _, _, err1 := registry.RegisterService(context.Background(), serviceConfig1)
+	require.NoError(t, err1)
 
 	serviceConfig2 := &configv1.UpstreamServiceConfig{}
 	serviceConfig2.SetName("service2")
-	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
-	require.NoError(t, err)
+	_, _, _, err2 := registry.RegisterService(context.Background(), serviceConfig2)
+	require.NoError(t, err2)
 
 	// Get all services
-	services, err = registry.GetAllServices()
-	require.NoError(t, err)
+	services = registry.GetAllServices()
 	assert.Len(t, services, 2)
 }
 

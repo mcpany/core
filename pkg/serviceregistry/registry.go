@@ -32,12 +32,10 @@ import (
 // ServiceRegistryInterface defines the interface for a service registry.
 // It provides a method for registering new upstream services.
 type ServiceRegistryInterface interface {
-	// RegisterService registers a new upstream service based on the provided
-	// configuration. It returns the generated service key, a list of any tools
-	// discovered during registration, and an error if the registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 	UnregisterService(ctx context.Context, serviceName string) error
-	GetAllServices() ([]*config.UpstreamServiceConfig, error)
+	UpdateService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) error
+	GetAllServices() []*config.UpstreamServiceConfig
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 }
 
@@ -171,7 +169,6 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	return serviceConfig, ok
 }
 
-// UnregisterService removes a service from the registry.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -187,8 +184,15 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	return nil
 }
 
-// GetAllServices returns a list of all registered services.
-func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
+func (r *ServiceRegistry) UpdateService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) error {
+	if err := r.UnregisterService(ctx, serviceConfig.GetName()); err != nil {
+		return err
+	}
+	_, _, _, err := r.RegisterService(ctx, serviceConfig)
+	return err
+}
+
+func (r *ServiceRegistry) GetAllServices() []*config.UpstreamServiceConfig {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -196,5 +200,5 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	for _, service := range r.serviceConfigs {
 		services = append(services, service)
 	}
-	return services, nil
+	return services
 }
