@@ -54,6 +54,10 @@ func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListen
 	return nil
 }
 
+func (m *mockRunner) ReloadConfig(fs afero.Fs, configPaths []string) error {
+	return nil
+}
+
 func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
 	return nil
 }

@@ -118,6 +118,12 @@ func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
 	m.prompts[p.Prompt().Name] = p
 }
 
+func (m *MockPromptManager) UpdatePrompt(p prompt.Prompt) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.prompts[p.Prompt().Name] = p
+}
+
 func (m *MockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
