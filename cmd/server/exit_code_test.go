@@ -52,6 +52,10 @@ func (m *mockFailingRunner) RunHealthServer(jsonrpcPort string) error {
 	return nil
 }
 
+func (m *mockFailingRunner) ReloadConfig(fs afero.Fs, configPaths []string) error {
+	return nil
+}
+
 var _ app.Runner = &mockFailingRunner{}
 
 func TestMain_FailingExitCode(t *testing.T) {
