@@ -75,7 +75,12 @@ type ServiceInfo struct {
 // its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
 	ToolName   string
+	// ToolInputs is the raw JSON message of the tool inputs. It is used by
+	// tools that need to unmarshal the inputs into a specific struct.
 	ToolInputs json.RawMessage
+	// Arguments is a map of the tool inputs. It is used by tools that need to
+	// access the inputs as a map.
+	Arguments map[string]interface{}
 }
 
 // ServiceRegistry defines an interface for a component that can look up tools
@@ -102,6 +107,11 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
+}
+
+// Callable is an interface that represents a callable tool.
+type Callable interface {
+	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
