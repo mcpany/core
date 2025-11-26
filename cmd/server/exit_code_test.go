@@ -39,6 +39,7 @@ func (m *mockFailingRunner) Run(
 	stdio bool,
 	jsonrpcPort string,
 	registrationPort string,
+	apiKey string,
 	configPaths []string,
 	shutdownTimeout time.Duration,
 ) error {

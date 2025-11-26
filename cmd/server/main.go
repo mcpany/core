@@ -89,8 +89,9 @@ func newRootCmd() *cobra.Command {
 			grpcPort := cfg.GRPCPort()
 			stdio := cfg.Stdio()
 			configPaths := cfg.ConfigPaths()
+			apiKey := cfg.APIKey()
 
-			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
+			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths, "api-key-set", apiKey != "")
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
@@ -110,7 +111,7 @@ func newRootCmd() *cobra.Command {
 
 			shutdownTimeout := cfg.ShutdownTimeout()
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, apiKey, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

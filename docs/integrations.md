@@ -66,6 +66,9 @@ gemini mcp add mcpany "./build/bin/server"
 # Add with command-line arguments (like a config file)
 # Note the use of '--' to separate the command from its arguments.
 gemini mcp add mcpany -- "./build/bin/server" --config-paths "/path/to/your/mcpany-config.yaml"
+
+# Add with an API key for a secured server
+gemini mcp add mcpany-secured -- "./build/bin/server" --api-key "your-secret-key"
 ```
 
 #### Claude CLI

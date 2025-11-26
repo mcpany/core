@@ -76,7 +76,7 @@ type Runner interface {
 		ctx context.Context,
 		fs afero.Fs,
 		stdio bool,
-		jsonrpcPort, grpcPort string,
+		jsonrpcPort, grpcPort, apiKey string,
 		configPaths []string,
 		shutdownTimeout time.Duration,
 	) error
@@ -125,7 +125,7 @@ func (a *Application) Run(
 	ctx context.Context,
 	fs afero.Fs,
 	stdio bool,
-	jsonrpcPort, grpcPort string,
+	jsonrpcPort, grpcPort, apiKey string,
 	configPaths []string,
 	shutdownTimeout time.Duration,
 ) error {
@@ -271,7 +271,7 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, apiKey, shutdownTimeout)
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -388,11 +388,34 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
+func apiKeyMiddleware(next http.Handler, apiKey string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if apiKey == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Unauthorized: Missing Authorization header", http.StatusUnauthorized)
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token != apiKey {
+			http.Error(w, "Unauthorized: Invalid API key", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (a *Application) runServerMode(
 	ctx context.Context,
 	mcpSrv *mcpserver.Server,
 	bus *bus.BusProvider,
-	bindAddress, grpcPort string,
+	bindAddress, grpcPort, apiKey string,
 	shutdownTimeout time.Duration,
 ) error {
 	// localCtx is used to manage the lifecycle of the servers started in this function.
@@ -407,8 +430,10 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
+	authedHandler := apiKeyMiddleware(httpHandler, apiKey)
+
 	mux := http.NewServeMux()
-	mux.Handle("/", httpHandler)
+	mux.Handle("/", authedHandler)
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")

@@ -187,6 +187,25 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 **Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
 
+### Server Authentication
+
+To secure your MCP Any server, you can specify a global API key that all clients must provide to access its tools.
+
+- **Command-line Flag**: Use the `--api-key` flag to set the API key when starting the server.
+
+  ```bash
+  ./build/bin/server --api-key "your-secret-api-key"
+  ```
+
+- **Environment Variable**: Alternatively, you can use the `MCPANY_API_KEY` environment variable.
+
+  ```bash
+  export MCPANY_API_KEY="your-secret-api-key"
+  ./build/bin/server
+  ```
+
+When the server is secured, clients must include the API key in the `Authorization` header as a Bearer token.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
@@ -200,7 +219,15 @@ For hands-on examples of how to use `mcpany` with different upstream service typ
 To see the list of all registered tools, you can send a `tools/list` request.
 
 ```bash
+# Without authentication
 curl -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' \
+  http://localhost:50050
+
+# With authentication
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secret-api-key" \
   -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' \
   http://localhost:50050
 ```
@@ -210,7 +237,15 @@ curl -X POST -H "Content-Type: application/json" \
 To execute a tool, send a `tools/call` request with the tool's name and arguments. Based on the example configuration above, here's how you would call the `get_user` tool:
 
 ```bash
+# Without authentication
 curl -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service/-/get_user", "arguments": {"userId": "123"}}, "id": 2}' \
+  http://localhost:50050
+
+# With authentication
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secret-api-key" \
   -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service/-/get_user", "arguments": {"userId": "123"}}, "id": 2}' \
   http://localhost:50050
 ```

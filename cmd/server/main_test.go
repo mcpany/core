@@ -36,19 +36,21 @@ import (
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
-	called                  bool
-	capturedStdio           bool
-	capturedMcpListenAddress string
-	capturedGrpcPort        string
-	capturedConfigPaths     []string
-	capturedShutdownTimeout time.Duration
+	called                   bool
+	capturedStdio            bool
+	capturedMcpListenAddress  string
+	capturedGrpcPort         string
+	capturedApiKey           string
+	capturedConfigPaths      []string
+	capturedShutdownTimeout  time.Duration
 }
 
-func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort, apiKey string, configPaths []string, shutdownTimeout time.Duration) error {
 	m.called = true
 	m.capturedStdio = stdio
 	m.capturedMcpListenAddress = mcpListenAddress
 	m.capturedGrpcPort = grpcPort
+	m.capturedApiKey = apiKey
 	m.capturedConfigPaths = configPaths
 	m.capturedShutdownTimeout = shutdownTimeout
 	return nil
@@ -105,6 +107,7 @@ func TestRootCmd(t *testing.T) {
 		"--grpc-port", "8082",
 		"--config-path", "/etc/config.yaml,/etc/conf.d",
 		"--shutdown-timeout", "10s",
+		"--api-key", "test-key",
 	})
 	rootCmd.Execute()
 
@@ -112,6 +115,7 @@ func TestRootCmd(t *testing.T) {
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
 	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
+	assert.Equal(t, "test-key", mock.capturedApiKey, "api-key should be captured")
 	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }

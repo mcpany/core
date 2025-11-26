@@ -97,3 +97,49 @@ upstream_services:
 	// Check that the upstream service was only called once
 	assert.Equal(t, 1, requestCount, "Upstream service should have been called only once")
 }
+
+func TestAPIKeyAuthIntegration(t *testing.T) {
+	apiKey := "test-api-key"
+
+	// Start the MCP Any server with an API key
+	serverInfo := integration.StartMCPANYServer(t, "api-key-test", "--api-key", apiKey)
+	defer serverInfo.CleanupFunc()
+
+	// Case 1: Correct API Key
+	t.Run("CorrectAPIKey", func(t *testing.T) {
+		req, err := http.NewRequest("POST", serverInfo.JSONRPCEndpoint, strings.NewReader(`{"jsonrpc":"2.0","method":"tools/list","id":1}`))
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer "+apiKey)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json, text/event-stream")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode, "Expected status OK with correct API key")
+	})
+
+	// Case 2: Incorrect API Key
+	t.Run("IncorrectAPIKey", func(t *testing.T) {
+		req, err := http.NewRequest("POST", serverInfo.JSONRPCEndpoint, strings.NewReader(`{"jsonrpc":"2.0","method":"tools/list","id":1}`))
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer incorrect-key")
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json, text/event-stream")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode, "Expected status Unauthorized with incorrect API key")
+	})
+
+	// Case 3: No API Key
+	t.Run("NoAPIKey", func(t *testing.T) {
+		req, err := http.NewRequest("POST", serverInfo.JSONRPCEndpoint, strings.NewReader(`{"jsonrpc":"2.0","method":"tools/list","id":1}`))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json, text/event-stream")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode, "Expected status Unauthorized with no API key")
+	})
+}

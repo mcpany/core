@@ -39,6 +39,7 @@ type Settings struct {
 	logLevel        string
 	logFile         string
 	shutdownTimeout time.Duration
+	apiKey          string
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -70,6 +71,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
+	s.apiKey = viper.GetString("api-key")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -126,6 +128,11 @@ func (s *Settings) LogFile() string {
 // ShutdownTimeout returns the graceful shutdown timeout.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
+}
+
+// APIKey returns the API key for the server.
+func (s *Settings) APIKey() string {
+	return s.apiKey
 }
 
 // LogLevel returns the log level for the server.
