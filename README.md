@@ -231,6 +231,20 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 **Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
 
+## Bootstrapping a Configuration
+
+MCP Any provides a `bootstrap` command to help you get started with a new configuration.
+
+### From an OpenAPI Specification
+
+You can generate an MCP Any configuration from an OpenAPI (Swagger) specification using the `bootstrap openapi` command. This will inspect the OpenAPI spec and generate a corresponding `UpstreamService` configuration.
+
+```bash
+./build/bin/server bootstrap openapi <path_or_url_to_openapi_spec>
+```
+
+This will print the generated configuration to standard output, which you can then redirect to a file.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.

@@ -152,6 +152,7 @@ func newRootCmd() *cobra.Command {
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
+	rootCmd.AddCommand(newBootstrapCmd())
 
 	validateCmd := &cobra.Command{
 		Use:   "validate",
