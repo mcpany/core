@@ -2224,6 +2224,8 @@ type ToolDefinition struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// The name of the tool, which will be used to invoke it.
 	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The ID of the service that provides the tool.
+	ServiceId *string `protobuf:"bytes,13,opt,name=service_id,json=serviceId" json:"service_id,omitempty"`
 	// A human-readable description of what the tool does.
 	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
 	// The schema for the input parameters required by the tool.
@@ -2288,6 +2290,13 @@ func (x *ToolDefinition) ProtoReflect() protoreflect.Message {
 func (x *ToolDefinition) GetName() string {
 	if x != nil && x.Name != nil {
 		return *x.Name
+	}
+	return ""
+}
+
+func (x *ToolDefinition) GetServiceId() string {
+	if x != nil && x.ServiceId != nil {
+		return *x.ServiceId
 	}
 	return ""
 }
@@ -2373,6 +2382,10 @@ func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
 
+func (x *ToolDefinition) SetServiceId(v string) {
+	x.ServiceId = &v
+}
+
 func (x *ToolDefinition) SetDescription(v string) {
 	x.Description = &v
 }
@@ -2422,6 +2435,13 @@ func (x *ToolDefinition) HasName() bool {
 		return false
 	}
 	return x.Name != nil
+}
+
+func (x *ToolDefinition) HasServiceId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ServiceId != nil
 }
 
 func (x *ToolDefinition) HasDescription() bool {
@@ -2505,6 +2525,10 @@ func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
 
+func (x *ToolDefinition) ClearServiceId() {
+	x.ServiceId = nil
+}
+
 func (x *ToolDefinition) ClearDescription() {
 	x.Description = nil
 }
@@ -2554,6 +2578,8 @@ type ToolDefinition_builder struct {
 
 	// The name of the tool, which will be used to invoke it.
 	Name *string
+	// The ID of the service that provides the tool.
+	ServiceId *string
 	// A human-readable description of what the tool does.
 	Description *string
 	// The schema for the input parameters required by the tool.
@@ -2593,6 +2619,7 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.Name = b.Name
+	x.ServiceId = b.ServiceId
 	x.Description = b.Description
 	x.InputSchema = b.InputSchema
 	x.OutputSchema = b.OutputSchema
@@ -2705,9 +2732,11 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xc8\x03\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xe7\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\r \x01(\tR\tserviceId\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
