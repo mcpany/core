@@ -436,6 +436,9 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 	if sVal.Default != nil {
 		fieldSchema["default"] = sVal.Default
 	}
+	if sVal.Example != nil {
+		fieldSchema["example"] = sVal.Example
+	}
 
 	switch schemaType {
 	case openapi3.TypeObject:
