@@ -152,7 +152,51 @@ func newRootCmd() *cobra.Command {
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
-	rootCmd.AddCommand(newValidateCmd())
+
+	validateCmd := &cobra.Command{
+		Use:   "validate",
+		Short: "Validate the configuration file(s).",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, fs); err != nil {
+				return err
+			}
+
+			configPaths := cfg.ConfigPaths()
+			if len(configPaths) == 0 {
+				_, err := fmt.Fprintln(cmd.OutOrStdout(), "No configuration files provided to validate.")
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+
+			store := config.NewFileStore(fs, configPaths)
+			serverConfig, err := config.LoadServices(store, "server")
+			if err != nil {
+				return fmt.Errorf("failed to load configuration for validation: %w", err)
+			}
+
+			validationErrors := config.Validate(serverConfig, config.Server)
+			if len(validationErrors) > 0 {
+				for _, err := range validationErrors {
+					_, printErr := fmt.Fprintf(cmd.ErrOrStderr(), "Validation error: %s\n", err.Error())
+					if printErr != nil {
+						return printErr
+					}
+				}
+				return fmt.Errorf("configuration validation failed")
+			}
+
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+	rootCmd.AddCommand(validateCmd)
 
 	config.BindFlags(rootCmd)
 
