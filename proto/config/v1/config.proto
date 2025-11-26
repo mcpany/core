@@ -60,6 +60,8 @@ message GlobalSettings {
   LogLevel log_level = 3;
   // The message bus configuration.
   bus.MessageBus message_bus = 4;
+  // The API key for securing the MCP server.
+  string api_key = 5;
 }
 
 
