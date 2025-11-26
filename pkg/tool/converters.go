@@ -24,6 +24,7 @@ import (
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -149,6 +150,30 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 		properties.Fields[field.Name] = value
 	}
 	return properties, nil
+}
+
+// ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
+// *pb.Tool.
+func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition) (*pb.Tool, error) {
+	if toolDef == nil {
+		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
+	}
+
+	pbTool := &pb.Tool{}
+	pbTool.Reset()
+	pbTool.SetName(toolDef.GetName())
+	pbTool.SetDescription(toolDef.GetDescription())
+	pbTool.SetDisplayName(toolDef.GetTitle())
+	pbTool.SetServiceId(toolDef.GetServiceId())
+
+	pbAnnotations := &pb.ToolAnnotations{}
+	pbAnnotations.Reset()
+	pbAnnotations.SetInputSchema(toolDef.GetInputSchema())
+	pbAnnotations.SetOutputSchema(toolDef.GetOutputSchema())
+
+	pbTool.SetAnnotations(pbAnnotations)
+
+	return pbTool, nil
 }
 
 // getJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
