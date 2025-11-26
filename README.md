@@ -8,6 +8,21 @@
   <img src="docs/images/logo.png" alt="MCP Any Logo" width="200"/>
 </p>
 
+## Secret Management
+
+MCP Any supports resolving secrets from environment variables. This allows you to keep your sensitive data, such as API keys and passwords, out of your configuration files.
+
+To use this feature, you can use the `environment_variable` field in your configuration file. For example:
+
+```yaml
+upstream_authentication:
+  bearer_token:
+    token:
+      environment_variable: "MY_API_TOKEN"
+```
+
+When the server starts, it will use the value of the `MY_API_TOKEN` environment variable as the bearer token.
+
 # MCP Any: Configuration-Driven MCP Server
 
 **Eliminate the need to build and maintain custom MCP servers for every API.**

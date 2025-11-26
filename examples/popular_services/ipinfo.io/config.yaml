@@ -16,12 +16,15 @@
 
 upstream_services:
 - name: ipinfo.io
+  upstream_authentication:
+    bearer_token:
+      token:
+        environment_variable: IPINFO_API_TOKEN
   http_service:
     address: "https://ipinfo.io"
-    authentication:
-      token: "${IPINFO_API_TOKEN}"
     calls:
     - endpoint_path: "/{{ip}}/json"
+      method: "HTTP_METHOD_GET"
       schema:
         name: "ipinfo"
         input_schema:
@@ -123,5 +126,3 @@ upstream_services:
                   type: "array"
                   items:
                     type: "string"
-
-      method: "HTTP_METHOD_GET"
