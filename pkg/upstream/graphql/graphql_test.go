@@ -1,0 +1,236 @@
+/*
+ * Copyright 2024 Author(s) of MCP Any
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package graphql
+
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/machinebox/graphql"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestGraphQLUpstream_Register(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"data": map[string]interface{}{
+				"__schema": map[string]interface{}{
+					"queryType":    map[string]string{"name": "Query"},
+					"mutationType": map[string]string{"name": "Mutation"},
+					"types": []map[string]interface{}{
+						{
+							"name": "Query",
+							"kind": "OBJECT",
+							"fields": []map[string]interface{}{
+								{
+									"name": "hello",
+									"args": []map[string]interface{}{},
+									"type": map[string]interface{}{
+										"name": "String",
+										"kind": "SCALAR",
+									},
+								},
+								{
+									"name": "user",
+									"args": []map[string]interface{}{
+										{
+											"name": "id",
+											"type": map[string]interface{}{
+												"name": "ID",
+												"kind": "SCALAR",
+											},
+										},
+									},
+									"type": map[string]interface{}{
+										"name": "User",
+										"kind": "OBJECT",
+										"fields": []map[string]interface{}{
+											{
+												"name": "id",
+											},
+											{
+												"name": "name",
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							"name": "Mutation",
+							"kind": "OBJECT",
+							"fields": []map[string]interface{}{
+								{
+									"name": "createUser",
+									"args": []map[string]interface{}{
+										{
+											"name": "name",
+											"type": map[string]interface{}{
+												"name":   "String",
+												"kind":   "NON_NULL",
+												"ofType": map[string]interface{}{"name": "String", "kind": "SCALAR"},
+											},
+										},
+									},
+									"type": map[string]interface{}{
+										"name": "User",
+										"kind": "OBJECT",
+										"fields": []map[string]interface{}{
+											{
+												"name": "id",
+											},
+											{
+												"name": "name",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer server.Close()
+
+	upstream := NewGraphQLUpstream()
+	toolManager := tool.NewToolManager(nil)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+
+	serviceKey, toolDefs, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	assert.Equal(t, "test-service", serviceKey)
+	assert.Len(t, toolDefs, 3)
+	assert.Equal(t, "test-service-hello", toolDefs[0].GetName())
+	assert.Equal(t, "test-service-user", toolDefs[1].GetName())
+	assert.Equal(t, "test-service-createUser", toolDefs[2].GetName())
+
+	_, ok := toolManager.GetTool("test-service.test-service-hello")
+	assert.True(t, ok)
+	_, ok = toolManager.GetTool("test-service.test-service-user")
+	assert.True(t, ok)
+	_, ok = toolManager.GetTool("test-service.test-service-createUser")
+	assert.True(t, ok)
+}
+
+func TestGraphQLTool_ExecuteQuery(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"data": map[string]interface{}{
+				"user": map[string]interface{}{
+					"id":   "1",
+					"name": "test",
+				},
+			},
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer server.Close()
+
+	toolDef := &configv1.ToolDefinition{}
+	toolDef.SetName("test-service-user")
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+
+	callable := &GraphQLCallable{
+		client: graphql.NewClient(server.URL),
+		query:  `query ($id: ID) { user(id: $id) { id name } }`,
+	}
+	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
+	require.NoError(t, err)
+
+	req := &tool.ExecutionRequest{
+		Arguments: map[string]interface{}{
+			"id": "1",
+		},
+	}
+
+	resp, err := graphqlTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	respMap, ok := resp.(map[string]interface{})
+	require.True(t, ok)
+
+	user, ok := respMap["user"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "1", user["id"])
+	assert.Equal(t, "test", user["name"])
+}
+
+func TestGraphQLTool_ExecuteMutation(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"data": map[string]interface{}{
+				"createUser": map[string]interface{}{
+					"id":   "2",
+					"name": "new-user",
+				},
+			},
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer server.Close()
+
+	toolDef := &configv1.ToolDefinition{}
+	toolDef.SetName("test-service-createUser")
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+
+	callable := &GraphQLCallable{
+		client: graphql.NewClient(server.URL),
+		query:  `mutation ($name: String!) { createUser(name: $name) { id name } }`,
+	}
+	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
+	require.NoError(t, err)
+
+	req := &tool.ExecutionRequest{
+		Arguments: map[string]interface{}{
+			"name": "new-user",
+		},
+	}
+
+	resp, err := graphqlTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	respMap, ok := resp.(map[string]interface{})
+	require.True(t, ok)
+
+	user, ok := respMap["createUser"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "2", user["id"])
+	assert.Equal(t, "new-user", user["name"])
+}
