@@ -29,7 +29,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-- **Advanced Service Policies**: Configure Caching and Rate Limiting to optimize performance and protect upstream services.
+- **Advanced Service Policies**: Configure Caching, Rate Limiting, and Retries to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
@@ -173,6 +173,22 @@ MCP Any supports a variety of advanced configuration options, including:
         apiKey:
           headerName: "X-API-Key"
           apiKey: "my-secret-key"
+  ```
+
+- **Resilience**: Configure retries for a gRPC service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-resilient-service"
+      grpcService:
+        address: "localhost:50052"
+        reflection:
+          enabled: true
+      resilience:
+        retryPolicy:
+          numberOfRetries: 3
+          baseBackoff: "100ms"
+          maxBackoff: "1s"
   ```
 
 ### Remote Configurations
