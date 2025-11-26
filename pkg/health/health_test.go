@@ -399,3 +399,73 @@ func TestCheckVariousServices(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandLineHealthCheck(t *testing.T) {
+	ctx := context.Background()
+
+	testCases := []struct {
+		name   string
+		config *configv1.CommandLineUpstreamService
+		want   health.AvailabilityStatus
+	}{
+		{
+			name: "Successful Health Check",
+			config: configv1.CommandLineUpstreamService_builder{
+				HealthCheck: configv1.CommandLineHealthCheck_builder{
+					Method:                     lo.ToPtr("echo health_check"),
+					ExpectedResponseContains: lo.ToPtr("health_check"),
+				}.Build(),
+			}.Build(),
+			want: health.StatusUp,
+		},
+		{
+			name: "Failed Health Check - Command Fails",
+			config: configv1.CommandLineUpstreamService_builder{
+				HealthCheck: configv1.CommandLineHealthCheck_builder{
+					Method: lo.ToPtr("false"), // This command always fails
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
+			name: "Failed Health Check - Unexpected Output",
+			config: configv1.CommandLineUpstreamService_builder{
+				HealthCheck: configv1.CommandLineHealthCheck_builder{
+					Method:                     lo.ToPtr("echo"),
+					Prompt:                     lo.ToPtr("wrong_output"),
+					ExpectedResponseContains: lo.ToPtr("expected_output"),
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
+			name: "Health Check Timeout",
+			config: configv1.CommandLineUpstreamService_builder{
+				HealthCheck: configv1.CommandLineHealthCheck_builder{
+					Method:  lo.ToPtr("sleep 2"),
+					Timeout: durationpb.New(1 * time.Second),
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
+			name: "No Health Check Configured",
+			config: configv1.CommandLineUpstreamService_builder{
+				HealthCheck: nil,
+			}.Build(),
+			want: health.StatusUp,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			check := commandLineCheck("test-service", tc.config)
+			result := check.Check(ctx)
+			if tc.want == health.StatusUp {
+				assert.NoError(t, result)
+			} else {
+				assert.Error(t, result)
+			}
+		})
+	}
+}

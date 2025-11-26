@@ -153,6 +153,91 @@ func TestMainExecution(t *testing.T) {
 	})
 }
 
+func TestValidateCommand(t *testing.T) {
+	// Create a temporary directory for config files
+	dir, err := os.MkdirTemp("", "test-validate")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	// Create a dummy valid configuration file
+	validConfig := `
+upstream_services:
+  - name: "my-http-service"
+    http_service:
+      address: "https://api.example.com"
+      tools:
+        - name: "get_user"
+          description: "Get user by ID"
+          call_id: "get_user_call"
+      calls:
+        get_user_call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/users/{userId}"
+`
+	validConfigFile := dir + "/valid_config.yaml"
+	err = os.WriteFile(validConfigFile, []byte(validConfig), 0644)
+	assert.NoError(t, err)
+
+	// Create a dummy invalid configuration file
+	invalidConfig := `
+upstream_services:
+  - name: "my-http-service"
+    http_service:
+      address: "https://api.example.com"
+      tools:
+        - name: "get_user"
+          description: "Get user by ID"
+          call_id: "get_user_call"
+      calls:
+        get_user_call:
+          method: "INVALID_METHOD"
+          endpoint_path: "/users/{userId}"
+`
+	invalidConfigFile := dir + "/invalid_config.yaml"
+	err = os.WriteFile(invalidConfigFile, []byte(invalidConfig), 0644)
+	assert.NoError(t, err)
+
+	testCases := []struct {
+		name          string
+		args          []string
+		expectSuccess bool
+		expectedError string
+	}{
+		{
+			name:          "ValidConfig",
+			args:          []string{"validate", "--config-path", validConfigFile},
+			expectSuccess: true,
+		},
+		{
+			name:          "InvalidConfig",
+			args:          []string{"validate", "--config-path", invalidConfigFile},
+			expectSuccess: false,
+			expectedError: "invalid value for enum field method: \"INVALID_METHOD\"",
+		},
+		{
+			name:          "NoConfigPath",
+			args:          []string{"validate"},
+			expectSuccess: false,
+			expectedError: "no configuration paths provided",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rootCmd := newRootCmd()
+			rootCmd.SetArgs(tc.args)
+			err := rootCmd.Execute()
+
+			if tc.expectSuccess {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tc.expectedError)
+			}
+		})
+	}
+}
+
 func TestHealthCmdFlagPrecedence(t *testing.T) {
 	// Start a mock HTTP server on a custom port
 	port := "8089"
