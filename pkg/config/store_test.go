@@ -230,3 +230,57 @@ upstream_services:
 		})
 	}
 }
+
+func TestExpand(t *testing.T) {
+	t.Setenv("TEST_VAR", "test_value")
+	t.Setenv("EMPTY_VAR", "")
+
+	testCases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "no variables",
+			input:    "this is a simple string",
+			expected: "this is a simple string",
+		},
+		{
+			name:     "braced variable",
+			input:    "hello ${TEST_VAR}",
+			expected: "hello test_value",
+		},
+		{
+			name:     "variable with default value",
+			input:    "hello ${UNDEFINED_VAR:default_value}",
+			expected: "hello default_value",
+		},
+		{
+			name:     "empty variable with default value",
+			input:    "hello ${EMPTY_VAR:default_value}",
+			expected: "hello ",
+		},
+		{
+			name:     "undefined variable without default",
+			input:    "hello ${UNDEFINED_VAR}",
+			expected: "hello ${UNDEFINED_VAR}",
+		},
+		{
+			name:     "multiple variables",
+			input:    "${TEST_VAR} ${TEST_VAR} ${UNDEFINED_VAR} ${UNDEFINED_VAR:default}",
+			expected: "test_value test_value ${UNDEFINED_VAR} default",
+		},
+		{
+			name:     "simple variable syntax is ignored",
+			input:    "$TEST_VAR",
+			expected: "$TEST_VAR",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := expand([]byte(tc.input))
+			assert.Equal(t, tc.expected, string(actual))
+		})
+	}
+}
