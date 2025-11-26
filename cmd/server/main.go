@@ -153,6 +153,9 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	validateCmd := newValidateCommand(afero.NewOsFs())
+	rootCmd.AddCommand(validateCmd)
+
 	config.BindFlags(rootCmd)
 
 	return rootCmd

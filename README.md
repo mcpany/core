@@ -191,6 +191,16 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
+### Validating Configuration Files
+
+To validate your configuration files before starting the server, you can use the `validate` command. This command checks the syntax and semantics of your configuration files, ensuring that they are well-formed and valid.
+
+```bash
+./build/bin/server validate --config-paths ./config.yaml
+```
+
+If the configuration is valid, the command will output a success message. Otherwise, it will print the validation errors and exit with a non-zero status code.
+
 ## Examples
 
 For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
