@@ -153,6 +153,91 @@ func TestMainExecution(t *testing.T) {
 	})
 }
 
+func TestValidateCommand(t *testing.T) {
+	// Create a temporary directory for config files
+	dir, err := os.MkdirTemp("", "test-validate")
+	assert.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	// Create a dummy valid configuration file
+	validConfig := `
+upstream_services:
+  - name: "my-http-service"
+    http_service:
+      address: "https://api.example.com"
+      tools:
+        - name: "get_user"
+          description: "Get user by ID"
+          call_id: "get_user_call"
+      calls:
+        get_user_call:
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/users/{userId}"
+`
+	validConfigFile := dir + "/valid_config.yaml"
+	err = os.WriteFile(validConfigFile, []byte(validConfig), 0644)
+	assert.NoError(t, err)
+
+	// Create a dummy invalid configuration file
+	invalidConfig := `
+upstream_services:
+  - name: "my-http-service"
+    http_service:
+      address: "https://api.example.com"
+      tools:
+        - name: "get_user"
+          description: "Get user by ID"
+          call_id: "get_user_call"
+      calls:
+        get_user_call:
+          method: "INVALID_METHOD"
+          endpoint_path: "/users/{userId}"
+`
+	invalidConfigFile := dir + "/invalid_config.yaml"
+	err = os.WriteFile(invalidConfigFile, []byte(invalidConfig), 0644)
+	assert.NoError(t, err)
+
+	testCases := []struct {
+		name          string
+		args          []string
+		expectSuccess bool
+		expectedError string
+	}{
+		{
+			name:          "ValidConfig",
+			args:          []string{"validate", "--config-path", validConfigFile},
+			expectSuccess: true,
+		},
+		{
+			name:          "InvalidConfig",
+			args:          []string{"validate", "--config-path", invalidConfigFile},
+			expectSuccess: false,
+			expectedError: "invalid value for enum field method: \"INVALID_METHOD\"",
+		},
+		{
+			name:          "NoConfigPath",
+			args:          []string{"validate"},
+			expectSuccess: false,
+			expectedError: "no configuration paths provided",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rootCmd := newRootCmd()
+			rootCmd.SetArgs(tc.args)
+			err := rootCmd.Execute()
+
+			if tc.expectSuccess {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tc.expectedError)
+			}
+		})
+	}
+}
+
 func TestHealthCmdFlagPrecedence(t *testing.T) {
 	// Start a mock HTTP server on a custom port
 	port := "8089"
@@ -242,43 +327,4 @@ func TestGracefulShutdown(t *testing.T) {
 
 	err = cmd.Wait()
 	assert.NoError(t, err)
-}
-
-func TestValidateCmd(t *testing.T) {
-	// Create a temporary directory for config files
-	dir, err := os.MkdirTemp("", "test-validate-config")
-	assert.NoError(t, err)
-	defer os.RemoveAll(dir)
-
-	// Create a valid config file
-	validConfigFile := dir + "/valid_config.yaml"
-	err = os.WriteFile(validConfigFile, []byte(`
-upstream_services:
-  - name: "my-service"
-    http_service:
-      address: "http://localhost:8080"
-`), 0644)
-	assert.NoError(t, err)
-
-	// Create an invalid config file
-	invalidConfigFile := dir + "/invalid_config.yaml"
-	err = os.WriteFile(invalidConfigFile, []byte(`
-upstream_services:
-  - name: "my-service"
-    http_service:
-      address: "invalid-url"
-`), 0644)
-	assert.NoError(t, err)
-
-	// Test with a valid config file
-	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"validate", "--config-path", validConfigFile})
-	err = rootCmd.Execute()
-	assert.NoError(t, err, "Validation should pass for a valid config file")
-
-	// Test with an invalid config file
-	rootCmd = newRootCmd()
-	rootCmd.SetArgs([]string{"validate", "--config-path", invalidConfigFile})
-	err = rootCmd.Execute()
-	assert.Error(t, err, "Validation should fail for an invalid config file")
 }
