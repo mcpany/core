@@ -29,6 +29,8 @@ import (
 	"testing"
 	"time"
 
+	"bytes"
+
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -245,40 +247,51 @@ func TestGracefulShutdown(t *testing.T) {
 }
 
 func TestValidateCmd(t *testing.T) {
-	// Create a temporary directory for config files
-	dir, err := os.MkdirTemp("", "test-validate-config")
+	fs := afero.NewOsFs()
+	dir, err := afero.TempDir(fs, "", "test-config")
 	assert.NoError(t, err)
-	defer os.RemoveAll(dir)
+	defer fs.RemoveAll(dir)
 
-	// Create a valid config file
-	validConfigFile := dir + "/valid_config.yaml"
-	err = os.WriteFile(validConfigFile, []byte(`
+	configFile := dir + "/config.yaml"
+	err = afero.WriteFile(fs, configFile, []byte(`
 upstream_services:
-  - name: "my-service"
+  - name: "test"
     http_service:
       address: "http://localhost:8080"
 `), 0644)
 	assert.NoError(t, err)
 
-	// Create an invalid config file
-	invalidConfigFile := dir + "/invalid_config.yaml"
-	err = os.WriteFile(invalidConfigFile, []byte(`
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{"validate", "--config-path", configFile})
+
+	b := new(bytes.Buffer)
+	cmd.SetOut(b)
+	cmd.SetErr(b)
+
+	err = cmd.Execute()
+	assert.NoError(t, err)
+	assert.Contains(t, b.String(), "Configuration is valid.")
+}
+
+func TestValidateCmd_InvalidConfig(t *testing.T) {
+	fs := afero.NewOsFs()
+	dir, err := afero.TempDir(fs, "", "test-config")
+	assert.NoError(t, err)
+	defer fs.RemoveAll(dir)
+
+	configFile := dir + "/config.yaml"
+	err = afero.WriteFile(fs, configFile, []byte(`
 upstream_services:
-  - name: "my-service"
+  - name: "test"
     http_service:
       address: "invalid-url"
 `), 0644)
 	assert.NoError(t, err)
 
-	// Test with a valid config file
-	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"validate", "--config-path", validConfigFile})
-	err = rootCmd.Execute()
-	assert.NoError(t, err, "Validation should pass for a valid config file")
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{"validate", "--config-path", configFile})
 
-	// Test with an invalid config file
-	rootCmd = newRootCmd()
-	rootCmd.SetArgs([]string{"validate", "--config-path", invalidConfigFile})
-	err = rootCmd.Execute()
-	assert.Error(t, err, "Validation should fail for an invalid config file")
+	err = cmd.Execute()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid http target_address")
 }
