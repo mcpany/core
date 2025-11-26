@@ -18,16 +18,17 @@ package config
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"os"
-	"time"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -37,6 +38,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
+
 
 // Engine defines the interface for configuration unmarshaling from different
 // file formats. Implementations of this interface are responsible for parsing a
@@ -249,7 +251,7 @@ func readURL(url string) ([]byte, error) {
 func (s *FileStore) collectFilePaths() ([]string, error) {
 	var files []string
 	for _, path := range s.paths {
-		if isURL(path) {
+		if isURL(path) || isGitHubURL(path) {
 			files = append(files, path)
 			continue
 		}

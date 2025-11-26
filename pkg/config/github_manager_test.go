@@ -1,99 +1,131 @@
-// Copyright 2025 Author(s) of MCP Any
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2025 Author(s) of MCP Any
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package config
 
 import (
 	"context"
-	"fmt"
+	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/google/go-github/v58/github"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
-	var server *httptest.Server
-	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestLoadGitHubCollection_File(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		switch r.URL.Path {
-		case "/repos/mcpany/core/contents/examples":
-			w.Write([]byte(fmt.Sprintf(`[
-				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/service.yaml", "download_url": "%s/service.yaml"},
-				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "%s/README.md"},
-				{"type": "dir", "html_url": "https://github.com/mcpany/core/tree/main/examples/nested", "download_url": null}
-			]`, server.URL, server.URL)))
-		case "/service.yaml":
-			w.Write([]byte(`{"services": [{"name": "github-service", "version": "1.0"}]}`))
-		case "/repos/mcpany/core/contents/examples/nested":
-			w.Write([]byte(fmt.Sprintf(`[
-				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/nested/service.json", "download_url": "%s/service.json"}
-			]`, server.URL)))
-		case "/service.json":
-			w.Write([]byte(`{"services": [{"name": "nested-service", "version": "1.0"}]}`))
-		default:
-			w.WriteHeader(http.StatusNotFound)
+		content := `
+services:
+  - name: "test-service"
+    http_service:
+      address: "http://localhost:8080"
+`
+		encodedContent := base64.StdEncoding.EncodeToString([]byte(content))
+		w.Write([]byte(`{"content": "` + encodedContent + `"}`))
+	}))
+	defer server.Close()
+
+	manager := NewUpstreamServiceManager()
+	collection := &configv1.UpstreamServiceCollection{
+		Name: "test-collection",
+		Source: &configv1.UpstreamServiceCollection_Github_{
+			Github: &configv1.GitHubCollection{
+				Owner: "owner",
+				Repo:  "repo",
+				Path:  "path",
+			},
+		},
+	}
+
+	// This is a bit of a hack, but it allows us to inject the mock server
+	// without changing the function signature.
+	originalClient := http.DefaultClient
+	http.DefaultClient = server.Client()
+	defer func() { http.DefaultClient = originalClient }()
+
+	err := manager.loadAndMergeCollection(context.Background(), collection)
+	assert.NoError(t, err)
+
+	var services []*configv1.UpstreamServiceConfig
+	for _, service := range manager.services {
+		services = append(services, service)
+	}
+
+	assert.Len(t, services, 1)
+	assert.Equal(t, "test-service", services[0].Name)
+}
+
+func TestLoadGitHubCollection_Directory(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path == "/repos/owner/repo/contents/path" {
+			w.Write([]byte(`[{"type": "file", "path": "path/to/file1.yaml"}, {"type": "file", "path": "path/to/file2.yaml"}]`))
+		} else if r.URL.Path == "/repos/owner/repo/contents/path/to/file1.yaml" {
+			content := `
+services:
+  - name: "test-service-1"
+    http_service:
+      address: "http://localhost:8080"
+`
+			encodedContent := base64.StdEncoding.EncodeToString([]byte(content))
+			w.Write([]byte(`{"content": "` + encodedContent + `"}`))
+		} else if r.URL.Path == "/repos/owner/repo/contents/path/to/file2.yaml" {
+			content := `
+services:
+  - name: "test-service-2"
+    http_service:
+      address: "http://localhost:8080"
+`
+			encodedContent := base64.StdEncoding.EncodeToString([]byte(content))
+			w.Write([]byte(`{"content": "` + encodedContent + `"}`))
 		}
 	}))
 	defer server.Close()
 
-	originalAPIURL := githubAPIURL
-	originalRawContentURL := githubRawContentURL
-	defer func() {
-		githubAPIURL = originalAPIURL
-		githubRawContentURL = originalRawContentURL
-	}()
-
-	githubAPIURL = server.URL
-	githubRawContentURL = server.URL
-
 	manager := NewUpstreamServiceManager()
-	collection := &configv1.UpstreamServiceCollection{}
-	collection.SetName("github-dir")
-	collection.SetHttpUrl("https://github.com/mcpany/core/tree/main/examples")
-	auth := &configv1.UpstreamAuthentication{}
-	secret := &configv1.SecretValue{}
-	secret.SetPlainText("my-secret-token")
-	bearer := &configv1.UpstreamBearerTokenAuth{}
-	bearer.SetToken(secret)
-	auth.SetBearerToken(bearer)
-	collection.SetAuthentication(auth)
-	config := &configv1.McpAnyServerConfig{}
-	config.SetUpstreamServiceCollections([]*configv1.UpstreamServiceCollection{collection})
-
-	loadedServices, err := manager.LoadAndMergeServices(context.Background(), config)
-	require.NoError(t, err)
-
-	expectedServiceNamesAndVersions := map[string]string{
-		"github-service": "1.0",
-		"nested-service": "1.0",
+	collection := &configv1.UpstreamServiceCollection{
+		Name: "test-collection",
+		Source: &configv1.UpstreamServiceCollection_Github{
+			Github: &configv1.GitHubCollection{
+				Owner: "owner",
+				Repo:  "repo",
+				Path:  "path",
+			},
+		},
 	}
 
-	assert.Equal(t, len(expectedServiceNamesAndVersions), len(loadedServices))
+	// This is a bit of a hack, but it allows us to inject the mock server
+	// without changing the function signature.
+	originalClient := http.DefaultClient
+	http.DefaultClient = server.Client()
+	defer func() { http.DefaultClient = originalClient }()
 
-	serviceMap := make(map[string]*configv1.UpstreamServiceConfig)
-	for _, s := range loadedServices {
-		serviceMap[s.GetName()] = s
+	err := manager.loadAndMergeCollection(context.Background(), collection)
+	assert.NoError(t, err)
+
+	var services []*configv1.UpstreamServiceConfig
+	for _, service := range manager.services {
+		services = append(services, service)
 	}
 
-	for name, version := range expectedServiceNamesAndVersions {
-		s, ok := serviceMap[name]
-		assert.True(t, ok, "expected service %s to be loaded", name)
-		assert.Equal(t, version, s.GetVersion())
-	}
+	assert.Len(t, services, 2)
+	assert.Equal(t, "test-service-1", services[0].Name)
+	assert.Equal(t, "test-service-2", services[1].Name)
 }

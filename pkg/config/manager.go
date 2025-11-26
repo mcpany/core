@@ -29,6 +29,11 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"encoding/base64"
+	"os"
+
+	"github.com/google/go-github/v58/github"
+	"golang.org/x/oauth2"
 	"google.golang.org/protobuf/encoding/prototext"
 	"sigs.k8s.io/yaml"
 
@@ -79,44 +84,77 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 }
 
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
-	if isGitHubURL(collection.GetHttpUrl()) {
-		g, err := NewGitHub(ctx, collection.GetHttpUrl())
-		if err != nil {
-			return fmt.Errorf("failed to parse github url: %w", err)
-		}
+	if collection.GetHttpUrl() != "" {
+		return m.loadFromURL(ctx, collection.GetHttpUrl(), collection)
+	}
+	if collection.GetGithub() != nil {
+		return m.loadGitHubCollection(ctx, collection.GetGithub(), collection)
+	}
+	return fmt.Errorf("unknown collection source type")
+}
 
-		if g.URLType == "blob" {
-			return m.loadFromURL(ctx, g.ToRawContentURL(), collection)
-		}
+func (m *UpstreamServiceManager) loadGitHubCollection(ctx context.Context, githubCollection *configv1.GitHubCollection, collection *configv1.UpstreamServiceCollection) error {
+	var tc *http.Client
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: token},
+		)
+		tc = oauth2.NewClient(ctx, ts)
+	} else {
+		tc = http.DefaultClient
+	}
+	client := github.NewClient(tc)
 
-		contents, err := g.List(ctx, collection.GetAuthentication())
-		if err != nil {
-			return fmt.Errorf("failed to list github directory: %w", err)
-		}
+	fileContent, directoryContent, _, err := client.Repositories.GetContents(ctx, githubCollection.GetOwner(), githubCollection.GetRepo(), githubCollection.GetPath(), &github.RepositoryContentGetOptions{Ref: githubCollection.GetRef()})
+	if err != nil {
+		return fmt.Errorf("failed to fetch github content: %w", err)
+	}
 
-		for _, content := range contents {
-			if content.Type == "dir" {
-				newCollection := &configv1.UpstreamServiceCollection{}
-				newCollection.SetName(collection.GetName())
-				newCollection.SetHttpUrl(content.HTMLURL)
-				newCollection.SetPriority(collection.GetPriority())
-				newCollection.SetAuthentication(collection.GetAuthentication())
-				if err := m.loadAndMergeCollection(ctx, newCollection); err != nil {
-					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
+	if directoryContent != nil {
+		for _, content := range directoryContent {
+			if content.GetType() == "file" {
+				newGithubCollection := &configv1.GitHubCollection{
+					Owner: githubCollection.GetOwner(),
+					Repo:  githubCollection.GetRepo(),
+					Path:  content.GetPath(),
+					Ref:   githubCollection.GetRef(),
 				}
-			} else if content.Type == "file" {
-				if !(strings.HasSuffix(content.HTMLURL, ".yaml") || strings.HasSuffix(content.HTMLURL, ".yml") || strings.HasSuffix(content.HTMLURL, ".json")) {
-					continue
-				}
-				if err := m.loadFromURL(ctx, content.DownloadURL, collection); err != nil {
-					m.log.Warn("Failed to load from github url", "url", content.DownloadURL, "error", err)
+				if err := m.loadGitHubCollection(ctx, newGithubCollection, collection); err != nil {
+					m.log.Warn("Failed to load from github url", "url", content.GetHTMLURL(), "error", err)
 				}
 			}
 		}
 		return nil
 	}
 
-	return m.loadFromURL(ctx, collection.GetHttpUrl(), collection)
+	content, err := fileContent.GetContent()
+	if err != nil {
+		return fmt.Errorf("failed to get content: %w", err)
+	}
+	if content == "" {
+		return fmt.Errorf("content is empty")
+	}
+
+	decodedContent, err := base64.StdEncoding.DecodeString(content)
+	if err != nil {
+		return fmt.Errorf("failed to decode content: %w", err)
+	}
+
+	var services []*configv1.UpstreamServiceConfig
+	if err := m.unmarshalServices(decodedContent, &services, "application/yaml"); err != nil {
+		return fmt.Errorf("failed to unmarshal services: %w", err)
+	}
+
+	for _, service := range services {
+		priority := collection.GetPriority()
+		if service.GetPriority() != 0 {
+			priority = service.GetPriority()
+		}
+		m.addService(service, priority)
+	}
+
+	m.log.Info("Successfully loaded and merged upstream service collection from GitHub", "name", collection.GetName(), "owner", githubCollection.GetOwner(), "repo", githubCollection.GetRepo(), "path", githubCollection.GetPath(), "ref", githubCollection.GetRef(), "services_loaded", len(services))
+	return nil
 }
 
 func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, collection *configv1.UpstreamServiceCollection) error {

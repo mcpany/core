@@ -204,6 +204,18 @@ func (a *Application) Run(
 
 	toolManager.SetMCPServer(mcpSrv)
 
+	for _, collection := range cfg.GetUpstreamServiceCollections() {
+		if collection.GetGithub() != nil {
+			log.Info("Loading services from GitHub collection", "collection", collection.GetName())
+			services, err := config.LoadGitHubCollection(collection.GetGithub())
+			if err != nil {
+				log.Error("Failed to load services from GitHub collection", "collection", collection.GetName(), "error", err)
+				continue
+			}
+			cfg.SetUpstreamServices(append(cfg.GetUpstreamServices(), services...))
+		}
+	}
+
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
 		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](

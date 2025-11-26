@@ -35,12 +35,29 @@ message McpAnyServerConfig {
 message UpstreamServiceCollection {
   // The name of the collection.
   string name = 1;
-  // The HTTP URL to load the collection from.
-  string http_url = 2;
   // The priority of the collection. Lower numbers have higher priority.
   int32 priority = 3;
   // The authentication to use when fetching the collection.
   UpstreamAuthentication authentication = 4;
+
+  oneof source {
+    // The HTTP URL to load the collection from.
+    string http_url = 2;
+    // The GitHub repository to load the collection from.
+    GitHubCollection github = 5;
+  }
+}
+
+// GitHubCollection defines a collection of upstream services that can be loaded from a GitHub repository.
+message GitHubCollection {
+  // The owner of the repository.
+  string owner = 1;
+  // The name of the repository.
+  string repo = 2;
+  // The path to the configuration file or directory in the repository.
+  string path = 3;
+  // The git ref to use (e.g., "main", "v1.2.3").
+  string ref = 4;
 }
 
 // GlobalSettings contains server-wide operational parameters.

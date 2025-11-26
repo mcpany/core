@@ -187,6 +187,25 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 **Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
 
+### GitHub Configurations
+
+You can also load configurations directly from public GitHub repositories. This is a great way to share and discover new MCP Any configurations.
+
+To load a configuration from a GitHub repository, you can use the `upstreamServiceCollections` key in your configuration file:
+
+```yaml
+# config.yaml
+upstreamServiceCollections:
+  - name: "my-github-collection"
+    github:
+      owner: "my-org"
+      repo: "my-repo"
+      path: "path/to/config.yaml"
+      ref: "main"
+```
+
+This will load the `config.yaml` file from the `my-org/my-repo` repository at the `main` branch. You can also specify a different branch, tag, or commit hash using the `ref` field.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
