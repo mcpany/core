@@ -54,6 +54,7 @@ message UpstreamAuthentication {
     UpstreamBearerTokenAuth bearer_token = 2;
     UpstreamBasicAuth basic_auth = 3;
     UpstreamOAuth2Auth oauth2 = 5;
+    UpstreamMTLSAuth mtls = 6;
   }
   bool use_environment_variable = 4;
 }
@@ -84,6 +85,16 @@ message UpstreamOAuth2Auth {
   SecretValue client_id = 2;
   SecretValue client_secret = 3;
   string scopes = 4;
+}
+
+// UpstreamMTLSAuth defines authentication using mutual TLS.
+message UpstreamMTLSAuth {
+  // Path to the client certificate file.
+  string client_cert_path = 1;
+  // Path to the client private key file.
+  string client_key_path = 2;
+  // Path to the CA certificate file for verifying the server's certificate.
+  string ca_cert_path = 3;
 }
 
 // AuthenticationConfig specifies the authentication method to use.

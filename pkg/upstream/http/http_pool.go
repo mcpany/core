@@ -19,8 +19,10 @@ package http
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/mcpany/core/pkg/client"
@@ -43,13 +45,31 @@ var NewHttpPool = func(
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HttpClientWrapper], error) {
 	factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
+		tlsConfig := &tls.Config{
+			MinVersion:         tls.VersionTLS12,
+			InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(),
+		}
+
+		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
+			cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
+			if err != nil {
+				return nil, err
+			}
+			tlsConfig.Certificates = []tls.Certificate{cert}
+
+			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+			if err != nil {
+				return nil, err
+			}
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+			tlsConfig.RootCAs = caCertPool
+		}
+
 		return client.NewHttpClientWrapper(
 			&http.Client{
 				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						MinVersion:         tls.VersionTLS12,
-						InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(),
-					},
+					TLSClientConfig: tlsConfig,
 					DialContext: (&net.Dialer{
 						Timeout: 30 * time.Second,
 					}).DialContext,

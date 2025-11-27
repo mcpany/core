@@ -35,6 +35,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **API Keys**
   - **Bearer Tokens**
   - **Basic Auth**
+  - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
@@ -173,6 +174,21 @@ MCP Any supports a variety of advanced configuration options, including:
         apiKey:
           headerName: "X-API-Key"
           apiKey: "my-secret-key"
+  ```
+
+- **mTLS**: Configure mTLS for an upstream service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-mtls-service"
+      httpService:
+        address: "https://api.example.com"
+        # ...
+      upstreamAuthentication:
+        mtls:
+          clientCertPath: "/path/to/client.crt"
+          clientKeyPath: "/path/to/client.key"
+          caCertPath: "/path/to/ca.crt"
   ```
 
 ### Remote Configurations
