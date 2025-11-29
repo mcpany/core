@@ -214,6 +214,7 @@ type HTTPTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
+	resilience        *configv1.ResilienceConfig
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -224,7 +225,7 @@ type HTTPTool struct {
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
-func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition) *HTTPTool {
+func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, resilience *configv1.ResilienceConfig) *HTTPTool {
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
@@ -234,6 +235,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
+		resilience:        resilience,
 	}
 }
 
@@ -251,6 +253,7 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	log := logging.GetLogger()
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
@@ -332,49 +335,116 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, method, urlString, body)
-	if err != nil {
-		return "", fmt.Errorf("failed to create http request: %w", err)
+	var resp *http.Response
+	var respBody []byte
+	var lastErr error
+
+	var retryPolicy *configv1.RetryConfig
+	if t.resilience != nil {
+		retryPolicy = t.resilience.GetRetryPolicy()
 	}
 
-	if contentType != "" {
-		httpReq.Header.Set("Content-Type", contentType)
+	maxAttempts := 1
+	if retryPolicy != nil {
+		maxAttempts = int(retryPolicy.GetNumberOfRetries()) + 1
 	}
-	httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
-	httpReq.Header.Set("Accept", "*/*")
+	if maxAttempts <= 1 {
+		maxAttempts = 1
+	}
 
-	if t.authenticator != nil {
-		if err := t.authenticator.Authenticate(httpReq); err != nil {
-			return nil, fmt.Errorf("failed to authenticate request: %w", err)
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if attempt > 0 {
+			backoff := retryPolicy.GetBaseBackoff().AsDuration()
+			log.Debug("Retrying request", "attempt", attempt+1, "backoff", backoff)
+			time.Sleep(backoff)
 		}
-	}
 
-	if method == http.MethodGet || method == http.MethodDelete {
-		q := httpReq.URL.Query()
-		for key, value := range inputs {
-			q.Add(key, fmt.Sprintf("%v", value))
+		// Recreate the request body for each attempt to allow retries for POST/PUT requests
+		var bodyForAttempt io.Reader
+		if body != nil {
+			if seeker, ok := body.(io.Seeker); ok {
+				seeker.Seek(0, io.SeekStart)
+				bodyForAttempt = body
+			} else {
+				// If the body is not seekable, we can't retry.
+				// This can be improved by reading the body into a buffer first.
+				// For now, we just use the original body for the first attempt.
+				if attempt == 0 {
+					bodyForAttempt = body
+				} else {
+					// This case should be handled by improving body handling before the loop
+					return nil, fmt.Errorf("cannot retry request with non-seekable body")
+				}
+			}
 		}
-		httpReq.URL.RawQuery = q.Encode()
-	}
 
-	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-		reqDump, err := httputil.DumpRequestOut(httpReq, true)
+		httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
 		if err != nil {
-			logging.GetLogger().Error("failed to dump http request", "error", err)
-		} else {
-			logging.GetLogger().Debug("sending http request", "request", string(reqDump))
+			return "", fmt.Errorf("failed to create http request: %w", err)
+		}
+
+		if contentType != "" {
+			httpReq.Header.Set("Content-Type", contentType)
+		}
+		httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
+		httpReq.Header.Set("Accept", "*/*")
+
+		if t.authenticator != nil {
+			if err := t.authenticator.Authenticate(httpReq); err != nil {
+				return nil, fmt.Errorf("failed to authenticate request: %w", err)
+			}
+		}
+
+		if method == http.MethodGet || method == http.MethodDelete {
+			q := httpReq.URL.Query()
+			for key, value := range inputs {
+				q.Add(key, fmt.Sprintf("%v", value))
+			}
+			httpReq.URL.RawQuery = q.Encode()
+		}
+
+		if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+			reqDump, err := httputil.DumpRequestOut(httpReq, true)
+			if err != nil {
+				logging.GetLogger().Error("failed to dump http request", "error", err)
+			} else {
+				logging.GetLogger().Debug("sending http request", "request", string(reqDump))
+			}
+		}
+
+		resp, err = httpClient.Do(httpReq)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to execute http request: %w", err)
+			log.Warn("Request failed, retrying...", "attempt", attempt+1, "error", err)
+			continue
+		}
+
+		if resp.StatusCode < 400 {
+			lastErr = nil
+			break
+		}
+
+		if resp.StatusCode >= 500 {
+			resp.Body.Close()
+			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
+			log.Error("Request failed with server error, retrying...", "attempt", attempt+1, "status", resp.StatusCode)
+			continue
+		}
+
+		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
+			break
 		}
 	}
-
-	resp, err := httpClient.Do(httpReq)
-	if err != nil {
+	if lastErr != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
-		return nil, fmt.Errorf("failed to execute http request: %w", err)
+		return nil, lastErr
 	}
+
 	defer resp.Body.Close()
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
-	respBody, err := io.ReadAll(resp.Body)
+	respBody, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
 	}
@@ -389,10 +459,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else {
 			logging.GetLogger().Debug("received http response", "response", string(respDump))
 		}
-	}
-
-	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream HTTP request failed with status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	if t.outputTransformer != nil {
