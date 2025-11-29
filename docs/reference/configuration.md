@@ -4,6 +4,26 @@
 
 This document provides a comprehensive reference for configuring the MCP Any server. The configuration is defined in the `McpAnyServerConfig` protobuf message and can be provided to the server in YAML or JSON format.
 
+## Using Environment Variables
+
+MCP Any supports the use of environment variables within configuration files to enhance security and portability. You can reference environment variables using the `${VAR_NAME}` syntax. Default values are also supported using the `${VAR_NAME:default_value}` syntax.
+
+### Example
+
+```yaml
+upstream_services:
+  - name: "my-api"
+    http_service:
+      address: "https://api.example.com"
+    upstream_authentication:
+      api_key:
+        header_name: "X-API-Key"
+        api_key:
+          plain_text: "${API_KEY:my-secret-key}"
+```
+
+In this example, the `api_key` will be set to the value of the `API_KEY` environment variable. If `API_KEY` is not set, it will default to `my-secret-key`.
+
 ## Root Server Configuration (`McpAnyServerConfig`)
 
 The `McpAnyServerConfig` is the top-level configuration object for the entire MCP Any server.

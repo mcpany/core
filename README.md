@@ -29,7 +29,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-- **Advanced Service Policies**: Configure Caching and Rate Limiting to optimize performance and protect upstream services.
+- **Advanced Service Policies**: Configure Caching, Rate Limiting, and Retries to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
@@ -38,6 +38,34 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
+
+### Defining Prompts
+
+MCP Any allows you to define and execute prompts directly from your configuration files. This is useful for integrating with AI models and other services that require dynamic, template-based inputs.
+
+Here's an example of how to define a prompt in your `config.yaml`:
+
+```yaml
+upstreamServices:
+  - name: "my-prompt-service"
+    httpService:
+      address: "https://api.example.com"
+      prompts:
+        - name: "my-prompt"
+          description: "A sample prompt"
+          messages:
+            - role: "user"
+              text:
+                text: "Hello, {{name}}!"
+```
+
+You can then execute this prompt by sending a `prompts/get` request to the server:
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "method": "prompts/get", "params": {"name": "my-prompt-service.my-prompt", "arguments": {"name": "world"}}, "id": 1}' \
+  http://localhost:50050
+```
 
 ## Getting Started
 
@@ -189,6 +217,20 @@ MCP Any supports a variety of advanced configuration options, including:
           clientCertPath: "/path/to/client.crt"
           clientKeyPath: "/path/to/client.key"
           caCertPath: "/path/to/ca.crt"
+- **Resilience**: Configure retries for a gRPC service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-resilient-service"
+      grpcService:
+        address: "localhost:50052"
+        reflection:
+          enabled: true
+      resilience:
+        retryPolicy:
+          numberOfRetries: 3
+          baseBackoff: "100ms"
+          maxBackoff: "1s"
   ```
 
 ### Remote Configurations
