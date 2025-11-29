@@ -85,6 +85,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
+	s.proto.SetApiKey(s.APIKey())
 
 	return nil
 }
@@ -129,6 +130,13 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 }
 
 // LogLevel returns the log level for the server.
+func (s *Settings) APIKey() string {
+	if s.proto.GetApiKey() != "" {
+		return s.proto.GetApiKey()
+	}
+	return viper.GetString("api-key")
+}
+
 func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return v1.GlobalSettings_LOG_LEVEL_DEBUG

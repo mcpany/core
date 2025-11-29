@@ -14,6 +14,7 @@ require (
 	github.com/antchfx/xmlquery v1.4.4
 	github.com/antchfx/xpath v1.3.5
 	github.com/armon/go-metrics v0.4.1
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
 	github.com/eko/gocache/lib/v4 v4.2.0
@@ -26,6 +27,7 @@ require (
 	github.com/google/jsonschema-go v0.3.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/jhump/protoreflect v1.15.3
 	github.com/modelcontextprotocol/go-sdk v1.1.0
@@ -46,6 +48,8 @@ require (
 	go.uber.org/goleak v1.3.0
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/sync v0.17.0
+	golang.org/x/time v0.14.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20251111163417-95abcf5c77ba
 	google.golang.org/grpc v1.75.1
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/yaml.v3 v3.0.1
@@ -58,7 +62,6 @@ require (
 	github.com/antithesishq/antithesis-sdk-go v0.4.3-default-no-op // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bufbuild/protocompile v0.6.0 // indirect
-	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
@@ -151,8 +154,6 @@ require (
 	golang.org/x/net v0.45.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
-	golang.org/x/time v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20251111163417-95abcf5c77ba // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251103181224-f26f9409b101 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
