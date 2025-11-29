@@ -103,6 +103,9 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 func (m *mockToolManager) ClearToolsForService(serviceID string) {
 }
 
+func (m *mockToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {
+}
+
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
 }
 

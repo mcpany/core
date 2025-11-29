@@ -30,6 +30,7 @@ type PromptManagerInterface interface {
 	GetPrompt(name string) (Prompt, bool)
 	ListPrompts() []Prompt
 	ClearPromptsForService(serviceID string)
+	PrunePromptsForService(serviceID string, keepPromptNames []string)
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
@@ -55,10 +56,15 @@ func (pm *PromptManager) SetMCPServer(mcpServer MCPServerProvider) {
 }
 
 // AddPrompt registers a new prompt with the manager. If a prompt with the same
-// name already exists, it will not be overwritten, and a warning will be logged.
+// name already exists, it will be overwritten if the service matches.
+// Otherwise, it will not be overwritten, and a warning will be logged.
 func (pm *PromptManager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadOrStore(promptName, prompt); loaded {
+		if existingPrompt.Service() == prompt.Service() {
+			pm.prompts.Store(promptName, prompt)
+			return
+		}
 		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Ignoring. promptName=%s, newPromptService=%s, existingPromptService=%s",
 			promptName,
 			prompt.Service(),
@@ -88,6 +94,24 @@ func (pm *PromptManager) ClearPromptsForService(serviceID string) {
 	pm.prompts.Range(func(key string, value Prompt) bool {
 		if value.Service() == serviceID {
 			pm.prompts.Delete(key)
+		}
+		return true
+	})
+}
+
+// PrunePromptsForService removes prompts associated with a given service that are
+// not in the keep list.
+func (pm *PromptManager) PrunePromptsForService(serviceID string, keepPromptNames []string) {
+	keepSet := make(map[string]bool)
+	for _, n := range keepPromptNames {
+		keepSet[n] = true
+	}
+
+	pm.prompts.Range(func(key string, value Prompt) bool {
+		if value.Service() == serviceID {
+			if !keepSet[key] {
+				pm.prompts.Delete(key)
+			}
 		}
 		return true
 	})

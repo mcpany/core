@@ -66,6 +66,7 @@ type mockToolManager struct {
 
 func (m *mockToolManager) AddTool(t tool.Tool) error                               { return nil }
 func (m *mockToolManager) ClearToolsForService(serviceID string)                   {}
+func (m *mockToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {}
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool)                   { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                  { return nil }
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
@@ -222,8 +223,7 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	serviceConfig2 := &configv1.UpstreamServiceConfig{}
 	serviceConfig2.SetName("test-service")
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
-	require.Error(t, err, "Second registration with the same name should fail")
-	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
+	require.NoError(t, err, "Second registration with the same name should succeed (overwrite)")
 }
 
 func TestServiceRegistry_UnregisterService(t *testing.T) {

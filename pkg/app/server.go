@@ -178,6 +178,15 @@ func (a *Application) Run(
 	upstreamWorker.Start(ctx)
 	registrationWorker.Start(ctx)
 
+	reloader := NewConfigReloader(
+		fs,
+		configPaths,
+		config.GlobalSettings().ReloadInterval(),
+		busProvider,
+		cfg,
+	)
+	reloader.Start(ctx)
+
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
 		workerCfg := &worker.Config{

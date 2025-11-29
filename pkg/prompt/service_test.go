@@ -92,6 +92,10 @@ func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
 	m.Called(serviceID)
 }
 
+func (m *MockPromptManager) PrunePromptsForService(serviceID string, keepPromptNames []string) {
+	m.Called(serviceID, keepPromptNames)
+}
+
 func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {

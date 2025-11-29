@@ -52,6 +52,7 @@ func BindFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	cmd.Flags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
 	cmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
+	cmd.Flags().Duration("reload-interval", 0, "Interval to reload configuration files. 0 to disable. Env: MCPANY_RELOAD_INTERVAL")
 	cmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 	cmd.Flags().String("api-key", "", "API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY")
 

@@ -39,6 +39,7 @@ type Settings struct {
 	logLevel        string
 	logFile         string
 	shutdownTimeout time.Duration
+	reloadInterval  time.Duration
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -70,6 +71,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
+	s.reloadInterval = viper.GetDuration("reload-interval")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -127,6 +129,11 @@ func (s *Settings) LogFile() string {
 // ShutdownTimeout returns the graceful shutdown timeout.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
+}
+
+// ReloadInterval returns the configuration reload interval.
+func (s *Settings) ReloadInterval() time.Duration {
+	return s.reloadInterval
 }
 
 // LogLevel returns the log level for the server.

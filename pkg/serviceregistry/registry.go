@@ -103,16 +103,26 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	capturedPrompts := &capturingPromptManager{delegate: r.promptManager}
+	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, capturedPrompts, r.resourceManager, false)
 	if err != nil {
 		return "", nil, nil, err
 	}
 
 	if _, ok := r.serviceConfigs[serviceID]; ok {
-		r.toolManager.ClearToolsForService(serviceID)
-		r.promptManager.ClearPromptsForService(serviceID)
-		r.resourceManager.ClearResourcesForService(serviceID)
-		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+		var keepToolNames []string
+		for _, t := range discoveredTools {
+			keepToolNames = append(keepToolNames, t.GetName())
+		}
+		r.toolManager.PruneToolsForService(serviceID, keepToolNames)
+
+		r.promptManager.PrunePromptsForService(serviceID, capturedPrompts.addedPrompts)
+
+		var keepResourceURIs []string
+		for _, res := range discoveredResources {
+			keepResourceURIs = append(keepResourceURIs, res.GetUri())
+		}
+		r.resourceManager.PruneResourcesForService(serviceID, keepResourceURIs)
 	}
 
 	r.serviceConfigs[serviceID] = serviceConfig
@@ -197,4 +207,37 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 		services = append(services, service)
 	}
 	return services, nil
+}
+
+type capturingPromptManager struct {
+	delegate     prompt.PromptManagerInterface
+	addedPrompts []string
+	mu           sync.Mutex
+}
+
+func (m *capturingPromptManager) AddPrompt(p prompt.Prompt) {
+	m.mu.Lock()
+	m.addedPrompts = append(m.addedPrompts, p.Prompt().Name)
+	m.mu.Unlock()
+	m.delegate.AddPrompt(p)
+}
+
+func (m *capturingPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {
+	return m.delegate.GetPrompt(name)
+}
+
+func (m *capturingPromptManager) ListPrompts() []prompt.Prompt {
+	return m.delegate.ListPrompts()
+}
+
+func (m *capturingPromptManager) ClearPromptsForService(serviceID string) {
+	m.delegate.ClearPromptsForService(serviceID)
+}
+
+func (m *capturingPromptManager) PrunePromptsForService(serviceID string, keepPromptNames []string) {
+	m.delegate.PrunePromptsForService(serviceID, keepPromptNames)
+}
+
+func (m *capturingPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
+	m.delegate.SetMCPServer(mcpServer)
 }

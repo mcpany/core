@@ -44,6 +44,7 @@ type ToolManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	ListTools() []Tool
 	ClearToolsForService(serviceID string)
+	PruneToolsForService(serviceID string, keepToolNames []string)
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	SetMCPServer(mcpServer MCPServerProvider)
 	AddMiddleware(middleware ToolExecutionMiddleware)
@@ -319,4 +320,34 @@ func (tm *ToolManager) ClearToolsForService(serviceID string) {
 		return true
 	})
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
+}
+
+// PruneToolsForService removes tools associated with a given service key that are
+// not in the keep list.
+//
+// serviceID is the unique identifier for the service.
+// keepToolNames is a list of tool names to keep.
+func (tm *ToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+
+	keepKeys := make(map[string]struct{})
+	for _, name := range keepToolNames {
+		sanitized, err := util.SanitizeToolName(name)
+		if err != nil {
+			logging.GetLogger().Error("Failed to sanitize tool name during prune", "name", name, "error", err)
+			continue
+		}
+		key := serviceID + "." + sanitized
+		keepKeys[key] = struct{}{}
+	}
+
+	tm.tools.Range(func(key string, value Tool) bool {
+		if value.Tool().GetServiceId() == serviceID {
+			if _, keep := keepKeys[key]; !keep {
+				tm.tools.Delete(key)
+			}
+		}
+		return true
+	})
 }

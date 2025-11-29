@@ -60,6 +60,8 @@ type ResourceManagerInterface interface {
 	OnListChanged(func())
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	ClearResourcesForService(serviceID string)
+	// PruneResourcesForService removes resources associated with a given service ID that are not in the keep list.
+	PruneResourcesForService(serviceID string, keepResourceURIs []string)
 }
 
 // ResourceManager is a thread-safe implementation of the
@@ -100,6 +102,29 @@ func (rm *ResourceManager) AddResource(resource Resource) {
 	defer rm.mu.Unlock()
 	rm.resources[resource.Resource().URI] = resource
 	if rm.onListChangedFunc != nil {
+		rm.onListChangedFunc()
+	}
+}
+
+// PruneResourcesForService removes resources associated with a given service ID that are not in the keep list.
+func (rm *ResourceManager) PruneResourcesForService(serviceID string, keepResourceURIs []string) {
+	keepSet := make(map[string]bool)
+	for _, uri := range keepResourceURIs {
+		keepSet[uri] = true
+	}
+
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	changed := false
+	for uri, resource := range rm.resources {
+		if resource.Service() == serviceID {
+			if !keepSet[uri] {
+				delete(rm.resources, uri)
+				changed = true
+			}
+		}
+	}
+	if changed && rm.onListChangedFunc != nil {
 		rm.onListChangedFunc()
 	}
 }
