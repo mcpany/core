@@ -153,35 +153,6 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
-	validateCmd := &cobra.Command{
-		Use:   "validate",
-		Short: "Validate the configuration file(s)",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fs := afero.NewOsFs()
-			cfg := config.GlobalSettings()
-			if err := cfg.Load(cmd, fs); err != nil {
-				return err
-			}
-
-			configPaths := cfg.ConfigPaths()
-			if len(configPaths) == 0 {
-				return fmt.Errorf("no configuration paths provided")
-			}
-
-			store := config.NewFileStore(fs, configPaths)
-			if _, err := config.LoadServices(store, "server"); err != nil {
-				return fmt.Errorf("configuration validation failed: %w", err)
-			}
-
-			_, err := fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
-			if err != nil {
-				return fmt.Errorf("failed to print validation message: %w", err)
-			}
-			return nil
-		},
-	}
-	rootCmd.AddCommand(validateCmd)
-
 	config.BindFlags(rootCmd)
 
 	return rootCmd

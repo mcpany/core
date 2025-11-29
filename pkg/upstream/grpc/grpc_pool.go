@@ -23,7 +23,6 @@ import (
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
-	"github.com/mcpany/core/pkg/service"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -55,9 +54,6 @@ func NewGrpcPool(
 		}
 		if creds != nil {
 			opts = append(opts, grpc.WithPerRPCCredentials(creds))
-		}
-		if config.GetResilience() != nil && config.GetResilience().GetRetryPolicy() != nil {
-			opts = append(opts, grpc.WithUnaryInterceptor(service.UnaryClientInterceptor(config.GetResilience().GetRetryPolicy())))
 		}
 		addr := strings.TrimPrefix(config.GetGrpcService().GetAddress(), "grpc://")
 
