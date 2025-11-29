@@ -24,6 +24,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 	"path/filepath"
 	"sort"
@@ -120,6 +121,24 @@ type Store interface {
 	Load() (*configv1.McpAnyServerConfig, error)
 }
 
+var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
+
+func expand(b []byte) []byte {
+	return envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
+		s := string(match[2 : len(match)-1])
+		parts := strings.SplitN(s, ":", 2)
+		varName := parts[0]
+		val, ok := os.LookupEnv(varName)
+		if ok {
+			return []byte(val)
+		}
+		if len(parts) > 1 {
+			return []byte(parts[1])
+		}
+		return match
+	})
+}
+
 // FileStore implements the `Store` interface for loading configurations from one
 // or more files or directories on a filesystem. It supports multiple file
 // formats (JSON, YAML, and textproto) and merges the configurations into a
@@ -178,6 +197,8 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 		if len(b) == 0 {
 			continue
 		}
+
+		b = expand(b)
 
 		engine, err := NewEngine(path)
 		if err != nil {

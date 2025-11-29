@@ -213,6 +213,8 @@ message CacheConfig {
 message ToolDefinition {
   // The name of the tool, which will be used to invoke it.
   string name = 1;
+  // The ID of the service that provides the tool.
+  string service_id = 13;
   // A human-readable description of what the tool does.
   string description = 2;
   // The schema for the input parameters required by the tool.
