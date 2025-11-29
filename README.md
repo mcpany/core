@@ -29,6 +29,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
+- **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
 - **Advanced Service Policies**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
@@ -187,6 +188,18 @@ MCP Any supports a variety of advanced configuration options, including:
       openapiService:
         spec:
           path: "./openapi.json"
+  ```
+
+- **GraphQL Services**: Register a GraphQL service and customize the selection set for a query.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-graphql-service"
+      graphqlService:
+        address: "http://localhost:8080/graphql"
+        calls:
+          - name: "user"
+            selectionSet: "{ id name }"
   ```
 
 - **Authentication**: Configure authentication for an upstream service.
