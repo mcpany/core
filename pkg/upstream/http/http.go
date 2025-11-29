@@ -269,7 +269,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 
 		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
 
-		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef)
+		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience())
 		if err := toolManager.AddTool(httpTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue
