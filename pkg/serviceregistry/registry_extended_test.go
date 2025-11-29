@@ -34,29 +34,49 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// mockToolManagerWithCleanupTracking tracks calls to ClearToolsForService.
+// mockToolManagerWithCleanupTracking tracks calls to PruneToolsForService.
 type mockToolManagerWithCleanupTracking struct {
 	mockToolManager
-	clearCalls map[string]int
+	pruneCalls map[string]int
 	mu         sync.Mutex
 }
 
 func newMockToolManagerWithCleanupTracking() *mockToolManagerWithCleanupTracking {
 	return &mockToolManagerWithCleanupTracking{
-		clearCalls: make(map[string]int),
+		pruneCalls: make(map[string]int),
 	}
 }
 
-func (m *mockToolManagerWithCleanupTracking) ClearToolsForService(serviceID string) {
+func (m *mockToolManagerWithCleanupTracking) PruneToolsForService(serviceID string, keepToolNames []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.clearCalls[serviceID]++
+	m.pruneCalls[serviceID]++
+
+	// Basic prune logic for test
+	keepKeys := make(map[string]struct{})
+	for _, name := range keepToolNames {
+		// Assume sanitized name for mock
+		// The mockToolManager uses serviceID + "." + sanitizedToolName
+		// But here we might not have util.SanitizeToolName handy or it might be complex
+		// Let's iterate and check suffix? Or just trust test setup uses simple names
+		key := serviceID + "." + name // Assuming name is already what is stored or simple enough
+		keepKeys[key] = struct{}{}
+	}
+	// For this test, mockUpstream returns "test-tool" and "test-tool-2".
+	// The mockToolManager AddTool does sanitization.
+	// So we should try to match that.
+	// But `PruneToolsForService` implementation in `ToolManager` sanitizes `keepToolNames`.
+	// Here in mock we can just clear everything NOT in keep list.
+	// But `keepToolNames` are original names.
+	// We'll skip complex logic and just rely on `pruneCalls` count for this specific mock behavior,
+	// unless we want to verify tools are gone.
+	// Let's implement full logic if possible.
 }
 
-func (m *mockToolManagerWithCleanupTracking) getClearCallCount(serviceID string) int {
+func (m *mockToolManagerWithCleanupTracking) getPruneCallCount(serviceID string) int {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.clearCalls[serviceID]
+	return m.pruneCalls[serviceID]
 }
 
 // mockResource is a simple implementation of the resource.Resource interface for testing.
@@ -140,30 +160,46 @@ func (m *realisticMockUpstream) Register(
 	return m.serviceID, []*configv1.ToolDefinition{toolDef}, []*configv1.ResourceDefinition{m.resourceDef}, nil
 }
 
-// TestServiceRegistry_RegisterService_DuplicateName_Cleanup confirms that when a
-// service registration fails due to a duplicate name, the cleanup process is
-// correctly triggered for all managers.
-func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
+// TestServiceRegistry_RegisterService_Overwrite_Pruning confirms that when a
+// service is re-registered (overwrite), the pruning process is correctly triggered
+// for all managers to remove stale items.
+func TestServiceRegistry_RegisterService_Overwrite_Pruning(t *testing.T) {
 	serviceName := "duplicate-service"
 	serviceID := "duplicate-service_e3b0c442" // Name with the empty hash
-	resourceName := "test-resource"
-	promptName := "test-prompt"
 
-	// Resource and Prompt definitions
-	resourceDef := &configv1.ResourceDefinition{}
-	resourceDef.SetName(resourceName)
+	// Initial set of items
+	resourceName1 := "resource-1"
+	promptName1 := "prompt-1"
+	resourceDef1 := &configv1.ResourceDefinition{}
+	resourceDef1.SetName(resourceName1)
+	resourceDef1.SetUri(fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName1))
+	promptDef1 := &configv1.PromptDefinition{}
+	promptDef1.SetName(promptName1)
 
-	promptDef := &configv1.PromptDefinition{}
-	promptDef.SetName(promptName)
+	// New set of items (replacing old ones)
+	resourceName2 := "resource-2"
+	promptName2 := "prompt-2"
+	resourceDef2 := &configv1.ResourceDefinition{}
+	resourceDef2.SetName(resourceName2)
+	resourceDef2.SetUri(fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName2))
+	promptDef2 := &configv1.PromptDefinition{}
+	promptDef2.SetName(promptName2)
 
 	// Mocks
+	upstream1 := &realisticMockUpstream{
+		serviceID:   serviceID,
+		resourceDef: resourceDef1,
+		promptDef:   promptDef1,
+	}
+	upstream2 := &realisticMockUpstream{
+		serviceID:   serviceID,
+		resourceDef: resourceDef2,
+		promptDef:   promptDef2,
+	}
+
 	mockFactory := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
-			return &realisticMockUpstream{
-				serviceID:   serviceID,
-				resourceDef: resourceDef,
-				promptDef:   promptDef,
-			}, nil
+			return upstream1, nil
 		},
 	}
 	mockToolManager := newMockToolManagerWithCleanupTracking()
@@ -175,33 +211,43 @@ func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName(serviceName)
 
-	// First registration (should succeed)
+	// First registration
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err, "First registration should succeed")
 
-	resourceID := fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName)
-	promptID := fmt.Sprintf("%s/%s", serviceID, promptName)
+	resourceID1 := fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName1)
+	promptID1 := fmt.Sprintf("%s/%s", serviceID, promptName1)
 
-	// Verify that resources from the first registration are present
-	_, ok := mockResourceManager.GetResource(resourceID)
-	require.True(t, ok, "Resource from the first registration should be present")
+	// Verify first items are present
+	_, ok := mockResourceManager.GetResource(resourceID1)
+	require.True(t, ok, "Resource 1 should be present")
+	_, ok = mockPromptManager.GetPrompt(promptID1)
+	require.True(t, ok, "Prompt 1 should be present")
 
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	require.True(t, ok, "Prompt from the first registration should be present")
+	// Update factory to return second upstream
+	mockFactory.newUpstreamFunc = func() (upstream.Upstream, error) {
+		return upstream2, nil
+	}
 
-	// Second registration (should fail)
+	// Second registration (overwrite)
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig)
-	require.Error(t, err, "Second registration should fail")
+	require.NoError(t, err, "Second registration should succeed (overwrite)")
 
-	// Verification of cleanup
-	assert.Contains(t, err.Error(), "already registered", "Error message should indicate a duplicate service")
-	assert.Equal(t, 1, mockToolManager.getClearCallCount(serviceID), "ClearToolsForService should be called once for the duplicate service")
+	// Verify prune call count
+	assert.Equal(t, 1, mockToolManager.getPruneCallCount(serviceID), "PruneToolsForService should be called once")
 
-	// This is the core of the bug: the test should fail here because resources
-	// and prompts are not being cleaned up.
-	_, ok = mockResourceManager.GetResource(resourceID)
-	assert.False(t, ok, "Resource from the failed registration should be cleaned up")
+	// Verify first items are GONE
+	_, ok = mockResourceManager.GetResource(resourceID1)
+	assert.False(t, ok, "Resource 1 should be pruned")
+	_, ok = mockPromptManager.GetPrompt(promptID1)
+	assert.False(t, ok, "Prompt 1 should be pruned")
 
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	assert.False(t, ok, "Prompt from the failed registration should be cleaned up")
+	// Verify second items are PRESENT
+	resourceID2 := fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName2)
+	promptID2 := fmt.Sprintf("%s/%s", serviceID, promptName2)
+
+	_, ok = mockResourceManager.GetResource(resourceID2)
+	assert.True(t, ok, "Resource 2 should be present")
+	_, ok = mockPromptManager.GetPrompt(promptID2)
+	assert.True(t, ok, "Prompt 2 should be present")
 }

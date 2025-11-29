@@ -91,6 +91,11 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
+func (m *MockToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+}
+
 func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
 
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}

@@ -59,6 +59,10 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	m.Called(serviceID)
 }
 
+func (m *MockToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {
+	m.Called(serviceID, keepToolNames)
+}
+
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.Called(serviceID, info)
 }

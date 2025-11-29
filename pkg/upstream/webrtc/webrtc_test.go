@@ -85,6 +85,11 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
+func (m *MockToolManager) PruneToolsForService(serviceID string, keepToolNames []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+}
+
 func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
 
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
@@ -152,6 +157,11 @@ func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
 	}
 }
 
+func (m *MockPromptManager) PrunePromptsForService(serviceID string, keepPromptNames []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+}
+
 // MockResourceManager is a mock implementation of the ResourceManagerInterface.
 type MockResourceManager struct {
 	mu        sync.Mutex
@@ -201,6 +211,11 @@ func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
 			delete(m.resources, name)
 		}
 	}
+}
+
+func (m *MockResourceManager) PruneResourcesForService(serviceID string, keepResourceURIs []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 }
 
 func TestNewWebrtcUpstream(t *testing.T) {
