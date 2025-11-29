@@ -31,6 +31,7 @@ import (
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -63,6 +64,7 @@ func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
 }
 
 func TestHealthCmd(t *testing.T) {
+	viper.Reset()
 	// This is a basic test to ensure the command runs without panicking.
 	// A more thorough test would involve setting up a mock HTTP server.
 	rootCmd := newRootCmd()
@@ -73,6 +75,7 @@ func TestHealthCmd(t *testing.T) {
 }
 
 func TestHealthCmdWithCustomPort(t *testing.T) {
+	viper.Reset()
 	// Start a mock HTTP server on a custom port
 	port := "8088"
 	server := &http.Server{
@@ -97,17 +100,25 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 }
 
 func TestRootCmd(t *testing.T) {
+	viper.Reset()
 	mock := &mockRunner{}
 	originalRunner := appRunner
 	appRunner = mock
 	defer func() { appRunner = originalRunner }()
+
+	// Create temp config files/dirs that actually exist, otherwise fsnotify watcher fails
+	tmpDir := t.TempDir()
+	tmpFile, err := os.CreateTemp(tmpDir, "config*.yaml")
+	assert.NoError(t, err)
+	tmpFilePath := tmpFile.Name()
+	tmpFile.Close()
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"--stdio",
 		"--mcp-listen-address", "8081",
 		"--grpc-port", "8082",
-		"--config-path", "/etc/config.yaml,/etc/conf.d",
+		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
 		"--shutdown-timeout", "10s",
 	})
 	rootCmd.Execute()
@@ -116,11 +127,12 @@ func TestRootCmd(t *testing.T) {
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
 	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
-	assert.Equal(t, []string{"/etc/config.yaml", "/etc/conf.d"}, mock.capturedConfigPaths, "config-path should be captured")
+	assert.Equal(t, []string{tmpFilePath, tmpDir}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
 func TestVersionCmd(t *testing.T) {
+	viper.Reset()
 	originalStdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
@@ -144,6 +156,7 @@ func TestVersionCmd(t *testing.T) {
 // This test is for the main function, which is not easily testable.
 // We can, however, test the command execution.
 func TestMainExecution(t *testing.T) {
+	viper.Reset()
 	// This is a bit of a meta-test. We're just making sure that calling main()
 	// doesn't panic. We can't really inspect the output without more refactoring.
 	// We will rely on the other tests to validate the behavior of the commands.
@@ -158,6 +171,7 @@ func TestMainExecution(t *testing.T) {
 }
 
 func TestHealthCmdFlagPrecedence(t *testing.T) {
+	viper.Reset()
 	// Start a mock HTTP server on a custom port
 	port := "8089"
 	server := &http.Server{
