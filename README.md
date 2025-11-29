@@ -203,20 +203,11 @@ MCP Any supports a variety of advanced configuration options, including:
           apiKey: "my-secret-key"
   ```
 
-- **Resilience**: Configure retries for a gRPC service.
+- **Server Authentication**: Secure the MCP server with an API key.
 
   ```yaml
-  upstreamServices:
-    - name: "my-resilient-service"
-      grpcService:
-        address: "localhost:50052"
-        reflection:
-          enabled: true
-      resilience:
-        retryPolicy:
-          numberOfRetries: 3
-          baseBackoff: "100ms"
-          maxBackoff: "1s"
+  global_settings:
+    api_key: "my-secret-key"
   ```
 
 ### Remote Configurations

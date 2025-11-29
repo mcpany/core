@@ -45,7 +45,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/factory"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
-
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
@@ -2002,6 +2002,71 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	if l != nil {
 		l.Close()
 	}
+}
+
+func waitForServerReady(t *testing.T, addr string) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		conn, err := net.Dial("tcp", addr)
+		if err != nil {
+			return false
+		}
+		conn.Close()
+		return true
+	}, 5*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
+}
+
+func TestRun_APIKeyAuthentication(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	// Set the API key
+	viper.Set("api-key", "test-api-key")
+	defer viper.Set("api-key", "")
+
+	// Get the address from the listener
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	l.Close()
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", nil, 5*time.Second)
+	}()
+
+	// Wait for the server to be ready
+	waitForServerReady(t, addr)
+
+	// Make a request without the API key
+	req, err := http.NewRequest("GET", "http://"+addr, nil)
+	require.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+
+	// Make a request with the correct API key
+	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	require.NoError(t, err)
+	req.Header.Set("X-API-Key", "test-api-key")
+	resp, err = http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// Make a request with an incorrect API key
+	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	require.NoError(t, err)
+	req.Header.Set("X-API-Key", "incorrect-api-key")
+	resp, err = http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err)
 }
 
 func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
