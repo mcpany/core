@@ -146,6 +146,22 @@ message MCPCallDefinition {
   CacheConfig cache = 5;
 }
 
+// GraphQLCallDefinition describes a call derived from a GraphQL introspection query.
+message GraphQLCallDefinition {
+// The unique identifier for the call.
+string id = 1;
+// The GraphQL query to execute.
+string query = 2;
+// The GraphQL operation name.
+string operation_name = 3;
+// A map of variables for the GraphQL query.
+google.protobuf.Struct variables = 4;
+// Caching configuration to improve performance and reduce load on the upstream.
+CacheConfig cache = 5;
+// The selection set for the GraphQL query.
+string selection_set = 6;
+}
+
 // ParameterType defines the data type of a parameter.
 enum ParameterType {
   STRING = 0;

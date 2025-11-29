@@ -41,3 +41,8 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
+
+// Callable returns the underlying Callable of the tool.
+func (t *CallableTool) Callable() Callable {
+	return t.callable
+}
