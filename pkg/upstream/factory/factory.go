@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/openapi"
 	"github.com/mcpany/core/pkg/upstream/webrtc"
 	"github.com/mcpany/core/pkg/upstream/websocket"
+	"github.com/mcpany/core/pkg/upstream/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -81,6 +82,8 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return websocket.NewWebsocketUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
 		return webrtc.NewWebrtcUpstream(f.poolManager), nil
+	case configv1.UpstreamServiceConfig_GraphqlService_case:
+		return graphql.NewGraphQLUpstream(), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}

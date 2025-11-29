@@ -104,6 +104,7 @@ message UpstreamServiceConfig {
     CommandLineUpstreamService command_line_service = 13;
     WebsocketUpstreamService websocket_service = 16;
     WebrtcUpstreamService webrtc_service = 17;
+    GraphQLUpstreamService graphql_service = 21;
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -264,6 +265,12 @@ message CommandLineUpstreamService {
   map<string, CommandLineCallDefinition> calls = 10;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 11;
+}
+
+// GraphQLUpstreamService defines an upstream service that speaks GraphQL.
+message GraphQLUpstreamService {
+  // The URL of the GraphQL endpoint (e.g., "http://api.example.com/graphql").
+  string address = 1;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
