@@ -273,6 +273,8 @@ message CommandLineUpstreamService {
 message GraphQLUpstreamService {
   // The URL of the GraphQL endpoint (e.g., "http://api.example.com/graphql").
   string address = 1;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, GraphQLCallDefinition> calls = 2;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.

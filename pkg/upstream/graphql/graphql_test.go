@@ -139,6 +139,90 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 	assert.True(t, ok)
 	_, ok = toolManager.GetTool("test-service.test-service-createUser")
 	assert.True(t, ok)
+
+	userTool, ok := toolManager.GetTool("test-service.test-service-user")
+	require.True(t, ok)
+
+	callableTool, ok := userTool.(*tool.CallableTool)
+	require.True(t, ok)
+	callable, ok := callableTool.Callable().(*GraphQLCallable)
+	require.True(t, ok)
+
+	assert.Contains(t, callable.query, "user(id: $id) { id name }")
+}
+
+func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"data": map[string]interface{}{
+				"__schema": map[string]interface{}{
+					"queryType": map[string]string{"name": "Query"},
+					"types": []map[string]interface{}{
+						{
+							"name": "Query",
+							"kind": "OBJECT",
+							"fields": []map[string]interface{}{
+								{
+									"name": "user",
+									"args": []map[string]interface{}{
+										{
+											"name": "id",
+											"type": map[string]interface{}{
+												"name": "ID",
+												"kind": "SCALAR",
+											},
+										},
+									},
+									"type": map[string]interface{}{
+										"name": "User",
+										"kind": "OBJECT",
+										"fields": []map[string]interface{}{
+											{
+												"name": "id",
+											},
+											{
+												"name": "name",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer server.Close()
+
+	upstream := NewGraphQLUpstream()
+	toolManager := tool.NewToolManager(nil)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	selectionSet := "{ id }"
+	serviceConfig.GetGraphqlService().SetCalls(map[string]*configv1.GraphQLCallDefinition{
+		"user": {
+			SelectionSet: &selectionSet,
+		},
+	})
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	userTool, ok := toolManager.GetTool("test-service.test-service-user")
+	require.True(t, ok)
+
+	callableTool, ok := userTool.(*tool.CallableTool)
+	require.True(t, ok)
+	callable, ok := callableTool.Callable().(*GraphQLCallable)
+	require.True(t, ok)
+
+	assert.Contains(t, callable.query, "user(id: $id) { id }")
 }
 
 func TestGraphQLTool_ExecuteQuery(t *testing.T) {
