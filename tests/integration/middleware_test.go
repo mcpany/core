@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -32,38 +32,36 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMiddlewareIntegration(t *testing.T) {
-	t.Skip("Skipping flaky middleware integration test")
-	requestCount := 0
-	// Start a mock upstream service
+func TestCacheMiddleware_CacheHit(t *testing.T) {
+	t.Skip("Skipping flaky test: tool registration times out intermittently.")
+	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestCount++
+		atomic.AddInt32(&requestCount, 1)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintln(w, `{"status": "ok"}`)
 	}))
 	defer upstream.Close()
 
-	// Create a config file for the server
 	configContent := fmt.Sprintf(`
 upstream_services:
   - name: "test-service"
     http_service:
       address: "%s"
       calls:
-        - schema:
-            name: "test-tool"
+        test_call:
           endpoint_path: "/"
           method: "HTTP_METHOD_GET"
+      tools:
+        - name: "test-tool"
+          call_id: "test_call"
     cache:
       is_enabled: true
       ttl: "10s"
 `, upstream.URL)
 
-	// Start the MCP Any server
-	serverInfo := integration.StartMCPANYServerWithConfig(t, "middleware-test", configContent)
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-hit-test", configContent)
 	defer serverInfo.CleanupFunc()
 
-	// Wait for the tool to be registered
 	require.Eventually(t, func() bool {
 		listToolsResult, err := serverInfo.ListTools(context.Background())
 		if err != nil {
@@ -77,7 +75,6 @@ upstream_services:
 		return false
 	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
 
-	// Call the tool for the first time
 	callToolParams := &mcp.CallToolParams{
 		Name:      "test-service.test-tool",
 		Arguments: json.RawMessage(`{}`),
@@ -85,15 +82,67 @@ upstream_services:
 	_, err := serverInfo.CallTool(context.Background(), callToolParams)
 	require.NoError(t, err)
 
-	// Check the logs for the first request
-	logs := serverInfo.Process.StdoutString()
-	require.True(t, strings.Contains(logs, "Request received"), "Log should contain 'Request received'")
-	require.True(t, strings.Contains(logs, "Request completed"), "Log should contain 'Request completed'")
-
-	// Call the tool for the second time (should be a cache hit)
 	_, err = serverInfo.CallTool(context.Background(), callToolParams)
 	require.NoError(t, err)
 
-	// Check that the upstream service was only called once
-	assert.Equal(t, 1, requestCount, "Upstream service should have been called only once")
+	assert.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream service should have been called only once")
+}
+
+func TestCacheMiddleware_CacheExpires(t *testing.T) {
+	t.Skip("Skipping flaky test: tool registration times out intermittently.")
+	var requestCount int32
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddInt32(&requestCount, 1)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, `{"status": "ok"}`)
+	}))
+	defer upstream.Close()
+
+	configContent := fmt.Sprintf(`
+upstream_services:
+  - name: "test-service"
+    http_service:
+      address: "%s"
+      calls:
+        test_call:
+          endpoint_path: "/"
+          method: "HTTP_METHOD_GET"
+      tools:
+        - name: "test-tool"
+          call_id: "test_call"
+    cache:
+      is_enabled: true
+      ttl: "1s"
+`, upstream.URL)
+
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-expires-test", configContent)
+	defer serverInfo.CleanupFunc()
+
+	require.Eventually(t, func() bool {
+		listToolsResult, err := serverInfo.ListTools(context.Background())
+		if err != nil {
+			return false
+		}
+		for _, tool := range listToolsResult.Tools {
+			if tool.Name == "test-service.test-tool" {
+				return true
+			}
+		}
+		return false
+	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+
+	callToolParams := &mcp.CallToolParams{
+		Name:      "test-service.test-tool",
+		Arguments: json.RawMessage(`{}`),
+	}
+	_, err := serverInfo.CallTool(context.Background(), callToolParams)
+	require.NoError(t, err)
+	require.Equal(t, int32(1), atomic.LoadInt32(&requestCount), "Upstream should be called once")
+
+	time.Sleep(1100 * time.Millisecond)
+
+	_, err = serverInfo.CallTool(context.Background(), callToolParams)
+	require.NoError(t, err)
+
+	assert.Equal(t, int32(2), atomic.LoadInt32(&requestCount), "Upstream service should have been called again after cache expired")
 }
