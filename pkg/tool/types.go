@@ -44,6 +44,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/sony/gobreaker"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -215,6 +216,7 @@ type HTTPTool struct {
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
 	resilience        *configv1.ResilienceConfig
+	circuitBreaker    *gobreaker.CircuitBreaker
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -226,6 +228,11 @@ type HTTPTool struct {
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, resilience *configv1.ResilienceConfig) *HTTPTool {
+	var cb *gobreaker.CircuitBreaker
+	if resilience != nil && resilience.GetCircuitBreaker() != nil {
+		cb = GetCircuitBreaker(serviceID, resilience.GetCircuitBreaker())
+	}
+
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
@@ -236,6 +243,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
 		resilience:        resilience,
+		circuitBreaker:    cb,
 	}
 }
 
@@ -253,6 +261,22 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.circuitBreaker == nil {
+		return t.execute(ctx, req)
+	}
+	result, err := t.circuitBreaker.Execute(func() (interface{}, error) {
+		return t.execute(ctx, req)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// execute handles the execution of the HTTP tool. It builds an HTTP request by
+// mapping input parameters to the path, query, and body, applies any
+// configured transformations, sends the request, and processes the response.
+func (t *HTTPTool) execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger()
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
