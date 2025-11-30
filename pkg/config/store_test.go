@@ -19,6 +19,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -229,6 +231,23 @@ upstream_services:
 			}
 		})
 	}
+}
+
+func TestReadURL_RedirectShouldFail(t *testing.T) {
+	// This server will redirect to a "safe" URL, but the redirect should not be followed
+	redirectServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "http://example.com", http.StatusFound)
+	}))
+	defer redirectServer.Close()
+
+	// Temporarily remove the SSRF protection to test the redirect logic in isolation.
+	originalTransport := httpClient.Transport
+	defer func() { httpClient.Transport = originalTransport }()
+	httpClient.Transport = &http.Transport{}
+
+	_, err := readURL(redirectServer.URL)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "redirects are disabled for security reasons")
 }
 
 func TestExpand(t *testing.T) {
