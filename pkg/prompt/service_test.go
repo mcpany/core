@@ -75,6 +75,10 @@ func (m *MockPromptManager) AddPrompt(p prompt.Prompt) {
 	m.Called(p)
 }
 
+func (m *MockPromptManager) UpdatePrompt(p prompt.Prompt) {
+	m.Called(p)
+}
+
 func (m *MockPromptManager) RemovePrompt(name string) {
 	m.Called(name)
 }

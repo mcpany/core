@@ -81,6 +81,7 @@ type Runner interface {
 		configPaths []string,
 		shutdownTimeout time.Duration,
 	) error
+	ReloadConfig(fs afero.Fs, configPaths []string) error
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -89,6 +90,10 @@ type Runner interface {
 // method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	PromptManager    prompt.PromptManagerInterface
+	ToolManager      tool.ToolManagerInterface
+	ResourceManager  resource.ResourceManagerInterface
+	configFiles      map[string]string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -97,8 +102,13 @@ type Application struct {
 //
 // Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
+	busProvider, _ := bus.NewBusProvider(nil)
 	return &Application{
 		runStdioModeFunc: runStdioMode,
+		PromptManager:    prompt.NewPromptManager(),
+		ToolManager:      tool.NewToolManager(busProvider),
+		ResourceManager:  resource.NewResourceManager(),
+		configFiles:      make(map[string]string),
 	}
 }
 
@@ -158,20 +168,20 @@ func (a *Application) Run(
 	}
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	var toolManager tool.ToolManagerInterface = tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	a.ToolManager = tool.NewToolManager(busProvider)
+	a.PromptManager = prompt.NewPromptManager()
+	a.ResourceManager = resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
-		toolManager,
-		promptManager,
-		resourceManager,
+		a.ToolManager,
+		a.PromptManager,
+		a.ResourceManager,
 		authManager,
 	)
 
 	// New message bus and workers
-	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 
 	// Start background workers
@@ -192,9 +202,9 @@ func (a *Application) Run(
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
-		toolManager,
-		promptManager,
-		resourceManager,
+		a.ToolManager,
+		a.PromptManager,
+		a.ResourceManager,
 		authManager,
 		serviceRegistry,
 		busProvider,
@@ -203,7 +213,7 @@ func (a *Application) Run(
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
 
-	toolManager.SetMCPServer(mcpSrv)
+	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
@@ -230,8 +240,8 @@ func (a *Application) Run(
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
-	cachingMiddleware := middleware.NewCachingMiddleware(toolManager)
-	rateLimitMiddleware := middleware.NewRateLimitMiddleware(toolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
+	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
@@ -273,6 +283,53 @@ func (a *Application) Run(
 	}
 
 	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+}
+
+// ReloadConfig reloads the configuration from the given paths and updates the
+// services.
+func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
+	log := logging.GetLogger()
+	log.Info("Reloading configuration...")
+	store := config.NewFileStore(fs, configPaths)
+	cfg, err := config.LoadServices(store, "server")
+	if err != nil {
+		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+
+	// Clear existing services
+	for _, serviceConfig := range cfg.GetUpstreamServices() {
+		a.ToolManager.ClearToolsForService(serviceConfig.GetName())
+		a.ResourceManager.ClearResourcesForService(serviceConfig.GetName())
+		a.PromptManager.ClearPromptsForService(serviceConfig.GetName())
+	}
+
+	if cfg.GetUpstreamServices() != nil {
+		for _, serviceConfig := range cfg.GetUpstreamServices() {
+			if serviceConfig.GetDisable() {
+				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
+				continue
+			}
+
+			// Reload tools, prompts, and resources
+			upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
+			upstream, err := upstreamFactory.NewUpstream(serviceConfig)
+			if err != nil {
+				log.Error("Failed to get upstream service", "error", err)
+				continue
+			}
+			if upstream != nil {
+				_, _, _, err = upstream.Register(context.Background(), serviceConfig, a.ToolManager, a.PromptManager, a.ResourceManager, false)
+				if err != nil {
+					log.Error("Failed to register upstream service", "error", err)
+					continue
+				}
+			}
+		}
+	}
+	log.Info("Tools", "tools", a.ToolManager.ListTools())
+	log.Info("Prompts", "prompts", a.PromptManager.ListPrompts())
+	log.Info("Resources", "resources", a.ResourceManager.ListResources())
+	return nil
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
