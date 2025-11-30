@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package mcpany.service;
+
+option go_package = "github.com/mcpany/core/proto/mcpany/service";
+
+// FileSystemService defines the configuration for a service that exposes the
+// local file system as a set of tools.
+message FileSystemService {
+  // The root directory to expose. All file operations will be relative to this
+  // directory. If not specified, the current working directory will be used.
+  string root_directory = 1;
+
+  // If true, the service will not allow any write operations (e.g., writeFile,
+  // deleteFile).
+  bool read_only = 2;
+}

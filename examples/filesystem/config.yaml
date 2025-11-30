@@ -1,0 +1,5 @@
+upstreamServices:
+  - name: "my-filesystem-service"
+    filesystemService:
+      rootDirectory: "/tmp"
+      readOnly: false
