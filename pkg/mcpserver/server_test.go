@@ -26,6 +26,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/observability"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
@@ -43,6 +44,15 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+func TestMain(m *testing.M) {
+	// Initialize the MeterProvider before any tests are run.
+	_, err := observability.Start(context.Background(), ":0")
+	if err != nil {
+		panic(err)
+	}
+	m.Run()
+}
 
 type mockTool struct {
 	tool *v1.Tool

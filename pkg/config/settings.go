@@ -104,6 +104,11 @@ func (s *Settings) MCPListenAddress() string {
 	return addr
 }
 
+// MetricsListenAddress returns the listen address for the metrics server.
+func (s *Settings) MetricsListenAddress() string {
+	return viper.GetString("metrics-listen-address")
+}
+
 // Stdio returns whether stdio mode is enabled.
 func (s *Settings) Stdio() bool {
 	return s.stdio

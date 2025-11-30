@@ -401,16 +401,17 @@ func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
 
 // GlobalSettings contains server-wide operational parameters.
 type GlobalSettings struct {
-	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_McpListenAddress *string                 `protobuf:"bytes,1,opt,name=mcp_listen_address,json=mcpListenAddress"`
-	xxx_hidden_McpBasepath      *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
-	xxx_hidden_LogLevel         GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_MessageBus       *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
-	xxx_hidden_ApiKey           *string                 `protobuf:"bytes,5,opt,name=api_key,json=apiKey"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state                           protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_McpListenAddress     *string                 `protobuf:"bytes,1,opt,name=mcp_listen_address,json=mcpListenAddress"`
+	xxx_hidden_McpBasepath          *string                 `protobuf:"bytes,2,opt,name=mcp_basepath,json=mcpBasepath"`
+	xxx_hidden_LogLevel             GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,json=logLevel,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_MessageBus           *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus,json=messageBus"`
+	xxx_hidden_ApiKey               *string                 `protobuf:"bytes,5,opt,name=api_key,json=apiKey"`
+	xxx_hidden_MetricsListenAddress *string                 `protobuf:"bytes,6,opt,name=metrics_listen_address,json=metricsListenAddress"`
+	XXX_raceDetectHookData          protoimpl.RaceDetectHookData
+	XXX_presence                    [1]uint32
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -484,19 +485,29 @@ func (x *GlobalSettings) GetApiKey() string {
 	return ""
 }
 
+func (x *GlobalSettings) GetMetricsListenAddress() string {
+	if x != nil {
+		if x.xxx_hidden_MetricsListenAddress != nil {
+			return *x.xxx_hidden_MetricsListenAddress
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *GlobalSettings) SetMcpBasepath(v string) {
 	x.xxx_hidden_McpBasepath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -505,7 +516,12 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *GlobalSettings) SetMetricsListenAddress(v string) {
+	x.xxx_hidden_MetricsListenAddress = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -543,6 +559,13 @@ func (x *GlobalSettings) HasApiKey() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
+func (x *GlobalSettings) HasMetricsListenAddress() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -567,6 +590,11 @@ func (x *GlobalSettings) ClearApiKey() {
 	x.xxx_hidden_ApiKey = nil
 }
 
+func (x *GlobalSettings) ClearMetricsListenAddress() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_MetricsListenAddress = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -580,6 +608,8 @@ type GlobalSettings_builder struct {
 	MessageBus *bus.MessageBus
 	// The API key for securing the MCP server.
 	ApiKey *string
+	// The listen address for the metrics server.
+	MetricsListenAddress *string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -587,21 +617,25 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.McpBasepath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_McpBasepath = b.McpBasepath
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
 		x.xxx_hidden_ApiKey = b.ApiKey
+	}
+	if b.MetricsListenAddress != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_MetricsListenAddress = b.MetricsListenAddress
 	}
 	return m0
 }
@@ -5762,14 +5796,15 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xed\x02\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xa3\x03\n" +
 	"\x0eGlobalSettings\x12,\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x10mcpListenAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\blogLevel\x120\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\n" +
 	"messageBus\x12\x17\n" +
-	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\"w\n" +
+	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\x124\n" +
+	"\x16metrics_listen_address\x18\x06 \x01(\tR\x14metricsListenAddress\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

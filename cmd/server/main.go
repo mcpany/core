@@ -34,6 +34,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/observability"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 )
@@ -85,6 +86,26 @@ func newRootCmd() *cobra.Command {
 
 			metrics.Initialize()
 			log := logging.GetLogger().With("service", "mcpany")
+
+			// Initialize and start the observability server
+			observabilityAddr := cfg.MetricsListenAddress()
+			obsServer, err := observability.Start(context.Background(), observabilityAddr)
+			if err != nil {
+				log.Error("Failed to start observability server", "error", err)
+				return err
+			}
+			log.Info("Observability server started", "address", observabilityAddr)
+
+			// Defer the shutdown of the observability server
+			defer func() {
+				shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				if err := obsServer.Shutdown(shutdownCtx); err != nil {
+					log.Error("Failed to shutdown observability server", "error", err)
+				} else {
+					log.Info("Observability server shutdown complete.")
+				}
+			}()
 
 			bindAddress := cfg.MCPListenAddress()
 			grpcPort := cfg.GRPCPort()

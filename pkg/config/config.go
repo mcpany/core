@@ -54,6 +54,7 @@ func BindFlags(cmd *cobra.Command) {
 	cmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
 	cmd.Flags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 	cmd.Flags().String("api-key", "", "API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY")
+	cmd.Flags().String("metrics-listen-address", ":9090", "Listen address for the metrics server. Env: MCPANY_METRICS_LISTEN_ADDRESS")
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		fmt.Printf("Error binding command line flags: %v\n", err)
