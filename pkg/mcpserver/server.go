@@ -26,6 +26,7 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -203,6 +204,7 @@ func NewServer(
 		}
 	}
 
+	s.server.AddReceivingMiddleware(middleware.Observability)
 	s.server.AddReceivingMiddleware(routerMiddleware)
 	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
 

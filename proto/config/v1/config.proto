@@ -62,6 +62,8 @@ message GlobalSettings {
   bus.MessageBus message_bus = 4;
   // The API key for securing the MCP server.
   string api_key = 5;
+  // The listen address for the metrics server.
+  string metrics_listen_address = 6;
 }
 
 
