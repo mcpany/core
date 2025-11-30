@@ -28,7 +28,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/config"
@@ -109,39 +108,18 @@ func newRootCmd() *cobra.Command {
 			}()
 
 			// Start file watcher
-			watcher, err := fsnotify.NewWatcher()
-			if err != nil {
-				return fmt.Errorf("failed to create file watcher: %w", err)
-			}
-			defer watcher.Close()
-
-			go func() {
-				for {
-					select {
-					case event, ok := <-watcher.Events:
-						if !ok {
-							return
-						}
-						if event.Op&fsnotify.Write == fsnotify.Write {
-							log.Info("Configuration file modified, reloading...", "file", event.Name)
-							if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
-								log.Error("Failed to reload config", "error", err)
-							}
-						}
-					case err, ok := <-watcher.Errors:
-						if !ok {
-							return
-						}
-						log.Error("File watcher error", "error", err)
-					}
-				}
-			}()
-
-			for _, path := range configPaths {
-				err = watcher.Add(path)
+			if !cfg.Stdio() {
+				watcher, err := config.NewWatcher()
 				if err != nil {
-					return fmt.Errorf("failed to add path to file watcher: %w", err)
+					return fmt.Errorf("failed to create file watcher: %w", err)
 				}
+				defer watcher.Close()
+
+				go watcher.Watch(configPaths, func() {
+					if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
+						log.Error("Failed to reload config", "error", err)
+					}
+				})
 			}
 
 			shutdownTimeout := cfg.ShutdownTimeout()
