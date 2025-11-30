@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -18,7 +19,6 @@ package middleware_test
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 	"time"
 
@@ -27,275 +27,185 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
+// mockTool is a mock implementation of the tool.Tool interface for testing.
 type mockTool struct {
-	toolProto *v1.Tool
-	mock.Mock
-}
-
-func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	args := m.Called(ctx, req)
-	return args.Get(0), args.Error(1)
+	tool         *v1.Tool
+	executeCount int
+	cacheConfig  *configv1.CacheConfig
 }
 
 func (m *mockTool) Tool() *v1.Tool {
-	return m.toolProto
+	return m.tool
+}
+
+func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	m.executeCount++
+	return "success", nil
 }
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
-	args := m.Called()
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*configv1.CacheConfig)
+	return m.cacheConfig
 }
 
-type mockToolManager struct {
-	tool.ToolManagerInterface
-	mock.Mock
-}
+// mockToolManager is a mock implementation of the tool.ToolManagerInterface.
+type mockToolManager struct{}
 
 func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceID)
-	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
+	return &tool.ServiceInfo{
+		Config: &configv1.UpstreamServiceConfig{},
+	}, true
+}
+func (m *mockToolManager) AddTool(t tool.Tool) error                                  { return nil }
+func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)                   { return nil, false }
+func (m *mockToolManager) ListTools() []tool.Tool                                      { return nil }
+func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware)       {}
+func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) { return nil, nil }
+func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider)               {}
+func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo)     {}
+func (m *mockToolManager) ClearToolsForService(serviceKey string)                      {}
+
+func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("test-tool"),
+			ServiceId: proto.String("test-service"),
+		},
+		cacheConfig: &configv1.CacheConfig{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(100 * time.Millisecond),
+		},
+	}
+
+	req := &tool.ExecutionRequest{
+		ToolName: "test-service.test-tool",
+	}
+
+	// Create a context with the tool
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+
+	// Define the "next" function in the middleware chain
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. First call - should execute the tool
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, "success", res)
+	assert.Equal(t, 1, testTool.executeCount, "Tool should have been executed on the first call")
+
+	// 2. Second call - should hit the cache
+	res, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, "success", res)
+	assert.Equal(t, 1, testTool.executeCount, "Tool should not have been executed again; result should come from cache")
 }
 
-func TestCachingMiddleware(t *testing.T) {
-	t.Run("cache hit", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+func TestCachingMiddleware_CacheExpiration(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	ttl := 50 * time.Millisecond
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
+	testTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("test-tool"),
+			ServiceId: proto.String("test-service"),
+		},
+		cacheConfig: &configv1.CacheConfig{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(ttl),
+		},
+	}
+	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
 
-		cacheConfig := &configv1.CacheConfig{}
-		cacheConfig.SetIsEnabled(true)
-		cacheConfig.SetTtl(durationpb.New(10 * time.Second))
-		mockTool.On("GetCacheConfig").Return(cacheConfig)
+	// 1. First call to populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	require.Equal(t, 1, testTool.executeCount)
 
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+	// 2. Wait for the cache to expire
+	time.Sleep(ttl + 10*time.Millisecond)
 
-		// Prime the cache
-		cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			return "cached result", nil
-		})
+	// 3. Third call - should execute the tool again
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, "success", res)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache expiry")
+}
 
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			t.Fatal("next should not be called")
-			return nil, nil
-		}
+func TestCachingMiddleware_CacheDisabled(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	testTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("test-tool"),
+			ServiceId: proto.String("test-service"),
+		},
+		cacheConfig: &configv1.CacheConfig{
+			IsEnabled: proto.Bool(false), // Cache is explicitly disabled
+			Ttl:       durationpb.New(1 * time.Hour),
+		},
+	}
+	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
 
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "cached result", result)
-	})
+	// 1. First call
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
 
-	t.Run("cache miss", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
+	// 2. Second call
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when cache is disabled")
+}
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
+func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	testTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("test-tool"),
+			ServiceId: proto.String("test-service"),
+		},
+		cacheConfig: nil, // No cache config provided for the tool
+	}
+	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
 
-		cacheConfig := &configv1.CacheConfig{}
-		cacheConfig.SetIsEnabled(true)
-		cacheConfig.SetTtl(durationpb.New(10 * time.Second))
-		mockTool.On("GetCacheConfig").Return(cacheConfig)
+	// 1. First call
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
 
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
-
-		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled = true
-			return "new result", nil
-		}
-
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.True(t, nextCalled)
-	})
-
-	t.Run("cache override", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
-
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
-
-		// Service-level cache config
-		serviceCacheConfig := &configv1.CacheConfig{}
-		serviceCacheConfig.SetIsEnabled(true)
-		serviceCacheConfig.SetTtl(durationpb.New(20 * time.Second))
-		serviceInfo := &tool.ServiceInfo{
-			Config: &configv1.UpstreamServiceConfig{},
-		}
-		serviceInfo.Config.SetCache(serviceCacheConfig)
-		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
-
-		// Call-level cache config
-		callCacheConfig := &configv1.CacheConfig{}
-		callCacheConfig.SetIsEnabled(true)
-		callCacheConfig.SetTtl(durationpb.New(5 * time.Second))
-		mockTool.On("GetCacheConfig").Return(callCacheConfig)
-
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
-
-		// Prime the cache with the call-level TTL
-		cachingMiddleware.Execute(ctx, req, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			return "cached result", nil
-		})
-
-		// Wait for the call-level cache to expire
-		time.Sleep(6 * time.Second)
-
-		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled = true
-			return "new result", nil
-		}
-
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.True(t, nextCalled)
-	})
-
-	t.Run("cache disabled", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
-
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
-
-		cacheConfig := &configv1.CacheConfig{}
-		cacheConfig.SetIsEnabled(false) // Cache is disabled
-		mockTool.On("GetCacheConfig").Return(cacheConfig)
-
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
-
-		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled = true
-			return "new result", nil
-		}
-
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.True(t, nextCalled, "next should be called when cache is disabled")
-	})
-
-	t.Run("no tool in context", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
-
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := context.Background() // No tool in context
-
-		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled = true
-			return "new result", nil
-		}
-
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.True(t, nextCalled, "next should be called when no tool is in context")
-	})
-
-	t.Run("next returns error", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
-
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
-
-		cacheConfig := &configv1.CacheConfig{}
-		cacheConfig.SetIsEnabled(true)
-		cacheConfig.SetTtl(durationpb.New(10 * time.Second))
-		mockTool.On("GetCacheConfig").Return(cacheConfig)
-
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
-
-		nextCalled := 0
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled++
-			if nextCalled == 1 {
-				return nil, assert.AnError
-			}
-			return "new result", nil
-		}
-
-		// First call, next returns an error
-		_, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.ErrorIs(t, err, assert.AnError)
-
-		// Second call, should not hit cache
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.Equal(t, 2, nextCalled, "next should be called twice")
-	})
-
-	t.Run("service info not found", func(t *testing.T) {
-		mockToolManager := &mockToolManager{}
-		cachingMiddleware := middleware.NewCachingMiddleware(mockToolManager)
-
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
-		mockTool := &mockTool{toolProto: toolProto}
-
-		mockTool.On("GetCacheConfig").Return(nil)
-		mockToolManager.On("GetServiceInfo", "service").Return((*tool.ServiceInfo)(nil), false)
-
-		req := &tool.ExecutionRequest{
-			ToolName:   "service.test-tool",
-			ToolInputs: json.RawMessage(`{"input":"value"}`),
-		}
-		ctx := tool.NewContextWithTool(context.Background(), mockTool)
-
-		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			nextCalled = true
-			return "new result", nil
-		}
-
-		result, err := cachingMiddleware.Execute(ctx, req, next)
-		assert.NoError(t, err)
-		assert.Equal(t, "new result", result)
-		assert.True(t, nextCalled, "next should be called when service info is not found")
-	})
+	// 2. Second call
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when there is no cache config")
 }

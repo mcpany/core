@@ -36,6 +36,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 type mockAuthenticator struct {
@@ -72,7 +73,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 		UnderlyingMethodFqn: &methodAndURL,
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDefinition)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDefinition, nil)
 	return httpTool, server
 }
 
@@ -204,7 +205,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("pool_not_found", func(t *testing.T) {
 		poolManager := pool.NewManager() // Empty pool manager
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil)
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "no http pool found for service")
@@ -219,7 +220,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		require.NoError(t, err)
 		poolManager.Register("test-service", p)
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil)
 		_, err = httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to get client from pool")
@@ -233,7 +234,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 		invalidTool := v1.Tool_builder{UnderlyingMethodFqn: lo.ToPtr("INVALID")}.Build()
-		httpTool := tool.NewHTTPTool(invalidTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+		httpTool := tool.NewHTTPTool(invalidTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil)
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid http tool definition")
@@ -274,7 +275,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		mcpTool := v1.Tool_builder{
 			UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
 		}.Build()
-		authedTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", authenticator, &configv1.HttpCallDefinition{})
+		authedTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", authenticator, &configv1.HttpCallDefinition{}, nil)
 
 		_, err := authedTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
@@ -310,7 +311,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil)
 
 		inputs := json.RawMessage(`{"userID": 123}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -413,7 +414,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 			UnderlyingMethodFqn: &methodAndURL,
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{})
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil)
 
 		inputs := json.RawMessage(`{"id": "123"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -451,7 +452,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 			Parameters: []*configv1.HttpParameterMapping{paramMapping},
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil)
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -518,10 +519,150 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef)
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil)
 
 	inputs := json.RawMessage(`{"username": "test/user"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}
 	_, err = httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
+}
+
+func TestHTTPTool_Execute_WithRetry(t *testing.T) {
+	t.Run("retry_succeeds", func(t *testing.T) {
+		attempt := 0
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if attempt == 0 {
+				attempt++
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status": "ok"}`))
+		})
+		server := httptest.NewServer(handler)
+		defer server.Close()
+
+		poolManager := pool.NewManager()
+		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		}, 1, 1, 0, true)
+		poolManager.Register("test-service", p)
+
+		mcpTool := v1.Tool_builder{
+			UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
+		}.Build()
+
+		resilience := &configv1.ResilienceConfig{}
+		retryPolicy := &configv1.RetryConfig{}
+		retryPolicy.SetNumberOfRetries(2)
+		retryPolicy.SetBaseBackoff(durationpb.New(0))
+		resilience.SetRetryPolicy(retryPolicy)
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience)
+		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
+		require.NoError(t, err)
+	})
+
+	t.Run("retry_fails", func(t *testing.T) {
+		attempt := 0
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			attempt++
+			w.WriteHeader(http.StatusInternalServerError)
+		})
+		server := httptest.NewServer(handler)
+		defer server.Close()
+
+		poolManager := pool.NewManager()
+		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		}, 1, 1, 0, true)
+		poolManager.Register("test-service", p)
+
+		mcpTool := v1.Tool_builder{
+			UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
+		}.Build()
+
+		resilience := &configv1.ResilienceConfig{}
+		retryPolicy := &configv1.RetryConfig{}
+		retryPolicy.SetNumberOfRetries(2)
+		retryPolicy.SetBaseBackoff(durationpb.New(0))
+		resilience.SetRetryPolicy(retryPolicy)
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience)
+		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
+		require.Error(t, err)
+		assert.Equal(t, 3, attempt)
+	})
+
+	t.Run("non_retriable_error", func(t *testing.T) {
+		attempt := 0
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			attempt++
+			w.WriteHeader(http.StatusBadRequest)
+		})
+		server := httptest.NewServer(handler)
+		defer server.Close()
+
+		poolManager := pool.NewManager()
+		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		}, 1, 1, 0, true)
+		poolManager.Register("test-service", p)
+
+		mcpTool := v1.Tool_builder{
+			UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
+		}.Build()
+
+		resilience := &configv1.ResilienceConfig{}
+		retryPolicy := &configv1.RetryConfig{}
+		retryPolicy.SetNumberOfRetries(2)
+		retryPolicy.SetBaseBackoff(durationpb.New(0))
+		resilience.SetRetryPolicy(retryPolicy)
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience)
+		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
+		require.Error(t, err)
+		assert.Equal(t, 1, attempt)
+	})
+
+	t.Run("retry_post_succeeds", func(t *testing.T) {
+		attempt := 0
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			body, err := io.ReadAll(r.Body)
+			require.NoError(t, err)
+			assert.Equal(t, `{"key":"value"}`, string(body))
+
+			if attempt == 0 {
+				attempt++
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status": "ok"}`))
+		})
+		server := httptest.NewServer(handler)
+		defer server.Close()
+
+		poolManager := pool.NewManager()
+		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
+			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		}, 1, 1, 0, true)
+		poolManager.Register("test-service", p)
+
+		mcpTool := v1.Tool_builder{
+			UnderlyingMethodFqn: lo.ToPtr("POST " + server.URL),
+		}.Build()
+
+		resilience := &configv1.ResilienceConfig{}
+		retryPolicy := &configv1.RetryConfig{}
+		retryPolicy.SetNumberOfRetries(2)
+		retryPolicy.SetBaseBackoff(durationpb.New(0))
+		resilience.SetRetryPolicy(retryPolicy)
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience)
+		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolInputs: json.RawMessage(`{"key":"value"}`),
+		})
+		require.NoError(t, err)
+	})
 }

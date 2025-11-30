@@ -29,7 +29,8 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **Stdio**: Wrap any command-line tool that communicates over standard I/O.
-- **Advanced Service Policies**: Configure Caching, Rate Limiting, and Retries to optimize performance and protect upstream services.
+- **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
+- **Advanced Service Policies**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
@@ -190,6 +191,18 @@ MCP Any supports a variety of advanced configuration options, including:
           path: "./openapi.json"
   ```
 
+- **GraphQL Services**: Register a GraphQL service and customize the selection set for a query.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-graphql-service"
+      graphqlService:
+        address: "http://localhost:8080/graphql"
+        calls:
+          - name: "user"
+            selectionSet: "{ id name }"
+  ```
+
 - **Authentication**: Configure authentication for an upstream service.
 
   ```yaml
@@ -218,19 +231,11 @@ MCP Any supports a variety of advanced configuration options, including:
           clientKeyPath: "/path/to/client.key"
           caCertPath: "/path/to/ca.crt"
 - **Resilience**: Configure retries for a gRPC service.
+- **Server Authentication**: Secure the MCP server with an API key.
 
   ```yaml
-  upstreamServices:
-    - name: "my-resilient-service"
-      grpcService:
-        address: "localhost:50052"
-        reflection:
-          enabled: true
-      resilience:
-        retryPolicy:
-          numberOfRetries: 3
-          baseBackoff: "100ms"
-          maxBackoff: "1s"
+  global_settings:
+    api_key: "my-secret-key"
   ```
 
 ### Remote Configurations

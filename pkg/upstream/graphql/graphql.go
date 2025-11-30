@@ -259,15 +259,24 @@ func (g *graphqlUpstream) Register(
 					i++
 				}
 				sb.WriteString(") ")
-				if len(field.Type.Fields) > 0 {
-					sb.WriteString("{ ")
-					for i, f := range field.Type.Fields {
-						sb.WriteString(f.Name)
-						if i < len(field.Type.Fields)-1 {
-							sb.WriteString(" ")
+				selectionSet := ""
+				if call, ok := graphqlConfig.GetCalls()[field.Name]; ok {
+					selectionSet = call.GetSelectionSet()
+				}
+
+				if selectionSet != "" {
+					sb.WriteString(selectionSet)
+				} else {
+					if len(field.Type.Fields) > 0 {
+						sb.WriteString("{ ")
+						for i, f := range field.Type.Fields {
+							sb.WriteString(f.Name)
+							if i < len(field.Type.Fields)-1 {
+								sb.WriteString(" ")
+							}
 						}
+						sb.WriteString(" }")
 					}
-					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")

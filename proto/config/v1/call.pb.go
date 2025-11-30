@@ -1529,6 +1529,212 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 	return m0
 }
 
+// GraphQLCallDefinition describes a call derived from a GraphQL introspection query.
+type GraphQLCallDefinition struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The unique identifier for the call.
+	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	// The GraphQL query to execute.
+	Query *string `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
+	// The GraphQL operation name.
+	OperationName *string `protobuf:"bytes,3,opt,name=operation_name,json=operationName" json:"operation_name,omitempty"`
+	// A map of variables for the GraphQL query.
+	Variables *structpb.Struct `protobuf:"bytes,4,opt,name=variables" json:"variables,omitempty"`
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	// The selection set for the GraphQL query.
+	SelectionSet  *string `protobuf:"bytes,6,opt,name=selection_set,json=selectionSet" json:"selection_set,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GraphQLCallDefinition) Reset() {
+	*x = GraphQLCallDefinition{}
+	mi := &file_proto_config_v1_call_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GraphQLCallDefinition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphQLCallDefinition) ProtoMessage() {}
+
+func (x *GraphQLCallDefinition) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_call_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GraphQLCallDefinition) GetId() string {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return ""
+}
+
+func (x *GraphQLCallDefinition) GetQuery() string {
+	if x != nil && x.Query != nil {
+		return *x.Query
+	}
+	return ""
+}
+
+func (x *GraphQLCallDefinition) GetOperationName() string {
+	if x != nil && x.OperationName != nil {
+		return *x.OperationName
+	}
+	return ""
+}
+
+func (x *GraphQLCallDefinition) GetVariables() *structpb.Struct {
+	if x != nil {
+		return x.Variables
+	}
+	return nil
+}
+
+func (x *GraphQLCallDefinition) GetCache() *CacheConfig {
+	if x != nil {
+		return x.Cache
+	}
+	return nil
+}
+
+func (x *GraphQLCallDefinition) GetSelectionSet() string {
+	if x != nil && x.SelectionSet != nil {
+		return *x.SelectionSet
+	}
+	return ""
+}
+
+func (x *GraphQLCallDefinition) SetId(v string) {
+	x.Id = &v
+}
+
+func (x *GraphQLCallDefinition) SetQuery(v string) {
+	x.Query = &v
+}
+
+func (x *GraphQLCallDefinition) SetOperationName(v string) {
+	x.OperationName = &v
+}
+
+func (x *GraphQLCallDefinition) SetVariables(v *structpb.Struct) {
+	x.Variables = v
+}
+
+func (x *GraphQLCallDefinition) SetCache(v *CacheConfig) {
+	x.Cache = v
+}
+
+func (x *GraphQLCallDefinition) SetSelectionSet(v string) {
+	x.SelectionSet = &v
+}
+
+func (x *GraphQLCallDefinition) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return x.Id != nil
+}
+
+func (x *GraphQLCallDefinition) HasQuery() bool {
+	if x == nil {
+		return false
+	}
+	return x.Query != nil
+}
+
+func (x *GraphQLCallDefinition) HasOperationName() bool {
+	if x == nil {
+		return false
+	}
+	return x.OperationName != nil
+}
+
+func (x *GraphQLCallDefinition) HasVariables() bool {
+	if x == nil {
+		return false
+	}
+	return x.Variables != nil
+}
+
+func (x *GraphQLCallDefinition) HasCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.Cache != nil
+}
+
+func (x *GraphQLCallDefinition) HasSelectionSet() bool {
+	if x == nil {
+		return false
+	}
+	return x.SelectionSet != nil
+}
+
+func (x *GraphQLCallDefinition) ClearId() {
+	x.Id = nil
+}
+
+func (x *GraphQLCallDefinition) ClearQuery() {
+	x.Query = nil
+}
+
+func (x *GraphQLCallDefinition) ClearOperationName() {
+	x.OperationName = nil
+}
+
+func (x *GraphQLCallDefinition) ClearVariables() {
+	x.Variables = nil
+}
+
+func (x *GraphQLCallDefinition) ClearCache() {
+	x.Cache = nil
+}
+
+func (x *GraphQLCallDefinition) ClearSelectionSet() {
+	x.SelectionSet = nil
+}
+
+type GraphQLCallDefinition_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The unique identifier for the call.
+	Id *string
+	// The GraphQL query to execute.
+	Query *string
+	// The GraphQL operation name.
+	OperationName *string
+	// A map of variables for the GraphQL query.
+	Variables *structpb.Struct
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig
+	// The selection set for the GraphQL query.
+	SelectionSet *string
+}
+
+func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
+	m0 := &GraphQLCallDefinition{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.Query = b.Query
+	x.OperationName = b.OperationName
+	x.Variables = b.Variables
+	x.Cache = b.Cache
+	x.SelectionSet = b.SelectionSet
+	return m0
+}
+
 // ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
 type ParameterSchema struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -1548,7 +1754,7 @@ type ParameterSchema struct {
 
 func (x *ParameterSchema) Reset() {
 	*x = ParameterSchema{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[9]
+	mi := &file_proto_config_v1_call_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1560,7 +1766,7 @@ func (x *ParameterSchema) String() string {
 func (*ParameterSchema) ProtoMessage() {}
 
 func (x *ParameterSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[9]
+	mi := &file_proto_config_v1_call_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1721,7 +1927,7 @@ type HttpParameterMapping struct {
 
 func (x *HttpParameterMapping) Reset() {
 	*x = HttpParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[10]
+	mi := &file_proto_config_v1_call_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1733,7 +1939,7 @@ func (x *HttpParameterMapping) String() string {
 func (*HttpParameterMapping) ProtoMessage() {}
 
 func (x *HttpParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[10]
+	mi := &file_proto_config_v1_call_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1819,7 +2025,7 @@ type WebsocketParameterMapping struct {
 
 func (x *WebsocketParameterMapping) Reset() {
 	*x = WebsocketParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[11]
+	mi := &file_proto_config_v1_call_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1831,7 +2037,7 @@ func (x *WebsocketParameterMapping) String() string {
 func (*WebsocketParameterMapping) ProtoMessage() {}
 
 func (x *WebsocketParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[11]
+	mi := &file_proto_config_v1_call_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1917,7 +2123,7 @@ type WebrtcParameterMapping struct {
 
 func (x *WebrtcParameterMapping) Reset() {
 	*x = WebrtcParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[12]
+	mi := &file_proto_config_v1_call_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1929,7 +2135,7 @@ func (x *WebrtcParameterMapping) String() string {
 func (*WebrtcParameterMapping) ProtoMessage() {}
 
 func (x *WebrtcParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[12]
+	mi := &file_proto_config_v1_call_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2015,7 +2221,7 @@ type CommandLineParameterMapping struct {
 
 func (x *CommandLineParameterMapping) Reset() {
 	*x = CommandLineParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[13]
+	mi := &file_proto_config_v1_call_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2027,7 +2233,7 @@ func (x *CommandLineParameterMapping) String() string {
 func (*CommandLineParameterMapping) ProtoMessage() {}
 
 func (x *CommandLineParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[13]
+	mi := &file_proto_config_v1_call_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2112,7 +2318,7 @@ type CacheConfig struct {
 
 func (x *CacheConfig) Reset() {
 	*x = CacheConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[14]
+	mi := &file_proto_config_v1_call_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2124,7 +2330,7 @@ func (x *CacheConfig) String() string {
 func (*CacheConfig) ProtoMessage() {}
 
 func (x *CacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[14]
+	mi := &file_proto_config_v1_call_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2264,7 +2470,7 @@ type ToolDefinition struct {
 
 func (x *ToolDefinition) Reset() {
 	*x = ToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[15]
+	mi := &file_proto_config_v1_call_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2276,7 +2482,7 @@ func (x *ToolDefinition) String() string {
 func (*ToolDefinition) ProtoMessage() {}
 
 func (x *ToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[15]
+	mi := &file_proto_config_v1_call_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2708,7 +2914,14 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12O\n" +
 	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
 	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xda\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf5\x01\n" +
+	"\x15GraphQLCallDefinition\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05query\x18\x02 \x01(\tR\x05query\x12%\n" +
+	"\x0eoperation_name\x18\x03 \x01(\tR\roperationName\x125\n" +
+	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x123\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12#\n" +
+	"\rselection_set\x18\x06 \x01(\tR\fselectionSet\"\xda\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
@@ -2761,7 +2974,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_proto_config_v1_call_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
 	(HttpCallDefinition_HttpMethod)(0),  // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -2775,62 +2988,65 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*GrpcCallDefinition)(nil),          // 9: mcpany.config.v1.GrpcCallDefinition
 	(*OpenAPICallDefinition)(nil),       // 10: mcpany.config.v1.OpenAPICallDefinition
 	(*MCPCallDefinition)(nil),           // 11: mcpany.config.v1.MCPCallDefinition
-	(*ParameterSchema)(nil),             // 12: mcpany.config.v1.ParameterSchema
-	(*HttpParameterMapping)(nil),        // 13: mcpany.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),   // 14: mcpany.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),      // 15: mcpany.config.v1.WebrtcParameterMapping
-	(*CommandLineParameterMapping)(nil), // 16: mcpany.config.v1.CommandLineParameterMapping
-	(*CacheConfig)(nil),                 // 17: mcpany.config.v1.CacheConfig
-	(*ToolDefinition)(nil),              // 18: mcpany.config.v1.ToolDefinition
-	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Value)(nil),              // 20: google.protobuf.Value
-	(*SecretValue)(nil),                 // 21: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),         // 22: google.protobuf.Duration
-	(*structpb.Struct)(nil),             // 23: google.protobuf.Struct
+	(*GraphQLCallDefinition)(nil),       // 12: mcpany.config.v1.GraphQLCallDefinition
+	(*ParameterSchema)(nil),             // 13: mcpany.config.v1.ParameterSchema
+	(*HttpParameterMapping)(nil),        // 14: mcpany.config.v1.HttpParameterMapping
+	(*WebsocketParameterMapping)(nil),   // 15: mcpany.config.v1.WebsocketParameterMapping
+	(*WebrtcParameterMapping)(nil),      // 16: mcpany.config.v1.WebrtcParameterMapping
+	(*CommandLineParameterMapping)(nil), // 17: mcpany.config.v1.CommandLineParameterMapping
+	(*CacheConfig)(nil),                 // 18: mcpany.config.v1.CacheConfig
+	(*ToolDefinition)(nil),              // 19: mcpany.config.v1.ToolDefinition
+	nil,                                 // 20: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Struct)(nil),             // 21: google.protobuf.Struct
+	(*structpb.Value)(nil),              // 22: google.protobuf.Value
+	(*SecretValue)(nil),                 // 23: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 24: google.protobuf.Duration
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
-	13, // 1: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
+	14, // 1: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
 	7,  // 2: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 3: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	17, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	14, // 5: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
+	18, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	15, // 5: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
 	7,  // 6: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 7: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	17, // 8: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	15, // 9: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
+	18, // 8: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	16, // 9: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
 	7,  // 10: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 11: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	17, // 12: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	16, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
-	17, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	18, // 12: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	17, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
+	18, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	17, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	18, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	17, // 20: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	18, // 20: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	7,  // 21: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	17, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	0,  // 24: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	20, // 25: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	12, // 26: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 27: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	12, // 28: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 29: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	12, // 30: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 31: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	12, // 32: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	21, // 33: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	22, // 34: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	23, // 35: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	23, // 36: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	18, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	21, // 24: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	18, // 25: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	0,  // 26: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	22, // 27: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	13, // 28: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 29: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 30: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 31: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 32: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 33: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 34: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 35: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	24, // 36: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	21, // 37: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	21, // 38: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
+	39, // [39:39] is the sub-list for method output_type
+	39, // [39:39] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -2845,7 +3061,7 @@ func file_proto_config_v1_call_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_call_proto_rawDesc), len(file_proto_config_v1_call_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   17,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
