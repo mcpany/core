@@ -355,6 +355,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	for attempt := 0; attempt < maxAttempts; attempt++ {
 		if attempt > 0 {
 			backoff := retryPolicy.GetBaseBackoff().AsDuration()
+			backoff *= time.Duration(1 << (uint(attempt) - 1))
+			if maxBackoffDuration := retryPolicy.GetMaxBackoff(); maxBackoffDuration != nil {
+				if maxBackoff := maxBackoffDuration.AsDuration(); backoff > maxBackoff {
+					backoff = maxBackoff
+				}
+			}
 			log.Debug("Retrying request", "attempt", attempt+1, "backoff", backoff)
 			time.Sleep(backoff)
 		}
@@ -431,10 +437,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			continue
 		}
 
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
-			break
-		}
+		lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
+		break
 	}
 	if lastErr != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
