@@ -230,6 +230,8 @@ MCP Any supports a variety of advanced configuration options, including:
           clientCertPath: "/path/to/client.crt"
           clientKeyPath: "/path/to/client.key"
           caCertPath: "/path/to/ca.crt"
+  ```
+
 - **Resilience**: Configure retries for a gRPC service.
 - **Server Authentication**: Secure the MCP server with an API key.
 
