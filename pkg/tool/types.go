@@ -39,6 +39,7 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/resilience"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -214,7 +215,7 @@ type HTTPTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
-	resilience        *configv1.ResilienceConfig
+	resilienceManager *resilience.Manager
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -225,7 +226,7 @@ type HTTPTool struct {
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
-func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, resilience *configv1.ResilienceConfig) *HTTPTool {
+func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig) *HTTPTool {
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
@@ -235,7 +236,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-		resilience:        resilience,
+		resilienceManager: resilience.NewManager(cfg),
 	}
 }
 
@@ -253,8 +254,8 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	log := logging.GetLogger()
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
+
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
@@ -336,51 +337,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	var resp *http.Response
-	var respBody []byte
-	var lastErr error
-
-	var retryPolicy *configv1.RetryConfig
-	if t.resilience != nil {
-		retryPolicy = t.resilience.GetRetryPolicy()
-	}
-
-	maxAttempts := 1
-	if retryPolicy != nil {
-		maxAttempts = int(retryPolicy.GetNumberOfRetries()) + 1
-	}
-	if maxAttempts <= 1 {
-		maxAttempts = 1
-	}
-
-	for attempt := 0; attempt < maxAttempts; attempt++ {
-		if attempt > 0 {
-			backoff := retryPolicy.GetBaseBackoff().AsDuration()
-			log.Debug("Retrying request", "attempt", attempt+1, "backoff", backoff)
-			time.Sleep(backoff)
-		}
-
-		// Recreate the request body for each attempt to allow retries for POST/PUT requests
+	work := func() error {
 		var bodyForAttempt io.Reader
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
 				seeker.Seek(0, io.SeekStart)
 				bodyForAttempt = body
 			} else {
-				// If the body is not seekable, we can't retry.
-				// This can be improved by reading the body into a buffer first.
-				// For now, we just use the original body for the first attempt.
-				if attempt == 0 {
-					bodyForAttempt = body
-				} else {
-					// This case should be handled by improving body handling before the loop
-					return nil, fmt.Errorf("cannot retry request with non-seekable body")
-				}
+				return &resilience.PermanentError{Err: fmt.Errorf("cannot retry request with non-seekable body")}
 			}
 		}
 
 		httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
 		if err != nil {
-			return "", fmt.Errorf("failed to create http request: %w", err)
+			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
 		}
 
 		if contentType != "" {
@@ -391,7 +361,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		if t.authenticator != nil {
 			if err := t.authenticator.Authenticate(httpReq); err != nil {
-				return nil, fmt.Errorf("failed to authenticate request: %w", err)
+				return &resilience.PermanentError{Err: fmt.Errorf("failed to authenticate request: %w", err)}
 			}
 		}
 
@@ -414,44 +384,33 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		resp, err = httpClient.Do(httpReq)
 		if err != nil {
-			lastErr = fmt.Errorf("failed to execute http request: %w", err)
-			log.Warn("Request failed, retrying...", "attempt", attempt+1, "error", err)
-			continue
-		}
-
-		if resp.StatusCode < 400 {
-			lastErr = nil
-			break
-		}
-
-		if resp.StatusCode >= 500 {
-			resp.Body.Close()
-			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
-			log.Error("Request failed with server error, retrying...", "attempt", attempt+1, "status", resp.StatusCode)
-			continue
+			return fmt.Errorf("failed to execute http request: %w", err)
 		}
 
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
-			break
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)}
 		}
+
+		if resp.StatusCode >= 500 {
+			return fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
+		}
+		return nil
 	}
-	if lastErr != nil {
+
+	if err := t.resilienceManager.Execute(work); err != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
-		return nil, lastErr
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
-	respBody, err = io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
 	}
 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-		// Since we have already read the body, we need to create a new reader and assign it back to the response
-		// so that DumpResponse can read it.
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 		respDump, err := httputil.DumpResponse(resp, true)
 		if err != nil {

@@ -22,13 +22,12 @@ The following features are fully implemented and tested:
 - **Advanced Service Policies**:
   - Caching (`CacheConfig`)
   - Rate Limiting (`RateLimitConfig`)
+  - Resilience (Circuit Breakers & Retries) (`ResilienceConfig`)
 
 ### Configured but Not Yet Implemented
 
 The following features are defined in the configuration schema (`proto/config/v1/config.proto`) but are **not yet implemented** in the server logic:
 
-- **Advanced Service Policies**:
-  - Resilience (Circuit Breakers & Retries) (`ResilienceConfig`)
 - **Advanced Authentication**:
   - OAuth 2.0 (`OAuth2Auth`)
   - Incoming request authentication (`AuthenticationConfig`)
@@ -44,7 +43,7 @@ For a complete list of all available configuration options, please see the [Conf
 Our immediate focus is on implementing the features that are already defined in the configuration schema.
 
 - [x] **Implement Caching and Rate Limiting**: Build the server-side logic to enforce the `CacheConfig` and `RateLimitConfig` policies.
-- [ ] **Implement Resilience Policies**: Build the server-side logic to enforce `ResilienceConfig` policies.
+- [x] **Implement Resilience Policies**: Build the server-side logic to enforce `ResilienceConfig` policies.
 - [ ] **Implement Health Checking**: Build the logic for performing service health checks and routing traffic accordingly.
 - [ ] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
