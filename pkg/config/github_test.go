@@ -135,6 +135,10 @@ func TestGitHub_List(t *testing.T) {
 	}))
 	defer server.Close()
 
+	originalClient := httpClient
+	defer func() { httpClient = originalClient }()
+	httpClient = &http.Client{}
+
 	g := &GitHub{
 		Owner:   "mcpany",
 		Repo:    "core",
@@ -163,5 +167,26 @@ func TestGitHub_List(t *testing.T) {
 	}
 	if len(contents) != 1 || contents[0] != expected[0] {
 		t.Errorf("List() = %v, want %v", contents, expected)
+	}
+}
+
+func TestGitHub_List_ssrf(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`[{"type": "file"}]`))
+	}))
+	defer server.Close()
+
+	g := &GitHub{
+		Owner:   "mcpany",
+		Repo:    "core",
+		Ref:     "main",
+		Path:    "examples",
+		apiURL:  server.URL,
+	}
+
+	_, err := g.List(context.Background(), nil)
+	if err == nil {
+		t.Errorf("Expected an error due to SSRF attempt, but got nil")
 	}
 }

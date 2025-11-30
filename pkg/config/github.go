@@ -111,7 +111,7 @@ func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication
 		return nil, fmt.Errorf("failed to apply authentication for github api: %w", err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch contents from github api: %w", err)
 	}
