@@ -25,6 +25,7 @@ repos:
     -   id: check-yaml
         exclude: ^helm/
     -   id: detect-private-key
+        exclude: ^tests/tls/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/golangci/golangci-lint
