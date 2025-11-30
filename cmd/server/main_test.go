@@ -65,13 +65,27 @@ func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
 
 func TestHealthCmd(t *testing.T) {
 	viper.Reset()
-	// This is a basic test to ensure the command runs without panicking.
-	// A more thorough test would involve setting up a mock HTTP server.
+	// Start a mock HTTP server on a custom port
+	port := "50051"
+	server := &http.Server{
+		Addr: ":" + port,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}),
+	}
+	go func() {
+		server.ListenAndServe()
+	}()
+	defer server.Shutdown(context.Background())
+
+	// Wait for the server to start
+	time.Sleep(100 * time.Millisecond)
+
 	rootCmd := newRootCmd()
-	rootCmd.SetArgs([]string{"health", "--mcp-listen-address", "50051"})
+	rootCmd.SetArgs([]string{"health", "--mcp-listen-address", port})
 	err := rootCmd.Execute()
-	// We expect an error because no server is running
-	assert.Error(t, err)
+
+	assert.NoError(t, err, "Health check should pass when server is running on custom port")
 }
 
 func TestHealthCmdWithCustomPort(t *testing.T) {
