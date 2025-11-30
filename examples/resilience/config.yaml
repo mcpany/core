@@ -1,0 +1,21 @@
+upstreamServices:
+  - name: "resilient-http-service"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+          parameterMappings:
+            - inputParameterName: "userId"
+              targetParameterName: "userId"
+    resilience:
+      circuitBreaker:
+        failureRateThreshold: 0.6
+        openDuration: "5s"
+        halfOpenRequests: 2
+      retryPolicy:
+        numberOfRetries: 3
+        baseBackoff: "1s"
+        maxBackoff: "5s"
