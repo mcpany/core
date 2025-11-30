@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -107,6 +108,14 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	}
 	if def.GetMethod() == configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED {
 		return fmt.Errorf("method is required")
+	}
+	return nil
+}
+
+// FileExists checks if a file exists at the given path.
+func FileExists(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return err
 	}
 	return nil
 }
