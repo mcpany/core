@@ -5,10 +5,15 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 func TestIsRetryable(t *testing.T) {
 	testCases := []struct {
@@ -53,4 +58,29 @@ func TestIsRetryable(t *testing.T) {
 			assert.Equal(t, tc.expected, actual)
 		})
 	}
+}
+
+func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
+	retries := int32(20)
+	retryConfig := configv1.RetryConfig_builder{
+		NumberOfRetries: &retries,
+		BaseBackoff:     durationpb.New(10 * time.Millisecond),
+		MaxBackoff:      durationpb.New(100 * time.Millisecond),
+		MaxElapsedTime:  durationpb.New(100 * time.Millisecond),
+	}.Build()
+
+	interceptor := UnaryClientInterceptor(retryConfig)
+
+	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		return status.Error(codes.Unavailable, "unavailable")
+	}
+
+	start := time.Now()
+	err := interceptor(context.Background(), "/test", nil, nil, nil, invoker)
+	elapsed := time.Since(start)
+
+	t.Logf("Elapsed time: %s", elapsed)
+
+	assert.Error(t, err)
+	assert.InDelta(t, float64(100*time.Millisecond), float64(elapsed), float64(40*time.Millisecond))
 }
