@@ -227,6 +227,19 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "openapi-svc-1": invalid openapi target_address: not a url`,
 		},
 		{
+			name: "invalid openapi service - no address or spec path",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("openapi-svc-2"),
+						OpenapiService: (&configv1.OpenapiUpstreamService_builder{}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "openapi-svc-2": openapi service must have either an address or a spec path`,
+		},
+		{
 			name: "invalid mcp service - no connection",
 			config: (&configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{

@@ -147,6 +147,9 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			return fmt.Errorf("gRPC service has empty target_address")
 		}
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
+		if openapiService.GetAddress() == "" && openapiService.GetOpenapiSpec() == "" {
+			return fmt.Errorf("openapi service must have either an address or a spec path")
+		}
 		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
 		}
