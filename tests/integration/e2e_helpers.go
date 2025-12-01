@@ -127,7 +127,9 @@ func ProjectRoot(t *testing.T) string {
 }
 
 const (
-	McpAnyServerStartupTimeout = 30 * time.Second
+	// McpAnyServerStartupTimeout defines the maximum time to wait for the MCP Any server to start up.
+	// This is set to a higher value to accommodate slower CI environments.
+	McpAnyServerStartupTimeout = 60 * time.Second
 	ServiceStartupTimeout      = 15 * time.Second
 	TestWaitTimeShort          = 60 * time.Second
 	TestWaitTimeMedium         = 240 * time.Second
