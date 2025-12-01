@@ -48,7 +48,7 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 		RandomizationFactor: backoff.DefaultRandomizationFactor,
 		Multiplier:          backoff.DefaultMultiplier,
 		MaxInterval:         retryConfig.GetMaxBackoff().AsDuration(),
-		MaxElapsedTime:      retryConfig.GetMaxElapsedTime().AsDuration(),
+		MaxElapsedTime:      0, // Disabled
 		Stop:                backoff.Stop,
 		Clock:               backoff.SystemClock,
 	}

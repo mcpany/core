@@ -5413,7 +5413,6 @@ type RetryConfig struct {
 	xxx_hidden_NumberOfRetries int32                  `protobuf:"varint,1,opt,name=number_of_retries,json=numberOfRetries"`
 	xxx_hidden_BaseBackoff     *durationpb.Duration   `protobuf:"bytes,2,opt,name=base_backoff,json=baseBackoff"`
 	xxx_hidden_MaxBackoff      *durationpb.Duration   `protobuf:"bytes,3,opt,name=max_backoff,json=maxBackoff"`
-	xxx_hidden_MaxElapsedTime  *durationpb.Duration   `protobuf:"bytes,4,opt,name=max_elapsed_time,json=maxElapsedTime"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -5466,16 +5465,9 @@ func (x *RetryConfig) GetMaxBackoff() *durationpb.Duration {
 	return nil
 }
 
-func (x *RetryConfig) GetMaxElapsedTime() *durationpb.Duration {
-	if x != nil {
-		return x.xxx_hidden_MaxElapsedTime
-	}
-	return nil
-}
-
 func (x *RetryConfig) SetNumberOfRetries(v int32) {
 	x.xxx_hidden_NumberOfRetries = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *RetryConfig) SetBaseBackoff(v *durationpb.Duration) {
@@ -5484,10 +5476,6 @@ func (x *RetryConfig) SetBaseBackoff(v *durationpb.Duration) {
 
 func (x *RetryConfig) SetMaxBackoff(v *durationpb.Duration) {
 	x.xxx_hidden_MaxBackoff = v
-}
-
-func (x *RetryConfig) SetMaxElapsedTime(v *durationpb.Duration) {
-	x.xxx_hidden_MaxElapsedTime = v
 }
 
 func (x *RetryConfig) HasNumberOfRetries() bool {
@@ -5511,13 +5499,6 @@ func (x *RetryConfig) HasMaxBackoff() bool {
 	return x.xxx_hidden_MaxBackoff != nil
 }
 
-func (x *RetryConfig) HasMaxElapsedTime() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MaxElapsedTime != nil
-}
-
 func (x *RetryConfig) ClearNumberOfRetries() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_NumberOfRetries = 0
@@ -5531,10 +5512,6 @@ func (x *RetryConfig) ClearMaxBackoff() {
 	x.xxx_hidden_MaxBackoff = nil
 }
 
-func (x *RetryConfig) ClearMaxElapsedTime() {
-	x.xxx_hidden_MaxElapsedTime = nil
-}
-
 type RetryConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -5544,8 +5521,6 @@ type RetryConfig_builder struct {
 	BaseBackoff *durationpb.Duration
 	// The maximum duration for the backoff.
 	MaxBackoff *durationpb.Duration
-	// The maximum total time to spend retrying.
-	MaxElapsedTime *durationpb.Duration
 }
 
 func (b0 RetryConfig_builder) Build() *RetryConfig {
@@ -5553,12 +5528,11 @@ func (b0 RetryConfig_builder) Build() *RetryConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.NumberOfRetries != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_NumberOfRetries = *b.NumberOfRetries
 	}
 	x.xxx_hidden_BaseBackoff = b.BaseBackoff
 	x.xxx_hidden_MaxBackoff = b.MaxBackoff
-	x.xxx_hidden_MaxElapsedTime = b.MaxElapsedTime
 	return m0
 }
 
@@ -6008,13 +5982,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x16failure_rate_threshold\x18\x01 \x01(\x01R\x14failureRateThreshold\x121\n" +
 	"\x14consecutive_failures\x18\x02 \x01(\x05R\x13consecutiveFailures\x12>\n" +
 	"\ropen_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\fopenDuration\x12,\n" +
-	"\x12half_open_requests\x18\x04 \x01(\x05R\x10halfOpenRequests\"\xf8\x01\n" +
+	"\x12half_open_requests\x18\x04 \x01(\x05R\x10halfOpenRequests\"\xb3\x01\n" +
 	"\vRetryConfig\x12*\n" +
 	"\x11number_of_retries\x18\x01 \x01(\x05R\x0fnumberOfRetries\x12<\n" +
 	"\fbase_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\vbaseBackoff\x12:\n" +
 	"\vmax_backoff\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\n" +
-	"maxBackoff\x12C\n" +
-	"\x10max_elapsed_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0emaxElapsedTime\"\xd2\x01\n" +
+	"maxBackoff\"\xd2\x01\n" +
 	"\tTLSConfig\x12\x1f\n" +
 	"\vserver_name\x18\x01 \x01(\tR\n" +
 	"serverName\x12 \n" +
@@ -6171,20 +6144,19 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	46, // 79: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
 	46, // 80: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
 	46, // 81: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	46, // 82: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
-	47, // 83: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
-	48, // 84: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
-	49, // 85: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	50, // 86: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	51, // 87: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	52, // 88: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	53, // 89: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
-	54, // 90: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
-	91, // [91:91] is the sub-list for method output_type
-	91, // [91:91] is the sub-list for method input_type
-	91, // [91:91] is the sub-list for extension type_name
-	91, // [91:91] is the sub-list for extension extendee
-	0,  // [0:91] is the sub-list for field type_name
+	47, // 82: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
+	48, // 83: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
+	49, // 84: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	50, // 85: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	51, // 86: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	52, // 87: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	53, // 88: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
+	54, // 89: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
+	90, // [90:90] is the sub-list for method output_type
+	90, // [90:90] is the sub-list for method input_type
+	90, // [90:90] is the sub-list for extension type_name
+	90, // [90:90] is the sub-list for extension extendee
+	0,  // [0:90] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
