@@ -224,7 +224,7 @@ var httpClient = &http.Client{
 	Timeout: 5 * time.Second,
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, _, err := net.SplitHostPort(addr)
+			host, port, err := net.SplitHostPort(addr)
 			if err != nil {
 				return nil, err
 			}
@@ -234,13 +234,22 @@ var httpClient = &http.Client{
 				return nil, err
 			}
 
+			var dialAddr string
 			for _, ip := range ips {
 				if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
 					return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
 				}
+				// Use the first valid IP address for the connection.
+				if dialAddr == "" {
+					dialAddr = net.JoinHostPort(ip.String(), port)
+				}
 			}
 
-			return (&net.Dialer{}).DialContext(ctx, network, addr)
+			if dialAddr == "" {
+				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
+			}
+
+			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
 		},
 	},
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
