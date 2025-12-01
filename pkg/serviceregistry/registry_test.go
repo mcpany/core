@@ -19,7 +19,6 @@ package serviceregistry
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -29,6 +28,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -38,12 +38,12 @@ import (
 
 type mockUpstream struct {
 	upstream.Upstream
-	registerFunc func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerFunc func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
 func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if m.registerFunc != nil {
-		return m.registerFunc()
+		return m.registerFunc(serviceConfig.GetName())
 	}
 	return "mock-service-key", nil, nil, nil
 }
@@ -92,13 +92,13 @@ func TestNew(t *testing.T) {
 }
 
 func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
-	var serviceCounter int
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-					serviceCounter++
-					return fmt.Sprintf("service-%d", serviceCounter), nil, nil, nil
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
 				},
 			}, nil
 		},
@@ -124,7 +124,9 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	// Successful registration
 	serviceID, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
-	assert.Equal(t, "service-1", serviceID)
+	expectedServiceID, err := util.SanitizeServiceName("test-service")
+	require.NoError(t, err)
+	assert.Equal(t, expectedServiceID, serviceID)
 	assert.Nil(t, tools)
 	assert.Nil(t, resources)
 
@@ -183,7 +185,7 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 					return "", nil, nil, upstreamErr
 				},
 			}, nil
@@ -203,9 +205,10 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-					// Both services will have the same key because they have the same name
-					return "test-service_e3b0c442", nil, nil, nil
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
 				},
 			}, nil
 		},
@@ -230,8 +233,10 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-					return "test-service", nil, nil, nil
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
 				},
 			}, nil
 		},
@@ -248,7 +253,9 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	// Register the service
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
-	assert.Equal(t, "test-service", serviceID)
+	expectedServiceID, err := util.SanitizeServiceName("test-service")
+	require.NoError(t, err)
+	assert.Equal(t, expectedServiceID, serviceID)
 
 	// Verify it's registered
 	_, ok := registry.GetServiceConfig(serviceID)
@@ -269,13 +276,13 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 }
 
 func TestServiceRegistry_GetAllServices(t *testing.T) {
-	var serviceCounter int
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func() (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-					serviceCounter++
-					return fmt.Sprintf("service-%d", serviceCounter), nil, nil, nil
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
 				},
 			}, nil
 		},
