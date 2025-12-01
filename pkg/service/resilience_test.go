@@ -84,3 +84,23 @@ func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
 	assert.Error(t, err)
 	assert.InDelta(t, float64(100*time.Millisecond), float64(elapsed), float64(50*time.Millisecond))
 }
+
+func TestUnaryClientInterceptor_ContextCanceled(t *testing.T) {
+	retries := int32(1)
+	retryConfig := &configv1.RetryConfig_builder{
+		NumberOfRetries: &retries,
+		BaseBackoff:     durationpb.New(1 * time.Second),
+	}
+	interceptor := UnaryClientInterceptor(retryConfig.Build())
+
+	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		return status.Error(codes.Unavailable, "unavailable")
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	err := interceptor(ctx, "/test", nil, nil, nil, invoker)
+	assert.Error(t, err)
+	assert.Equal(t, context.Canceled, err)
+}
