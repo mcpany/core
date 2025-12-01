@@ -426,13 +426,16 @@ endif
 build-docker: docker/Dockerfile.server
 ifdef HAS_DOCKER
 	@{ \
-		if [ -z "$(PLATFORMS)" ]; then \
+		PLATFORMS="$(PLATFORMS)"; \
+		if [ -z "$$PLATFORMS" ]; then \
 			HOST_ARCH=$$(uname -m); \
 			case "$$HOST_ARCH" in \
 				x86_64) PLATFORMS=linux/amd64 ;; \
 				aarch64) PLATFORMS=linux/arm64 ;; \
 				*) PLATFORMS=linux/amd64 ;; \
 			esac; \
+		else \
+			PLATFORMS=$$(echo "$$PLATFORMS" | tr ' ' ','); \
 		fi; \
 		echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
 		CACHE_ARGS=""; \
