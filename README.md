@@ -257,12 +257,14 @@ MCP Any supports a variety of advanced configuration options, including:
   ```
 
 - **Resilience**: Configure retries for a gRPC service.
-- **Server Authentication**: Secure the MCP server with an API key.
+- **Server Authentication**: Secure the MCP server with an API key. To enable authentication, add the `api_key` to the `global_settings` section of your configuration file.
 
   ```yaml
   global_settings:
     api_key: "my-secret-key"
   ```
+
+  When authentication is enabled, clients must provide the API key in the `X-API-Key` header of their requests.
 
 ### Remote Configurations
 

@@ -50,6 +50,7 @@ type Server struct {
 	serviceRegistry *serviceregistry.ServiceRegistry
 	bus             *bus.BusProvider
 	reloadFunc      func() error
+	apiKey          string
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -90,6 +91,7 @@ func NewServer(
 	authManager *auth.AuthManager,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 	bus *bus.BusProvider,
+	apiKey string,
 ) (*Server, error) {
 	s := &Server{
 		router:          NewRouter(),
@@ -99,6 +101,7 @@ func NewServer(
 		authManager:     authManager,
 		serviceRegistry: serviceRegistry,
 		bus:             bus,
+		apiKey:          apiKey,
 	}
 
 	s.router.Register(
