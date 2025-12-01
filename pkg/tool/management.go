@@ -65,6 +65,8 @@ type ToolManager struct {
 	bus         *bus.BusProvider
 	mu          sync.RWMutex
 	middlewares []ToolExecutionMiddleware
+	cachedTools []Tool
+	toolsMutex  sync.RWMutex
 }
 
 // NewToolManager creates and returns a new, empty ToolManager.
@@ -181,6 +183,10 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	log.Debug("Adding tool to ToolManager")
 	tm.tools.Store(toolID, tool)
 
+	tm.toolsMutex.Lock()
+	tm.cachedTools = nil
+	tm.toolsMutex.Unlock()
+
 	if tm.mcpServer != nil {
 		mcpTool, err := ConvertProtoToMCPTool(tool.Tool())
 		if err != nil {
@@ -291,11 +297,28 @@ func (tm *ToolManager) GetTool(toolName string) (Tool, bool) {
 // ListTools returns a slice containing all the tools currently registered with
 // the manager.
 func (tm *ToolManager) ListTools() []Tool {
+	tm.toolsMutex.RLock()
+	if tm.cachedTools != nil {
+		defer tm.toolsMutex.RUnlock()
+		return tm.cachedTools
+	}
+	tm.toolsMutex.RUnlock()
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+	// After acquiring the write lock, we need to check if the cache is still nil.
+	// This is because another goroutine might have populated it between the RUnlock
+	// and Lock calls.
+	if tm.cachedTools != nil {
+		return tm.cachedTools
+	}
+
 	var tools []Tool
 	tm.tools.Range(func(key string, value Tool) bool {
 		tools = append(tools, value)
 		return true
 	})
+	tm.cachedTools = tools
 	return tools
 }
 
@@ -318,5 +341,10 @@ func (tm *ToolManager) ClearToolsForService(serviceID string) {
 		}
 		return true
 	})
+	if deletedCount > 0 {
+		tm.toolsMutex.Lock()
+		tm.cachedTools = nil
+		tm.toolsMutex.Unlock()
+	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
 }
