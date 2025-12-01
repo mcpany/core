@@ -362,6 +362,57 @@ upstream_services:
 	}
 }
 
+func TestIsURL(t *testing.T) {
+	testCases := []struct {
+		name     string
+		path     string
+		expected bool
+	}{
+		{
+			name:     "lowercase http",
+			path:     "http://example.com",
+			expected: true,
+		},
+		{
+			name:     "lowercase https",
+			path:     "https://example.com",
+			expected: true,
+		},
+		{
+			name:     "uppercase HTTP",
+			path:     "HTTP://example.com",
+			expected: true,
+		},
+		{
+			name:     "uppercase HTTPS",
+			path:     "HTTPS://example.com",
+			expected: true,
+		},
+		{
+			name:     "mixed case http",
+			path:     "Http://example.com",
+			expected: true,
+		},
+		{
+			name:     "not a url",
+			path:     "/path/to/file",
+			expected: false,
+		},
+		{
+			name:     "empty string",
+			path:     "",
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := isURL(tc.path)
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}
+
 func TestReadURL_RedirectShouldFail(t *testing.T) {
 	// This server will redirect to a "safe" URL, but the redirect should not be followed
 	redirectServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
