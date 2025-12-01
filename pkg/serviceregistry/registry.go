@@ -26,6 +26,7 @@ import (
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	config "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -98,6 +99,14 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to generate service key: %w", err)
+	}
+	if _, ok := r.serviceConfigs[serviceID]; ok {
+		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+	}
+
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
@@ -106,13 +115,6 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
 		return "", nil, nil, err
-	}
-
-	if _, ok := r.serviceConfigs[serviceID]; ok {
-		r.toolManager.ClearToolsForService(serviceID)
-		r.promptManager.ClearPromptsForService(serviceID)
-		r.resourceManager.ClearResourcesForService(serviceID)
-		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
 	r.serviceConfigs[serviceID] = serviceConfig
