@@ -145,6 +145,22 @@ upstream_services: {
 		assert.Contains(t, err.Error(), "ssrf attempt blocked")
 	})
 
+	t.Run("Load from URL with localhost address", func(t *testing.T) {
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{"http://localhost:8080/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	})
+
+	t.Run("Load from URL with IPv6 loopback address", func(t *testing.T) {
+		fs := afero.NewOsFs()
+		fileStore := NewFileStore(fs, []string{"http://[::1]:8080/config.textproto"})
+		_, err := LoadServices(fileStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	})
+
 	t.Run("unknown binary type", func(t *testing.T) {
 		filePath := createTempConfigFile(t, "")
 		fs := afero.NewOsFs()
