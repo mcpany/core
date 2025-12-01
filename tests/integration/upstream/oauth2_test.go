@@ -195,6 +195,53 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 	framework.RunE2ETest(t, testCase)
 }
 
+func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
+	oauth2Server := newMockOAuth2Server(t)
+	defer oauth2Server.Close()
+
+	testCase := &framework.E2ETestCase{
+		Name:                "Authenticated HTTP Echo Server with OAuth2 Invalid Credentials",
+		UpstreamServiceType: "http",
+		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
+		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+			const serviceID = "e2e_http_oauth2_echo_invalid"
+			tokenURL := oauth2Server.URL + oauth2TestTokenPath
+			clientID := &configv1.SecretValue{}
+			clientID.SetPlainText(oauth2TestClientID)
+			clientSecret := &configv1.SecretValue{}
+			clientSecret.SetPlainText("invalid-secret")
+			oauth2AuthConfig := configv1.UpstreamOAuth2Auth_builder{
+				TokenUrl:     &tokenURL,
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
+			}.Build()
+			authConfig := configv1.UpstreamAuthentication_builder{
+				Oauth2: oauth2AuthConfig,
+			}.Build()
+			integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)
+		},
+		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
+			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+			defer cancel()
+
+			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
+			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+			require.NoError(t, err)
+			defer cs.Close()
+
+			const echoServiceID = "e2e_http_oauth2_echo_invalid"
+			serviceID, _ := util.SanitizeServiceName(echoServiceID)
+			sanitizedToolName, _ := util.SanitizeToolName("echo")
+			toolName := serviceID + "." + sanitizedToolName
+			echoMessage := `{"message": "hello world from oauth2 protected upstream"}`
+			_, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
+			require.Error(t, err, "Expected an error when calling echo tool with invalid auth")
+		},
+	}
+
+	framework.RunE2ETest(t, testCase)
+}
+
 func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
 	oauth2Server := newMockOAuth2Server(t)
 	defer oauth2Server.Close()
