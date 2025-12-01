@@ -213,6 +213,10 @@ func (a *Application) Run(
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
 
+	mcpSrv.SetReloadFunc(func() error {
+		return a.ReloadConfig(fs, configPaths)
+	})
+
 	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {
