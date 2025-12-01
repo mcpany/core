@@ -217,6 +217,21 @@ MCP Any supports a variety of advanced configuration options, including:
           apiKey: "my-secret-key"
   ```
 
+  You can also source secrets from environment variables. This is the recommended approach for production environments.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-secure-service"
+      httpService:
+        address: "https://api.example.com"
+        # ...
+      upstreamAuthentication:
+        apiKey:
+          headerName: "X-API-Key"
+          apiKey:
+            environmentVariable: "MY_API_KEY"
+  ```
+
 - **mTLS**: Configure mTLS for an upstream service.
 
   ```yaml
