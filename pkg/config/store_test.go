@@ -17,11 +17,15 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
@@ -29,15 +33,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
-)
-
-import (
-	"context"
-	"net"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"time"
 )
 
 func TestReadURL(t *testing.T) {
