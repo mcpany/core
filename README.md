@@ -165,6 +165,16 @@ make run ARGS="--config-paths ./config.yaml"
 
 The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPANY_JSONRPC_PORT=6000`.
 
+### Validating Configuration
+
+You can validate your configuration files without starting the server using the `config validate` command:
+
+```bash
+./build/bin/server config validate --config-path ./config.yaml
+```
+
+If the configuration is valid, the command will print a success message and exit with a status code of 0. If the configuration is invalid, the command will print an error message and exit with a non-zero status code.
+
 ### Advanced Configuration
 
 MCP Any supports a variety of advanced configuration options, including:
