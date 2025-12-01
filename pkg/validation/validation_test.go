@@ -170,6 +170,14 @@ func TestValidateHTTPServiceDefinition(t *testing.T) {
 			}.Build(),
 			expectedError: "method is required",
 		},
+		{
+			name: "path with query string",
+			def: configv1.HttpCallDefinition_builder{
+				EndpointPath: lo.ToPtr("/v1/users/{userId}?filter=name eq 'test'"),
+				Method:       &methodGet,
+			}.Build(),
+			expectedError: "path must not contain query parameters",
+		},
 	}
 
 	for _, tc := range testCases {
