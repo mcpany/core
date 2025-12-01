@@ -719,12 +719,16 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	require.NoError(t, err, "nats-server binary not found at %s. Run 'make prepare'.", natsServerBin)
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
-	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
-	err = cmd.Start()
+
+	args := []string{"-p", fmt.Sprintf("%d", natsPort)}
+	mp := NewManagedProcess(t, "nats-server", natsServerBin, args, nil)
+	err = mp.Start()
 	require.NoError(t, err)
+
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
+
 	cleanup := func() {
-		cmd.Process.Kill()
+		mp.Stop()
 	}
 	return natsURL, cleanup
 }

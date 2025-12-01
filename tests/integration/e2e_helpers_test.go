@@ -19,6 +19,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -98,4 +100,69 @@ func TestDockerHelpers(t *testing.T) {
 
 	// The StartRedisContainer function has internal checks to ensure the container
 	// starts and is responsive. A successful return is a pass.
+}
+
+// countProcesses checks how many processes with a given name are running.
+func countProcesses(t *testing.T, name string) int {
+	t.Helper()
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("tasklist")
+	default:
+		cmd = exec.Command("pgrep", "-c", name)
+	}
+
+	output, err := cmd.Output()
+	if err != nil {
+		// On Unix, pgrep returns exit code 1 if no process is found
+		if exitErr, ok := err.(*exec.ExitError); ok && exitErr.ExitCode() == 1 {
+			return 0
+		}
+		// On Windows, tasklist might fail if no process is found, but it's better to check output.
+		if runtime.GOOS == "windows" && strings.Contains(string(output), "No tasks are running") {
+			return 0
+		}
+		t.Logf("Error checking for running processes '%s': %v, output: %s", name, err, string(output))
+		return 0 // Return 0 on error to avoid false positives
+	}
+
+	if runtime.GOOS == "windows" {
+		return strings.Count(strings.ToLower(string(output)), strings.ToLower(name))
+	}
+	count := 0
+	fmt.Sscanf(string(output), "%d", &count)
+	return count
+}
+
+// TestStartNatsServerCleanup ensures that the NATS server is properly cleaned up
+// after the test, leaving no orphaned processes. This is critical for preventing
+// resource leaks in the test suite.
+func TestStartNatsServerCleanup(t *testing.T) {
+	// Let's give a bit of time for any lingering processes from previous tests to terminate
+	time.Sleep(2 * time.Second)
+
+	initialCount := countProcesses(t, "nats-server")
+	t.Logf("Initial nats-server processes: %d", initialCount)
+
+	// We'll run this multiple times to ensure that cleanup is consistent.
+	for i := 0; i < 3; i++ {
+		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
+			_, cleanup := StartNatsServer(t)
+			// Give the server a moment to fully start up and be discoverable by pgrep.
+			time.Sleep(500 * time.Millisecond)
+			// At this point, we expect at least one nats-server process to be running.
+			require.Greater(t, countProcesses(t, "nats-server"), initialCount, "nats-server process should have been started")
+			cleanup()
+			// After cleanup, the number of nats-server processes should return to the initial count.
+			// We use `Eventually` to account for the small delay it might take for the OS to reap the terminated process.
+			require.Eventually(t, func() bool {
+				return countProcesses(t, "nats-server") == initialCount
+			}, 5*time.Second, 250*time.Millisecond, "nats-server process was not cleaned up properly")
+		})
+	}
+
+	// Final check to ensure no processes were leaked after all iterations.
+	finalCount := countProcesses(t, "nats-server")
+	require.Equal(t, initialCount, finalCount, "The number of nats-server processes should be the same as before the test suite started.")
 }
