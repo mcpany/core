@@ -43,7 +43,7 @@ func TestIsValidURL(t *testing.T) {
 		{"valid unix scheme with slashes and path", "unix:///tmp/socket.sock", true}, // No host, path is present
 		{"valid passthrough scheme with path", "passthrough:///service-name", true},  // No host, path is present
 		{"valid passthrough scheme opaque", "passthrough:service-name", true},        // No host, opaque is present
-		{"valid mailto", "mailto:user@example.com", true},
+		{"invalid mailto", "mailto:user@example.com", false},
 		{"valid data url", "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==", true},
 
 		// Invalid URLs
@@ -67,9 +67,6 @@ func TestIsValidURL(t *testing.T) {
 		{"no scheme but has slashes", "//example.com/path", false},
 		{"invalid scheme chars", "ht!tp://example.com", false},
 		{"dns scheme malformed (empty opaque/path)", "dns:", false},
-		{"invalid mailto with host", "mailto://user@example.com", false},
-		{"invalid mailto with slashes", "mailto:///foo", false},
-		{"invalid mailto with path", "mailto:user@example.com/path", false},
 
 		// Specific gRPC target cases
 		{"grpc target no scheme", "localhost:50051", false},                       // Invalid: No scheme
