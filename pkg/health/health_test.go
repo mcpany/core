@@ -328,14 +328,45 @@ func TestCheckVariousServices(t *testing.T) {
 			want: health.StatusUp,
 		},
 		{
-			name: "Command Line Service with Health Check",
+			name: "Command Line Service Health Check Success",
 			config: configv1.UpstreamServiceConfig_builder{
-				Name: lo.ToPtr("cmd-service-with-health-check"),
+				Name: lo.ToPtr("cmd-service-health-check-success"),
 				CommandLineService: configv1.CommandLineUpstreamService_builder{
-					HealthCheck: &configv1.CommandLineHealthCheck{},
+					Command: lo.ToPtr("echo"),
+					HealthCheck: configv1.CommandLineHealthCheck_builder{
+						Method:                   lo.ToPtr("hello"),
+						ExpectedResponseContains: lo.ToPtr("hello"),
+					}.Build(),
 				}.Build(),
 			}.Build(),
 			want: health.StatusUp,
+		},
+		{
+			name: "Command Line Service Health Check Failure",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("cmd-service-health-check-failure"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: lo.ToPtr("echo"),
+					HealthCheck: configv1.CommandLineHealthCheck_builder{
+						Method:                   lo.ToPtr("hello"),
+						ExpectedResponseContains: lo.ToPtr("world"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
+			name: "Command Line Service Health Check Non-Zero Exit Code",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("cmd-service-health-check-non-zero-exit"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: lo.ToPtr("false"),
+					HealthCheck: configv1.CommandLineHealthCheck_builder{
+						Method: lo.ToPtr(""),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
 		},
 		{
 			name: "WebSocket Service",
