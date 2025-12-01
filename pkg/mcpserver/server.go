@@ -172,7 +172,16 @@ func NewServer(
 		}
 	}
 
-	toolListFilteringMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
+	s.server.AddReceivingMiddleware(routerMiddleware)
+	s.server.AddReceivingMiddleware(s.ToolListFilteringMiddleware())
+
+	return s, nil
+}
+
+// ToolListFilteringMiddleware returns a middleware function that intercepts
+// "tools/list" requests and ensures the tool list is up-to-date.
+func (s *Server) ToolListFilteringMiddleware() func(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(
 			ctx context.Context,
 			method string,
@@ -182,32 +191,27 @@ func NewServer(
 
 			if method == consts.MethodToolsList {
 				if err == nil {
-					// The tool manager is the authoritative source of tools. We iterate over the
-					// tools in the manager to ensure that the list is always up-to-date and
-					// reflects the current state of the system.
-					managedTools := s.toolManager.ListTools()
-					refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
-					for _, toolInstance := range managedTools {
-						mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
-						if err != nil {
-							logging.GetLogger().
-								Error("Failed to convert tool to MCP format, skipping", "toolName", toolInstance.Tool().GetName(), "error", err)
-							continue
+					if listToolsResult, ok := result.(*mcp.ListToolsResult); ok {
+						managedTools := s.toolManager.ListTools()
+						refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
+						for _, toolInstance := range managedTools {
+							mcpTool, convErr := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+							if convErr != nil {
+								logging.GetLogger().
+									Error("Failed to convert tool to MCP format, skipping", "toolName", toolInstance.Tool().GetName(), "error", convErr)
+								continue
+							}
+							refreshedTools = append(refreshedTools, mcpTool)
 						}
-						refreshedTools = append(refreshedTools, mcpTool)
+						listToolsResult.Tools = refreshedTools
+						result = listToolsResult
 					}
-					result = &mcp.ListToolsResult{Tools: refreshedTools}
 				}
 			}
 
 			return result, err
 		}
 	}
-
-	s.server.AddReceivingMiddleware(routerMiddleware)
-	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
-
-	return s, nil
 }
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of

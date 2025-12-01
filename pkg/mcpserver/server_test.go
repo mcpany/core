@@ -42,6 +42,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"reflect"
+	"unsafe"
+	"go.uber.org/mock/gomock"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 type mockTool struct {
@@ -201,6 +205,72 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, listResult.Tools, 1)
 	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+}
+
+func TestToolListFilteringMiddleware_PreservesResultObject(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockToolManager := tool.NewMockToolManagerInterface(ctrl)
+	mockToolManager.EXPECT().ListTools().Return([]tool.Tool{
+		&mockTool{
+			tool: &v1.Tool{
+				ServiceId: proto.String("mock-service"),
+				Name:      proto.String("fresh-tool"),
+			},
+		},
+	})
+
+	s := &mcpserver.Server{}
+	setUnexportedField(s, "toolManager", mockToolManager)
+
+	toolListFilteringMiddleware := s.ToolListFilteringMiddleware()
+
+	originalResult := &mcp.ListToolsResult{
+		Tools: []*mcp.Tool{
+			{
+				Name: "stale-tool",
+			},
+		},
+	}
+
+	result, err := toolListFilteringMiddleware(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		return originalResult, nil
+	})(context.Background(), consts.MethodToolsList, &mcp.ListToolsRequest{})
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Same(t, originalResult, result, "The middleware should modify the result in-place, not create a new one.")
+
+	listToolsResult, ok := result.(*mcp.ListToolsResult)
+	assert.True(t, ok)
+	assert.Len(t, listToolsResult.Tools, 1)
+	assert.Equal(t, "mock-service.fresh-tool", listToolsResult.Tools[0].Name)
+}
+
+func setUnexportedField(obj interface{}, name string, value interface{}) {
+	rv := reflect.ValueOf(obj)
+	if rv.Kind() != reflect.Ptr || rv.IsNil() {
+		// handle error
+		return
+	}
+	rv = rv.Elem()
+	if rv.Kind() != reflect.Struct {
+		// handle error
+		return
+	}
+	field := rv.FieldByName(name)
+	if !field.IsValid() {
+		// handle error
+		return
+	}
+	if !field.CanSet() {
+		reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).
+			Elem().
+			Set(reflect.ValueOf(value))
+	} else {
+		field.Set(reflect.ValueOf(value))
+	}
 }
 
 type mockErrorTool struct {
