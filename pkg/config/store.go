@@ -243,9 +243,6 @@ var httpClient = &http.Client{
 			return (&net.Dialer{}).DialContext(ctx, network, addr)
 		},
 	},
-	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		return http.ErrUseLastResponse
-	},
 }
 
 func readURL(url string) ([]byte, error) {
@@ -258,13 +255,7 @@ func readURL(url string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
 	}
-
 	defer resp.Body.Close()
-
-	// Since redirects are disabled, a redirect attempt will result in a 3xx status code.
-	if resp.StatusCode >= 300 && resp.StatusCode <= 399 {
-		return nil, fmt.Errorf("redirects are disabled for security reasons")
-	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to get config from url %s: status code %d", url, resp.StatusCode)

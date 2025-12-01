@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -48,6 +47,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+
+	"github.com/cenkalti/backoff/v4"
+	"log/slog"
 )
 
 // Tool is the fundamental interface for any executable tool in the system.
@@ -253,7 +255,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	log := logging.GetLogger()
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
@@ -337,7 +338,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	var resp *http.Response
 	var respBody []byte
-	var lastErr error
 
 	var retryPolicy *configv1.RetryConfig
 	if t.resilience != nil {
@@ -352,19 +352,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		maxAttempts = 1
 	}
 
-	for attempt := 0; attempt < maxAttempts; attempt++ {
-		if attempt > 0 {
-			backoff := retryPolicy.GetBaseBackoff().AsDuration()
-			backoff *= time.Duration(1 << (uint(attempt) - 1))
-			if maxBackoffDuration := retryPolicy.GetMaxBackoff(); maxBackoffDuration != nil {
-				if maxBackoff := maxBackoffDuration.AsDuration(); backoff > maxBackoff {
-					backoff = maxBackoff
-				}
-			}
-			log.Debug("Retrying request", "attempt", attempt+1, "backoff", backoff)
-			time.Sleep(backoff)
-		}
-
+	operation := func() error {
 		// Recreate the request body for each attempt to allow retries for POST/PUT requests
 		var bodyForAttempt io.Reader
 		if body != nil {
@@ -375,18 +363,13 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				// If the body is not seekable, we can't retry.
 				// This can be improved by reading the body into a buffer first.
 				// For now, we just use the original body for the first attempt.
-				if attempt == 0 {
-					bodyForAttempt = body
-				} else {
-					// This case should be handled by improving body handling before the loop
-					return nil, fmt.Errorf("cannot retry request with non-seekable body")
-				}
+				bodyForAttempt = body
 			}
 		}
 
 		httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
 		if err != nil {
-			return "", fmt.Errorf("failed to create http request: %w", err)
+			return backoff.Permanent(fmt.Errorf("failed to create http request: %w", err))
 		}
 
 		if contentType != "" {
@@ -397,7 +380,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		if t.authenticator != nil {
 			if err := t.authenticator.Authenticate(httpReq); err != nil {
-				return nil, fmt.Errorf("failed to authenticate request: %w", err)
+				return backoff.Permanent(fmt.Errorf("failed to authenticate request: %w", err))
 			}
 		}
 
@@ -420,29 +403,35 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		resp, err = httpClient.Do(httpReq)
 		if err != nil {
-			lastErr = fmt.Errorf("failed to execute http request: %w", err)
-			log.Warn("Request failed, retrying...", "attempt", attempt+1, "error", err)
-			continue
-		}
-
-		if resp.StatusCode < 400 {
-			lastErr = nil
-			break
+			return fmt.Errorf("failed to execute http request: %w", err)
 		}
 
 		if resp.StatusCode >= 500 {
 			resp.Body.Close()
-			lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
-			log.Error("Request failed with server error, retrying...", "attempt", attempt+1, "status", resp.StatusCode)
-			continue
+			return fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
 		}
 
-		lastErr = fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
-		break
+		if resp.StatusCode >= 400 {
+			return backoff.Permanent(fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode))
+		}
+
+		return nil
 	}
-	if lastErr != nil {
+
+	if retryPolicy != nil {
+		b := backoff.NewExponentialBackOff()
+		b.InitialInterval = retryPolicy.GetBaseBackoff().AsDuration()
+		if maxBackoff := retryPolicy.GetMaxBackoff(); maxBackoff != nil {
+			b.MaxInterval = maxBackoff.AsDuration()
+		}
+		err = backoff.Retry(operation, backoff.WithMaxRetries(b, uint64(retryPolicy.GetNumberOfRetries())))
+	} else {
+		err = operation()
+	}
+
+	if err != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
-		return nil, lastErr
+		return nil, err
 	}
 
 	defer resp.Body.Close()
