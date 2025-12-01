@@ -59,6 +59,13 @@ func TestResolveSecret(t *testing.T) {
 		assert.Equal(t, "my-env-secret", resolved)
 	})
 
+	t.Run("EnvironmentVariable not set", func(t *testing.T) {
+		secret := &configv1.SecretValue{}
+		secret.SetEnvironmentVariable("MY_SECRET_ENV_NOT_SET")
+		_, err := ResolveSecret(secret)
+		assert.Error(t, err)
+	})
+
 	t.Run("FilePath", func(t *testing.T) {
 		tmpfile, err := os.CreateTemp("", "secret")
 		assert.NoError(t, err)
