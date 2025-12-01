@@ -240,7 +240,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 
-		fullURL := baseURL.JoinPath(endpointURL.Path).String()
+		fullURL := baseURL.ResolveReference(endpointURL).String()
 
 		if properties == nil {
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
