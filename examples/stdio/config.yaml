@@ -1,0 +1,10 @@
+upstreamServices:
+  - name: "stdio-echo"
+    stdioService:
+      command: "./examples/stdio/echo.sh"
+      calls:
+        - name: "echo"
+          description: "Echo a message"
+          parameterMappings:
+            - inputParameterName: "message"
+              targetParameterName: "message"
