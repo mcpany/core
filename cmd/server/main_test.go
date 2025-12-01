@@ -275,3 +275,75 @@ func TestGracefulShutdown(t *testing.T) {
 	err = cmd.Wait()
 	assert.NoError(t, err)
 }
+
+func TestConfigValidateCmd(t *testing.T) {
+	viper.Reset()
+	// Create a temporary valid config file
+	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(validConfigFile.Name())
+	_, err = validConfigFile.WriteString(`
+global_settings:
+  mcp_listen_address: "localhost:8080"
+`)
+	assert.NoError(t, err)
+	validConfigFile.Close()
+
+	// Create a temporary invalid config file
+	invalidConfigFile, err := os.CreateTemp("", "invalid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(invalidConfigFile.Name())
+	_, err = invalidConfigFile.WriteString(`
+invalid-yaml
+`)
+	assert.NoError(t, err)
+	invalidConfigFile.Close()
+
+	tests := []struct {
+		name          string
+		args          []string
+		expectError   bool
+		expectedOutput string
+	}{
+		{
+			name:          "valid config",
+			args:          []string{"config", "validate", "--config-path", validConfigFile.Name()},
+			expectError:   false,
+			expectedOutput: "Configuration is valid.\n",
+		},
+		{
+			name:        "invalid config",
+			args:        []string{"config", "validate", "--config-path", invalidConfigFile.Name()},
+			expectError: true,
+		},
+		{
+			name:          "no config file",
+			args:          []string{"config", "validate"},
+			expectError:   false,
+			expectedOutput: "Configuration is valid.\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			originalStdout := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+
+			rootCmd := newRootCmd()
+			rootCmd.SetArgs(tt.args)
+			err := rootCmd.Execute()
+
+			w.Close()
+			out, _ := io.ReadAll(r)
+			os.Stdout = originalStdout
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedOutput, string(out))
+			}
+		})
+	}
+}
