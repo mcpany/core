@@ -49,6 +49,7 @@ type Server struct {
 	authManager     *auth.AuthManager
 	serviceRegistry *serviceregistry.ServiceRegistry
 	bus             *bus.BusProvider
+	reloadFunc      func() error
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -346,10 +347,12 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 }
 
 func (s *Server) ListTools() []tool.Tool {
+	logging.GetLogger().Info("Listing tools...")
 	return s.toolManager.ListTools()
 }
 
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
 	return s.toolManager.ExecuteTool(ctx, req)
 }
 
@@ -367,4 +370,16 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
+}
+
+func (s *Server) SetReloadFunc(f func() error) {
+	s.reloadFunc = f
+}
+
+// Reload reloads the server's configuration and updates its state.
+func (s *Server) Reload() error {
+	if s.reloadFunc != nil {
+		return s.reloadFunc()
+	}
+	return nil
 }
