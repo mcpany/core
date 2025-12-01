@@ -202,6 +202,30 @@ MCP Any supports a variety of advanced configuration options, including:
             selectionSet: "{ id name }"
   ```
 
+- **Command-Line Services**: Wrap any command-line tool.
+
+  ```yaml
+  upstream_services:
+    - name: "git"
+      command_line_service:
+        command: "git"
+        working_directory: "."
+        tools:
+          - name: "status"
+            call_id: "status"
+          - name: "log"
+            call_id: "log"
+          - name: "diff"
+            call_id: "diff"
+        calls:
+          "status":
+            args: ["status"]
+          "log":
+            args: ["log", "-n", "5"]
+          "diff":
+            args: ["diff", "HEAD~1", "HEAD"]
+  ```
+
 - **Authentication**: Configure authentication for an upstream service.
 
   ```yaml
