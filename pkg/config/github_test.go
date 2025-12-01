@@ -170,6 +170,41 @@ func TestGitHub_List(t *testing.T) {
 	}
 }
 
+func TestGitHub_List_With_Single_File(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}`))
+	}))
+	defer server.Close()
+
+	originalClient := httpClient
+	defer func() { httpClient = originalClient }()
+	httpClient = &http.Client{}
+
+	g := &GitHub{
+		Owner:   "mcpany",
+		Repo:    "core",
+		Ref:     "main",
+		Path:    "examples",
+		apiURL:  server.URL,
+	}
+
+	contents, err := g.List(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("List() error = %v", err)
+	}
+	expected := []Content{
+		{
+			Type:        "file",
+			HTMLURL:     "https://github.com/mcpany/core/blob/main/examples/README.md",
+			DownloadURL: "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md",
+		},
+	}
+	if len(contents) != 1 || contents[0] != expected[0] {
+		t.Errorf("List() = %v, want %v", contents, expected)
+	}
+}
+
 func TestGitHub_List_ssrf(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
