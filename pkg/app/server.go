@@ -114,6 +114,7 @@ type Runner interface {
 		shutdownTimeout time.Duration,
 	) error
 	ReloadConfig(fs afero.Fs, configPaths []string) error
+	WatchConfig(ctx context.Context, fs afero.Fs, configPaths []string)
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -327,6 +328,35 @@ func (a *Application) Run(
 	}
 
 	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+}
+
+// WatchConfig watches the configuration files for changes and reloads the
+// configuration when a change is detected.
+func (a *Application) WatchConfig(ctx context.Context, fs afero.Fs, configPaths []string) {
+	log := logging.GetLogger()
+	reloadChan := make(chan struct{}, 1)
+	watcher, err := config.NewWatcher(reloadChan)
+	if err != nil {
+		log.Error("Failed to create file watcher", "error", err)
+		return
+	}
+	defer watcher.Close()
+
+	if err := watcher.Watch(configPaths); err != nil {
+		log.Error("Failed to watch config files", "error", err)
+		return
+	}
+
+	for {
+		select {
+		case <-reloadChan:
+			if err := a.ReloadConfig(fs, configPaths); err != nil {
+				log.Error("Failed to reload config", "error", err)
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the

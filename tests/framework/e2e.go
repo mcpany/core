@@ -71,16 +71,21 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 	require.NoError(t, err)
 	defer session.Close()
 
-	tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err)
-
 	var foundTool *mcp.Tool
-	for _, tool := range tools.Tools {
-		if tool.Name == expectedTool.Name {
-			foundTool = tool
-			break
+	require.Eventually(t, func() bool {
+		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
+		if err != nil {
+			return false
 		}
-	}
+
+		for _, tool := range tools.Tools {
+			if tool.Name == expectedTool.Name {
+				foundTool = tool
+				return true
+			}
+		}
+		return false
+	}, integration.TestWaitTimeShort, 250*time.Millisecond, "tool %q not found", expectedTool.Name)
 
 	require.NotNil(t, foundTool, "tool %q not found", expectedTool.Name)
 	require.Equal(t, expectedTool.Description, foundTool.Description)

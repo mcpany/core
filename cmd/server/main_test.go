@@ -59,6 +59,8 @@ func (m *mockRunner) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	return nil
 }
 
+func (m *mockRunner) WatchConfig(ctx context.Context, fs afero.Fs, configPaths []string) {}
+
 func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
 	return nil
 }

@@ -1,93 +1,66 @@
-// Copyright 2025 Author(s) of MCP Any
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// SPDX-License-Identifier: Apache-2.0
-
 package config
 
 import (
 	"log"
-	"sync"
-	"time"
 
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher monitors configuration files for changes and triggers a reload.
+// Watcher watches configuration files for changes and sends a signal to reload.
 type Watcher struct {
-	watcher *fsnotify.Watcher
-	done    chan bool
-	mu      sync.Mutex
-	timer   *time.Timer
+	watcher    *fsnotify.Watcher
+	reloadChan chan<- struct{}
+	done       chan struct{}
 }
 
-// NewWatcher creates a new file watcher.
-func NewWatcher() (*Watcher, error) {
+// NewWatcher creates a new configuration watcher.
+func NewWatcher(reloadChan chan<- struct{}) (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err
 	}
-
 	return &Watcher{
-		watcher: watcher,
-		done:    make(chan bool),
+		watcher:    watcher,
+		reloadChan: reloadChan,
+		done:       make(chan struct{}),
 	}, nil
 }
 
-// Watch starts monitoring the specified configuration paths.
-func (w *Watcher) Watch(paths []string, reloadFunc func()) {
-	go func() {
-		for {
-			select {
-			case event, ok := <-w.watcher.Events:
-				if !ok {
-					return
-				}
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					w.mu.Lock()
-					if w.timer != nil {
-						w.timer.Stop()
-					}
-					w.timer = time.AfterFunc(1*time.Second, func() {
-						log.Println("Reloading configuration...")
-						reloadFunc()
-					})
-					w.mu.Unlock()
-				}
-			case err, ok := <-w.watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Println("error:", err)
-			case <-w.done:
-				return
-			}
-		}
-	}()
-
+// Watch starts watching the given configuration files.
+func (w *Watcher) Watch(paths []string) error {
 	for _, path := range paths {
-		err := w.watcher.Add(path)
-		if err != nil {
-			log.Fatal(err)
+		if err := w.watcher.Add(path); err != nil {
+			return err
 		}
 	}
-
-	<-w.done
+	go w.run()
+	return nil
 }
 
-// Close stops the file watcher.
+// Close stops the watcher.
 func (w *Watcher) Close() {
 	close(w.done)
 	w.watcher.Close()
+}
+
+func (w *Watcher) run() {
+	for {
+		select {
+		case event, ok := <-w.watcher.Events:
+			if !ok {
+				return
+			}
+			if event.Op&fsnotify.Write == fsnotify.Write {
+				log.Printf("Configuration file modified: %s", event.Name)
+				w.reloadChan <- struct{}{}
+			}
+		case err, ok := <-w.watcher.Errors:
+			if !ok {
+				return
+			}
+			log.Printf("Error watching config file: %v", err)
+		case <-w.done:
+			return
+		}
+	}
 }

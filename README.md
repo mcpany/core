@@ -292,7 +292,13 @@ To load a remote configuration, simply provide the URL as a value to the `--conf
 make run ARGS="--config-paths https://example.com/my-config.yaml"
 ```
 
-**Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
+**Security Warning:** Loading configurations from remote URLs can be dangerous if you not trust the source. Only load configurations from trusted sources to avoid potential security risks.
+
+### Dynamic Configuration Reloading
+
+MCP Any supports dynamic configuration reloading, which allows you to modify your configuration files and have the changes take effect without restarting the server. To enable this feature, simply start the server with the `--config-paths` flag, pointing to the configuration files you want to watch.
+
+When you modify a watched configuration file, MCP Any will automatically detect the change and reload the configuration. This is useful for development and for environments where you need to frequently update your server's configuration.
 
 ## Monitoring
 

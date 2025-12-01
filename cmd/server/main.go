@@ -108,18 +108,8 @@ func newRootCmd() *cobra.Command {
 			}()
 
 			// Start file watcher
-			if !cfg.Stdio() {
-				watcher, err := config.NewWatcher()
-				if err != nil {
-					return fmt.Errorf("failed to create file watcher: %w", err)
-				}
-				defer watcher.Close()
-
-				go watcher.Watch(configPaths, func() {
-					if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
-						log.Error("Failed to reload config", "error", err)
-					}
-				})
+			if !cfg.Stdio() && len(configPaths) > 0 {
+				go appRunner.WatchConfig(ctx, osFs, configPaths)
 			}
 
 			shutdownTimeout := cfg.ShutdownTimeout()

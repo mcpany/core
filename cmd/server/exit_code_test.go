@@ -56,6 +56,8 @@ func (m *mockFailingRunner) ReloadConfig(fs afero.Fs, configPaths []string) erro
 	return nil
 }
 
+func (m *mockFailingRunner) WatchConfig(ctx context.Context, fs afero.Fs, configPaths []string) {}
+
 var _ app.Runner = &mockFailingRunner{}
 
 func TestMain_FailingExitCode(t *testing.T) {
