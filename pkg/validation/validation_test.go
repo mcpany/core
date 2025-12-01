@@ -69,6 +69,7 @@ func TestIsValidURL(t *testing.T) {
 		{"dns scheme malformed (empty opaque/path)", "dns:", false},
 		{"invalid mailto with host", "mailto://user@example.com", false},
 		{"invalid mailto with slashes", "mailto:///foo", false},
+		{"invalid mailto with path", "mailto:user@example.com/path", false},
 
 		// Specific gRPC target cases
 		{"grpc target no scheme", "localhost:50051", false},                       // Invalid: No scheme
