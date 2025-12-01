@@ -106,6 +106,13 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if !strings.HasPrefix(def.GetEndpointPath(), "/") {
 		return fmt.Errorf("path must start with a '/'")
 	}
+	u, err := url.Parse(def.GetEndpointPath())
+	if err != nil {
+		return fmt.Errorf("path contains invalid characters")
+	}
+	if u.RawQuery != "" {
+		return fmt.Errorf("path must not contain query parameters")
+	}
 	if def.GetMethod() == configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED {
 		return fmt.Errorf("method is required")
 	}
