@@ -18,6 +18,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -219,6 +220,83 @@ global_settings:
 	err = rootCmd.Execute()
 
 	assert.NoError(t, err, "Health check should pass because the --mcp-listen-address flag should take precedence over the config file")
+}
+
+func TestValidateCmd(t *testing.T) {
+	// Create a temporary valid config file
+	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(validConfigFile.Name())
+	_, err = validConfigFile.WriteString(`
+upstreamServices:
+  - name: "my-http-service"
+    httpService:
+      address: "https://api.example.com"
+`)
+	assert.NoError(t, err)
+	validConfigFile.Close()
+
+	// Create a temporary invalid config file
+	invalidConfigFile, err := os.CreateTemp("", "invalid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(invalidConfigFile.Name())
+	_, err = invalidConfigFile.WriteString(`
+invalid-field: "hello"
+`)
+	assert.NoError(t, err)
+	invalidConfigFile.Close()
+
+	// Test with a valid config file
+	cmd := newRootCmd()
+	b := new(bytes.Buffer)
+	cmd.SetOut(b)
+	cmd.SetErr(b)
+	cmd.SetArgs([]string{"validate", validConfigFile.Name()})
+	err = cmd.Execute()
+	assert.NoError(t, err)
+	assert.Contains(t, b.String(), "Configuration file is valid")
+
+	// Test with an invalid config file
+	cmd = newRootCmd()
+	b = new(bytes.Buffer)
+	cmd.SetOut(b)
+	cmd.SetErr(b)
+	cmd.SetArgs([]string{"validate", invalidConfigFile.Name()})
+	err = cmd.Execute()
+	assert.Error(t, err)
+}
+
+func TestRunCmd(t *testing.T) {
+	viper.Reset()
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+
+	// Create temp config files/dirs that actually exist, otherwise fsnotify watcher fails
+	tmpDir := t.TempDir()
+	tmpFile, err := os.CreateTemp(tmpDir, "config*.yaml")
+	assert.NoError(t, err)
+	tmpFilePath := tmpFile.Name()
+	tmpFile.Close()
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"run",
+		"--stdio",
+		"--mcp-listen-address", "8081",
+		"--grpc-port", "8082",
+		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
+		"--shutdown-timeout", "10s",
+	})
+	rootCmd.Execute()
+
+	assert.True(t, mock.called, "app.Run should have been called")
+	assert.True(t, mock.capturedStdio, "stdio flag should be true")
+	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
+	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
+	assert.Equal(t, []string{tmpFilePath, tmpDir}, mock.capturedConfigPaths, "config-path should be captured")
+	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 
 func findFreePort(t *testing.T) int {

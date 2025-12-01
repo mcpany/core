@@ -153,7 +153,7 @@ func (a *Application) Run(
 	if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
-		cfg, err = config.LoadServices(store, "server")
+		cfg, err = store.Load()
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
@@ -295,7 +295,7 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	store := config.NewFileStore(fs, configPaths)
-	cfg, err := config.LoadServices(store, "server")
+	cfg, err := store.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}

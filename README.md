@@ -256,6 +256,26 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
+### CLI
+
+MCP Any provides a command-line interface (CLI) for managing the server.
+
+#### Validate a configuration file
+
+To validate a configuration file, use the `validate` command:
+
+```bash
+./build/bin/server validate ./config.yaml
+```
+
+#### Run the server
+
+To run the server, use the `run` command:
+
+```bash
+./build/bin/server run --config-paths ./config.yaml
+```
+
 ## Examples
 
 For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.

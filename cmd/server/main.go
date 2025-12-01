@@ -167,7 +167,33 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	validateCmd := &cobra.Command{
+		Use:   "validate [config-file]",
+		Short: "Validate a configuration file.",
+		Long:  `Validate a configuration file to ensure it is well-formed and all the required fields are present.`,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configFile := args[0]
+			store := config.NewFileStore(afero.NewOsFs(), []string{configFile})
+			if _, err := store.Load(); err != nil {
+				return fmt.Errorf("invalid config file: %w", err)
+			}
+			cmd.Println("Configuration file is valid:", configFile)
+			return nil
+		},
+	}
+	rootCmd.AddCommand(validateCmd)
+
+	runCmd := &cobra.Command{
+		Use:   "run",
+		Short: "Run the MCP Any server.",
+		Long:  `Run the MCP Any server with the given configuration.`,
+		RunE: rootCmd.RunE,
+	}
 	config.BindFlags(rootCmd)
+	runCmd.Flags().AddFlagSet(rootCmd.PersistentFlags())
+	runCmd.Flags().AddFlagSet(rootCmd.Flags())
+	rootCmd.AddCommand(runCmd)
 
 	return rootCmd
 }
