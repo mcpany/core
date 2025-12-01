@@ -63,6 +63,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	} else if binaryType == "worker" {
 		bt = Worker
 	} else {
+		log.Error("Unknown binary type", "binary_type", binaryType)
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
 
