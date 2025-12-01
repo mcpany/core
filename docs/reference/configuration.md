@@ -422,11 +422,9 @@ resilience:
     failure_rate_threshold: 0.5
     consecutive_failures: 3
     open_duration: "10s"
-    half_open_requests: 5
   retry_policy:
     number_of_retries: 3
     base_backoff: "100ms"
-    max_backoff: "30s"
 ```
 
 - **`circuit_breaker` (`CircuitBreakerConfig`)**:

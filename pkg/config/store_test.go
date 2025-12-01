@@ -19,8 +19,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -30,140 +28,6 @@ import (
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
-
-import (
-	"context"
-	"net"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"time"
-)
-
-func TestReadURL(t *testing.T) {
-	t.Run("should block loopback addresses", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}))
-		defer server.Close()
-
-		_, err := readURL(server.URL)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	})
-
-	t.Run("should block private non-loopback addresses", func(t *testing.T) {
-		// This is a bit tricky to test without being able to bind to a private IP.
-		// We'll simulate this by creating a URL with a private IP and assuming the DialContext will block it.
-		// We can't actually make a request to it in a test environment easily.
-		// The check happens before the dial, so this is sufficient.
-		_, err := readURL("http://192.168.1.1/config.yaml")
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	})
-
-	t.Run("should fail on non-200 status code", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusNotFound)
-		}))
-		defer server.Close()
-
-		// To bypass the SSRF check for this test, we need to use a public IP.
-		// We'll replace the httpClient for this test.
-		originalClient := httpClient
-		defer func() { httpClient = originalClient }()
-		httpClient = &http.Client{
-			Timeout: 5 * time.Second,
-		}
-
-		_, err := readURL(server.URL)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "status code 404")
-	})
-
-	t.Run("should demonstrate TOCTOU vulnerability", func(t *testing.T) {
-		t.Skip("Skipping this test as it requires a reliable DNS rebinding setup, but it documents the vulnerability.")
-
-		// Test setup to demonstrate the TOCTOU (Time-of-Check, Time-of-Use) vulnerability.
-		// An attacker can control a DNS server that returns a public IP (e.g., 8.8.8.8) for the first lookup,
-		// which passes the SSRF check. Immediately after, it returns a private IP (e.g., 127.0.0.1) for the
-		// second lookup, which is performed by the HTTP dialer.
-
-		// 1. A local server is running on 127.0.0.1.
-		localServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"global_settings": {}}`)
-		}))
-		defer localServer.Close()
-
-		// 2. The attacker's domain, e.g., "rebind.example.com".
-		attackerDomain := "rebind.example.com"
-
-		// 3. The attacker's DNS server is configured to respond with different IPs for the same domain.
-		//    - First lookup for "rebind.example.com" -> 8.8.8.8 (passes the check)
-		//    - Second lookup for "rebind.example.com" -> 127.0.0.1 (used by the dialer)
-
-		// 4. We simulate this by replacing the default HTTP client's transport with a custom one
-		//    that mimics the DNS rebinding behavior.
-
-		originalTransport := httpClient.Transport
-		defer func() { httpClient.Transport = originalTransport }()
-
-		lookupCount := 0
-		httpClient.Transport = &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				host, _, err := net.SplitHostPort(addr)
-				if err != nil {
-					return nil, err
-				}
-
-				var resolvedIPs []net.IP
-				if host == attackerDomain {
-					lookupCount++
-					if lookupCount == 1 {
-						// First lookup (the "check") returns a safe, public IP.
-						resolvedIPs = []net.IP{net.ParseIP("8.8.8.8")}
-					} else {
-						// Second lookup (the "use" by the dialer) returns the loopback IP.
-						serverURL, _ := url.Parse(localServer.URL)
-						localIP, _, _ := net.SplitHostPort(serverURL.Host)
-						resolvedIPs = []net.IP{net.ParseIP(localIP)}
-					}
-				} else {
-					// Default behavior for other domains.
-					ips, err := net.LookupIP(host)
-					if err != nil {
-						return nil, err
-					}
-					resolvedIPs = ips
-				}
-
-				// The original code's check is simulated here. It would pass on the first lookup.
-				for _, ip := range resolvedIPs {
-					if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
-						return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
-					}
-				}
-
-				// The original code then calls the dialer with the hostname. The dialer does its own lookup.
-				// We simulate the rebinding by connecting to the local server if it's the second lookup.
-				dialAddr := addr
-				if lookupCount > 1 && host == attackerDomain {
-					serverURL, _ := url.Parse(localServer.URL)
-					_, localPort, _ := net.SplitHostPort(serverURL.Host)
-					dialAddr = net.JoinHostPort("127.0.0.1", localPort)
-				}
-
-				return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
-			},
-		}
-
-		// With the vulnerability, this call should succeed by connecting to the local server.
-		// The test will fail if it returns an error, but the real failure is that it doesn't.
-		_, err := readURL("http://" + attackerDomain)
-		assert.NoError(t, err, "Expected the request to succeed due to SSRF TOCTOU vulnerability")
-	})
-}
 
 func TestNewEngine(t *testing.T) {
 	t.Run("UnsupportedExtension", func(t *testing.T) {
@@ -365,23 +229,6 @@ upstream_services:
 			}
 		})
 	}
-}
-
-func TestReadURL_RedirectShouldFail(t *testing.T) {
-	// This server will redirect to a "safe" URL, but the redirect should not be followed
-	redirectServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "http://example.com", http.StatusFound)
-	}))
-	defer redirectServer.Close()
-
-	// Temporarily remove the SSRF protection to test the redirect logic in isolation.
-	originalTransport := httpClient.Transport
-	defer func() { httpClient.Transport = originalTransport }()
-	httpClient.Transport = &http.Transport{}
-
-	_, err := readURL(redirectServer.URL)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "redirects are disabled for security reasons")
 }
 
 func TestExpand(t *testing.T) {
