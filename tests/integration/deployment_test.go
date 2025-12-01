@@ -29,6 +29,7 @@ import (
 
 	"github.com/mcpany/core/tests/integration"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 )
 
 func commandExists(cmd string) bool {
@@ -194,4 +195,30 @@ func TestHelmChart(t *testing.T) {
 	require.Contains(t, outputStr, "name: mcpany-release", "Rendered template should contain the release name")
 	require.Contains(t, outputStr, "kind: Deployment", "Rendered template should contain a Deployment")
 	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpany", "Rendered template should contain the app name label")
+}
+
+func TestDockerComposeImageTag(t *testing.T) {
+	t.Parallel()
+
+	rootDir := integration.ProjectRoot(t)
+	dockerComposeFile := filepath.Join(rootDir, "docker-compose.yml")
+
+	data, err := os.ReadFile(dockerComposeFile)
+	require.NoError(t, err)
+
+	var compose struct {
+		Services map[string]struct {
+			Image string `yaml:"image"`
+		} `yaml:"services"`
+	}
+
+	err = yaml.Unmarshal(data, &compose)
+	require.NoError(t, err)
+
+	mcpanyServer, ok := compose.Services["mcpany-server"]
+	require.True(t, ok, "mcpany-server service not found in docker-compose.yml")
+
+	require.NotEmpty(t, mcpanyServer.Image, "mcpany-server image not specified")
+	require.NotContains(t, mcpanyServer.Image, ":latest", "mcpany-server image should not use the 'latest' tag")
+	require.Regexp(t, `:.+`, mcpanyServer.Image, "mcpany-server image should have a specific tag")
 }
