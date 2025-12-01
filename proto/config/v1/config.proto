@@ -439,6 +439,8 @@ message RetryConfig {
   google.protobuf.Duration base_backoff = 2;
   // The maximum duration for the backoff.
   google.protobuf.Duration max_backoff = 3;
+  // The maximum total time to spend retrying.
+  google.protobuf.Duration max_elapsed_time = 4;
 }
 
 
