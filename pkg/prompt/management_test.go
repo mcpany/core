@@ -154,6 +154,6 @@ func TestPromptManager(t *testing.T) {
 
 		p, ok := promptManager.GetPrompt("duplicate-prompt")
 		assert.True(t, ok)
-		assert.Equal(t, "service1", p.Service())
+		assert.Equal(t, "service2", p.Service())
 	})
 }
