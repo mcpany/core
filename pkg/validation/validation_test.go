@@ -17,6 +17,7 @@
 package validation
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -112,6 +113,21 @@ func TestIsValidBindAddress(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFileExists(t *testing.T) {
+	// Create a temporary file to test the case where the file exists.
+	file, err := os.CreateTemp("", "test")
+	if err != nil {
+		t.Fatalf("Failed to create temporary file: %v", err)
+	}
+	defer os.Remove(file.Name())
+
+	// Test case where the file exists.
+	assert.NoError(t, FileExists(file.Name()))
+
+	// Test case where the file does not exist.
+	assert.Error(t, FileExists("non-existent-file"))
 }
 
 func TestValidateHTTPServiceDefinition(t *testing.T) {
