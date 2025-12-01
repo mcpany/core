@@ -18,6 +18,8 @@ package integration
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"testing"
 	"time"
@@ -110,4 +112,53 @@ func TestConfigLoading(t *testing.T) {
 			}, 10*time.Second, 500*time.Millisecond, "service loading status mismatch")
 		})
 	}
+}
+
+func TestRemoteConfigLoading(t *testing.T) {
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+
+	// Start a mock HTTP server to serve the remote config file.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filepath.Join(root, "examples/remote-config/remote_config.yaml"))
+	}))
+	defer server.Close()
+
+	t.Run("fails without flag", func(t *testing.T) {
+		t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
+		mcpAny := StartMCPANYServerWithNoHealthCheck(t, "remote-config-without-flag", "--config-paths", server.URL)
+
+		// The server should exit quickly because remote configs are not allowed by default.
+		select {
+		case <-mcpAny.Process.waitDone:
+			// Process exited as expected.
+		case <-time.After(10 * time.Second):
+			t.Fatal("MCPANY server with remote config did not exit as expected.")
+		}
+		mcpAny.CleanupFunc()
+	})
+
+	t.Run("succeeds with flag", func(t *testing.T) {
+		t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
+		mcpAny := StartMCPANYServer(t, "remote-config-with-flag", "--config-paths", server.URL, "--allow-remote-config")
+		defer mcpAny.CleanupFunc()
+
+		conn, err := grpc.Dial(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		require.NoError(t, err)
+		defer conn.Close()
+
+		client := v1.NewRegistrationServiceClient(conn)
+
+		require.Eventually(t, func() bool {
+			resp, err := client.ListServices(context.Background(), &v1.ListServicesRequest{})
+			require.NoError(t, err)
+
+			for _, service := range resp.GetServices() {
+				if service.GetName() == "hello-remote" {
+					return true
+				}
+			}
+			return false
+		}, 10*time.Second, 500*time.Millisecond, "remote service not loaded")
+	})
 }

@@ -40,6 +40,16 @@ import (
 func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
+	if fileStore, ok := store.(*FileStore); ok {
+		for _, path := range fileStore.paths {
+			if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+				if !GlobalSettings().AllowRemoteConfig() {
+					return nil, fmt.Errorf("remote config loading is not enabled. Please use the --allow-remote-config flag to enable it")
+				}
+			}
+		}
+	}
+
 	fileConfig, err := store.Load()
 	if err != nil {
 		return nil, fmt.Errorf("failed to load config from store: %w", err)

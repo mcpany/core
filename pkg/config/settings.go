@@ -31,12 +31,13 @@ import (
 
 // Settings defines the global configuration for the application.
 type Settings struct {
-	proto           *v1.GlobalSettings
-	grpcPort        string
-	stdio           bool
-	configPaths     []string
-	debug           bool
-	logLevel        string
+	proto               *v1.GlobalSettings
+	grpcPort            string
+	stdio               bool
+	configPaths         []string
+	allowRemoteConfig   bool
+	debug               bool
+	logLevel            string
 	logFile         string
 	shutdownTimeout time.Duration
 	fs              afero.Fs
@@ -66,6 +67,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.grpcPort = viper.GetString("grpc-port")
 	s.stdio = viper.GetBool("stdio")
 	s.configPaths = viper.GetStringSlice("config-path")
+	s.allowRemoteConfig = viper.GetBool("allow-remote-config")
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
@@ -117,6 +119,11 @@ func (s *Settings) Stdio() bool {
 // ConfigPaths returns the paths to the configuration files.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
+}
+
+// AllowRemoteConfig returns whether remote config loading is enabled.
+func (s *Settings) AllowRemoteConfig() bool {
+	return s.allowRemoteConfig
 }
 
 // IsDebug returns whether debug mode is enabled.
