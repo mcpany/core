@@ -17,6 +17,7 @@
 package config
 
 import (
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -26,6 +27,19 @@ import (
 )
 
 func TestValidate(t *testing.T) {
+	// Create temporary files for mTLS tests
+	clientCertFile, err := os.CreateTemp("", "client.crt")
+	require.NoError(t, err)
+	defer os.Remove(clientCertFile.Name())
+
+	clientKeyFile, err := os.CreateTemp("", "client.key")
+	require.NoError(t, err)
+	defer os.Remove(clientKeyFile.Name())
+
+	caCertFile, err := os.CreateTemp("", "ca.crt")
+	require.NoError(t, err)
+	defer os.Remove(caCertFile.Name())
+
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig
@@ -352,6 +366,69 @@ func TestValidate(t *testing.T) {
 			}).Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "basic-auth-svc-2": basic auth 'username' is empty`,
+		},
+		{
+			name: "valid mtls auth - with ca cert",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("mtls-svc-1"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+						UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+							Mtls: (&configv1.UpstreamMTLSAuth_builder{
+								ClientCertPath: proto.String(clientCertFile.Name()),
+								ClientKeyPath:  proto.String(clientKeyFile.Name()),
+								CaCertPath:     proto.String(caCertFile.Name()),
+							}).Build(),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount: 0,
+		},
+		{
+			name: "valid mtls auth - without ca cert",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("mtls-svc-2"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+						UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+							Mtls: (&configv1.UpstreamMTLSAuth_builder{
+								ClientCertPath: proto.String(clientCertFile.Name()),
+								ClientKeyPath:  proto.String(clientKeyFile.Name()),
+							}).Build(),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount: 0,
+		},
+		{
+			name: "invalid mtls auth - ca cert path not found",
+			config: (&configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					(&configv1.UpstreamServiceConfig_builder{
+						Name: proto.String("mtls-svc-3"),
+						HttpService: (&configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://localhost:8080"),
+						}).Build(),
+						UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
+							Mtls: (&configv1.UpstreamMTLSAuth_builder{
+								ClientCertPath: proto.String(clientCertFile.Name()),
+								ClientKeyPath:  proto.String(clientKeyFile.Name()),
+								CaCertPath:     proto.String("nonexistent.crt"),
+							}).Build(),
+						}).Build(),
+					}).Build(),
+				},
+			}).Build(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "mtls-svc-3": mtls 'ca_cert_path' not found: stat nonexistent.crt: no such file or directory`,
 		},
 	}
 
