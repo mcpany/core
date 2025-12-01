@@ -211,6 +211,26 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			if passwordValue == "" {
 				return fmt.Errorf("basic auth 'password' is empty")
 			}
+		case configv1.UpstreamAuthentication_Mtls_case:
+			mtls := authConfig.GetMtls()
+			if mtls.GetClientCertPath() == "" {
+				return fmt.Errorf("mtls 'client_cert_path' is empty")
+			}
+			if mtls.GetClientKeyPath() == "" {
+				return fmt.Errorf("mtls 'client_key_path' is empty")
+			}
+			if mtls.GetCaCertPath() == "" {
+				return fmt.Errorf("mtls 'ca_cert_path' is empty")
+			}
+			if err := validation.FileExists(mtls.GetClientCertPath()); err != nil {
+				return fmt.Errorf("mtls 'client_cert_path' not found: %w", err)
+			}
+			if err := validation.FileExists(mtls.GetClientKeyPath()); err != nil {
+				return fmt.Errorf("mtls 'client_key_path' not found: %w", err)
+			}
+			if err := validation.FileExists(mtls.GetCaCertPath()); err != nil {
+				return fmt.Errorf("mtls 'ca_cert_path' not found: %w", err)
+			}
 		}
 	}
 	return nil
