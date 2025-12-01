@@ -56,11 +56,11 @@ func (pm *PromptManager) SetMCPServer(mcpServer MCPServerProvider) {
 }
 
 // AddPrompt registers a new prompt with the manager. If a prompt with the same
-// name already exists, it will not be overwritten, and a warning will be logged.
+// name already exists, it will be overwritten, and a warning will be logged.
 func (pm *PromptManager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
-	if existingPrompt, loaded := pm.prompts.LoadOrStore(promptName, prompt); loaded {
-		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Ignoring. promptName=%s, newPromptService=%s, existingPromptService=%s",
+	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
+		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
 			promptName,
 			prompt.Service(),
 			existingPrompt.Service(),
