@@ -18,7 +18,10 @@ package grpc
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/mcpany/core/pkg/client"
@@ -48,7 +51,30 @@ func NewGrpcPool(
 	disableHealthCheck bool,
 ) (pool.Pool[*client.GrpcClientWrapper], error) {
 	factory := func(ctx context.Context) (*client.GrpcClientWrapper, error) {
-		opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+		var transportCreds credentials.TransportCredentials
+		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
+			certificate, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
+			if err != nil {
+				return nil, err
+			}
+
+			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+			if err != nil {
+				return nil, err
+			}
+
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+
+			transportCreds = credentials.NewTLS(&tls.Config{
+				Certificates: []tls.Certificate{certificate},
+				RootCAs:      caCertPool,
+			})
+		} else {
+			transportCreds = insecure.NewCredentials()
+		}
+
+		opts := []grpc.DialOption{grpc.WithTransportCredentials(transportCreds)}
 		if dialer != nil {
 			opts = append(opts, grpc.WithContextDialer(dialer))
 		}
