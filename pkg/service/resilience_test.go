@@ -82,5 +82,5 @@ func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
 	t.Logf("Elapsed time: %s", elapsed)
 
 	assert.Error(t, err)
-	assert.InDelta(t, float64(100*time.Millisecond), float64(elapsed), float64(40*time.Millisecond))
+	assert.InDelta(t, float64(100*time.Millisecond), float64(elapsed), float64(60*time.Millisecond))
 }

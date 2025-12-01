@@ -317,9 +317,14 @@ build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
-test: test-fast e2e test-public-api
+test: test-verify-fast test-fast e2e test-public-api
 
 COVERAGE_FILE ?= coverage.out
+
+.PHONY: test-verify-fast
+test-verify-fast:
+	@echo "Verifying that 'test-fast' does not run e2e tests..."
+	@./tests/verify_test_fast.sh
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
@@ -327,7 +332,7 @@ e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=!e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
 .PHONY: test-public-api
 test-public-api: build

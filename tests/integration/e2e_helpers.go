@@ -871,7 +871,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 				// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
 				t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
 				return true
-			}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+			}, TestWaitTimeShort, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
 		}
 	}
 
