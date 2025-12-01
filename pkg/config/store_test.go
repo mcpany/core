@@ -379,6 +379,61 @@ func TestReadURL_RedirectShouldFail(t *testing.T) {
 	assert.Contains(t, err.Error(), "redirects are disabled for security reasons")
 }
 
+func TestIsURL(t *testing.T) {
+	testCases := []struct {
+		name     string
+		path     string
+		expected bool
+	}{
+		{
+			name:     "lowercase http",
+			path:     "http://example.com",
+			expected: true,
+		},
+		{
+			name:     "uppercase http",
+			path:     "HTTP://example.com",
+			expected: true,
+		},
+		{
+			name:     "mixed-case http",
+			path:     "HtTp://example.com",
+			expected: true,
+		},
+		{
+			name:     "lowercase https",
+			path:     "https://example.com",
+			expected: true,
+		},
+		{
+			name:     "uppercase https",
+			path:     "HTTPS://example.com",
+			expected: true,
+		},
+		{
+			name:     "mixed-case https",
+			path:     "hTtPs://example.com",
+			expected: true,
+		},
+		{
+			name:     "not a url",
+			path:     "htp://example.com",
+			expected: false,
+		},
+		{
+			name:     "local file path",
+			path:     "/path/to/file",
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, isURL(tc.path))
+		})
+	}
+}
+
 func TestExpand(t *testing.T) {
 	t.Setenv("TEST_VAR", "test_value")
 	t.Setenv("EMPTY_VAR", "")

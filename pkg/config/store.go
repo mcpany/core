@@ -314,5 +314,6 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 }
 
 func isURL(path string) bool {
-	return strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://")
+	lowerPath := strings.ToLower(path)
+	return strings.HasPrefix(lowerPath, "http://") || strings.HasPrefix(lowerPath, "https://")
 }
