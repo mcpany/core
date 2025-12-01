@@ -17,12 +17,16 @@
 package auth
 
 import (
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/oauth2"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -31,6 +35,40 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 		auth, err := NewUpstreamAuthenticator(nil)
 		assert.NoError(t, err)
 		assert.Nil(t, auth)
+	})
+
+	t.Run("OAuth2", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(oauth2.Token{
+				AccessToken: "test-token",
+				TokenType:   "Bearer",
+				Expiry:      time.Now().Add(time.Hour),
+			})
+		}))
+		defer ts.Close()
+
+		clientID := (&configv1.SecretValue_builder{
+			PlainText: proto.String("id"),
+		}).Build()
+		clientSecret := (&configv1.SecretValue_builder{
+			PlainText: proto.String("secret"),
+		}).Build()
+		config := (&configv1.UpstreamAuthentication_builder{
+			Oauth2: (&configv1.UpstreamOAuth2Auth_builder{
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
+				TokenUrl:     proto.String(ts.URL),
+			}).Build(),
+		}).Build()
+		auth, err := NewUpstreamAuthenticator(config)
+		require.NoError(t, err)
+		require.NotNil(t, auth)
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		err = auth.Authenticate(req)
+		assert.NoError(t, err)
+		assert.Equal(t, "Bearer test-token", req.Header.Get("Authorization"))
 	})
 
 	t.Run("APIKey", func(t *testing.T) {
@@ -207,6 +245,51 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 			auth, err := NewUpstreamAuthenticator(config)
 			assert.NoError(t, err)
 			assert.Nil(t, auth)
+		})
+
+		t.Run("OAuth2_MissingClientID", func(t *testing.T) {
+			clientSecret := (&configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}).Build()
+			config := (&configv1.UpstreamAuthentication_builder{
+				Oauth2: (&configv1.UpstreamOAuth2Auth_builder{
+					ClientSecret: clientSecret,
+					TokenUrl:     proto.String("http://token.url"),
+				}).Build(),
+			}).Build()
+			_, err := NewUpstreamAuthenticator(config)
+			assert.ErrorContains(t, err, "OAuth2 authentication requires a client ID")
+		})
+
+		t.Run("OAuth2_MissingClientSecret", func(t *testing.T) {
+			clientID := (&configv1.SecretValue_builder{
+				PlainText: proto.String("id"),
+			}).Build()
+			config := (&configv1.UpstreamAuthentication_builder{
+				Oauth2: (&configv1.UpstreamOAuth2Auth_builder{
+					ClientId: clientID,
+					TokenUrl: proto.String("http://token.url"),
+				}).Build(),
+			}).Build()
+			_, err := NewUpstreamAuthenticator(config)
+			assert.ErrorContains(t, err, "OAuth2 authentication requires a client secret")
+		})
+
+		t.Run("OAuth2_MissingTokenURL", func(t *testing.T) {
+			clientID := (&configv1.SecretValue_builder{
+				PlainText: proto.String("id"),
+			}).Build()
+			clientSecret := (&configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}).Build()
+			config := (&configv1.UpstreamAuthentication_builder{
+				Oauth2: (&configv1.UpstreamOAuth2Auth_builder{
+					ClientId:     clientID,
+					ClientSecret: clientSecret,
+				}).Build(),
+			}).Build()
+			_, err := NewUpstreamAuthenticator(config)
+			assert.ErrorContains(t, err, "OAuth2 authentication requires a token URL")
 		})
 	})
 }
