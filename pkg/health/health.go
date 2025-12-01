@@ -28,6 +28,11 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
+	"bytes"
+	"io"
+	"strings"
+
+	"github.com/mcpany/core/pkg/command"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -159,7 +164,34 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 			if c.GetHealthCheck() == nil {
 				return nil
 			}
-			// NOTE: StdioHealthCheck is not implemented yet.
+
+			healthCheck := c.GetHealthCheck()
+			executor := command.NewExecutor(c.GetContainerEnvironment())
+			var args []string
+			if healthCheck.GetMethod() != "" {
+				args = append(args, healthCheck.GetMethod())
+			}
+			if healthCheck.GetPrompt() != "" {
+				args = append(args, healthCheck.GetPrompt())
+			}
+
+			stdout, _, exitCodeChan, err := executor.Execute(ctx, c.GetCommand(), args, c.GetWorkingDirectory(), nil)
+			if err != nil {
+				return fmt.Errorf("failed to execute health check command: %w", err)
+			}
+
+			var stdoutBuf bytes.Buffer
+			io.Copy(&stdoutBuf, stdout)
+			exitCode := <-exitCodeChan
+
+			if exitCode != 0 {
+				return fmt.Errorf("health check command failed with exit code: %d", exitCode)
+			}
+
+			if healthCheck.GetExpectedResponseContains() != "" && !strings.Contains(stdoutBuf.String(), healthCheck.GetExpectedResponseContains()) {
+				return fmt.Errorf("health check response did not contain expected string: %s", healthCheck.GetExpectedResponseContains())
+			}
+
 			return nil
 		},
 	}
