@@ -62,6 +62,10 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 	githubAPIURL = server.URL
 	githubRawContentURL = server.URL
 
+	originalClient := httpClient
+	defer func() { httpClient = originalClient }()
+	httpClient = &http.Client{}
+
 	manager := NewUpstreamServiceManager()
 	collection := &configv1.UpstreamServiceCollection{}
 	collection.SetName("github-dir")
