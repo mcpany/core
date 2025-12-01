@@ -22,6 +22,9 @@ func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientI
 		b := newBackoff(ctx, retryConfig)
 		var err error
 		for {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			err = invoker(ctx, method, req, reply, cc, opts...)
 			if !isRetryable(err) {
 				return err
@@ -33,7 +36,14 @@ func UnaryClientInterceptor(retryConfig *configv1.RetryConfig) grpc.UnaryClientI
 			}
 
 			slog.Warn("retrying call", "method", method, "error", err, "next_backoff", nextBackOff)
-			time.Sleep(nextBackOff)
+
+			timer := time.NewTimer(nextBackOff)
+			select {
+			case <-ctx.Done():
+				timer.Stop()
+				return ctx.Err()
+			case <-timer.C:
+			}
 		}
 	}
 }

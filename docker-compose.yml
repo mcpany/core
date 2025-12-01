@@ -64,7 +64,7 @@ services:
       - mcpany-net
 
   redis:
-    image: redis:latest
+    image: mirror.gcr.io/library/redis:latest
     ports:
       - "6379:6379"
     networks:

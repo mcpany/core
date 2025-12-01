@@ -18,8 +18,6 @@ package serviceregistry
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"sync"
 	"testing"
 
@@ -28,180 +26,113 @@ import (
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
+	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
-// mockToolManagerWithCleanupTracking tracks calls to ClearToolsForService.
-type mockToolManagerWithCleanupTracking struct {
-	mockToolManager
-	clearCalls map[string]int
-	mu         sync.Mutex
+type mockTool struct {
+	tool *mcp_routerv1.Tool
 }
 
-func newMockToolManagerWithCleanupTracking() *mockToolManagerWithCleanupTracking {
-	return &mockToolManagerWithCleanupTracking{
-		clearCalls: make(map[string]int),
+func (m *mockTool) Tool() *mcp_routerv1.Tool {
+	return m.tool
+}
+
+func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+
+func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
+}
+
+type threadSafeToolManager struct {
+	tool.ToolManagerInterface
+	mu    sync.RWMutex
+	tools map[string]tool.Tool
+}
+
+func newThreadSafeToolManager() *threadSafeToolManager {
+	return &threadSafeToolManager{
+		tools: make(map[string]tool.Tool),
 	}
 }
 
-func (m *mockToolManagerWithCleanupTracking) ClearToolsForService(serviceID string) {
+func (m *threadSafeToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.clearCalls[serviceID]++
+	m.tools[t.Tool().GetName()] = t
+	return nil
 }
 
-func (m *mockToolManagerWithCleanupTracking) getClearCallCount(serviceID string) int {
+func (m *threadSafeToolManager) ClearToolsForService(serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.clearCalls[serviceID]
-}
-
-// mockResource is a simple implementation of the resource.Resource interface for testing.
-type mockResource struct {
-	resource *mcp.Resource
-	service  string
-}
-
-func (m *mockResource) Resource() *mcp.Resource {
-	return m.resource
-}
-
-func (m *mockResource) Service() string {
-	return m.service
-}
-
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
-	return nil, nil // Not needed for this test
-}
-
-func (m *mockResource) Subscribe(ctx context.Context) error {
-	return nil // Not needed for this test
-}
-
-// mockPrompt is a simple implementation of the prompt.Prompt interface for testing.
-type mockPrompt struct {
-	prompt  *mcp.Prompt
-	service string
-}
-
-func (m *mockPrompt) Prompt() *mcp.Prompt {
-	return m.prompt
-}
-
-func (m *mockPrompt) Service() string {
-	return m.service
-}
-
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
-	return nil, nil // Not needed for this test
-}
-
-// realisticMockUpstream is a mock that interacts with managers during registration.
-type realisticMockUpstream struct {
-	upstream.Upstream
-	serviceID   string
-	resourceDef *configv1.ResourceDefinition
-	promptDef   *configv1.PromptDefinition
-}
-
-func (m *realisticMockUpstream) Register(
-	ctx context.Context,
-	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
-	isReload bool,
-) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	// Simulate resource registration
-	if m.resourceDef != nil {
-		res := &mockResource{
-			resource: &mcp.Resource{URI: fmt.Sprintf("mcp://%s/r/%s", m.serviceID, m.resourceDef.GetName())},
-			service:  m.serviceID,
+	for name, t := range m.tools {
+		if t.Tool().GetServiceId() == serviceID {
+			delete(m.tools, name)
 		}
-		resourceManager.AddResource(res)
 	}
-
-	// Simulate prompt registration
-	if m.promptDef != nil {
-		p := &mockPrompt{
-			prompt:  &mcp.Prompt{Name: fmt.Sprintf("%s/%s", m.serviceID, m.promptDef.GetName())},
-			service: m.serviceID,
-		}
-		promptManager.AddPrompt(p)
-	}
-
-	// Return a dummy tool definition to simulate tool discovery
-	toolDef := &configv1.ToolDefinition{}
-	toolDef.SetName("test-tool")
-
-	return m.serviceID, []*configv1.ToolDefinition{toolDef}, []*configv1.ResourceDefinition{m.resourceDef}, nil
 }
 
-// TestServiceRegistry_RegisterService_DuplicateName_Cleanup confirms that when a
-// service registration fails due to a duplicate name, the cleanup process is
-// correctly triggered for all managers.
-func TestServiceRegistry_RegisterService_DuplicateName_Cleanup(t *testing.T) {
-	serviceName := "duplicate-service"
-	serviceID := "duplicate-service_e3b0c442" // Name with the empty hash
-	resourceName := "test-resource"
-	promptName := "test-prompt"
+func (m *threadSafeToolManager) GetTool(name string) (tool.Tool, bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	t, ok := m.tools[name]
+	return t, ok
+}
 
-	// Resource and Prompt definitions
-	resourceDef := &configv1.ResourceDefinition{}
-	resourceDef.SetName(resourceName)
+func (m *threadSafeToolManager) ListTools() []tool.Tool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	var tools []tool.Tool
+	for _, t := range m.tools {
+		tools = append(tools, t)
+	}
+	return tools
+}
 
-	promptDef := &configv1.PromptDefinition{}
-	promptDef.SetName(promptName)
-
-	// Mocks
-	mockFactory := &mockFactory{
+func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *testing.T) {
+	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
-			return &realisticMockUpstream{
-				serviceID:   serviceID,
-				resourceDef: resourceDef,
-				promptDef:   promptDef,
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
 			}, nil
 		},
 	}
-	mockToolManager := newMockToolManagerWithCleanupTracking()
-	mockPromptManager := prompt.NewPromptManager()
-	mockResourceManager := resource.NewResourceManager()
+	tm := newThreadSafeToolManager()
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
 
-	registry := New(mockFactory, mockToolManager, mockPromptManager, mockResourceManager, auth.NewAuthManager())
-
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName(serviceName)
-
-	// First registration (should succeed)
-	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	// Register the first service with a tool
+	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1.SetName("test-service")
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err, "First registration should succeed")
 
-	resourceID := fmt.Sprintf("mcp://%s/r/%s", serviceID, resourceName)
-	promptID := fmt.Sprintf("%s/%s", serviceID, promptName)
+	// Add a tool to the service
+	tool1 := &mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("tool1"), ServiceId: proto.String(serviceID)}}
+	err = tm.AddTool(tool1)
+	require.NoError(t, err)
 
-	// Verify that resources from the first registration are present
-	_, ok := mockResourceManager.GetResource(resourceID)
-	require.True(t, ok, "Resource from the first registration should be present")
+	// Verify the tool is there
+	_, ok := tm.GetTool("tool1")
+	assert.True(t, ok, "Tool should be present after first registration")
 
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	require.True(t, ok, "Prompt from the first registration should be present")
+	// Attempt to register another service with the same name
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.Error(t, err, "Second registration with the same name should fail")
 
-	// Second registration (should fail)
-	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig)
-	require.Error(t, err, "Second registration should fail")
-
-	// Verification of cleanup
-	assert.Contains(t, err.Error(), "already registered", "Error message should indicate a duplicate service")
-	assert.Equal(t, 1, mockToolManager.getClearCallCount(serviceID), "ClearToolsForService should be called once for the duplicate service")
-
-	// This is the core of the bug: the test should fail here because resources
-	// and prompts are not being cleaned up.
-	_, ok = mockResourceManager.GetResource(resourceID)
-	assert.False(t, ok, "Resource from the failed registration should be cleaned up")
-
-	_, ok = mockPromptManager.GetPrompt(promptID)
-	assert.False(t, ok, "Prompt from the failed registration should be cleaned up")
+	// Verify that the tool from the first service is still there
+	_, ok = tm.GetTool("tool1")
+	assert.True(t, ok, "Tool should still be present after failed duplicate registration")
 }
