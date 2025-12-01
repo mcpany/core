@@ -2051,7 +2051,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Make a request with the correct API key
 	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
 	require.NoError(t, err)
-	req.Header.Set("X-API-Key", "test-api-key")
+	req.Header.Set("Authorization", "Bearer test-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -2059,7 +2059,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Make a request with an incorrect API key
 	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
 	require.NoError(t, err)
-	req.Header.Set("X-API-Key", "incorrect-api-key")
+	req.Header.Set("Authorization", "Bearer incorrect-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)

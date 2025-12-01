@@ -233,7 +233,7 @@ MCP Any supports a variety of advanced configuration options, including:
   ```
 
 - **Resilience**: Configure retries for a gRPC service.
-- **Server Authentication**: Secure the MCP server with an API key.
+- **Server Authentication**: Secure the MCP server with an API key. When an `api_key` is set in the `global_settings`, all incoming requests must include a valid `Authorization: Bearer <api_key>` header.
 
   ```yaml
   global_settings:
@@ -262,10 +262,11 @@ For hands-on examples of how to use `mcpany` with different upstream service typ
 
 ### Listing Tools
 
-To see the list of all registered tools, you can send a `tools/list` request.
+To see the list of all registered tools, you can send a `tools/list` request. If you have configured an API key, you must include it in the `Authorization` header.
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
+  -H "Authorization: Bearer my-secret-key" \
   -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' \
   http://localhost:50050
 ```
@@ -276,6 +277,7 @@ To execute a tool, send a `tools/call` request with the tool's name and argument
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
+  -H "Authorization: Bearer my-secret-key" \
   -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service/-/get_user", "arguments": {"userId": "123"}}, "id": 2}' \
   http://localhost:50050
 ```

@@ -20,7 +20,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"crypto/subtle"
 	"io"
 	"net"
 	"net/http"
@@ -275,7 +274,6 @@ func (a *Application) Run(
 		}
 	})
 	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
-	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
 
 	if stdio {
 		return a.runStdioModeFunc(ctx, mcpSrv)
@@ -470,17 +468,7 @@ func (a *Application) runServerMode(
 	}, nil)
 
 	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if apiKey != "" {
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
-					http.Error(w, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
+	authMiddleware := middleware.APIKeyAuth(apiKey)
 
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
