@@ -85,7 +85,7 @@ func TestToolListFiltering(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -152,7 +152,7 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -239,7 +239,7 @@ func TestServer_CallTool(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -360,7 +360,7 @@ func TestServer_Prompts(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a test prompt
@@ -438,7 +438,7 @@ func TestServer_Resources(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a test resource
@@ -495,7 +495,7 @@ func TestServer_Getters(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	assert.NotNil(t, server.AuthManager())
@@ -571,7 +571,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	server.AddServiceInfo("test-service", &tool.ServiceInfo{})
@@ -634,7 +634,7 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	require.NoError(t, err)
 
 	// Now create the server. It will receive the toolManager with the pre-existing tool.
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	// Create client-server connection
@@ -676,7 +676,7 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	// Create a client and a server, but don't add any tools to the underlying mcp.Server.
@@ -728,7 +728,7 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
