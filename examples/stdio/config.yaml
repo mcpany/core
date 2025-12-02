@@ -1,10 +1,9 @@
+# examples/stdio/config.yaml
 upstreamServices:
-  - name: "stdio-echo"
+  - name: "my-stdio-service"
     stdioService:
-      command: "./examples/stdio/echo.sh"
+      # The command to execute. The path is relative to the MCP server's working directory.
+      command: "./examples/stdio/my-tool-bin"
       calls:
-        - name: "echo"
-          description: "Echo a message"
-          parameterMappings:
-            - inputParameterName: "message"
-              targetParameterName: "message"
+        - operationId: "greet"
+          description: "A simple tool that greets the user."
