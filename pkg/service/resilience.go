@@ -62,6 +62,9 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 		Stop:                backoff.Stop,
 		Clock:               backoff.SystemClock,
 	}
+	if b.InitialInterval == 0 {
+		b.InitialInterval = 100 * time.Millisecond
+	}
 	b.Reset()
 	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retryConfig.GetNumberOfRetries())), ctx)
 }
