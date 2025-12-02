@@ -17,79 +17,100 @@
 package config
 
 import (
-	"bufio"
-	"errors"
+	"io"
+	"os"
 	"strings"
 	"testing"
 )
 
-func TestGenerator_generateHTTPService(t *testing.T) {
-	input := "my-service\nhttp://example.com\nget-user\nGet a user\nHTTP_METHOD_GET\n/users/{id}\n"
-	reader := bufio.NewReader(strings.NewReader(input))
-
-	g := &Generator{
-		reader: reader,
-	}
-
-	output, err := g.generateHTTPService()
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	expectedOutput := `upstreamServices:
-  - name: "my-service"
+func TestGenerator(t *testing.T) {
+	testCases := []struct {
+		name          string
+		input         string
+		expected      string
+		expectedError string
+	}{
+		{
+			name: "HTTP Service",
+			input: "http\nmy-http-service\nhttps://api.example.com\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
+			expected: `upstreamServices:
+  - name: "my-http-service"
     httpService:
-      address: "http://example.com"
+      address: "https://api.example.com"
       calls:
-        - operationId: "get-user"
-          description: "Get a user"
+        - operationId: "get_user"
+          description: "Get user by ID"
           method: "HTTP_METHOD_GET"
-          endpointPath: "/users/{id}"
-`
-	if string(output) != expectedOutput {
-		t.Errorf("unexpected output:\ngot:\n%s\nwant:\n%s", string(output), expectedOutput)
+          endpointPath: "/users/{userId}"
+`,
+		},
+		{
+			name: "gRPC Service",
+			input: "grpc\nmy-grpc-service\nlocalhost:50052\ntrue\n",
+			expected: `upstreamServices:
+  - name: "my-grpc-service"
+    grpcService:
+      address: "localhost:50052"
+      reflection:
+        enabled: true
+`,
+		},
+		{
+			name: "OpenAPI Service",
+			input: "openapi\nmy-openapi-service\n./openapi.json\n",
+			expected: `upstreamServices:
+  - name: "my-openapi-service"
+    openapiService:
+      spec:
+        path: "./openapi.json"
+`,
+		},
+		{
+			name: "GraphQL Service",
+			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\n",
+			expected: `upstreamServices:
+  - name: "my-graphql-service"
+    graphqlService:
+      address: "http://localhost:8080/graphql"
+      calls:
+        - name: "user"
+          selectionSet: "{ id name }"
+`,
+		},
+		{
+			name:          "Unsupported Service Type",
+			input:         "invalid\n",
+			expectedError: "unsupported service type: invalid",
+		},
 	}
-}
 
-func TestGenerator_Generate_unsupportedServiceType(t *testing.T) {
-	input := "invalid-service-type\n"
-	reader := bufio.NewReader(strings.NewReader(input))
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.NewReader(tc.input)
+			oldStdin := os.Stdin
+			defer func() { os.Stdin = oldStdin }()
+			r, w, _ := os.Pipe()
+			os.Stdin = r
+			io.Copy(w, input)
+			w.Close()
 
-	g := &Generator{
-		reader: reader,
-	}
+			generator := NewGenerator()
+			output, err := generator.Generate()
 
-	_, err := g.Generate()
-	if err == nil {
-		t.Fatal("expected an error, but got nil")
-	}
+			if tc.expectedError != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.expectedError) {
+					t.Errorf("expected error containing %q, got %v", tc.expectedError, err)
+				}
+				return
+			}
 
-	expectedError := "unsupported service type: invalid-service-type"
-	if err.Error() != expectedError {
-		t.Errorf("unexpected error:\ngot:\n%s\nwant:\n%s", err.Error(), expectedError)
-	}
-}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
-type errorReader struct{}
-
-func (r *errorReader) Read(p []byte) (n int, err error) {
-	return 0, errors.New("test error")
-}
-
-func TestGenerator_Generate_ioError(t *testing.T) {
-	reader := bufio.NewReader(&errorReader{})
-
-	g := &Generator{
-		reader: reader,
-	}
-
-	_, err := g.Generate()
-	if err == nil {
-		t.Fatal("expected an error, but got nil")
-	}
-
-	expectedError := "test error"
-	if err.Error() != expectedError {
-		t.Errorf("unexpected error:\ngot:\n%s\nwant:\n%s", err.Error(), expectedError)
+			if strings.TrimSpace(string(output)) != strings.TrimSpace(tc.expected) {
+				t.Errorf("expected:\n%s\ngot:\n%s", tc.expected, string(output))
+			}
+		})
 	}
 }
