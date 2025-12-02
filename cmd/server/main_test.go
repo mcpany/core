@@ -239,7 +239,7 @@ func TestGracefulShutdown(t *testing.T) {
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
 		port := findFreePort(t)
 		cmd := newRootCmd()
-		cmd.SetArgs([]string{"--mcp-listen-address", fmt.Sprintf("localhost:%d", port)})
+		cmd.SetArgs([]string{"--mcp-listen-address", fmt.Sprintf("localhost:%d", port), "--config-path", ""})
 		go func() {
 			err := cmd.Execute()
 			assert.NoError(t, err)
