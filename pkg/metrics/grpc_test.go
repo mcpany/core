@@ -28,6 +28,11 @@ import (
 )
 
 func TestGrpcStatsHandler(t *testing.T) {
+	// Initialize the metrics system
+	if err := Initialize(); err != nil {
+		t.Fatalf("failed to initialize metrics: %v", err)
+	}
+
 	h := &GrpcStatsHandler{}
 
 	// Test HandleConn

@@ -294,9 +294,11 @@ func (a *Application) Run(
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
+	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 	store := config.NewFileStore(fs, configPaths)
 	cfg, err := config.LoadServices(store, "server")
 	if err != nil {
+		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
 

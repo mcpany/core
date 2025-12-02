@@ -23,9 +23,12 @@ import (
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
+	"time"
+
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -343,12 +346,24 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
+	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
 	return s.toolManager.ListTools()
 }
 
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
-	return s.toolManager.ExecuteTool(ctx, req)
+	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
+	metrics.IncrCounter([]string{"tool", req.ToolName, "call", "total"}, 1)
+	startTime := time.Now()
+	defer metrics.MeasureSince([]string{"tool", req.ToolName, "call", "latency"}, startTime)
+	defer metrics.MeasureSince([]string{"tools", "call", "latency"}, startTime)
+
+	result, err := s.toolManager.ExecuteTool(ctx, req)
+	if err != nil {
+		metrics.IncrCounter([]string{"tools", "call", "errors"}, 1)
+		metrics.IncrCounter([]string{"tool", req.ToolName, "call", "errors"}, 1)
+	}
+	return result, err
 }
 
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
