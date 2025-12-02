@@ -123,8 +123,10 @@ func newRootCmd() *cobra.Command {
 			}
 
 			shutdownTimeout := cfg.ShutdownTimeout()
+			configGitURL := cfg.ConfigGitURL()
+			configGitPath := cfg.ConfigGitPath()
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, configGitURL, configGitPath, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

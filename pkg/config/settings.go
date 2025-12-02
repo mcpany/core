@@ -35,6 +35,8 @@ type Settings struct {
 	grpcPort        string
 	stdio           bool
 	configPaths     []string
+	configGitURL    string
+	configGitPath   string
 	debug           bool
 	logLevel        string
 	logFile         string
@@ -66,6 +68,8 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.grpcPort = viper.GetString("grpc-port")
 	s.stdio = viper.GetBool("stdio")
 	s.configPaths = viper.GetStringSlice("config-path")
+	s.configGitURL = viper.GetString("config-git-url")
+	s.configGitPath = viper.GetString("config-git-path")
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
@@ -112,6 +116,16 @@ func (s *Settings) Stdio() bool {
 // ConfigPaths returns the paths to the configuration files.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
+}
+
+// ConfigGitURL returns the URL of the Git repository for configuration.
+func (s *Settings) ConfigGitURL() string {
+	return s.configGitURL
+}
+
+// ConfigGitPath returns the path to the configuration file within the Git repository.
+func (s *Settings) ConfigGitPath() string {
+	return s.configGitPath
 }
 
 // IsDebug returns whether debug mode is enabled.

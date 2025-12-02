@@ -161,6 +161,11 @@ upstream_services: {
 		assert.Contains(t, err.Error(), "ssrf attempt blocked")
 	})
 
+	t.Run("Load from Git repository", func(t *testing.T) {
+		_, err := LoadFromGit("https://github.com/git-fixtures/basic.git", ".git/config")
+		require.NoError(t, err)
+	})
+
 	t.Run("unknown binary type", func(t *testing.T) {
 		filePath := createTempConfigFile(t, "")
 		fs := afero.NewOsFs()

@@ -42,6 +42,16 @@ func BindFlags(cmd *cobra.Command) {
 		fmt.Printf("Error binding config-path flag: %v\n", err)
 		os.Exit(1)
 	}
+	cmd.PersistentFlags().String("config-git-url", "", "URL of the Git repository to load configuration from. Env: MCPANY_CONFIG_GIT_URL")
+	cmd.PersistentFlags().String("config-git-path", "", "Path to the configuration file within the Git repository. Env: MCPANY_CONFIG_GIT_PATH")
+	if err := viper.BindPFlag("config-git-url", cmd.PersistentFlags().Lookup("config-git-url")); err != nil {
+		fmt.Printf("Error binding config-git-url flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("config-git-path", cmd.PersistentFlags().Lookup("config-git-path")); err != nil {
+		fmt.Printf("Error binding config-git-path flag: %v\n", err)
+		os.Exit(1)
+	}
 
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {

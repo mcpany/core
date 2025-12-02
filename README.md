@@ -286,6 +286,20 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 **Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
 
+### Loading Configurations from Git Repositories
+
+In addition to loading configuration files from the local filesystem and remote URLs, MCP Any can also load configurations from Git repositories. This allows you to easily share and reuse configurations without having to manually copy and paste files.
+
+To load a configuration from a Git repository, use the `--config-git-url` and `--config-git-path` flags. The `--config-git-url` flag specifies the URL of the Git repository, and the `--config-git-path` flag specifies the path to the configuration file within the repository.
+
+Here is an example of how to load a configuration from a Git repository:
+
+```bash
+make run ARGS="--config-git-url https://github.com/mcpany/examples.git --config-git-path basic-http-service/config.yaml"
+```
+
+This command will clone the `mcpany/examples` repository, load the `config.yaml` file from the `basic-http-service` directory, and then start the server with the loaded configuration.
+
 ## Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.

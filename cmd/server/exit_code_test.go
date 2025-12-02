@@ -40,6 +40,8 @@ func (m *mockFailingRunner) Run(
 	jsonrpcPort string,
 	registrationPort string,
 	configPaths []string,
+	configGitURL string,
+	configGitPath string,
 	shutdownTimeout time.Duration,
 ) error {
 	if shutdownTimeout != 10*time.Second {

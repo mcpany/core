@@ -42,15 +42,19 @@ type mockRunner struct {
 	capturedMcpListenAddress string
 	capturedGrpcPort        string
 	capturedConfigPaths     []string
+	capturedConfigGitURL    string
+	capturedConfigGitPath   string
 	capturedShutdownTimeout time.Duration
 }
 
-func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, configGitURL, configGitPath string, shutdownTimeout time.Duration) error {
 	m.called = true
 	m.capturedStdio = stdio
 	m.capturedMcpListenAddress = mcpListenAddress
 	m.capturedGrpcPort = grpcPort
 	m.capturedConfigPaths = configPaths
+	m.capturedConfigGitURL = configGitURL
+	m.capturedConfigGitPath = configGitPath
 	m.capturedShutdownTimeout = shutdownTimeout
 	return nil
 }
@@ -133,6 +137,8 @@ func TestRootCmd(t *testing.T) {
 		"--mcp-listen-address", "8081",
 		"--grpc-port", "8082",
 		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
+		"--config-git-url", "https://github.com/mcpany/examples.git",
+		"--config-git-path", "basic-http-service/config.yaml",
 		"--shutdown-timeout", "10s",
 	})
 	rootCmd.Execute()
@@ -142,6 +148,8 @@ func TestRootCmd(t *testing.T) {
 	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
 	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{tmpFilePath, tmpDir}, mock.capturedConfigPaths, "config-path should be captured")
+	assert.Equal(t, "https://github.com/mcpany/examples.git", mock.capturedConfigGitURL, "config-git-url should be captured")
+	assert.Equal(t, "basic-http-service/config.yaml", mock.capturedConfigGitPath, "config-git-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
 

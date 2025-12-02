@@ -21,9 +21,35 @@ import (
 	"fmt"
 	"strings"
 
+	"os"
+	"path/filepath"
+
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 )
+
+// LoadFromGit loads a configuration from a Git repository.
+func LoadFromGit(gitURL, filePath string) (*configv1.McpAnyServerConfig, error) {
+	log := logging.GetLogger().With("component", "configLoader")
+
+	// Clone the Git repository.
+	tempDir, err := CloneGitRepository(gitURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to clone Git repository: %w", err)
+	}
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			log.Error("failed to remove temporary directory", "path", tempDir, "error", err)
+		}
+	}()
+
+	// Create a new store for the cloned repository.
+	store := NewFileStore(afero.NewOsFs(), []string{filepath.Join(tempDir, filePath)})
+
+	// Load the configuration from the store.
+	return LoadServices(store, "server")
+}
 
 // LoadServices loads, validates, and processes the MCP Any server configuration
 // from a given store. It orchestrates the reading of the configuration,

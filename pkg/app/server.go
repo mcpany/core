@@ -79,6 +79,7 @@ type Runner interface {
 		stdio bool,
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
+		configGitURL, configGitPath string,
 		shutdownTimeout time.Duration,
 	) error
 	ReloadConfig(fs afero.Fs, configPaths []string) error
@@ -138,6 +139,7 @@ func (a *Application) Run(
 	stdio bool,
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
+	configGitURL, configGitPath string,
 	shutdownTimeout time.Duration,
 ) error {
 	log := logging.GetLogger()
@@ -150,7 +152,13 @@ func (a *Application) Run(
 
 	// Load initial services from config files
 	var cfg *config_v1.McpAnyServerConfig
-	if len(configPaths) > 0 {
+	if configGitURL != "" {
+		var err error
+		cfg, err = config.LoadFromGit(configGitURL, configGitPath)
+		if err != nil {
+			return fmt.Errorf("failed to load services from Git repository: %w", err)
+		}
+	} else if len(configPaths) > 0 {
 		store := config.NewFileStore(fs, configPaths)
 		var err error
 		cfg, err = config.LoadServices(store, "server")
