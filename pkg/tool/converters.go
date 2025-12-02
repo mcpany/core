@@ -215,7 +215,11 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to sanitize tool name: %w", err)
 	}
-	toolID := pbTool.GetServiceId() + "." + sanitizedToolName
+	sanitizedServiceID, err := util.SanitizeToolName(pbTool.GetServiceId())
+	if err != nil {
+		return nil, fmt.Errorf("failed to sanitize service id: %w", err)
+	}
+	toolID := sanitizedServiceID + "." + sanitizedToolName
 
 	mcpTool := &mcp.Tool{
 		Name:        toolID,
