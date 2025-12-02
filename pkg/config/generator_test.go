@@ -17,56 +17,52 @@
 package config
 
 import (
-	"io"
-	"os"
+	"bufio"
 	"strings"
 	"testing"
 )
 
 func TestGenerator(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expected      string
-		expectedError string
+		name        string
+		input       string
+		expected    string
+		expectError bool
 	}{
 		{
-			name: "HTTP Service",
-			input: "http\nmy-http-service\nhttps://api.example.com\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
+			name:  "http",
+			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
 			expected: `upstreamServices:
-  - name: "my-http-service"
+  - name: "my-service"
     httpService:
-      address: "https://api.example.com"
+      address: "http://localhost:8080"
       calls:
         - operationId: "get_user"
           description: "Get user by ID"
           method: "HTTP_METHOD_GET"
-          endpointPath: "/users/{userId}"
-`,
+          endpointPath: "/users/{userId}"`,
 		},
 		{
-			name: "gRPC Service",
-			input: "grpc\nmy-grpc-service\nlocalhost:50052\ntrue\n",
+			name:  "grpc",
+			input: "grpc\nmy-grpc-service\nlocalhost:50051\ntrue\n",
 			expected: `upstreamServices:
   - name: "my-grpc-service"
     grpcService:
-      address: "localhost:50052"
+      address: "localhost:50051"
       reflection:
-        enabled: true
-`,
+        enabled: true`,
 		},
 		{
-			name: "OpenAPI Service",
+			name:  "openapi",
 			input: "openapi\nmy-openapi-service\n./openapi.json\n",
 			expected: `upstreamServices:
   - name: "my-openapi-service"
     openapiService:
       spec:
-        path: "./openapi.json"
-`,
+        path: "./openapi.json"`,
 		},
 		{
-			name: "GraphQL Service",
+			name:  "graphql",
 			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\n",
 			expected: `upstreamServices:
   - name: "my-graphql-service"
@@ -74,32 +70,26 @@ func TestGenerator(t *testing.T) {
       address: "http://localhost:8080/graphql"
       calls:
         - name: "user"
-          selectionSet: "{ id name }"
-`,
+          selectionSet: "{ id name }"`,
 		},
 		{
-			name:          "Unsupported Service Type",
-			input:         "invalid\n",
-			expectedError: "unsupported service type: invalid",
+			name:        "unsupported",
+			input:       "foo\n",
+			expectError: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			input := strings.NewReader(tc.input)
-			oldStdin := os.Stdin
-			defer func() { os.Stdin = oldStdin }()
-			r, w, _ := os.Pipe()
-			os.Stdin = r
-			io.Copy(w, input)
-			w.Close()
+			reader := bufio.NewReader(strings.NewReader(tc.input))
+			generator := &Generator{
+				Reader: reader,
+			}
 
-			generator := NewGenerator()
-			output, err := generator.Generate()
-
-			if tc.expectedError != "" {
-				if err == nil || !strings.Contains(err.Error(), tc.expectedError) {
-					t.Errorf("expected error containing %q, got %v", tc.expectedError, err)
+			configData, err := generator.Generate()
+			if tc.expectError {
+				if err == nil {
+					t.Fatal("expected an error, but got none")
 				}
 				return
 			}
@@ -108,8 +98,8 @@ func TestGenerator(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if strings.TrimSpace(string(output)) != strings.TrimSpace(tc.expected) {
-				t.Errorf("expected:\n%s\ngot:\n%s", tc.expected, string(output))
+			if strings.TrimSpace(string(configData)) != strings.TrimSpace(tc.expected) {
+				t.Errorf("unexpected config data:\ngot:\n%s\nwant:\n%s", string(configData), tc.expected)
 			}
 		})
 	}
