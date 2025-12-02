@@ -82,5 +82,9 @@ func TestRetry(t *testing.T) {
 		err := retry.Execute(work)
 		require.Error(t, err)
 		require.Equal(t, 1, attempts)
+
+		unwrappedErr := errors.Unwrap(err)
+		require.NotNil(t, unwrappedErr)
+		require.Equal(t, "permanent error", unwrappedErr.Error())
 	})
 }
