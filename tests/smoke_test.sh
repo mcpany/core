@@ -31,6 +31,7 @@ docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 docker run -d --name "$CONTAINER_NAME" \
   -p 50050:50050 -p 50051:50051 \
   "$IMAGE_NAME" \
+  run \
   --mcp-listen-address :50050 \
   --grpc-port :50051
 
