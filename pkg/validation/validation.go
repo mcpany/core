@@ -39,6 +39,21 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
+// IsValidServiceName checks if a given string is a valid service name.
+// A valid service name must be between 1 and 64 characters long and can only
+// contain alphanumeric characters and hyphens.
+func IsValidServiceName(s string) bool {
+	if len(s) == 0 || len(s) > 64 {
+		return false
+	}
+	for _, r := range s {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' {
+			return false
+		}
+	}
+	return true
+}
+
 // IsValidURL checks if a given string is a valid URL. This function performs
 // several checks, including for length, whitespace, the presence of a scheme,
 // and host, considering special cases for schemes like "unix" or "mailto" that

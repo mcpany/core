@@ -116,6 +116,9 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 }
 
 func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
+	if !validation.IsValidServiceName(service.GetName()) {
+		return fmt.Errorf("invalid service name: %s", service.GetName())
+	}
 	if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
 		return fmt.Errorf("service has no service_config")
 	}

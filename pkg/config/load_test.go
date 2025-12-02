@@ -327,6 +327,18 @@ upstream_services: {
 			expectLoadError: true,
 		},
 		{
+			name: "service name too long",
+			textprotoContent: `
+upstream_services: {
+    name: "this-service-name-is-definitely-way-too-long-to-be-valid-and-should-cause-a-validation-error"
+    http_service: {
+        address: "http://api.example.com/v3"
+    }
+}
+`,
+			expectLoadError: true,
+		},
+		{
 			name: "duplicate service names",
 			textprotoContent: `
 upstream_services: {
