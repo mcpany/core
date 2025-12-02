@@ -208,8 +208,8 @@ func newRootCmd() *cobra.Command {
 	}
 	configCmd.AddCommand(generateCmd)
 
-	validationCmd := &cobra.Command{
-		Use:   "validation",
+	validateCmd := &cobra.Command{
+		Use:   "validate",
 		Short: "Validate the configuration file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			osFs := afero.NewOsFs()
@@ -224,7 +224,7 @@ func newRootCmd() *cobra.Command {
 			return nil
 		},
 	}
-	configCmd.AddCommand(validationCmd)
+	configCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)

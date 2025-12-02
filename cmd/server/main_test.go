@@ -308,18 +308,18 @@ invalid-yaml
 	}{
 		{
 			name:          "valid config",
-			args:          []string{"config", "validation", "--config-path", validConfigFile.Name()},
+			args:          []string{"config", "validate", "--config-path", validConfigFile.Name()},
 			expectError:   false,
 			expectedOutput: "Configuration is valid.\n",
 		},
 		{
 			name:        "invalid config",
-			args:        []string{"config", "validation", "--config-path", invalidConfigFile.Name()},
+			args:        []string{"config", "validate", "--config-path", invalidConfigFile.Name()},
 			expectError: true,
 		},
 		{
 			name:          "no config file",
-			args:          []string{"config", "validation"},
+			args:          []string{"config", "validate"},
 			expectError:   false,
 			expectedOutput: "Configuration is valid.\n",
 		},
