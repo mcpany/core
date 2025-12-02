@@ -93,6 +93,18 @@ func TestNewGitHub(t *testing.T) {
 			expectedError: true,
 			expected:      nil,
 		},
+		{
+			name:          "Valid GitHub URL without tree/blob",
+			url:           "https://github.com/mcpany/core",
+			expectedError: false,
+			expected: &GitHub{
+				Owner:   "mcpany",
+				Repo:    "core",
+				Ref:     "main",
+				Path:    "",
+				URLType: "tree",
+			},
+		},
 	}
 
 	for _, tc := range testCases {
