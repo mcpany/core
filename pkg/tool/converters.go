@@ -211,6 +211,10 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
 	}
 
+	if pbTool.GetName() == "" {
+		return nil, fmt.Errorf("tool name cannot be empty")
+	}
+
 	sanitizedToolName, err := util.SanitizeToolName(pbTool.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("failed to sanitize tool name: %w", err)

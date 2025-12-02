@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sync"
 	"testing"
 	"time"
 
@@ -711,4 +712,89 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
 	assert.Len(t, listResult.Tools, 1)
+}
+
+func TestToolListFilteringConversionError(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewBusProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	require.NoError(t, err)
+
+	tm := server.ToolManager().(*tool.ToolManager)
+
+	// Add a tool that is initially valid but becomes invalid after being added.
+	chameleon := &chameleonTool{
+		tool: &v1.Tool{
+			Name:      proto.String("valid-name"),
+			ServiceId: proto.String("test-service"),
+			Annotations: &v1.ToolAnnotations{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			},
+		},
+	}
+	tm.AddTool(chameleon)
+
+	// Now, make the tool invalid by setting an empty name.
+	chameleon.setName("")
+
+	// Create client-server connection
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer serverSession.Close()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer clientSession.Close()
+
+	// Test tools/list and expect an error because the chameleonTool is now invalid.
+	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	require.Error(t, err, "ListTools should fail when a tool is invalid")
+	assert.Contains(t, err.Error(), "failed to convert tool", "Error message should indicate a conversion failure")
+}
+
+// chameleonTool is a mock tool that can change its name after it's created.
+// This is useful for testing error conditions in the tool list filtering middleware.
+type chameleonTool struct {
+	mu   sync.RWMutex
+	tool *v1.Tool
+}
+
+func (m *chameleonTool) Tool() *v1.Tool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.tool
+}
+
+func (m *chameleonTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return "success", nil
+}
+
+func (m *chameleonTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
+}
+
+// setName changes the name of the tool. This is used to simulate a tool that
+// becomes invalid after it's been added to the tool manager.
+func (m *chameleonTool) setName(name string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.tool.Name = proto.String(name)
 }

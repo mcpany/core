@@ -188,8 +188,8 @@ func NewServer(
 					mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
 					if err != nil {
 						logging.GetLogger().
-							Error("Failed to convert tool to MCP format, skipping", "toolName", toolInstance.Tool().GetName(), "error", err)
-						continue
+						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)
+					return nil, fmt.Errorf("failed to convert tool %q to MCP format: %w", toolInstance.Tool().GetName(), err)
 					}
 					refreshedTools = append(refreshedTools, mcpTool)
 				}
