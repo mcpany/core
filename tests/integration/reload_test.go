@@ -7,8 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/app"
-	"github.com/spf13/afero"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,29 +33,24 @@ upstreamServices:
 	err = os.WriteFile(configPath, []byte(initialConfig), 0644)
 	require.NoError(t, err)
 
-	// Create a new application
-	application := app.NewApplication()
-
-	// Create a context that can be canceled
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// Start the application in a separate goroutine
-	go func() {
-		// This Run call will block until the context is canceled.
-		_ = application.Run(ctx, afero.NewOsFs(), false, "0", "0", []string{configPath}, 5*time.Second)
+	// Start the MCPANY server
+	mcpanyTestServerInfo := StartMCPANYServerWithConfig(t, "reload-test", initialConfig)
+	defer func() {
+		t.Logf("Server logs:\n%s", mcpanyTestServerInfo.Process.StderrString())
+		mcpanyTestServerInfo.CleanupFunc()
 	}()
 
-	// Wait for the server to start and load the initial configuration
-	require.Eventually(t, func() bool {
-		tools := application.ToolManager.ListTools()
-		return len(tools) == 1
-	}, 5*time.Second, 100*time.Millisecond, "server did not load initial tool in time")
-
 	// Check that the initial tool is present
-	tools := application.ToolManager.ListTools()
-	require.Len(t, tools, 1)
-	require.Equal(t, "my-http-service.get_user", tools[0].Tool().GetName())
+	require.Eventually(t, func() bool {
+		tools, err := listTools(mcpanyTestServerInfo.HTTPEndpoint)
+		if err != nil {
+			return false
+		}
+		if len(tools) != 1 {
+			return false
+		}
+		return tools[0].Name == "my-http-service.get_user"
+	}, 10*time.Second, 500*time.Millisecond, "Initial tool not found")
 
 	// Create a new configuration file
 	newConfig := `
@@ -77,20 +71,40 @@ upstreamServices:
 	err = os.WriteFile(configPath, []byte(newConfig), 0644)
 	require.NoError(t, err)
 
-	// Reload the configuration
-	err = application.ReloadConfig(afero.NewOsFs(), []string{configPath})
-	require.NoError(t, err)
-
 	// Check that the new tool is present
+	var tools []*mcp.Tool
 	require.Eventually(t, func() bool {
-		tools = application.ToolManager.ListTools()
+		var err error
+		tools, err = listTools(mcpanyTestServerInfo.HTTPEndpoint)
+		if err != nil {
+			return false
+		}
 		return len(tools) == 2
-	}, 2*time.Second, 100*time.Millisecond, "server did not reload to two tools")
+	}, 10*time.Second, 500*time.Millisecond, "Reloaded tools not found")
 
-	require.Len(t, tools, 2)
+	toolNames := []string{tools[0].Name, tools[1].Name}
+	require.ElementsMatch(t, toolNames, []string{"my-http-service.get_user", "my-http-service.create_user"})
+}
 
-	// Note: The order of tools is not guaranteed, so we check for presence instead of order.
-	toolNames := []string{tools[0].Tool().GetName(), tools[1].Tool().GetName()}
-	require.Contains(t, toolNames, "my-http-service.get_user")
-	require.Contains(t, toolNames, "my-http-service.create_user")
+func listTools(endpoint string) ([]*mcp.Tool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
+
+	transport := &mcp.StreamableClientTransport{
+		Endpoint: endpoint,
+	}
+
+	session, err := client.Connect(ctx, transport, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer session.Close()
+
+	tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
+	if err != nil {
+		return nil, err
+	}
+	return tools.Tools, nil
 }
