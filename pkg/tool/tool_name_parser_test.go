@@ -44,10 +44,10 @@ func TestParseToolName(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name:          "Invalid tool name - too many sections",
-			toolName:      "namespace" + consts.ToolNameServiceSeparator + "method" + consts.ToolNameServiceSeparator + "extra",
-			wantNamespace: "namespace",
-			wantMethod:    "method" + consts.ToolNameServiceSeparator + "extra",
+			name:          "Valid tool name - multiple separators",
+			toolName:      "a" + consts.ToolNameServiceSeparator + "b" + consts.ToolNameServiceSeparator + "c",
+			wantNamespace: "a" + consts.ToolNameServiceSeparator + "b",
+			wantMethod:    "c",
 			wantErr:       false,
 		},
 		{

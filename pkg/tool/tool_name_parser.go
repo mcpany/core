@@ -32,10 +32,12 @@ import (
 // It returns the namespace, the bare tool name, and an error if the tool name
 // is invalid (e.g., empty).
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
-	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
-	if !found {
-		tool = namespace
+	if lastIndex := strings.LastIndex(toolName, consts.ToolNameServiceSeparator); lastIndex != -1 {
+		namespace = toolName[:lastIndex]
+		tool = toolName[lastIndex+len(consts.ToolNameServiceSeparator):]
+	} else {
 		namespace = ""
+		tool = toolName
 	}
 
 	if strings.HasPrefix(tool, "--") {
