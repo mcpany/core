@@ -211,6 +211,7 @@ func (a *Application) Run(
 		authManager,
 		serviceRegistry,
 		busProvider,
+		config.GlobalSettings().IsDebug(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
@@ -279,6 +280,10 @@ func (a *Application) Run(
 	})
 	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
 	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
+
+	if config.GlobalSettings().IsDebug() {
+		mcpSrv.Server().AddReceivingMiddleware(middleware.DebugMiddleware())
+	}
 
 	if stdio {
 		return a.runStdioModeFunc(ctx, mcpSrv)
