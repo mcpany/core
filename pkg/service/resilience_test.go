@@ -104,3 +104,22 @@ func TestUnaryClientInterceptor_ContextCanceled(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, context.Canceled, err)
 }
+
+func TestUnaryClientInterceptor_NoBaseBackoff(t *testing.T) {
+	retries := int32(1)
+	retryConfig := &configv1.RetryConfig_builder{
+		NumberOfRetries: &retries,
+	}
+	interceptor := UnaryClientInterceptor(retryConfig.Build())
+
+	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		return status.Error(codes.Unavailable, "unavailable")
+	}
+
+	start := time.Now()
+	err := interceptor(context.Background(), "/test", nil, nil, nil, invoker)
+	elapsed := time.Since(start)
+
+	assert.Error(t, err)
+	assert.True(t, elapsed > 10*time.Millisecond, "elapsed time should be greater than 10ms")
+}
