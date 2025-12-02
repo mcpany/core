@@ -280,6 +280,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to unescape url: %w", err)
 	}
 
+	// Replace placeholders in the URL path
+	urlString = util.ReplaceURLPath(urlString, req.Arguments)
+
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
