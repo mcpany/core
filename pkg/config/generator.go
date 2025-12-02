@@ -34,7 +34,7 @@ func NewGenerator() *Generator {
 }
 
 func (g *Generator) Generate() ([]byte, error) {
-	serviceType, err := g.prompt("Enter service type (http): ")
+	serviceType, err := g.prompt("Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +42,12 @@ func (g *Generator) Generate() ([]byte, error) {
 	switch serviceType {
 	case "http":
 		return g.generateHTTPService()
+	case "grpc":
+		return g.generateGRPCService()
+	case "openapi":
+		return g.generateOpenAPIService()
+	case "graphql":
+		return g.generateGraphQLService()
 	default:
 		return nil, fmt.Errorf("unsupported service type: %s", serviceType)
 	}
