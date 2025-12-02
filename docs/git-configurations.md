@@ -10,8 +10,8 @@ When you specify a Git repository as a source for your configuration, MCP Any wi
 
 To load a configuration from a Git repository, use the `--config-git-url` and `--config-git-path` flags.
 
--   `--config-git-url`: The URL of the Git repository to clone.
--   `--config-git-path`: The path to the configuration file within the repository.
+- `--config-git-url`: The URL of the Git repository to clone.
+- `--config-git-path`: The path to the configuration file within the repository.
 
 ### Example
 
