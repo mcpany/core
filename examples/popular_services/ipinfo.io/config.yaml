@@ -16,10 +16,10 @@
 
 upstream_services:
 - name: ipinfo.io
+  upstream_authentication:
+    token: "${IPINFO_API_TOKEN}"
   http_service:
     address: "https://ipinfo.io"
-    authentication:
-      token: "${IPINFO_API_TOKEN}"
     calls:
     - endpoint_path: "/{{ip}}/json"
       schema:
