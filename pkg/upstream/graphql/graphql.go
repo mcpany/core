@@ -20,8 +20,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
+	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
@@ -115,14 +117,26 @@ func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 }
 
 type GraphQLCallable struct {
-	client *graphql.Client
-	query  string
+	client        *graphql.Client
+	query         string
+	authenticator auth.UpstreamAuthenticator
+	address       string
 }
 
 func (c *GraphQLCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
 		graphqlReq.Var(key, value)
+	}
+	if c.authenticator != nil {
+		dummyReq, err := http.NewRequest("POST", c.address, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create dummy request: %w", err)
+		}
+		if err := c.authenticator.Authenticate(dummyReq); err != nil {
+			return nil, fmt.Errorf("failed to authenticate graphql query: %w", err)
+		}
+		graphqlReq.Header = dummyReq.Header
 	}
 	var respData any
 	if err := c.client.Run(ctx, graphqlReq, &respData); err != nil {
@@ -144,9 +158,24 @@ func (g *graphqlUpstream) Register(
 		return "", nil, nil, fmt.Errorf("missing graphql service config")
 	}
 
+	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator: %w", err)
+	}
+
 	client := graphql.NewClient(graphqlConfig.GetAddress())
 
 	req := graphql.NewRequest(introspectionQuery)
+	if authenticator != nil {
+		dummyReq, err := http.NewRequest("POST", graphqlConfig.GetAddress(), nil)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("failed to create dummy request: %w", err)
+		}
+		if err := authenticator.Authenticate(dummyReq); err != nil {
+			return "", nil, nil, fmt.Errorf("failed to authenticate introspection query: %w", err)
+		}
+		req.Header = dummyReq.Header
+	}
 
 	var respData struct {
 		Schema struct {
@@ -281,7 +310,7 @@ func (g *graphqlUpstream) Register(
 
 				sb.WriteString(" }")
 
-				callable := &GraphQLCallable{client: client, query: sb.String()}
+				callable := &GraphQLCallable{client: client, query: sb.String(), authenticator: authenticator, address: graphqlConfig.GetAddress()}
 
 				t, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
 				if err != nil {
