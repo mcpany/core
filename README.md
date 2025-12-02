@@ -210,6 +210,11 @@ MCP Any supports a variety of advanced configuration options, including:
         calls:
           - name: "user"
             selectionSet: "{ id name }"
+      upstreamAuthentication:
+        apiKey:
+          headerName: "X-API-Key"
+          apiKey:
+            plainText: "my-secret-key"
   ```
 
 - **Stdio Services**: Wrap a command-line tool that communicates over stdio.
