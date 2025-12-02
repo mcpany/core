@@ -65,6 +65,35 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "cmd-svc-1": command_line_service has empty command`,
 		},
+		{
+			name: "service with multiple errors reports only first error",
+			config: &configv1.McpAnyServerConfig{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					{
+						Name: "multi-error-service",
+						UpstreamAuthentication: &configv1.UpstreamAuthentication{
+							AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
+								ApiKey: &configv1.ApiKey{
+									HeaderName: "", // Error 1: empty header name
+									Key: &configv1.Secret{
+										Value: &configv1.Secret_PlainText{
+											PlainText: "secret",
+										},
+									},
+								},
+							},
+						},
+						ServiceType: &configv1.UpstreamServiceConfig_HttpService{
+							HttpService: &configv1.HttpService{
+								Address: "", // Error 2: empty address
+							},
+						},
+					},
+				},
+			},
+			expectedErrorCount:  1,
+			expectedErrorString: `service "multi-error-service": api key 'header_name' is empty`,
+		},
 	}
 
 	for _, tt := range tests {
