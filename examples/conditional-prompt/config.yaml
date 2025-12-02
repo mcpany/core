@@ -1,0 +1,15 @@
+upstreamServices:
+  - name: "conditional-prompt-service"
+    httpService:
+      address: "http://localhost:8080"
+      prompts:
+        - name: "conditional-prompt"
+          description: "A prompt that uses conditional logic"
+          arguments:
+            - name: "use_extra_message"
+              description: "Whether to include an extra message"
+              required: true
+          messages:
+            - role: "user"
+              text:
+                text: "Hello!{{if .use_extra_message}} Here is an extra message.{{end}}"

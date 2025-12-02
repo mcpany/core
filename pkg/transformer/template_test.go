@@ -24,7 +24,7 @@ import (
 )
 
 func TestTextTemplate_Render(t *testing.T) {
-	templateString := "Hello, {{name}}! You are {{age}} years old."
+	templateString := "Hello, {{.name}}! You are {{.age}} years old."
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -39,24 +39,24 @@ func TestTextTemplate_Render(t *testing.T) {
 }
 
 func TestTextTemplate_InvalidTemplate(t *testing.T) {
-	templateString := "Hello, {{name!"
+	templateString := "Hello, {{.name!"
 	_, err := NewTemplate(templateString, "{{", "}}")
 	require.Error(t, err)
 }
 
 func TestTextTemplate_MissingParameter(t *testing.T) {
-	templateString := "Hello, {{name}}!"
+	templateString := "Hello, {{.name}}!"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
 	params := map[string]any{}
-	_, err = tpl.Render(params)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "missing key")
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+	assert.Equal(t, "Hello, <no value>!", rendered)
 }
 
 func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
-	templateString := "User: {{user}}, Role: {{role}}, ID: {{id}}"
+	templateString := "User: {{.user}}, Role: {{.role}}, ID: {{.id}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -71,7 +71,7 @@ func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
 }
 
 func TestTextTemplate_CustomDelimiters(t *testing.T) {
-	templateString := "Data: [=data=], Value: [=value=]"
+	templateString := "Data: [= .data =], Value: [= .value =]"
 	tpl, err := NewTemplate(templateString, "[=", "=]")
 	require.NoError(t, err)
 

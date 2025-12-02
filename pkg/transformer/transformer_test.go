@@ -42,7 +42,7 @@ func TestTransformer_JSONInput(t *testing.T) {
 	parsedData, err := parser.Parse("json", jsonInput, config)
 	require.NoError(t, err)
 
-	templateString := "Name: {{name}}, Email: {{email}}"
+	templateString := "Name: {{.name}}, Email: {{.email}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -70,7 +70,7 @@ func TestTransformer_XMLInput(t *testing.T) {
 	parsedData, err := parser.Parse("xml", xmlInput, config)
 	require.NoError(t, err)
 
-	templateString := "Cell 1: {{cell1}}, Cell 2: {{cell2}}"
+	templateString := "Cell 1: {{.cell1}}, Cell 2: {{.cell2}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 
@@ -89,7 +89,7 @@ func TestTransformer_TextInput(t *testing.T) {
 	parsedData, err := parser.Parse("text", textInput, config)
 	require.NoError(t, err)
 
-	templateString := "Event: {{event}}, User: {{email}}"
+	templateString := "Event: {{.event}}, User: {{.email}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
 

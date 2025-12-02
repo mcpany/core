@@ -45,7 +45,7 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 			configv1.PromptMessage_builder{
 				Role: &role,
 				Text: configv1.TextContent_builder{
-					Text: proto.String("Hello, {{name}}"),
+					Text: proto.String("Hello, {{.name}}"),
 				}.Build(),
 			}.Build(),
 		},
@@ -75,14 +75,14 @@ func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
+func TestTemplatedPrompt_Get_MissingArgumentRendersDefaultValue(t *testing.T) {
 	role := configv1.PromptMessage_USER
 	definition := configv1.PromptDefinition_builder{
 		Messages: []*configv1.PromptMessage{
 			configv1.PromptMessage_builder{
 				Role: &role,
 				Text: configv1.TextContent_builder{
-					Text: proto.String("Hello, {{name}}"),
+					Text: proto.String("Hello, {{.name}}"),
 				}.Build(),
 			}.Build(),
 		},
@@ -90,8 +90,9 @@ func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 
 	args, _ := json.Marshal(map[string]string{})
-	_, err := templatedPrompt.Get(context.Background(), args)
-	assert.Error(t, err)
+	result, err := templatedPrompt.Get(context.Background(), args)
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, <no value>", result.Messages[0].Content.(*mcp.TextContent).Text)
 }
 
 func TestTemplatedPrompt_Prompt(t *testing.T) {

@@ -203,6 +203,32 @@ service_config:
 | `calls`        | `map<string, HttpCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`      | `repeated PromptDefinition`       | A list of prompts served by this service.            |
 
+##### Prompts
+
+Prompts in MCP Any support dynamic rendering using Go's `text/template` syntax. This allows for conditional logic, loops, and other advanced templating features.
+
+###### Conditional Logic
+
+You can use `if/else` statements to conditionally include content in your prompts.
+
+**Example:**
+
+```yaml
+prompts:
+  - name: "conditional-prompt"
+    description: "A prompt that uses conditional logic"
+    arguments:
+      - name: "use_extra_message"
+        description: "Whether to include an extra message"
+        required: true
+    messages:
+      - role: "user"
+        text:
+          text: "Hello!{{if .use_extra_message}} Here is an extra message.{{end}}"
+```
+
+In this example, the "Here is an extra message." text will only be included if the `use_extra_message` argument is set to `true`.
+
 ##### Use Case and Example
 
 Proxy an external HTTP API and add a health check.

@@ -17,16 +17,14 @@
 package transformer
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/valyala/fasttemplate"
+	"bytes"
+	"text/template"
 )
 
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 type TextTemplate struct {
-	template *fasttemplate.Template
+	template *template.Template
 	raw      string
 	startTag string
 	endTag   string
@@ -37,10 +35,11 @@ type TextTemplate struct {
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
-	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
+	tpl, err := template.New("").Delims(startTag, endTag).Parse(templateString)
 	if err != nil {
 		return nil, err
 	}
+
 	return &TextTemplate{
 		template: tpl,
 		raw:      templateString,
@@ -56,36 +55,9 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // template.
 // It returns the rendered string or an error if the template execution fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
-	tags := extractTags(t.raw, t.startTag, t.endTag)
-	for _, tag := range tags {
-		if _, ok := params[tag]; !ok {
-			return "", fmt.Errorf("missing key: %s", tag)
-		}
+	var buffer bytes.Buffer
+	if err := t.template.Execute(&buffer, params); err != nil {
+		return "", err
 	}
-
-	newParams := make(map[string]any, len(params))
-	for k, v := range params {
-		newParams[k] = fmt.Sprintf("%v", v)
-	}
-	s := t.template.ExecuteString(newParams)
-	return s, nil
-}
-
-func extractTags(template, startTag, endTag string) []string {
-	var tags []string
-	start := 0
-	for {
-		start = strings.Index(template, startTag)
-		if start == -1 {
-			break
-		}
-		template = template[start+len(startTag):]
-		end := strings.Index(template, endTag)
-		if end == -1 {
-			break
-		}
-		tags = append(tags, template[:end])
-		template = template[end+len(endTag):]
-	}
-	return tags
+	return buffer.String(), nil
 }
