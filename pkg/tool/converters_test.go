@@ -309,6 +309,26 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 	if diff := cmp.Diff(expectedTool, mcpTool, protocmp.Transform()); diff != "" {
 		t.Errorf("ConvertProtoToMCPTool() returned diff (-want +got):\n%s", diff)
 	}
+
+	// Test case with an unsanitized service ID
+	protoToolWithUnsanitizedServiceID := proto.Clone(protoTool).(*pb.Tool)
+	protoToolWithUnsanitizedServiceID.ServiceId = proto.String("invalid/service-id")
+	mcpToolWithUnsanitizedServiceID, err := ConvertProtoToMCPTool(protoToolWithUnsanitizedServiceID)
+	if err != nil {
+		t.Fatalf("ConvertProtoToMCPTool() with unsanitized service ID failed: %v", err)
+	}
+
+	expectedToolWithUnsanitizedServiceID := &mcp.Tool{
+		Name:        "invalidservice-id_4d3ca216.test-tool",
+		Description: expectedTool.Description,
+		Title:       expectedTool.Title,
+		Annotations: expectedTool.Annotations,
+		InputSchema: expectedTool.InputSchema,
+		OutputSchema: expectedTool.OutputSchema,
+	}
+	if diff := cmp.Diff(expectedToolWithUnsanitizedServiceID, mcpToolWithUnsanitizedServiceID, protocmp.Transform()); diff != "" {
+		t.Errorf("ConvertProtoToMCPTool() with unsanitized service ID returned diff (-want +got):\n%s", diff)
+	}
 }
 
 func TestConvertJSONSchemaToStruct_InvalidType(t *testing.T) {
