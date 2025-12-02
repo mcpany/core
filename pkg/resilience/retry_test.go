@@ -83,4 +83,20 @@ func TestRetry(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, 1, attempts)
 	})
+
+	t.Run("default_backoff", func(t *testing.T) {
+		config := &configv1.RetryConfig{}
+		retry := NewRetry(config)
+		require.Equal(t, time.Second, retry.config.GetBaseBackoff().AsDuration())
+		require.Equal(t, 30*time.Second, retry.config.GetMaxBackoff().AsDuration())
+	})
+
+	t.Run("backoff_capping", func(t *testing.T) {
+		config := &configv1.RetryConfig{}
+		config.SetBaseBackoff(durationpb.New(2 * time.Second))
+		config.SetMaxBackoff(durationpb.New(5 * time.Second))
+		retry := NewRetry(config)
+		require.Equal(t, 4*time.Second, retry.backoff(1))
+		require.Equal(t, 5*time.Second, retry.backoff(2))
+	})
 }
