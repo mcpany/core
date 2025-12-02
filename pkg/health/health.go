@@ -121,6 +121,16 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 			if resp.StatusCode != int(c.GetHealthCheck().GetExpectedCode()) {
 				return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 			}
+
+			if c.GetHealthCheck().GetExpectedResponseBodyContains() != "" {
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					return fmt.Errorf("failed to read health check response body: %w", err)
+				}
+				if !strings.Contains(string(body), c.GetHealthCheck().GetExpectedResponseBodyContains()) {
+					return fmt.Errorf("health check response body does not contain expected string")
+				}
+			}
 			return nil
 		},
 	}

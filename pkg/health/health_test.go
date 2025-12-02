@@ -137,6 +137,33 @@ func TestNewChecker(t *testing.T) {
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 
+	t.Run("ResponseBodyMismatch", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+		}))
+		defer server.Close()
+
+		serverURL := server.URL
+		serverAddr := server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+					ExpectedResponseBodyContains: lo.ToPtr("FAIL"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
 	t.Run("ServerUnreachable", func(t *testing.T) {
 		unreachableURL := "http://localhost:12345"
 		unreachableAddr := "localhost:12345"
