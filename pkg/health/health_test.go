@@ -137,6 +137,33 @@ func TestNewChecker(t *testing.T) {
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
 
+	t.Run("ResponseBodyMismatch", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+		}))
+		defer server.Close()
+
+		serverURL := server.URL
+		serverAddr := server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+					ExpectedResponseBodyContains: lo.ToPtr("FAIL"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
 	t.Run("ServerUnreachable", func(t *testing.T) {
 		unreachableURL := "http://localhost:12345"
 		unreachableAddr := "localhost:12345"
@@ -377,12 +404,28 @@ func TestCheckVariousServices(t *testing.T) {
 			want: health.StatusUp,
 		},
 		{
+			name: "WebSocket Service Unreachable",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name:             lo.ToPtr("websocket-service-unreachable"),
+				WebsocketService: configv1.WebsocketUpstreamService_builder{Address: lo.ToPtr("localhost:12345")}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
 			name: "WebRTC Service",
 			config: configv1.UpstreamServiceConfig_builder{
 				Name:          lo.ToPtr("webrtc-service"),
 				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: &addr}.Build(),
 			}.Build(),
 			want: health.StatusUp,
+		},
+		{
+			name: "WebRTC Service Unreachable",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name:          lo.ToPtr("webrtc-service-unreachable"),
+				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: lo.ToPtr("localhost:12345")}.Build(),
+			}.Build(),
+			want: health.StatusDown,
 		},
 		{
 			name: "MCP Service HTTP",

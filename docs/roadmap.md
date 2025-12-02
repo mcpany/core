@@ -35,6 +35,8 @@ The following features are defined in the configuration schema (`proto/config/v1
   - `HttpHealthCheck`
   - `GrpcHealthCheck`
   - `StdioHealthCheck`
+  - `WebsocketHealthCheck`
+  - `WebRTCHealthCheck`
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
 

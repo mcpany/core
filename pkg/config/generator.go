@@ -26,12 +26,12 @@ import (
 )
 
 type Generator struct {
-	reader *bufio.Reader
+	Reader *bufio.Reader
 }
 
 func NewGenerator() *Generator {
 	return &Generator{
-		reader: bufio.NewReader(os.Stdin),
+		Reader: bufio.NewReader(os.Stdin),
 	}
 }
 
@@ -57,7 +57,7 @@ func (g *Generator) Generate() ([]byte, error) {
 
 func (g *Generator) prompt(prompt string) (string, error) {
 	fmt.Print(prompt)
-	input, err := g.reader.ReadString('\n')
+	input, err := g.Reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}

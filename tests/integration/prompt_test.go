@@ -95,6 +95,7 @@ func TestPromptIntegration(t *testing.T) {
 		authManager,
 		serviceRegistry,
 		busProvider,
+		false,
 	)
 	require.NoError(t, err)
 

@@ -100,15 +100,59 @@ func TestMCPListenAddress(t *testing.T) {
 			address:  "mcpany.internal",
 			expected: "localhost:mcpany.internal",
 		},
+		{
+			name:     "empty address",
+			address:  "",
+			expected: "localhost:",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			settings := &Settings{
-				proto: &v1.GlobalSettings{},
-			}
-			settings.proto.SetMcpListenAddress(tt.address)
-			assert.Equal(t, tt.expected, settings.MCPListenAddress())
+			viper.Reset()
+			cmd := &cobra.Command{}
+			BindFlags(cmd)
+			viper.Set("mcp-listen-address", tt.address)
+			s := GlobalSettings()
+			err := s.Load(cmd, nil)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expected, s.MCPListenAddress())
 		})
 	}
+}
+
+func TestGlobalSettings(t *testing.T) {
+	// To prevent test pollution, we reset viper and clear any environment variables
+	// that might affect the test.
+	viper.Reset()
+	os.Clearenv()
+	defer os.Clearenv()
+
+	cmd := &cobra.Command{}
+	BindFlags(cmd)
+
+	// Test with default values first
+	s := GlobalSettings()
+	err := s.Load(cmd, nil)
+	assert.NoError(t, err)
+
+	assert.Equal(t, "", s.GRPCPort())
+	assert.Equal(t, "localhost:50050", s.MCPListenAddress())
+	assert.False(t, s.IsDebug())
+	assert.False(t, s.Stdio())
+
+	// Test with values from viper
+	viper.Set("grpc-port", "6001")
+	viper.Set("mcp-listen-address", "0.0.0.0:6000")
+	viper.Set("debug", true)
+	viper.Set("stdio", true)
+
+	// Reload settings to apply viper changes
+	err = s.Load(cmd, nil)
+	assert.NoError(t, err)
+
+	assert.Equal(t, "6001", s.GRPCPort())
+	assert.Equal(t, "0.0.0.0:6000", s.MCPListenAddress())
+	assert.True(t, s.IsDebug())
+	assert.True(t, s.Stdio())
 }

@@ -18,6 +18,7 @@ package serviceregistry
 
 import (
 	"context"
+	"encoding/json"
 	"sync"
 	"testing"
 
@@ -29,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -135,4 +137,87 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 	// Verify that the tool from the first service is still there
 	_, ok = tm.GetTool("tool1")
 	assert.True(t, ok, "Tool should still be present after failed duplicate registration")
+}
+
+// mockPrompt is a mock implementation of prompt.Prompt for testing.
+type mockPrompt struct {
+	p         *mcp.Prompt
+	serviceID string
+}
+
+func (m *mockPrompt) Prompt() *mcp.Prompt {
+	return m.p
+}
+
+func (m *mockPrompt) Service() string {
+	return m.serviceID
+}
+
+func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+	return nil, nil
+}
+
+// mockResource is a mock implementation of resource.Resource for testing.
+type mockResource struct {
+	r         *mcp.Resource
+	serviceID string
+}
+
+func (m *mockResource) Resource() *mcp.Resource {
+	return m.r
+}
+
+func (m *mockResource) Service() string {
+	return m.serviceID
+}
+
+func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+	return nil, nil
+}
+
+func (m *mockResource) Subscribe(ctx context.Context) error {
+	return nil
+}
+
+func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := newThreadSafeToolManager()
+	pm := prompt.NewPromptManager()
+	rm := resource.NewResourceManager()
+	registry := New(f, tm, pm, rm, auth.NewAuthManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err, "Registration should succeed")
+
+	// Manually add items to the managers
+	err = tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("test-tool"), ServiceId: proto.String(serviceID)}})
+	require.NoError(t, err)
+	pm.AddPrompt(&mockPrompt{serviceID: serviceID, p: &mcp.Prompt{Name: "test-prompt"}})
+	rm.AddResource(&mockResource{serviceID: serviceID, r: &mcp.Resource{URI: "test-resource"}})
+
+	// Verify that the data is there
+	assert.NotEmpty(t, tm.ListTools())
+	assert.NotEmpty(t, pm.ListPrompts())
+	assert.NotEmpty(t, rm.ListResources())
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err, "Unregistration should succeed")
+
+	// Verify that all data has been cleared
+	assert.Empty(t, tm.ListTools(), "Tools should be cleared after unregistration")
+	assert.Empty(t, pm.ListPrompts(), "Prompts should be cleared after unregistration")
+	assert.Empty(t, rm.ListResources(), "Resources should be cleared after unregistration")
 }
