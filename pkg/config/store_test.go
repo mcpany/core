@@ -456,7 +456,7 @@ func TestExpand(t *testing.T) {
 		{
 			name:     "empty variable with default value",
 			input:    "hello ${EMPTY_VAR:default_value}",
-			expected: "hello ",
+			expected: "hello default_value",
 		},
 		{
 			name:     "undefined variable without default",

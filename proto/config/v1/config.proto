@@ -267,6 +267,12 @@ message CommandLineUpstreamService {
   map<string, CommandLineCallDefinition> calls = 10;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 11;
+
+  enum CommunicationProtocol {
+    COMMUNICATION_PROTOCOL_UNSPECIFIED = 0;
+    COMMUNICATION_PROTOCOL_JSON = 1;
+  }
+  CommunicationProtocol communication_protocol = 12;
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.

@@ -33,6 +33,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/cli"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
@@ -832,6 +833,31 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	startTime := time.Now()
+	// Differentiate between JSON and environment variable-based communication
+	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
+		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+		}
+		defer stdin.Close()
+
+		go func() {
+			defer stderr.Close()
+			io.Copy(io.Discard, stderr)
+		}()
+
+		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		var result map[string]interface{}
+		var unmarshaledInputs map[string]interface{}
+		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+		}
+		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+		}
+		return result, nil
+	}
+
 	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute command: %w", err)

@@ -225,6 +225,7 @@ MCP Any supports a variety of advanced configuration options, including:
       stdioService:
         command: "my-tool"
         args: ["--arg1", "value1"]
+        communicationProtocol: "JSON"
   ```
 
 - **Authentication**: Configure authentication for an upstream service.
@@ -330,6 +331,16 @@ The tool will prompt you for the information needed to generate a configuration 
 ## Examples
 
 For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
+
+### Configuration Generator
+
+MCP Any includes a CLI tool to help you generate configuration files interactively. To use it, run the following command:
+
+```bash
+go run cmd/mcp-any-cli/main.go
+```
+
+The tool will prompt you for the information needed to generate a configuration file for a specific service type.
 
 ### Listing Tools
 
