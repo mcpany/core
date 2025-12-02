@@ -82,14 +82,14 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
 
-func TestNewStdioUpstream(t *testing.T) {
+func TestNewCommandUpstream(t *testing.T) {
 	u := NewCommandUpstream()
 	assert.NotNil(t, u)
 	_, ok := u.(*CommandUpstream)
 	assert.True(t, ok)
 }
 
-func TestStdioUpstream_Register(t *testing.T) {
+func TestCommandUpstream_Register(t *testing.T) {
 	tm := newMockToolManager()
 	prm := prompt.NewPromptManager()
 	rm := resource.NewResourceManager()
@@ -98,7 +98,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		tm := newMockToolManager()
 		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-stdio-service")
+		serviceConfig.SetName("test-command-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
 		cmdService.SetCommand("/bin/echo")
 		toolDef := configv1.ToolDefinition_builder{
@@ -123,7 +123,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 			false,
 		)
 		require.NoError(t, err)
-		expectedKey, _ := util.SanitizeServiceName("test-stdio-service")
+		expectedKey, _ := util.SanitizeServiceName("test-command-service")
 		assert.Equal(t, expectedKey, serviceID)
 		assert.Len(t, discoveredTools, 1)
 		assert.Equal(t, "echo", discoveredTools[0].GetName())

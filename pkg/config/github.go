@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -122,18 +121,9 @@ func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication
 		return nil, fmt.Errorf("failed to fetch contents from github api: status code %d", resp.StatusCode)
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read github api response body: %w", err)
-	}
-
 	var contents []Content
-	if err := json.Unmarshal(body, &contents); err != nil {
-		var content Content
-		if err := json.Unmarshal(body, &content); err != nil {
-			return nil, fmt.Errorf("failed to decode github api response: %w", err)
-		}
-		contents = append(contents, content)
+	if err := json.NewDecoder(resp.Body).Decode(&contents); err != nil {
+		return nil, fmt.Errorf("failed to decode github api response: %w", err)
 	}
 
 	return contents, nil

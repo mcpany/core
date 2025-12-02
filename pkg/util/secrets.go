@@ -36,12 +36,7 @@ func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 	case configv1.SecretValue_PlainText_case:
 		return secret.GetPlainText(), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
-		envVar := secret.GetEnvironmentVariable()
-		value := os.Getenv(envVar)
-		if value == "" {
-			return "", fmt.Errorf("environment variable %q is not set", envVar)
-		}
-		return value, nil
+		return os.Getenv(secret.GetEnvironmentVariable()), nil
 	case configv1.SecretValue_FilePath_case:
 		content, err := os.ReadFile(secret.GetFilePath())
 		if err != nil {
