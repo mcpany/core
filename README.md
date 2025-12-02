@@ -295,15 +295,29 @@ make run ARGS="--config-paths https://example.com/my-config.yaml"
 
 Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
 
-### Configuration Generator
+### Configuration Generator & Validator
 
-MCP Any includes a CLI tool to help you generate configuration files interactively. To use it, run the following command:
+MCP Any includes a CLI tool to help you generate and validate configuration files.
+
+#### Generating Configurations
+
+To generate a configuration file interactively, run the following command:
 
 ```bash
-go run cmd/mcp-any-cli/main.go
+go run cmd/mcp-any-cli/main.go generate
 ```
 
 The tool will prompt you for the information needed to generate a configuration file for a specific service type.
+
+#### Validating Configurations
+
+To validate one or more configuration files, use the `validate` command:
+
+```bash
+go run cmd/mcp-any-cli/main.go validate --config-paths ./config.yaml,./another-config.yaml
+```
+
+If the configuration is valid, the command will exit with a status code of 0. Otherwise, it will print the validation errors and exit with a non-zero status code.
 
 ## Examples
 
