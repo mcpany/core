@@ -44,6 +44,21 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 	)
 }
 
+func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
+	if callDef == nil {
+		callDef = &configv1.CommandLineCallDefinition{}
+	}
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command:               proto.String(command),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+	}).Build()
+	return tool.NewCommandTool(
+		&v1.Tool{},
+		service,
+		callDef,
+	)
+}
+
 func TestCommandTool_Execute(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
 		cmdTool := newCommandTool("/usr/bin/env", nil)
@@ -128,6 +143,21 @@ func TestCommandTool_Execute(t *testing.T) {
 
 		_, err := cmdTool.Execute(context.Background(), req)
 		assert.Error(t, err)
+	})
+
+	t.Run("json communication protocol", func(t *testing.T) {
+		cmdTool := newJSONCommandTool("./testdata/jsonecho/jsonecho", nil)
+		inputData := map[string]interface{}{"foo": "bar"}
+		inputs, err := json.Marshal(inputData)
+		require.NoError(t, err)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		resultMap, ok := result.(map[string]interface{})
+		require.True(t, ok)
+		assert.Equal(t, "bar", resultMap["foo"])
 	})
 }
 

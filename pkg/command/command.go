@@ -34,6 +34,7 @@ import (
 // Executor is an interface for executing commands.
 type Executor interface {
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
+	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
 // NewExecutor creates a new command executor.
@@ -83,6 +84,49 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	}()
 
 	return outR, errR, exitCodeChan, nil
+}
+
+func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+	cmd := exec.CommandContext(ctx, command, args...)
+	cmd.Dir = workingDir
+	cmd.Env = env
+
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to get stdin pipe: %w", err)
+	}
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to get stdout pipe: %w", err)
+	}
+
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to get stderr pipe: %w", err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
+	}
+
+	exitCodeChan := make(chan int, 1)
+	go func() {
+		defer close(exitCodeChan)
+		err := cmd.Wait()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				exitCodeChan <- exitErr.ExitCode()
+			} else {
+				logging.GetLogger().Error("Command execution failed", "error", err)
+				exitCodeChan <- -1
+			}
+		} else {
+			exitCodeChan <- 0
+		}
+	}()
+
+	return stdin, stdout, stderr, exitCodeChan, nil
 }
 
 type dockerExecutor struct {
@@ -179,4 +223,100 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	}()
 
 	return stdoutReader, stderrReader, exitCodeChan, nil
+}
+
+func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+	log := logging.GetLogger()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
+	}
+
+	img := e.containerEnv.GetImage()
+	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
+	if err != nil {
+		log.Warn("Failed to pull docker image, will try to use local image if available", "image", img, "error", err)
+	} else {
+		_, _ = io.Copy(io.Discard, reader)
+		log.Info("Successfully pulled docker image", "image", img)
+	}
+
+	containerConfig := &container.Config{
+		Image:        img,
+		Cmd:          append([]string{command}, args...),
+		WorkingDir:   workingDir,
+		Env:          env,
+		Tty:          false,
+		OpenStdin:    true,
+		AttachStdin:  true,
+		AttachStdout: true,
+		AttachStderr: true,
+	}
+
+	hostConfig := &container.HostConfig{}
+	if e.containerEnv.GetVolumes() != nil {
+		for dest, src := range e.containerEnv.GetVolumes() {
+			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
+				Type:   mount.TypeBind,
+				Source: src,
+				Target: dest,
+			})
+		}
+	}
+
+	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, nil, e.containerEnv.GetName())
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to create container: %w", err)
+	}
+
+	attachResp, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
+		Stream: true,
+		Stdin:  true,
+		Stdout: true,
+		Stderr: true,
+	})
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("failed to attach to container: %w", err)
+	}
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
+			log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
+		}
+		return nil, nil, nil, nil, fmt.Errorf("failed to start container: %w", err)
+	}
+
+	exitCodeChan := make(chan int, 1)
+	go func() {
+		defer close(exitCodeChan)
+		defer func() {
+			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
+				log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
+			}
+		}()
+		statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+		select {
+		case err := <-errCh:
+			if err != nil {
+				log.Error("Error waiting for container", "error", err)
+				exitCodeChan <- -1
+			}
+		case status := <-statusCh:
+			exitCodeChan <- int(status.StatusCode)
+		}
+	}()
+
+	stdoutReader, stdoutWriter := io.Pipe()
+	stderrReader, stderrWriter := io.Pipe()
+
+	go func() {
+		defer stdoutWriter.Close()
+		defer stderrWriter.Close()
+		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, attachResp.Reader)
+		if err != nil {
+			log.Error("Failed to demultiplex docker stream", "error", err)
+		}
+	}()
+
+	return attachResp.Conn, stdoutReader, stderrReader, exitCodeChan, nil
 }
