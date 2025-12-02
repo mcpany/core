@@ -50,12 +50,44 @@ import (
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+	"os"
 )
 
 var healthCheckClient = &http.Client{
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	},
+}
+
+func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "failed to get file from form", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Create a temporary file to store the uploaded content
+	tmpfile, err := os.CreateTemp("", "upload-*.txt")
+	if err != nil {
+		http.Error(w, "failed to create temporary file", http.StatusInternalServerError)
+		return
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	// Copy the uploaded file to the temporary file
+	if _, err := io.Copy(tmpfile, file); err != nil {
+		http.Error(w, "failed to copy file", http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with the file name and size
+	fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -499,6 +531,7 @@ func (a *Application) runServerMode(
 		fmt.Fprintln(w, "OK")
 	})))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
