@@ -89,6 +89,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 // services.
 type AuthManager struct {
 	authenticators *xsync.Map[string, Authenticator]
+	apiKey         string
 }
 
 // NewAuthManager creates and initializes a new AuthManager with an empty
@@ -98,6 +99,11 @@ func NewAuthManager() *AuthManager {
 	return &AuthManager{
 		authenticators: xsync.NewMap[string, Authenticator](),
 	}
+}
+
+// SetAPIKey sets the global API key for the server.
+func (am *AuthManager) SetAPIKey(apiKey string) {
+	am.apiKey = apiKey
 }
 
 // AddAuthenticator registers an authenticator for a given service ID. If an
@@ -132,6 +138,15 @@ func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenti
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
 func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
+	if am.apiKey != "" {
+		if r.Header.Get("X-API-Key") == "" {
+			return ctx, fmt.Errorf("unauthorized: missing API key")
+		}
+		if r.Header.Get("X-API-Key") != am.apiKey {
+			return ctx, fmt.Errorf("unauthorized: invalid API key")
+		}
+	}
+
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}
