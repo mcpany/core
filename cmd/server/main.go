@@ -57,6 +57,11 @@ func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
+	}
+
+	runCmd := &cobra.Command{
+		Use:   "run",
+		Short: "Run the MCP Any server",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
@@ -141,6 +146,8 @@ func newRootCmd() *cobra.Command {
 			return nil
 		},
 	}
+	config.BindServerFlags(runCmd)
+	rootCmd.AddCommand(runCmd)
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
@@ -181,8 +188,28 @@ func newRootCmd() *cobra.Command {
 		Short: "Manage configuration",
 	}
 
-	validateCmd := &cobra.Command{
-		Use:   "validate",
+	generateCmd := &cobra.Command{
+		Use:   "generate",
+		Short: "Generate configuration",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("MCP Any CLI: Configuration Generator")
+
+			generator := config.NewGenerator()
+			configData, err := generator.Generate()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("\nGenerated configuration:")
+			fmt.Print(string(configData))
+
+			return nil
+		},
+	}
+	configCmd.AddCommand(generateCmd)
+
+	validationCmd := &cobra.Command{
+		Use:   "validation",
 		Short: "Validate the configuration file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			osFs := afero.NewOsFs()
@@ -197,10 +224,10 @@ func newRootCmd() *cobra.Command {
 			return nil
 		},
 	}
-	configCmd.AddCommand(validateCmd)
+	configCmd.AddCommand(validationCmd)
 	rootCmd.AddCommand(configCmd)
 
-	config.BindFlags(rootCmd)
+	config.BindRootFlags(rootCmd)
 
 	return rootCmd
 }
