@@ -19,8 +19,10 @@ package graphql
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/pkg/tool"
@@ -205,11 +207,10 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
 	selectionSet := "{ id }"
-	serviceConfig.GetGraphqlService().SetCalls(map[string]*configv1.GraphQLCallDefinition{
-		"user": {
-			SelectionSet: &selectionSet,
-		},
-	})
+	calls := make(map[string]*configv1.GraphQLCallDefinition)
+	calls["user"] = &configv1.GraphQLCallDefinition{}
+	calls["user"].SetSelectionSet(selectionSet)
+	serviceConfig.GetGraphqlService().SetCalls(calls)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -223,6 +224,190 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	require.True(t, ok)
 
 	assert.Contains(t, callable.query, "user(id: $id) { id }")
+}
+
+func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
+
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+
+		var reqBody map[string]interface{}
+		err = json.Unmarshal(body, &reqBody)
+		require.NoError(t, err)
+
+		var response map[string]interface{}
+		if strings.Contains(reqBody["query"].(string), "IntrospectionQuery") {
+			response = map[string]interface{}{
+				"data": map[string]interface{}{
+					"__schema": map[string]interface{}{
+						"queryType": map[string]string{"name": "Query"},
+						"types": []map[string]interface{}{
+							{
+								"name": "Query",
+								"kind": "OBJECT",
+								"fields": []map[string]interface{}{
+									{
+										"name": "hello",
+										"args": []map[string]interface{}{},
+										"type": map[string]interface{}{
+											"name": "String",
+											"kind": "SCALAR",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+		} else {
+			response = map[string]interface{}{
+				"data": map[string]interface{}{
+					"hello": "world",
+				},
+			}
+		}
+		json.NewEncoder(w).Encode(response)
+	}))
+	defer server.Close()
+
+	upstream := NewGraphQLUpstream()
+	toolManager := tool.NewToolManager(nil)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	authConfig := &configv1.UpstreamAuthentication{}
+	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
+	apiKeyAuth.SetHeaderName("X-API-Key")
+	secretValue := &configv1.SecretValue{}
+	secretValue.SetPlainText("test-api-key")
+	apiKeyAuth.SetApiKey(secretValue)
+	authConfig.SetApiKey(apiKeyAuth)
+	serviceConfig.SetUpstreamAuthentication(authConfig)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	helloTool, ok := toolManager.GetTool("test-service.test-service-hello")
+	require.True(t, ok)
+
+	req := &tool.ExecutionRequest{
+		Arguments: map[string]interface{}{},
+	}
+
+	resp, err := helloTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	respMap, ok := resp.(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "world", respMap["hello"])
+}
+
+func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer server.Close()
+
+	upstream := NewGraphQLUpstream()
+	toolManager := tool.NewToolManager(nil)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	authConfig := &configv1.UpstreamAuthentication{}
+	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
+	apiKeyAuth.SetHeaderName("X-API-Key")
+	secretValue := &configv1.SecretValue{}
+	secretValue.SetPlainText("test-api-key")
+	apiKeyAuth.SetApiKey(secretValue)
+	authConfig.SetApiKey(apiKeyAuth)
+	serviceConfig.SetUpstreamAuthentication(authConfig)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to run introspection query")
+}
+
+func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
+	// Create a mock GraphQL server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
+
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+
+		var reqBody map[string]interface{}
+		err = json.Unmarshal(body, &reqBody)
+		require.NoError(t, err)
+
+		if strings.Contains(reqBody["query"].(string), "IntrospectionQuery") {
+			response := map[string]interface{}{
+				"data": map[string]interface{}{
+					"__schema": map[string]interface{}{
+						"queryType": map[string]string{"name": "Query"},
+						"types": []map[string]interface{}{
+							{
+								"name": "Query",
+								"kind": "OBJECT",
+								"fields": []map[string]interface{}{
+									{
+										"name": "hello",
+										"args": []map[string]interface{}{},
+										"type": map[string]interface{}{
+											"name": "String",
+											"kind": "SCALAR",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+			json.NewEncoder(w).Encode(response)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+	}))
+	defer server.Close()
+
+	upstream := NewGraphQLUpstream()
+	toolManager := tool.NewToolManager(nil)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
+	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	authConfig := &configv1.UpstreamAuthentication{}
+	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
+	apiKeyAuth.SetHeaderName("X-API-Key")
+	secretValue := &configv1.SecretValue{}
+	secretValue.SetPlainText("test-api-key")
+	apiKeyAuth.SetApiKey(secretValue)
+	authConfig.SetApiKey(apiKeyAuth)
+	serviceConfig.SetUpstreamAuthentication(authConfig)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	helloTool, ok := toolManager.GetTool("test-service.test-service-hello")
+	require.True(t, ok)
+
+	req := &tool.ExecutionRequest{
+		Arguments: map[string]interface{}{},
+	}
+
+	_, err = helloTool.Execute(context.Background(), req)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to run graphql query")
 }
 
 func TestGraphQLTool_ExecuteQuery(t *testing.T) {
