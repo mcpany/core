@@ -176,3 +176,10 @@ func GetDockerCommand() (string, []string) {
 	}
 	return "docker", []string{}
 }
+
+func ReplaceURLPath(urlPath string, params map[string]interface{}) string {
+	for k, v := range params {
+		urlPath = strings.Replace(urlPath, "{{"+k+"}}", fmt.Sprintf("%v", v), -1)
+	}
+	return urlPath
+}
