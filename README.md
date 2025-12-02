@@ -225,6 +225,7 @@ MCP Any supports a variety of advanced configuration options, including:
       stdioService:
         command: "my-tool"
         args: ["--arg1", "value1"]
+        communicationProtocol: "JSON"
   ```
 
 - **Authentication**: Configure authentication for an upstream service.
