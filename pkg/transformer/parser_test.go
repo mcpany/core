@@ -104,6 +104,18 @@ func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 	})
 }
 
+func TestTextParser_Transform(t *testing.T) {
+	parser := NewTextParser()
+	data := map[string]any{
+		"name": "test",
+		"age":  123,
+	}
+	template := `{"name": "{{.name}}", "age": {{.age}}}`
+	result, err := parser.Transform(template, data)
+	require.NoError(t, err)
+	assert.JSONEq(t, `{"name": "test", "age": 123}`, string(result))
+}
+
 func TestTextParser_ParseJSON_Complex(t *testing.T) {
 	parser := NewTextParser()
 	jsonInput := []byte(`{
