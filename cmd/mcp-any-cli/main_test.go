@@ -14,34 +14,45 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package e2e
+package main
 
 import (
+	"bytes"
+	"io"
 	"os"
-	"os/exec"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCLI(t *testing.T) {
-	t.Skip("skipping CLI test for now")
-	t.Parallel()
+	t.Run("no command", func(t *testing.T) {
+		// Capture stdout
+		old := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
 
-	// Build the CLI binary
-	buildCmd := exec.Command("go", "build", "-o", "build/mcp-any-cli", "cmd/mcp-any-cli")
-	err := buildCmd.Run()
-	require.NoError(t, err, "failed to build CLI binary")
+		// Run the CLI with no arguments
+		rootCmd := &cobra.Command{
+			Use:   "mcp-any-cli",
+			Short: "A CLI tool for MCP Any",
+		}
+		rootCmd.AddCommand(NewGenerateCommand())
+		rootCmd.AddCommand(NewScaffoldCommand())
+		err := rootCmd.Execute()
+		require.NoError(t, err)
 
-	t.Run("generate command", func(t *testing.T) {
-		// Run the CLI with the "generate" subcommand
-		cmd := exec.Command("build/mcp-any-cli", "generate")
-		output, err := cmd.CombinedOutput()
-		require.NoError(t, err, "failed to run CLI command")
+		// Restore stdout and read the output
+		w.Close()
+		os.Stdout = old
+		var buf bytes.Buffer
+		_, err = io.Copy(&buf, r)
+		require.NoError(t, err)
 
 		// Check the output
-		assert.Contains(t, string(output), "MCP Any CLI: Configuration Generator", "unexpected output format")
+		assert.Contains(t, buf.String(), "A CLI tool for MCP Any", "unexpected output format")
 	})
 
 	t.Run("scaffold command", func(t *testing.T) {
@@ -69,9 +80,10 @@ paths: {}
 		outputFile.Close()
 
 		// Run the scaffold command
-		cmd := exec.Command("build/mcp-any-cli", "scaffold", "-f", openapiFile.Name(), "-o", outputFile.Name())
-		err = cmd.Run()
-		require.NoError(t, err, "failed to run CLI command")
+		cmd := NewScaffoldCommand()
+		cmd.SetArgs([]string{"-f", openapiFile.Name(), "-o", outputFile.Name()})
+		err = cmd.Execute()
+		require.NoError(t, err)
 
 		// Check that the output file was created
 		_, err = os.Stat(outputFile.Name())

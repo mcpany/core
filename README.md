@@ -295,10 +295,28 @@ Once the server is running, you can interact with it using its JSON-RPC API. For
 MCP Any includes a CLI tool to help you generate configuration files interactively. To use it, run the following command:
 
 ```bash
-go run cmd/mcp-any-cli/main.go
+go run cmd/mcp-any-cli/main.go generate
 ```
 
 The tool will prompt you for the information needed to generate a configuration file for a specific service type.
+
+### Scaffolding from OpenAPI
+
+You can also scaffold a baseline MCP Any configuration from an OpenAPI (Swagger) specification. This is a great way to quickly get started with an existing RESTful API.
+
+To scaffold a configuration, use the `scaffold` command:
+
+```bash
+go run cmd/mcp-any-cli/main.go scaffold -f <path-to-openapi-spec> -o <path-to-output-config>
+```
+
+For example:
+
+```bash
+go run cmd/mcp-any-cli/main.go scaffold -f ./my-api.yaml -o ./mcp-any-config.yaml
+```
+
+This will generate a `mcp-any-config.yaml` file with a basic configuration for your API. You can then customize this file to add authentication, caching, and other advanced features.
 
 ## Examples
 
