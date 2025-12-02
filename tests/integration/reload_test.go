@@ -34,9 +34,6 @@ upstreamServices:
 	err = os.WriteFile(configPath, []byte(initialConfig), 0644)
 	require.NoError(t, err)
 
-	// Print the content of the configuration file
-	t.Logf("Initial config file:\n%s", initialConfig)
-
 	// Create a new application
 	application := app.NewApplication()
 
@@ -44,19 +41,17 @@ upstreamServices:
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Create a channel to signal when the server is ready
-	ready := make(chan struct{})
-
 	// Start the application in a separate goroutine
 	go func() {
-		close(ready)
-		err := application.Run(ctx, afero.NewOsFs(), false, "0", "0", []string{configPath}, 5*time.Second)
-		require.NoError(t, err)
+		// This Run call will block until the context is canceled.
+		_ = application.Run(ctx, afero.NewOsFs(), false, "0", "0", []string{configPath}, 5*time.Second)
 	}()
 
-	// Wait for the server to start
-	<-ready
-	time.Sleep(2 * time.Second)
+	// Wait for the server to start and load the initial configuration
+	require.Eventually(t, func() bool {
+		tools := application.ToolManager.ListTools()
+		return len(tools) == 1
+	}, 5*time.Second, 100*time.Millisecond, "server did not load initial tool in time")
 
 	// Check that the initial tool is present
 	tools := application.ToolManager.ListTools()
@@ -87,8 +82,15 @@ upstreamServices:
 	require.NoError(t, err)
 
 	// Check that the new tool is present
-	tools = application.ToolManager.ListTools()
+	require.Eventually(t, func() bool {
+		tools = application.ToolManager.ListTools()
+		return len(tools) == 2
+	}, 2*time.Second, 100*time.Millisecond, "server did not reload to two tools")
+
 	require.Len(t, tools, 2)
-	require.Equal(t, "my-http-service.get_user", tools[0].Tool().GetName())
-	require.Equal(t, "my-http-service.create_user", tools[1].Tool().GetName())
+
+	// Note: The order of tools is not guaranteed, so we check for presence instead of order.
+	toolNames := []string{tools[0].Tool().GetName(), tools[1].Tool().GetName()}
+	require.Contains(t, toolNames, "my-http-service.get_user")
+	require.Contains(t, toolNames, "my-http-service.create_user")
 }

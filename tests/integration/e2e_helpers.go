@@ -44,7 +44,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"gopkg.in/yaml.v3"
+	"sigs.k8s.io/yaml"
 
 	"github.com/mcpany/core/pkg/app"
 	"github.com/spf13/afero"
@@ -57,7 +57,10 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
 	}.Build()
 
-	data, err := yaml.Marshal(mcpanyConfig)
+	jsonBytes, err := protojson.Marshal(mcpanyConfig)
+	require.NoError(t, err)
+
+	data, err := yaml.JSONToYAML(jsonBytes)
 	require.NoError(t, err)
 
 	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -83,7 +86,10 @@ func CreateTempNatsConfigFile(t *testing.T) string {
 		}.Build(),
 	}.Build()
 
-	data, err := yaml.Marshal(mcpanyConfig)
+	jsonBytes, err := protojson.Marshal(mcpanyConfig)
+	require.NoError(t, err)
+
+	data, err := yaml.JSONToYAML(jsonBytes)
 	require.NoError(t, err)
 
 	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-nats-config-*.yaml")
