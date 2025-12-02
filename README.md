@@ -279,6 +279,8 @@ MCP Any supports a variety of advanced configuration options, including:
     api_key: "my-secret-key"
   ```
 
+  When the `api_key` is set, clients must provide the key in the `X-API-Key` header of their requests.
+
 ### Remote Configurations
 
 In addition to loading configuration files from the local filesystem, MCP Any can also load configurations from remote URLs. This allows you to easily share and reuse configurations without having to manually copy and paste files.

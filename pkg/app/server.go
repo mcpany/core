@@ -172,6 +172,9 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewPromptManager()
 	a.ResourceManager = resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
+	if cfg.GetGlobalSettings().GetApiKey() != "" {
+		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
+	}
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
 		a.ToolManager,

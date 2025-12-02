@@ -171,6 +171,29 @@ func TestAuthManager(t *testing.T) {
 		assert.True(t, ok)
 		assert.Equal(t, apiKeyAuth, authenticator)
 	})
+
+	t.Run("authenticate_with_global_api_key", func(t *testing.T) {
+		authManager.SetAPIKey("global-secret-key")
+
+		// Successful authentication
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "global-secret-key")
+		_, err := authManager.Authenticate(context.Background(), "any-service", req)
+		assert.NoError(t, err)
+
+		// Failed authentication
+		req = httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "wrong-key")
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
+
+		// Failed authentication (missing key)
+		req = httptest.NewRequest("GET", "/", nil)
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
+
+		authManager.SetAPIKey("")
+	})
 }
 
 func TestAddOAuth2Authenticator(t *testing.T) {
