@@ -34,12 +34,17 @@ func BindFlags(cmd *cobra.Command) {
 
 	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
 	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
+	cmd.PersistentFlags().String("metrics-listen-address", "", "Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS")
 	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
 		fmt.Printf("Error binding mcp-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
 		fmt.Printf("Error binding config-path flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("metrics-listen-address", cmd.PersistentFlags().Lookup("metrics-listen-address")); err != nil {
+		fmt.Printf("Error binding metrics-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 

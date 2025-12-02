@@ -124,6 +124,15 @@ func newRootCmd() *cobra.Command {
 
 			shutdownTimeout := cfg.ShutdownTimeout()
 
+			if metricsListenAddress := cfg.MetricsListenAddress(); metricsListenAddress != "" {
+				go func() {
+					log.Info("Starting metrics server", "address", metricsListenAddress)
+					if err := metrics.StartServer(metricsListenAddress); err != nil {
+						log.Error("Metrics server failed", "error", err)
+					}
+				}()
+			}
+
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err

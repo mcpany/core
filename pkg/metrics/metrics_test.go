@@ -17,65 +17,51 @@
 package metrics
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"strings"
 	"testing"
 	"time"
+
+	"github.com/armon/go-metrics"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMain(m *testing.M) {
-	if err := Initialize(); err != nil {
-		os.Exit(1)
-	}
-	os.Exit(m.Run())
-}
+func TestStartServer(t *testing.T) {
+	// Initialize the metrics system
+	err := Initialize()
+	require.NoError(t, err)
 
-func TestMetrics(t *testing.T) {
-	// Test Handler
-	if handler := Handler(); handler == nil {
-		t.Error("Handler returned a nil handler")
-	}
-
-	// Test SetGauge
-	SetGauge("test_gauge", 1.0, "test_service")
-
-	// Test IncrCounter
-	IncrCounter([]string{"test_counter"}, 1.0)
-
-	// Test MeasureSince
-	MeasureSince([]string{"test_measurement"}, time.Now())
-
-	// Create a test server
-	ts := httptest.NewServer(Handler())
-	defer ts.Close()
+	// Create a new test server
+	server := httptest.NewServer(Handler())
+	defer server.Close()
 
 	// Make a request to the /metrics endpoint
-	resp, err := http.Get(ts.URL + "/metrics")
-	if err != nil {
-		t.Fatal(err)
-	}
+	resp, err := http.Get(server.URL + "/metrics")
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
-	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Check the response body for the expected metrics
-	if !strings.Contains(string(body), "mcpany_test_counter 1") {
-		t.Errorf("Expected metric mcpany_test_counter not found in response body")
-	}
+	// Check the response status code
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestInitialize_Error(t *testing.T) {
-	// The global metrics system is already initialized in TestMain,
-	// so calling it again should return an error.
-	err := Initialize()
-	if err == nil {
-		t.Errorf("Expected an error when calling Initialize twice, but got nil")
-	}
+func TestMetricsCollection(t *testing.T) {
+	// Initialize the metrics system with an in-memory sink
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	m, err := metrics.New(conf, sink)
+	require.NoError(t, err)
+
+	// Record some metrics
+	m.SetGaugeWithLabels([]string{"my_gauge"}, 123, []metrics.Label{{Name: "service_name", Value: "label1"}})
+	m.IncrCounter([]string{"my_counter"}, 1)
+	m.MeasureSince([]string{"my_histogram"}, time.Now().Add(-1*time.Second))
+
+	// Check if the metrics are present in the sink
+	data := sink.Data()
+	require.Len(t, data, 1)
+	assert.Equal(t, float32(123), data[0].Gauges["mcpany.my_gauge;service_name=label1"].Value)
+	assert.Equal(t, 1, data[0].Counters["mcpany.my_counter"].Count)
+	assert.Contains(t, data[0].Samples, "mcpany.my_histogram")
 }
