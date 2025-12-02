@@ -323,7 +323,9 @@ COVERAGE_FILE ?= coverage.out
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
+	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@-pkill -f file-upload-server
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
@@ -349,6 +351,12 @@ build-weather-server:
 	@echo "Building weather server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
 	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream/http/server/weather_server/weather_server.go
+
+.PHONY: build-file-upload-server
+build-file-upload-server:
+	@echo "Building file upload server example..."
+	@mkdir -p $(EXAMPLE_BIN_DIR)
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server examples/file-upload/main.go
 
 # ==============================================================================
 # Other Commands
@@ -389,6 +397,7 @@ E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_serve
 build-e2e-mocks:
 	@mkdir -p $(E2E_BIN_DIR)
 	@$(MAKE) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
+	@$(MAKE) build-file-upload-server
 
 # Rule to build a single E2E mock service
 # < is the first prerequisite (the main.go file)
