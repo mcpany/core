@@ -70,10 +70,15 @@ func NewGitHub(ctx context.Context, rawURL string) (*GitHub, error) {
 		urlType = "blob"
 	}
 
+	ref := matches[4]
+	if ref == "" {
+		ref = "main"
+	}
+
 	return &GitHub{
 		Owner:       matches[1],
 		Repo:        matches[2],
-		Ref:         matches[4],
+		Ref:         ref,
 		Path:        matches[5],
 		URLType:     urlType,
 		log:         logging.GetLogger().With("component", "GitHub"),
