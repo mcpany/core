@@ -153,6 +153,10 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
 		}
+	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
+		if commandLineService.GetCommand() == "" {
+			return fmt.Errorf("command_line_service has empty command")
+		}
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		switch mcpService.WhichConnectionType() {
 		case configv1.McpUpstreamService_HttpConnection_case:
