@@ -377,12 +377,28 @@ func TestCheckVariousServices(t *testing.T) {
 			want: health.StatusUp,
 		},
 		{
+			name: "WebSocket Service Unreachable",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name:             lo.ToPtr("websocket-service-unreachable"),
+				WebsocketService: configv1.WebsocketUpstreamService_builder{Address: lo.ToPtr("localhost:12345")}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
+		{
 			name: "WebRTC Service",
 			config: configv1.UpstreamServiceConfig_builder{
 				Name:          lo.ToPtr("webrtc-service"),
 				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: &addr}.Build(),
 			}.Build(),
 			want: health.StatusUp,
+		},
+		{
+			name: "WebRTC Service Unreachable",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name:          lo.ToPtr("webrtc-service-unreachable"),
+				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: lo.ToPtr("localhost:12345")}.Build(),
+			}.Build(),
+			want: health.StatusDown,
 		},
 		{
 			name: "MCP Service HTTP",
