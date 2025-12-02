@@ -718,6 +718,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 		authManager,
 		serviceRegistry,
 		busProvider,
+		false,
 	)
 	require.NoError(t, err)
 
@@ -1197,6 +1198,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 		authManager,
 		serviceRegistry,
 		busProvider,
+		false,
 	)
 	require.NoError(t, err)
 
@@ -1265,7 +1267,7 @@ func Test_runStdioMode_real(t *testing.T) {
 	resourceManager := resource.NewResourceManager()
 	authManager := auth.NewAuthManager()
 	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
-	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider)
+	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
 	errChan := make(chan error, 1)
