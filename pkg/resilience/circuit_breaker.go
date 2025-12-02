@@ -41,8 +41,7 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 func (cb *CircuitBreaker) Execute(work func() error) error {
 	cb.mutex.Lock()
 
-	state := cb.state
-	if state == StateOpen {
+	if cb.state == StateOpen {
 		if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
 			cb.state = StateHalfOpen
 			cb.halfOpenHits = 0
@@ -50,13 +49,16 @@ func (cb *CircuitBreaker) Execute(work func() error) error {
 			cb.mutex.Unlock()
 			return &CircuitBreakerOpenError{}
 		}
-	} else if state == StateHalfOpen {
+	}
+
+	if cb.state == StateHalfOpen {
 		if cb.halfOpenHits >= int(cb.config.GetHalfOpenRequests()) {
 			cb.mutex.Unlock()
 			return &CircuitBreakerOpenError{}
 		}
 		cb.halfOpenHits++
 	}
+
 	cb.mutex.Unlock()
 
 	err := work()
@@ -79,16 +81,24 @@ func (cb *CircuitBreaker) Execute(work func() error) error {
 }
 
 func (cb *CircuitBreaker) onSuccess() {
-	cb.failures = 0
 	if cb.state == StateHalfOpen {
 		cb.state = StateClosed
+		cb.halfOpenHits = 0
 	}
+	cb.failures = 0
 }
 
 func (cb *CircuitBreaker) onFailure() {
 	if cb.state == StateOpen {
 		return
 	}
+
+	if cb.state == StateHalfOpen {
+		cb.state = StateOpen
+		cb.openTime = time.Now()
+		return
+	}
+
 	cb.failures++
 	if cb.failures >= int(cb.config.GetConsecutiveFailures()) {
 		cb.state = StateOpen
