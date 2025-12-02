@@ -32,11 +32,26 @@ import (
 // plain text) and extract data into a structured map. It uses a configuration
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
-type TextParser struct{}
+type TextParser struct {
+	transformer *Transformer
+}
 
 // NewTextParser creates and returns a new instance of TextParser.
 func NewTextParser() *TextParser {
-	return &TextParser{}
+	return &TextParser{
+		transformer: NewTransformer(),
+	}
+}
+
+// Transform takes a map of data and a Go template string and returns a byte
+// slice containing the transformed output.
+//
+// templateStr is the Go template to be executed.
+// data is the map containing the data to be used in the template.
+// It returns the transformed data as a byte slice or an error if the
+// transformation fails.
+func (p *TextParser) Transform(templateStr string, data map[string]any) ([]byte, error) {
+	return p.transformer.Transform(templateStr, data)
 }
 
 // Parse extracts data from an input byte slice based on the specified input
