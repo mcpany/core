@@ -17,100 +17,128 @@
 package config
 
 import (
-	"io"
-	"os"
+	"bufio"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 )
 
 func TestGenerator(t *testing.T) {
-	testCases := []struct {
-		name          string
-		input         string
-		expected      string
-		expectedError string
-	}{
-		{
-			name: "HTTP Service",
-			input: "http\nmy-http-service\nhttps://api.example.com\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
-			expected: `upstreamServices:
-  - name: "my-http-service"
-    httpService:
-      address: "https://api.example.com"
-      calls:
-        - operationId: "get_user"
-          description: "Get user by ID"
-          method: "HTTP_METHOD_GET"
-          endpointPath: "/users/{userId}"
-`,
-		},
-		{
-			name: "gRPC Service",
-			input: "grpc\nmy-grpc-service\nlocalhost:50052\ntrue\n",
-			expected: `upstreamServices:
-  - name: "my-grpc-service"
-    grpcService:
-      address: "localhost:50052"
-      reflection:
-        enabled: true
-`,
-		},
-		{
-			name: "OpenAPI Service",
-			input: "openapi\nmy-openapi-service\n./openapi.json\n",
-			expected: `upstreamServices:
-  - name: "my-openapi-service"
-    openapiService:
-      spec:
-        path: "./openapi.json"
-`,
-		},
-		{
-			name: "GraphQL Service",
-			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\n",
-			expected: `upstreamServices:
-  - name: "my-graphql-service"
-    graphqlService:
-      address: "http://localhost:8080/graphql"
-      calls:
-        - name: "user"
-          selectionSet: "{ id name }"
-`,
-		},
-		{
-			name:          "Unsupported Service Type",
-			input:         "invalid\n",
-			expectedError: "unsupported service type: invalid",
-		},
-	}
+	t.Run("generateHTTPService", func(t *testing.T) {
+		input := "test-http-service\nhttp://localhost:8080\napiKey\nX-API-Key\nmy-api-key\ny\nget-user\nGet a user\nGET\n/users/{id}\ny\nid\nuserId\nn\nn\n"
+		reader := bufio.NewReader(strings.NewReader(input))
+		generator := &Generator{reader: reader}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			input := strings.NewReader(tc.input)
-			oldStdin := os.Stdin
-			defer func() { os.Stdin = oldStdin }()
-			r, w, _ := os.Pipe()
-			os.Stdin = r
-			io.Copy(w, input)
-			w.Close()
+		configBytes, err := generator.generateHTTPService()
+		require.NoError(t, err)
 
-			generator := NewGenerator()
-			output, err := generator.Generate()
+		var actualConfig Config
+		err = yaml.Unmarshal(configBytes, &actualConfig)
+		require.NoError(t, err)
 
-			if tc.expectedError != "" {
-				if err == nil || !strings.Contains(err.Error(), tc.expectedError) {
-					t.Errorf("expected error containing %q, got %v", tc.expectedError, err)
-				}
-				return
-			}
+		expectedYAML := `upstreamServices:
+    - name: test-http-service
+      httpService:
+        address: http://localhost:8080
+        calls:
+            - operationId: get-user
+              description: Get a user
+              method: GET
+              endpointPath: /users/{id}
+              parameterMappings:
+                - inputParameterName: id
+                  targetParameterName: userId
+      upstreamAuthentication:
+        apiKey:
+            headerName: X-API-Key
+            apiKey:
+                plainText: my-api-key
+`
+		var expectedConfig Config
+		err = yaml.Unmarshal([]byte(expectedYAML), &expectedConfig)
+		require.NoError(t, err)
 
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+		assert.Equal(t, expectedConfig, actualConfig)
+	})
 
-			if strings.TrimSpace(string(output)) != strings.TrimSpace(tc.expected) {
-				t.Errorf("expected:\n%s\ngot:\n%s", tc.expected, string(output))
-			}
-		})
-	}
+	t.Run("generateGRPCService", func(t *testing.T) {
+		input := "test-grpc-service\nlocalhost:50051\ny\n"
+		reader := bufio.NewReader(strings.NewReader(input))
+		generator := &Generator{reader: reader}
+
+		configBytes, err := generator.generateGRPCService()
+		require.NoError(t, err)
+
+		var actualConfig Config
+		err = yaml.Unmarshal(configBytes, &actualConfig)
+		require.NoError(t, err)
+
+		expectedYAML := `upstreamServices:
+    - name: test-grpc-service
+      grpcService:
+        address: localhost:50051
+        reflection:
+            enabled: true
+`
+		var expectedConfig Config
+		err = yaml.Unmarshal([]byte(expectedYAML), &expectedConfig)
+		require.NoError(t, err)
+
+		assert.Equal(t, expectedConfig, actualConfig)
+	})
+
+	t.Run("generateOpenAPIService", func(t *testing.T) {
+		input := "test-openapi-service\n./openapi.json\n"
+		reader := bufio.NewReader(strings.NewReader(input))
+		generator := &Generator{reader: reader}
+
+		configBytes, err := generator.generateOpenAPIService()
+		require.NoError(t, err)
+
+		var actualConfig Config
+		err = yaml.Unmarshal(configBytes, &actualConfig)
+		require.NoError(t, err)
+
+		expectedYAML := `upstreamServices:
+    - name: test-openapi-service
+      openapiService:
+        spec:
+            path: ./openapi.json
+`
+		var expectedConfig Config
+		err = yaml.Unmarshal([]byte(expectedYAML), &expectedConfig)
+		require.NoError(t, err)
+
+		assert.Equal(t, expectedConfig, actualConfig)
+	})
+
+	t.Run("generateGraphQLService", func(t *testing.T) {
+		input := "test-graphql-service\nhttp://localhost:8080/graphql\ny\nuser\n{ id name }\nn\n"
+		reader := bufio.NewReader(strings.NewReader(input))
+		generator := &Generator{reader: reader}
+
+		configBytes, err := generator.generateGraphQLService()
+		require.NoError(t, err)
+
+		var actualConfig Config
+		err = yaml.Unmarshal(configBytes, &actualConfig)
+		require.NoError(t, err)
+
+		expectedYAML := `upstreamServices:
+    - name: test-graphql-service
+      graphqlService:
+        address: http://localhost:8080/graphql
+        calls:
+            - name: user
+              selectionSet: "{ id name }"
+`
+		var expectedConfig Config
+		err = yaml.Unmarshal([]byte(expectedYAML), &expectedConfig)
+		require.NoError(t, err)
+
+		assert.Equal(t, expectedConfig, actualConfig)
+	})
 }

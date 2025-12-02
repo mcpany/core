@@ -325,7 +325,48 @@ MCP Any includes a CLI tool to help you generate configuration files interactive
 go run cmd/mcp-any-cli/main.go
 ```
 
-The tool will prompt you for the information needed to generate a configuration file for a specific service type.
+The tool will guide you through a series of prompts to gather the necessary information for a specific service type. For example, to create a configuration for an HTTP service, you will be asked for the service name, address, authentication method, and tool definitions.
+
+Here is an example of the interactive prompts for creating an HTTP service:
+
+```
+MCP Any CLI: Configuration Generator
+Enter service type (http, grpc, openapi, graphql): http
+Enter service name: my-http-service
+Enter service address: http://localhost:8080
+Enter auth method (none, apiKey, bearerToken, basicAuth): apiKey
+Enter API key header name: X-API-Key
+Enter API key: my-secret-key
+Add a tool? (y/n): y
+Enter operation ID: get-user
+Enter description: Get a user by ID
+Enter HTTP method: GET
+Enter endpoint path: /users/{id}
+Add a parameter mapping? (y/n): y
+Enter input parameter name: id
+Enter target parameter name: userId
+Add a parameter mapping? (y/n): n
+Add a tool? (y/n): n
+
+Generated configuration:
+upstreamServices:
+    - name: my-http-service
+      httpService:
+        address: http://localhost:8080
+        calls:
+            - operationId: get-user
+              description: Get a user by ID
+              method: GET
+              endpointPath: /users/{id}
+              parameterMappings:
+                - inputParameterName: id
+                  targetParameterName: userId
+      upstreamAuthentication:
+        apiKey:
+            headerName: X-API-Key
+            apiKey:
+                plainText: my-secret-key
+```
 
 ## Examples
 

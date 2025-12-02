@@ -21,77 +21,82 @@ import (
 	"strings"
 	"testing"
 
-	"gopkg.in/yaml.v2"
+	"github.com/mcpany/core/pkg/config"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	UpstreamServices []struct {
-		Name        string `yaml:"name"`
-		HTTPService struct {
-			Address string `yaml:"address"`
-			Calls   []struct {
-				OperationID  string `yaml:"operationId"`
-				Description  string `yaml:"description"`
-				Method       string `yaml:"method"`
-				EndpointPath string `yaml:"endpointPath"`
-			} `yaml:"calls"`
-		} `yaml:"httpService"`
-	} `yaml:"upstreamServices"`
-}
-
 func TestCLI(t *testing.T) {
-	cmd := exec.Command("go", "run", "../../cmd/mcp-any-cli/main.go")
+	t.Run("generate http service", func(t *testing.T) {
+		cmd := exec.Command("go", "run", "../../cmd/mcp-any-cli/main.go")
 
-	input := "http\nmy-service\nhttp://example.com\nget-user\nGet a user\nHTTP_METHOD_GET\n/users/{id}\n"
-	cmd.Stdin = strings.NewReader(input)
+		input := "http\ntest-http-service\nhttp://localhost:8080\napiKey\nX-API-Key\nmy-api-key\ny\nget-user\nGet a user\nGET\n/users/{id}\ny\nid\nuserId\nn\nn\n"
+		cmd.Stdin = strings.NewReader(input)
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("unexpected error: %v\noutput: %s", err, string(output))
-	}
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("unexpected error: %v\noutput: %s", err, string(output))
+		}
 
-	outputParts := strings.Split(string(output), "Generated configuration:")
-	if len(outputParts) != 2 {
-		t.Fatalf("unexpected output format: %s", string(output))
-	}
+		outputParts := strings.Split(string(output), "Generated configuration:")
+		if len(outputParts) != 2 {
+			t.Fatalf("unexpected output format: %s", string(output))
+		}
 
-	var cfg Config
-	err = yaml.Unmarshal([]byte(outputParts[1]), &cfg)
-	if err != nil {
-		t.Fatalf("failed to unmarshal YAML: %v", err)
-	}
+		var cfg config.Config
+		err = yaml.Unmarshal([]byte(outputParts[1]), &cfg)
+		if err != nil {
+			t.Fatalf("failed to unmarshal YAML: %v", err)
+		}
 
-	if len(cfg.UpstreamServices) != 1 {
-		t.Fatalf("expected 1 upstream service, but got %d", len(cfg.UpstreamServices))
-	}
+		assert.Len(t, cfg.UpstreamServices, 1)
+		service := cfg.UpstreamServices[0]
+		assert.Equal(t, "test-http-service", service.Name)
+		assert.NotNil(t, service.HTTPService)
+		assert.Equal(t, "http://localhost:8080", service.HTTPService.Address)
+		assert.Len(t, service.HTTPService.Calls, 1)
+		call := service.HTTPService.Calls[0]
+		assert.Equal(t, "get-user", call.OperationID)
+		assert.Equal(t, "Get a user", call.Description)
+		assert.Equal(t, "GET", call.Method)
+		assert.Equal(t, "/users/{id}", call.EndpointPath)
+		assert.Len(t, call.ParameterMappings, 1)
+		param := call.ParameterMappings[0]
+		assert.Equal(t, "id", param.InputParameterName)
+		assert.Equal(t, "userId", param.TargetParameterName)
+		assert.NotNil(t, service.UpstreamAuthentication)
+		assert.NotNil(t, service.UpstreamAuthentication.APIKey)
+		assert.Equal(t, "X-API-Key", service.UpstreamAuthentication.APIKey.HeaderName)
+		assert.Equal(t, "my-api-key", service.UpstreamAuthentication.APIKey.APIKey.PlainText)
+	})
 
-	service := cfg.UpstreamServices[0]
-	if service.Name != "my-service" {
-		t.Errorf("unexpected service name: got %s, want my-service", service.Name)
-	}
+	t.Run("generate grpc service", func(t *testing.T) {
+		cmd := exec.Command("go", "run", "../../cmd/mcp-any-cli/main.go")
 
-	if service.HTTPService.Address != "http://example.com" {
-		t.Errorf("unexpected service address: got %s, want http://example.com", service.HTTPService.Address)
-	}
+		input := "grpc\ntest-grpc-service\nlocalhost:50051\ny\n"
+		cmd.Stdin = strings.NewReader(input)
 
-	if len(service.HTTPService.Calls) != 1 {
-		t.Fatalf("expected 1 call, but got %d", len(service.HTTPService.Calls))
-	}
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("unexpected error: %v\noutput: %s", err, string(output))
+		}
 
-	call := service.HTTPService.Calls[0]
-	if call.OperationID != "get-user" {
-		t.Errorf("unexpected operation ID: got %s, want get-user", call.OperationID)
-	}
+		outputParts := strings.Split(string(output), "Generated configuration:")
+		if len(outputParts) != 2 {
+			t.Fatalf("unexpected output format: %s", string(output))
+		}
 
-	if call.Description != "Get a user" {
-		t.Errorf("unexpected description: got %s, want Get a user", call.Description)
-	}
+		var cfg config.Config
+		err = yaml.Unmarshal([]byte(outputParts[1]), &cfg)
+		if err != nil {
+			t.Fatalf("failed to unmarshal YAML: %v", err)
+		}
 
-	if call.Method != "HTTP_METHOD_GET" {
-		t.Errorf("unexpected method: got %s, want HTTP_METHOD_GET", call.Method)
-	}
-
-	if call.EndpointPath != "/users/{id}" {
-		t.Errorf("unexpected endpoint path: got %s, want /users/{id}", call.EndpointPath)
-	}
+		assert.Len(t, cfg.UpstreamServices, 1)
+		service := cfg.UpstreamServices[0]
+		assert.Equal(t, "test-grpc-service", service.Name)
+		assert.NotNil(t, service.GRPCService)
+		assert.Equal(t, "localhost:50051", service.GRPCService.Address)
+		assert.True(t, service.GRPCService.Reflection.Enabled)
+	})
 }
