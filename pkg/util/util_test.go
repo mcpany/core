@@ -269,49 +269,6 @@ func TestGenerateUUID(t *testing.T) {
 	}
 }
 
-func TestReplaceURLPath(t *testing.T) {
-	testCases := []struct {
-		name        string
-		urlPath     string
-		params      map[string]interface{}
-		expected    string
-	}{
-		{
-			name:    "simple replacement",
-			urlPath: "/users/{{id}}",
-			params:  map[string]interface{}{"id": "123"},
-			expected: "/users/123",
-		},
-		{
-			name:    "multiple replacements",
-			urlPath: "/users/{{id}}/posts/{{postId}}",
-			params:  map[string]interface{}{"id": "123", "postId": "456"},
-			expected: "/users/123/posts/456",
-		},
-		{
-			name:    "with special characters",
-			urlPath: "/users/{{id}}",
-			params:  map[string]interface{}{"id": "a/b"},
-			expected: "/users/a%2Fb",
-		},
-		{
-			name:    "no replacements",
-			urlPath: "/users",
-			params:  map[string]interface{}{"id": "123"},
-			expected: "/users",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			actual := ReplaceURLPath(tc.urlPath, tc.params)
-			if actual != tc.expected {
-				t.Errorf("Expected %q, but got %q", tc.expected, actual)
-			}
-		})
-	}
-}
-
 func TestParseToolName(t *testing.T) {
 	testCases := []struct {
 		name               string

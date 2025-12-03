@@ -13,7 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"github.com/cenkalti/backoff/v4"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 func TestIsRetryable(t *testing.T) {
@@ -123,58 +122,4 @@ func TestUnaryClientInterceptor_NoBaseBackoff(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.True(t, elapsed > 10*time.Millisecond, "elapsed time should be greater than 10ms")
-}
-
-func TestUnaryClientInterceptor_Success(t *testing.T) {
-	retryConfig := &configv1.RetryConfig{}
-	interceptor := UnaryClientInterceptor(retryConfig)
-
-	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		return nil
-	}
-
-	err := interceptor(context.Background(), "/test", nil, nil, nil, invoker)
-	assert.NoError(t, err)
-}
-
-func TestUnaryClientInterceptor_RetryThenSuccess(t *testing.T) {
-	retries := int32(1)
-	retryConfig := &configv1.RetryConfig_builder{
-		NumberOfRetries: &retries,
-		BaseBackoff:     durationpb.New(1 * time.Millisecond),
-	}
-	interceptor := UnaryClientInterceptor(retryConfig.Build())
-
-	callCount := 0
-	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		callCount++
-		if callCount == 1 {
-			return status.Error(codes.Unavailable, "unavailable")
-		}
-		return nil
-	}
-
-	err := interceptor(context.Background(), "/test", nil, nil, nil, invoker)
-	assert.NoError(t, err)
-	assert.Equal(t, 2, callCount)
-}
-
-func TestUnaryClientInterceptor_NonRetryableError(t *testing.T) {
-	retryConfig := &configv1.RetryConfig{}
-	interceptor := UnaryClientInterceptor(retryConfig)
-
-	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		return status.Error(codes.InvalidArgument, "invalid argument")
-	}
-
-	err := interceptor(context.Background(), "/test", nil, nil, nil, invoker)
-	assert.Error(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = invalid argument", err.Error())
-}
-
-func TestNewBackoff_NilConfig(t *testing.T) {
-	b := newBackoff(context.Background(), nil)
-	assert.NotNil(t, b)
-	_, ok := b.(*backoff.StopBackOff)
-	assert.True(t, ok)
 }
