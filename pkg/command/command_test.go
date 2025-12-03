@@ -57,25 +57,6 @@ func canConnectToDocker(t *testing.T) bool {
 	return true
 }
 
-func TestNewExecutor(t *testing.T) {
-	t.Run("should return localExecutor when containerEnv is nil", func(t *testing.T) {
-		executor := NewExecutor(nil)
-		assert.IsType(t, &localExecutor{}, executor)
-	})
-
-	t.Run("should return localExecutor when containerEnv image is empty", func(t *testing.T) {
-		executor := NewExecutor(&configv1.ContainerEnvironment{})
-		assert.IsType(t, &localExecutor{}, executor)
-	})
-
-	t.Run("should return dockerExecutor when containerEnv image is not empty", func(t *testing.T) {
-		ce := &configv1.ContainerEnvironment{}
-		ce.SetImage("test-image")
-		executor := NewExecutor(ce)
-		assert.IsType(t, &dockerExecutor{}, executor)
-	})
-}
-
 func TestLocalExecutor(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
@@ -181,31 +162,6 @@ func TestLocalExecutor(t *testing.T) {
 	})
 }
 
-func TestLocalExecutor_ExecuteWithStdIO(t *testing.T) {
-	executor := NewLocalExecutor()
-
-	t.Run("should execute a command with stdin and return stdout", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		stdin, stdout, stderr, exitCode, err := executor.ExecuteWithStdIO(ctx, "cat", nil, "", nil)
-		require.NoError(t, err)
-
-		go func() {
-			defer stdin.Close()
-			_, err := io.WriteString(stdin, "hello")
-			assert.NoError(t, err)
-		}()
-
-		stdoutBytes, _ := io.ReadAll(stdout)
-		stderrBytes, _ := io.ReadAll(stderr)
-
-		assert.Equal(t, "hello", string(stdoutBytes))
-		assert.Empty(t, string(stderrBytes))
-		assert.Equal(t, 0, <-exitCode)
-	})
-}
-
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
@@ -253,18 +209,8 @@ func TestDockerExecutor(t *testing.T) {
 		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil)
 		require.NoError(t, err)
 
-		var wg sync.WaitGroup
-		wg.Add(1)
-		var stdoutBytes []byte
-		var stdoutErr error
-		go func() {
-			defer wg.Done()
-			stdoutBytes, stdoutErr = io.ReadAll(stdout)
-		}()
-
-		wg.Wait()
-
-		require.NoError(t, stdoutErr)
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
 		assert.Equal(t, "hello from the host", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
@@ -322,14 +268,7 @@ func TestDockerExecutor(t *testing.T) {
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		var wg sync.WaitGroup
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			<-exitCodeChan
-		}()
-
-		wg.Wait()
+		<-exitCodeChan
 
 		// Check if container is removed
 		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

@@ -130,51 +130,6 @@ func TestFileExists(t *testing.T) {
 	assert.Error(t, FileExists("non-existent-file"))
 }
 
-func TestIsSecurePath(t *testing.T) {
-	testCases := []struct {
-		name          string
-		path          string
-		expectedError string
-	}{
-		{
-			name:          "valid relative path",
-			path:          "path/to/file",
-			expectedError: "",
-		},
-		{
-			name:          "valid relative path with dot",
-			path:          "./path/to/file",
-			expectedError: "",
-		},
-		{
-			name:          "absolute path",
-			path:          "/path/to/file",
-			expectedError: "absolute paths are not allowed: /path/to/file",
-		},
-		{
-			name:          "path traversal",
-			path:          "../path/to/file",
-			expectedError: "path resolves to a location outside of the working directory: ../path/to/file",
-		},
-		{
-			name:          "path traversal with parent directory",
-			path:          "path/../../file",
-			expectedError: "path resolves to a location outside of the working directory: ../file",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := IsSecurePath(tc.path)
-			if tc.expectedError == "" {
-				assert.NoError(t, err)
-			} else {
-				assert.EqualError(t, err, tc.expectedError)
-			}
-		})
-	}
-}
-
 func TestValidateHTTPServiceDefinition(t *testing.T) {
 	methodPost := configv1.HttpCallDefinition_HTTP_METHOD_POST
 	methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET

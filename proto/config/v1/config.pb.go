@@ -276,7 +276,6 @@ type UpstreamServiceCollection struct {
 	xxx_hidden_HttpUrl        *string                 `protobuf:"bytes,2,opt,name=http_url,json=httpUrl"`
 	xxx_hidden_Priority       int32                   `protobuf:"varint,3,opt,name=priority"`
 	xxx_hidden_Authentication *UpstreamAuthentication `protobuf:"bytes,4,opt,name=authentication"`
-	xxx_hidden_Namespace      *string                 `protobuf:"bytes,5,opt,name=namespace"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -342,38 +341,23 @@ func (x *UpstreamServiceCollection) GetAuthentication() *UpstreamAuthentication 
 	return nil
 }
 
-func (x *UpstreamServiceCollection) GetNamespace() string {
-	if x != nil {
-		if x.xxx_hidden_Namespace != nil {
-			return *x.xxx_hidden_Namespace
-		}
-		return ""
-	}
-	return ""
-}
-
 func (x *UpstreamServiceCollection) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *UpstreamServiceCollection) SetHttpUrl(v string) {
 	x.xxx_hidden_HttpUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *UpstreamServiceCollection) SetPriority(v int32) {
 	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *UpstreamServiceCollection) SetAuthentication(v *UpstreamAuthentication) {
 	x.xxx_hidden_Authentication = v
-}
-
-func (x *UpstreamServiceCollection) SetNamespace(v string) {
-	x.xxx_hidden_Namespace = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *UpstreamServiceCollection) HasName() bool {
@@ -404,13 +388,6 @@ func (x *UpstreamServiceCollection) HasAuthentication() bool {
 	return x.xxx_hidden_Authentication != nil
 }
 
-func (x *UpstreamServiceCollection) HasNamespace() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
 func (x *UpstreamServiceCollection) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -430,11 +407,6 @@ func (x *UpstreamServiceCollection) ClearAuthentication() {
 	x.xxx_hidden_Authentication = nil
 }
 
-func (x *UpstreamServiceCollection) ClearNamespace() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Namespace = nil
-}
-
 type UpstreamServiceCollection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -446,9 +418,6 @@ type UpstreamServiceCollection_builder struct {
 	Priority *int32
 	// The authentication to use when fetching the collection.
 	Authentication *UpstreamAuthentication
-	// A namespace prefix to apply to all services in this collection.
-	// The final service name will be "{namespace}/{service_name}".
-	Namespace *string
 }
 
 func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
@@ -456,22 +425,18 @@ func (b0 UpstreamServiceCollection_builder) Build() *UpstreamServiceCollection {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.HttpUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
 		x.xxx_hidden_HttpUrl = b.HttpUrl
 	}
 	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
 		x.xxx_hidden_Priority = *b.Priority
 	}
 	x.xxx_hidden_Authentication = b.Authentication
-	if b.Namespace != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Namespace = b.Namespace
-	}
 	return m0
 }
 
@@ -5922,13 +5887,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x12McpAnyServerConfig\x12I\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0eglobalSettings\x12T\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x10upstreamServices\x12m\n" +
-	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1aupstreamServiceCollections\"\xd6\x01\n" +
+	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1aupstreamServiceCollections\"\xb8\x01\n" +
 	"\x19UpstreamServiceCollection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\x12\x1c\n" +
-	"\tnamespace\x18\x05 \x01(\tR\tnamespace\"\xed\x02\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xed\x02\n" +
 	"\x0eGlobalSettings\x12,\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x10mcpListenAddress\x12!\n" +
 	"\fmcp_basepath\x18\x02 \x01(\tR\vmcpBasepath\x12F\n" +
