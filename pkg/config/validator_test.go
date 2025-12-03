@@ -65,6 +65,22 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "cmd-svc-1": command_line_service has empty command`,
 		},
+		{
+			name: "service with no service_config",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "no-service-config"
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "no-service-config": service "no-service-config" has no service_config`,
+		},
 	}
 
 	for _, tt := range tests {
