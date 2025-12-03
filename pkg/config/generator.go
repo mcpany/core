@@ -164,11 +164,10 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		lowerInput := strings.ToLower(reflectionEnabled)
-		if lowerInput == "true" {
+		if reflectionEnabled == "true" {
 			data.ReflectionEnabled = true
 			break
-		} else if lowerInput == "false" {
+		} else if reflectionEnabled == "false" {
 			data.ReflectionEnabled = false
 			break
 		} else {

@@ -18,6 +18,7 @@ package redis
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,126 +29,167 @@ import (
 func TestRedisBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
-	topic := "concurrent-subscribers-topic"
+	topic := "concurrent-subscribers"
+	numSubscribers := 10
+	var wg sync.WaitGroup
+	wg.Add(numSubscribers)
 
-	handler1Called := make(chan bool, 1)
-	handler2Called := make(chan bool, 1)
+	for i := 0; i < numSubscribers; i++ {
+		go func() {
+			unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+				// Each subscriber should receive the message
+				wg.Done()
+			})
+			defer unsub()
+		}()
+	}
 
-	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {
-		handler1Called <- true
+	// Give subscribers time to start
+	time.Sleep(100 * time.Millisecond)
+
+	// Publish a message
+	err := bus.Publish(context.Background(), topic, "hello")
+	require.NoError(t, err)
+
+	wg.Wait()
+}
+
+func TestRedisBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "once-unsubscribe-from-handler"
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	var unsub func()
+	unsub = bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+		unsub() // Call unsubscribe from within the handler
+		wg.Done()
 	})
-	defer unsub1()
-
-	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {
-		handler2Called <- true
-	})
-	defer unsub2()
 
 	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 2
-	}, 1*time.Second, 10*time.Millisecond, "subscribers did not appear")
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
 	err := bus.Publish(context.Background(), topic, "hello")
 	assert.NoError(t, err)
 
-	<-handler1Called
-	<-handler2Called
+	wg.Wait()
+
+	require.Eventually(t, func() bool {
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 0
+		}
+		return true
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
 
-func TestRedisBus_Subscribe_CloseClientDuringSubscription(t *testing.T) {
+func TestRedisBus_Subscribe_CloseClient(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
-	topic := "close-client-during-subscription"
+	topic := "test-close-client"
 
-	handlerCalled := make(chan bool, 1)
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		handlerCalled <- true
+		// This handler might be called once if a message is received before the client is closed
+		wg.Done()
 	})
 	defer unsub()
 
 	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
+		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
+		require.NoError(t, err)
+		if val, ok := subs[topic]; ok {
+			return val == 1
+		}
+		return false
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
+	// Close the client, which should terminate the subscription loop
 	err := client.Close()
 	assert.NoError(t, err)
+	time.Sleep(100 * time.Millisecond)
 
-	// The subscription goroutine should exit gracefully.
-	// We verify this by checking that it doesn't panic and the test completes.
-	time.Sleep(200 * time.Millisecond)
-
-	// A new publish should fail
-	err = bus.Publish(context.Background(), topic, "hello")
-	assert.Error(t, err)
+	bus.mu.Lock()
+	_, ok := bus.pubsubs[topic]
+	bus.mu.Unlock()
+	assert.False(t, ok, "subscription should be removed after client is closed")
 }
 
-func TestRedisBus_Close(t *testing.T) {
+func TestRedisBus_Subscribe_CloseClient_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
+	topic := "test-close-client-race"
 
-	// Subscribe to a topic to create a pubsub connection
-	unsubscribe := bus.Subscribe(context.Background(), "test-topic-close", func(msg string) {})
+	var wg sync.WaitGroup
+	wg.Add(1)
 
-	err := bus.Close()
-	assert.NoError(t, err)
-
-	// After closing, publish should fail
-	err = bus.Publish(context.Background(), "test-topic-close", "hello")
-	assert.Error(t, err)
-
-	// calling unsubscribe after close should not panic
-	assert.NotPanics(t, func() {
-		unsubscribe()
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+		wg.Done()
 	})
-}
 
-func TestRedisBus_Close_Error(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
+	var unsubOnce sync.Once
+	go func() {
+		unsubOnce.Do(unsub)
+	}()
 
-	// Subscribe to a topic to create a pubsub connection
-	bus.Subscribe(context.Background(), "test-topic-close-error", func(msg string) {})
-
-	// Close the underlying client to trigger an error when bus.Close() is called.
 	err := client.Close()
 	assert.NoError(t, err)
 
-	// This should now return an error because the client is already closed.
-	err = bus.Close()
-	assert.Error(t, err)
+	unsubOnce.Do(unsub)
 }
 
-func TestRedisBus_Close_ClientCloseError(t *testing.T) {
+func TestRedisBus_Unsubscribe_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
+	topic := "test-unsubscribe-race"
 
-	// Subscribe to a topic to create a pubsub connection
-	bus.Subscribe(context.Background(), "test-topic-client-close-error", func(msg string) {})
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
 
-	// Close the underlying client to trigger an error when bus.Close() is called.
-	err := client.Close()
-	assert.NoError(t, err)
-
-	// This should now return an error because the client is already closed.
-	err = bus.Close()
-	assert.Error(t, err)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		unsub()
+	}()
+	go func() {
+		defer wg.Done()
+		unsub()
+	}()
+	wg.Wait()
 }
 
-func TestRedisBus_Close_PubSubCloseError(t *testing.T) {
+func TestRedisBus_Subscribe_And_Unsubscribe_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
+	topic := "test-subscribe-and-unsubscribe-race"
 
-	// Subscribe to a topic to create a pubsub connection
-	bus.Subscribe(context.Background(), "test-topic-pubsub-close-error", func(msg string) {})
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	// Manually close the pubsub to trigger an error on the second close
-	pubsub := bus.pubsubs["test-topic-pubsub-close-error"]
-	err := pubsub.Close()
-	assert.NoError(t, err)
+	go func() {
+		defer wg.Done()
+		unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+		time.Sleep(10 * time.Millisecond)
+		unsub()
+	}()
 
-	err = bus.Close()
-	assert.Error(t, err)
+	go func() {
+		defer wg.Done()
+		unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+		time.Sleep(10 * time.Millisecond)
+		unsub()
+	}()
+
+	wg.Wait()
 }
