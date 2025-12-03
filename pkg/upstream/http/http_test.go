@@ -32,6 +32,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -544,6 +545,51 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	})
 }
 
+func TestHTTPUpstream_Register_WithFragment(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	mockToolManager := tool.NewMockToolManagerInterface(ctrl)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+
+	ctx := context.Background()
+	poolManager := pool.NewManager()
+	u := NewHTTPUpstream(poolManager)
+
+	configJSON := `{
+		"name": "test-service-with-fragment",
+		"http_service": {
+			"address": "http://localhost:8080",
+			"calls": {
+				"call1": {
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "/path#fragment"
+				}
+			},
+			"tools": [
+				{
+					"call_id": "call1",
+					"name": "test-tool-with-fragment"
+				}
+			]
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	mockToolManager.EXPECT().ClearToolsForService(gomock.Any()).AnyTimes()
+	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any()).AnyTimes()
+	mockToolManager.EXPECT().AddTool(gomock.Any()).DoAndReturn(func(httpTool tool.Tool) error {
+		underlyingMethod := httpTool.Tool().GetUnderlyingMethodFqn()
+		expectedMethod := "GET http://localhost:8080/path#fragment"
+		assert.Equal(t, expectedMethod, underlyingMethod)
+		return nil
+	}).Times(1)
+
+	_, _, _, err := u.Register(ctx, serviceConfig, mockToolManager, promptManager, resourceManager, false)
+	assert.NoError(t, err)
+}
+
 func newMockToolManager() *mockToolManager {
 	return &mockToolManager{
 		addedTools: make([]tool.Tool, 0),
@@ -631,7 +677,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 
 	// We need to use a mock tool manager to check if ClearToolsForService is called.
 	// Since the upstream doesn't expose the tool manager, this is the best we can do
-	// without further refactoring. The logic is tested implicitly by checking the
+	// without further refactoring. The logic is tested implicitly by a checking the
 	// final state of the tools.
 	_, _, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
