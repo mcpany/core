@@ -23,11 +23,18 @@ import (
 )
 
 func main() {
-	var data map[string]interface{}
-	if err := json.NewDecoder(os.Stdin).Decode(&data); err != nil {
-		if err != io.EOF {
-			os.Exit(1)
-		}
+	input, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		os.Exit(1)
+	}
+
+	if len(input) == 0 {
+		return
+	}
+
+	var data interface{}
+	if err := json.Unmarshal(input, &data); err != nil {
+		os.Exit(1)
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(data); err != nil {
