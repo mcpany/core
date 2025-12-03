@@ -7,7 +7,8 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -77,7 +78,7 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	// 1. Reset the upstream server's counter.
-	resp, err := http.Post(fmt.Sprintf("http://%s/reset", upstreamEndpoint), "", nil)
+	resp, err := http.Post(fmt.Sprintf("%s/reset", upstreamEndpoint), "", nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -104,7 +105,7 @@ func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 }
 
 func getUpstreamMetrics(t *testing.T, upstreamEndpoint string) map[string]int64 {
-	resp, err := http.Get(fmt.Sprintf("http://%s/metrics", upstreamEndpoint))
+	resp, err := http.Get(fmt.Sprintf("%s/metrics", upstreamEndpoint))
 	require.NoError(t, err)
 	defer resp.Body.Close()
 

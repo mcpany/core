@@ -390,7 +390,7 @@ E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
 E2E_BIN_DIR := $(CURDIR)/build/test/bin
 
 # List of mock service directories (which are also their binary names)
-E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server command-tester prompt-server
+E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server http_caching_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server command-tester prompt-server
 
 # Target to build all E2E mock services
 .PHONY: build-e2e-mocks
