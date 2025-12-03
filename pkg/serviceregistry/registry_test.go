@@ -39,6 +39,14 @@ import (
 type mockUpstream struct {
 	upstream.Upstream
 	registerFunc func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	shutdownFunc func() error
+}
+
+func (m *mockUpstream) Shutdown(ctx context.Context) error {
+	if m.shutdownFunc != nil {
+		return m.shutdownFunc()
+	}
+	return nil
 }
 
 func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {

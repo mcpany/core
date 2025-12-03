@@ -81,6 +81,13 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // effectively acting as a proxy or aggregator.
 type MCPUpstream struct{}
 
+// Shutdown is a no-op for the MCP upstream, as the connections it manages are
+// transient and established on a per-call basis. There are no persistent
+// connections to tear down.
+func (u *MCPUpstream) Shutdown(ctx context.Context) error {
+	return nil
+}
+
 // NewMCPUpstream creates a new instance of MCPUpstream.
 func NewMCPUpstream() upstream.Upstream {
 	return &MCPUpstream{}

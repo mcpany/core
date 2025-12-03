@@ -66,6 +66,14 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // defined in the service configuration.
 type HTTPUpstream struct {
 	poolManager *pool.Manager
+	serviceID   string
+}
+
+// Shutdown gracefully terminates the HTTP upstream service by shutting down the
+// associated connection pool.
+func (u *HTTPUpstream) Shutdown(ctx context.Context) error {
+	u.poolManager.Deregister(u.serviceID)
+	return nil
 }
 
 // NewHTTPUpstream creates a new instance of HTTPUpstream.
@@ -103,7 +111,8 @@ func (u *HTTPUpstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	u.serviceID = sanitizedName
+	serviceID := u.serviceID
 
 	if isReload {
 		toolManager.ClearToolsForService(serviceID)
