@@ -108,6 +108,12 @@ func TestNewGitHub(t *testing.T) {
 				URLType: "tree",
 			},
 		},
+		{
+			name:          "URL with control character",
+			url:           "https://\x7fgithub.com/mcpany/core",
+			expectedError: true,
+			expected:      nil,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -241,5 +247,161 @@ func TestGitHub_List_ssrf(t *testing.T) {
 		t.Errorf("Expected an error due to SSRF attempt, but got nil")
 	} else if !strings.Contains(err.Error(), "ssrf attempt blocked") {
 		t.Errorf("Expected error to contain 'ssrf attempt blocked', but got: %v", err)
+	}
+}
+
+func TestGitHub_applyAuthentication(t *testing.T) {
+	g := &GitHub{}
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+
+	// Test case 1: No authentication
+	err := g.applyAuthentication(req, nil)
+	if err != nil {
+		t.Errorf("applyAuthentication(nil) returned an error: %v", err)
+	}
+
+	// Test case 2: API Key authentication
+	auth := &configv1.UpstreamAuthentication{}
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("my-api-key")
+	apiKey := &configv1.UpstreamAPIKeyAuth{}
+	apiKey.SetHeaderName("X-API-Key")
+	apiKey.SetApiKey(secret)
+	auth.SetApiKey(apiKey)
+	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	err = g.applyAuthentication(req, auth)
+	if err != nil {
+		t.Errorf("applyAuthentication with API Key returned an error: %v", err)
+	}
+	if req.Header.Get("X-API-Key") != "my-api-key" {
+		t.Errorf("API Key not set correctly in the header")
+	}
+
+	// Test case 3: Bearer Token authentication
+	secret.SetPlainText("my-bearer-token")
+	bearerToken := &configv1.UpstreamBearerTokenAuth{}
+	bearerToken.SetToken(secret)
+	auth.SetBearerToken(bearerToken)
+	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	err = g.applyAuthentication(req, auth)
+	if err != nil {
+		t.Errorf("applyAuthentication with Bearer Token returned an error: %v", err)
+	}
+	if req.Header.Get("Authorization") != "Bearer my-bearer-token" {
+		t.Errorf("Bearer Token not set correctly in the header")
+	}
+
+	// Test case 4: Basic authentication
+	secret.SetPlainText("my-password")
+	basicAuth := &configv1.UpstreamBasicAuth{}
+	basicAuth.SetUsername("my-user")
+	basicAuth.SetPassword(secret)
+	auth.SetBasicAuth(basicAuth)
+	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	err = g.applyAuthentication(req, auth)
+	if err != nil {
+		t.Errorf("applyAuthentication with Basic Auth returned an error: %v", err)
+	}
+	username, password, ok := req.BasicAuth()
+	if !ok || username != "my-user" || password != "my-password" {
+		t.Errorf("Basic Auth not set correctly in the header")
+	}
+}
+
+func TestGitHub_applyAuthentication_SecretErrors(t *testing.T) {
+	g := &GitHub{}
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+
+	// API Key with secret error
+	auth := &configv1.UpstreamAuthentication{}
+	secret := &configv1.SecretValue{}
+	secret.SetEnvironmentVariable("NON_EXISTENT_VAR")
+	apiKey := &configv1.UpstreamAPIKeyAuth{}
+	apiKey.SetHeaderName("X-API-Key")
+	apiKey.SetApiKey(secret)
+	auth.SetApiKey(apiKey)
+	err := g.applyAuthentication(req, auth)
+	if err == nil {
+		t.Errorf("Expected an error for API Key with secret error, but got nil")
+	}
+
+	// Bearer Token with secret error
+	secret.SetEnvironmentVariable("NON_EXISTENT_VAR")
+	bearerToken := &configv1.UpstreamBearerTokenAuth{}
+	bearerToken.SetToken(secret)
+	auth.SetBearerToken(bearerToken)
+	err = g.applyAuthentication(req, auth)
+	if err == nil {
+		t.Errorf("Expected an error for Bearer Token with secret error, but got nil")
+	}
+
+	// Basic Auth with secret error
+	secret.SetEnvironmentVariable("NON_EXISTENT_VAR")
+	basicAuth := &configv1.UpstreamBasicAuth{}
+	basicAuth.SetUsername("my-user")
+	basicAuth.SetPassword(secret)
+	auth.SetBasicAuth(basicAuth)
+	err = g.applyAuthentication(req, auth)
+	if err == nil {
+		t.Errorf("Expected an error for Basic Auth with secret error, but got nil")
+	}
+}
+
+func TestGitHub_List_Errors(t *testing.T) {
+	g := &GitHub{
+		Owner:      "mcpany",
+		Repo:       "core",
+		Ref:        "main",
+		Path:       "examples",
+		httpClient: &http.Client{},
+	}
+
+	// Test case 1: HTTP request creation error
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel the context to force an error in NewRequestWithContext
+	_, err := g.List(ctx, nil)
+	if err == nil {
+		t.Errorf("Expected an error for failed HTTP request creation, but got nil")
+	}
+
+	// Test case 2: HTTP client error
+	g.apiURL = "http://invalid-url"
+	_, err = g.List(context.Background(), nil)
+	if err == nil {
+		t.Errorf("Expected an error for HTTP client failure, but got nil")
+	}
+
+	// Test case 3: Non-200 status code
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+	g.apiURL = server.URL
+	_, err = g.List(context.Background(), nil)
+	if err == nil {
+		t.Errorf("Expected an error for non-200 status code, but got nil")
+	}
+
+	// Test case 4: Response body read error
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Length", "1")
+	}))
+	defer server.Close()
+	g.apiURL = server.URL
+	_, err = g.List(context.Background(), nil)
+	if err == nil {
+		t.Errorf("Expected an error for response body read failure, but got nil")
+	}
+
+	// Test case 5: JSON unmarshal error
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("invalid-json"))
+	}))
+	defer server.Close()
+	g.apiURL = server.URL
+	_, err = g.List(context.Background(), nil)
+	if err == nil {
+		t.Errorf("Expected an error for JSON unmarshal failure, but got nil")
 	}
 }

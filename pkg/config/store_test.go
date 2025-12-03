@@ -158,6 +158,28 @@ func TestReadURL(t *testing.T) {
 		_, err := readURL("http://" + attackerDomain)
 		assert.NoError(t, err, "Expected the request to succeed due to SSRF TOCTOU vulnerability")
 	})
+
+	t.Run("should fail on oversized response body", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusOK)
+			// 1MB + 1 byte
+			largeResponse := make([]byte, 1024*1024+1)
+			w.Write(largeResponse)
+		}))
+		defer server.Close()
+
+		originalClient := httpClient
+		defer func() { httpClient = originalClient }()
+		httpClient = &http.Client{
+			Timeout: 5 * time.Second,
+		}
+
+		_, err := readURL(server.URL)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to read response body")
+		assert.Contains(t, err.Error(), "http: request body too large")
+	})
 }
 
 func TestNewEngine(t *testing.T) {

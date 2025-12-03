@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/tool"
@@ -28,6 +29,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
@@ -36,6 +38,21 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 	}
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String(command),
+	}).Build()
+	return tool.NewCommandTool(
+		&v1.Tool{},
+		service,
+		callDef,
+	)
+}
+
+func newCommandToolWithTimeout(command string, callDef *configv1.CommandLineCallDefinition, timeout time.Duration) tool.Tool {
+	if callDef == nil {
+		callDef = &configv1.CommandLineCallDefinition{}
+	}
+	service := (&configv1.CommandLineUpstreamService_builder{
+		Command: proto.String(command),
+		Timeout: durationpb.New(timeout),
 	}).Build()
 	return tool.NewCommandTool(
 		&v1.Tool{},
@@ -158,6 +175,22 @@ func TestCommandTool_Execute(t *testing.T) {
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
 		assert.Equal(t, "bar", resultMap["foo"])
+	})
+
+	t.Run("execution timeout", func(t *testing.T) {
+		cmdTool := newCommandToolWithTimeout("/usr/bin/env", nil, 10*time.Millisecond)
+		inputData := map[string]interface{}{"args": []string{"sleep", "1"}}
+		inputs, err := json.Marshal(inputData)
+		require.NoError(t, err)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		resultMap, ok := result.(map[string]interface{})
+		require.True(t, ok)
+		assert.Equal(t, consts.CommandStatusTimeout, resultMap["status"])
+		assert.Equal(t, -1, resultMap["return_code"])
 	})
 }
 
