@@ -83,15 +83,6 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
 	}
-
-	// Prepend "localhost:" if the address is just a port.
-	if !strings.Contains(mcpListenAddress, ":") {
-		mcpListenAddress = "localhost:" + mcpListenAddress
-	}
-
-	if err := ValidateListenAddress(mcpListenAddress); err != nil {
-		return err
-	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
 	s.proto.SetApiKey(s.APIKey())
@@ -106,7 +97,11 @@ func (s *Settings) GRPCPort() string {
 
 // MCPListenAddress returns the MCP listen address.
 func (s *Settings) MCPListenAddress() string {
-	return s.proto.GetMcpListenAddress()
+	addr := s.proto.GetMcpListenAddress()
+	if !strings.Contains(addr, ":") {
+		addr = "localhost:" + addr
+	}
+	return addr
 }
 
 // MetricsListenAddress returns the metrics listen address.
