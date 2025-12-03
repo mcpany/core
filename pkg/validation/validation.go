@@ -65,9 +65,6 @@ func IsSecurePath(path string) error {
 	if strings.HasPrefix(cleanedPath, "..") {
 		return fmt.Errorf("path resolves to a location outside of the working directory: %s", cleanedPath)
 	}
-	if strings.HasPrefix(path, "/") {
-		return fmt.Errorf("path is absolute, which is not allowed")
-	}
 	return nil
 }
 

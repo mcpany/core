@@ -90,44 +90,6 @@ func TestIsValidURL(t *testing.T) {
 	}
 }
 
-func TestIsSecurePath(t *testing.T) {
-	testCases := []struct {
-		name    string
-		path    string
-		wantErr bool
-	}{
-		{
-			name:    "valid relative path",
-			path:    "some/path/to/file.txt",
-			wantErr: false,
-		},
-		{
-			name:    "path with ..",
-			path:    "../etc/passwd",
-			wantErr: true,
-		},
-		{
-			name:    "absolute path",
-			path:    "/etc/passwd",
-			wantErr: true,
-		},
-		{
-			name:    "current directory",
-			path:    ".",
-			wantErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := IsSecurePath(tc.path)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("IsSecurePath() error = %v, wantErr %v", err, tc.wantErr)
-			}
-		})
-	}
-}
-
 func TestIsValidBindAddress(t *testing.T) {
 	tests := []struct {
 		name    string

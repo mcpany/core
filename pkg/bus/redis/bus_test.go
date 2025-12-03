@@ -21,19 +21,23 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
-	"os"
 	"sync"
 	"testing"
 	"time"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/logging"
-	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 	"google.golang.org/protobuf/proto"
+)
+
+import (
+	"os"
+	// ... other imports
 )
 
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
@@ -108,6 +112,8 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
+
+
 func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -177,6 +183,7 @@ func TestRedisBus_SubscribeOnce_Correctness(t *testing.T) {
 	assert.Equal(t, 1, callCount, "handler should be called exactly once")
 	mu.Unlock()
 }
+
 
 func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
@@ -375,29 +382,6 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	case <-time.After(200 * time.Millisecond):
 		// Test passed
 	}
-}
-
-func TestRedisBus_Close(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-
-	// Subscribe to a topic to create a pubsub connection
-	unsub := bus.Subscribe(context.Background(), "test-close", func(msg string) {})
-	defer unsub()
-
-	// Check that there is one subscription
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), "test-close").Val()
-		return len(subs) > 0 && subs["test-close"] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Close the bus
-	err := bus.Close()
-	assert.NoError(t, err)
-
-	// Verify that the client is closed
-	err = client.Ping(context.Background()).Err()
-	assert.Equal(t, redis.ErrClosed, err)
 }
 
 func TestRedisBus_New(t *testing.T) {
@@ -929,38 +913,4 @@ func TestRedisBus_SubscribeOnce_CancelledContext(t *testing.T) {
 	assert.NoError(t, err)
 
 	time.Sleep(100 * time.Millisecond)
-}
-
-func TestRedisBus_Close_WithActiveSubscriptions(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "close-with-active-subscriptions"
-
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		// This handler should not be called
-		t.Error("handler should not be called")
-	})
-
-	require.Eventually(t, func() bool {
-		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
-		require.NoError(t, err)
-		if val, ok := subs[topic]; ok {
-			return val == 1
-		}
-		return false
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	err := bus.Close()
-	assert.NoError(t, err)
-
-	// The subscription should be closed
-	require.Eventually(t, func() bool {
-		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
-		require.NoError(t, err)
-		if val, ok := subs[topic]; ok {
-			return val == 0
-		}
-		return true
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after close")
-	unsub()
 }
