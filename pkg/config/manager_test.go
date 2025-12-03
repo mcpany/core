@@ -290,6 +290,7 @@ services:
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			manager := NewUpstreamServiceManager()
+			manager.httpClient = &http.Client{}
 			loadedServices, err := manager.LoadAndMergeServices(context.Background(), tc.initialConfig)
 
 			if tc.expectLoadError {
