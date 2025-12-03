@@ -257,6 +257,57 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestToolManager_ExecuteTool_Middleware_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := NewToolManager(nil)
+	mockMiddleware := NewMockToolExecutionMiddleware(ctrl)
+	tm.AddMiddleware(mockMiddleware)
+
+	mockTool := NewMockTool(ctrl)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("exec-service")
+	toolProto.SetName("exec-tool")
+	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
+	toolID := "exec-service" + "." + sanitizedToolName
+	execReq := &ExecutionRequest{ToolName: toolID}
+
+	expectedErr := fmt.Errorf("middleware error")
+	mockMiddleware.EXPECT().Execute(gomock.Any(), execReq, gomock.Any()).Return(nil, expectedErr)
+
+	_, err = tm.ExecuteTool(context.Background(), execReq)
+	assert.Error(t, err)
+	assert.Equal(t, expectedErr, err)
+}
+
+func TestToolManager_ClearToolsForService_Cache(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := NewToolManager(nil)
+	mockTool1 := NewMockTool(ctrl)
+	toolProto1 := &v1.Tool{}
+	toolProto1.SetServiceId("service-a")
+	toolProto1.SetName("tool-1")
+	mockTool1.EXPECT().Tool().Return(toolProto1).AnyTimes()
+	mockTool1.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
+
+	_ = tm.AddTool(mockTool1)
+
+	// This will cache the tool list
+	tm.ListTools()
+
+	tm.ClearToolsForService("service-a")
+	tools := tm.ListTools()
+	assert.Len(t, tools, 0, "Should have no tools remaining")
+}
+
 // MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
 type MockToolExecutionMiddleware struct {
 	ctrl     *gomock.Controller
