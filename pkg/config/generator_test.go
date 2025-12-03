@@ -68,6 +68,22 @@ func TestGenerator_Generate(t *testing.T) {
 `,
 		},
 		{
+			name: "gRPC Service with uppercase reflection input",
+			inputs: []string{
+				"grpc",
+				"test-grpc-uppercase",
+				"localhost:50051",
+				"TRUE",
+			},
+			expected: `upstreamServices:
+  - name: "test-grpc-uppercase"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: true
+`,
+		},
+		{
 			name: "gRPC Service with reflection disabled",
 			inputs: []string{
 				"grpc",
