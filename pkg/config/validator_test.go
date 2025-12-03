@@ -66,34 +66,30 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "cmd-svc-1": command_line_service has empty command`,
 		},
 		{
-			name: "invalid global settings - api key too short",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"global_settings": {
-						"api_key": "short"
-					}
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "global_settings": API key must be at least 16 characters long`,
-    },
-    {
-			name: "service with no service_config",
+			name: "invalid mTLS config - insecure client cert path",
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
 					"upstream_services": [
 						{
-							"name": "no-service-config"
+							"name": "mtls-svc-1",
+							"http_service": {
+								"address": "https://example.com"
+							},
+							"upstream_authentication": {
+								"mtls": {
+									"client_cert_path": "../../../etc/passwd",
+									"client_key_path": "testdata/client.key",
+									"ca_cert_path": "testdata/ca.crt"
+								}
+							}
 						}
 					]
 				}`), cfg))
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "no-service-config": service "no-service-config" has no service_config`,
+			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
 		},
 	}
 
