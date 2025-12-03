@@ -18,88 +18,230 @@ package config
 
 import (
 	"bufio"
+	"bytes"
 	"strings"
 	"testing"
 )
 
 func TestGenerator(t *testing.T) {
 	testCases := []struct {
-		name        string
-		input       string
-		expected    string
-		expectError bool
+		name          string
+		input         string
+		expected      string
+		expectError   bool
+		expectedError string
 	}{
 		{
-			name:  "http",
-			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
+			name: "HTTP Service without Auth",
+			input: "http\n" +
+				"my-http-service\n" +
+				"http://localhost:8080\n" +
+				"get_user\n" +
+				"Get a user\n" +
+				"HTTP_METHOD_GET\n" +
+				"/users/123\n" +
+				"no\n",
+			expected: `upstreamServices:
+  - name: "my-http-service"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get a user"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/123"
+`,
+		},
+		{
+			name: "HTTP Service with API Key Auth",
+			input: "http\n" +
+				"my-http-service\n" +
+				"http://localhost:8080\n" +
+				"get_user\n" +
+				"Get a user\n" +
+				"HTTP_METHOD_GET\n" +
+				"/users/123\n" +
+				"yes\n" +
+				"apiKey\n" +
+				"X-API-Key\n" +
+				"my-secret-key\n",
+			expected: `upstreamServices:
+  - name: "my-http-service"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get a user"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/123"
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          plainText: "my-secret-key"
+`,
+		},
+		{
+			name: "gRPC Service without Auth",
+			input: "grpc\n" +
+				"my-grpc-service\n" +
+				"localhost:50051\n" +
+				"true\n" +
+				"no\n",
+			expected: `upstreamServices:
+  - name: "my-grpc-service"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: true
+`,
+		},
+		{
+			name: "gRPC Service with Bearer Token Auth",
+			input: "grpc\n" +
+				"my-grpc-service\n" +
+				"localhost:50051\n" +
+				"true\n" +
+				"yes\n" +
+				"bearerToken\n" +
+				"my-bearer-token\n",
+			expected: `upstreamServices:
+  - name: "my-grpc-service"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: true
+    upstreamAuthentication:
+      bearerToken:
+        token:
+          plainText: "my-bearer-token"
+`,
+		},
+		{
+			name: "OpenAPI Service without Auth",
+			input: "openapi\n" +
+				"my-openapi-service\n" +
+				"./openapi.json\n" +
+				"no\n",
+			expected: `upstreamServices:
+  - name: "my-openapi-service"
+    openapiService:
+      spec:
+        path: "./openapi.json"
+`,
+		},
+		{
+			name: "OpenAPI Service with Basic Auth",
+			input: "openapi\n" +
+				"my-openapi-service\n" +
+				"./openapi.json\n" +
+				"yes\n" +
+				"basicAuth\n" +
+				"my-user\n" +
+				"my-password\n",
+			expected: `upstreamServices:
+  - name: "my-openapi-service"
+    openapiService:
+      spec:
+        path: "./openapi.json"
+    upstreamAuthentication:
+      basicAuth:
+        username: "my-user"
+        password:
+          plainText: "my-password"
+`,
+		},
+		{
+			name: "GraphQL Service without Auth",
+			input: "graphql\n" +
+				"my-graphql-service\n" +
+				"http://localhost:8081/graphql\n" +
+				"user\n" +
+				"{ id name }\n" +
+				"no\n",
+			expected: `upstreamServices:
+  - name: "my-graphql-service"
+    graphqlService:
+      address: "http://localhost:8081/graphql"
+      calls:
+        - name: "user"
+          selectionSet: "{ id name }"
+`,
+		},
+		{
+			name: "GraphQL Service with Basic Auth",
+			input: "graphql\n" +
+				"my-graphql-service\n" +
+				"http://localhost:8081/graphql\n" +
+				"user\n" +
+				"{ id name }\n" +
+				"yes\n" +
+				"basicAuth\n" +
+				"my-user\n" +
+				"my-password\n",
+			expected: `upstreamServices:
+  - name: "my-graphql-service"
+    graphqlService:
+      address: "http://localhost:8081/graphql"
+      calls:
+        - name: "user"
+          selectionSet: "{ id name }"
+    upstreamAuthentication:
+      basicAuth:
+        username: "my-user"
+        password:
+          plainText: "my-password"
+`,
+		},
+		{
+			name:          "Invalid Service Type",
+			input:         "invalid\n",
+			expectError:   true,
+			expectedError: "unsupported service type: invalid",
+		},
+		{
+			name: "Empty Service Name with recovery",
+			input: "http\n\nmy-service\n" +
+				"http://localhost:8080\n" +
+				"get_user\n" +
+				"Get a user\n" +
+				"HTTP_METHOD_GET\n" +
+				"/users/123\n" +
+				"no\n",
 			expected: `upstreamServices:
   - name: "my-service"
     httpService:
       address: "http://localhost:8080"
       calls:
         - operationId: "get_user"
-          description: "Get user by ID"
+          description: "Get a user"
           method: "HTTP_METHOD_GET"
-          endpointPath: "/users/{userId}"`,
-		},
-		{
-			name:  "grpc",
-			input: "grpc\nmy-grpc-service\nlocalhost:50051\ntrue\n",
-			expected: `upstreamServices:
-  - name: "my-grpc-service"
-    grpcService:
-      address: "localhost:50051"
-      reflection:
-        enabled: true`,
-		},
-		{
-			name:  "openapi",
-			input: "openapi\nmy-openapi-service\n./openapi.json\n",
-			expected: `upstreamServices:
-  - name: "my-openapi-service"
-    openapiService:
-      spec:
-        path: "./openapi.json"`,
-		},
-		{
-			name:  "graphql",
-			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\n",
-			expected: `upstreamServices:
-  - name: "my-graphql-service"
-    graphqlService:
-      address: "http://localhost:8080/graphql"
-      calls:
-        - name: "user"
-          selectionSet: "{ id name }"`,
-		},
-		{
-			name:        "unsupported",
-			input:       "foo\n",
-			expectError: true,
+          endpointPath: "/users/123"
+`,
+			expectError: false,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := bufio.NewReader(strings.NewReader(tc.input))
-			generator := &Generator{
-				Reader: reader,
-			}
+			generator := &Generator{Reader: reader}
 
-			configData, err := generator.Generate()
+			output, err := generator.Generate()
+
 			if tc.expectError {
 				if err == nil {
-					t.Fatal("expected an error, but got none")
+					t.Errorf("Expected an error, but got none")
+				} else if !strings.Contains(err.Error(), tc.expectedError) {
+					t.Errorf("Expected error to contain '%s', but got '%s'", tc.expectedError, err.Error())
 				}
 				return
 			}
-
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Unexpected error: %v", err)
 			}
-
-			if strings.TrimSpace(string(configData)) != strings.TrimSpace(tc.expected) {
-				t.Errorf("unexpected config data:\ngot:\n%s\nwant:\n%s", string(configData), tc.expected)
+			if !bytes.Equal(bytes.TrimSpace(output), bytes.TrimSpace([]byte(tc.expected))) {
+				t.Errorf("Expected:\n%s\n\nGot:\n%s", tc.expected, output)
 			}
 		})
 	}

@@ -35,8 +35,34 @@ func NewGenerator() *Generator {
 	}
 }
 
+type Validator func(input string) error
+
+func (g *Generator) prompt(prompt string, validator Validator) (string, error) {
+	for {
+		fmt.Print(prompt)
+		input, err := g.Reader.ReadString('\n')
+		if err != nil {
+			return "", err
+		}
+		input = strings.TrimSpace(input)
+
+		if err := validator(input); err != nil {
+			fmt.Printf("Invalid input: %v\n", err)
+			continue
+		}
+		return input, nil
+	}
+}
+
+func notEmpty(input string) error {
+	if input == "" {
+		return fmt.Errorf("input cannot be empty")
+	}
+	return nil
+}
+
 func (g *Generator) Generate() ([]byte, error) {
-	serviceType, err := g.prompt("Enter service type (http, grpc, openapi, graphql): ")
+	serviceType, err := g.prompt("Enter service type (http, grpc, openapi, graphql): ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
@@ -55,15 +81,6 @@ func (g *Generator) Generate() ([]byte, error) {
 	}
 }
 
-func (g *Generator) prompt(prompt string) (string, error) {
-	fmt.Print(prompt)
-	input, err := g.Reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(input), nil
-}
-
 const httpServiceTemplate = `upstreamServices:
   - name: "{{ .Name }}"
     httpService:
@@ -73,6 +90,24 @@ const httpServiceTemplate = `upstreamServices:
           description: "{{ .Description }}"
           method: "{{ .Method }}"
           endpointPath: "{{ .EndpointPath }}"
+{{- if .Auth.Type }}
+    upstreamAuthentication:
+      {{- if eq .Auth.Type "apiKey" }}
+      apiKey:
+        headerName: "{{ .Auth.APIKey.HeaderName }}"
+        apiKey:
+          plainText: "{{ .Auth.APIKey.APIKey }}"
+      {{- else if eq .Auth.Type "bearerToken" }}
+      bearerToken:
+        token:
+          plainText: "{{ .Auth.BearerToken.Token }}"
+      {{- else if eq .Auth.Type "basicAuth" }}
+      basicAuth:
+        username: "{{ .Auth.BasicAuth.Username }}"
+        password:
+          plainText: "{{ .Auth.BasicAuth.Password }}"
+      {{- end }}
+{{- end }}
 `
 
 type HTTPServiceData struct {
@@ -82,38 +117,44 @@ type HTTPServiceData struct {
 	Description  string
 	Method       string
 	EndpointPath string
+	Auth         AuthData
 }
 
 func (g *Generator) generateHTTPService() ([]byte, error) {
 	data := HTTPServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("Enter service name: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("Enter service address: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.OperationID, err = g.prompt("Enter operation ID: ")
+	data.OperationID, err = g.prompt("Enter operation ID: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.Description, err = g.prompt("Enter description: ")
+	data.Description, err = g.prompt("Enter description: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.Method, err = g.prompt("Enter HTTP method (e.g., HTTP_METHOD_GET): ")
+	data.Method, err = g.prompt("Enter HTTP method (e.g., HTTP_METHOD_GET): ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.EndpointPath, err = g.prompt("Enter endpoint path: ")
+	data.EndpointPath, err = g.prompt("Enter endpoint path: ", notEmpty)
+	if err != nil {
+		return nil, err
+	}
+
+	data.Auth, err = g.generateAuthData()
 	if err != nil {
 		return nil, err
 	}
@@ -137,33 +178,57 @@ const grpcServiceTemplate = `upstreamServices:
       address: "{{ .Address }}"
       reflection:
         enabled: {{ .ReflectionEnabled }}
+{{- if .Auth.Type }}
+    upstreamAuthentication:
+      {{- if eq .Auth.Type "apiKey" }}
+      apiKey:
+        headerName: "{{ .Auth.APIKey.HeaderName }}"
+        apiKey:
+          plainText: "{{ .Auth.APIKey.APIKey }}"
+      {{- else if eq .Auth.Type "bearerToken" }}
+      bearerToken:
+        token:
+          plainText: "{{ .Auth.BearerToken.Token }}"
+      {{- else if eq .Auth.Type "basicAuth" }}
+      basicAuth:
+        username: "{{ .Auth.BasicAuth.Username }}"
+        password:
+          plainText: "{{ .Auth.BasicAuth.Password }}"
+      {{- end }}
+{{- end }}
 `
 
 type GRPCServiceData struct {
 	Name              string
 	Address           string
 	ReflectionEnabled bool
+	Auth              AuthData
 }
 
 func (g *Generator) generateGRPCService() ([]byte, error) {
 	data := GRPCServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("Enter service name: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("Enter service address: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	reflectionEnabled, err := g.prompt("Enable reflection (true/false): ")
+	reflectionEnabled, err := g.prompt("Enable reflection (true/false): ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 	data.ReflectionEnabled = reflectionEnabled == "true"
+
+	data.Auth, err = g.generateAuthData()
+	if err != nil {
+		return nil, err
+	}
 
 	tmpl, err := template.New("grpcService").Parse(grpcServiceTemplate)
 	if err != nil {
@@ -183,23 +248,47 @@ const openapiServiceTemplate = `upstreamServices:
     openapiService:
       spec:
         path: "{{ .SpecPath }}"
+{{- if .Auth.Type }}
+    upstreamAuthentication:
+      {{- if eq .Auth.Type "apiKey" }}
+      apiKey:
+        headerName: "{{ .Auth.APIKey.HeaderName }}"
+        apiKey:
+          plainText: "{{ .Auth.APIKey.APIKey }}"
+      {{- else if eq .Auth.Type "bearerToken" }}
+      bearerToken:
+        token:
+          plainText: "{{ .Auth.BearerToken.Token }}"
+      {{- else if eq .Auth.Type "basicAuth" }}
+      basicAuth:
+        username: "{{ .Auth.BasicAuth.Username }}"
+        password:
+          plainText: "{{ .Auth.BasicAuth.Password }}"
+      {{- end }}
+{{- end }}
 `
 
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
+	Auth     AuthData
 }
 
 func (g *Generator) generateOpenAPIService() ([]byte, error) {
 	data := OpenAPIServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("Enter service name: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.SpecPath, err = g.prompt("Enter OpenAPI spec path: ")
+	data.SpecPath, err = g.prompt("Enter OpenAPI spec path: ", notEmpty)
+	if err != nil {
+		return nil, err
+	}
+
+	data.Auth, err = g.generateAuthData()
 	if err != nil {
 		return nil, err
 	}
@@ -224,6 +313,24 @@ const graphqlServiceTemplate = `upstreamServices:
       calls:
         - name: "{{ .CallName }}"
           selectionSet: "{{ .SelectionSet }}"
+{{- if .Auth.Type }}
+    upstreamAuthentication:
+      {{- if eq .Auth.Type "apiKey" }}
+      apiKey:
+        headerName: "{{ .Auth.APIKey.HeaderName }}"
+        apiKey:
+          plainText: "{{ .Auth.APIKey.APIKey }}"
+      {{- else if eq .Auth.Type "bearerToken" }}
+      bearerToken:
+        token:
+          plainText: "{{ .Auth.BearerToken.Token }}"
+      {{- else if eq .Auth.Type "basicAuth" }}
+      basicAuth:
+        username: "{{ .Auth.BasicAuth.Username }}"
+        password:
+          plainText: "{{ .Auth.BasicAuth.Password }}"
+      {{- end }}
+{{- end }}
 `
 
 type GraphQLServiceData struct {
@@ -231,28 +338,34 @@ type GraphQLServiceData struct {
 	Address      string
 	CallName     string
 	SelectionSet string
+	Auth         AuthData
 }
 
 func (g *Generator) generateGraphQLService() ([]byte, error) {
 	data := GraphQLServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("Enter service name: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("Enter service address: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.CallName, err = g.prompt("Enter call name: ")
+	data.CallName, err = g.prompt("Enter call name: ", notEmpty)
 	if err != nil {
 		return nil, err
 	}
 
-	data.SelectionSet, err = g.prompt("Enter selection set: ")
+	data.SelectionSet, err = g.prompt("Enter selection set: ", notEmpty)
+	if err != nil {
+		return nil, err
+	}
+
+	data.Auth, err = g.generateAuthData()
 	if err != nil {
 		return nil, err
 	}
@@ -268,4 +381,81 @@ func (g *Generator) generateGraphQLService() ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+type AuthData struct {
+	Type        string
+	APIKey      APIKeyData
+	BearerToken BearerTokenData
+	BasicAuth   BasicAuthData
+}
+
+type APIKeyData struct {
+	HeaderName string
+	APIKey     string
+}
+
+type BearerTokenData struct {
+	Token string
+}
+
+type BasicAuthData struct {
+	Username string
+	Password string
+}
+
+func (g *Generator) generateAuthData() (AuthData, error) {
+	authData := AuthData{}
+	addAuth, err := g.prompt("Add upstream authentication? (yes/no): ", func(input string) error {
+		if input != "yes" && input != "no" {
+			return fmt.Errorf("please enter 'yes' or 'no'")
+		}
+		return nil
+	})
+	if err != nil {
+		return authData, err
+	}
+
+	if addAuth == "yes" {
+		authType, err := g.prompt("Enter auth type (apiKey, bearerToken, basicAuth): ", func(input string) error {
+			if input != "apiKey" && input != "bearerToken" && input != "basicAuth" {
+				return fmt.Errorf("unsupported auth type")
+			}
+			return nil
+		})
+		if err != nil {
+			return authData, err
+		}
+		authData.Type = authType
+
+		switch authType {
+		case "apiKey":
+			headerName, err := g.prompt("Enter API key header name: ", notEmpty)
+			if err != nil {
+				return authData, err
+			}
+			apiKey, err := g.prompt("Enter API key: ", notEmpty)
+			if err != nil {
+				return authData, err
+			}
+			authData.APIKey = APIKeyData{HeaderName: headerName, APIKey: apiKey}
+		case "bearerToken":
+			token, err := g.prompt("Enter bearer token: ", notEmpty)
+			if err != nil {
+				return authData, err
+			}
+			authData.BearerToken = BearerTokenData{Token: token}
+		case "basicAuth":
+			username, err := g.prompt("Enter username: ", notEmpty)
+			if err != nil {
+				return authData, err
+			}
+			password, err := g.prompt("Enter password: ", notEmpty)
+			if err != nil {
+				return authData, err
+			}
+			authData.BasicAuth = BasicAuthData{Username: username, Password: password}
+		}
+	}
+	return authData, nil
 }
