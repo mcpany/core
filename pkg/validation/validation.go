@@ -50,6 +50,9 @@ func IsSecurePath(path string) error {
 	if strings.Contains(path, "..") {
 		return fmt.Errorf("path contains '..', which is not allowed")
 	}
+	if strings.HasPrefix(path, "/") {
+		return fmt.Errorf("path is absolute, which is not allowed")
+	}
 	return nil
 }
 
