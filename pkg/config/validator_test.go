@@ -91,6 +91,25 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
 		},
+		{
+			name: "invalid openapi service - spec path does not exist",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "openapi-svc-1",
+							"openapi_service": {
+								"openapi_spec": "non-existent-file.json"
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "openapi-svc-1": openapi spec path 'non-existent-file.json' not found`,
+		},
 	}
 
 	for _, tt := range tests {

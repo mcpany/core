@@ -157,6 +157,13 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
 		}
+		if specPath := openapiService.GetOpenapiSpec(); specPath != "" {
+			if !validation.IsValidURL(specPath) {
+				if err := validation.FileExists(specPath); err != nil {
+					return fmt.Errorf("openapi spec path '%s' not found", specPath)
+				}
+			}
+		}
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
 		if commandLineService.GetCommand() == "" {
 			return fmt.Errorf("command_line_service has empty command")
