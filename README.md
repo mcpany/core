@@ -228,6 +228,15 @@ MCP Any supports a variety of advanced configuration options, including:
         communicationProtocol: "JSON"
   ```
 
+- **Filesystem Services**: Expose local filesystem operations as tools.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-filesystem-service"
+      filesystemService:
+        basePath: "/path/to/base"
+  ```
+
 - **Authentication**: Configure authentication for an upstream service.
 
   ```yaml

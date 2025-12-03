@@ -1,0 +1,6 @@
+
+# examples/filesystem/config.yaml
+upstreamServices:
+  - name: "my-filesystem-service"
+    filesystemService:
+      basePath: "/tmp"

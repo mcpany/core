@@ -107,6 +107,7 @@ message UpstreamServiceConfig {
     WebsocketUpstreamService websocket_service = 16;
     WebrtcUpstreamService webrtc_service = 17;
     GraphQLUpstreamService graphql_service = 21;
+    FileSystemServiceConfig filesystem_service = 22;
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -281,6 +282,12 @@ message GraphQLUpstreamService {
   string address = 1;
   // A map of call definitions, keyed by their unique ID.
   map<string, GraphQLCallDefinition> calls = 2;
+}
+
+// FileSystemServiceConfig defines an upstream service that interacts with the local filesystem.
+message FileSystemServiceConfig {
+  // The base path for all file operations.
+  string base_path = 1;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
