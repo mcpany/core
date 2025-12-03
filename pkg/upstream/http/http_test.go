@@ -839,6 +839,12 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			endpointPath: "api/v1/test?query=param",
 			expectedFqn:  "GET http://localhost:8080/api/v1/test?query=param",
 		},
+		{
+			name:          "path traversal",
+			address:       "http://localhost:8080/",
+			endpointPath:  "../api/v1/test",
+			expectAnError: true,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -865,14 +871,22 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
-			assert.NoError(t, err)
+			if tc.expectAnError {
+				assert.NoError(t, err, "Registration should not fail, but tool should not be created")
+				sanitizedToolName, _ := util.SanitizeToolName("test-op")
+				toolID := serviceID + "." + sanitizedToolName
+				_, ok := tm.GetTool(toolID)
+				assert.False(t, ok, "Tool with invalid path should not be registered")
+			} else {
+				assert.NoError(t, err)
 
-			sanitizedToolName, _ := util.SanitizeToolName("test-op")
-			toolID := serviceID + "." + sanitizedToolName
-			registeredTool, ok := tm.GetTool(toolID)
-			assert.True(t, ok)
-			assert.NotNil(t, registeredTool)
-			assert.Equal(t, tc.expectedFqn, registeredTool.Tool().GetUnderlyingMethodFqn())
+				sanitizedToolName, _ := util.SanitizeToolName("test-op")
+				toolID := serviceID + "." + sanitizedToolName
+				registeredTool, ok := tm.GetTool(toolID)
+				assert.True(t, ok)
+				assert.NotNil(t, registeredTool)
+				assert.Equal(t, tc.expectedFqn, registeredTool.Tool().GetUnderlyingMethodFqn())
+			}
 		})
 	}
 }
