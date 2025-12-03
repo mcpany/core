@@ -73,7 +73,29 @@ const httpServiceTemplate = `upstreamServices:
           description: "{{ .Description }}"
           method: "{{ .Method }}"
           endpointPath: "{{ .EndpointPath }}"
+    {{- if .AuthEnabled }}
+    upstreamAuthentication:
+      {{- if eq .AuthType "apiKey" }}
+      apiKey:
+        headerName: "{{ .APIKeyHeaderName }}"
+        apiKey:
+          {{- if .IsAPIKeyFromEnv }}
+          environmentVariable: "{{ .APIKeyEnvVar }}"
+          {{- else }}
+          plainText: "{{ .APIKeyValue }}"
+          {{- end }}
+      {{- end }}
+    {{- end }}
 `
+
+type AuthData struct {
+	AuthEnabled     bool
+	AuthType        string
+	APIKeyHeaderName string
+	APIKeyValue     string
+	APIKeyEnvVar    string
+	IsAPIKeyFromEnv bool
+}
 
 type HTTPServiceData struct {
 	Name         string
@@ -82,6 +104,7 @@ type HTTPServiceData struct {
 	Description  string
 	Method       string
 	EndpointPath string
+	AuthData
 }
 
 func (g *Generator) generateHTTPService() ([]byte, error) {
@@ -118,6 +141,10 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 		return nil, err
 	}
 
+	if err := g.promptForAuth(&data.AuthData); err != nil {
+		return nil, err
+	}
+
 	tmpl, err := template.New("httpService").Parse(httpServiceTemplate)
 	if err != nil {
 		return nil, err
@@ -131,18 +158,72 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+func (g *Generator) promptForAuth(authData *AuthData) error {
+	addAuth, err := g.prompt("Add authentication (yes/no): ")
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(addAuth) == "yes" {
+		authData.AuthEnabled = true
+		authType, err := g.prompt("Enter authentication type (apiKey): ")
+		if err != nil {
+			return err
+		}
+		authData.AuthType = authType
+
+		if authData.AuthType == "apiKey" {
+			authData.APIKeyHeaderName, err = g.prompt("Enter API key header name: ")
+			if err != nil {
+				return err
+			}
+			apiKeySource, err := g.prompt("Source API key from (plainText, environmentVariable): ")
+			if err != nil {
+				return err
+			}
+			if apiKeySource == "plainText" {
+				authData.APIKeyValue, err = g.prompt("Enter API key value: ")
+				if err != nil {
+					return err
+				}
+			} else if apiKeySource == "environmentVariable" {
+				authData.IsAPIKeyFromEnv = true
+				authData.APIKeyEnvVar, err = g.prompt("Enter environment variable name: ")
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
 const grpcServiceTemplate = `upstreamServices:
   - name: "{{ .Name }}"
     grpcService:
       address: "{{ .Address }}"
       reflection:
         enabled: {{ .ReflectionEnabled }}
+    {{- if .AuthEnabled }}
+    upstreamAuthentication:
+      {{- if eq .AuthType "apiKey" }}
+      apiKey:
+        headerName: "{{ .APIKeyHeaderName }}"
+        apiKey:
+          {{- if .IsAPIKeyFromEnv }}
+          environmentVariable: "{{ .APIKeyEnvVar }}"
+          {{- else }}
+          plainText: "{{ .APIKeyValue }}"
+          {{- end }}
+      {{- end }}
+    {{- end }}
 `
 
 type GRPCServiceData struct {
 	Name              string
 	Address           string
 	ReflectionEnabled bool
+	AuthData
 }
 
 func (g *Generator) generateGRPCService() ([]byte, error) {
@@ -165,6 +246,10 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 	}
 	data.ReflectionEnabled = reflectionEnabled == "true"
 
+	if err := g.promptForAuth(&data.AuthData); err != nil {
+		return nil, err
+	}
+
 	tmpl, err := template.New("grpcService").Parse(grpcServiceTemplate)
 	if err != nil {
 		return nil, err
@@ -183,11 +268,25 @@ const openapiServiceTemplate = `upstreamServices:
     openapiService:
       spec:
         path: "{{ .SpecPath }}"
+    {{- if .AuthEnabled }}
+    upstreamAuthentication:
+      {{- if eq .AuthType "apiKey" }}
+      apiKey:
+        headerName: "{{ .APIKeyHeaderName }}"
+        apiKey:
+          {{- if .IsAPIKeyFromEnv }}
+          environmentVariable: "{{ .APIKeyEnvVar }}"
+          {{- else }}
+          plainText: "{{ .APIKeyValue }}"
+          {{- end }}
+      {{- end }}
+    {{- end }}
 `
 
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
+	AuthData
 }
 
 func (g *Generator) generateOpenAPIService() ([]byte, error) {
@@ -201,6 +300,10 @@ func (g *Generator) generateOpenAPIService() ([]byte, error) {
 
 	data.SpecPath, err = g.prompt("Enter OpenAPI spec path: ")
 	if err != nil {
+		return nil, err
+	}
+
+	if err := g.promptForAuth(&data.AuthData); err != nil {
 		return nil, err
 	}
 
@@ -224,6 +327,19 @@ const graphqlServiceTemplate = `upstreamServices:
       calls:
         - name: "{{ .CallName }}"
           selectionSet: "{{ .SelectionSet }}"
+    {{- if .AuthEnabled }}
+    upstreamAuthentication:
+      {{- if eq .AuthType "apiKey" }}
+      apiKey:
+        headerName: "{{ .APIKeyHeaderName }}"
+        apiKey:
+          {{- if .IsAPIKeyFromEnv }}
+          environmentVariable: "{{ .APIKeyEnvVar }}"
+          {{- else }}
+          plainText: "{{ .APIKeyValue }}"
+          {{- end }}
+      {{- end }}
+    {{- end }}
 `
 
 type GraphQLServiceData struct {
@@ -231,6 +347,7 @@ type GraphQLServiceData struct {
 	Address      string
 	CallName     string
 	SelectionSet string
+	AuthData
 }
 
 func (g *Generator) generateGraphQLService() ([]byte, error) {
@@ -254,6 +371,10 @@ func (g *Generator) generateGraphQLService() ([]byte, error) {
 
 	data.SelectionSet, err = g.prompt("Enter selection set: ")
 	if err != nil {
+		return nil, err
+	}
+
+	if err := g.promptForAuth(&data.AuthData); err != nil {
 		return nil, err
 	}
 

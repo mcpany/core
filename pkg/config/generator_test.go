@@ -31,7 +31,7 @@ func TestGenerator(t *testing.T) {
 	}{
 		{
 			name:  "http",
-			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\n",
+			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\nno\n",
 			expected: `upstreamServices:
   - name: "my-service"
     httpService:
@@ -43,8 +43,44 @@ func TestGenerator(t *testing.T) {
           endpointPath: "/users/{userId}"`,
 		},
 		{
+			name:  "http_with_auth_plain_text",
+			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\nyes\napiKey\nX-API-Key\nplainText\nmy-secret-key\n",
+			expected: `upstreamServices:
+  - name: "my-service"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          plainText: "my-secret-key"`,
+		},
+		{
+			name:  "http_with_auth_env_var",
+			input: "http\nmy-service\nhttp://localhost:8080\nget_user\nGet user by ID\nHTTP_METHOD_GET\n/users/{userId}\nyes\napiKey\nX-API-Key\nenvironmentVariable\nMY_API_KEY\n",
+			expected: `upstreamServices:
+  - name: "my-service"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          environmentVariable: "MY_API_KEY"`,
+		},
+		{
 			name:  "grpc",
-			input: "grpc\nmy-grpc-service\nlocalhost:50051\ntrue\n",
+			input: "grpc\nmy-grpc-service\nlocalhost:50051\ntrue\nno\n",
 			expected: `upstreamServices:
   - name: "my-grpc-service"
     grpcService:
@@ -53,8 +89,23 @@ func TestGenerator(t *testing.T) {
         enabled: true`,
 		},
 		{
+			name:  "grpc_with_auth_plain_text",
+			input: "grpc\nmy-grpc-service\nlocalhost:50051\ntrue\nyes\napiKey\nX-API-Key\nplainText\nmy-secret-key\n",
+			expected: `upstreamServices:
+  - name: "my-grpc-service"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: true
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          plainText: "my-secret-key"`,
+		},
+		{
 			name:  "openapi",
-			input: "openapi\nmy-openapi-service\n./openapi.json\n",
+			input: "openapi\nmy-openapi-service\n./openapi.json\nno\n",
 			expected: `upstreamServices:
   - name: "my-openapi-service"
     openapiService:
@@ -62,8 +113,22 @@ func TestGenerator(t *testing.T) {
         path: "./openapi.json"`,
 		},
 		{
+			name:  "openapi_with_auth_env_var",
+			input: "openapi\nmy-openapi-service\n./openapi.json\nyes\napiKey\nX-API-Key\nenvironmentVariable\nMY_API_KEY\n",
+			expected: `upstreamServices:
+  - name: "my-openapi-service"
+    openapiService:
+      spec:
+        path: "./openapi.json"
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          environmentVariable: "MY_API_KEY"`,
+		},
+		{
 			name:  "graphql",
-			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\n",
+			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\nno\n",
 			expected: `upstreamServices:
   - name: "my-graphql-service"
     graphqlService:
@@ -71,6 +136,22 @@ func TestGenerator(t *testing.T) {
       calls:
         - name: "user"
           selectionSet: "{ id name }"`,
+		},
+		{
+			name:  "graphql_with_auth_plain_text",
+			input: "graphql\nmy-graphql-service\nhttp://localhost:8080/graphql\nuser\n{ id name }\nyes\napiKey\nX-API-Key\nplainText\nmy-secret-key\n",
+			expected: `upstreamServices:
+  - name: "my-graphql-service"
+    graphqlService:
+      address: "http://localhost:8080/graphql"
+      calls:
+        - name: "user"
+          selectionSet: "{ id name }"
+    upstreamAuthentication:
+      apiKey:
+        headerName: "X-API-Key"
+        apiKey:
+          plainText: "my-secret-key"`,
 		},
 		{
 			name:        "unsupported",
