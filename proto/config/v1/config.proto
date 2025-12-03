@@ -107,7 +107,6 @@ message UpstreamServiceConfig {
     WebsocketUpstreamService websocket_service = 16;
     WebrtcUpstreamService webrtc_service = 17;
     GraphQLUpstreamService graphql_service = 21;
-    FileSystemServiceConfig filesystem_service = 22;
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -274,6 +273,9 @@ message CommandLineUpstreamService {
     COMMUNICATION_PROTOCOL_JSON = 1;
   }
   CommunicationProtocol communication_protocol = 12;
+
+  // If true, the command will be executed on the local filesystem.
+  bool local = 13;
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.
@@ -284,11 +286,6 @@ message GraphQLUpstreamService {
   map<string, GraphQLCallDefinition> calls = 2;
 }
 
-// FileSystemServiceConfig defines an upstream service that interacts with the local filesystem.
-message FileSystemServiceConfig {
-  // The base path for all file operations.
-  string base_path = 1;
-}
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
 message McpUpstreamService {

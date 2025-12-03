@@ -768,6 +768,175 @@ func NewCommandTool(
 	}
 }
 
+// LocalCommandTool implements the Tool interface for a tool that is executed as a
+// local command-line process. It maps tool inputs to command-line arguments and
+// environment variables.
+type LocalCommandTool struct {
+	tool           *v1.Tool
+	service        *configv1.CommandLineUpstreamService
+	callDefinition *configv1.CommandLineCallDefinition
+}
+
+// NewLocalCommandTool creates a new LocalCommandTool.
+//
+// tool is the protobuf definition of the tool.
+// command is the command to be executed.
+func NewLocalCommandTool(
+	tool *v1.Tool,
+	service *configv1.CommandLineUpstreamService,
+	callDefinition *configv1.CommandLineCallDefinition,
+) Tool {
+	return &LocalCommandTool{
+		tool:           tool,
+		service:        service,
+		callDefinition: callDefinition,
+	}
+}
+
+// Tool returns the protobuf definition of the command-line tool.
+func (t *LocalCommandTool) Tool() *v1.Tool {
+	return t.tool
+}
+
+// GetCacheConfig returns the cache configuration for the command-line tool.
+func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
+	if t.callDefinition == nil {
+		return nil
+	}
+	return t.callDefinition.GetCache()
+}
+
+// Execute handles the execution of the command-line tool. It constructs a command
+// with arguments and environment variables derived from the tool inputs, runs
+// the command, and returns its output.
+func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	var inputs map[string]any
+	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	args := []string{}
+	if t.callDefinition.GetArgs() != nil {
+		args = append(args, t.callDefinition.GetArgs()...)
+	}
+	if inputs != nil {
+		if argsVal, ok := inputs["args"]; ok {
+			if argsList, ok := argsVal.([]any); ok {
+				for _, arg := range argsList {
+					if argStr, ok := arg.(string); ok {
+						args = append(args, argStr)
+					} else {
+						return nil, fmt.Errorf("non-string value in 'args' array")
+					}
+				}
+			} else {
+				return nil, fmt.Errorf("'args' parameter must be an array of strings")
+			}
+			delete(inputs, "args")
+		}
+	}
+
+	timeout := t.service.GetTimeout()
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
+		defer cancel()
+	}
+
+	executor := command.NewLocalExecutor()
+
+	env := os.Environ()
+	for key, value := range inputs {
+		env = append(env, fmt.Sprintf("%s=%v", key, value))
+	}
+
+	for _, param := range t.callDefinition.GetParameters() {
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", param.GetSchema().GetName(), secretValue))
+		}
+	}
+
+	startTime := time.Now()
+	// Differentiate between JSON and environment variable-based communication
+	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
+		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+		}
+		defer stdin.Close()
+
+		go func() {
+			defer stderr.Close()
+			io.Copy(io.Discard, stderr)
+		}()
+
+		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		var result map[string]interface{}
+		var unmarshaledInputs map[string]interface{}
+		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+		}
+		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+		}
+		return result, nil
+	}
+
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute command: %w", err)
+	}
+
+	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		if closer, ok := stdout.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
+		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+	}()
+	go func() {
+		defer wg.Done()
+		if closer, ok := stderr.(io.ReadCloser); ok {
+			defer closer.Close()
+		}
+		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+	}()
+
+	wg.Wait()
+	exitCode := <-exitCodeChan
+	endTime := time.Now()
+
+	status := consts.CommandStatusSuccess
+	if ctx.Err() == context.DeadlineExceeded {
+		status = consts.CommandStatusTimeout
+		exitCode = -1 // Override exit code on timeout
+	} else if exitCode != 0 {
+		status = consts.CommandStatusError
+	}
+
+	result := map[string]interface{}{
+		"command":         t.service.GetCommand(),
+		"args":            args,
+		"stdout":          stdoutBuf.String(),
+		"stderr":          stderrBuf.String(),
+		"combined_output": combinedBuf.String(),
+		"start_time":      startTime,
+		"end_time":        endTime,
+		"return_code":     exitCode,
+		"status":          status,
+	}
+
+	return result, nil
+}
+
 // Tool returns the protobuf definition of the command-line tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
