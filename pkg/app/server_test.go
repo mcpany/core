@@ -43,6 +43,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/testutil"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
@@ -789,6 +790,162 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
 	if lis != nil {
 		lis.Close()
+	}
+}
+
+const (
+	validConfig = `
+upstreamServices:
+- name: "test-service"
+  httpService:
+    address: "http://localhost:8080"
+`
+	invalidConfig = `
+upstreamServices:
+- name: "test-service"
+  httpService:
+    address: "http://localhost:8080"
+    calls:
+    - operationId: "test"
+      endpointPath: "/test"
+      method: "INVALID"
+`
+	noServicesConfig = `
+upstreamServices: []
+`
+
+	disabledServicesConfig = `
+upstreamServices:
+- name: "test-service"
+  disable: true
+  httpService:
+    address: "http://localhost:8080"
+`
+)
+
+func TestReloadConfig(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name          string
+		configContent string
+		configName    string
+		expectError   bool
+		expectedTools []string
+	}{
+		{
+			name:          "Valid Config",
+			configContent: validConfig,
+			configName:    "config.yaml",
+			expectError:   false,
+			expectedTools: []string{},
+		},
+		{
+			name:          "Invalid Config",
+			configContent: invalidConfig,
+			configName:    "config.yaml",
+			expectError:   true,
+			expectedTools: []string{},
+		},
+		{
+			name:          "No Services",
+			configContent: noServicesConfig,
+			configName:    "config.yaml",
+			expectError:   false,
+			expectedTools: []string{},
+		},
+		{
+			name:          "Disabled Services",
+			configContent: disabledServicesConfig,
+			configName:    "config.yaml",
+			expectError:   false,
+			expectedTools: []string{},
+		},
+		{
+			name:          "Non-Existent Config",
+			configContent: "",
+			configName:    "config.yaml",
+			expectError:   true,
+			expectedTools: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			// Create a mock filesystem
+			fs := afero.NewMemMapFs()
+			if tt.configContent != "" {
+				err := afero.WriteFile(fs, tt.configName, []byte(tt.configContent), 0644)
+				require.NoError(t, err)
+			}
+
+			// Create a new application
+			app := NewApplication()
+			err := app.ReloadConfig(fs, []string{tt.configName})
+			if tt.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+
+			// Assert that the tools are registered correctly
+			tools := app.ToolManager.ListTools()
+			var toolNames []string
+			for _, tool := range tools {
+				toolNames = append(toolNames, tool.Tool().GetName())
+			}
+
+			// Sort the tool names for consistent comparison
+			assert.ElementsMatch(t, tt.expectedTools, toolNames)
+
+		})
+	}
+}
+
+func TestUploadFile(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name           string
+		method         string
+		fileContent    string
+		fileName       string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "Successful Upload",
+			method:         "POST",
+			fileContent:    "test file content",
+			fileName:       "test.txt",
+			expectedStatus: 200,
+			expectedBody:   "File 'test.txt' uploaded successfully (size: 17 bytes)",
+		},
+		{
+			name:           "Incorrect Method",
+			method:         "GET",
+			fileContent:    "",
+			fileName:       "",
+			expectedStatus: 405,
+			expectedBody:   "method not allowed",
+		},
+		{
+			name:           "Missing File",
+			method:         "POST",
+			fileContent:    "",
+			fileName:       "",
+			expectedStatus: 400,
+			expectedBody:   "failed to get file from form",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			app := NewApplication()
+			req, w := testutil.CreateTestUploadRequest(t, tt.method, tt.fileName, tt.fileContent)
+			app.uploadFile(w, req)
+			assert.Equal(t, tt.expectedStatus, w.Code)
+			assert.Contains(t, w.Body.String(), tt.expectedBody)
+		})
 	}
 }
 
