@@ -31,7 +31,7 @@ type RedisBus[T any] struct {
 	client *redis.Client
 	mu     sync.RWMutex
 	// We need to keep track of pubsub clients to close them
-	pubsubs map[string]*redis.PubSub
+	pubsubs map[string]PubSubClient
 }
 
 // New creates a new RedisBus.
@@ -49,7 +49,7 @@ func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
 func NewWithClient[T any](client *redis.Client) *RedisBus[T] {
 	return &RedisBus[T]{
 		client:  client,
-		pubsubs: make(map[string]*redis.PubSub),
+		pubsubs: make(map[string]PubSubClient),
 	}
 }
 
@@ -137,6 +137,11 @@ func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler f
 		})
 	})
 	return unsub
+}
+
+// GetPubsubs returns the pubsubs map for the bus. This is intended for testing purposes.
+func (b *RedisBus[T]) GetPubsubs() map[string]PubSubClient {
+	return b.pubsubs
 }
 
 // Close closes the Redis client and all pubsub connections.
