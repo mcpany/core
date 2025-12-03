@@ -41,6 +41,9 @@ message UpstreamServiceCollection {
   int32 priority = 3;
   // The authentication to use when fetching the collection.
   UpstreamAuthentication authentication = 4;
+  // A namespace prefix to apply to all services in this collection.
+  // The final service name will be "{namespace}/{service_name}".
+  string namespace = 5;
 }
 
 // GlobalSettings contains server-wide operational parameters.
