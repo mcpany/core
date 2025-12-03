@@ -411,3 +411,31 @@ func TestFindMethodDescriptor(t *testing.T) {
 		assert.Equal(t, "GetWeather", string(methodDesc.Name()))
 	})
 }
+
+func TestGRPCUpstream_Shutdown(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewGRPCUpstream(poolManager).(*GRPCUpstream)
+	serviceID := "test-service"
+	upstream.serviceID = serviceID
+	p, _ := pool.New(func(ctx context.Context) (pool.ClosableClient, error) {
+		return &mockClient{}, nil
+	}, 1, 1, 0, false)
+	poolManager.Register(serviceID, p)
+
+	err := upstream.Shutdown(context.Background())
+	require.NoError(t, err)
+
+	p, ok := pool.Get[pool.ClosableClient](poolManager, serviceID)
+	assert.False(t, ok, "pool should be deregistered after shutdown")
+	assert.Nil(t, p)
+}
+
+type mockClient struct{}
+
+func (m *mockClient) Close() error {
+	return nil
+}
+
+func (m *mockClient) IsHealthy(ctx context.Context) bool {
+	return true
+}

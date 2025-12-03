@@ -156,3 +156,31 @@ func TestGlobalSettings(t *testing.T) {
 	assert.True(t, s.IsDebug())
 	assert.True(t, s.Stdio())
 }
+
+func TestBindRootFlags(t *testing.T) {
+	cmd := &cobra.Command{}
+	BindRootFlags(cmd)
+
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("mcp-listen-address"))
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("config-path"))
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("metrics-listen-address"))
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("debug"))
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("log-level"))
+	assert.NotNil(t, cmd.PersistentFlags().Lookup("logfile"))
+
+	cmd.PersistentFlags().Set("debug", "true")
+	assert.True(t, viper.GetBool("debug"))
+}
+
+func TestBindServerFlags(t *testing.T) {
+	cmd := &cobra.Command{}
+	BindServerFlags(cmd)
+
+	assert.NotNil(t, cmd.Flags().Lookup("grpc-port"))
+	assert.NotNil(t, cmd.Flags().Lookup("stdio"))
+	assert.NotNil(t, cmd.Flags().Lookup("shutdown-timeout"))
+	assert.NotNil(t, cmd.Flags().Lookup("api-key"))
+
+	cmd.Flags().Set("stdio", "true")
+	assert.True(t, viper.GetBool("stdio"))
+}

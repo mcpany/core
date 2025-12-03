@@ -590,6 +590,31 @@ func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestRedisBus_Close(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-close"
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	err := bus.Close()
+	assert.NoError(t, err)
+
+	err = bus.Publish(context.Background(), topic, "hello")
+	assert.Error(t, err)
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after close")
+}
+
 func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)

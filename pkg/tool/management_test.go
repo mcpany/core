@@ -39,27 +39,7 @@ func (p *TestMCPServerProvider) Server() *mcp.Server {
 	return p.server
 }
 
-func TestToolManager_AddAndGetTool(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
-	tm := NewToolManager(nil)
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("test-service")
-	toolProto.SetName("test-tool")
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
-	mockTool.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
-
-	err := tm.AddTool(mockTool)
-	assert.NoError(t, err)
-
-	sanitizedToolName, _ := util.SanitizeToolName("test-tool")
-	toolID := "test-service" + "." + sanitizedToolName
-	retrievedTool, ok := tm.GetTool(toolID)
-	assert.True(t, ok, "Tool should be found")
-	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
-}
 
 func TestToolManager_ListTools(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -255,6 +235,44 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 	// If this doesn't panic, it means the tool was added successfully to the mcpServer.
 	err = tm.AddTool(mockTool)
 	assert.NoError(t, err)
+
+	sanitizedToolName, _ := util.SanitizeToolName("test-tool")
+	toolID := "test-service" + "." + sanitizedToolName
+	retrievedTool, ok := tm.GetTool(toolID)
+	assert.True(t, ok, "Tool should be found")
+	assert.Equal(t, mockTool, retrievedTool, "Retrieved tool should be the one that was added")
+}
+
+func TestToolManager_AddAndGetTool(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := NewToolManager(nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	provider := &TestMCPServerProvider{server: mcpServer}
+	tm.SetMCPServer(provider)
+
+	mockTool := NewMockTool(ctrl)
+	toolProto := &v1.Tool{}
+	toolProto.SetServiceId("test-service")
+	toolProto.SetName("test-tool")
+	toolProto.SetDescription("A test tool")
+	annotations := &v1.ToolAnnotations{}
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+	})
+	assert.NoError(t, err)
+	annotations.SetInputSchema(inputSchema)
+	toolProto.SetAnnotations(annotations)
+
+	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	tool, ok := tm.GetTool("test-service.test-tool")
+	assert.True(t, ok)
+	assert.NotNil(t, tool)
 }
 
 // MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
