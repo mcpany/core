@@ -23,38 +23,74 @@ import (
 )
 
 func TestJSONExecutor(t *testing.T) {
-	in := &bytes.Buffer{}
-	out := &bytes.Buffer{}
+	t.Run("successful execution", func(t *testing.T) {
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
 
-	executor := NewJSONExecutor(in, out)
+		executor := NewJSONExecutor(in, out)
 
-	// Test data
-	requestData := map[string]string{"hello": "world"}
-	responseData := map[string]string{"foo": "bar"}
+		// Test data
+		requestData := map[string]string{"hello": "world"}
+		responseData := map[string]string{"foo": "bar"}
 
-	// Encode the response data to the output buffer
-	if err := json.NewEncoder(out).Encode(responseData); err != nil {
-		t.Fatalf("failed to encode response data: %v", err)
-	}
+		// Encode the response data to the output buffer
+		if err := json.NewEncoder(out).Encode(responseData); err != nil {
+			t.Fatalf("failed to encode response data: %v", err)
+		}
 
-	// Execute the command
-	var resultData map[string]string
-	if err := executor.Execute(requestData, &resultData); err != nil {
-		t.Fatalf("failed to execute command: %v", err)
-	}
+		// Execute the command
+		var resultData map[string]string
+		if err := executor.Execute(requestData, &resultData); err != nil {
+			t.Fatalf("failed to execute command: %v", err)
+		}
 
-	// Check the input buffer for the correct data
-	var decodedRequestData map[string]string
-	if err := json.NewDecoder(in).Decode(&decodedRequestData); err != nil {
-		t.Fatalf("failed to decode request data: %v", err)
-	}
+		// Check the input buffer for the correct data
+		var decodedRequestData map[string]string
+		if err := json.NewDecoder(in).Decode(&decodedRequestData); err != nil {
+			t.Fatalf("failed to decode request data: %v", err)
+		}
 
-	if decodedRequestData["hello"] != "world" {
-		t.Errorf("unexpected request data: got %v, want %v", decodedRequestData, requestData)
-	}
+		if decodedRequestData["hello"] != "world" {
+			t.Errorf("unexpected request data: got %v, want %v", decodedRequestData, requestData)
+		}
 
-	// Check the result data for the correct data
-	if resultData["foo"] != "bar" {
-		t.Errorf("unexpected result data: got %v, want %v", resultData, responseData)
-	}
+		// Check the result data for the correct data
+		if resultData["foo"] != "bar" {
+			t.Errorf("unexpected result data: got %v, want %v", resultData, responseData)
+		}
+	})
+
+	t.Run("encoding error", func(t *testing.T) {
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+
+		executor := NewJSONExecutor(in, out)
+
+		// Invalid data that cannot be marshaled to JSON
+		requestData := make(chan int)
+
+		var resultData map[string]string
+		err := executor.Execute(requestData, &resultData)
+		if err == nil {
+			t.Fatal("expected an error, but got nil")
+		}
+	})
+
+	t.Run("decoding error", func(t *testing.T) {
+		in := &bytes.Buffer{}
+		out := &bytes.Buffer{}
+
+		executor := NewJSONExecutor(in, out)
+
+		requestData := map[string]string{"hello": "world"}
+
+		// Write invalid JSON to the output buffer
+		out.WriteString("invalid json")
+
+		var resultData map[string]string
+		err := executor.Execute(requestData, &resultData)
+		if err == nil {
+			t.Fatal("expected an error, but got nil")
+		}
+	})
 }
