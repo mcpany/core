@@ -100,6 +100,10 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		}
 	}
 
+	if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
+		return fmt.Errorf("API key must be at least 16 characters long")
+	}
+
 	if bus := gs.GetMessageBus(); bus != nil {
 		if redis := bus.GetRedis(); redis != nil {
 			if redis.GetAddress() == "" {
