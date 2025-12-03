@@ -252,6 +252,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 
 		resolvedURL := baseURL.JoinPath(endpointURL.Path)
 		resolvedURL.RawQuery = endpointURL.RawQuery
+		resolvedURL.Fragment = endpointURL.Fragment
 		fullURL := resolvedURL.String()
 
 		if properties == nil {
