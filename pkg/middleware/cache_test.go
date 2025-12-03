@@ -68,6 +68,7 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider)               {}
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo)     {}
 func (m *mockToolManager) ClearToolsForService(serviceKey string)                      {}
+func (m *mockToolManager) ClearAllTools()                                              {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup

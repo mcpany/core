@@ -31,6 +31,7 @@ type PromptManagerInterface interface {
 	GetPrompt(name string) (Prompt, bool)
 	ListPrompts() []Prompt
 	ClearPromptsForService(serviceID string)
+	ClearAllPrompts()
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
@@ -98,4 +99,9 @@ func (pm *PromptManager) ClearPromptsForService(serviceID string) {
 		}
 		return true
 	})
+}
+
+// ClearAllPrompts removes all prompts from the manager.
+func (pm *PromptManager) ClearAllPrompts() {
+	pm.prompts = xsync.NewMap[string, Prompt]()
 }

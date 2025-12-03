@@ -792,6 +792,151 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	}
 }
 
+func TestApplication_uploadFile(t *testing.T) {
+	app := NewApplication()
+
+	t.Run("successful upload", func(t *testing.T) {
+		var buf bytes.Buffer
+		writer := multipart.NewWriter(&buf)
+		part, err := writer.CreateFormFile("file", "test.txt")
+		require.NoError(t, err)
+		_, err = part.Write([]byte("this is a test file"))
+		require.NoError(t, err)
+		writer.Close()
+
+		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusOK, rr.Code)
+		assert.Contains(t, rr.Body.String(), "File 'test.txt' uploaded successfully")
+	})
+
+	t.Run("method not allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/upload", nil)
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+	})
+
+	t.Run("no file", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/upload", nil)
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+	})
+}
+
+func TestApplication_ReloadConfig(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+
+	t.Run("successful reload", func(t *testing.T) {
+		configContent1 := `
+upstream_services:
+ - name: "service1"
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "tool1"
+         call_id: "call1"
+     calls:
+        call1:
+          id: "call1"
+          endpoint_path: "/test"
+          method: "HTTP_METHOD_POST"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent1), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.NoError(t, err)
+
+		tools := app.ToolManager.ListTools()
+		assert.Len(t, tools, 1)
+		assert.Equal(t, "service1", tools[0].Tool().GetServiceId())
+		assert.Equal(t, "tool1", tools[0].Tool().GetName())
+
+		configContent2 := `
+upstream_services:
+ - name: "service2"
+   http_service:
+     address: "http://localhost:8081"
+     tools:
+       - name: "tool2"
+         call_id: "call2"
+     calls:
+        call2:
+          id: "call2"
+          endpoint_path: "/test2"
+          method: "HTTP_METHOD_POST"
+`
+		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent2), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.NoError(t, err)
+
+		tools = app.ToolManager.ListTools()
+		assert.Len(t, tools, 1)
+		assert.Equal(t, "service2", tools[0].Tool().GetServiceId())
+		assert.Equal(t, "tool2", tools[0].Tool().GetName())
+	})
+
+	t.Run("reload with invalid config", func(t *testing.T) {
+		err := afero.WriteFile(fs, "/config.yaml", []byte("invalid yaml"), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.Error(t, err)
+	})
+
+	t.Run("reload with disabled service", func(t *testing.T) {
+		configContent := `
+upstream_services:
+ - name: "service1"
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "tool1"
+         call_id: "call1"
+     calls:
+        call1:
+          id: "call1"
+          endpoint_path: "/test"
+          method: "HTTP_METHOD_POST"
+ - name: "service2"
+   disable: true
+   http_service:
+     address: "http://localhost:8081"
+     tools:
+       - name: "tool2"
+         call_id: "call2"
+     calls:
+        call2:
+          id: "call2"
+          endpoint_path: "/test2"
+          method: "HTTP_METHOD_POST"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.NoError(t, err)
+
+		tools := app.ToolManager.ListTools()
+		assert.Len(t, tools, 1)
+		assert.Equal(t, "service1", tools[0].Tool().GetServiceId())
+		assert.Equal(t, "tool1", tools[0].Tool().GetName())
+	})
+}
+
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer

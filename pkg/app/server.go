@@ -343,11 +343,9 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	// Clear existing services
-	for _, serviceConfig := range cfg.GetUpstreamServices() {
-		a.ToolManager.ClearToolsForService(serviceConfig.GetName())
-		a.ResourceManager.ClearResourcesForService(serviceConfig.GetName())
-		a.PromptManager.ClearPromptsForService(serviceConfig.GetName())
-	}
+	a.ToolManager.ClearAllTools()
+	a.ResourceManager.ClearAllResources()
+	a.PromptManager.ClearAllPrompts()
 
 	if cfg.GetUpstreamServices() != nil {
 		for _, serviceConfig := range cfg.GetUpstreamServices() {

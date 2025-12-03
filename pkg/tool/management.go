@@ -44,6 +44,7 @@ type ToolManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	ListTools() []Tool
 	ClearToolsForService(serviceID string)
+	ClearAllTools()
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	SetMCPServer(mcpServer MCPServerProvider)
 	AddMiddleware(middleware ToolExecutionMiddleware)
@@ -320,6 +321,19 @@ func (tm *ToolManager) ListTools() []Tool {
 	})
 	tm.cachedTools = tools
 	return tools
+}
+
+// ClearAllTools removes all tools from the manager.
+func (tm *ToolManager) ClearAllTools() {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+	log := logging.GetLogger()
+	log.Debug("Clearing all tools.")
+	tm.tools = xsync.NewMap[string, Tool]()
+	tm.toolsMutex.Lock()
+	tm.cachedTools = nil
+	tm.toolsMutex.Unlock()
+	log.Debug("Cleared all tools")
 }
 
 // ClearToolsForService removes all tools associated with a given service key from

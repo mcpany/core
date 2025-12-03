@@ -60,6 +60,8 @@ type ResourceManagerInterface interface {
 	OnListChanged(func())
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	ClearResourcesForService(serviceID string)
+	// ClearAllResources removes all resources from the manager.
+	ClearAllResources()
 }
 
 // ResourceManager is a thread-safe implementation of the
@@ -99,6 +101,16 @@ func (rm *ResourceManager) AddResource(resource Resource) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	rm.resources[resource.Resource().URI] = resource
+	if rm.onListChangedFunc != nil {
+		rm.onListChangedFunc()
+	}
+}
+
+// ClearAllResources removes all resources from the manager.
+func (rm *ResourceManager) ClearAllResources() {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	rm.resources = make(map[string]Resource)
 	if rm.onListChangedFunc != nil {
 		rm.onListChangedFunc()
 	}

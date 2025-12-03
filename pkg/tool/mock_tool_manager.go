@@ -90,6 +90,18 @@ func (mr *MockToolManagerInterfaceMockRecorder) ClearToolsForService(serviceID a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearToolsForService", reflect.TypeOf((*MockToolManagerInterface)(nil).ClearToolsForService), serviceID)
 }
 
+// ClearAllTools mocks base method.
+func (m *MockToolManagerInterface) ClearAllTools() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "ClearAllTools")
+}
+
+// ClearAllTools indicates an expected call of ClearAllTools.
+func (mr *MockToolManagerInterfaceMockRecorder) ClearAllTools() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearAllTools", reflect.TypeOf((*MockToolManagerInterface)(nil).ClearAllTools))
+}
+
 // ExecuteTool mocks base method.
 func (m *MockToolManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	m.ctrl.T.Helper()
