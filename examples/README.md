@@ -85,7 +85,7 @@ This example showcases how an AI can chain tools together to perform a more comp
    Use the `gemini mcp add` command to register the running `mcpany` server.
 
    ```bash
-   gemini mcp add mcpany-http-example --transport http http://localhost:50050
+   gemini mcp add mcpany-http-example --transport http http://localhost:8080
    ```
 
 2. **List Available Tools:** Use the `gemini list tools` command to see the tools exposed by the `mcpany` server. You should see `ip-location-service-df37f29a/getLocation`, `weather-service-somehash/getWeather`, and `time-service-c0eda60c/get_time_by_ip`.

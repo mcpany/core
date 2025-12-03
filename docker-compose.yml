@@ -70,6 +70,15 @@ services:
     networks:
       - mcpany-net
 
+  file-upload-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.file-upload-server
+    ports:
+      - "8081:8081"
+    networks:
+      - mcpany-net
+
 networks:
   mcpany-net:
     driver: bridge
