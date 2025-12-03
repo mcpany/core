@@ -40,7 +40,7 @@ type Config struct {
 }
 
 func TestCLI(t *testing.T) {
-	cmd := exec.Command("go", "run", "../../cmd/mcp-any-cli/main.go")
+	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "config", "generate")
 
 	input := "http\nmy-service\nhttp://example.com\nget-user\nGet a user\nHTTP_METHOD_GET\n/users/{id}\n"
 	cmd.Stdin = strings.NewReader(input)

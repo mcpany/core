@@ -129,6 +129,7 @@ func TestRootCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
+		"run",
 		"--stdio",
 		"--mcp-listen-address", "8081",
 		"--grpc-port", "8082",
@@ -239,7 +240,7 @@ func TestGracefulShutdown(t *testing.T) {
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
 		port := findFreePort(t)
 		cmd := newRootCmd()
-		cmd.SetArgs([]string{"--mcp-listen-address", fmt.Sprintf("localhost:%d", port), "--config-path", ""})
+		cmd.SetArgs([]string{"run", "--mcp-listen-address", fmt.Sprintf("localhost:%d", port), "--config-path", ""})
 		go func() {
 			err := cmd.Execute()
 			assert.NoError(t, err)
@@ -346,4 +347,51 @@ invalid-yaml
 			}
 		})
 	}
+}
+
+func TestConfigGenerateCmd(t *testing.T) {
+	viper.Reset()
+	originalStdout := os.Stdout
+	originalStdin := os.Stdin
+	defer func() {
+		os.Stdout = originalStdout
+		os.Stdin = originalStdin
+	}()
+
+	rOut, wOut, _ := os.Pipe()
+	rIn, wIn, _ := os.Pipe()
+	os.Stdout = wOut
+	os.Stdin = rIn
+
+	// Inputs for HTTP service generation
+	inputs := []string{
+		"http",
+		"my-service",
+		"http://localhost:8080",
+		"get-data",
+		"Get some data",
+		"HTTP_METHOD_GET",
+		"/data",
+	}
+
+	go func() {
+		defer wIn.Close()
+		for _, input := range inputs {
+			fmt.Fprintln(wIn, input)
+		}
+	}()
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"config", "generate"})
+	err := rootCmd.Execute()
+
+	wOut.Close()
+	out, _ := io.ReadAll(rOut)
+
+	assert.NoError(t, err)
+	output := string(out)
+	assert.Contains(t, output, "MCP Any CLI: Configuration Generator")
+	assert.Contains(t, output, "Generated configuration:")
+	assert.Contains(t, output, "upstreamServices:")
+	assert.Contains(t, output, "name: \"my-service\"")
 }
