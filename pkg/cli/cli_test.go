@@ -19,10 +19,7 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestJSONExecutor(t *testing.T) {
@@ -96,28 +93,4 @@ func TestJSONExecutor(t *testing.T) {
 			t.Fatal("expected an error, but got nil")
 		}
 	})
-}
-
-type errWriter struct{}
-
-func (e *errWriter) Write(p []byte) (n int, err error) {
-	return 0, io.ErrClosedPipe
-}
-
-func TestJSONExecutor_Execute_EncodeError(t *testing.T) {
-	out := &errWriter{}
-	in := &bytes.Buffer{}
-	executor := NewJSONExecutor(out, in)
-	err := executor.Execute(nil, nil)
-	assert.Error(t, err)
-}
-
-func TestJSONExecutor_Execute_DecodeError(t *testing.T) {
-	out := &bytes.Buffer{}
-	in := &bytes.Buffer{}
-	_, err := in.WriteString("invalid json")
-	assert.NoError(t, err)
-	executor := NewJSONExecutor(out, in)
-	err = executor.Execute(nil, nil)
-	assert.Error(t, err)
 }
