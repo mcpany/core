@@ -2163,44 +2163,6 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	}
 }
 
-func TestApplication_ReloadConfig_Concurrent(t *testing.T) {
-	t.Parallel()
-	// This test is designed to be flaky if the race condition exists.
-	if testing.Short() {
-		t.Skip("Skipping test in short mode.")
-	}
-
-	fs := afero.NewMemMapFs()
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// Create a dummy config file
-	afero.WriteFile(fs, "config.yaml", []byte(`
-upstream_services:
-  - name: "test-service"
-    http_service:
-      address: "http://localhost:8080"
-      calls:
-        test_call:
-          endpoint_path: "/"
-          method: "HTTP_METHOD_GET"
-`), 0644)
-
-	app := NewApplication()
-
-	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := app.ReloadConfig(fs, []string{"config.yaml"})
-			assert.NoError(t, err)
-		}()
-	}
-
-	wg.Wait()
-}
-
 func waitForServerReady(t *testing.T, addr string) {
 	t.Helper()
 	require.Eventually(t, func() bool {

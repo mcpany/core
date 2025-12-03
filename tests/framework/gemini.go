@@ -81,7 +81,7 @@ func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	cmd := g.geminiCommand("-m", DefaultModel, "-p", prompt)
 	cmd.Env = append(os.Environ(), "GEMINI_API_KEY="+apiKey)
 	cmd.Stdout = &outputBuffer
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = &outputBuffer
 	err := cmd.Run()
 	return outputBuffer.String(), err
 }

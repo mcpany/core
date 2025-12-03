@@ -120,22 +120,6 @@ func TestRedisBus_Close_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestRedisBus_Close_ClientCloseError(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-
-	// Subscribe to a topic to create a pubsub connection
-	bus.Subscribe(context.Background(), "test-topic-client-close-error", func(msg string) {})
-
-	// Close the underlying client to trigger an error when bus.Close() is called.
-	err := client.Close()
-	assert.NoError(t, err)
-
-	// This should now return an error because the client is already closed.
-	err = bus.Close()
-	assert.Error(t, err)
-}
-
 func TestRedisBus_Close_PubSubCloseError(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)

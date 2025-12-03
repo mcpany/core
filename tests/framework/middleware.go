@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"path/filepath"
 	"testing"
@@ -69,9 +70,17 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 	})
 	require.NoError(t, err)
 
-	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(requestBody))
+	time.Sleep(1 * time.Second)
+	req, err := http.NewRequest("POST", mcpanyEndpoint, bytes.NewBuffer(requestBody))
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json, text/event-stream")
+
+	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	t.Logf("Response body: %s", string(body))
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }
