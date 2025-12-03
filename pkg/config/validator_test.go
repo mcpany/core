@@ -66,6 +66,20 @@ func TestValidate(t *testing.T) {
 			expectedErrorString: `service "cmd-svc-1": command_line_service has empty command`,
 		},
 		{
+			name: "invalid global settings - api key too short",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"global_settings": {
+						"api_key": "short"
+					}
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "global_settings": API key must be at least 16 characters long`,
+    },
+    {
 			name: "service with no service_config",
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}

@@ -190,7 +190,24 @@ func newRootCmd() *cobra.Command {
 			if err := cfg.Load(cmd, osFs); err != nil {
 				return fmt.Errorf("configuration validation failed: %w", err)
 			}
-			_, err := fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadServices(store, "server")
+			if err != nil {
+				return fmt.Errorf("failed to load configurations for validation: %w", err)
+			}
+
+			var allErrors []string
+			if validationErrors := config.Validate(configs, config.Server); len(validationErrors) > 0 {
+				for _, e := range validationErrors {
+					allErrors = append(allErrors, e.Error())
+				}
+			}
+
+			if len(allErrors) > 0 {
+				return fmt.Errorf("configuration validation failed with errors: \n- %s", strings.Join(allErrors, "\n- "))
+			}
+
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
 			if err != nil {
 				return fmt.Errorf("failed to print validation success message: %w", err)
 			}
