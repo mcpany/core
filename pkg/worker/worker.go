@@ -36,8 +36,7 @@ type Config struct {
 type Worker struct {
 	busProvider *bus.BusProvider
 	pond        pond.Pool
-	stopFuncs   []func()
-	mu          sync.Mutex
+	cancel      context.CancelFunc
 	wg          sync.WaitGroup
 }
 
@@ -54,22 +53,26 @@ func New(busProvider *bus.BusProvider, cfg *Config) *Worker {
 
 // Start starts the worker.
 func (w *Worker) Start(ctx context.Context) {
+	workerCtx, cancel := context.WithCancel(ctx)
+	w.cancel = cancel
+
+	startWg := &sync.WaitGroup{}
+	startWg.Add(1)
 	w.wg.Add(1)
-	go w.startToolExecutionWorker(ctx)
+	go w.startToolExecutionWorker(workerCtx, startWg)
+	startWg.Wait() // wait for subscribe to happen
 }
 
 // Stop stops the worker.
 func (w *Worker) Stop() {
-	w.wg.Wait() // Wait for the subscription to be set up
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	for _, stop := range w.stopFuncs {
-		stop()
+	if w.cancel != nil {
+		w.cancel()
 	}
+	w.wg.Wait() // Wait for the goroutine to finish
 	w.pond.StopAndWait()
 }
 
-func (w *Worker) startToolExecutionWorker(ctx context.Context) {
+func (w *Worker) startToolExecutionWorker(ctx context.Context, startWg *sync.WaitGroup) {
 	defer w.wg.Done()
 	reqBus := bus.GetBus[*bus.ToolExecutionRequest](w.busProvider, bus.ToolExecutionRequestTopic)
 	resBus := bus.GetBus[*bus.ToolExecutionResult](w.busProvider, bus.ToolExecutionResultTopic)
@@ -90,7 +93,8 @@ func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 			}
 		})
 	})
-	w.mu.Lock()
-	w.stopFuncs = append(w.stopFuncs, unsubscribe)
-	w.mu.Unlock()
+	defer unsubscribe()
+	startWg.Done()
+
+	<-ctx.Done()
 }
