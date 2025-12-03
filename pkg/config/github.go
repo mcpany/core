@@ -28,8 +28,8 @@ import (
 	"log/slog"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/util"
 )
 
 var (
@@ -50,6 +50,7 @@ type GitHub struct {
 	log         *slog.Logger
 	apiURL      string
 	rawContentURL string
+	httpClient *http.Client
 }
 
 func NewGitHub(ctx context.Context, rawURL string) (*GitHub, error) {
@@ -84,6 +85,11 @@ func NewGitHub(ctx context.Context, rawURL string) (*GitHub, error) {
 		log:         logging.GetLogger().With("component", "GitHub"),
 		apiURL:      githubAPIURL,
 		rawContentURL: githubRawContentURL,
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				DialContext: util.SafeDialContext,
+			},
+		},
 	}, nil
 }
 
@@ -117,7 +123,7 @@ func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication
 		return nil, fmt.Errorf("failed to apply authentication for github api: %w", err)
 	}
 
-	resp, err := httpClient.Do(req)
+	resp, err := g.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch contents from github api: %w", err)
 	}

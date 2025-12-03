@@ -37,17 +37,25 @@ import (
 
 // UpstreamServiceManager manages the loading and merging of upstream services.
 type UpstreamServiceManager struct {
-	log          *slog.Logger
-	services     map[string]*configv1.UpstreamServiceConfig
+	log               *slog.Logger
+	services          map[string]*configv1.UpstreamServiceConfig
 	servicePriorities map[string]int32
+	httpClient        *http.Client
+	newGitHub         func(ctx context.Context, rawURL string) (*GitHub, error)
 }
 
 // NewUpstreamServiceManager creates a new UpstreamServiceManager.
 func NewUpstreamServiceManager() *UpstreamServiceManager {
 	return &UpstreamServiceManager{
-		log:          logging.GetLogger().With("component", "UpstreamServiceManager"),
-		services:     make(map[string]*configv1.UpstreamServiceConfig),
+		log:               logging.GetLogger().With("component", "UpstreamServiceManager"),
+		services:          make(map[string]*configv1.UpstreamServiceConfig),
 		servicePriorities: make(map[string]int32),
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				DialContext: util.SafeDialContext,
+			},
+		},
+		newGitHub: NewGitHub,
 	}
 }
 
@@ -80,7 +88,7 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 
 func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
 	if isGitHubURL(collection.GetHttpUrl()) {
-		g, err := NewGitHub(ctx, collection.GetHttpUrl())
+		g, err := m.newGitHub(ctx, collection.GetHttpUrl())
 		if err != nil {
 			return fmt.Errorf("failed to parse github url: %w", err)
 		}
@@ -131,7 +139,7 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 		}
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := m.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to fetch collection from url %s: %w", url, err)
 	}
