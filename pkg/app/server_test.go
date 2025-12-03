@@ -47,10 +47,130 @@ import (
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
+	"mime/multipart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 )
+
+func TestReloadConfig(t *testing.T) {
+	t.Run("successful reload", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+
+		configContent := `
+upstream_services:
+ - name: "test-service"
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "test-tool"
+         call_id: "test-call"
+     calls:
+       test-call:
+         id: "test-call"
+         endpoint_path: "/test"
+         method: "HTTP_METHOD_POST"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.NoError(t, err)
+
+		// Verify that the tool was loaded
+		_, ok := app.ToolManager.GetTool("test-service.test-tool")
+		assert.True(t, ok, "tool should be loaded after reload")
+	})
+
+	t.Run("malformed config", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+
+		err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		assert.Error(t, err)
+	})
+
+	t.Run("disabled service", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+
+		configContent := `
+upstream_services:
+ - name: "disabled-service"
+   disable: true
+   http_service:
+     address: "http://localhost:8080"
+     tools:
+       - name: "test-tool"
+         call_id: "test-call"
+     calls:
+       test-call:
+         id: "test-call"
+         endpoint_path: "/test"
+         method: "HTTP_METHOD_POST"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.NoError(t, err)
+
+		_, ok := app.ToolManager.GetTool("test-tool")
+		assert.False(t, ok, "tool from disabled service should not be loaded")
+	})
+}
+
+func TestUploadFile(t *testing.T) {
+	app := NewApplication()
+
+	// Test case 1: Successful file upload
+	t.Run("successful upload", func(t *testing.T) {
+		var buf bytes.Buffer
+		writer := multipart.NewWriter(&buf)
+		fileWriter, err := writer.CreateFormFile("file", "test.txt")
+		require.NoError(t, err)
+
+		fileContent := "this is a test file"
+		_, err = io.WriteString(fileWriter, fileContent)
+		require.NoError(t, err)
+		writer.Close()
+
+		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusOK, rr.Code)
+		assert.Contains(t, rr.Body.String(), "File 'test.txt' uploaded successfully")
+	})
+
+	// Test case 2: Incorrect HTTP method
+	t.Run("incorrect http method", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/upload", nil)
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+		assert.Equal(t, "method not allowed\n", rr.Body.String())
+	})
+
+	// Test case 3: No file provided
+	t.Run("no file provided", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/upload", nil)
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Equal(t, "failed to get file from form\n", rr.Body.String())
+	})
+}
 
 // connCountingListener is a net.Listener that wraps another net.Listener and
 // counts the number of accepted connections.
