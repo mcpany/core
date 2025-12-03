@@ -58,11 +58,14 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	fileConfig.SetUpstreamServices(services)
 
 	var bt BinaryType
-	if binaryType == "server" {
+	switch binaryType {
+	case "server":
 		bt = Server
-	} else if binaryType == "worker" {
+	case "worker":
 		bt = Worker
-	} else {
+	case "":
+		return nil, fmt.Errorf("binary type cannot be empty")
+	default:
 		log.Error("Unknown binary type", "binary_type", binaryType)
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
