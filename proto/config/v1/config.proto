@@ -273,6 +273,9 @@ message CommandLineUpstreamService {
     COMMUNICATION_PROTOCOL_JSON = 1;
   }
   CommunicationProtocol communication_protocol = 12;
+
+  // If true, the command will be executed on the local filesystem.
+  bool local = 13;
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.
@@ -282,6 +285,7 @@ message GraphQLUpstreamService {
   // A map of call definitions, keyed by their unique ID.
   map<string, GraphQLCallDefinition> calls = 2;
 }
+
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
 message McpUpstreamService {

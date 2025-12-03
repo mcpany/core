@@ -3200,6 +3200,7 @@ type CommandLineUpstreamService struct {
 	xxx_hidden_Calls                 map[string]*CommandLineCallDefinition            `protobuf:"bytes,10,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Prompts               *[]*PromptDefinition                             `protobuf:"bytes,11,rep,name=prompts"`
 	xxx_hidden_CommunicationProtocol CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,json=communicationProtocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol"`
+	xxx_hidden_Local                 bool                                             `protobuf:"varint,13,opt,name=local"`
 	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
 	XXX_presence                     [1]uint32
 	unknownFields                    protoimpl.UnknownFields
@@ -3322,14 +3323,21 @@ func (x *CommandLineUpstreamService) GetCommunicationProtocol() CommandLineUpstr
 	return CommandLineUpstreamService_COMMUNICATION_PROTOCOL_UNSPECIFIED
 }
 
+func (x *CommandLineUpstreamService) GetLocal() bool {
+	if x != nil {
+		return x.xxx_hidden_Local
+	}
+	return false
+}
+
 func (x *CommandLineUpstreamService) SetCommand(v string) {
 	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
 	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *CommandLineUpstreamService) SetTools(v []*ToolDefinition) {
@@ -3366,7 +3374,12 @@ func (x *CommandLineUpstreamService) SetPrompts(v []*PromptDefinition) {
 
 func (x *CommandLineUpstreamService) SetCommunicationProtocol(v CommandLineUpstreamService_CommunicationProtocol) {
 	x.xxx_hidden_CommunicationProtocol = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
+}
+
+func (x *CommandLineUpstreamService) SetLocal(v bool) {
+	x.xxx_hidden_Local = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
 }
 
 func (x *CommandLineUpstreamService) HasCommand() bool {
@@ -3418,6 +3431,13 @@ func (x *CommandLineUpstreamService) HasCommunicationProtocol() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
+func (x *CommandLineUpstreamService) HasLocal() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *CommandLineUpstreamService) ClearCommand() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Command = nil
@@ -3449,6 +3469,11 @@ func (x *CommandLineUpstreamService) ClearCommunicationProtocol() {
 	x.xxx_hidden_CommunicationProtocol = CommandLineUpstreamService_COMMUNICATION_PROTOCOL_UNSPECIFIED
 }
 
+func (x *CommandLineUpstreamService) ClearLocal() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Local = false
+}
+
 type CommandLineUpstreamService_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -3473,6 +3498,8 @@ type CommandLineUpstreamService_builder struct {
 	// A list of prompts served by this service.
 	Prompts               []*PromptDefinition
 	CommunicationProtocol *CommandLineUpstreamService_CommunicationProtocol
+	// If true, the command will be executed on the local filesystem.
+	Local *bool
 }
 
 func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService {
@@ -3480,11 +3507,11 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_Command = b.Command
 	}
 	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
 	}
 	x.xxx_hidden_Tools = &b.Tools
@@ -3496,8 +3523,12 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	x.xxx_hidden_Calls = b.Calls
 	x.xxx_hidden_Prompts = &b.Prompts
 	if b.CommunicationProtocol != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
 		x.xxx_hidden_CommunicationProtocol = *b.CommunicationProtocol
+	}
+	if b.Local != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		x.xxx_hidden_Local = *b.Local
 	}
 	return m0
 }
@@ -5991,7 +6022,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
-	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01\"\xc4\a\n" +
+	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01\"\xda\a\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
 	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x126\n" +
@@ -6004,7 +6035,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x05calls\x18\n" +
 	" \x03(\v27.mcpany.config.v1.CommandLineUpstreamService.CallsEntryR\x05calls\x12<\n" +
 	"\aprompts\x18\v \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12y\n" +
-	"\x16communication_protocol\x18\f \x01(\x0e2B.mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocolR\x15communicationProtocol\x1ae\n" +
+	"\x16communication_protocol\x18\f \x01(\x0e2B.mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocolR\x15communicationProtocol\x12\x14\n" +
+	"\x05local\x18\r \x01(\bR\x05local\x1ae\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +

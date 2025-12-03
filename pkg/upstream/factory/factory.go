@@ -22,13 +22,13 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/command"
+	"github.com/mcpany/core/pkg/upstream/graphql"
 	"github.com/mcpany/core/pkg/upstream/grpc"
 	"github.com/mcpany/core/pkg/upstream/http"
 	"github.com/mcpany/core/pkg/upstream/mcp"
 	"github.com/mcpany/core/pkg/upstream/openapi"
 	"github.com/mcpany/core/pkg/upstream/webrtc"
 	"github.com/mcpany/core/pkg/upstream/websocket"
-	"github.com/mcpany/core/pkg/upstream/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
