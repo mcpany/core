@@ -76,6 +76,19 @@ func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConf
 	return nil
 }
 
+func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+	s1 := "service1"
+	s2 := "service2"
+	return []*configv1.UpstreamServiceConfig{
+		configv1.UpstreamServiceConfig_builder{Name: &s1}.Build(),
+		configv1.UpstreamServiceConfig_builder{Name: &s2}.Build(),
+	}, nil
+}
+
+func (m *mockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+	return nil
+}
+
 type mockToolManager struct {
 	tool.ToolManagerInterface
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
@@ -241,6 +254,40 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			assert.Equal(t, "success-key-request-context", result.ServiceKey)
 		case <-time.After(1 * time.Second):
 			t.Fatal("timed out waiting for registration result")
+		}
+	})
+
+	t.Run("successful service list", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewBusProvider(messageBus)
+		require.NoError(t, err)
+		requestBus := bus.GetBus[*bus.ServiceListRequest](bp, bus.ServiceListRequestTopic)
+		resultBus := bus.GetBus[*bus.ServiceListResult](bp, bus.ServiceListResultTopic)
+
+		registry := &mockServiceRegistry{}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceListResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "test-list", func(result *bus.ServiceListResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceListRequest{}
+		req.SetCorrelationID("test-list")
+		requestBus.Publish(ctx, "request", req)
+
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+			assert.Len(t, result.Services, 2)
+			assert.Equal(t, "service1", result.Services[0].GetName())
+			assert.Equal(t, "service2", result.Services[1].GetName())
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for service list result")
 		}
 	})
 }
