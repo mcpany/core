@@ -267,7 +267,6 @@ func readURL(url string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
 	}
-
 	defer resp.Body.Close()
 
 	// Since redirects are disabled, a redirect attempt will result in a 3xx status code.
@@ -281,7 +280,11 @@ func readURL(url string) ([]byte, error) {
 
 	// Limit the size of the response to 1MB to prevent DoS attacks.
 	resp.Body = http.MaxBytesReader(nil, resp.Body, 1024*1024)
-	return io.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body from url %s: %w", url, err)
+	}
+	return b, nil
 }
 
 // collectFilePaths recursively scans the configured paths and returns a list of valid config files.
