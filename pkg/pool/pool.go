@@ -377,6 +377,22 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
+// Deregister closes and removes a pool from the manager.
+func (m *Manager) Deregister(name string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if oldPool, ok := m.pools[name]; ok {
+		if p, isCloser := oldPool.(io.Closer); isCloser {
+			logging.GetLogger().Info("Closing old entry", "name", name)
+			if err := p.Close(); err != nil {
+				logging.GetLogger().Warn("Failed to close pool", "name", name, "error", err)
+			}
+		}
+		delete(m.pools, name)
+	}
+}
+
 // Get retrieves a typed pool from the manager by name. It uses a type parameter
 // `T` to ensure that the returned pool is of the expected type.
 //

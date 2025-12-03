@@ -53,6 +53,7 @@ type GRPCUpstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
 	toolManager     tool.ToolManagerInterface
+	serviceID       string
 }
 
 // NewGRPCUpstream creates a new instance of GRPCUpstream.
@@ -69,6 +70,13 @@ func NewGRPCUpstream(poolManager *pool.Manager) upstream.Upstream {
 		poolManager:     poolManager,
 		reflectionCache: cache,
 	}
+}
+
+// Shutdown gracefully terminates the gRPC upstream service by shutting down the
+// associated connection pool.
+func (u *GRPCUpstream) Shutdown(ctx context.Context) error {
+	u.poolManager.Deregister(u.serviceID)
+	return nil
 }
 
 // Register handles the registration of a gRPC upstream service. It establishes a
@@ -101,7 +109,8 @@ func (u *GRPCUpstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	u.serviceID = sanitizedName // for internal use
+	serviceID := u.serviceID
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {
