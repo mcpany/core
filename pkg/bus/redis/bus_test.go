@@ -384,6 +384,29 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	}
 }
 
+func TestRedisBus_Close(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+
+	// Subscribe to a topic to create a pubsub connection
+	unsub := bus.Subscribe(context.Background(), "test-close", func(msg string) {})
+	defer unsub()
+
+	// Check that there is one subscription
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), "test-close").Val()
+		return len(subs) > 0 && subs["test-close"] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	// Close the bus
+	err := bus.Close()
+	assert.NoError(t, err)
+
+	// Verify that the client is closed
+	err = client.Ping(context.Background()).Err()
+	assert.Equal(t, redis.ErrClosed, err)
+}
+
 func TestRedisBus_New(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address:  proto.String("localhost:6379"),
