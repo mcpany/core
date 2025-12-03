@@ -126,7 +126,6 @@ type Application struct {
 	ToolManager      tool.ToolManagerInterface
 	ResourceManager  resource.ResourceManagerInterface
 	configFiles      map[string]string
-	reloadMu         sync.Mutex
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -333,8 +332,6 @@ func (a *Application) Run(
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
-	a.reloadMu.Lock()
-	defer a.reloadMu.Unlock()
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)

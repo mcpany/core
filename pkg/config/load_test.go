@@ -169,15 +169,6 @@ upstream_services: {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown binary type: unknown")
 	})
-
-	t.Run("empty binary type", func(t *testing.T) {
-		filePath := createTempConfigFile(t, "")
-		fs := afero.NewOsFs()
-		fileStore := NewFileStore(fs, []string{filePath})
-		_, err := LoadServices(fileStore, "")
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "binary type cannot be empty")
-	})
 	tests := []struct {
 		name             string
 		textprotoContent string

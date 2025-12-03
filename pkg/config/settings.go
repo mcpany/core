@@ -156,12 +156,14 @@ func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	case "error":
 		return v1.GlobalSettings_LOG_LEVEL_ERROR
 	default:
-		logging.GetLogger().Warn(
-			fmt.Sprintf(
-				"Invalid log level specified: '%s'. Defaulting to INFO.",
-				s.logLevel,
-			),
-		)
+		if s.logLevel != "" {
+			logging.GetLogger().Warn(
+				fmt.Sprintf(
+					"Invalid log level specified: '%s'. Defaulting to INFO.",
+					s.logLevel,
+				),
+			)
+		}
 		return v1.GlobalSettings_LOG_LEVEL_INFO
 	}
 }

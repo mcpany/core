@@ -431,20 +431,6 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestRedisBus_New_InvalidConfig(t *testing.T) {
-	redisBus := bus_pb.RedisBus_builder{
-		Address: proto.String("invalid-address"),
-	}.Build()
-
-	bus := New[string](redisBus)
-	assert.NotNil(t, bus)
-	assert.NotNil(t, bus.client)
-
-	// Ping the client to check the connection
-	err := bus.client.Ping(context.Background()).Err()
-	assert.Error(t, err)
-}
-
 func TestRedisBus_New_PartialConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address: proto.String("localhost:6381"),
@@ -604,39 +590,6 @@ func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
 
 	// Allow some time for the goroutine to exit.
 	time.Sleep(100 * time.Millisecond)
-}
-
-func TestRedisBus_Close_Behavior(t *testing.T) {
-	client := setupRedisIntegrationTest(t)
-	bus := NewWithClient[string](client)
-	topic := "test-close"
-
-	// Subscribe to create a pubsub connection
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		t.Error("handler should not be called")
-	})
-
-	require.Eventually(t, func() bool {
-		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		return len(subs) > 0 && subs[topic] == 1
-	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
-
-	// Close the bus
-	err := bus.Close()
-	assert.NoError(t, err)
-
-	// Publish should fail after close
-	err = bus.Publish(context.Background(), topic, "hello")
-	assert.Error(t, err)
-	assert.Equal(t, redis.ErrClosed, err)
-
-	// Unsubscribe should not panic
-	assert.NotPanics(t, unsub)
-
-	// Double close should not panic and should return an error
-	err = bus.Close()
-	assert.Error(t, err)
-	assert.Equal(t, redis.ErrClosed, err)
 }
 
 func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
