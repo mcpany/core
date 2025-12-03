@@ -1,4 +1,3 @@
-
 # File Upload Example
 
 This example demonstrates how to upload a file to the MCP Any server.
