@@ -319,3 +319,109 @@ func TestNewDockerExecutorSuccess(t *testing.T) {
 	executor := newDockerExecutor(containerEnv)
 	assert.NotNil(t, executor)
 }
+
+func TestNewExecutor(t *testing.T) {
+	t.Run("WithContainer", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := NewExecutor(containerEnv)
+		assert.IsType(t, &dockerExecutor{}, executor)
+	})
+
+	t.Run("WithoutContainer", func(t *testing.T) {
+		executor := NewExecutor(nil)
+		assert.IsType(t, &localExecutor{}, executor)
+	})
+}
+
+func TestNewLocalExecutor(t *testing.T) {
+	executor := NewLocalExecutor()
+	assert.NotNil(t, executor)
+	assert.IsType(t, &localExecutor{}, executor)
+}
+
+func TestLocalExecutorWithStdIO(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
+		executor := NewExecutor(nil)
+		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		require.NoError(t, err)
+
+		go func() {
+			defer stdin.Close()
+			_, err := stdin.Write([]byte("hello\n"))
+			require.NoError(t, err)
+		}()
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var stdoutBytes, stderrBytes []byte
+		var stdoutErr, stderrErr error
+
+		go func() {
+			defer wg.Done()
+			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+		}()
+
+		go func() {
+			defer wg.Done()
+			stderrBytes, stderrErr = io.ReadAll(stderr)
+		}()
+
+		wg.Wait()
+
+		require.NoError(t, stdoutErr)
+		assert.Equal(t, "hello\n", string(stdoutBytes))
+
+		require.NoError(t, stderrErr)
+		assert.Empty(t, string(stderrBytes))
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+}
+
+func TestDockerExecutorWithStdIO(t *testing.T) {
+	if !canConnectToDocker(t) {
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := NewExecutor(containerEnv)
+		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		require.NoError(t, err)
+
+		go func() {
+			defer stdin.Close()
+			_, err := stdin.Write([]byte("hello\n"))
+			require.NoError(t, err)
+		}()
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var stdoutBytes, stderrBytes []byte
+		var stdoutErr, stderrErr error
+
+		go func() {
+			defer wg.Done()
+			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+		}()
+
+		go func() {
+			defer wg.Done()
+			stderrBytes, stderrErr = io.ReadAll(stderr)
+		}()
+
+		wg.Wait()
+
+		require.NoError(t, stdoutErr)
+		assert.Equal(t, "hello\n", string(stdoutBytes))
+
+		require.NoError(t, stderrErr)
+		assert.Empty(t, string(stderrBytes))
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+}
