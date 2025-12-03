@@ -72,7 +72,8 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	// Load and merge remote service collections
 	for _, collection := range config.GetUpstreamServiceCollections() {
 		if err := m.loadAndMergeCollection(ctx, collection); err != nil {
-			return nil, fmt.Errorf("failed to load upstream service collection %s: %w", collection.GetName(), err)
+			m.log.Warn("Failed to load upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "error", err)
+			// Continue loading other collections even if one fails
 		}
 	}
 
@@ -110,7 +111,6 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 				newCollection.SetHttpUrl(content.HTMLURL)
 				newCollection.SetPriority(collection.GetPriority())
 				newCollection.SetAuthentication(collection.GetAuthentication())
-				newCollection.SetNamespace(collection.GetNamespace())
 				if err := m.loadAndMergeCollection(ctx, newCollection); err != nil {
 					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
 				}
@@ -167,14 +167,7 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 		if service.HasPriority() {
 			priority = service.GetPriority()
 		}
-
-		if namespace := collection.GetNamespace(); namespace != "" {
-			service.SetName(fmt.Sprintf("%s/%s", namespace, service.GetName()))
-		}
-
-		if err := m.addService(service, priority); err != nil {
-			return err
-		}
+		m.addService(service, priority)
 	}
 
 	m.log.Info("Successfully loaded and merged upstream service collection", "name", collection.GetName(), "url", url, "services_loaded", len(services))

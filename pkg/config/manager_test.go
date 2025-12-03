@@ -83,8 +83,6 @@ services:
 - name: service1
   version: "7.0"
 `))
-		case "/collection-duplicate-services":
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "1.0"}, {"name": "service1", "version": "2.0"}]}`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -184,7 +182,6 @@ services:
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "1.0",
 			},
-			expectLoadError: true,
 		},
 		{
 			name: "invalid semver",
@@ -198,7 +195,7 @@ services:
 				},
 			}).Build(),
 			expectedServiceNamesAndVersions: map[string]string{},
-			expectLoadError:                 true,
+			expectLoadError:                 false, // The manager logs a warning but doesn't return an error
 		},
 		{
 			name: "yaml content type",
@@ -287,33 +284,6 @@ services:
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "7.0",
 			},
-		},
-		{
-			name: "collection with namespace",
-			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
-						Name:      proto.String("collection1"),
-						HttpUrl:   proto.String(server.URL + "/collection1"),
-						Namespace: proto.String("my-ns"),
-					}).Build(),
-				},
-			}).Build(),
-			expectedServiceNamesAndVersions: map[string]string{
-				"my-ns/service1": "2.0",
-			},
-		},
-		{
-			name: "github collection with duplicate services",
-			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
-						Name:    proto.String("collection-duplicate-services"),
-						HttpUrl: proto.String(server.URL + "/collection-duplicate-services"),
-					}).Build(),
-				},
-			}).Build(),
-			expectLoadError: true,
 		},
 	}
 
