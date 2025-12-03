@@ -40,6 +40,12 @@ import (
 // a list of commands defined in the service configuration.
 type CommandUpstream struct{}
 
+// Shutdown implements the upstream.Upstream interface.
+func (u *CommandUpstream) Shutdown(ctx context.Context) error {
+	// Noop for command upstream
+	return nil
+}
+
 // NewCommandUpstream creates a new instance of CommandUpstream.
 func NewCommandUpstream() upstream.Upstream {
 	return &CommandUpstream{}

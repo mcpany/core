@@ -221,3 +221,36 @@ func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
 	assert.Empty(t, pm.ListPrompts(), "Prompts should be cleared after unregistration")
 	assert.Empty(t, rm.ListResources(), "Resources should be cleared after unregistration")
 }
+
+func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
+	shutdownCalled := false
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+				shutdownFunc: func() error {
+					shutdownCalled = true
+					return nil
+				},
+			}, nil
+		},
+	}
+	tm := newThreadSafeToolManager()
+	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err, "Registration should succeed")
+
+	// Unregister the service
+	err = registry.UnregisterService(context.Background(), serviceID)
+	require.NoError(t, err, "Unregistration should succeed")
+
+	// Verify that the shutdown method was called
+	assert.True(t, shutdownCalled, "Shutdown method should be called on unregister")
+}

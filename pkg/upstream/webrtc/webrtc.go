@@ -47,6 +47,12 @@ type WebrtcUpstream struct {
 	toolNameSanitizer sanitizer
 }
 
+// Shutdown is a no-op for the WebRTC upstream, as connections are transient
+// and not managed by a persistent pool.
+func (u *WebrtcUpstream) Shutdown(ctx context.Context) error {
+	return nil
+}
+
 // NewWebrtcUpstream creates a new instance of WebrtcUpstream.
 //
 // poolManager is the connection pool manager, though it is not currently used

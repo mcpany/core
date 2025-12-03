@@ -44,6 +44,14 @@ import (
 // registers tools based on the service configuration.
 type WebsocketUpstream struct {
 	poolManager *pool.Manager
+	serviceID   string
+}
+
+// Shutdown gracefully terminates the WebSocket upstream service by shutting down
+// the associated connection pool.
+func (u *WebsocketUpstream) Shutdown(ctx context.Context) error {
+	u.poolManager.Deregister(u.serviceID)
+	return nil
 }
 
 // NewWebsocketUpstream creates a new instance of WebsocketUpstream.
@@ -84,7 +92,8 @@ func (u *WebsocketUpstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	u.serviceID = sanitizedName
+	serviceID := u.serviceID
 
 	websocketService := serviceConfig.GetWebsocketService()
 	if websocketService == nil {
