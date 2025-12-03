@@ -39,6 +39,20 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
+// IsSecurePath checks if a given file path is secure and does not contain any
+// path traversal sequences ("../" or "..\\"). This function is crucial for
+// preventing directory traversal attacks, where a malicious actor could
+// otherwise access or manipulate files outside of the intended directory.
+//
+// path is the file path to be validated.
+// It returns an error if the path is found to be insecure, and nil otherwise.
+func IsSecurePath(path string) error {
+	if strings.Contains(path, "..") {
+		return fmt.Errorf("path contains '..', which is not allowed")
+	}
+	return nil
+}
+
 // IsValidURL checks if a given string is a valid URL. This function performs
 // several checks, including for length, whitespace, the presence of a scheme,
 // and host, considering special cases for schemes like "unix" or "mailto" that
