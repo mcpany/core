@@ -63,6 +63,7 @@ func TestBindFlags(t *testing.T) {
 	assert.True(t, viper.GetBool("stdio"))
 }
 
+
 func TestGRPCPortEnvVar(t *testing.T) {
 	viper.Reset() // Reset viper to avoid state leakage from other tests.
 	os.Setenv("MCPANY_GRPC_PORT", "9090")

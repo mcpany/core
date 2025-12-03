@@ -54,6 +54,28 @@ func TestRedisBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 	wg.Wait()
 }
 
+func TestRedisBus_Close_WithActiveSubscription(t *testing.T) {
+	client := setupRedisIntegrationTest(t)
+	bus := NewWithClient[string](client)
+	topic := "test-close-with-active-subscription"
+
+	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	defer unsub()
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) > 0 && subs[topic] == 1
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
+
+	err := bus.Close()
+	assert.NoError(t, err)
+
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		return len(subs) == 0 || subs[topic] == 0
+	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after close")
+}
+
 func TestRedisBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
