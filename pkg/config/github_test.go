@@ -20,8 +20,11 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/pkg/util"
 )
 
 func TestIsGitHubURL(t *testing.T) {
@@ -147,16 +150,13 @@ func TestGitHub_List(t *testing.T) {
 	}))
 	defer server.Close()
 
-	originalClient := httpClient
-	defer func() { httpClient = originalClient }()
-	httpClient = &http.Client{}
-
 	g := &GitHub{
-		Owner:   "mcpany",
-		Repo:    "core",
-		Ref:     "main",
-		Path:    "examples",
-		apiURL:  server.URL,
+		Owner:      "mcpany",
+		Repo:       "core",
+		Ref:        "main",
+		Path:       "examples",
+		apiURL:     server.URL,
+		httpClient: &http.Client{},
 	}
 
 	auth := &configv1.UpstreamAuthentication{}
@@ -189,16 +189,13 @@ func TestGitHub_List_With_Single_File(t *testing.T) {
 	}))
 	defer server.Close()
 
-	originalClient := httpClient
-	defer func() { httpClient = originalClient }()
-	httpClient = &http.Client{}
-
 	g := &GitHub{
-		Owner:   "mcpany",
-		Repo:    "core",
-		Ref:     "main",
-		Path:    "examples",
-		apiURL:  server.URL,
+		Owner:      "mcpany",
+		Repo:       "core",
+		Ref:        "main",
+		Path:       "examples",
+		apiURL:     server.URL,
+		httpClient: &http.Client{},
 	}
 
 	contents, err := g.List(context.Background(), nil)
@@ -218,22 +215,31 @@ func TestGitHub_List_With_Single_File(t *testing.T) {
 }
 
 func TestGitHub_List_ssrf(t *testing.T) {
+	// This test verifies that the GitHub client blocks requests to loopback addresses.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`[{"type": "file"}]`))
 	}))
 	defer server.Close()
 
+	// The httptest.Server URL uses a loopback address (e.g., 127.0.0.1), which should be blocked.
 	g := &GitHub{
 		Owner:   "mcpany",
 		Repo:    "core",
 		Ref:     "main",
 		Path:    "examples",
 		apiURL:  server.URL,
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				DialContext: util.SafeDialContext,
+			},
+		},
 	}
 
 	_, err := g.List(context.Background(), nil)
 	if err == nil {
 		t.Errorf("Expected an error due to SSRF attempt, but got nil")
+	} else if !strings.Contains(err.Error(), "ssrf attempt blocked") {
+		t.Errorf("Expected error to contain 'ssrf attempt blocked', but got: %v", err)
 	}
 }
