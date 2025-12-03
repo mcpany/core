@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
@@ -244,9 +245,15 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 			continue
 		}
 
-		endpointURL, err := url.Parse(httpDef.GetEndpointPath())
+		endpointPath := httpDef.GetEndpointPath()
+		if strings.Contains(endpointPath, "..") {
+			log.Error("Endpoint path contains '..', which is not allowed", "path", endpointPath)
+			continue
+		}
+
+		endpointURL, err := url.Parse(endpointPath)
 		if err != nil {
-			log.Error("Failed to parse endpoint path", "path", httpDef.GetEndpointPath(), "error", err)
+			log.Error("Failed to parse endpoint path", "path", endpointPath, "error", err)
 			continue
 		}
 
