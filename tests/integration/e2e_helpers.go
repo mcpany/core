@@ -413,51 +413,41 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 }
 
 // WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
-func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
+func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) bool {
 	t.Helper()
-	require.Eventually(t, func() bool {
-		// This context is for a single connection attempt.
-		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
-		defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	// Use grpc.WithBlock() to make Dial block until the connection is established.
+	conn, err := grpc.DialContext(ctx, grpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 
-		// grpc.NewClient is non-blocking.
-		conn, err := grpc.NewClient(grpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			t.Logf("gRPC server at %s not ready, error creating client: %v", grpcAddress, err)
-			return false
-		}
-		defer conn.Close()
+	if err == nil {
+		conn.Close()
+		return true
+	}
 
-		// Wait for the connection to be ready.
-		for {
-			s := conn.GetState()
-			if s == connectivity.Ready {
-				return true
-			}
-			if !conn.WaitForStateChange(ctx, s) {
-				// Context expired, so this attempt failed.
-				return false
-			}
-		}
-	}, timeout, RetryInterval, "gRPC server at %s did not become ready in time", grpcAddress)
+	t.Logf("gRPC server at %s did not become ready in time: %v", grpcAddress, err)
+	return false
 }
 
 // WaitForWebsocketReady waits for a websocket server to become ready by attempting to connect.
-func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
+func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) bool {
 	t.Helper()
-	require.Eventually(t, func() bool {
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
 		dialer := websocket.Dialer{
 			HandshakeTimeout: 2 * time.Second,
 		}
 		conn, resp, err := dialer.Dial(url, nil)
-		if err != nil {
-			t.Logf("Websocket server at %s not ready: %v", url, err)
-			return false
+		if err == nil {
+			resp.Body.Close()
+			conn.Close()
+			return true
 		}
-		defer resp.Body.Close()
-		conn.Close()
-		return true
-	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
+		t.Logf("Websocket server at %s not ready: %v", url, err)
+		time.Sleep(RetryInterval)
+	}
+	t.Logf("Websocket server at %s did not become ready in time", url)
+	return false
 }
 
 // WaitForHTTPHealth waits for an HTTP endpoint to return a 200 OK status.
@@ -1206,8 +1196,9 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	// Use protojson to marshal the request to JSON
 	jsonBytes, err := protojson.Marshal(req)
 	require.NoError(t, err)
-
-	var params json.RawMessage = jsonBytes
+	var params map[string]interface{}
+	err = json.Unmarshal(jsonBytes, &params)
+	require.NoError(t, err)
 
 	jsonRPCReq := map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1280,6 +1271,20 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 		Error  *MCPJSONRPCError     `json:"error"`
 	}
 	bodyBytes, _ := io.ReadAll(resp.Body)
+	s.T.Logf("ListTools response body: %s", string(bodyBytes))
+
+	// Handle server-sent events
+	if strings.HasPrefix(resp.Header.Get("Content-Type"), "text/event-stream") {
+		// A very basic parser for SSE format to extract the JSON data
+		lines := strings.Split(strings.TrimSpace(string(bodyBytes)), "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "data:") {
+				bodyBytes = []byte(strings.TrimSpace(strings.TrimPrefix(line, "data:")))
+				break
+			}
+		}
+	}
+
 	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
 	}
@@ -1324,8 +1329,23 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 		Result *mcp.CallToolResult `json:"result"`
 		Error  *MCPJSONRPCError    `json:"error"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	s.T.Logf("CallTool response body: %s", string(bodyBytes))
+
+	// Handle server-sent events
+	if strings.HasPrefix(resp.Header.Get("Content-Type"), "text/event-stream") {
+		// A very basic parser for SSE format to extract the JSON data
+		lines := strings.Split(strings.TrimSpace(string(bodyBytes)), "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "data:") {
+				bodyBytes = []byte(strings.TrimSpace(strings.TrimPrefix(line, "data:")))
+				break
+			}
+		}
+	}
+
+	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
 	}
 
 	if rpcResp.Error != nil {
