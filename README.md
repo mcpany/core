@@ -31,6 +31,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
 - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
 - **Advanced Service Policies**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
+- **Server Authentication**: Secure the MCP server with an API key.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
   - **Bearer Tokens**
@@ -274,6 +275,8 @@ MCP Any supports a variety of advanced configuration options, including:
 
 - **Resilience**: Configure retries for a gRPC service.
 - **Server Authentication**: Secure the MCP server with an API key.
+
+  You can secure your MCP Any server by setting an API key in the global settings. When an API key is configured, all incoming requests must include this key in the `X-API-Key` header.
 
   ```yaml
   global_settings:

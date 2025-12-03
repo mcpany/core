@@ -106,6 +106,16 @@ func (am *AuthManager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
 
+// IsAPIKeyAuthEnabled returns true if API key authentication is enabled.
+func (am *AuthManager) IsAPIKeyAuthEnabled() bool {
+	return am.apiKey != ""
+}
+
+// ValidateAPIKey validates the provided API key.
+func (am *AuthManager) ValidateAPIKey(apiKey string) bool {
+	return am.apiKey == apiKey
+}
+
 // AddAuthenticator registers an authenticator for a given service ID. If an
 // authenticator is already registered for the same service ID, it will be
 // overwritten.

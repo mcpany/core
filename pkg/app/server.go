@@ -20,7 +20,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"crypto/subtle"
 	"io"
 	"net"
 	"net/http"
@@ -28,6 +27,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
@@ -479,11 +479,11 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	apiKey := config.GlobalSettings().APIKey()
 	authMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if apiKey != "" {
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
+			if mcpSrv.AuthManager().IsAPIKeyAuthEnabled() {
+				apiKey := r.Header.Get(appconsts.APIKeyHeader)
+				if !mcpSrv.AuthManager().ValidateAPIKey(apiKey) {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}

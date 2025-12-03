@@ -50,6 +50,8 @@ import (
 	"github.com/spf13/afero"
 )
 
+type RequestEditor func(req *http.Request)
+
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
@@ -1245,7 +1247,7 @@ func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }
 
-func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
+func (s *MCPANYTestServerInfo) ListTools(ctx context.Context, editor ...RequestEditor) (*mcp.ListToolsResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  "tools/list",
@@ -1262,6 +1264,10 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+
+	for _, e := range editor {
+		e(httpReq)
+	}
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1290,7 +1296,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	return rpcResp.Result, nil
 }
 
-func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams, editor ...RequestEditor) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  "tools/call",
@@ -1307,6 +1313,10 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+
+	for _, e := range editor {
+		e(httpReq)
+	}
 
 	resp, err := s.HTTPClient.Do(httpReq)
 	if err != nil {

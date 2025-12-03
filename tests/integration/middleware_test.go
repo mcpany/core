@@ -146,3 +146,39 @@ upstream_services:
 
 	assert.Equal(t, int32(2), atomic.LoadInt32(&requestCount), "Upstream service should have been called again after cache expired")
 }
+
+func TestAuthMiddleware_APIKeyAuthentication(t *testing.T) {
+	configContent := `
+global_settings:
+  api_key: "test-api-key"
+`
+	serverInfo := integration.StartMCPANYServerWithConfig(t, "api-key-auth-test", configContent)
+	defer serverInfo.CleanupFunc()
+
+	// Test case 1: Valid API key
+	t.Run("ValidAPIKey", func(t *testing.T) {
+		ctx := context.Background()
+		_, err := serverInfo.ListTools(ctx, func(req *http.Request) {
+			req.Header.Set("X-API-Key", "test-api-key")
+		})
+		require.NoError(t, err)
+	})
+
+	// Test case 2: Invalid API key
+	t.Run("InvalidAPIKey", func(t *testing.T) {
+		ctx := context.Background()
+		_, err := serverInfo.ListTools(ctx, func(req *http.Request) {
+			req.Header.Set("X-API-Key", "invalid-api-key")
+		})
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Unauthorized")
+	})
+
+	// Test case 3: Missing API key
+	t.Run("MissingAPIKey", func(t *testing.T) {
+		ctx := context.Background()
+		_, err := serverInfo.ListTools(ctx)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Unauthorized")
+	})
+}

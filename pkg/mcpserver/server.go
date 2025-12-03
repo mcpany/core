@@ -34,6 +34,9 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 var AddReceivingMiddlewareHook func(name string)
@@ -205,6 +208,33 @@ func NewServer(
 		}
 	}
 
+	authMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
+		return func(
+			ctx context.Context,
+			method string,
+			req mcp.Request,
+		) (mcp.Result, error) {
+			if s.authManager.IsAPIKeyAuthEnabled() {
+				md, ok := metadata.FromIncomingContext(ctx)
+				if !ok {
+					return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+				}
+
+				values := md.Get(appconsts.APIKeyHeader)
+				if len(values) == 0 {
+					return nil, status.Errorf(codes.Unauthenticated, "api key is not provided")
+				}
+				apiKey := values[0]
+
+				if !s.authManager.ValidateAPIKey(apiKey) {
+					return nil, status.Errorf(codes.Unauthenticated, "invalid api key")
+				}
+			}
+			return next(ctx, method, req)
+		}
+	}
+
+	s.server.AddReceivingMiddleware(authMiddleware)
 	s.server.AddReceivingMiddleware(routerMiddleware)
 	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
 
