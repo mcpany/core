@@ -100,6 +100,10 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		}
 	}
 
+	if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
+		return fmt.Errorf("API key must be at least 16 characters long")
+	}
+
 	if bus := gs.GetMessageBus(); bus != nil {
 		if redis := bus.GetRedis(); redis != nil {
 			if redis.GetAddress() == "" {
@@ -117,7 +121,7 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 
 func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
-		return fmt.Errorf("service has no service_config")
+		return fmt.Errorf("service %q has no service_config", service.GetName())
 	}
 
 	if httpService := service.GetHttpService(); httpService != nil {

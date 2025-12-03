@@ -280,7 +280,7 @@ MCP Any supports a variety of advanced configuration options, including:
     api_key: "my-secret-key"
   ```
 
-  When the `api_key` is set, clients must provide the key in the `X-API-Key` header of their requests.
+  When the `api_key` is set, clients must provide the key in the `X-API-Key` header of their requests. The API key must be at least 16 characters long.
 
 ### Remote Configurations
 

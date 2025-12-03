@@ -32,3 +32,11 @@ upstreamServices:
           checkTimeout: 2s
           failureThreshold: 3
           initialDelay: 5s
+  - name: "docker-file-upload"
+    httpService:
+      address: "http://file-upload-server:8081"
+      calls:
+        - operationId: "upload"
+          description: "Uploads a file to the server."
+          method: "HTTP_METHOD_POST"
+          endpointPath: "/upload"
