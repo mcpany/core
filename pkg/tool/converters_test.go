@@ -23,6 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -81,16 +82,16 @@ func TestConvertMCPToolToProto(t *testing.T) {
 		return s
 	}
 
-	expectedTool := pb.Tool_builder{
-		Name:        proto.String("test-tool"),
-		Description: proto.String("A tool for testing"),
-		DisplayName: proto.String("Test Tool"),
-		Annotations: pb.ToolAnnotations_builder{
-			Title:           proto.String("Test Tool"),
-			ReadOnlyHint:    proto.Bool(true),
-			DestructiveHint: proto.Bool(true),
-			IdempotentHint:  proto.Bool(true),
-			OpenWorldHint:   proto.Bool(true),
+	expectedTool := &pb.Tool{
+		Name:        "test-tool",
+		Description: "A tool for testing",
+		DisplayName: "Test Tool",
+		Annotations: &pb.ToolAnnotations{
+			Title:           "Test Tool",
+			ReadOnlyHint:    true,
+			DestructiveHint: true,
+			IdempotentHint:  true,
+			OpenWorldHint:   true,
 			InputSchema: mustNewStruct(map[string]any{
 				"type": "object",
 				"properties": map[string]any{
@@ -109,8 +110,8 @@ func TestConvertMCPToolToProto(t *testing.T) {
 					},
 				},
 			}),
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	if diff := cmp.Diff(expectedTool, protoTool, protocmp.Transform()); diff != "" {
 		t.Errorf("convertMCPToolToProto() returned diff (-want +got):\n%s", diff)
@@ -236,17 +237,17 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 		return s
 	}
 
-	protoTool := pb.Tool_builder{
-		ServiceId:   proto.String("test-service"),
-		Name:        proto.String("test-tool"),
-		Description: proto.String("A tool for testing"),
-		DisplayName: proto.String("Test Tool"),
-		Annotations: pb.ToolAnnotations_builder{
-			Title:           proto.String("Test Tool"),
-			ReadOnlyHint:    proto.Bool(true),
-			DestructiveHint: proto.Bool(true),
-			IdempotentHint:  proto.Bool(true),
-			OpenWorldHint:   proto.Bool(true),
+	protoTool := &pb.Tool{
+		ServiceId:   "test-service",
+		Name:        "test-tool",
+		Description: "A tool for testing",
+		DisplayName: "Test Tool",
+		Annotations: &pb.ToolAnnotations{
+			Title:           "Test Tool",
+			ReadOnlyHint:    true,
+			DestructiveHint: true,
+			IdempotentHint:  true,
+			OpenWorldHint:   true,
 			InputSchema: mustNewStruct(map[string]any{
 				"type": "object",
 				"properties": map[string]any{
@@ -265,8 +266,8 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 					},
 				},
 			}),
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	mcpTool, err := ConvertProtoToMCPTool(protoTool)
 	if err != nil {
@@ -339,4 +340,56 @@ func TestConvertJSONSchemaToStruct_InvalidType(t *testing.T) {
 	}
 	_, err := convertJSONSchemaToStruct(jsonSchema)
 	assert.Error(t, err, "Should return an error for an invalid schema type")
+}
+
+func TestConvertMCPToolToProto_NilInput(t *testing.T) {
+	t.Parallel()
+
+	_, err := ConvertMCPToolToProto(nil)
+	assert.Error(t, err, "Should return an error when the input tool is nil")
+}
+
+func TestConvertProtoToMCPTool_NilInput(t *testing.T) {
+	t.Parallel()
+
+	_, err := ConvertProtoToMCPTool(nil)
+	assert.Error(t, err, "Should return an error when the input tool is nil")
+}
+
+
+
+
+func TestConvertToolDefinitionToProto(t *testing.T) {
+	t.Parallel()
+
+	toolDef := &configv1.ToolDefinition{
+		Name:        "test-tool",
+		Description: "A tool for testing",
+		Title:       "Test Tool",
+		InputSchema: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type": structpb.NewStringValue("object"),
+			},
+		},
+	}
+
+	pbTool, err := ConvertToolDefinitionToProto(toolDef)
+	assert.NoError(t, err)
+
+	expectedTool := &pb.Tool{
+		Name:        "test-tool",
+		Description: "A tool for testing",
+		DisplayName: "Test Tool",
+		Annotations: &pb.ToolAnnotations{
+			InputSchema: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type": structpb.NewStringValue("object"),
+				},
+			},
+		},
+	}
+
+	if diff := cmp.Diff(expectedTool, pbTool, protocmp.Transform()); diff != "" {
+		t.Errorf("ConvertToolDefinitionToProto() returned diff (-want +got):\n%s", diff)
+	}
 }
