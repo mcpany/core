@@ -353,6 +353,7 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	if cfg.GetUpstreamServices() != nil {
+		upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
@@ -360,7 +361,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			}
 
 			// Reload tools, prompts, and resources
-			upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
 			upstream, err := upstreamFactory.NewUpstream(serviceConfig)
 			if err != nil {
 				log.Error("Failed to get upstream service", "error", err)
