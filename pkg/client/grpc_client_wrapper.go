@@ -19,7 +19,6 @@ package client
 import (
 	"context"
 
-	"github.com/alexliesenfeld/health"
 	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
@@ -61,11 +60,11 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.config.GetGrpcService().GetAddress() == "bufnet" {
 		return true
 	}
-	checker := healthChecker.NewChecker(w.config)
-	if checker == nil {
-		return true // No health check configured, assume healthy.
+	checker := healthChecker.NewChecker()
+	if err := checker.Check(ctx, w.config); err != nil {
+		return false
 	}
-	return checker.Check(ctx).Status == health.StatusUp
+	return true
 }
 
 // Close terminates the underlying gRPC connection, releasing any associated

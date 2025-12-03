@@ -20,7 +20,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alexliesenfeld/health"
 	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -44,11 +43,11 @@ func NewHttpClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
 func (w *HttpClientWrapper) IsHealthy(ctx context.Context) bool {
-	checker := healthChecker.NewChecker(w.config)
-	if checker == nil {
-		return true // No health check configured, assume healthy.
+	checker := healthChecker.NewChecker()
+	if err := checker.Check(ctx, w.config); err != nil {
+		return false
 	}
-	return checker.Check(ctx).Status == health.StatusUp
+	return true
 }
 
 // Close is a no-op for the `*http.Client` wrapper. The underlying transport

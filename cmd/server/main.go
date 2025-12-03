@@ -176,6 +176,15 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	upstreamHealthCmd := &cobra.Command{
+		Use:   "upstream-health",
+		Short: "Run health checks for upstream services",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return app.UpstreamHealthCheck(cmd)
+		},
+	}
+	rootCmd.AddCommand(upstreamHealthCmd)
+
 	configCmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage configuration",

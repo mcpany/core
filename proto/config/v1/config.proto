@@ -119,6 +119,10 @@ message UpstreamServiceConfig {
   bool disable = 19;
   // The priority of the service. Lower numbers have higher priority.
   int32 priority = 20;
+  // Health check for the upstream service. This is a generic health check that
+  // can be used for any service type. If a service-specific health check is
+  // also defined, the service-specific one takes precedence.
+  HealthCheck health_check = 22;
 }
 
 // --- Upstream Service Types ---
@@ -338,6 +342,15 @@ message ConnectionPoolConfig {
   int32 max_idle_connections = 2;
   // The duration a connection can remain idle in the pool before being closed.
   google.protobuf.Duration idle_timeout = 3;
+}
+
+// HealthCheck defines a generic health check for an upstream service.
+message HealthCheck {
+  oneof health_check_type {
+    HttpHealthCheck http = 1;
+    GrpcHealthCheck grpc = 2;
+    CommandLineHealthCheck command_line = 3;
+  }
 }
 
 // Defines a health check for an HTTP-based service.

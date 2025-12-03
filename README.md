@@ -175,6 +175,35 @@ You can validate your configuration files without starting the server using the 
 
 If the configuration is valid, the command will print a success message and exit with a status code of 0. If the configuration is invalid, the command will print an error message and exit with a non-zero status code.
 
+### Health Checks
+
+MCP Any supports health checks for upstream services. Health checks are defined in the `healthCheck` field of an `upstreamService` configuration. The following types of health checks are supported:
+
+- `http`: Sends an HTTP GET request to the specified URL and checks for a successful response.
+- `grpc`: Sends a gRPC health check request to the specified service.
+- `commandLine`: Runs a command and checks for a successful exit code.
+
+Here is an example of an HTTP health check configuration:
+
+```yaml
+upstreamServices:
+  - name: "my-http-service"
+    httpService:
+      address: "https://api.example.com"
+      # ...
+    healthCheck:
+      http:
+        url: "https://api.example.com/health"
+        expectedCode: 200
+        timeout: 5s
+```
+
+You can run health checks for all configured upstream services using the `upstream-health` command:
+
+```bash
+./build/bin/server upstream-health --config-paths ./config.yaml
+```
+
 ### Advanced Configuration
 
 MCP Any supports a variety of advanced configuration options, including:
