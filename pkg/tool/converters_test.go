@@ -319,7 +319,7 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 	}
 
 	expectedToolWithUnsanitizedServiceID := &mcp.Tool{
-		Name:        "invalidservice-id_4d3ca216.test-tool",
+		Name:        "invalid/service-id.test-tool",
 		Description: expectedTool.Description,
 		Title:       expectedTool.Title,
 		Annotations: expectedTool.Annotations,
