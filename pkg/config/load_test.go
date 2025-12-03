@@ -342,39 +342,7 @@ upstream_services: {
 	}
 }
 `,
-			expectedCount: 1,
-			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "duplicate-name", s.GetName())
-				httpService := s.GetHttpService()
-				require.NotNil(t, httpService)
-				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
-			},
-		},
-		{
-			name: "detailed error for duplicate service names",
-			textprotoContent: `
-upstream_services: {
-	name: "duplicate-name"
-	http_service: {
-		address: "http://api.example.com/v1"
-	}
-}
-upstream_services: {
-	name: "duplicate-name"
-	http_service: {
-		address: "http://api.example.com/v2"
-	}
-}
-`,
-			expectedCount: 1,
-			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "duplicate-name", s.GetName())
-				httpService := s.GetHttpService()
-				require.NotNil(t, httpService)
-				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
-			},
+			expectLoadError: true,
 		},
 	}
 
@@ -387,8 +355,8 @@ upstream_services: {
 
 			if tt.expectLoadError {
 				assert.Error(t, err)
-				if tt.name == "detailed error for duplicate service names" {
-					assert.Contains(t, err.Error(), "service 'duplicate-name': duplicate service name found")
+				if tt.name == "duplicate service names" {
+					assert.Contains(t, err.Error(), "duplicate service name found: duplicate-name")
 				}
 				return
 			}

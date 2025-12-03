@@ -64,7 +64,9 @@ func NewUpstreamServiceManager() *UpstreamServiceManager {
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
-		m.addService(service, 0)
+		if err := m.addService(service, 0); err != nil {
+			return nil, err
+		}
 	}
 
 	// Load and merge remote service collections
@@ -259,9 +261,9 @@ func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *co
 	return nil
 }
 
-func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) {
+func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error {
 	if service == nil {
-		return
+		return nil
 	}
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {
@@ -271,8 +273,8 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 			m.servicePriorities[serviceName] = priority
 			m.log.Info("Replaced service due to higher priority", "service_name", serviceName, "old_priority", existingPriority, "new_priority", priority)
 		} else if priority == existingPriority {
-			// Same priority, keep the one loaded first
-			m.log.Info("Ignoring service with same priority, keeping the first one loaded", "service_name", serviceName, "priority", priority)
+			// Same priority, this is a duplicate
+			return fmt.Errorf("duplicate service name found: %s", serviceName)
 		} else {
 			// lower priority, do nothing
 			m.log.Info("Ignoring service due to lower priority", "service_name", serviceName, "existing_priority", existingPriority, "new_priority", priority)
@@ -283,4 +285,5 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		m.servicePriorities[serviceName] = priority
 		m.log.Info("Added new service", "service_name", serviceName, "priority", priority)
 	}
+	return nil
 }
