@@ -1,0 +1,1541 @@
+ok  	github.com/mcpany/core/pkg/app	21.769s
+?   	github.com/mcpany/core/pkg/appconsts	[no test files]
+ok  	github.com/mcpany/core/pkg/auth	3.829s
+ok  	github.com/mcpany/core/pkg/bus	11.642s
+ok  	github.com/mcpany/core/pkg/bus/memory	1.066s
+ok  	github.com/mcpany/core/pkg/bus/nats	1.504s
+redis: 2025/12/03 21:45:38 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:39 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:39 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:40 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:40 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:41 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:42 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:42 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:43 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:43 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:44 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:44 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:45 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:45 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:46 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:46 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:47 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:47 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:48 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:48 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:49 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:49 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:50 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:51 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:51 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:52 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:52 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:53 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:53 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:54 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:54 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:55 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:55 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:56 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:56 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:57 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:57 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:58 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:59 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:45:59 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:00 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:00 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:01 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:01 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:02 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:02 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:03 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:03 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:04 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:04 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:05 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:06 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:06 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:07 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:07 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+redis: 2025/12/03 21:46:08 pool.go:376: redis: connection pool: failed to dial after 5 attempts: dial tcp [::1]:6379: connect: connection refused
+panic: test timed out after 30s
+	running tests:
+		TestRedisBus_Unsubscribe (0s)
+
+goroutine 1484 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/local/go/src/testing/testing.go:2484 +0x605
+created by time.goFunc
+	/usr/local/go/src/time/sleep.go:215 +0x45
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc00018a540, {0xc3e2ba, 0x18}, 0xc61dd8)
+	/usr/local/go/src/testing/testing.go:1859 +0x91e
+testing.runTests.func1(0xc00018a540)
+	/usr/local/go/src/testing/testing.go:2279 +0x86
+testing.tRunner(0xc00018a540, 0xc000197ae0)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+testing.runTests(0xc0000101c8, {0x10b2300, 0x2b, 0x2b}, {0x2?, 0x0?, 0x10b98e0?})
+	/usr/local/go/src/testing/testing.go:2277 +0x96d
+testing.(*M).Run(0xc000114b40)
+	/usr/local/go/src/testing/testing.go:2142 +0xeeb
+main.main()
+	_testmain.go:131 +0x165
+
+goroutine 8 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000144500)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 7
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 114 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000145b80)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 113
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 621 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6cd0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 620
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 618 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6aa0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 617
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 300 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0000d9040)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 299
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 624 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6f50)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 623
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 199 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0000d8500)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 198
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 429 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0000f8a50)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 428
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 840 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002c8d70)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 839
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 619 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6b90)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 617
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 615 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6820)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 614
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 507 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0000f98b0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 506
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 622 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6dc0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 620
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 616 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002a6910)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 614
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 736 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000309e50)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 735
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 1436 [select]:
+github.com/redis/go-redis/v9/internal/pool.(*ConnPool).dialConn(0xc0002ada00, {0xd06d60, 0xc00040c8c0}, 0x1)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/internal/pool/pool.go:355 +0x31a
+github.com/redis/go-redis/v9/internal/pool.(*ConnPool).newConn(0xc0002ada00, {0xd06c10, 0x10dabc0}, 0x1)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/internal/pool/pool.go:284 +0x1af
+github.com/redis/go-redis/v9/internal/pool.(*ConnPool).getConn(0xc0002ada00, {0xd06c10, 0x10dabc0})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/internal/pool/pool.go:494 +0x63a
+github.com/redis/go-redis/v9/internal/pool.(*ConnPool).Get(0xc0002ada00, {0xd06c10, 0x10dabc0})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/internal/pool/pool.go:422 +0x3b
+github.com/redis/go-redis/v9.(*baseClient)._getConn(0xc000000a80, {0xd06c10, 0x10dabc0})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:284 +0x75
+github.com/redis/go-redis/v9.(*baseClient).getConn(0xc000000a80, {0xd06c10, 0x10dabc0})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:272 +0xbd
+github.com/redis/go-redis/v9.(*baseClient).withConn(0xc000000a80, {0xd06c10, 0x10dabc0}, 0xc0000bfc00)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:548 +0x6a
+github.com/redis/go-redis/v9.(*baseClient)._process(0xc000000a80, {0xd06c10, 0x10dabc0}, {0xd0a918, 0xc00040c850}, 0x0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:603 +0x1b5
+github.com/redis/go-redis/v9.(*baseClient).process(0xc000000a80, {0xd06c10, 0x10dabc0}, {0xd0a918, 0xc00040c850})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:572 +0xbb
+github.com/redis/go-redis/v9.(*hooksMixin).processHook(...)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:200
+github.com/redis/go-redis/v9.(*Client).Process(0xc0004100a0, {0xd06c10, 0x10dabc0}, {0xd0a918, 0xc00040c850})
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/redis.go:1023 +0x85
+github.com/redis/go-redis/v9.cmdable.Ping(...)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/commands.go:432
+github.com/mcpany/core/pkg/bus/redis.setupRedisIntegrationTest(0xc0002c48c0)
+	/app/pkg/bus/redis/bus_test.go:52 +0x28d
+github.com/mcpany/core/pkg/bus/redis.TestRedisBus_Unsubscribe(0xc0002c48c0)
+	/app/pkg/bus/redis/bus_test.go:355 +0x3c
+testing.tRunner(0xc0002c48c0, 0xc61dd8)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 1
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 1352 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0003745a0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 1351
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 852 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000333130)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 851
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 853 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000333220)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 851
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 1067 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0003d01e0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 1066
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 1135 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0002fa5a0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 1134
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 942 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc00038e960)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 941
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 1245 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc0003dc7d0)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 1244
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+
+goroutine 1437 [select]:
+github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop(0xc000403b30)
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:285 +0x172
+created by github.com/redis/go-redis/v9/maintnotifications.newCircuitBreakerManager in goroutine 1436
+	/home/jules/go/pkg/mod/github.com/redis/go-redis/v9@v9.16.0/maintnotifications/circuit_breaker.go:241 +0x1fd
+FAIL	github.com/mcpany/core/pkg/bus/redis	30.031s
+ok  	github.com/mcpany/core/pkg/cli	1.020s
+ok  	github.com/mcpany/core/pkg/client	1.056s
+ok  	github.com/mcpany/core/pkg/command	1.071s
+ok  	github.com/mcpany/core/pkg/config	4.404s
+?   	github.com/mcpany/core/pkg/consts	[no test files]
+ok  	github.com/mcpany/core/pkg/health	1.093s
+ok  	github.com/mcpany/core/pkg/logging	1.026s
+time=2025-12-03T21:45:52.298Z level=INFO source=/app/pkg/worker/registration_worker.go:56 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-03T21:45:52.299Z level=INFO source=/app/pkg/worker/registration_worker.go:65 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=1ff2d03d-4454-49df-9bb6-9d2e6ef91d9c
+time=2025-12-03T21:45:52.299Z level=INFO source=/app/pkg/upstream/http/http.go:167 msg="Registered HTTP service" serviceID=testservice toolsAdded=0
+time=2025-12-03T21:45:52.300Z level=INFO source=/app/pkg/mcpserver/registration_server.go:120 msg="Service registered via bus" service_name=testservice service_key=testservice discovered_tools_count=0 discovered_resources_count=0
+time=2025-12-03T21:45:52.301Z level=INFO source=/app/pkg/worker/registration_worker.go:65 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=5c20ceca-80e6-4fb4-ac5d-b26b201f65cc
+time=2025-12-03T21:45:52.318Z level=INFO source=/app/pkg/upstream/grpc/grpc.go:316 msg="Registered gRPC tool" tool_id=ServerReflectionInfo is_reload=false
+time=2025-12-03T21:45:52.319Z level=INFO source=/app/pkg/upstream/grpc/grpc.go:316 msg="Registered gRPC tool" tool_id=GetWeather is_reload=false
+time=2025-12-03T21:45:52.320Z level=INFO source=/app/pkg/upstream/grpc/grpc.go:186 msg="Registered gRPC service" serviceID=weather-service toolsAdded=2
+time=2025-12-03T21:45:52.320Z level=INFO source=/app/pkg/mcpserver/registration_server.go:120 msg="Service registered via bus" service_name=weather-service service_key=weather-service discovered_tools_count=2 discovered_resources_count=0
+time=2025-12-03T21:45:52.320Z level=INFO source=/app/pkg/mcpserver/registration_server.go:128 msg="Discovered tool" tool="name:\"ServerReflectionInfo\"  description:\"\"  input_schema:{fields:{key:\"properties\"  value:{struct_value:{fields:{key:\"all_extension_numbers_of_type\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"file_by_filename\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"file_containing_extension\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"file_containing_symbol\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"host\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"list_services\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}}}}  fields:{key:\"type\"  value:{string_value:\"object\"}}}  output_schema:{fields:{key:\"properties\"  value:{struct_value:{fields:{key:\"all_extension_numbers_response\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"error_response\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"file_descriptor_response\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"list_services_response\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"original_request\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}  fields:{key:\"valid_host\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}}}}  fields:{key:\"type\"  value:{string_value:\"object\"}}}"
+time=2025-12-03T21:45:52.322Z level=INFO source=/app/pkg/mcpserver/registration_server.go:128 msg="Discovered tool" tool="name:\"GetWeather\"  description:\"\"  input_schema:{fields:{key:\"properties\"  value:{struct_value:{fields:{key:\"location\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}}}}  fields:{key:\"type\"  value:{string_value:\"object\"}}}  output_schema:{fields:{key:\"properties\"  value:{struct_value:{fields:{key:\"weather\"  value:{struct_value:{fields:{key:\"description\"  value:{string_value:\"\"}}  fields:{key:\"type\"  value:{string_value:\"string\"}}}}}}}}  fields:{key:\"type\"  value:{string_value:\"object\"}}}"
+time=2025-12-03T21:45:52.324Z level=INFO source=/app/pkg/worker/registration_worker.go:65 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=940ebdec-3f67-46a5-aa36-090ca7a0fc14
+time=2025-12-03T21:45:52.328Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:294 msg="Registered OpenAPI tool" tool_id=getUser is_reload=false
+time=2025-12-03T21:45:52.328Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:152 msg="Registered OpenAPI service" serviceID=openapi-service toolsAdded=1
+time=2025-12-03T21:45:52.328Z level=INFO source=/app/pkg/mcpserver/registration_server.go:120 msg="Service registered via bus" service_name=openapi-service service_key=openapi-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-03T21:45:52.328Z level=INFO source=/app/pkg/mcpserver/registration_server.go:128 msg="Discovered tool" tool="name:\"getUser\"  description:\"\""
+time=2025-12-03T21:45:52.329Z level=INFO source=/app/pkg/worker/registration_worker.go:65 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=f9c72e3c-49ad-4b16-b68b-ef591a7b6c3b
+time=2025-12-03T21:45:52.330Z level=INFO source=/app/pkg/upstream/websocket/websocket.go:118 msg="Registered Websocket service" serviceID=websocket-service toolsAdded=1
+time=2025-12-03T21:45:52.330Z level=INFO source=/app/pkg/mcpserver/registration_server.go:120 msg="Service registered via bus" service_name=websocket-service service_key=websocket-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-03T21:45:52.330Z level=INFO source=/app/pkg/mcpserver/registration_server.go:128 msg="Discovered tool" tool="name:\"test-tool\"  description:\"\""
+time=2025-12-03T21:45:52.330Z level=INFO source=/app/pkg/worker/registration_worker.go:116 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-03T21:45:52.331Z level=INFO source=/app/pkg/worker/registration_worker.go:56 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-03T21:45:52.332Z level=INFO source=/app/pkg/worker/registration_worker.go:65 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=f0c39dc9-5eae-4bc1-aa4a-de582be9f39c
+time=2025-12-03T21:45:52.333Z level=INFO source=/app/pkg/upstream/http/http.go:167 msg="Registered HTTP service" serviceID=test-service-for-listing toolsAdded=0
+time=2025-12-03T21:45:52.333Z level=INFO source=/app/pkg/mcpserver/registration_server.go:120 msg="Service registered via bus" service_name=test-service-for-listing service_key=test-service-for-listing discovered_tools_count=0 discovered_resources_count=0
+time=2025-12-03T21:45:52.333Z level=INFO source=/app/pkg/worker/registration_worker.go:104 msg="Received service list request" component=ServiceRegistrationWorker correlationID=c0e6056b-581f-4349-a8f6-51bbaf3f2b66
+panic: test timed out after 30s
+	running tests:
+		TestListServices (30s)
+		TestListServices/list_services_with_bus_error (30s)
+
+goroutine 108 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/local/go/src/testing/testing.go:2484 +0x605
+created by time.goFunc
+	/usr/local/go/src/time/sleep.go:215 +0x45
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0002c2000, {0x290bdb4, 0x10}, 0x2994fa0)
+	/usr/local/go/src/testing/testing.go:1859 +0x91e
+testing.runTests.func1(0xc0002c2000)
+	/usr/local/go/src/testing/testing.go:2279 +0x86
+testing.tRunner(0xc0002c2000, 0xc000425ae0)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+testing.runTests(0xc000010a98, {0x3b6db40, 0x10, 0x10}, {0x1?, 0x0?, 0x3b96dc0?})
+	/usr/local/go/src/testing/testing.go:2277 +0x96d
+testing.(*M).Run(0xc0004b3d60)
+	/usr/local/go/src/testing/testing.go:2142 +0xeeb
+main.main()
+	_testmain.go:77 +0x165
+
+goroutine 66 [chan receive]:
+testing.(*T).Run(0xc0002e4000, {0x2921c30, 0x1c}, 0xc000010b70)
+	/usr/local/go/src/testing/testing.go:1859 +0x91e
+github.com/mcpany/core/pkg/mcpserver.TestListServices(0xc0002e4000)
+	/app/pkg/mcpserver/registration_server_test.go:382 +0x12fe
+testing.tRunner(0xc0002e4000, 0x2994fa0)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 1
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 14 [chan receive]:
+github.com/mcpany/core/pkg/worker.(*ServiceRegistrationWorker).Start.func3()
+	/app/pkg/worker/registration_worker.go:115 +0x65
+created by github.com/mcpany/core/pkg/worker.(*ServiceRegistrationWorker).Start in goroutine 66
+	/app/pkg/worker/registration_worker.go:114 +0x65f
+
+goroutine 12 [chan receive]:
+github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe.func1()
+	/app/pkg/bus/memory/bus.go:120 +0x5c
+created by github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe in goroutine 66
+	/app/pkg/bus/memory/bus.go:119 +0x496
+
+goroutine 13 [chan receive]:
+github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe.func1()
+	/app/pkg/bus/memory/bus.go:120 +0x5c
+created by github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe in goroutine 66
+	/app/pkg/bus/memory/bus.go:119 +0x496
+
+goroutine 51 [select]:
+github.com/jellydator/ttlcache/v3.(*Cache[...]).Start(0x2cc7760)
+	/home/jules/go/pkg/mod/github.com/jellydator/ttlcache/v3@v3.4.0/cache.go:689 +0x311
+created by github.com/mcpany/core/pkg/upstream/openapi.NewOpenAPIUpstream in goroutine 20
+	/app/pkg/upstream/openapi/openapi.go:72 +0x18a
+
+goroutine 39 [select]:
+github.com/jellydator/ttlcache/v3.(*Cache[...]).Start(0x2cc72a0)
+	/home/jules/go/pkg/mod/github.com/jellydator/ttlcache/v3@v3.4.0/cache.go:689 +0x311
+created by github.com/mcpany/core/pkg/upstream/grpc.NewGRPCUpstream in goroutine 20
+	/app/pkg/upstream/grpc/grpc.go:67 +0x198
+
+goroutine 82 [select]:
+github.com/mcpany/core/pkg/mcpserver.(*RegistrationServer).ListServices(0xc0000740b0, {0x2c95348, 0xc0000b22d0}, 0x0?)
+	/app/pkg/mcpserver/registration_server.go:192 +0x3f0
+github.com/mcpany/core/pkg/mcpserver.TestListServices.func1(0xc000103340)
+	/app/pkg/mcpserver/registration_server_test.go:391 +0x42c
+testing.tRunner(0xc000103340, 0xc000010b70)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 66
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 83 [chan receive]:
+github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe.func1()
+	/app/pkg/bus/memory/bus.go:120 +0x5c
+created by github.com/mcpany/core/pkg/bus/memory.(*DefaultBus[...]).Subscribe in goroutine 82
+	/app/pkg/bus/memory/bus.go:119 +0x496
+FAIL	github.com/mcpany/core/pkg/mcpserver	30.059s
+ok  	github.com/mcpany/core/pkg/metrics	1.058s
+ok  	github.com/mcpany/core/pkg/middleware	1.123s
+ok  	github.com/mcpany/core/pkg/pool	6.171s
+ok  	github.com/mcpany/core/pkg/prompt	1.051s
+ok  	github.com/mcpany/core/pkg/resilience	1.152s
+ok  	github.com/mcpany/core/pkg/resource	1.051s
+ok  	github.com/mcpany/core/pkg/service	1.225s
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.231s
+?   	github.com/mcpany/core/pkg/testutil	[no test files]
+time=2025-12-03T21:46:09.313Z level=ERROR source=/app/pkg/tool/management.go:108 msg="Tool not found" toolName=non-existent-tool
+time=2025-12-03T21:46:09.313Z level=ERROR source=/app/pkg/tool/management.go:134 msg="Tool execution chain failed" toolName=non-existent-tool error="unknown tool"
+time=2025-12-03T21:46:09.323Z level=ERROR source=/app/pkg/tool/management.go:178 msg="Failed to sanitize tool name" serviceID=test-service toolName="" error="id cannot be empty"
+time=2025-12-03T21:46:09.324Z level=INFO source=/app/pkg/tool/management.go:216 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc0002e06c0 Description:A test tool InputSchema:map[type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+time=2025-12-03T21:46:09.325Z level=ERROR source=/app/pkg/tool/management.go:134 msg="Tool execution chain failed" toolName=exec-service.exec-tool error="middleware error"
+time=2025-12-03T21:46:09.327Z level=INFO source=/app/pkg/tool/management.go:216 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc0001a8a80 Description: InputSchema:map[type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+panic: test timed out after 30s
+	running tests:
+		TestWebrtcTool_Execute_WithAuth (30s)
+
+goroutine 950 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/local/go/src/testing/testing.go:2484 +0x605
+created by time.goFunc
+	/usr/local/go/src/time/sleep.go:215 +0x45
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000102fc0, {0x255bc62, 0x1f}, 0x25c0148)
+	/usr/local/go/src/testing/testing.go:1859 +0x91e
+testing.runTests.func1(0xc000102fc0)
+	/usr/local/go/src/testing/testing.go:2279 +0x86
+testing.tRunner(0xc000102fc0, 0xc00049fae0)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+testing.runTests(0xc00013dc98, {0x3605b60, 0x49, 0x49}, {0x6?, 0x0?, 0x3627f40?})
+	/usr/local/go/src/testing/testing.go:2277 +0x96d
+testing.(*M).Run(0xc00051c640)
+	/usr/local/go/src/testing/testing.go:2142 +0xeeb
+main.main()
+	_testmain.go:191 +0x165
+
+goroutine 38 [chan receive]:
+testing.(*T).Parallel(0xc000103180)
+	/usr/local/go/src/testing/testing.go:1577 +0x4ff
+github.com/mcpany/core/pkg/tool.TestConvertMCPToolToProto(0xc000103180)
+	/app/pkg/tool/converters_test.go:35 +0x3f
+testing.tRunner(0xc000103180, 0x25bffc8)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 1
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 759 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0126148, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000643620, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc000643600, {0xc0005c2000, 0x2000, 0x2000}, 0xc0004d6d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc000643600, {0xc0005c2000, 0x2000, 0x2000}, 0xc0004d6d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc00012a560, {0xc0005c2000, 0x2000, 0x2000}, 0xc0006270e0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc00012a560, {0xc0005c2000, 0x2000, 0x2000}, 0xc0006270e0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc00012a560, {0xc0005c2000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0002ae8f0, 0xc000675f80)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 804
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 6 [chan receive]:
+testing.(*T).Parallel(0xc00039a8c0)
+	/usr/local/go/src/testing/testing.go:1577 +0x4ff
+github.com/mcpany/core/pkg/tool.TestConvertProtoToMCPTool(0xc00039a8c0)
+	/app/pkg/tool/converters_test.go:228 +0x3f
+testing.tRunner(0xc00039a8c0, 0x25bffd8)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 1
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 761 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0126378, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000643720, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc000643700, {0xc0005ae000, 0x2000, 0x2000}, 0xc0005e2d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc000643700, {0xc0005ae000, 0x2000, 0x2000}, 0xc0005e2d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc00012a568, {0xc0005ae000, 0x2000, 0x2000}, 0xc00042edb0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc00012a568, {0xc0005ae000, 0x2000, 0x2000}, 0xc00042edb0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc00012a568, {0xc0005ae000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0002aea90, 0xc000675f80)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 804
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 757 [select]:
+context.(*cancelCtx).propagateCancel.func2()
+	/usr/local/go/src/context/context.go:514 +0xdd
+created by context.(*cancelCtx).propagateCancel in goroutine 804
+	/usr/local/go/src/context/context.go:513 +0x554
+
+goroutine 874 [sync.Cond.Wait]:
+sync.runtime_notifyListWait(0xc000194890, 0x1)
+	/usr/local/go/src/runtime/sema.go:597 +0x159
+sync.(*Cond).Wait(0xc000194880)
+	/usr/local/go/src/sync/cond.go:71 +0x6c
+github.com/pion/sctp.(*Stream).ReadSCTP(0xc00051c000, {0xc0000ae000, 0xffff, 0xffff})
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/stream.go:146 +0x218
+github.com/pion/datachannel.(*DataChannel).ReadDataChannel(0xc0003263f0, {0xc0000ae000, 0xffff, 0xffff})
+	/home/jules/go/pkg/mod/github.com/pion/datachannel@v1.5.8/datachannel.go:198 +0x8e
+github.com/pion/webrtc/v3.(*DataChannel).readLoop(0xc0005acc60)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/datachannel.go:398 +0x1a5
+created by github.com/pion/webrtc/v3.(*DataChannel).handleOpen in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/datachannel.go:357 +0x49b
+
+goroutine 855 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dcae0, {0xc00074e000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8b30, {0xc00074e000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 734 [select]:
+github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).loop(0xc0000251a0, {0x2859740, 0xc000473c00})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:147 +0x253
+created by github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).BindRTCPWriter in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:81 +0x1aa
+
+goroutine 768 [select]:
+github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).loop(0xc00068cae0, {0x2859740, 0xc00056e120})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:147 +0x253
+created by github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).BindRTCPWriter in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:81 +0x1aa
+
+goroutine 918 [sync.Cond.Wait]:
+sync.runtime_notifyListWait(0xc000524a50, 0x1)
+	/usr/local/go/src/runtime/sema.go:597 +0x159
+sync.(*Cond).Wait(0xc000524a40)
+	/usr/local/go/src/sync/cond.go:71 +0x6c
+github.com/pion/sctp.(*Stream).ReadSCTP(0xc0001b41e0, {0xc000552000, 0xffff, 0xffff})
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/stream.go:146 +0x218
+github.com/pion/datachannel.(*DataChannel).ReadDataChannel(0xc00062a120, {0xc000552000, 0xffff, 0xffff})
+	/home/jules/go/pkg/mod/github.com/pion/datachannel@v1.5.8/datachannel.go:198 +0x8e
+github.com/pion/webrtc/v3.(*DataChannel).readLoop(0xc0005885a0)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/datachannel.go:398 +0x1a5
+created by github.com/pion/webrtc/v3.(*DataChannel).handleOpen in goroutine 872
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/datachannel.go:357 +0x49b
+
+goroutine 685 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0125f18, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001aa720, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc0001aa700, {0xc00073b000, 0x1000, 0x1000})
+	/usr/local/go/src/internal/poll/fd_unix.go:165 +0x453
+net.(*netFD).Read(0xc0001aa700, {0xc00073b000, 0x1000, 0x1000})
+	/usr/local/go/src/net/fd_posix.go:55 +0x4b
+net.(*conn).Read(0xc00032e098, {0xc00073b000, 0x1000, 0x1000})
+	/usr/local/go/src/net/net.go:194 +0xad
+net/http.(*connReader).Read(0xc0001e9f50, {0xc00073b000, 0x1000, 0x1000})
+	/usr/local/go/src/net/http/server.go:798 +0x210
+bufio.(*Reader).fill(0xc000025920)
+	/usr/local/go/src/bufio/bufio.go:113 +0x2a4
+bufio.(*Reader).Peek(0xc000025920, 0x4)
+	/usr/local/go/src/bufio/bufio.go:152 +0xc5
+net/http.(*conn).serve(0xc0000c85a0, {0x2869108, 0xc000512a20})
+	/usr/local/go/src/net/http/server.go:2137 +0x155b
+created by net/http.(*Server).Serve in goroutine 718
+	/usr/local/go/src/net/http/server.go:3454 +0x8ca
+
+goroutine 804 [select]:
+github.com/pion/ice/v2.(*Agent).taskLoop(0xc000163c08)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:244 +0x1e9
+created by github.com/pion/ice/v2.NewAgent in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:377 +0x1feb
+
+goroutine 803 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0126260, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000329e20, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).RawRead(0xc000329e00, 0xc0004a2af0)
+	/usr/local/go/src/internal/poll/fd_unix.go:717 +0x26b
+net.(*rawConn).Read(0xc0001b2160, 0xc0004a2af0)
+	/usr/local/go/src/net/rawconn.go:44 +0x79
+golang.org/x/net/internal/socket.(*Conn).recvMsg(0xc00005d1c0, 0xc0002d7aa0, 0x0)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/rawconn_msg.go:27 +0x367
+golang.org/x/net/internal/socket.(*Conn).RecvMsg(...)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/socket.go:247
+golang.org/x/net/ipv4.(*payloadHandler).ReadFrom(0xc000305460, {0xc00040f200, 0x5c0, 0x5c0})
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/ipv4/payload_cmsg.go:31 +0x768
+github.com/pion/mdns.(*Conn).start(0xc00062a630, 0x5c0, 0xc000521810)
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:407 +0x145
+created by github.com/pion/mdns.Server in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:152 +0xedf
+
+goroutine 678 [select]:
+github.com/pion/ice/v2.(*Agent).connectivityChecks(0xc0001be008)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:478 +0x325
+created by github.com/pion/ice/v2.(*Agent).startConnectivityChecks.func1 in goroutine 638
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:414 +0x1cc
+
+goroutine 737 [select]:
+github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).loop(0xc000025200, {0x2859740, 0xc000473c00})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:180 +0x1ba
+created by github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).BindRTCPWriter in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:93 +0x29b
+
+goroutine 798 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dca80, {0xc000644000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8b20, {0xc000644000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/transport/v2/connctx.(*connCtx).ReadContext(0xc00060ec80, {0x2869140, 0xc0004a3e00}, {0xc000644000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:98 +0x39a
+github.com/pion/dtls/v2.(*Conn).readAndBuffer(0xc000502708, {0x2869140, 0xc0004a3e00})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:604 +0x19b
+github.com/pion/dtls/v2.(*Conn).handshake.func3()
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:891 +0x1b0
+created by github.com/pion/dtls/v2.(*Conn).handshake in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:880 +0x74b
+
+goroutine 736 [select]:
+github.com/pion/interceptor/pkg/report.(*SenderInterceptor).loop(0xc00062a1b0, {0x2859740, 0xc000473c00})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:116 +0x3dc
+created by github.com/pion/interceptor/pkg/report.(*SenderInterceptor).BindRTCPWriter in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:100 +0x1aa
+
+goroutine 587 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc100, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0003d44a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0003d4480, {0xc000618000, 0x2000, 0x2000}, 0xc0003afd40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0003d4480, {0xc000618000, 0x2000, 0x2000}, 0xc0003afd40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0004ca138, {0xc000618000, 0x2000, 0x2000}, 0xc000432ea0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0004ca138, {0xc000618000, 0x2000, 0x2000}, 0xc000432ea0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0004ca138, {0xc000618000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0003f20d0, 0xc00009ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 638
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 735 [select]:
+github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).loop(0xc0005216c0, {0x2859740, 0xc000473c00})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:100 +0x350
+created by github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).BindRTCPWriter in goroutine 717
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:89 +0x1aa
+
+goroutine 859 [select]:
+github.com/pion/dtls/v2.(*Conn).Read(0xc000502708, {0xc000752000, 0x2000, 0x1c?})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:325 +0x210
+github.com/pion/sctp.(*Association).readLoop(0xc0000401e0)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:594 +0x21f
+created by github.com/pion/sctp.(*Association).init in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:392 +0x131
+
+goroutine 860 [select]:
+github.com/pion/sctp.(*Association).writeLoop(0xc0000401e0)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:644 +0x34c
+created by github.com/pion/sctp.(*Association).init in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:393 +0x1ab
+
+goroutine 448 [select]:
+github.com/pion/ice/v2.(*Agent).connectivityChecks(0xc0001be388)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:478 +0x325
+created by github.com/pion/ice/v2.(*Agent).startConnectivityChecks.func1 in goroutine 468
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:414 +0x1cc
+
+goroutine 764 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abccad8, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000239320, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc000239300, {0xc0005cc000, 0x2000, 0x2000}, 0xc0004d9d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc000239300, {0xc0005cc000, 0x2000, 0x2000}, 0xc0004d9d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0001b2180, {0xc0005cc000, 0x2000, 0x2000}, 0xc00042fb30)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0001b2180, {0xc0005cc000, 0x2000, 0x2000}, 0xc00042fb30)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0001b2180, {0xc0005cc000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc00016e540, 0xc000675f80)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 804
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 845 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTP).AcceptStream(0xc0002a8480)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtp.go:98 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTPMediaProcessor(0xc0004f2008)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1692 +0x158
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1673 +0x8b
+
+goroutine 830 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0125ce8, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0003d56a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0003d5680, {0xc000740000, 0x2000, 0x2000}, 0xc00019bd40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0003d5680, {0xc000740000, 0x2000, 0x2000}, 0xc00019bd40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc00012a5a0, {0xc000740000, 0x2000, 0x2000}, 0xc000700090)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc00012a5a0, {0xc000740000, 0x2000, 0x2000}, 0xc000700090)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc00012a5a0, {0xc000740000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0003f3860, 0xc00009f5e0)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 822
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 767 [select]:
+net/http.(*persistConn).writeLoop(0xc000588480)
+	/usr/local/go/src/net/http/transport.go:2590 +0x1b7
+created by net/http.(*Transport).dialConn in goroutine 683
+	/usr/local/go/src/net/http/transport.go:1945 +0x2dda
+
+goroutine 872 [chan receive]:
+github.com/pion/sctp.(*Association).AcceptStream(...)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:1513
+github.com/pion/datachannel.Accept(0xc00034d680, 0xc0004e2ee0, {0x3649e40, 0x0, 0xc0004a1ec0?})
+	/home/jules/go/pkg/mod/github.com/pion/datachannel@v1.5.8/datachannel.go:131 +0x6a
+github.com/pion/webrtc/v3.(*SCTPTransport).acceptDataChannels(0xc0000fa210, 0xc00034d680)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/sctptransport.go:181 +0x3b9
+created by github.com/pion/webrtc/v3.(*SCTPTransport).Start in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/sctptransport.go:142 +0x72b
+
+goroutine 850 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dccc0, {0xc00075c000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8ec0, {0xc00075c000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/transport/v2/connctx.(*connCtx).ReadContext(0xc00060ee40, {0x2869140, 0xc00063a2d0}, {0xc00075c000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:98 +0x39a
+github.com/pion/dtls/v2.(*Conn).readAndBuffer(0xc000502a88, {0x2869140, 0xc00063a2d0})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:604 +0x19b
+github.com/pion/dtls/v2.(*Conn).handshake.func3()
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:891 +0x1b0
+created by github.com/pion/dtls/v2.(*Conn).handshake in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:880 +0x74b
+
+goroutine 797 [select]:
+github.com/pion/dtls/v2.(*handshakeFSM).finish(0xc0004a3db0, {0x2869140, 0xc0004a3e50}, {0x2870e28, 0xc000502708})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/handshaker.go:322 +0x2d2
+github.com/pion/dtls/v2.(*handshakeFSM).Run(0xc0004a3db0, {0x2869140, 0xc0004a3e50}, {0x2870e28, 0xc000502708}, 0x1)
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/handshaker.go:189 +0x5f2
+github.com/pion/dtls/v2.(*Conn).handshake.func2()
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:872 +0x113
+created by github.com/pion/dtls/v2.(*Conn).handshake in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:870 +0x5ee
+
+goroutine 619 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc218, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000702320, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc000702300, {0xc000574000, 0x2000, 0x2000}, 0xc0001ced40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc000702300, {0xc000574000, 0x2000, 0x2000}, 0xc0001ced40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc00012a300, {0xc000574000, 0x2000, 0x2000}, 0xc00042f2f0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc00012a300, {0xc000574000, 0x2000, 0x2000}, 0xc00042f2f0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc00012a300, {0xc000574000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc00016e600, 0xc00009ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 638
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 922 [select]:
+github.com/pion/transport/v2/connctx.(*connCtx).ReadContext.func1()
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:83 +0x152
+created by github.com/pion/transport/v2/connctx.(*connCtx).ReadContext in goroutine 798
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:81 +0x35d
+
+goroutine 637 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc8a8, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001b0fa0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).RawRead(0xc0001b0f80, 0xc0004a2000)
+	/usr/local/go/src/internal/poll/fd_unix.go:717 +0x26b
+net.(*rawConn).Read(0xc0001b22c0, 0xc0004a2000)
+	/usr/local/go/src/net/rawconn.go:44 +0x79
+golang.org/x/net/internal/socket.(*Conn).recvMsg(0xc0001b8fe0, 0xc0000243c0, 0x0)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/rawconn_msg.go:27 +0x367
+golang.org/x/net/internal/socket.(*Conn).RecvMsg(...)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/socket.go:247
+golang.org/x/net/ipv4.(*payloadHandler).ReadFrom(0xc000684f60, {0xc0001da000, 0x5c0, 0x5c0})
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/ipv4/payload_cmsg.go:31 +0x768
+github.com/pion/mdns.(*Conn).start(0xc00062ba70, 0x5c0, 0xc0005217a0)
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:407 +0x145
+created by github.com/pion/mdns.Server in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:152 +0xedf
+
+goroutine 796 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000025560, {0xc000654600, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/ice/v2.(*Conn).Read(0xc000681f20, {0xc000654600, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/transport.go:76 +0x10b
+github.com/pion/webrtc/v3/internal/mux.(*Mux).readLoop(0xc0004a3b80)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:110 +0x17f
+created by github.com/pion/webrtc/v3/internal/mux.NewMux in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:50 +0x28e
+
+goroutine 790 [select]:
+github.com/pion/ice/v2.(*Agent).connectivityChecks(0xc0001bea88)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:478 +0x325
+created by github.com/pion/ice/v2.(*Agent).startConnectivityChecks.func1 in goroutine 822
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:414 +0x1cc
+
+goroutine 800 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc00068cea0, {0xc0006ac600, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/ice/v2.(*Conn).Read(0xc000011758, {0xc0006ac600, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/transport.go:76 +0x10b
+github.com/pion/webrtc/v3/internal/mux.(*Mux).readLoop(0xc00063a050)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:110 +0x17f
+created by github.com/pion/webrtc/v3/internal/mux.NewMux in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:50 +0x28e
+
+goroutine 202 [select]:
+context.(*cancelCtx).propagateCancel.func2()
+	/usr/local/go/src/context/context.go:514 +0xdd
+created by context.(*cancelCtx).propagateCancel in goroutine 201
+	/usr/local/go/src/context/context.go:513 +0x554
+
+goroutine 814 [select]:
+context.(*cancelCtx).propagateCancel.func2()
+	/usr/local/go/src/context/context.go:514 +0xdd
+created by context.(*cancelCtx).propagateCancel in goroutine 822
+	/usr/local/go/src/context/context.go:513 +0x554
+
+goroutine 844 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dcd80, {0xc000756000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8ee0, {0xc000756000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 201 [select]:
+github.com/pion/ice/v2.(*Agent).taskLoop(0xc00031a388)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:244 +0x1e9
+created by github.com/pion/ice/v2.NewAgent in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:377 +0x1feb
+
+goroutine 197 [select]:
+github.com/pion/interceptor/pkg/report.(*SenderInterceptor).loop(0xc0000c8090, {0x2859740, 0xc0001338a0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:116 +0x3dc
+created by github.com/pion/interceptor/pkg/report.(*SenderInterceptor).BindRTCPWriter in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:100 +0x1aa
+
+goroutine 200 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abccbf0, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc000239aa0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).RawRead(0xc000239a80, 0xc000304280)
+	/usr/local/go/src/internal/poll/fd_unix.go:717 +0x26b
+net.(*rawConn).Read(0xc00032e0b8, 0xc000304280)
+	/usr/local/go/src/net/rawconn.go:44 +0x79
+golang.org/x/net/internal/socket.(*Conn).recvMsg(0xc000324ac0, 0xc000308900, 0x0)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/rawconn_msg.go:27 +0x367
+golang.org/x/net/internal/socket.(*Conn).RecvMsg(...)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/socket.go:247
+golang.org/x/net/ipv4.(*payloadHandler).ReadFrom(0xc0001a29c0, {0xc000654000, 0x5c0, 0x5c0})
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/ipv4/payload_cmsg.go:31 +0x768
+github.com/pion/mdns.(*Conn).start(0xc0000c8510, 0x5c0, 0xc00030ce70)
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:407 +0x145
+created by github.com/pion/mdns.Server in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:152 +0xedf
+
+goroutine 519 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000024c60, {0xc0005b0c00, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/ice/v2.(*Conn).Read(0xc000680228, {0xc0005b0c00, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/transport.go:76 +0x10b
+github.com/pion/webrtc/v3/internal/mux.(*Mux).readLoop(0xc00020b720)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:110 +0x17f
+created by github.com/pion/webrtc/v3/internal/mux.NewMux in goroutine 446
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:50 +0x28e
+
+goroutine 766 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abccf38, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001aa6a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc0001aa680, {0xc0000ac000, 0x1000, 0x1000})
+	/usr/local/go/src/internal/poll/fd_unix.go:165 +0x453
+net.(*netFD).Read(0xc0001aa680, {0xc0000ac000, 0x1000, 0x1000})
+	/usr/local/go/src/net/fd_posix.go:55 +0x4b
+net.(*conn).Read(0xc00012a578, {0xc0000ac000, 0x1000, 0x1000})
+	/usr/local/go/src/net/net.go:194 +0xad
+net/http.(*persistConn).Read(0xc000588480, {0xc0000ac000, 0x1000, 0x1000})
+	/usr/local/go/src/net/http/transport.go:2122 +0xf5
+bufio.(*Reader).fill(0xc00068c960)
+	/usr/local/go/src/bufio/bufio.go:113 +0x2a4
+bufio.(*Reader).Peek(0xc00068c960, 0x1)
+	/usr/local/go/src/bufio/bufio.go:152 +0xc5
+net/http.(*persistConn).readLoop(0xc000588480)
+	/usr/local/go/src/net/http/transport.go:2275 +0x34a
+created by net/http.(*Transport).dialConn in goroutine 683
+	/usr/local/go/src/net/http/transport.go:1944 +0x2d52
+
+goroutine 313 [select]:
+github.com/pion/ice/v2.(*Agent).connectivityChecks(0xc00031a388)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:478 +0x325
+created by github.com/pion/ice/v2.(*Agent).startConnectivityChecks.func1 in goroutine 201
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:414 +0x1cc
+
+goroutine 822 [select]:
+github.com/pion/ice/v2.(*Agent).taskLoop(0xc0001bea88)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:244 +0x1e9
+created by github.com/pion/ice/v2.NewAgent in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:377 +0x1feb
+
+goroutine 198 [select]:
+github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).loop(0xc0001443c0, {0x2859740, 0xc0001338a0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:180 +0x1ba
+created by github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).BindRTCPWriter in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:93 +0x29b
+
+goroutine 842 [select]:
+github.com/pion/ice/v2.(*Agent).connectivityChecks(0xc000163c08)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:478 +0x325
+created by github.com/pion/ice/v2.(*Agent).startConnectivityChecks.func1 in goroutine 804
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:414 +0x1cc
+
+goroutine 235 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcce20, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0003295a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc000329580, {0xc0001e0000, 0x2000, 0x2000}, 0xc0005e6d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc000329580, {0xc0001e0000, 0x2000, 0x2000}, 0xc0005e6d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0001b2138, {0xc0001e0000, 0x2000, 0x2000}, 0xc000432180)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0001b2138, {0xc0001e0000, 0x2000, 0x2000}, 0xc000432180)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0001b2138, {0xc0001e0000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0000741a0, 0xc00039ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 201
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 546 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0000259e0, {0xc0005d2000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc000192d20, {0xc0005d2000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 446
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 635 [select]:
+github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).loop(0xc0001dd3e0, {0x2859740, 0xc0003028f0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:180 +0x1ba
+created by github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).BindRTCPWriter in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:93 +0x29b
+
+goroutine 847 [select]:
+github.com/pion/dtls/v2.(*Conn).Read(0xc000502a88, {0xc0006c2000, 0x2000, 0x1c?})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:325 +0x210
+github.com/pion/sctp.(*Association).readLoop(0xc00034d680)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:594 +0x21f
+created by github.com/pion/sctp.(*Association).init in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:392 +0x131
+
+goroutine 875 [chan receive]:
+github.com/pion/sctp.(*Association).AcceptStream(...)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:1513
+github.com/pion/datachannel.Accept(0xc0000401e0, 0xc0003adee0, {0xc0001b20b0, 0x1, 0x20?})
+	/home/jules/go/pkg/mod/github.com/pion/datachannel@v1.5.8/datachannel.go:131 +0x6a
+github.com/pion/webrtc/v3.(*SCTPTransport).acceptDataChannels(0xc000590840, 0xc0000401e0)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/sctptransport.go:181 +0x3b9
+created by github.com/pion/webrtc/v3.(*SCTPTransport).Start in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/sctptransport.go:142 +0x72b
+
+goroutine 338 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTCP).AcceptStream(0xc0003549c0)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtcp.go:96 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTCPMediaProcessor(0xc000470008)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1751 +0x159
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 312
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1674 +0xf5
+
+goroutine 801 [select]:
+github.com/pion/dtls/v2.(*handshakeFSM).finish(0xc00063a280, {0x2869140, 0xc00063a320}, {0x2870e28, 0xc000502a88})
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/handshaker.go:322 +0x2d2
+github.com/pion/dtls/v2.(*handshakeFSM).Run(0xc00063a280, {0x2869140, 0xc00063a320}, {0x2870e28, 0xc000502a88}, 0x1)
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/handshaker.go:189 +0x5f2
+github.com/pion/dtls/v2.(*Conn).handshake.func2()
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:872 +0x113
+created by github.com/pion/dtls/v2.(*Conn).handshake in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/dtls/v2@v2.2.12/conn.go:870 +0x5ee
+
+goroutine 176 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abccd08, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0002c60a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0002c6080, {0xc0001e2000, 0x2000, 0x2000}, 0xc0005b9d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0002c6080, {0xc0001e2000, 0x2000, 0x2000}, 0xc0005b9d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc00012a210, {0xc0001e2000, 0x2000, 0x2000}, 0xc00059a5a0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc00012a210, {0xc0001e2000, 0x2000, 0x2000}, 0xc00059a5a0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc00012a210, {0xc0001e2000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc00032add0, 0xc00039ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 201
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 634 [select]:
+github.com/pion/interceptor/pkg/report.(*SenderInterceptor).loop(0xc00062b290, {0x2859740, 0xc0003028f0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:116 +0x3dc
+created by github.com/pion/interceptor/pkg/report.(*SenderInterceptor).BindRTCPWriter in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:100 +0x1aa
+
+goroutine 638 [select]:
+github.com/pion/ice/v2.(*Agent).taskLoop(0xc0001be008)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:244 +0x1e9
+created by github.com/pion/ice/v2.NewAgent in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:377 +0x1feb
+
+goroutine 702 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0005ca240, {0xc00001e000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0003031f0, {0xc00001e000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 691
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 818 [select]:
+github.com/pion/interceptor/pkg/report.(*SenderInterceptor).loop(0xc000326870, {0x2859740, 0xc00056e120})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:116 +0x3dc
+created by github.com/pion/interceptor/pkg/report.(*SenderInterceptor).BindRTCPWriter in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:100 +0x1aa
+
+goroutine 821 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0125e00, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0003d5320, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).RawRead(0xc0003d5300, 0xc0004a2be0)
+	/usr/local/go/src/internal/poll/fd_unix.go:717 +0x26b
+net.(*rawConn).Read(0xc00012a598, 0xc0004a2be0)
+	/usr/local/go/src/net/rawconn.go:44 +0x79
+golang.org/x/net/internal/socket.(*Conn).recvMsg(0xc000696f80, 0xc0001dc180, 0x0)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/rawconn_msg.go:27 +0x367
+golang.org/x/net/internal/socket.(*Conn).RecvMsg(...)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/socket.go:247
+golang.org/x/net/ipv4.(*payloadHandler).ReadFrom(0xc000684ab0, {0xc00040f800, 0x5c0, 0x5c0})
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/ipv4/payload_cmsg.go:31 +0x768
+github.com/pion/mdns.(*Conn).start(0xc000326bd0, 0x5c0, 0xc000412a80)
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:407 +0x145
+created by github.com/pion/mdns.Server in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:152 +0xedf
+
+goroutine 650 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dd740, {0xc0006ad800, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/ice/v2.(*Conn).Read(0xc0001a6978, {0xc0006ad800, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/transport.go:76 +0x10b
+github.com/pion/webrtc/v3/internal/mux.(*Mux).readLoop(0xc00020b220)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:110 +0x17f
+created by github.com/pion/webrtc/v3/internal/mux.NewMux in goroutine 691
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:50 +0x28e
+
+goroutine 237 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc9c0, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001b00a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0001b0080, {0xc0001de000, 0x2000, 0x2000}, 0xc000653d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0001b0080, {0xc0001de000, 0x2000, 0x2000}, 0xc000653d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0004ca008, {0xc0001de000, 0x2000, 0x2000}, 0xc000415bf0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0004ca008, {0xc0001de000, 0x2000, 0x2000}, 0xc000415bf0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0004ca008, {0xc0001de000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0002a8000, 0xc00039ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 201
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 196 [select]:
+github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).loop(0xc00030ce00, {0x2859740, 0xc0001338a0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:100 +0x350
+created by github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).BindRTCPWriter in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:89 +0x1aa
+
+goroutine 195 [select]:
+github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).loop(0xc000144360, {0x2859740, 0xc0001338a0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:147 +0x253
+created by github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).BindRTCPWriter in goroutine 212
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:81 +0x1aa
+
+goroutine 300 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000144720, {0xc00040e000, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/ice/v2.(*Conn).Read(0xc00013c5a0, {0xc00040e000, 0x5b4, 0x5b4})
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/transport.go:76 +0x10b
+github.com/pion/webrtc/v3/internal/mux.(*Mux).readLoop(0xc0003050e0)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:110 +0x17f
+created by github.com/pion/webrtc/v3/internal/mux.NewMux in goroutine 312
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/mux.go:50 +0x28e
+
+goroutine 832 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0125bd0, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0006a3920, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0006a3900, {0xc000022000, 0x2000, 0x2000}, 0xc0005f3d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0006a3900, {0xc000022000, 0x2000, 0x2000}, 0xc0005f3d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0004ca298, {0xc000022000, 0x2000, 0x2000}, 0xc0007012c0)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0004ca298, {0xc000022000, 0x2000, 0x2000}, 0xc0007012c0)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0004ca298, {0xc000022000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc000592820, 0xc00009f5e0)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 822
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 887 [select]:
+github.com/pion/transport/v2/connctx.(*connCtx).ReadContext.func1()
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:83 +0x152
+created by github.com/pion/transport/v2/connctx.(*connCtx).ReadContext in goroutine 850
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/connctx/connctx.go:81 +0x35d
+
+goroutine 704 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTCP).AcceptStream(0xc00049e540)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtcp.go:96 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTCPMediaProcessor(0xc000470f08)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1751 +0x159
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 691
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1674 +0xf5
+
+goroutine 273 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTP).AcceptStream(0xc000354900)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtp.go:98 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTPMediaProcessor(0xc000470008)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1692 +0x158
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 312
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1673 +0x8b
+
+goroutine 272 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000309c20, {0xc000026000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0003f6200, {0xc000026000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 312
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 271 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000309bc0, {0xc0000a2000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0003f61f0, {0xc0000a2000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 312
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 639 [select]:
+context.(*cancelCtx).propagateCancel.func2()
+	/usr/local/go/src/context/context.go:514 +0xdd
+created by context.(*cancelCtx).propagateCancel in goroutine 638
+	/usr/local/go/src/context/context.go:513 +0x554
+
+goroutine 856 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dcb40, {0xc000750000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8b40, {0xc000750000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 701 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0005ca1e0, {0xc000000000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0003031e0, {0xc000000000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 691
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 425 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc330, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0002c68a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0002c6880, {0xc0005b2000, 0x2000, 0x2000}, 0xc0004e7d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0002c6880, {0xc0005b2000, 0x2000, 0x2000}, 0xc0004e7d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0004ca060, {0xc0005b2000, 0x2000, 0x2000}, 0xc000700630)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0004ca060, {0xc0005b2000, 0x2000, 0x2000}, 0xc000700630)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0004ca060, {0xc0005b2000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc000354300, 0xc000111810)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 468
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 843 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc0001dcd20, {0xc0006c0000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc0002d8ed0, {0xc0006c0000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 632 [select]:
+github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).loop(0xc0001dd380, {0x2859740, 0xc0003028f0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:147 +0x253
+created by github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).BindRTCPWriter in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:81 +0x1aa
+
+goroutine 717 [select]:
+github.com/mcpany/core/pkg/tool.(*WebrtcTool).executeWithPeerConnection(0xc0003fc8c0, {0x2868ca0, 0x3649e40}, 0xc000495e10, 0xc000470288)
+	/app/pkg/tool/webrtc.go:265 +0x1f94
+github.com/mcpany/core/pkg/tool.(*WebrtcTool).Execute(0xc0003fc8c0, {0x2868ca0, 0x3649e40}, 0xc000495e10)
+	/app/pkg/tool/webrtc.go:150 +0x2cc
+github.com/mcpany/core/pkg/tool.TestWebrtcTool_Execute_WithAuth(0xc00064b500)
+	/app/pkg/tool/webrtc_test.go:308 +0x71d
+testing.tRunner(0xc00064b500, 0x25c0148)
+	/usr/local/go/src/testing/testing.go:1792 +0x226
+created by testing.(*T).Run in goroutine 1
+	/usr/local/go/src/testing/testing.go:1851 +0x8f3
+
+goroutine 474 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc560, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001aa420, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0001aa400, {0xc0005b4000, 0x2000, 0x2000}, 0xc000603d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0001aa400, {0xc0005b4000, 0x2000, 0x2000}, 0xc000603d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0001b2140, {0xc0005b4000, 0x2000, 0x2000}, 0xc000700d20)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0001b2140, {0xc0005b4000, 0x2000, 0x2000}, 0xc000700d20)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0001b2140, {0xc0005b4000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc000074dd0, 0xc000111810)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 468
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 633 [select]:
+github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).loop(0xc000521730, {0x2859740, 0xc0003028f0})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:100 +0x350
+created by github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).BindRTCPWriter in goroutine 594
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:89 +0x1aa
+
+goroutine 769 [select]:
+github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).loop(0xc000412a10, {0x2859740, 0xc00056e120})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:100 +0x350
+created by github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).BindRTCPWriter in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:89 +0x1aa
+
+goroutine 468 [select]:
+github.com/pion/ice/v2.(*Agent).taskLoop(0xc0001be388)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:244 +0x1e9
+created by github.com/pion/ice/v2.NewAgent in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/agent.go:377 +0x1feb
+
+goroutine 467 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc790, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001b1ca0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).RawRead(0xc0001b1c80, 0xc0004a2370)
+	/usr/local/go/src/internal/poll/fd_unix.go:717 +0x26b
+net.(*rawConn).Read(0xc0001b2120, 0xc0004a2370)
+	/usr/local/go/src/net/rawconn.go:44 +0x79
+golang.org/x/net/internal/socket.(*Conn).recvMsg(0xc0001359c0, 0xc0001967e0, 0x0)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/rawconn_msg.go:27 +0x367
+golang.org/x/net/internal/socket.(*Conn).RecvMsg(...)
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/internal/socket/socket.go:247
+golang.org/x/net/ipv4.(*payloadHandler).ReadFrom(0xc0001a3780, {0xc0001db200, 0x5c0, 0x5c0})
+	/home/jules/go/pkg/mod/golang.org/x/net@v0.47.0/ipv4/payload_cmsg.go:31 +0x768
+github.com/pion/mdns.(*Conn).start(0xc00062b050, 0x5c0, 0xc000520850)
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:407 +0x145
+created by github.com/pion/mdns.Server in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/mdns@v0.0.12/conn.go:152 +0xedf
+
+goroutine 469 [select]:
+context.(*cancelCtx).propagateCancel.func2()
+	/usr/local/go/src/context/context.go:514 +0xdd
+created by context.(*cancelCtx).propagateCancel in goroutine 468
+	/usr/local/go/src/context/context.go:513 +0x554
+
+goroutine 465 [select]:
+github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).loop(0xc0000246c0, {0x2859740, 0xc000303d90})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:180 +0x1ba
+created by github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).BindRTCPWriter in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:93 +0x29b
+
+goroutine 464 [select]:
+github.com/pion/interceptor/pkg/report.(*SenderInterceptor).loop(0xc00062abd0, {0x2859740, 0xc000303d90})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:116 +0x3dc
+created by github.com/pion/interceptor/pkg/report.(*SenderInterceptor).BindRTCPWriter in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/sender_interceptor.go:100 +0x1aa
+
+goroutine 463 [select]:
+github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).loop(0xc000520770, {0x2859740, 0xc000303d90})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:100 +0x350
+created by github.com/pion/interceptor/pkg/report.(*ReceiverInterceptor).BindRTCPWriter in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/report/receiver_interceptor.go:89 +0x1aa
+
+goroutine 462 [select]:
+github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).loop(0xc000024660, {0x2859740, 0xc000303d90})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:147 +0x253
+created by github.com/pion/interceptor/pkg/nack.(*GeneratorInterceptor).BindRTCPWriter in goroutine 408
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/nack/generator_interceptor.go:81 +0x1aa
+
+goroutine 476 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc678, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0001aa520, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0001aa500, {0xc0005c4000, 0x2000, 0x2000}, 0xc000604d40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0001aa500, {0xc0005c4000, 0x2000, 0x2000}, 0xc000604d40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0001b2148, {0xc0005c4000, 0x2000, 0x2000}, 0xc000700660)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0001b2148, {0xc0005c4000, 0x2000, 0x2000}, 0xc000700660)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0001b2148, {0xc0005c4000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc000074ea0, 0xc000111810)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 468
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 819 [select]:
+github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).loop(0xc00068cb40, {0x2859740, 0xc00056e120})
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:180 +0x1ba
+created by github.com/pion/interceptor/pkg/twcc.(*SenderInterceptor).BindRTCPWriter in goroutine 685
+	/home/jules/go/pkg/mod/github.com/pion/interceptor@v0.1.29/pkg/twcc/sender_interceptor.go:93 +0x29b
+
+goroutine 718 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd8c0126030, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0000c6b20, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Accept(0xc0000c6b00)
+	/usr/local/go/src/internal/poll/fd_unix.go:620 +0x505
+net.(*netFD).accept(0xc0000c6b00)
+	/usr/local/go/src/net/fd_unix.go:172 +0x45
+net.(*TCPListener).accept(0xc00058b8c0)
+	/usr/local/go/src/net/tcpsock_posix.go:159 +0x4e
+net.(*TCPListener).Accept(0xc00058b8c0)
+	/usr/local/go/src/net/tcpsock.go:380 +0x65
+net/http.(*Server).Serve(0xc00069e000, {0x2866540, 0xc00058b8c0})
+	/usr/local/go/src/net/http/server.go:3424 +0x65f
+net/http/httptest.(*Server).goServe.func1()
+	/usr/local/go/src/net/http/httptest/server.go:311 +0xb4
+created by net/http/httptest.(*Server).goServe in goroutine 717
+	/usr/local/go/src/net/http/httptest/server.go:309 +0xa5
+
+goroutine 858 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTCP).AcceptStream(0xc000354a80)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtcp.go:96 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTCPMediaProcessor(0xc000470288)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1751 +0x159
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1674 +0xf5
+
+goroutine 547 [select]:
+github.com/pion/transport/v2/packetio.(*Buffer).Read(0xc000025a40, {0xc0005d4000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/transport/v2@v2.2.10/packetio/buffer.go:256 +0x293
+github.com/pion/webrtc/v3/internal/mux.(*Endpoint).Read(0xc000192d30, {0xc0005d4000, 0x2000, 0x2000})
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/internal/mux/endpoint.go:40 +0x59
+github.com/pion/srtp/v2.(*session).start.func1()
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:144 +0x122
+created by github.com/pion/srtp/v2.(*session).start in goroutine 446
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session.go:131 +0x525
+
+goroutine 549 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTCP).AcceptStream(0xc0002a83c0)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtcp.go:96 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTCPMediaProcessor(0xc000471188)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1751 +0x159
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 446
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1674 +0xf5
+
+goroutine 548 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTP).AcceptStream(0xc0002a8300)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtp.go:98 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTPMediaProcessor(0xc000471188)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1692 +0x158
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 446
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1673 +0x8b
+
+goroutine 589 [IO wait]:
+internal/poll.runtime_pollWait(0x7fd90abcc448, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:351 +0x85
+internal/poll.(*pollDesc).wait(0xc0003d45a0, 0x72, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0xb1
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).ReadFromInet4(0xc0003d4580, {0xc00057a000, 0x2000, 0x2000}, 0xc00066cd40)
+	/usr/local/go/src/internal/poll/fd_unix.go:248 +0x3f3
+net.(*netFD).readFromInet4(0xc0003d4580, {0xc00057a000, 0x2000, 0x2000}, 0xc00066cd40)
+	/usr/local/go/src/net/fd_posix.go:66 +0x55
+net.(*UDPConn).readFrom(0xc0004ca140, {0xc00057a000, 0x2000, 0x2000}, 0xc00042f170)
+	/usr/local/go/src/net/udpsock_posix.go:52 +0x285
+net.(*UDPConn).readFromUDP(0xc0004ca140, {0xc00057a000, 0x2000, 0x2000}, 0xc00042f170)
+	/usr/local/go/src/net/udpsock.go:149 +0x92
+net.(*UDPConn).ReadFrom(0xc0004ca140, {0xc00057a000, 0x2000, 0x2000})
+	/usr/local/go/src/net/udpsock.go:158 +0x91
+github.com/pion/ice/v2.(*candidateBase).recvLoop(0xc0003f21a0, 0xc00009ed90)
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:227 +0x23a
+created by github.com/pion/ice/v2.(*candidateBase).start in goroutine 638
+	/home/jules/go/pkg/mod/github.com/pion/ice/v2@v2.3.38/candidate_base.go:211 +0x246
+
+goroutine 835 [sync.WaitGroup.Wait]:
+sync.runtime_SemacquireWaitGroup(0xc000013350?)
+	/usr/local/go/src/runtime/sema.go:110 +0x25
+sync.(*WaitGroup).Wait(0xc000013350)
+	/usr/local/go/src/sync/waitgroup.go:118 +0x89
+github.com/mcpany/core/pkg/tool.TestWebrtcTool_Execute_WithAuth.func1.1()
+	/app/pkg/tool/webrtc_test.go:289 +0x34
+created by github.com/mcpany/core/pkg/tool.TestWebrtcTool_Execute_WithAuth.func1 in goroutine 685
+	/app/pkg/tool/webrtc_test.go:288 +0x66b
+
+goroutine 857 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTP).AcceptStream(0xc000354840)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtp.go:98 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTPMediaProcessor(0xc000470288)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1692 +0x158
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 836
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1673 +0x8b
+
+goroutine 703 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTP).AcceptStream(0xc00049e480)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtp.go:98 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTPMediaProcessor(0xc000470f08)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1692 +0x158
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 691
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1673 +0x8b
+
+goroutine 848 [select]:
+github.com/pion/sctp.(*Association).writeLoop(0xc00034d680)
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:644 +0x34c
+created by github.com/pion/sctp.(*Association).init in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/sctp@v1.8.19/association.go:393 +0x1ab
+
+goroutine 846 [chan receive]:
+github.com/pion/srtp/v2.(*SessionSRTCP).AcceptStream(0xc0002a8540)
+	/home/jules/go/pkg/mod/github.com/pion/srtp/v2@v2.0.20/session_srtcp.go:96 +0x4e
+github.com/pion/webrtc/v3.(*PeerConnection).undeclaredRTCPMediaProcessor(0xc0004f2008)
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1751 +0x159
+created by github.com/pion/webrtc/v3.(*PeerConnection).undeclaredMediaProcessor in goroutine 829
+	/home/jules/go/pkg/mod/github.com/pion/webrtc/v3@v3.3.6/peerconnection.go:1674 +0xf5
+FAIL	github.com/mcpany/core/pkg/tool	30.077s
+ok  	github.com/mcpany/core/pkg/transformer	1.032s
+?   	github.com/mcpany/core/pkg/upstream	[no test files]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.052s
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.051s
+ok  	github.com/mcpany/core/pkg/upstream/graphql	1.085s
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.144s
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.133s
+ok  	github.com/mcpany/core/pkg/upstream/http	1.121s
+ok  	github.com/mcpany/core/pkg/upstream/mcp	1.076s
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.126s
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.117s
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.074s
+ok  	github.com/mcpany/core/pkg/util	1.069s
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.033s
+ok  	github.com/mcpany/core/pkg/util/testutil	1.026s
+ok  	github.com/mcpany/core/pkg/validation	1.034s
+ok  	github.com/mcpany/core/pkg/worker	3.177s
+FAIL
