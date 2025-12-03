@@ -161,7 +161,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 )
-
-replace github.com/mcpany/core/proto => ./proto
-
-replace github.com/mcpany/core/examples => ./examples
