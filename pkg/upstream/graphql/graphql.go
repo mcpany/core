@@ -103,6 +103,10 @@ func NewGraphQLUpstream() *graphqlUpstream {
 	return &graphqlUpstream{}
 }
 
+func (g *graphqlUpstream) Shutdown(ctx context.Context) error {
+	return nil
+}
+
 func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 	switch typeName {
 	case "String", "ID":

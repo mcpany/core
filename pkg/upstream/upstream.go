@@ -30,6 +30,9 @@ import (
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
 type Upstream interface {
+	// Shutdown gracefully terminates the upstream service.
+	Shutdown(ctx context.Context) error
+
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
 	//

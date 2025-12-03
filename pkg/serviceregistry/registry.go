@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
 	config "github.com/mcpany/core/proto/config/v1"
@@ -51,6 +52,7 @@ type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
 	serviceInfo     map[string]*tool.ServiceInfo
+	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ToolManagerInterface
 	promptManager   prompt.PromptManagerInterface
@@ -73,6 +75,7 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
+		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
@@ -118,6 +121,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	}
 
 	r.serviceConfigs[serviceID] = serviceConfig
+	r.upstreams[serviceID] = u
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
@@ -180,6 +184,13 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 
 	if _, ok := r.serviceConfigs[serviceName]; !ok {
 		return fmt.Errorf("service %q not found", serviceName)
+	}
+
+	if u, ok := r.upstreams[serviceName]; ok {
+		if err := u.Shutdown(ctx); err != nil {
+			return fmt.Errorf("failed to shutdown upstream for service %s: %w", serviceName, err)
+		}
+		delete(r.upstreams, serviceName)
 	}
 
 	delete(r.serviceConfigs, serviceName)

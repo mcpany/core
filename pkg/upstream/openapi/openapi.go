@@ -47,6 +47,20 @@ type OpenAPIUpstream struct {
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
 	mu           sync.Mutex
+	serviceID    string
+}
+
+// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
+// services, this typically means closing any persistent connections.
+func (u *OpenAPIUpstream) Shutdown(ctx context.Context) error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	if client, ok := u.httpClients[u.serviceID]; ok {
+		client.CloseIdleConnections()
+		delete(u.httpClients, u.serviceID)
+	}
+	return nil
 }
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
@@ -88,7 +102,8 @@ func (u *OpenAPIUpstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	u.serviceID = sanitizedName
+	serviceID := u.serviceID
 
 	openapiService := serviceConfig.GetOpenapiService()
 	if openapiService == nil {
