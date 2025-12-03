@@ -91,6 +91,24 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
 		},
+		{
+			name: "valid graphql service",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "graphql-svc-1",
+							"graphql_service": {
+								"address": "http://localhost:8080/graphql"
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount: 0,
+		},
 	}
 
 	for _, tt := range tests {
