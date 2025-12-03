@@ -429,6 +429,20 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
+func TestRedisBus_New_InvalidConfig(t *testing.T) {
+	redisBus := bus_pb.RedisBus_builder{
+		Address: proto.String("invalid-address"),
+	}.Build()
+
+	bus := New[string](redisBus)
+	assert.NotNil(t, bus)
+	assert.NotNil(t, bus.client)
+
+	// Ping the client to check the connection
+	err := bus.client.Ping(context.Background()).Err()
+	assert.Error(t, err)
+}
+
 func TestRedisBus_New_PartialConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address: proto.String("localhost:6381"),
