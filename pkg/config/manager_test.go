@@ -285,6 +285,21 @@ services:
 				"service1": "7.0",
 			},
 		},
+		{
+			name: "collection with namespace",
+			initialConfig: (configv1.McpAnyServerConfig_builder{
+				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+					(configv1.UpstreamServiceCollection_builder{
+						Name:      proto.String("collection1"),
+						HttpUrl:   proto.String(server.URL + "/collection1"),
+						Namespace: proto.String("my-ns"),
+					}).Build(),
+				},
+			}).Build(),
+			expectedServiceNamesAndVersions: map[string]string{
+				"my-ns/service1": "2.0",
+			},
+		},
 	}
 
 	for _, tc := range testCases {

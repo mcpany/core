@@ -106,3 +106,84 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 		assert.Equal(t, version, s.GetVersion())
 	}
 }
+
+func TestUpstreamServiceManager_LoadAndMergeServices_GitHub_WithNamespace(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/repos/mcpany/core/contents/examples":
+			w.Write([]byte(fmt.Sprintf(`[
+				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/service.yaml", "download_url": "%s/service.yaml"},
+				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "%s/README.md"},
+				{"type": "dir", "html_url": "https://github.com/mcpany/core/tree/main/examples/nested", "download_url": null}
+			]`, server.URL, server.URL)))
+		case "/service.yaml":
+			w.Write([]byte(`{"services": [{"name": "github-service", "version": "1.0"}]}`))
+		case "/repos/mcpany/core/contents/examples/nested":
+			w.Write([]byte(fmt.Sprintf(`[
+				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/nested/service.json", "download_url": "%s/service.json"}
+			]`, server.URL)))
+		case "/service.json":
+			w.Write([]byte(`{"services": [{"name": "nested-service", "version": "1.0"}]}`))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	originalAPIURL := githubAPIURL
+	originalRawContentURL := githubRawContentURL
+	defer func() {
+		githubAPIURL = originalAPIURL
+		githubRawContentURL = originalRawContentURL
+	}()
+
+	githubAPIURL = server.URL
+	githubRawContentURL = server.URL
+
+	manager := NewUpstreamServiceManager()
+	manager.httpClient = &http.Client{}
+	manager.newGitHub = func(ctx context.Context, rawURL string) (*GitHub, error) {
+		g, err := NewGitHub(ctx, rawURL)
+		if err != nil {
+			return nil, err
+		}
+		g.httpClient = &http.Client{}
+		return g, nil
+	}
+	collection := &configv1.UpstreamServiceCollection{}
+	collection.SetName("github-dir")
+	collection.SetHttpUrl("https://github.com/mcpany/core/tree/main/examples")
+	collection.SetNamespace("gh-ns")
+	auth := &configv1.UpstreamAuthentication{}
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("my-secret-token")
+	bearer := &configv1.UpstreamBearerTokenAuth{}
+	bearer.SetToken(secret)
+	auth.SetBearerToken(bearer)
+	collection.SetAuthentication(auth)
+	config := &configv1.McpAnyServerConfig{}
+	config.SetUpstreamServiceCollections([]*configv1.UpstreamServiceCollection{collection})
+
+	loadedServices, err := manager.LoadAndMergeServices(context.Background(), config)
+	require.NoError(t, err)
+
+	expectedServiceNamesAndVersions := map[string]string{
+		"gh-ns/github-service": "1.0",
+		"gh-ns/nested-service": "1.0",
+	}
+
+	assert.Equal(t, len(expectedServiceNamesAndVersions), len(loadedServices))
+
+	serviceMap := make(map[string]*configv1.UpstreamServiceConfig)
+	for _, s := range loadedServices {
+		serviceMap[s.GetName()] = s
+	}
+
+	for name, version := range expectedServiceNamesAndVersions {
+		s, ok := serviceMap[name]
+		assert.True(t, ok, "expected service %s to be loaded", name)
+		assert.Equal(t, version, s.GetVersion())
+	}
+}
