@@ -60,7 +60,6 @@ func (w *Worker) Start(ctx context.Context) {
 
 // Stop stops the worker.
 func (w *Worker) Stop() {
-	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	for _, stop := range w.stopFuncs {
@@ -74,6 +73,7 @@ func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 	reqBus := bus.GetBus[*bus.ToolExecutionRequest](w.busProvider, bus.ToolExecutionRequestTopic)
 	resBus := bus.GetBus[*bus.ToolExecutionResult](w.busProvider, bus.ToolExecutionResultTopic)
 
+	var unsubscribeOnce sync.Once
 	unsubscribe := reqBus.Subscribe(ctx, bus.ToolExecutionRequestTopic, func(req *bus.ToolExecutionRequest) {
 		w.pond.Submit(func() {
 			log := logging.GetLogger()
@@ -91,6 +91,8 @@ func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 		})
 	})
 	w.mu.Lock()
-	w.stopFuncs = append(w.stopFuncs, unsubscribe)
+	w.stopFuncs = append(w.stopFuncs, func() {
+		unsubscribeOnce.Do(unsubscribe)
+	})
 	w.mu.Unlock()
 }

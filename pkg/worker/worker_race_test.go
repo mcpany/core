@@ -70,3 +70,19 @@ func TestWorker_StartStopRace(t *testing.T) {
 		}
 	}
 }
+
+func TestWorker_ConcurrentStartStop(t *testing.T) {
+	defer goleak.VerifyNone(t)
+	busConfig := &buspb.MessageBus{}
+	busConfig.SetInMemory(&buspb.InMemoryBus{})
+	bp, err := bus.NewBusProvider(busConfig)
+	require.NoError(t, err)
+
+	w := New(bp, &Config{
+		MaxWorkers:   1,
+		MaxQueueSize: 1,
+	})
+
+	go w.Start(context.Background())
+	w.Stop()
+}
