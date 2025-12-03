@@ -270,6 +270,15 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 
 		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
 		require.NoError(t, err)
+
+		pc.OnDataChannel(func(d *webrtc.DataChannel) {
+			d.OnMessage(func(msg webrtc.DataChannelMessage) {
+				// Echo message to unblock execution
+				err := d.SendText(string(msg.Data))
+				require.NoError(t, err)
+			})
+		})
+
 		var offer webrtc.SessionDescription
 		err = json.NewDecoder(r.Body).Decode(&offer)
 		require.NoError(t, err)
