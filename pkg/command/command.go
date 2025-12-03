@@ -45,6 +45,11 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	return &localExecutor{}
 }
 
+// NewLocalExecutor creates a new local command executor.
+func NewLocalExecutor() Executor {
+	return &localExecutor{}
+}
+
 type localExecutor struct{}
 
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
