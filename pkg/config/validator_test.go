@@ -89,7 +89,7 @@ func TestValidate(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
+			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path resolves to a location outside of the working directory: ../../../etc/passwd`,
 		},
 	}
 
