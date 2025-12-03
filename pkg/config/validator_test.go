@@ -78,6 +78,22 @@ func TestValidate(t *testing.T) {
 			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "global_settings": API key must be at least 16 characters long`,
+    },
+    {
+			name: "service with no service_config",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "no-service-config"
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "no-service-config": service "no-service-config" has no service_config`,
 		},
 	}
 
