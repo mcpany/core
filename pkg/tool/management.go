@@ -178,10 +178,11 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 			Error("Failed to sanitize tool name", "serviceID", tool.Tool().GetServiceId(), "toolName", tool.Tool().GetName(), "error", err)
 		return fmt.Errorf("failed to sanitize tool name: %w", err)
 	}
-	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
-	log := logging.GetLogger().With("toolID", toolID)
+	newName := tool.Tool().GetServiceId() + "." + sanitizedToolName
+	tool.Tool().Name = &newName
+	log := logging.GetLogger().With("toolID", tool.Tool().GetName())
 	log.Debug("Adding tool to ToolManager")
-	tm.tools.Store(toolID, tool)
+	tm.tools.Store(tool.Tool().GetName(), tool)
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil

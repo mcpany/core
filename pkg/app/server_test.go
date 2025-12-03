@@ -32,6 +32,7 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+	"mime/multipart"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -2114,4 +2115,101 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	if lis != nil {
 		lis.Close()
 	}
+}
+
+func TestUploadFile(t *testing.T) {
+	app := &Application{}
+
+	// Create a buffer to store our request body as bytes
+	var requestBody bytes.Buffer
+	writer := multipart.NewWriter(&requestBody)
+
+	// Create a new form file writer for our file field
+	fileWriter, err := writer.CreateFormFile("file", "test.txt")
+	assert.NoError(t, err)
+
+	// Write some content to our file field
+	_, err = fileWriter.Write([]byte("this is a test file"))
+	assert.NoError(t, err)
+
+	// Close the multipart writer to finalize the request body
+	writer.Close()
+
+	// Create a new HTTP request with our multipart form body
+	req := httptest.NewRequest(http.MethodPost, "/upload", &requestBody)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	// Create a response recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call the handler
+	app.uploadFile(rr, req)
+
+	// Check the status code and response body
+	assert.Equal(t, http.StatusOK, rr.Code)
+	expectedResponse := "File 'test.txt' uploaded successfully (size: 19 bytes)"
+	assert.Equal(t, expectedResponse, rr.Body.String())
+}
+
+func TestReloadConfig(t *testing.T) {
+	// Create a new Application with mock managers
+	busProvider, _ := bus.NewBusProvider(nil)
+	app := &Application{
+		ToolManager:     tool.NewToolManager(busProvider),
+		PromptManager:   prompt.NewPromptManager(),
+		ResourceManager: resource.NewResourceManager(),
+	}
+
+	// Create an in-memory filesystem
+	fs := afero.NewMemMapFs()
+
+	// Create an initial config file
+	initialConfig := `
+upstream_services:
+  - name: "service1"
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "tool1"
+          call_id: "tool1"
+      calls:
+        "tool1":
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/tool1"
+`
+	afero.WriteFile(fs, "config.yaml", []byte(initialConfig), 0644)
+
+	// Call ReloadConfig for the first time
+	err := app.ReloadConfig(fs, []string{"config.yaml"})
+	assert.NoError(t, err)
+
+	// Check that the initial tool is loaded
+	tools := app.ToolManager.ListTools()
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "service1.tool1", tools[0].Tool().GetName())
+
+	// Create an updated config file
+	updatedConfig := `
+upstream_services:
+  - name: "service1"
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "tool2"
+          call_id: "tool2"
+      calls:
+        "tool2":
+          method: "HTTP_METHOD_GET"
+          endpoint_path: "/tool2"
+`
+	afero.WriteFile(fs, "config.yaml", []byte(updatedConfig), 0644)
+
+	// Call ReloadConfig again
+	err = app.ReloadConfig(fs, []string{"config.yaml"})
+	assert.NoError(t, err)
+
+	// Check that the tool from the initial config is gone and the new one is loaded
+	tools = app.ToolManager.ListTools()
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "service1.tool2", tools[0].Tool().GetName())
 }
