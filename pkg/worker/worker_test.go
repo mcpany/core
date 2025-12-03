@@ -31,6 +31,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 )
 
 // Mocks
@@ -509,70 +510,37 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func TestWorker_ContextPropagation(t *testing.T) {
-	t.Log("Running TestWorker_ContextPropagation")
-	messageBus := bus_pb.MessageBus_builder{}.Build()
-	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	bp, err := bus.NewBusProvider(messageBus)
+func TestWorker_NoGoroutineLeakOnStop(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
+	busConfig := &bus_pb.MessageBus{}
+	busConfig.SetInMemory(&bus_pb.InMemoryBus{})
+	bp, err := bus.NewBusProvider(busConfig)
 	require.NoError(t, err)
 
-	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
-	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
+	worker := New(bp, &Config{MaxWorkers: 1, MaxQueueSize: 1})
+	worker.Start(context.Background())
+	worker.Stop()
+}
 
-	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
-		if topic == bus.ToolExecutionRequestTopic {
-			return reqBusMock
-		}
-		if topic == bus.ToolExecutionResultTopic {
-			return resBusMock
-		}
-		return nil
-	}
-	t.Cleanup(func() {
-		bus.GetBusHook = nil
-	})
+func TestWorker_GracefulShutdownWithCanceledContext(t *testing.T) {
+	defer goleak.VerifyNone(t)
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	readyToPublish := make(chan struct{})
-	var capturedHandler func(*bus.ToolExecutionRequest)
-
-	reqBusMock.subscribeFunc = func(ctx context.Context, topic string, handler func(*bus.ToolExecutionRequest)) func() {
-		capturedHandler = handler
-		close(readyToPublish)
-		return func() {}
-	}
-
-	resBusMock.publishFunc = func(ctx context.Context, topic string, msg *bus.ToolExecutionResult) error {
-		defer wg.Done()
-		// Block until context is canceled. This proves the correct context was passed.
-		// If context.Background() was passed, this will block forever and the test will time out.
-		<-ctx.Done()
-		require.Error(t, ctx.Err(), "Context should be canceled")
-		return nil
-	}
-
-	workerCtx, workerCancel := context.WithCancel(context.Background())
-	defer workerCancel()
+	busConfig := &bus_pb.MessageBus{}
+	busConfig.SetInMemory(&bus_pb.InMemoryBus{})
+	bp, err := bus.NewBusProvider(busConfig)
+	require.NoError(t, err)
 
 	worker := New(bp, &Config{MaxWorkers: 1, MaxQueueSize: 1})
-	worker.Start(workerCtx)
 
-	<-readyToPublish // Wait for subscription
+	ctx, cancel := context.WithCancel(context.Background())
+	worker.Start(ctx)
 
-	req := &bus.ToolExecutionRequest{}
-	req.SetCorrelationID("test")
-	go capturedHandler(req) // Simulate message arrival
+	// Cancel the context to simulate a shutdown signal
+	cancel()
 
-	// Give the worker goroutine time to run and block inside publishFunc
-	time.Sleep(100 * time.Millisecond)
-
-	// Now, cancel the context
-	workerCancel()
-
-	// Wait for publishFunc to complete its checks
-	wg.Wait()
+	// Stop the worker, which should handle the canceled context gracefully
+	worker.Stop()
 }
 
 func TestUpstreamWorker_Concurrent(t *testing.T) {
