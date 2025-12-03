@@ -21,6 +21,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -39,16 +40,30 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
-// IsSecurePath checks if a given file path is secure and does not contain any
-// path traversal sequences ("../" or "..\\"). This function is crucial for
-// preventing directory traversal attacks, where a malicious actor could
-// otherwise access or manipulate files outside of the intended directory.
+// IsSecurePath checks if a given file path is secure.
+//
+// A path is considered secure if it is relative (not absolute) and does not
+// contain any path traversal sequences (e.g., "../") that could resolve to a
+// location outside of the intended directory. This function is crucial for
+// preventing directory traversal attacks.
+//
+// The function performs the following checks:
+// 1. Verifies that the path is not absolute using `filepath.IsAbs`.
+// 2. Cleans the path using `filepath.Clean` to resolve any ".." sequences.
+// 3. Ensures that the cleaned path does not start with "../", which would
+//    indicate a path traversal attempt.
 //
 // path is the file path to be validated.
-// It returns an error if the path is found to be insecure, and nil otherwise.
+//
+// It returns an error if the path is found to be insecure (either absolute or
+// containing directory traversal sequences), and nil otherwise.
 func IsSecurePath(path string) error {
-	if strings.Contains(path, "..") {
-		return fmt.Errorf("path contains '..', which is not allowed")
+	if filepath.IsAbs(path) {
+		return fmt.Errorf("absolute paths are not allowed: %s", path)
+	}
+	cleanedPath := filepath.Clean(path)
+	if strings.HasPrefix(cleanedPath, "..") {
+		return fmt.Errorf("path resolves to a location outside of the working directory: %s", cleanedPath)
 	}
 	if strings.HasPrefix(path, "/") {
 		return fmt.Errorf("path is absolute, which is not allowed")
