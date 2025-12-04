@@ -22,8 +22,10 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -33,11 +35,17 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/update"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
-var appRunner app.Runner = app.NewApplication()
+var (
+	// Version is set at build time
+	Version   = "dev"
+	appRunner app.Runner = app.NewApplication()
+)
 
 // newRootCmd creates and configures the main command for the application.
 // It sets up the command-line flags for configuring the server, such as ports,
@@ -146,7 +154,7 @@ func newRootCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Print the version number of mcpany",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", appconsts.Name, appconsts.Version)
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", appconsts.Name, Version)
 			if err != nil {
 				return fmt.Errorf("failed to print version: %w", err)
 			}
@@ -154,6 +162,55 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	rootCmd.AddCommand(versionCmd)
+
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update the application to the latest version",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			token := os.Getenv("GITHUB_TOKEN")
+			var tc *http.Client
+			if token != "" {
+				ts := oauth2.StaticTokenSource(
+					&oauth2.Token{AccessToken: token},
+				)
+				tc = oauth2.NewClient(context.Background(), ts)
+			}
+			updater := update.NewUpdater(tc)
+			release, available, err := updater.CheckForUpdate(context.Background(), "mcpany", "core", Version)
+			if err != nil {
+				return fmt.Errorf("failed to check for updates: %w", err)
+			}
+
+			if !available {
+				fmt.Println("You are already running the latest version.")
+				return nil
+			}
+
+			fmt.Printf("A new version is available: %s. Updating...\n", release.GetTagName())
+
+			assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
+			checksumsAssetName := "checksums.txt"
+
+			fs := afero.NewOsFs()
+			executablePath, _ := cmd.Flags().GetString("path")
+			if executablePath == "" {
+				var err error
+				executablePath, err = os.Executable()
+				if err != nil {
+					return fmt.Errorf("failed to get executable path: %w", err)
+				}
+			}
+
+			if err := updater.UpdateTo(fs, executablePath, release, assetName, checksumsAssetName); err != nil {
+				return fmt.Errorf("failed to update: %w", err)
+			}
+
+			fmt.Println("Update successful.")
+			return nil
+		},
+	}
+	updateCmd.Flags().String("path", "", "Path to the binary to update. Defaults to the current executable.")
+	rootCmd.AddCommand(updateCmd)
 
 	healthCmd := &cobra.Command{
 		Use:   "health",

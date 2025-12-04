@@ -169,6 +169,20 @@ The server also supports configuration via environment variables. For example, y
 
 You can validate your configuration files without starting the server using the `config validate` command:
 
+### Updating
+
+You can update the application to the latest version using the `update` command:
+
+```bash
+./build/bin/server update
+```
+
+To update a binary at a specific path, use the `--path` flag:
+
+```bash
+./build/bin/server update --path /path/to/your/binary
+```
+
 ```bash
 ./build/bin/server config validate --config-path ./config.yaml
 ```
