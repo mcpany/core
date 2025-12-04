@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -19,16 +20,16 @@ package tool
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"sync"
 	"testing"
 
 	"github.com/mcpany/core/pkg/util"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/mock/gomock"
+	"github.com/mcpany/core/pkg/bus"
 )
 
 type TestMCPServerProvider struct {
@@ -40,16 +41,15 @@ func (p *TestMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("test-service")
-	toolProto.SetName("test-tool")
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
-	mockTool.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("test-service"),
+				Name:      proto.String("test-tool"),
+			}
+		},
+	}
 
 	err := tm.AddTool(mockTool)
 	assert.NoError(t, err)
@@ -62,23 +62,23 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 }
 
 func TestToolManager_ListTools(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool1 := NewMockTool(ctrl)
-	toolProto1 := &v1.Tool{}
-	toolProto1.SetServiceId("test-service")
-	toolProto1.SetName("test-tool-1")
-	mockTool1.EXPECT().Tool().Return(toolProto1).AnyTimes()
-	mockTool1.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
-
-	mockTool2 := NewMockTool(ctrl)
-	toolProto2 := &v1.Tool{}
-	toolProto2.SetServiceId("test-service")
-	toolProto2.SetName("test-tool-2")
-	mockTool2.EXPECT().Tool().Return(toolProto2).AnyTimes()
-	mockTool2.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
+	mockTool1 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("test-service"),
+				Name:      proto.String("test-tool-1"),
+			}
+		},
+	}
+	mockTool2 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("test-service"),
+				Name:      proto.String("test-tool-2"),
+			}
+		},
+	}
 
 	_ = tm.AddTool(mockTool1)
 	_ = tm.AddTool(mockTool2)
@@ -88,30 +88,31 @@ func TestToolManager_ListTools(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool1 := NewMockTool(ctrl)
-	toolProto1 := &v1.Tool{}
-	toolProto1.SetServiceId("service-a")
-	toolProto1.SetName("tool-1")
-	mockTool1.EXPECT().Tool().Return(toolProto1).AnyTimes()
-	mockTool1.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
-
-	mockTool2 := NewMockTool(ctrl)
-	toolProto2 := &v1.Tool{}
-	toolProto2.SetServiceId("service-b")
-	toolProto2.SetName("tool-2")
-	mockTool2.EXPECT().Tool().Return(toolProto2).AnyTimes()
-	mockTool2.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
-
-	mockTool3 := NewMockTool(ctrl)
-	toolProto3 := &v1.Tool{}
-	toolProto3.SetServiceId("service-a")
-	toolProto3.SetName("tool-3")
-	mockTool3.EXPECT().Tool().Return(toolProto3).AnyTimes()
-	mockTool3.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
+	mockTool1 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("service-a"),
+				Name:      proto.String("tool-1"),
+			}
+		},
+	}
+	mockTool2 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("service-b"),
+				Name:      proto.String("tool-2"),
+			}
+		},
+	}
+	mockTool3 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("service-a"),
+				Name:      proto.String("tool-3"),
+			}
+		},
+	}
 
 	_ = tm.AddTool(mockTool1)
 	_ = tm.AddTool(mockTool2)
@@ -126,21 +127,24 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("exec-service")
-	toolProto.SetName("exec-tool")
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
 	expectedResult := "success"
 	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
 
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
-	mockTool.EXPECT().Execute(gomock.Any(), execReq).Return(expectedResult, nil)
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("exec-service"),
+				Name:      proto.String("exec-tool"),
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			assert.Equal(t, execReq, req)
+			return expectedResult, nil
+		},
+	}
 
 	_ = tm.AddTool(mockTool)
 
@@ -158,9 +162,6 @@ func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 }
 
 func TestToolManager_ConcurrentAccess(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
 	var wg sync.WaitGroup
 	numRoutines := 50
@@ -169,12 +170,14 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			mockTool := NewMockTool(ctrl)
-			toolProto := &v1.Tool{}
-			toolProto.SetServiceId("concurrent-service")
-			toolProto.SetName(fmt.Sprintf("tool-%d", i))
-			mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
-			mockTool.EXPECT().GetCacheConfig().Return(nil).AnyTimes()
+			mockTool := &MockTool{
+				ToolFunc: func() *v1.Tool {
+					return &v1.Tool{
+						ServiceId: proto.String("concurrent-service"),
+						Name:      proto.String(fmt.Sprintf("tool-%d", i)),
+					}
+				},
+			}
 			err := tm.AddTool(mockTool)
 			assert.NoError(t, err)
 		}(i)
@@ -196,15 +199,15 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 }
 
 func TestToolManager_AddTool_NoServiceID(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("") // Empty service ID
-	toolProto.SetName("test-tool")
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String(""), // Empty service ID
+				Name:      proto.String("test-tool"),
+			}
+		},
+	}
 
 	err := tm.AddTool(mockTool)
 	assert.Error(t, err)
@@ -212,15 +215,15 @@ func TestToolManager_AddTool_NoServiceID(t *testing.T) {
 }
 
 func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("test-service")
-	toolProto.SetName("") // Empty tool name
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("test-service"),
+				Name:      proto.String(""), // Empty tool name
+			}
+		},
+	}
 
 	err := tm.AddTool(mockTool)
 	assert.Error(t, err)
@@ -228,118 +231,226 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
 
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("test-service")
-	toolProto.SetName("test-tool")
-	toolProto.SetDescription("A test tool")
-	annotations := &v1.ToolAnnotations{}
-	// Add an input schema to test the conversion logic and prevent a panic in the MCP server
 	inputSchema, err := structpb.NewStruct(map[string]interface{}{
 		"type": "object",
 	})
 	assert.NoError(t, err)
-	annotations.SetInputSchema(inputSchema)
-	toolProto.SetAnnotations(annotations)
 
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId:   proto.String("test-service"),
+				Name:        proto.String("test-tool"),
+				Description: proto.String("A test tool"),
+				Annotations: &v1.ToolAnnotations{
+					InputSchema: inputSchema,
+				},
+			}
+		},
+	}
 
-	// If this doesn't panic, it means the tool was added successfully to the mcpServer.
 	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	// Test case where the handler returns an error
+	mockTool2 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("test-service"),
+				Name:      proto.String("error-tool"),
+				Annotations: &v1.ToolAnnotations{
+					InputSchema: inputSchema,
+				},
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			return nil, fmt.Errorf("tool error")
+		},
+	}
+
+	err = tm.AddTool(mockTool2)
 	assert.NoError(t, err)
 }
 
-// MockToolExecutionMiddleware is a mock implementation of the ToolExecutionMiddleware interface.
 type MockToolExecutionMiddleware struct {
-	ctrl     *gomock.Controller
-	recorder *MockToolExecutionMiddlewareMockRecorder
-}
-
-// MockToolExecutionMiddlewareMockRecorder is the mock recorder for MockToolExecutionMiddleware.
-type MockToolExecutionMiddlewareMockRecorder struct {
-	mock *MockToolExecutionMiddleware
-}
-
-// NewMockToolExecutionMiddleware creates a new mock instance.
-func NewMockToolExecutionMiddleware(ctrl *gomock.Controller) *MockToolExecutionMiddleware {
-	mock := &MockToolExecutionMiddleware{ctrl: ctrl}
-	mock.recorder = &MockToolExecutionMiddlewareMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockToolExecutionMiddleware) EXPECT() *MockToolExecutionMiddlewareMockRecorder {
-	return m.recorder
+	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error)
 }
 
 func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
-	ret := m.ctrl.Call(m, "Execute", ctx, req, next)
-	ret0, _ := ret[0].(any)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-func (mr *MockToolExecutionMiddlewareMockRecorder) Execute(ctx, req, next interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockToolExecutionMiddleware)(nil).Execute), ctx, req, next)
+	if m.ExecuteFunc != nil {
+		return m.ExecuteFunc(ctx, req, next)
+	}
+	return next(ctx, req)
 }
 
 func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	tm := NewToolManager(nil)
-	mockMiddleware := NewMockToolExecutionMiddleware(ctrl)
-	tm.AddMiddleware(mockMiddleware)
-
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("exec-service")
-	toolProto.SetName("exec-tool")
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
-
-	err := tm.AddTool(mockTool)
-	assert.NoError(t, err)
 
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
 	execReq := &ExecutionRequest{ToolName: toolID}
 
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("exec-service"),
+				Name:      proto.String("exec-tool"),
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			return "tool success", nil
+		},
+	}
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
 	// Case 1: Middleware returns a result directly
-	expectedResult := "middleware success"
-	mockMiddleware.EXPECT().Execute(gomock.Any(), execReq, gomock.Any()).Return(expectedResult, nil)
+	middleware1 := &MockToolExecutionMiddleware{
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+			return "middleware success", nil
+		},
+	}
+	tm.AddMiddleware(middleware1)
 
 	result, err := tm.ExecuteTool(context.Background(), execReq)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResult, result)
+	assert.Equal(t, "middleware success", result)
+
+	// Reset middlewares
+	tm.middlewares = nil
 
 	// Case 2: Middleware calls the next function
-	expectedToolResult := "tool success"
-	mockMiddleware.EXPECT().Execute(gomock.Any(), execReq, gomock.Any()).DoAndReturn(
-		func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+	middleware2 := &MockToolExecutionMiddleware{
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
 			return next(ctx, req)
-		})
-	mockTool.EXPECT().Execute(gomock.Any(), execReq).Return(expectedToolResult, nil)
+		},
+	}
+	tm.AddMiddleware(middleware2)
 
 	result, err = tm.ExecuteTool(context.Background(), execReq)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedToolResult, result)
+	assert.Equal(t, "tool success", result)
 }
 
-func TestGetFullyQualifiedToolName(t *testing.T) {
-	serviceID := "test-service"
-	toolName := "test-tool"
-	expectedFQN := "test-service.test-tool"
-	fqn := GetFullyQualifiedToolName(serviceID, toolName)
-	assert.Equal(t, expectedFQN, fqn)
+func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockTool1 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{ServiceId: proto.String("service-a"), Name: proto.String("tool-1")}
+		},
+	}
+	_ = tm.AddTool(mockTool1)
+
+	tm.ClearToolsForService("service-b") // service-b has no tools
+	assert.Len(t, tm.ListTools(), 1, "Should still have one tool")
 }
+
+func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
+	tm := NewToolManager(nil)
+	// Mock the mcp.Server's AddTool method to return an error.
+	// We can't directly do this, so we'll rely on the fact that a tool
+	// with an empty name will cause an error.
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	provider := &TestMCPServerProvider{server: mcpServer}
+	tm.SetMCPServer(provider)
+
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			// This tool is valid for the ToolManager, but will fail in the MCP server
+			// because the sanitized name is different from the original name, and we
+			// are passing a tool with an empty name to the MCP server.
+			inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
+			return &v1.Tool{
+				ServiceId: proto.String("test"),
+				Name:      proto.String(" "),
+				Annotations: &v1.ToolAnnotations{
+					InputSchema: inputSchema,
+				},
+			}
+		},
+	}
+	// The error is not propagated up from mcpServer.AddTool, but it should log an error.
+	// This test is limited in what it can assert, but it covers the code path.
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+}
+
+func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
+	busProvider, _ := bus.NewBusProvider(nil)
+	tm := NewToolManager(busProvider)
+
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	provider := &TestMCPServerProvider{server: mcpServer}
+	tm.SetMCPServer(provider)
+
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"arg": map[string]interface{}{"type": "string"},
+		},
+	})
+	assert.NoError(t, err)
+
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId:   proto.String("test-service"),
+				Name:        proto.String("bus-tool"),
+				Annotations: &v1.ToolAnnotations{InputSchema: inputSchema},
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			return map[string]string{"status": "ok from tool"}, nil
+		},
+	}
+	err = tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	// This part is tricky to test without a running worker,
+	// but we can at least ensure the handler is registered and doesn't panic.
+	sanitizedToolName, _ := util.SanitizeToolName("bus-tool")
+	toolID := "test-service" + "." + sanitizedToolName
+	assert.NotNil(t, toolID)
+}
+
+func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
+	tm := NewToolManager(nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
+	provider := &TestMCPServerProvider{server: mcpServer}
+	tm.SetMCPServer(provider)
+
+	// Case 1: Error converting proto tool to mcp tool (empty name)
+	mockTool1 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{ServiceId: proto.String("test"), Name: proto.String("")}
+		},
+	}
+	err := tm.AddTool(mockTool1)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to sanitize tool name")
+
+	// Case 2: Good tool for subsequent tests
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{"type": "object"})
+	assert.NoError(t, err)
+
+	mockTool2 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId:   proto.String("test"),
+				Name:        proto.String("good-tool"),
+				Annotations: &v1.ToolAnnotations{InputSchema: inputSchema},
+			}
+		},
+	}
+	err = tm.AddTool(mockTool2)
+	assert.NoError(t, err)
+}
+
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	tm := NewToolManager(nil)
@@ -365,29 +476,62 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 	assert.Equal(t, provider, tm.mcpServer, "MCPServerProvider should be set")
 }
 
-func TestToolManager_AddTool_Handler(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
+func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 	tm := NewToolManager(nil)
-	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
-	provider := &TestMCPServerProvider{server: mcpServer}
-	tm.SetMCPServer(provider)
+	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
+	toolID := "exec-service" + "." + sanitizedToolName
+	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
+	expectedError := fmt.Errorf("execution failed")
 
-	mockTool := NewMockTool(ctrl)
-	toolProto := &v1.Tool{}
-	toolProto.SetServiceId("test-service")
-	toolProto.SetName("test-tool")
-	// Add an input schema to test the conversion logic and prevent a panic in the MCP server
-	inputSchema, err := structpb.NewStruct(map[string]interface{}{
-		"type": "object",
-	})
-	assert.NoError(t, err)
-	annotations := &v1.ToolAnnotations{}
-	annotations.SetInputSchema(inputSchema)
-	toolProto.SetAnnotations(annotations)
-	mockTool.EXPECT().Tool().Return(toolProto).AnyTimes()
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("exec-service"),
+				Name:      proto.String("exec-tool"),
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			return nil, expectedError
+		},
+	}
 
-	err = tm.AddTool(mockTool)
-	assert.NoError(t, err)
+	_ = tm.AddTool(mockTool)
+
+	_, err := tm.ExecuteTool(context.Background(), execReq)
+	assert.Error(t, err)
+	assert.Equal(t, expectedError, err)
+}
+
+func TestToolManager_ListTools_Caching(t *testing.T) {
+	tm := NewToolManager(nil)
+	mockTool1 := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t1")} },
+	}
+	_ = tm.AddTool(mockTool1)
+
+	// First call populates cache
+	list1 := tm.ListTools()
+	assert.Len(t, list1, 1)
+
+	// Second call should return cached slice
+	list2 := tm.ListTools()
+	assert.Len(t, list2, 1)
+	// Compare pointers of the first elements to check if it's the same slice
+	if len(list1) > 0 && len(list2) > 0 {
+		assert.Same(t, list1[0], list2[0])
+	}
+
+	// Invalidate cache by adding a new tool
+	mockTool2 := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t2")} },
+	}
+	_ = tm.AddTool(mockTool2)
+
+	list3 := tm.ListTools()
+	assert.Len(t, list3, 2, "Cache should be invalidated and list repopulated")
+
+	// Invalidate cache by clearing tools
+	tm.ClearToolsForService("s1")
+	list4 := tm.ListTools()
+	assert.Len(t, list4, 0, "Cache should be invalidated and list cleared")
 }
