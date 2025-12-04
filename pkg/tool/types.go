@@ -1,18 +1,17 @@
-/*
- * Copyright 2025 Author(s) of MCP Any
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+// Copyright 2024 Author(s) of MCP any
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package tool
 
@@ -33,7 +32,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/cli"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
@@ -816,12 +814,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	args := []string{}
+	// Default to args from definition
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
+
+	// If args are provided in the request, they override the definition's args.
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			if argsList, ok := argsVal.([]any); ok {
+				args = []string{} // Override
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						args = append(args, argStr)
@@ -861,7 +863,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	startTime := time.Now()
-	// Differentiate between JSON and environment variable-based communication
+	// Handle JSON communication protocol directly. This approach was chosen over a
+	// separate JSONExecutor to keep the logic self-contained within the CommandTool,
+	// simplifying the overall design and reducing dependencies between packages.
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
@@ -874,19 +878,27 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			io.Copy(io.Discard, stderr)
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		go func() {
+			defer stdin.Close()
+			json.NewEncoder(stdin).Encode(inputs)
+		}()
+
 		var result map[string]interface{}
-		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
-		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+		if err := json.NewDecoder(stdout).Decode(&result); err != nil {
+			return nil, fmt.Errorf("failed to decode JSON from command output: %w", err)
 		}
 		return result, nil
 	}
 
-	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+	var stdin io.Reader
+	if stdinVal, ok := inputs["stdin"]; ok {
+		if stdinStr, ok := stdinVal.(string); ok {
+			stdin = strings.NewReader(stdinStr)
+		}
+		delete(inputs, "stdin")
+	}
+
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env, stdin)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
@@ -959,13 +971,17 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	args := []string{}
+	var args []string
+	// Default to args from definition
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
+
+	// If args are provided in the request, they override the definition's args.
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			if argsList, ok := argsVal.([]any); ok {
+				args = []string{} // Override
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						args = append(args, argStr)
@@ -1005,7 +1021,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	startTime := time.Now()
-	// Differentiate between JSON and environment variable-based communication
+	// Handle JSON communication protocol directly. This approach was chosen over a
+	// separate JSONExecutor to keep the logic self-contained within the CommandTool,
+	// simplifying the overall design and reducing dependencies between packages.
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
 		if err != nil {
@@ -1018,19 +1036,27 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			io.Copy(io.Discard, stderr)
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		go func() {
+			defer stdin.Close()
+			json.NewEncoder(stdin).Encode(inputs)
+		}()
+
 		var result map[string]interface{}
-		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
-		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+		if err := json.NewDecoder(stdout).Decode(&result); err != nil {
+			return nil, fmt.Errorf("failed to decode JSON from command output: %w", err)
 		}
 		return result, nil
 	}
 
-	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+	var stdin io.Reader
+	if stdinVal, ok := inputs["stdin"]; ok {
+		if stdinStr, ok := stdinVal.(string); ok {
+			stdin = strings.NewReader(stdinStr)
+		}
+		delete(inputs, "stdin")
+	}
+
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env, stdin)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}

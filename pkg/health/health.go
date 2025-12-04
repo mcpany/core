@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -185,7 +186,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 				args = append(args, healthCheck.GetPrompt())
 			}
 
-			stdout, _, exitCodeChan, err := executor.Execute(ctx, c.GetCommand(), args, c.GetWorkingDirectory(), nil)
+			stdout, _, exitCodeChan, err := executor.Execute(ctx, c.GetCommand(), args, c.GetWorkingDirectory(), nil, nil)
 			if err != nil {
 				return fmt.Errorf("failed to execute health check command: %w", err)
 			}

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -463,7 +464,6 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 }
 
 func TestWorker_ContextPropagation(t *testing.T) {
-	t.Log("Running TestWorker_ContextPropagation")
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	bp, err := bus.NewBusProvider(messageBus)

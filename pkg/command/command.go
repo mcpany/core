@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -33,7 +34,7 @@ import (
 
 // Executor is an interface for executing commands.
 type Executor interface {
-	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
+	Execute(ctx context.Context, command string, args []string, workingDir string, env []string, stdin io.Reader) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
@@ -52,10 +53,11 @@ func NewLocalExecutor() Executor {
 
 type localExecutor struct{}
 
-func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string, stdin io.Reader) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
+	cmd.Stdin = stdin
 
 	outR, outW := io.Pipe()
 	errR, errW := io.Pipe()
@@ -142,7 +144,7 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	return &dockerExecutor{containerEnv: containerEnv}
 }
 
-func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string, stdin io.Reader) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -164,6 +166,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		WorkingDir: workingDir,
 		Env:        env,
 		Tty:        false,
+		OpenStdin:  stdin != nil,
 	}
 
 	hostConfig := &container.HostConfig{}
@@ -182,14 +185,35 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		return nil, nil, nil, fmt.Errorf("failed to create container: %w", err)
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
-			log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
+	if stdin != nil {
+		if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
+				log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
+			}
+			return nil, nil, nil, fmt.Errorf("failed to start container: %w", err)
 		}
-		return nil, nil, nil, fmt.Errorf("failed to start container: %w", err)
+		go func() {
+			conn, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
+				Stream: true,
+				Stdin:  true,
+			})
+			if err != nil {
+				log.Error("Failed to attach to container", "error", err)
+				return
+			}
+			defer conn.Close()
+			io.Copy(conn.Conn, stdin)
+		}()
+	} else {
+		if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
+				log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
+			}
+			return nil, nil, nil, fmt.Errorf("failed to start container: %w", err)
+		}
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true})
+	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true, Follow: true})
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to get container logs: %w", err)
 	}
@@ -229,7 +253,6 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 
 	return stdoutReader, stderrReader, exitCodeChan, nil
 }
-
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

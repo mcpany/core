@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -405,4 +406,55 @@ func TestOpenAPITool_Tool(t *testing.T) {
 func TestWebsocketTool_GetCacheConfig(t *testing.T) {
 	tool := &WebsocketTool{}
 	assert.Nil(t, tool.GetCacheConfig(), "GetCacheConfig should return nil")
+}
+
+func TestHTTPTool_Execute_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"key":"value"}`)
+	}))
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	httpPool, _ := pool.New[*client.HttpClientWrapper](func(ctx context.Context) (*client.HttpClientWrapper, error) {
+		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 0, false)
+	poolManager.Register("http-service", httpPool)
+
+	toolProto := &v1.Tool{}
+	toolProto.SetUnderlyingMethodFqn("GET " + server.URL)
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil)
+
+	res, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]any{"key": "value"}, res)
+}
+
+func TestMCPTool_Execute_Success(t *testing.T) {
+	mockClient := new(MockMCPClient)
+	mockResult := &mcp.CallToolResult{
+		Content: []mcp.Content{&mcp.TextContent{Text: `{"key":"value"}`}},
+	}
+	mockClient.On("CallTool", mock.Anything, mock.Anything).Return(mockResult, nil)
+
+	toolProto := &v1.Tool{}
+	toolProto.SetName("test-tool")
+	mcpTool := NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+	res, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolName: "test.test-tool", ToolInputs: json.RawMessage(`{"key":"value"}`)})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]any{"key": "value"}, res)
+}
+
+func TestOpenAPITool_Execute_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"key":"value"}`)
+	}))
+	defer server.Close()
+
+	toolProto := &v1.Tool{}
+	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, &configv1.OpenAPICallDefinition{})
+	res, err := openapiTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]any{"key": "value"}, res)
 }
