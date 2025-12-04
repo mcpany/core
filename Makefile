@@ -18,6 +18,8 @@
 GO = go
 GO_CMD := $(GO)
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
+VERSION := $(shell git describe --tags --always --dirty)
+LDFLAGS := -ldflags="-X main.Version=$(VERSION)"
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
@@ -315,7 +317,7 @@ gen: clean prepare
 
 build: gen
 	@echo "Building Go project locally..."
-	@$(GO_CMD) build -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
+	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
 test: test-fast e2e test-public-api
 
@@ -504,7 +506,7 @@ release: prepare
 		GOOS=$${platform%/*}; \
 		GOARCH=$${platform#*/}; \
 		echo "Building for $${GOOS}/$${GOARCH}..."; \
-		CGO_ENABLED=0 GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_CMD) build -a -installsuffix cgo -buildvcs=false -o $(RELEASE_DIR)/server-$${GOOS}-$${GOARCH} ./cmd/server; \
+		CGO_ENABLED=0 GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_CMD) build $(LDFLAGS) -a -installsuffix cgo -buildvcs=false -o $(RELEASE_DIR)/server-$${GOOS}-$${GOARCH} ./cmd/server; \
 	done
 	@echo "Release binaries are in $(RELEASE_DIR)"
 
