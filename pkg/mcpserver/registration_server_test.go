@@ -388,10 +388,7 @@ func TestListServices(t *testing.T) {
 		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider)
 		require.NoError(t, err)
 
-		shortCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
-		defer cancel()
-
-		_, err = errorRegistrationServer.ListServices(shortCtx, &v1.ListServicesRequest{})
+		_, err = errorRegistrationServer.ListServices(ctx, &v1.ListServicesRequest{})
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)

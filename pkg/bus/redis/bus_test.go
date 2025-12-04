@@ -49,9 +49,7 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-	if _, err := client.Ping(ctx).Result(); err != nil {
+	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
 	}
 	return client

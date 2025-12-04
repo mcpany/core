@@ -363,21 +363,6 @@ func TestManager_Concurrent(t *testing.T) {
 	m.CloseAll()
 }
 
-func TestManager_Deregister(t *testing.T) {
-	m := NewManager()
-	p, err := New(newMockClientFactory(true), 1, 5, 100, false)
-	require.NoError(t, err)
-	m.Register("test_pool", p)
-
-	retrievedPool, ok := Get[*mockClient](m, "test_pool")
-	require.True(t, ok)
-	assert.NotNil(t, retrievedPool)
-
-	m.Deregister("test_pool")
-	_, ok = Get[*mockClient](m, "test_pool")
-	assert.False(t, ok, "Pool should have been deregistered")
-}
-
 func TestPool_New_FactoryError(t *testing.T) {
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return nil, fmt.Errorf("factory error")

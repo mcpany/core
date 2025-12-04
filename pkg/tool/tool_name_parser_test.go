@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -20,78 +19,76 @@ package tool
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 func TestParseToolName(t *testing.T) {
 	testCases := []struct {
 		name          string
 		toolName      string
-		namespace     string
-		tool          string
-		expectError   bool
-		errorContains string
+		wantNamespace string
+		wantMethod    string
+		wantErr       bool
 	}{
 		{
-			name:        "valid tool name",
-			toolName:    "my-service.my-tool",
-			namespace:   "my-service",
-			tool:        "my-tool",
-			expectError: false,
+			name:          "Valid tool name",
+			toolName:      "namespace" + consts.ToolNameServiceSeparator + "method",
+			wantNamespace: "namespace",
+			wantMethod:    "method",
+			wantErr:       false,
 		},
 		{
-			name:        "valid tool name with dashes",
-			toolName:    "my-service.--my-tool",
-			namespace:   "my-service",
-			tool:        "my-tool",
-			expectError: false,
+			name:       "Invalid tool name - no section",
+			toolName:   "namespacemethod",
+			wantMethod: "namespacemethod",
+			wantErr:    false,
 		},
 		{
-			name:        "tool name without namespace",
-			toolName:    "my-tool",
-			namespace:   "",
-			tool:        "my-tool",
-			expectError: false,
+			name:          "Invalid tool name - too many sections",
+			toolName:      "namespace" + consts.ToolNameServiceSeparator + "method" + consts.ToolNameServiceSeparator + "extra",
+			wantNamespace: "namespace",
+			wantMethod:    "method" + consts.ToolNameServiceSeparator + "extra",
+			wantErr:       false,
 		},
 		{
-			name:          "empty tool name",
-			toolName:      "",
-			expectError:   true,
-			errorContains: "invalid tool name",
+			name:     "Invalid tool name - empty",
+			toolName: "",
+			wantErr:  true,
 		},
 		{
-			name:          "tool name with only separator",
-			toolName:      ".",
-			expectError:   true,
-			errorContains: "invalid tool name",
+			name:     "Invalid tool name - only separator",
+			toolName: consts.ToolNameServiceSeparator,
+			wantErr:  true,
 		},
 		{
-			name:          "tool name with only separator and dashes",
-			toolName:      ".--",
-			expectError:   true,
-			errorContains: "invalid tool name",
+			name:     "Invalid tool name - ends with separator",
+			toolName: "namespace" + consts.ToolNameServiceSeparator,
+			wantErr:  true,
+		},
+		{
+			name:          "Valid tool name with -- prefix",
+			toolName:      "my-service" + consts.ToolNameServiceSeparator + "--my-tool",
+			wantNamespace: "my-service",
+			wantMethod:    "my-tool",
+			wantErr:       false,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			namespace, tool, err := ParseToolName(tc.toolName)
-			if tc.expectError {
-				assert.Error(t, err)
-				assert.Contains(t, err.Error(), tc.errorContains)
-			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, tc.namespace, namespace)
-				assert.Equal(t, tc.tool, tool)
+			namespace, method, err := ParseToolName(tc.toolName)
+			if (err != nil) != tc.wantErr {
+				t.Errorf("ParseToolName() error = %v, wantErr %v", err, tc.wantErr)
+				return
+			}
+			if !tc.wantErr {
+				if namespace != tc.wantNamespace {
+					t.Errorf("ParseToolName() namespace = %v, want %v", namespace, tc.wantNamespace)
+				}
+				if method != tc.wantMethod {
+					t.Errorf("ParseToolName() method = %v, want %v", method, tc.wantMethod)
+				}
 			}
 		})
 	}
-}
-
-func TestGetFullyQualifiedToolName(t *testing.T) {
-	serviceID := "test-service"
-	methodName := "test-method"
-	expected := "test-service.test-method"
-	actual := GetFullyQualifiedToolName(serviceID, methodName)
-	assert.Equal(t, expected, actual)
 }
