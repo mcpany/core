@@ -22,6 +22,16 @@ import (
 	"net"
 )
 
+// SafeDialContext creates a connection to the given address, but strictly prevents
+// connections to private or loopback IP addresses to mitigate SSRF vulnerabilities.
+//
+// It resolves the host's IP addresses and checks each one. If any resolved IP
+// is private or loopback, the connection is blocked.
+//
+// ctx is the context for the dial operation.
+// network is the network type (e.g., "tcp").
+// addr is the address to connect to (host:port).
+// It returns the established connection or an error if the connection fails or is blocked.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
