@@ -871,21 +871,29 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer stdin.Close()
 
 		go func() {
 			defer stderr.Close()
 			io.Copy(io.Discard, stderr)
 		}()
 
+		var wg sync.WaitGroup
+		wg.Add(1)
 		go func() {
 			defer stdin.Close()
 			json.NewEncoder(stdin).Encode(inputs)
 		}()
 
 		var result map[string]interface{}
-		if err := json.NewDecoder(stdout).Decode(&result); err != nil {
-			return nil, fmt.Errorf("failed to decode JSON from command output: %w", err)
+		var decodeErr error
+		go func() {
+			defer wg.Done()
+			decodeErr = json.NewDecoder(stdout).Decode(&result)
+		}()
+
+		wg.Wait()
+		if decodeErr != nil {
+			return nil, fmt.Errorf("failed to decode JSON from command output: %w", decodeErr)
 		}
 		return result, nil
 	}
@@ -1029,21 +1037,29 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer stdin.Close()
 
 		go func() {
 			defer stderr.Close()
 			io.Copy(io.Discard, stderr)
 		}()
 
+		var wg sync.WaitGroup
+		wg.Add(1)
 		go func() {
 			defer stdin.Close()
 			json.NewEncoder(stdin).Encode(inputs)
 		}()
 
 		var result map[string]interface{}
-		if err := json.NewDecoder(stdout).Decode(&result); err != nil {
-			return nil, fmt.Errorf("failed to decode JSON from command output: %w", err)
+		var decodeErr error
+		go func() {
+			defer wg.Done()
+			decodeErr = json.NewDecoder(stdout).Decode(&result)
+		}()
+
+		wg.Wait()
+		if decodeErr != nil {
+			return nil, fmt.Errorf("failed to decode JSON from command output: %w", decodeErr)
 		}
 		return result, nil
 	}

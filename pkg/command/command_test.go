@@ -60,7 +60,7 @@ func canConnectToDocker(t *testing.T) bool {
 func TestLocalExecutor(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
-		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil, nil)
 		require.NoError(t, err)
 
 		var wg sync.WaitGroup
@@ -94,7 +94,7 @@ func TestLocalExecutor(t *testing.T) {
 		t.Parallel()
 		for i := 0; i < 10; i++ {
 			executor := NewExecutor(nil)
-			stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+			stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil, nil)
 			require.NoError(t, err)
 
 			var wg sync.WaitGroup
@@ -127,13 +127,13 @@ func TestLocalExecutor(t *testing.T) {
 
 	t.Run("CommandNotFound", func(t *testing.T) {
 		executor := NewExecutor(nil)
-		_, _, _, err := executor.Execute(context.Background(), "non-existent-command", nil, "", nil)
+		_, _, _, err := executor.Execute(context.Background(), "non-existent-command", nil, "", nil, nil)
 		assert.Error(t, err)
 	})
 
 	t.Run("NonZeroExitCode", func(t *testing.T) {
 		executor := NewExecutor(nil)
-		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil)
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil, nil)
 		require.NoError(t, err)
 
 		exitCode := <-exitCodeChan
@@ -146,7 +146,7 @@ func TestLocalExecutor(t *testing.T) {
 		defer cancel()
 
 		// Start a long-running command
-		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
+		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil, nil)
 		require.NoError(t, err)
 
 		// Cancel the context almost immediately
@@ -170,7 +170,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		executor := NewExecutor(containerEnv)
-		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil, nil)
 		require.NoError(t, err)
 
 		stdoutBytes, err := io.ReadAll(stdout)
@@ -206,7 +206,7 @@ func TestDockerExecutor(t *testing.T) {
 		executor := NewExecutor(containerEnv)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
-		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil)
+		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil, nil)
 		require.NoError(t, err)
 
 		stdoutBytes, err := io.ReadAll(stdout)
@@ -225,7 +225,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("non-existent-image:latest")
 		executor := NewExecutor(containerEnv)
-		_, _, _, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		_, _, _, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil, nil)
 		assert.Error(t, err)
 	})
 
@@ -233,7 +233,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		executor := NewExecutor(containerEnv)
-		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil)
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil, nil)
 		require.NoError(t, err)
 
 		exitCode := <-exitCodeChan
@@ -247,7 +247,7 @@ func TestDockerExecutor(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
-		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
+		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil, nil)
 		require.NoError(t, err)
 
 		cancel()
@@ -265,7 +265,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetName("test-container-removal")
 		executor := NewExecutor(containerEnv)
-		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil, nil)
 		require.NoError(t, err)
 
 		<-exitCodeChan
@@ -285,7 +285,7 @@ func TestCombinedOutput(t *testing.T) {
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := NewExecutor(containerEnv)
-	stdout, stderr, _, err := executor.Execute(context.Background(), "sh", []string{"-c", "echo 'hello stdout' && echo 'hello stderr' >&2"}, "", nil)
+	stdout, stderr, _, err := executor.Execute(context.Background(), "sh", []string{"-c", "echo 'hello stdout' && echo 'hello stderr' >&2"}, "", nil, nil)
 	require.NoError(t, err)
 
 	var combined strings.Builder
