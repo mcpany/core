@@ -18,6 +18,9 @@ package middleware
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -35,12 +38,6 @@ import (
 //   - authManager: The authentication manager to be used for authenticating
 //     requests.
 //
-import (
-	"fmt"
-	"net/http"
-	"strings"
-)
-
 // Returns an `mcp.Middleware` function.
 func AuthMiddleware(authManager *auth.AuthManager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {

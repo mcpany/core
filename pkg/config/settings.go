@@ -134,7 +134,7 @@ func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
 
-// LogLevel returns the log level for the server.
+// APIKey returns the API key for the server.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()

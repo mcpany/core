@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/machinebox/graphql"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -99,10 +100,12 @@ const introspectionQuery = `
 
 type graphqlUpstream struct{}
 
-func NewGraphQLUpstream() *graphqlUpstream {
+// NewGraphQLUpstream creates a new GraphQL upstream.
+func NewGraphQLUpstream() upstream.Upstream {
 	return &graphqlUpstream{}
 }
 
+// Shutdown shuts down the upstream.
 func (g *graphqlUpstream) Shutdown(ctx context.Context) error {
 	return nil
 }
@@ -120,6 +123,7 @@ func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 	}
 }
 
+// GraphQLCallable implements the Callable interface for GraphQL queries.
 type GraphQLCallable struct {
 	client        *graphql.Client
 	query         string
@@ -127,6 +131,7 @@ type GraphQLCallable struct {
 	address       string
 }
 
+// Call executes the GraphQL query.
 func (c *GraphQLCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
