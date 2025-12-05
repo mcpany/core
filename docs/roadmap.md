@@ -27,6 +27,8 @@ The following features are fully implemented and tested:
   - Resilience (Circuit Breakers & Retries) (`ResilienceConfig`)
 - **Deployment**:
   - Official Helm Chart
+- **Configuration**:
+  - Hot Configuration Reloading
 
 ### Configured but Not Yet Implemented
 
@@ -45,7 +47,7 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## High Priority (Next 1-3 Months)
 
-- [ ] **Hot Configuration Reloading**: Allow updating configuration without restarting the server to ensure zero downtime.
+- [ ] **Role-Based Access Control (RBAC)**: Implement granular access control for tools and resources based on user roles.
 - [ ] **Secret Management Integration**: Support sourcing secrets from Vault, AWS Secrets Manager, and other providers directly in configuration.
 - [ ] **Schema Validation**: Integrate CUE or JSON Schema to validate configuration files before loading.
 - [ ] **Distributed Tracing**: Integrate with OpenTelemetry to provide end-to-end visibility into request flows across microservices.
