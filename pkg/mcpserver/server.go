@@ -339,20 +339,24 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
+// AddServiceInfo adds information about a service to the tool manager.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
 
+// GetTool retrieves a tool by its name.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
+// ListTools returns a list of all available tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
 	return s.toolManager.ListTools()
 }
 
+// CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
 	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
@@ -369,22 +373,27 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return result, err
 }
 
+// SetMCPServer sets the MCP server provider for the tool manager.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
 
+// AddTool registers a new tool with the tool manager.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
 
+// GetServiceInfo retrieves information about a service by its ID.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
 
+// ClearToolsForService removes all tools associated with a specific service.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
 
+// SetReloadFunc sets the function to be called when a configuration reload is triggered.
 func (s *Server) SetReloadFunc(f func() error) {
 	s.reloadFunc = f
 }

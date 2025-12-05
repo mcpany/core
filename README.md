@@ -413,6 +413,10 @@ For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` di
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
 
+## Roadmap
+
+Check out our [Roadmap](docs/roadmap.md) to see what we're working on and what's coming next.
+
 ## License
 
 This project is licensed under the terms of the [LICENSE](LICENSE) file.

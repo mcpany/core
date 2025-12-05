@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// NewTestPoolManager creates a new pool.Manager for testing purposes.
+// It initializes a default HTTP connection pool and registers it with the manager.
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()
@@ -31,10 +33,12 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 	return pm
 }
 
+// MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
 type MockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
 
+// Authenticate calls the mock AuthenticateFunc if set, otherwise returns nil.
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

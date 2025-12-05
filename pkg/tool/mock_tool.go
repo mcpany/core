@@ -24,12 +24,14 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 )
 
+// MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
 	ToolFunc       func() *v1.Tool
 	ExecuteFunc    func(ctx context.Context, req *ExecutionRequest) (any, error)
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
+// Tool returns the protobuf definition of the mock tool.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -37,6 +39,7 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
+// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -44,6 +47,7 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
+// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()
