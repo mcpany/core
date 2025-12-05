@@ -12,6 +12,7 @@ The following features are fully implemented and tested:
   - gRPC (with reflection)
   - HTTP
   - OpenAPI
+  - GraphQL
   - Stdio
   - MCP-to-MCP Proxy
 - **Upstream Authentication**:
@@ -24,6 +25,8 @@ The following features are fully implemented and tested:
   - Caching (`CacheConfig`)
   - Rate Limiting (`RateLimitConfig`)
   - Resilience (Circuit Breakers & Retries) (`ResilienceConfig`)
+- **Deployment**:
+  - Official Helm Chart
 
 ### Configured but Not Yet Implemented
 
@@ -40,12 +43,21 @@ The following features are defined in the configuration schema (`proto/config/v1
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
-## Short-Term Goals (Next 1-3 Months)
+## High Priority (Next 1-3 Months)
 
-Our immediate focus is on implementing the features that are already defined in the configuration schema.
+- [ ] **Hot Configuration Reloading**: Allow updating configuration without restarting the server to ensure zero downtime.
+- [ ] **Secret Management Integration**: Support sourcing secrets from Vault, AWS Secrets Manager, and other providers directly in configuration.
+- [ ] **Schema Validation**: Integrate CUE or JSON Schema to validate configuration files before loading.
+- [ ] **Distributed Tracing**: Integrate with OpenTelemetry to provide end-to-end visibility into request flows across microservices.
+- [ ] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
+- [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
+- [ ] **IP Allowlisting & Security Policies**: Implement fine-grained security policies, including IP allowlisting and request validation.
+- [ ] **WASM Plugin Support**: Allow extending functionality using WebAssembly plugins for custom logic.
+- [ ] **Transport Protocols (NATS/Kafka)**: Add support for asynchronous communication via NATS and Kafka.
+- [ ] **Client SDKs**: Develop official Client SDKs (Go, Python, TS) to interact with MCP Any programmatically.
 
-- [x] **Implement Caching and Rate Limiting**: Build the server-side logic to enforce the `CacheConfig` and `RateLimitConfig` policies.
-- [x] **Implement Resilience Policies**: Build the server-side logic to enforce `ResilienceConfig` policies.
+## Ongoing Goals
+
 - [ ] **Implement Health Checking**: Build the logic for performing service health checks and routing traffic accordingly.
 - [ ] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
@@ -53,7 +65,5 @@ Our immediate focus is on implementing the features that are already defined in 
 
 ## Long-Term Goals (6-12+ Months)
 
-- [ ] **Add Support for More Service Types**: Extend the server to support additional protocols, such as GraphQL and WebSockets.
+- [ ] **Add Support for More Service Types**: Extend the server to support additional protocols, such as WebSockets.
 - [ ] **Implement a Web-Based UI**: Create a user interface for easier management and monitoring of the server.
-- [ ] **Official Helm Chart**: Provide an official Helm chart for easy deployment to Kubernetes.
-- [ ] **Distributed Tracing**: Integrate with systems like OpenTelemetry to provide better observability.

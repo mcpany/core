@@ -25,16 +25,22 @@ import (
 	"text/template"
 )
 
+// Generator handles the interactive generation of configuration files.
+// It prompts the user for input and uses templates to generate YAML configuration.
 type Generator struct {
 	Reader *bufio.Reader
 }
 
+// NewGenerator creates a new Generator instance that reads from standard input.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
 }
 
+// Generate prompts the user for service details and returns the generated
+// configuration as a byte slice. It supports multiple service types including
+// HTTP, gRPC, OpenAPI, and GraphQL.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
@@ -75,6 +81,7 @@ const httpServiceTemplate = `upstreamServices:
           endpointPath: "{{ .EndpointPath }}"
 `
 
+// HTTPServiceData holds the data required to generate an HTTP service configuration.
 type HTTPServiceData struct {
 	Name         string
 	Address      string
@@ -139,6 +146,7 @@ const grpcServiceTemplate = `upstreamServices:
         enabled: {{ .ReflectionEnabled }}
 `
 
+// GRPCServiceData holds the data required to generate a gRPC service configuration.
 type GRPCServiceData struct {
 	Name              string
 	Address           string
@@ -195,6 +203,7 @@ const openapiServiceTemplate = `upstreamServices:
         path: "{{ .SpecPath }}"
 `
 
+// OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
@@ -236,6 +245,7 @@ const graphqlServiceTemplate = `upstreamServices:
           selectionSet: "{{ .SelectionSet }}"
 `
 
+// GraphQLServiceData holds the data required to generate a GraphQL service configuration.
 type GraphQLServiceData struct {
 	Name         string
 	Address      string
