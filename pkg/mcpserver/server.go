@@ -158,12 +158,24 @@ func NewServer(
 	s.toolManager.SetMCPServer(s)
 	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
 
-	// TODO: Re-enable notifications when the go-sdk supports them
-	// s.resourceManager.OnListChanged(func() {
-	// 	if s.server != nil {
-	// 		s.server.Notify(consts.NotificationResourcesListChanged, nil)
-	// 	}
-	// })
+	s.resourceManager.OnListChanged(func() {
+		if s.server != nil {
+			// WORKAROUND: The Go SDK (v1.1.0) does not expose a way to manually trigger
+			// notifications. However, adding a resource using AddResource triggers
+			// "notifications/resources/list_changed". We add a dummy resource to
+			// trigger the notification. The server intercepts "resources/list", so this
+			// dummy resource will not be visible to clients.
+			s.server.AddResource(
+				&mcp.Resource{
+					Name: "internal-notification-trigger",
+					URI:  "internal://notification-trigger",
+				},
+				func(context.Context, *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
+					return nil, mcp.ResourceNotFoundError("internal://notification-trigger")
+				},
+			)
+		}
+	})
 
 	routerMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(
