@@ -41,7 +41,7 @@ A top-level configuration for an MCP Any server that connects to a local gRPC se
 ```yaml
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  log_level: "INFO"
+  log_level: "LOG_LEVEL_INFO"
 upstream_services:
   - name: "user-service"
     service_config:
@@ -160,6 +160,9 @@ The `service_config` oneof field can contain one of the following service types:
 - **`OpenapiUpstreamService`**: For services defined by an OpenAPI (Swagger) specification.
 - **`CommandLineUpstreamService`**: For services that communicate over standard I/O.
 - **`McpUpstreamService`**: For proxying another MCP Any instance.
+- **`GraphqlUpstreamService`**: For GraphQL services.
+- **`WebsocketUpstreamService`**: For services that communicate over Websocket.
+- **`WebrtcUpstreamService`**: For services that communicate over WebRTC data channels.
 
 #### `GrpcUpstreamService`
 
@@ -301,6 +304,33 @@ service_config:
     http_connection:
       http_address: "mcp-internal.example.com:8080"
     tool_auto_discovery: true
+```
+
+#### `GraphqlUpstreamService`
+
+| Field     | Type                                 | Description                                |
+| --------- | ------------------------------------ | ------------------------------------------ |
+| `address` | `string`                             | The endpoint URL of the GraphQL service.   |
+| `calls`   | `map<string, GraphqlCallDefinition>` | A map of call definitions to expose tools. |
+| `prompts` | `repeated PromptDefinition`          | A list of prompts served by this service.  |
+
+##### Use Case and Example
+
+Register a GraphQL service and customize the selection set for a query.
+
+```yaml
+upstream_services:
+  - name: "my-graphql-service"
+    graphql_service:
+      address: "http://localhost:8080/graphql"
+      calls:
+        user:
+          selection_set: "{ id name }"
+    upstream_authentication:
+      api_key:
+        header_name: "X-API-Key"
+        api_key:
+          plain_text: "my-secret-key"
 ```
 
 - **`WebsocketUpstreamService`**: For services that communicate over Websocket.
@@ -608,3 +638,33 @@ tls_config:
   client_cert_path: "/etc/ssl/private/client.pem"
   client_key_path: "/etc/ssl/private/client.key"
 ```
+
+## Defining Prompts
+
+MCP Any allows you to define and execute prompts directly from your configuration files. This is useful for integrating with AI models and other services that require dynamic, template-based inputs.
+
+| Field         | Type                     | Description                            |
+| ------------- | ------------------------ | -------------------------------------- |
+| `name`        | `string`                 | The name of the prompt.                |
+| `description` | `string`                 | A description of what the prompt does. |
+| `messages`    | `repeated PromptMessage` | The list of messages in the prompt.    |
+
+### Use Case and Example
+
+Here's an example of how to define a prompt in any service configuration (e.g., `http_service`):
+
+```yaml
+upstream_services:
+  - name: "my-prompt-service"
+    http_service:
+      address: "https://api.example.com"
+      prompts:
+        - name: "my-prompt"
+          description: "A sample prompt"
+          messages:
+            - role: "user"
+              content:
+                text: "Hello, {{name}}!"
+```
+
+You can then execute this prompt by sending a `prompts/get` request to the server.

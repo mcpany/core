@@ -38,6 +38,10 @@ repos:
     hooks:
     -   id: prettier
         types: [markdown]
+-   repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.9.0
+    hooks:
+    -   id: shellcheck
 -   repo: local
     hooks:
     -   id: helm-lint
@@ -46,11 +50,6 @@ repos:
         language: system
         files: ^helm/
         pass_filenames: false
-    -   id: shellcheck
-        name: ShellCheck
-        entry: shellcheck
-        language: system
-        types: [shell]
 -   repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.31.1
     hooks:

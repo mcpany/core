@@ -4,7 +4,7 @@ MCP Any provides a caching middleware that can be used to cache the results of t
 
 ## Configuration
 
-Caching is configured at the service level in the `mcp-any.yaml` configuration file. The following options are available:
+Caching is configured at the service level in the configuration file (e.g. `config.yaml`). The following options are available:
 
 - `is_enabled`: A boolean value that indicates whether caching is enabled for the service.
 - `ttl`: The time-to-live for cached entries, specified as a duration (e.g., "10s", "5m").

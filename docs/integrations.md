@@ -2,11 +2,12 @@
 
 This guide explains how to connect `mcpany` to various AI assistant clients, enabling them to leverage the tools exposed by your `mcpany` server. By integrating `mcpany`, you can give your AI assistant access to gRPC services, REST APIs, local command-line tools, and more.
 
-There are three primary ways to run `mcpany` for integration:
-
 1. **As a Local Binary**: Run the `mcpany` server directly on your machine.
 2. **With Docker Compose**: Run `mcpany` as a containerized service.
 3. **With Helm**: Deploy `mcpany` to a Kubernetes cluster.
+
+> [!TIP] > **Best Practice: One Server, Many Tools**
+> You don't need to run a separate `mcpany` instance for every tool you want to use. Instead, point your initialized `mcpany` server to multiple configuration files or a directory of configs using `--config-paths`. This way, you only need to register **one** MCP server with your AI assistant to access **all** your tools.
 
 ---
 
