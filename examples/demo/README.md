@@ -23,7 +23,7 @@ This example demonstrates how to expose multiple public APIs as tools through `m
 
 ### Step 1: The `mcpany` Configuration
 
-The `mcpany` configuration file (`upstream/http/config/mcpany_config.yaml`) tells `mcpany` how to connect to the upstream public APIs and what tools to expose. Here's what it looks like:
+The `mcpany` configuration file (`upstream_service/http/config/mcpany_config.yaml`) tells `mcpany` how to connect to the upstream public APIs and what tools to expose. Here's what it looks like:
 
 ```yaml
 global_settings:
@@ -64,7 +64,7 @@ This configuration defines three tools:
 
 1. **Run the `mcpany` Server**
 
-   In a terminal, start the `mcpany` server using the provided shell script from the `examples/upstream/http` directory:
+   In a terminal, start the `mcpany` server using the provided shell script from the `upstream_service/http` directory:
 
    ```bash
    ./start.sh
