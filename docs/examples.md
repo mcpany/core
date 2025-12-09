@@ -42,20 +42,24 @@ The user service example demonstrates how to use MCP Any with a gRPC service tha
 
 ## Interacting with the Server
 
-You can interact with the MCP Any server using any gRPC client. The following examples use `grpcurl`.
+You can interact with the MCP Any server using its JSON-RPC API. The following examples use `curl`.
 
 ### List Tools
 
 To list the available tools, run the following command:
 
 ```bash
-grpcurl -plaintext localhost:8080 mcpany.mcp_router.v1.McpRouter/ListTools
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' \
+  http://localhost:50050
 ```
 
 ### Call a Tool
 
-To call a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example, you would run the following command:
+To call a tool, you need to know the tool's name and the required inputs. For example, to use the `GetWeather` tool from the weather example (assuming it is registered as `weather/-/GetWeather`), you would run:
 
 ```bash
-grpcurl -plaintext -d '{"tool_id": "weather/GetWeather", "inputs": {"location": "London"}}' localhost:8080 mcpany.mcp_router.v1.McpRouter/CallTool
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "weather/-/GetWeather", "arguments": {"location": "London"}}, "id": 2}' \
+  http://localhost:50050
 ```

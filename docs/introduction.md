@@ -11,8 +11,9 @@ Traditionally, if you wanted to expose an API as an MCP tool, you would need to 
 ## Core Philosophy
 
 1.  **Configuration-First**: Users can create MCP server tools, resources, and prompts with just configuration files (YAML/JSON).
-2.  **Shareability**: Configurations can be easily shared publicly. This means the community can exchange "connectors" for various services without passing around opaque binaries or requiring complex build environments.
-3.  **Local & Secure**: By running MCP Any locally, you keep your sensitive API keys and data within your own environment. You don't risk leaking information to a remote proxy service just to convert an API call to MCP.
+2.  **Unified Runtime**: Instead of managing a dozen separate processes (one for each tool), run a single `mcpany` instance. It handles all your connections—gRPC, HTTP, stdio—in one efficient process.
+3.  **Shareability**: Configurations can be easily shared publicly. This means the community can exchange "connectors" for various services without passing around opaque binaries or requiring complex build environments.
+4.  **Local & Secure**: By running MCP Any locally, you keep your sensitive API keys and data within your own environment. You don't risk leaking information to a remote proxy service just to convert an API call to MCP.
 
 ## How It Works
 

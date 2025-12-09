@@ -27,6 +27,7 @@ The following features are fully implemented and tested:
   - Resilience (Circuit Breakers & Retries) (`ResilienceConfig`)
 - **Deployment**:
   - Official Helm Chart
+  - Docker Container
 - **Configuration**:
   - Hot Configuration Reloading
 

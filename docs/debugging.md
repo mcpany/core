@@ -7,14 +7,14 @@ MCP Any provides a debug mode that can be used to inspect the full request and r
 You can enable debug mode by passing the `--debug` flag when starting the server:
 
 ```bash
-./build/bin/server --debug
+./build/bin/server run --debug
 ```
 
 Alternatively, you can set the `MCPANY_DEBUG` environment variable to `true`:
 
 ```bash
 export MCPANY_DEBUG=true
-./build/bin/server
+./build/bin/server run
 ```
 
 When debug mode is enabled, the server will log the full JSON-RPC request and response for each tool call. The logs will be printed to standard output or to the file specified by the `--logfile` flag.

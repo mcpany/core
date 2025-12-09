@@ -27,10 +27,6 @@ Alternatively, you can install the tools manually:
   - **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
   - **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
   - **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
-    The `protoc` compiler is required to generate Go code from `.proto` files.
-    - **Find the latest release:** Go to the [protobuf GitHub releases page](https://github.com/protocolbuffers/protobuf/releases).
-    - **Download the archive:** Find the `protoc-*-<OS>-<ARCH>.zip` file that matches your operating system and architecture.
-    - **Install:** Unzip the archive and move the `bin/protoc` executable to a directory that is in your system's `PATH`.
 
 This command will download and install the correct versions of the tools into a `./build/env` directory, ensuring a consistent development environment without polluting your global system paths.
 
