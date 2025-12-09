@@ -5,7 +5,7 @@ syntax = "proto3";
 
 package greeter;
 
-option go_package = "github.com/mcpany/core/examples/upstream/grpc/greeter_server/proto";
+option go_package = "github.com/mcpany/core/upstream_service/grpc/greeter_server/proto";
 
 // The greeting service definition.
 service Greeter {

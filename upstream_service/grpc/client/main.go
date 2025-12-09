@@ -22,7 +22,7 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/mcpany/core/examples/upstream/grpc/greeter_server/proto"
+	pb "github.com/mcpany/core/upstream_service/grpc/greeter_server/proto"
 	"google.golang.org/grpc"
 )
 

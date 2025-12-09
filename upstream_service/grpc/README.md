@@ -22,7 +22,7 @@ make build
 
 ### 2. Run the Upstream gRPC Server
 
-In a separate terminal, start the upstream gRPC server. From this directory (`examples/upstream/grpc`), run:
+In a separate terminal, start the upstream gRPC server. From this directory (`upstream_service/grpc`), run:
 
 ```bash
 go run ./greeter_server/server/main.go
