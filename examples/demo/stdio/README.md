@@ -11,11 +11,11 @@ The `my-tool` is a simple Go program that reads a JSON object from stdin, extrac
 The `config.yaml` file tells `mcpany` how to register the `my-tool` program as a tool.
 
 ```yaml
-# examples/stdio/config.yaml
+# examples/demo/stdio/config.yaml
 upstreamServices:
   - name: "my-stdio-service"
     stdioService:
-      command: "./examples/stdio/my-tool-bin"
+      command: "./examples/demo/stdio/my-tool-bin"
       calls:
         - operationId: "greet"
           description: "A simple tool that greets the user."
@@ -25,7 +25,7 @@ upstreamServices:
 
 1.  **Run the `mcpany` Server**
 
-    In a terminal, start the `mcpany` server using the provided shell script from the `examples/stdio` directory:
+    In a terminal, start the `mcpany` server using the provided shell script from the `examples/demo/stdio` directory:
 
     ```bash
     ./start.sh

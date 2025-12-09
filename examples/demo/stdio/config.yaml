@@ -1,9 +1,9 @@
-# examples/stdio/config.yaml
+# examples/demo/stdio/config.yaml
 upstreamServices:
   - name: "my-stdio-service"
     stdioService:
       # The command to execute. The path is relative to the MCP server's working directory.
-      command: "./examples/stdio/my-tool-bin"
+      command: "./examples/demo/stdio/my-tool-bin"
       calls:
         - operationId: "greet"
           description: "A simple tool that greets the user."

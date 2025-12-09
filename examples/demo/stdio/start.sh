@@ -11,4 +11,4 @@ if [ ! -f "$MCP_SERVER_BIN" ]; then
 fi
 
 # Run the MCP server with the stdio example configuration.
-"$MCP_SERVER_BIN" --config-paths ./examples/stdio/config.yaml
+"$MCP_SERVER_BIN" --config-paths ./examples/demo/stdio/config.yaml

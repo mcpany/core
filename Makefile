@@ -352,13 +352,13 @@ build-examples: build-weather-server
 build-weather-server:
 	@echo "Building weather server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
-	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream/http/server/weather_server/weather_server.go
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server upstream_service/http/server/weather_server/weather_server.go
 
 .PHONY: build-file-upload-server
 build-file-upload-server:
 	@echo "Building file upload server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
-	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server examples/file-upload/main.go
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server upstream_service/file-upload/main.go
 
 # ==============================================================================
 # Other Commands

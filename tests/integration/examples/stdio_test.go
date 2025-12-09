@@ -41,7 +41,7 @@ func TestStdioExample(t *testing.T) {
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
 			// The config path is relative to the root of the repo
-			return "../../examples/stdio/config.yaml"
+			return "../../examples/demo/stdio/config.yaml"
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)

@@ -22,7 +22,7 @@ make build
 
 ### 2. Run the Upstream WebSocket Server
 
-In a separate terminal, start the upstream WebSocket server. From this directory (`examples/upstream/websocket`), run:
+In a separate terminal, start the upstream WebSocket server. From this directory (`upstream_service/websocket`), run:
 
 ```bash
 go run ./echo_server/server/main.go
