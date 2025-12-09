@@ -7,13 +7,13 @@ This example demonstrates how to configure MCP Any to connect to a GraphQL upstr
 1.  **Start the GraphQL server:**
 
     ```bash
-    go run ./examples/graphql/server/server.go
+    go run ./upstream_service/graphql/server/server.go
     ```
 
 2.  **Start the MCP Any server with the GraphQL configuration:**
 
     ```bash
-    make run ARGS="--config-paths ./examples/graphql/config.yaml"
+    make run ARGS="--config-paths ./upstream_service/graphql/config.yaml"
     ```
 
 3.  **Call the `hello` tool:**

@@ -1,4 +1,0 @@
-upstreamServices:
-  - name: "graphql-service"
-    graphqlService:
-      address: "http://localhost:8080/graphql"

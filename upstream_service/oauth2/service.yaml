@@ -22,7 +22,7 @@
 #
 # You can then run the server with the following command:
 #
-# go run cmd/server/main.go --config-paths examples/upstream/oauth2/service.yaml
+# go run cmd/server/main.go --config-paths upstream_service/oauth2/service.yaml
 #
 # To test the service, you can use a tool like curl to make a request
 # to the server, including a valid JWT in the Authorization header:
