@@ -14,21 +14,22 @@
 
 MCP Any empowers you to create robust Model Context Protocol (MCP) servers using **simple configurations**. Instead of writing code, compiling binaries, and managing complex deployments, you define your tools, resources, and prompts in portable configuration files.
 
-## Why MCP Any?
+## ❓ Why MCP Any?
 
 - **No Code Required**: Create fully functional MCP servers for your APIs just by writing a config file.
+- **Unified Runtime**: Stop spawning a new npx or python process for every single tool. Run one efficient `mcpany` server that manages all your connections and tools in a single place.
 - **Shareable Configurations**: Share your MCP server setups publicly. Users don't need to download unsafe binaries or set up complex environments—they just load your config.
 - **Local & Secure**: Host your MCP server locally. Connect to your private or public APIs without sending sensitive data through third-party remote servers. Perfect for both personal and enterprise use.
 - **Universal Adapter**: Dynamically acts as a bridge for gRPC services, RESTful APIs (via OpenAPI), and command-line tools, exposing them as standardized MCP tools.
 
-## Key Features
+## ✨ Key Features
 
 - **Dynamic Tool Registration**: Automatically discover and register tools from various backend services, either through a dynamic gRPC API or a static configuration file.
 - **Multiple Service Types**: Supports a wide range of service types, including:
   - **gRPC**: Register services from `.proto` files or by using gRPC reflection.
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
-- **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
+  - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
 - **Advanced Service Policies**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
@@ -39,384 +40,122 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
-### Defining Prompts
+## ⚡ Quick Start (5 Minutes)
 
-MCP Any allows you to define and execute prompts directly from your configuration files. This is useful for integrating with AI models and other services that require dynamic, template-based inputs.
+Ready to give your AI access to real-time data? Let's connect a public Weather API to **Gemini CLI** (or any MCP client) using MCP Any.
 
-Here's an example of how to define a prompt in your `config.yaml`:
+### 1. Prerequisites
 
-```yaml
-upstreamServices:
-  - name: "my-prompt-service"
-    httpService:
-      address: "https://api.example.com"
-      prompts:
-        - name: "my-prompt"
-          description: "A sample prompt"
-          messages:
-            - role: "user"
-              text:
-                text: "Hello, {{name}}!"
+- **Docker**: Ensure you have [Docker](https://docs.docker.com/get-docker/) installed and running.
+- **Gemini CLI**: If not installed, see the [installation guide](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli).
+
+_(Prefer building from source? See [Getting Started](docs/getting_started.md) for build instructions.)_
+
+### 2. Create Configuration
+
+Create a file named `weather-config.yaml` in your workspace. We will wrap `wttr.in`, a simple public weather service.
+
+**File Architecture:**
+
+```
+.
+└── weather-config.yaml # The config file we are creating
 ```
 
-You can then execute this prompt by sending a `prompts/get` request to the server:
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "method": "prompts/get", "params": {"name": "my-prompt-service.my-prompt", "arguments": {"name": "world"}}, "id": 1}' \
-  http://localhost:50050
-```
-
-## Getting Started
-
-Follow these instructions to get MCP Any set up and running on your local machine.
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- [Go](https://golang.org/doc/install) (version 1.24.3 or later)
-- [Docker](https://docs.docker.com/get-docker/)
-- [Make](https://www.gnu.org/software/make/)
-
-### Installation & Setup
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/mcpany/core.git
-    cd core
-    ```
-
-2.  **Build the application:**
-    This command will install dependencies, generate code, and build the `mcpany` binary.
-
-    ```bash
-    make build
-    ```
-
-    The binary will be located at `./build/bin/server`.
-
-### Running the Server
-
-You can run the MCP Any server directly or by using a `make` command.
-
-- **Directly:**
-
-  ```bash
-  ./build/bin/server
-  ```
-
-- **Via Make:**
-
-  ```bash
-  make run
-  ```
-
-By default, the server will start and listen for JSON-RPC requests on port `50050` and gRPC registration requests on port `50051`.
-
-### Running with Docker
-
-You can also run the server using Docker. The official image is available on GitHub Container Registry.
-
-1.  **Pull the latest image:**
-
-    ```bash
-    docker pull ghcr.io/mcpany/core:latest
-    ```
-
-2.  **Run the server:**
-
-    ```bash
-    docker run --rm -p 50050:50050 -p 50051:50051 ghcr.io/mcpany/core:latest
-    ```
-
-    This will start the server and expose the JSON-RPC and gRPC ports to your local machine.
-
-## Configuration
-
-MCP Any can be configured to register services at startup using configuration files. You can specify one or more configuration files or directories using the `--config-paths` flag. The configuration files can be in YAML, JSON, or textproto format.
-
-### Example Configuration
-
-Here is an example of a `config.yaml` file that registers an HTTP service with a single tool:
+**`weather-config.yaml`**:
 
 ```yaml
-# config.yaml
-upstreamServices:
-  - name: "my-http-service"
-    httpService:
-      address: "https://api.example.com"
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: "INFO"
+
+upstream_services:
+  - name: "weather"
+    http_service:
+      address: "https://wttr.in"
       calls:
-        - operationId: "get_user"
-          description: "Get user by ID"
+        get_weather:
+          id: "get_weather"
+          endpoint_path: "/{city}?format=j1"
           method: "HTTP_METHOD_GET"
-          endpointPath: "/users/{userId}"
-          parameterMappings:
-            - inputParameterName: "userId"
-              targetParameterName: "userId"
+          parameters:
+            - schema:
+                name: "city"
+                type: "STRING"
+      tools:
+        - name: "get_weather"
+          description: "Get current weather for a specific city."
+          call_id: "get_weather"
+          input_schema:
+            type: "object"
+            properties:
+              city:
+                type: "string"
 ```
 
-To run the server with this configuration, use the following command:
+### 3. Run with Docker
+
+Start the server using the official image. We mount the current directory so the container can read your config.
 
 ```bash
-make run ARGS="--config-paths ./config.yaml"
+docker run --rm \
+  -v $(pwd)/weather-config.yaml:/weather-config.yaml \
+  -p 50050:50050 \
+  ghcr.io/mcpany/core:latest \
+  run --config-path /weather-config.yaml
 ```
 
-The server also supports configuration via environment variables. For example, you can set the JSON-RPC port with `MCPANY_JSONRPC_PORT=6000`.
+The server will start and listen on port `50050`.
 
-### Validating Configuration
+### 4. Connect Your AI
 
-You can validate your configuration files without starting the server using the `config validate` command:
+Tell your AI assistant how to reach the server.
 
-### Updating
+**For Gemini CLI:**
 
-You can update the application to the latest version using the `update` command:
+Connect to the running HTTP server:
 
 ```bash
-./build/bin/server update
+gemini mcp add --transport http --trust weather-server http://localhost:50050
 ```
 
-To update a binary at a specific path, use the `--path` flag:
+_(Note: You may see an unrelated "GitHub requires OAuth" error in the CLI; this can be ignored if tools are working.)_
+
+### 5. Chat!
+
+Ask your AI about the weather:
 
 ```bash
-./build/bin/server update --path /path/to/your/binary
+gemini -m gemini-2.5-flash -p "What is the weather in London?"
 ```
 
-```bash
-./build/bin/server config validate --config-path ./config.yaml
-```
+The AI will:
 
-If the configuration is valid, the command will print a success message and exit with a status code of 0. If the configuration is invalid, the command will print an error message and exit with a non-zero status code.
+1.  **Call** the `weather.get_weather` tool with `city="London"`.
+2.  `mcpany` will **proxy** the request to `https://wttr.in/London?format=j1`.
+3.  The AI receives the JSON response and answers your question!
 
-### Advanced Configuration
+---
 
-MCP Any supports a variety of advanced configuration options, including:
+For more complex examples, including gRPC, OpenAPI, and authentication, check out [docs/reference/configuration.md](docs/reference/configuration.md).
 
-- **gRPC Services**: Register a gRPC service using reflection.
+## 💡 More Usage
 
-  ```yaml
-  upstreamServices:
-    - name: "my-grpc-service"
-      grpcService:
-        address: "localhost:50052"
-        reflection:
-          enabled: true
-  ```
+Once the server is running, you can interact with it using its JSON-RPC API.
 
-- **OpenAPI Services**: Register a service from an OpenAPI specification.
+- For detailed configuration options, see **[Configuration Reference](docs/reference/configuration.md)**.
+- For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
+- For hands-on examples, see the **[Examples](docs/examples.md)**.
+- For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
 
-  ```yaml
-  upstreamServices:
-    - name: "my-openapi-service"
-      openapiService:
-        spec:
-          path: "./openapi.json"
-  ```
-
-- **GraphQL Services**: Register a GraphQL service and customize the selection set for a query.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-graphql-service"
-      graphqlService:
-        address: "http://localhost:8080/graphql"
-        calls:
-          - name: "user"
-            selectionSet: "{ id name }"
-      upstreamAuthentication:
-        apiKey:
-          headerName: "X-API-Key"
-          apiKey:
-            plainText: "my-secret-key"
-  ```
-
-- **Stdio Services**: Wrap a command-line tool that communicates over stdio.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-stdio-service"
-      stdioService:
-        command: "my-tool"
-        args: ["--arg1", "value1"]
-        communicationProtocol: "JSON"
-  ```
-
-- **Authentication**: Configure authentication for an upstream service.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-secure-service"
-      httpService:
-        address: "https://api.example.com"
-        # ...
-      upstreamAuthentication:
-        apiKey:
-          headerName: "X-API-Key"
-          apiKey: "my-secret-key"
-  ```
-
-  You can also source secrets from environment variables. This is the recommended approach for production environments.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-secure-service"
-      httpService:
-        address: "https://api.example.com"
-        # ...
-      upstreamAuthentication:
-        apiKey:
-          headerName: "X-API-Key"
-          apiKey:
-            environmentVariable: "MY_API_KEY"
-  ```
-
-- **mTLS**: Configure mTLS for an upstream service.
-
-  ```yaml
-  upstreamServices:
-    - name: "my-mtls-service"
-      httpService:
-        address: "https://api.example.com"
-        # ...
-      upstreamAuthentication:
-        mtls:
-          clientCertPath: "/path/to/client.crt"
-          clientKeyPath: "/path/to/client.key"
-          caCertPath: "/path/to/ca.crt"
-  ```
-
-- **Resilience**: Configure retries for a gRPC service.
-- **Server Authentication**: Secure the MCP server with an API key.
-
-  ```yaml
-  global_settings:
-    api_key: "my-secret-key"
-  ```
-
-  When the `api_key` is set, clients must provide the key in the `X-API-Key` header of their requests. The API key must be at least 16 characters long.
-
-### Remote Configurations
-
-In addition to loading configuration files from the local filesystem, MCP Any can also load configurations from remote URLs. This allows you to easily share and reuse configurations without having to manually copy and paste files.
-
-To load a remote configuration, simply provide the URL as a value to the `--config-paths` flag:
-
-```bash
-make run ARGS="--config-paths https://example.com/my-config.yaml"
-```
-
-**Security Warning:** Loading configurations from remote URLs can be dangerous if you do not trust the source. Only load configurations from trusted sources to avoid potential security risks.
-
-## Monitoring
-
-MCP Any exposes a Prometheus metrics endpoint on the address specified by the `--metrics-listen-address` flag. If this flag is not specified, the metrics endpoint is disabled.
-
-### Available Metrics
-
-- `mcpany_tools_list_total`: Total number of `tools/list` requests.
-- `mcpany_tools_call_total`: Total number of `tools/call` requests.
-- `mcpany_tools_call_latency`: Latency of `tools/call` requests.
-- `mcpany_tools_call_errors`: Total number of failed `tools/call` requests.
-- `mcpany_tool_<tool_name>_call_total`: Total number of calls for a specific tool.
-- `mcpany_tool_<tool_name>_call_latency`: Latency of calls for a specific tool.
-- `mcpany_tool_<tool_name>_call_errors`: Total number of failed calls for a specific tool.
-- `mcpany_config_reload_total`: Total number of configuration reloads.
-- `mcpany_config_reload_errors`: Total number of failed configuration reloads.
-- `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
-- `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
-- `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.
-- `mcpany_grpc_rpc_finished_total`: Total number of finished gRPC RPCs.
-
-## Usage
-
-Once the server is running, you can interact with it using its JSON-RPC API. For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
-
-### Configuration Generator
-
-MCP Any includes a CLI tool to help you generate configuration files interactively. To use it, run the following command:
-
-```bash
-go run cmd/mcp-any-cli/main.go
-```
-
-The tool will prompt you for the information needed to generate a configuration file for a specific service type.
-
-## Examples
-
-For hands-on examples of how to use `mcpany` with different upstream service types and AI tools like Gemini CLI, please see the [examples](examples) directory. Each example includes a README file with detailed instructions.
-
-### Configuration Generator
-
-MCP Any includes a CLI tool to help you generate configuration files interactively. To use it, run the following command:
-
-```bash
-go run cmd/mcp-any-cli/main.go
-```
-
-The tool will prompt you for the information needed to generate a configuration file for a specific service type.
-
-### Listing Tools
-
-To see the list of all registered tools, you can send a `tools/list` request.
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}' \
-  http://localhost:50050
-```
-
-### Calling a Tool
-
-To execute a tool, send a `tools/call` request with the tool's name and arguments. Based on the example configuration above, here's how you would call the `get_user` tool:
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "my-http-service/-/get_user", "arguments": {"userId": "123"}}, "id": 2}' \
-  http://localhost:50050
-```
-
-## Running with Docker Compose
-
-For a containerized setup, you can use the provided `docker-compose.yml` file. This will build and run the `mcpany` server along with a sample `http-echo-server` to demonstrate how `mcpany` connects to other services in a Docker network.
-
-1.  **Start the services:**
-
-    ```bash
-    docker compose up --build
-    ```
-
-    This command will build the Docker images for both the `mcpany` server and the echo server, and then start them. The `mcpany` server is configured via `docker/config.docker.yaml` to automatically discover the echo server.
-
-2.  **Test the setup:**
-    Once the services are running, you can call the `echo` tool from the `http-echo-server` through the `mcpany` JSON-RPC API:
-
-    ```bash
-    curl -X POST -H "Content-Type: application/json" \
-      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 3}' \
-      http://localhost:50050
-    ```
-
-    You should receive a response echoing your message.
-
-3.  **Shut down the services:**
-
-    ```bash
-    docker compose down
-    ```
-
-## Running with Helm
-
-For deployments to Kubernetes, a Helm chart is available in the `helm/mcpany` directory. See the [Helm chart README](helm/mcpany/README.md) for detailed instructions.
-
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
 
-## Roadmap
+## 🗺️ Roadmap
 
 Check out our [Roadmap](docs/roadmap.md) to see what we're working on and what's coming next.
 
-## License
+## 📄 License
 
 This project is licensed under the terms of the [LICENSE](LICENSE) file.

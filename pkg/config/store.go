@@ -24,11 +24,11 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"regexp"
-	"time"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -84,6 +84,15 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	var yamlMap map[string]interface{}
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+	}
+
+	// Helper to fix log level
+	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
+		if ll, ok := gs["log_level"].(string); ok {
+			if !strings.HasPrefix(ll, "LOG_LEVEL_") {
+				gs["log_level"] = "LOG_LEVEL_" + ll
+			}
+		}
 	}
 
 	// Then, marshal the map to JSON. This is a common way to convert YAML to JSON.
