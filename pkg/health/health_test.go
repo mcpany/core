@@ -259,6 +259,37 @@ func TestNewChecker(t *testing.T) {
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
+
+	t.Run("HTTPHealthCheckWithCustomPOSTMethod", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodPost {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		serverURL := server.URL
+		serverAddr := server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service-post"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					Method:       lo.ToPtr("POST"),
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		result := checker.Check(ctx)
+		assert.Equal(t, health.StatusUp, result.Status)
+	})
 }
 
 func TestCheckGRPCHealth(t *testing.T) {
