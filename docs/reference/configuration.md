@@ -346,6 +346,7 @@ upstream_services:
 | `resources`  | `repeated ResourceDefinition`          | A list of resources served by this service.          |
 | `calls`      | `map<string, WebsocketCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`    | `repeated PromptDefinition`            | A list of prompts served by this service.            |
+| `health_check` | `WebsocketHealthCheck`                 | Health check configuration.                          |
 
 ##### Use Case and Example
 
@@ -502,6 +503,15 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 | ---------------------------- | ---------- | ------------------------------------------------------------------- |
 | `method`                     | `string`   | The method or command to send to the command line service.          |
 | `prompt`                     | `string`   | The input/prompt to send to the service.                            |
+| `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass. |
+| `interval`                   | `duration` | How often to perform the health check.                              |
+| `timeout`                    | `duration` | The timeout for each health check attempt.                          |
+
+#### `WebsocketHealthCheck`
+
+| Field                        | Type       | Description                                                         |
+| ---------------------------- | ---------- | ------------------------------------------------------------------- |
+| `message`                    | `string`   | The message to send to the WebSocket service for the health check.  |
 | `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass. |
 | `interval`                   | `duration` | How often to perform the health check.                              |
 | `timeout`                    | `duration` | The timeout for each health check attempt.                          |

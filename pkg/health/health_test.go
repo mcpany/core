@@ -29,9 +29,98 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
+	"github.com/gorilla/websocket"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
+
+func TestWebsocketHealthCheck(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("Success", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			upgrader := websocket.Upgrader{}
+			conn, err := upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close()
+			for {
+				mt, message, err := conn.ReadMessage()
+				if err != nil {
+					break
+				}
+				err = conn.WriteMessage(mt, message)
+				if err != nil {
+					break
+				}
+			}
+		}))
+		defer server.Close()
+
+		serverAddr := "ws://" + server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					Message:                  lo.ToPtr("ping"),
+					ExpectedResponseContains: lo.ToPtr("ping"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("ConnectionFailure", func(t *testing.T) {
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: lo.ToPtr("ws://localhost:12345"),
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					Timeout: durationpb.New(10 * time.Millisecond),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
+	t.Run("ResponseMismatch", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			upgrader := websocket.Upgrader{}
+			conn, err := upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close()
+			conn.WriteMessage(websocket.TextMessage, []byte("pong"))
+		}))
+		defer server.Close()
+
+		serverAddr := "ws://" + server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					ExpectedResponseContains: lo.ToPtr("ping"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+}
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
 type mockHealthServer struct {

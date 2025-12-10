@@ -32,6 +32,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/gorilla/websocket"
 	"github.com/mcpany/core/pkg/command"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -67,7 +68,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		check = commandLineCheck(serviceName, uc.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		check = connectionCheck(serviceName, uc.GetWebsocketService().GetAddress())
+		check = websocketCheck(serviceName, uc.GetWebsocketService())
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
 		check = connectionCheck(serviceName, uc.GetWebrtcService().GetAddress())
 	case configv1.UpstreamServiceConfig_McpService_case:
@@ -92,6 +93,42 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	}
 
 	return health.NewChecker(opts...)
+}
+
+func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Check {
+	return health.Check{
+		Name:    name,
+		Timeout: lo.Ternary(c.GetHealthCheck() != nil && c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
+		Check: func(ctx context.Context) error {
+			if c.GetHealthCheck() == nil {
+				return checkConnection(c.GetAddress())
+			}
+			dialer := websocket.Dialer{
+				Proxy:            http.ProxyFromEnvironment,
+				HandshakeTimeout: lo.Ternary(c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
+			}
+			conn, _, err := dialer.Dial(c.GetAddress(), nil)
+			if err != nil {
+				return fmt.Errorf("failed to connect to websocket service: %w", err)
+			}
+			defer conn.Close()
+			if c.GetHealthCheck().GetMessage() != "" {
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(c.GetHealthCheck().GetMessage())); err != nil {
+					return fmt.Errorf("failed to send message to websocket service: %w", err)
+				}
+			}
+			if c.GetHealthCheck().GetExpectedResponseContains() != "" {
+				_, message, err := conn.ReadMessage()
+				if err != nil {
+					return fmt.Errorf("failed to read message from websocket service: %w", err)
+				}
+				if !strings.Contains(string(message), c.GetHealthCheck().GetExpectedResponseContains()) {
+					return fmt.Errorf("websocket health check response did not contain expected string: %s", c.GetHealthCheck().GetExpectedResponseContains())
+				}
+			}
+			return nil
+		},
+	}
 }
 
 func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
