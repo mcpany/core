@@ -535,3 +535,26 @@ func TestToolManager_ListTools_Caching(t *testing.T) {
 	list4 := tm.ListTools()
 	assert.Len(t, list4, 0, "Cache should be invalidated and list cleared")
 }
+
+func TestToolManager_ExecuteTool_Unhealthy(t *testing.T) {
+	tm := NewToolManager(nil)
+	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
+	toolID := "exec-service" + "." + sanitizedToolName
+	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
+
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("exec-service"),
+				Name:      proto.String("exec-tool"),
+			}
+		},
+	}
+
+	_ = tm.AddTool(mockTool)
+	tm.AddServiceInfo("exec-service", &ServiceInfo{Name: "exec-service", IsHealthy: false})
+
+	_, err := tm.ExecuteTool(context.Background(), execReq)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "is unhealthy")
+}

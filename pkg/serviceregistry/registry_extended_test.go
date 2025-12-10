@@ -25,6 +25,10 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"net/http"
+	"net/http/httptest"
+	"time"
+
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
@@ -253,4 +257,90 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 
 	// Verify that the shutdown method was called
 	assert.True(t, shutdownCalled, "Shutdown method should be called on unregister")
+}
+
+func TestServiceRegistry_HealthCheck(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	tm := newThreadSafeToolManager()
+	registry := New(&mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{
+		Name: "test-service",
+		HealthCheck: &configv1.HealthCheck{
+			IntervalSeconds: 1,
+			Check: &configv1.HealthCheck_HttpHealthCheck{
+				HttpHealthCheck: &configv1.HTTPHealthCheck{
+					Address: server.URL,
+				},
+			},
+		},
+	}
+
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	assert.NoError(t, err)
+
+	registry.AddServiceInfo(serviceID, &tool.ServiceInfo{Name: "test-service"})
+
+	time.Sleep(2 * time.Second)
+
+	info, ok := registry.GetServiceInfo(serviceID)
+	assert.True(t, ok)
+	assert.True(t, info.IsHealthy)
+}
+
+func TestServiceRegistry_HealthCheck_Unhealthy(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer server.Close()
+
+	tm := newThreadSafeToolManager()
+	registry := New(&mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{
+		Name: "test-service",
+		HealthCheck: &configv1.HealthCheck{
+			IntervalSeconds: 1,
+			Check: &configv1.HealthCheck_HttpHealthCheck{
+				HttpHealthCheck: &configv1.HTTPHealthCheck{
+					Address: server.URL,
+				},
+			},
+		},
+	}
+
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	assert.NoError(t, err)
+
+	registry.AddServiceInfo(serviceID, &tool.ServiceInfo{Name: "test-service"})
+
+	time.Sleep(2 * time.Second)
+
+	info, ok := registry.GetServiceInfo(serviceID)
+	assert.True(t, ok)
+	assert.False(t, info.IsHealthy)
 }

@@ -68,9 +68,10 @@ type Tool interface {
 // ServiceInfo holds metadata about a registered upstream service, including its
 // configuration and any associated protobuf file descriptors.
 type ServiceInfo struct {
-	Name   string
-	Config *configv1.UpstreamServiceConfig
-	Fds    *descriptorpb.FileDescriptorSet
+	Name      string
+	Config    *configv1.UpstreamServiceConfig
+	Fds       *descriptorpb.FileDescriptorSet
+	IsHealthy bool
 }
 
 // ExecutionRequest represents a request to execute a specific tool, including

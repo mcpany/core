@@ -108,6 +108,12 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 			log.Error("Tool not found")
 			return nil, ErrToolNotFound
 		}
+
+		serviceID := t.Tool().GetServiceId()
+		if info, ok := tm.GetServiceInfo(serviceID); ok && !info.IsHealthy {
+			return nil, fmt.Errorf("service %q for tool %q is unhealthy", serviceID, req.ToolName)
+		}
+
 		ctx = NewContextWithTool(ctx, t)
 		result, err := t.Execute(ctx, req)
 		if err != nil {

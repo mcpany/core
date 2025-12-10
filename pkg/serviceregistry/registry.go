@@ -24,6 +24,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/service"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -53,6 +54,7 @@ type ServiceRegistry struct {
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
 	serviceInfo     map[string]*tool.ServiceInfo
 	upstreams       map[string]upstream.Upstream
+	healthCheckers  map[string]service.Checker
 	factory         factory.Factory
 	toolManager     tool.ToolManagerInterface
 	promptManager   prompt.PromptManagerInterface
@@ -76,6 +78,7 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		upstreams:       make(map[string]upstream.Upstream),
+		healthCheckers:  make(map[string]service.Checker),
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
@@ -123,6 +126,15 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	r.serviceConfigs[serviceID] = serviceConfig
 	r.upstreams[serviceID] = u
 
+	if serviceConfig.GetHealthCheck() != nil {
+		checker, err := service.NewChecker(serviceID, serviceConfig.GetHealthCheck(), r)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("failed to create health checker for service %s: %w", serviceConfig.GetName(), err)
+		}
+		go checker.Start()
+		r.healthCheckers[serviceID] = checker
+	}
+
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
 			authenticator := auth.NewAPIKeyAuthenticator(apiKeyConfig)
@@ -163,6 +175,16 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
+// UpdateHealthCheckStatus updates the health status of a service.
+func (r *ServiceRegistry) UpdateHealthCheckStatus(serviceID string, isHealthy bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if info, ok := r.serviceInfo[serviceID]; ok {
+		info.IsHealthy = isHealthy
+	}
+}
+
 // GetServiceConfig returns the configuration for a given service key.
 //
 // Parameters:
@@ -191,6 +213,11 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 			return fmt.Errorf("failed to shutdown upstream for service %s: %w", serviceName, err)
 		}
 		delete(r.upstreams, serviceName)
+	}
+
+	if checker, ok := r.healthCheckers[serviceName]; ok {
+		checker.Stop()
+		delete(r.healthCheckers, serviceName)
 	}
 
 	delete(r.serviceConfigs, serviceName)
