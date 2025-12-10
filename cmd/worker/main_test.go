@@ -99,3 +99,25 @@ func TestSetup_DirectValidationError(t *testing.T) {
 	_, err := setupWithConfig(busConfig)
 	assert.Error(t, err, "setupWithConfig() should return an error with an invalid busConfig")
 }
+
+func TestSetup_InvalidConfig(t *testing.T) {
+	// Create a temporary invalid config file
+	invalidConfigFile, err := os.CreateTemp("", "invalid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(invalidConfigFile.Name())
+	_, err = invalidConfigFile.WriteString(`
+upstream_services:
+  - name: "my-service"
+    http_service:
+      address: "invalid-url"
+`)
+	assert.NoError(t, err)
+	invalidConfigFile.Close()
+
+	// Set the config path to the invalid file
+	t.Setenv("MCPANY_CONFIG_PATH", invalidConfigFile.Name())
+
+	_, err = setup()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "configuration validation failed with errors")
+}

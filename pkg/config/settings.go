@@ -63,17 +63,22 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
 
-	s.grpcPort = viper.GetString("grpc-port")
-	s.stdio = viper.GetBool("stdio")
-	s.configPaths = viper.GetStringSlice("config-path")
-	s.debug = viper.GetBool("debug")
-	s.logLevel = viper.GetString("log-level")
+	if cmd != nil {
+		s.grpcPort = viper.GetString("grpc-port")
+		s.stdio = viper.GetBool("stdio")
+		s.configPaths = viper.GetStringSlice("config-path")
+		s.debug = viper.GetBool("debug")
+		s.logLevel = viper.GetString("log-level")
+	} else {
+		viper.BindEnv("config-path", "MCPANY_CONFIG_PATH")
+		s.configPaths = viper.GetStringSlice("config-path")
+	}
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
-	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
+	if cmd != nil && !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
 		cfg, err := LoadServices(store, "server")
 		if err != nil {

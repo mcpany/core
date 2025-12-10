@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/pkg/worker"
 	buspb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 )
 
 func setup() (*worker.Worker, error) {
@@ -39,6 +40,25 @@ func setup() (*worker.Worker, error) {
 	} else {
 		busConfig.SetInMemory(&buspb.InMemoryBus{})
 	}
+
+	osFs := afero.NewOsFs()
+	cfg := config.GlobalSettings()
+	// This is a placeholder for a real command-line interface.
+	// In a real application, you would use something like cobra to parse flags.
+	if err := cfg.Load(nil, osFs); err != nil {
+		return nil, err
+	}
+
+	store := config.NewFileStore(osFs, cfg.ConfigPaths())
+	configs, err := config.LoadServices(store, "worker")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load configurations for validation: %w", err)
+	}
+
+	if validationErrors := config.Validate(configs, config.Worker); len(validationErrors) > 0 {
+		return nil, config.FormatValidationErrors(validationErrors)
+	}
+
 	return setupWithConfig(busConfig)
 }
 

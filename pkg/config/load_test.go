@@ -324,7 +324,8 @@ upstream_services: {
     }
 }
 `,
-			expectLoadError: true,
+			expectedCount:   1,
+			expectLoadError: false,
 		},
 		{
 			name: "duplicate service names",

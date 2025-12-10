@@ -19,7 +19,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -57,23 +56,11 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	}
 	fileConfig.SetUpstreamServices(services)
 
-	var bt BinaryType
 	if binaryType == "server" {
-		bt = Server
 	} else if binaryType == "worker" {
-		bt = Worker
 	} else {
 		log.Error("Unknown binary type", "binary_type", binaryType)
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
-	}
-
-	if validationErrors := Validate(fileConfig, bt); len(validationErrors) > 0 {
-		var errorMessages []string
-		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
-			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
-		}
-		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {

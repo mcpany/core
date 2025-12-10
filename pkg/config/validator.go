@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
@@ -89,6 +90,18 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 	}
 
 	return validationErrors
+}
+
+// FormatValidationErrors formats a slice of ValidationErrors into a single error.
+func FormatValidationErrors(validationErrors []ValidationError) error {
+	if len(validationErrors) == 0 {
+		return nil
+	}
+	var allErrors []string
+	for _, e := range validationErrors {
+		allErrors = append(allErrors, e.Error())
+	}
+	return fmt.Errorf("configuration validation failed with errors: \n- %s", strings.Join(allErrors, "\n- "))
 }
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {

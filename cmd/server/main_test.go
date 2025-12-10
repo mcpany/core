@@ -395,3 +395,26 @@ func TestConfigGenerateCmd(t *testing.T) {
 	assert.Contains(t, output, "upstreamServices:")
 	assert.Contains(t, output, "name: \"my-service\"")
 }
+
+func TestRunCmd_InvalidConfig(t *testing.T) {
+	viper.Reset()
+	// Create a temporary invalid config file
+	invalidConfigFile, err := os.CreateTemp("", "invalid-config-*.yaml")
+	assert.NoError(t, err)
+	defer os.Remove(invalidConfigFile.Name())
+	_, err = invalidConfigFile.WriteString(`
+upstream_services:
+  - name: "my-service"
+    http_service:
+      address: "invalid-url"
+`)
+	assert.NoError(t, err)
+	invalidConfigFile.Close()
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"run", "--config-path", invalidConfigFile.Name()})
+	err = rootCmd.Execute()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "configuration validation failed with errors")
+}

@@ -77,6 +77,16 @@ func newRootCmd() *cobra.Command {
 				return err
 			}
 
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadServices(store, "server")
+			if err != nil {
+				return fmt.Errorf("failed to load configurations for validation: %w", err)
+			}
+
+			if validationErrors := config.Validate(configs, config.Server); len(validationErrors) > 0 {
+				return config.FormatValidationErrors(validationErrors)
+			}
+
 			logLevel := slog.LevelInfo
 			if cfg.IsDebug() {
 				logLevel = slog.LevelDebug
