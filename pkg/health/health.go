@@ -36,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"nhooyr.io/websocket"
 )
 
 const (
@@ -67,9 +68,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		check = commandLineCheck(serviceName, uc.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		check = connectionCheck(serviceName, uc.GetWebsocketService().GetAddress())
+		check = websocketCheck(serviceName, uc.GetWebsocketService())
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		check = connectionCheck(serviceName, uc.GetWebrtcService().GetAddress())
+		check = webrtcCheck(serviceName, uc.GetWebrtcService())
 	case configv1.UpstreamServiceConfig_McpService_case:
 		check = mcpCheck(serviceName, uc.GetMcpService())
 	default:
@@ -94,7 +95,53 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	return health.NewChecker(opts...)
 }
 
+func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
+	if hc == nil {
+		return checkConnection(address)
+	}
+
+	client := &http.Client{
+		Timeout: lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second),
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", hc.GetUrl(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to create health check request: %w", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("health check failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != int(hc.GetExpectedCode()) {
+		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
+	}
+
+	if hc.GetExpectedResponseBodyContains() != "" {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read health check response body: %w", err)
+		}
+		if !strings.Contains(string(body), hc.GetExpectedResponseBodyContains()) {
+			return fmt.Errorf("health check response body does not contain expected string")
+		}
+	}
+	return nil
+}
+
 func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
+	return health.Check{
+		Name:    name,
+		Timeout: 5 * time.Second,
+		Check: func(ctx context.Context) error {
+			return httpCheckFunc(ctx, c.GetAddress(), c.GetHealthCheck())
+		},
+	}
+}
+
+func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 	return health.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
@@ -102,36 +149,17 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 			if c.GetHealthCheck() == nil {
 				return checkConnection(c.GetAddress())
 			}
-
-			client := &http.Client{
-				Timeout: lo.Ternary(c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
-			}
-
-			req, err := http.NewRequestWithContext(ctx, "GET", c.GetHealthCheck().GetUrl(), nil)
-			if err != nil {
-				return fmt.Errorf("failed to create health check request: %w", err)
-			}
-
-			resp, err := client.Do(req)
-			if err != nil {
-				return fmt.Errorf("health check failed: %w", err)
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != int(c.GetHealthCheck().GetExpectedCode()) {
-				return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
-			}
-
-			if c.GetHealthCheck().GetExpectedResponseBodyContains() != "" {
-				body, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return fmt.Errorf("failed to read health check response body: %w", err)
+			// For WebRTC, the health check is primarily concerned with the signaling
+			// server, which is typically an HTTP or WebSocket endpoint.
+			if hc := c.GetHealthCheck(); hc != nil {
+				if httpCheck := hc.GetHttp(); httpCheck != nil {
+					return httpCheckFunc(ctx, c.GetAddress(), httpCheck)
 				}
-				if !strings.Contains(string(body), c.GetHealthCheck().GetExpectedResponseBodyContains()) {
-					return fmt.Errorf("health check response body does not contain expected string")
+				if wsCheck := hc.GetWebsocket(); wsCheck != nil {
+					return websocketCheckFunc(ctx, c.GetAddress(), wsCheck)
 				}
 			}
-			return nil
+			return checkConnection(c.GetAddress())
 		},
 	}
 }
@@ -203,6 +231,38 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 			}
 
 			return nil
+		},
+	}
+}
+
+func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
+	if hc == nil {
+		return checkConnection(address)
+	}
+
+	healthCheckURL := hc.GetUrl()
+	if healthCheckURL == "" {
+		healthCheckURL = address
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, _, err := websocket.Dial(ctx, healthCheckURL, nil)
+	if err != nil {
+		return fmt.Errorf("WebSocket health check failed: %w", err)
+	}
+	defer conn.Close(websocket.StatusNormalClosure, "")
+
+	return nil
+}
+
+func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Check {
+	return health.Check{
+		Name:    name,
+		Timeout: 5 * time.Second,
+		Check: func(ctx context.Context) error {
+			return websocketCheckFunc(ctx, c.GetAddress(), c.GetHealthCheck())
 		},
 	}
 }

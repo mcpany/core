@@ -207,6 +207,8 @@ message WebsocketUpstreamService {
   map<string, WebsocketCallDefinition> calls = 5;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 6;
+  // Health check configuration.
+  WebsocketHealthCheck health_check = 7;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -223,6 +225,8 @@ message WebrtcUpstreamService {
   map<string, WebrtcCallDefinition> calls = 5;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 6;
+  // Health check configuration.
+  WebRTCHealthCheck health_check = 7;
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
@@ -466,4 +470,22 @@ message TLSConfig {
   string client_key_path = 4;
   // If true, the client will not verify the server's certificate chain. Use with caution.
   bool insecure_skip_verify = 5;
+}
+
+// Defines a health check for a Websocket-based service.
+message WebsocketHealthCheck {
+  // The URL to send the health check request to.
+  string url = 1;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 2;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 3;
+}
+
+// Defines a health check for a WebRTC-based service.
+message WebRTCHealthCheck {
+  oneof health_check_type {
+    HttpHealthCheck http = 1;
+    WebsocketHealthCheck websocket = 2;
+  }
 }

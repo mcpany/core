@@ -28,9 +28,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"strings"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"nhooyr.io/websocket"
 )
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
@@ -259,6 +262,34 @@ func TestNewChecker(t *testing.T) {
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
+
+	t.Run("WebRTC Service WebSocket Health Check Success", func(t *testing.T) {
+		// Mock WebSocket server
+		mockWSServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c, err := websocket.Accept(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer c.Close(websocket.StatusInternalError, "the sky is falling")
+		}))
+		defer mockWSServer.Close()
+		wsURL := "ws" + strings.TrimPrefix(mockWSServer.URL, "http")
+
+		config := (&configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("webrtc-service-ws-healthy"),
+			WebrtcService: (&configv1.WebrtcUpstreamService_builder{
+				Address: lo.ToPtr(mockWSServer.Listener.Addr().String()),
+				HealthCheck: (&configv1.WebRTCHealthCheck_builder{
+					Websocket: (&configv1.WebsocketHealthCheck_builder{
+						Url: lo.ToPtr(wsURL),
+					}).Build(),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
 }
 
 func TestCheckGRPCHealth(t *testing.T) {
@@ -472,4 +503,96 @@ func TestCheckVariousServices(t *testing.T) {
 			assert.Equal(t, tc.want, checker.Check(ctx).Status)
 		})
 	}
+}
+
+func TestWebSocketHealthCheck(t *testing.T) {
+	ctx := context.Background()
+
+	// Mock WebSocket server
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c, err := websocket.Accept(w, r, nil)
+		if err != nil {
+			return
+		}
+		defer c.Close(websocket.StatusInternalError, "the sky is falling")
+	}))
+	defer mockServer.Close()
+
+	// Convert http:// to ws://
+	wsURL := "ws" + strings.TrimPrefix(mockServer.URL, "http")
+
+	t.Run("WebSocket Service Health Check Success", func(t *testing.T) {
+		config := (&configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service-healthy"),
+			WebsocketService: (&configv1.WebsocketUpstreamService_builder{
+				Address: lo.ToPtr(mockServer.Listener.Addr().String()),
+				HealthCheck: (&configv1.WebsocketHealthCheck_builder{
+					Url: lo.ToPtr(wsURL),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("WebSocket Service Health Check Failure", func(t *testing.T) {
+		config := (&configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service-unhealthy"),
+			WebsocketService: (&configv1.WebsocketUpstreamService_builder{
+				Address: lo.ToPtr("localhost:12345"),
+				HealthCheck: (&configv1.WebsocketHealthCheck_builder{
+					Url: lo.ToPtr("ws://localhost:12345"),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+}
+
+func TestWebRTCHealthCheck(t *testing.T) {
+	ctx := context.Background()
+
+	// Mock HTTP server for signaling
+	mockSignalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer mockSignalingServer.Close()
+
+	t.Run("WebRTC Service Health Check Success", func(t *testing.T) {
+		config := (&configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("webrtc-service-healthy"),
+			WebrtcService: (&configv1.WebrtcUpstreamService_builder{
+				Address: lo.ToPtr(mockSignalingServer.Listener.Addr().String()),
+				HealthCheck: (&configv1.WebRTCHealthCheck_builder{
+					Http: (&configv1.HttpHealthCheck_builder{
+						Url:          lo.ToPtr(mockSignalingServer.URL),
+						ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+					}).Build(),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("WebRTC Service Health Check Failure", func(t *testing.T) {
+		config := (&configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("webrtc-service-unhealthy"),
+			WebrtcService: (&configv1.WebrtcUpstreamService_builder{
+				Address: lo.ToPtr("localhost:12345"),
+				HealthCheck: (&configv1.WebRTCHealthCheck_builder{
+					Http: (&configv1.HttpHealthCheck_builder{
+						Url: lo.ToPtr("http://localhost:12345"),
+					}).Build(),
+				}).Build(),
+			}).Build(),
+		}).Build()
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
 }
