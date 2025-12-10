@@ -346,8 +346,8 @@ message ConnectionPoolConfig {
 
 // Defines a health check for an HTTP-based service.
 message HttpHealthCheck {
-  // The full URL to send the health check request to.
-  string url = 1;
+  // The endpoint to send the health check request to. This is relative to the service address.
+  string endpoint = 1;
   // The expected HTTP status code for a successful health check. Defaults to 200.
   int32 expected_code = 2;
   // Optional: A substring that must be present in the response body for the check to pass.

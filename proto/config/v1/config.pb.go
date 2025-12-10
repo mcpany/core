@@ -4323,7 +4323,7 @@ func (b0 ConnectionPoolConfig_builder) Build() *ConnectionPoolConfig {
 // Defines a health check for an HTTP-based service.
 type HttpHealthCheck struct {
 	state                                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Url                          *string                `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_Endpoint                     *string                `protobuf:"bytes,1,opt,name=endpoint"`
 	xxx_hidden_ExpectedCode                 int32                  `protobuf:"varint,2,opt,name=expected_code,json=expectedCode"`
 	xxx_hidden_ExpectedResponseBodyContains *string                `protobuf:"bytes,3,opt,name=expected_response_body_contains,json=expectedResponseBodyContains"`
 	xxx_hidden_Interval                     *durationpb.Duration   `protobuf:"bytes,4,opt,name=interval"`
@@ -4359,10 +4359,10 @@ func (x *HttpHealthCheck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *HttpHealthCheck) GetUrl() string {
+func (x *HttpHealthCheck) GetEndpoint() string {
 	if x != nil {
-		if x.xxx_hidden_Url != nil {
-			return *x.xxx_hidden_Url
+		if x.xxx_hidden_Endpoint != nil {
+			return *x.xxx_hidden_Endpoint
 		}
 		return ""
 	}
@@ -4400,8 +4400,8 @@ func (x *HttpHealthCheck) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
-func (x *HttpHealthCheck) SetUrl(v string) {
-	x.xxx_hidden_Url = &v
+func (x *HttpHealthCheck) SetEndpoint(v string) {
+	x.xxx_hidden_Endpoint = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
@@ -4423,7 +4423,7 @@ func (x *HttpHealthCheck) SetTimeout(v *durationpb.Duration) {
 	x.xxx_hidden_Timeout = v
 }
 
-func (x *HttpHealthCheck) HasUrl() bool {
+func (x *HttpHealthCheck) HasEndpoint() bool {
 	if x == nil {
 		return false
 	}
@@ -4458,9 +4458,9 @@ func (x *HttpHealthCheck) HasTimeout() bool {
 	return x.xxx_hidden_Timeout != nil
 }
 
-func (x *HttpHealthCheck) ClearUrl() {
+func (x *HttpHealthCheck) ClearEndpoint() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Url = nil
+	x.xxx_hidden_Endpoint = nil
 }
 
 func (x *HttpHealthCheck) ClearExpectedCode() {
@@ -4484,8 +4484,8 @@ func (x *HttpHealthCheck) ClearTimeout() {
 type HttpHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The full URL to send the health check request to.
-	Url *string
+	// The endpoint to send the health check request to. This is relative to the service address.
+	Endpoint *string
 	// The expected HTTP status code for a successful health check. Defaults to 200.
 	ExpectedCode *int32
 	// Optional: A substring that must be present in the response body for the check to pass.
@@ -4500,9 +4500,9 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	m0 := &HttpHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Url != nil {
+	if b.Endpoint != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Url = b.Url
+		x.xxx_hidden_Endpoint = b.Endpoint
 	}
 	if b.ExpectedCode != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
@@ -6077,9 +6077,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
-	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vidleTimeout\"\xfb\x01\n" +
-	"\x0fHttpHealthCheck\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url\x12#\n" +
+	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vidleTimeout\"\x85\x02\n" +
+	"\x0fHttpHealthCheck\x12\x1a\n" +
+	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x12#\n" +
 	"\rexpected_code\x18\x02 \x01(\x05R\fexpectedCode\x12E\n" +
 	"\x1fexpected_response_body_contains\x18\x03 \x01(\tR\x1cexpectedResponseBodyContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +

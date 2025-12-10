@@ -26,6 +26,7 @@ import (
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -44,6 +45,16 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+type mockHealthChecker struct {
+	status health.Status
+}
+
+func (m *mockHealthChecker) Start(ctx context.Context) {}
+func (m *mockHealthChecker) Stop()                     {}
+func (m *mockHealthChecker) GetStatus(serviceName string) health.Status {
+	return m.status
+}
 
 type mockTool struct {
 	tool *v1.Tool
@@ -85,7 +96,8 @@ func TestToolListFiltering(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -152,7 +164,8 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -239,7 +252,8 @@ func TestServer_CallTool(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)
@@ -327,6 +341,19 @@ func TestServer_CallTool(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "context deadline exceeded")
 	})
+
+	t.Run("tool call with unhealthy service", func(t *testing.T) {
+		healthChecker.status = health.StatusUnhealthy
+		defer func() { healthChecker.status = health.StatusHealthy }()
+
+		sanitizedToolName, _ := util.SanitizeToolName("success-tool")
+		toolID := "test-service" + "." + sanitizedToolName
+		_, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
+			Name: toolID,
+		})
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "service \"test-service\" is unhealthy")
+	})
 }
 
 type testPrompt struct {
@@ -360,7 +387,8 @@ func TestServer_Prompts(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a test prompt
@@ -438,7 +466,8 @@ func TestServer_Resources(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	// Add a test resource
@@ -495,7 +524,8 @@ func TestServer_Getters(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	assert.NotNil(t, server.AuthManager())
@@ -571,7 +601,8 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	server.AddServiceInfo("test-service", &tool.ServiceInfo{})
@@ -634,7 +665,8 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	require.NoError(t, err)
 
 	// Now create the server. It will receive the toolManager with the pre-existing tool.
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	// Create client-server connection
@@ -676,7 +708,8 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	// Create a client and a server, but don't add any tools to the underlying mcp.Server.
@@ -728,7 +761,8 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	healthChecker := &mockHealthChecker{status: health.StatusHealthy}
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, healthChecker, busProvider, false)
 	require.NoError(t, err)
 
 	tm := server.ToolManager().(*tool.ToolManager)

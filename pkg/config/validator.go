@@ -114,6 +114,22 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 	return nil
 }
 
+func validateHTTPHealthCheck(healthCheck *configv1.HttpHealthCheck) error {
+	if healthCheck == nil {
+		return nil
+	}
+	if healthCheck.GetEndpoint() == "" {
+		return fmt.Errorf("http health check has empty endpoint")
+	}
+	if healthCheck.GetInterval().AsDuration() <= 0 {
+		return fmt.Errorf("http health check interval must be positive")
+	}
+	if healthCheck.GetTimeout().AsDuration() <= 0 {
+		return fmt.Errorf("http health check timeout must be positive")
+	}
+	return nil
+}
+
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(service)
@@ -125,6 +141,9 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	}
 
 	if httpService := service.GetHttpService(); httpService != nil {
+		if err := validateHTTPHealthCheck(httpService.GetHealthCheck()); err != nil {
+			return err
+		}
 		if httpService.GetAddress() == "" {
 			return fmt.Errorf("http service has empty target_address")
 		}

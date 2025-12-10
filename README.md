@@ -286,6 +286,20 @@ MCP Any supports a variety of advanced configuration options, including:
           caCertPath: "/path/to/ca.crt"
   ```
 
+- **Health Checks**: Configure health checks for an upstream service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-http-service"
+      httpService:
+        address: "https://api.example.com"
+        healthCheck:
+          endpoint: "/healthz"
+          expectedCode: 200
+          interval: "10s"
+          timeout: "5s"
+  ```
+
 - **Resilience**: Configure retries for a gRPC service.
 - **Server Authentication**: Secure the MCP server with an API key.
 

@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/metrics"
@@ -125,6 +126,7 @@ type Application struct {
 	PromptManager    prompt.PromptManagerInterface
 	ToolManager      tool.ToolManagerInterface
 	ResourceManager  resource.ResourceManagerInterface
+	Server           *mcpserver.Server
 	configFiles      map[string]string
 }
 
@@ -235,6 +237,7 @@ func (a *Application) Run(
 	}
 
 	// Initialize servers with the message bus
+	healthChecker := health.NewChecker(log.Desugar(), cfg.GetUpstreamServices())
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
 		a.ToolManager,
@@ -242,12 +245,14 @@ func (a *Application) Run(
 		a.ResourceManager,
 		authManager,
 		serviceRegistry,
+		healthChecker,
 		busProvider,
 		config.GlobalSettings().IsDebug(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
+	a.Server = mcpSrv
 
 	mcpSrv.SetReloadFunc(func() error {
 		return a.ReloadConfig(fs, configPaths)

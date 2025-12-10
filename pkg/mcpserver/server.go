@@ -51,6 +51,7 @@ type Server struct {
 	resourceManager resource.ResourceManagerInterface
 	authManager     *auth.AuthManager
 	serviceRegistry *serviceregistry.ServiceRegistry
+	healthChecker   health.Checker
 	bus             *bus.BusProvider
 	reloadFunc      func() error
 	debug           bool
@@ -93,6 +94,7 @@ func NewServer(
 	resourceManager resource.ResourceManagerInterface,
 	authManager *auth.AuthManager,
 	serviceRegistry *serviceregistry.ServiceRegistry,
+	healthChecker health.Checker,
 	bus *bus.BusProvider,
 	debug bool,
 ) (*Server, error) {
@@ -103,9 +105,12 @@ func NewServer(
 		resourceManager: resourceManager,
 		authManager:     authManager,
 		serviceRegistry: serviceRegistry,
+		healthChecker:   healthChecker,
 		bus:             bus,
 		debug:           debug,
 	}
+
+	go s.healthChecker.Start(ctx)
 
 	s.router.Register(
 		consts.MethodPromptsList,
@@ -370,6 +375,10 @@ func (s *Server) ListTools() []tool.Tool {
 
 // CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	serviceName := tool.GetServiceName(req.ToolName)
+	if status := s.healthChecker.GetStatus(serviceName); status == health.StatusUnhealthy {
+		return nil, fmt.Errorf("service %q is unhealthy", serviceName)
+	}
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
 	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
 	metrics.IncrCounter([]string{"tool", req.ToolName, "call", "total"}, 1)
