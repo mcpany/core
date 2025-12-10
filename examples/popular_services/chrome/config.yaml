@@ -1,0 +1,13 @@
+upstream_services:
+  - id: "chrome-devtools"
+    name: "Chrome DevTools"
+    mcp_service:
+      stdio_connection:
+        command: "npx"
+        args: ["-y", "@modelcontextprotocol/server-puppeteer"]
+    call_policy:
+      default_action: ALLOW
+      rules:
+        # Deny screenshots for privacy/speed in default config? (Optional)
+        # - action: DENY
+        #   tool_name_regex: "screenshot"

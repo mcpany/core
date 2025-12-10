@@ -1,0 +1,16 @@
+upstream_services:
+  - id: "gitlab"
+    name: "GitLab"
+    openapi_service:
+      spec_url: "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi.yaml"
+    upstream_authentication:
+      api_key:
+        header_name: "PRIVATE-TOKEN"
+        api_key:
+          plain_text: "{{GITLAB_TOKEN}}"
+    call_policy:
+      default_action: ALLOW
+      rules:
+        # Deny deleting projects
+        - action: DENY
+          tool_name_regex: "delete.*project"

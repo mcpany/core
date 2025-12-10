@@ -319,6 +319,10 @@ build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
 
+build-mock-server: gen
+	@echo "Building mock server..."
+	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/mock_server ./cmd/mock_mcp_server
+
 test: test-fast e2e test-public-api
 
 COVERAGE_FILE ?= coverage.out
@@ -334,7 +338,7 @@ test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
 
 .PHONY: test-public-api
-test-public-api: build
+test-public-api: build build-mock-server
 	@echo "Running public API E2E Go tests with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 

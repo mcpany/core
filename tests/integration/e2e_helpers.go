@@ -1146,7 +1146,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	spec := string(specContent)
 
 	openapiServiceDef := configv1.OpenapiUpstreamService_builder{
-		OpenapiSpec: &spec,
+		SpecContent: &spec,
 		Address:     &serverURLOverride,
 	}.Build()
 

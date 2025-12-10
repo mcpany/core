@@ -20,15 +20,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
-	xsync "github.com/puzpuzpuz/xsync/v4"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
 // MCPServerProvider defines an interface for components that can provide an
@@ -108,6 +110,12 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 			log.Error("Tool not found")
 			return nil, ErrToolNotFound
 		}
+
+		if err := tm.checkPolicy(ctx, t, req); err != nil {
+			log.Warn("Tool execution denied by policy", "error", err)
+			return nil, err
+		}
+
 		ctx = NewContextWithTool(ctx, t)
 		result, err := t.Execute(ctx, req)
 		if err != nil {
@@ -348,3 +356,56 @@ func (tm *ToolManager) ClearToolsForService(serviceID string) {
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
 }
+
+// checkPolicy enforces the CallPolicy for a tool execution.
+func (tm *ToolManager) checkPolicy(ctx context.Context, t Tool, req *ExecutionRequest) error {
+	serviceID := t.Tool().GetServiceId()
+	info, ok := tm.GetServiceInfo(serviceID)
+	// If no service info or no specific policy, we default to ALLOW (open by default).
+	if !ok || info.Config == nil || info.Config.GetCallPolicy() == nil {
+		return nil
+	}
+
+	policy := info.Config.GetCallPolicy()
+	// Determine default action
+	allowed := policy.GetDefaultAction() == configv1.CallPolicy_ALLOW
+
+	for _, rule := range policy.GetRules() {
+		// 1. Match Tool Name
+		if rule.GetToolNameRegex() != "" {
+			matched, err := regexp.MatchString(rule.GetToolNameRegex(), req.ToolName)
+			if err != nil {
+				logging.GetLogger().Error("Invalid tool name regex in policy", "regex", rule.GetToolNameRegex(), "error", err)
+				continue // Skip invalid rule
+			}
+			if !matched {
+				continue // Rule doesn't apply
+			}
+		}
+
+		// 2. Match Arguments
+		if rule.GetArgumentRegex() != "" {
+			// req.ToolInputs is json.RawMessage ([]byte)
+			matched, err := regexp.MatchString(rule.GetArgumentRegex(), string(req.ToolInputs))
+			if err != nil {
+				logging.GetLogger().Error("Invalid argument regex in policy", "regex", rule.GetArgumentRegex(), "error", err)
+				continue
+			}
+			if !matched {
+				continue
+			}
+		}
+
+		// Rule matched!
+		if rule.GetAction() == configv1.CallPolicy_ALLOW {
+			return nil
+		}
+		return fmt.Errorf("tool execution denied by policy rule: %s", req.ToolName)
+	}
+
+	if allowed {
+		return nil
+	}
+	return fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
+}
+

@@ -20,8 +20,11 @@ upstream_services:
       address: "https://generativelanguage.googleapis.com"
       authentication:
         api_key:
-          query_parameter_name: "key"
-          api_key: "${GEMINI_API_KEY}"
+
+          plain_text: query_parameter_name: "key"
+          api_key:
+
+            plain_text: "${GEMINI_API_KEY}"
       calls:
         - operation_id: "generate_content"
           method: "HTTP_METHOD_POST"

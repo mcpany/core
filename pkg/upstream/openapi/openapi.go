@@ -21,6 +21,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -116,9 +117,41 @@ func (u *OpenAPIUpstream) Register(
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
-	specContent := openapiService.GetOpenapiSpec()
+	specContent := openapiService.GetSpecContent()
 	if specContent == "" {
-		return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing for service %s", serviceID)
+		specURL := openapiService.GetSpecUrl()
+		if specURL != "" {
+			client := &http.Client{
+				Timeout: 30 * time.Second,
+			}
+			resp, err := client.Get(specURL)
+			if err != nil {
+				logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "error", err)
+			} else {
+				defer resp.Body.Close()
+				if resp.StatusCode != http.StatusOK {
+					logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "status", resp.StatusCode)
+				} else {
+					bodyBytes, err := io.ReadAll(resp.Body)
+					if err != nil {
+						logging.GetLogger().Warn("Failed to read OpenAPI spec body (continuing without tools)", "url", specURL, "error", err)
+					} else {
+						specContent = string(bodyBytes)
+					}
+				}
+			}
+		}
+	}
+
+	if specContent == "" {
+		// If spec_url was not provided either, this is a configuration error.
+		if openapiService.GetSpecUrl() == "" {
+			return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing")
+		}
+		// If spec_url was provided but failed to load, we warned above.
+		// We return no error so the service can at least register (with no tools).
+		logging.GetLogger().Warn("OpenAPI spec content is missing or failed to load. Service will have no tools.", "serviceID", serviceID)
+		return serviceID, []*configv1.ToolDefinition{}, []*configv1.ResourceDefinition{}, nil
 	}
 
 	hash := sha256.Sum256([]byte(specContent))
@@ -210,6 +243,28 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 	openapiService := serviceConfig.GetOpenapiService()
 	definitions := openapiService.GetTools()
 	calls := openapiService.GetCalls()
+
+	// If no tools are explicitly defined, auto-discover all tools from the spec
+	if len(definitions) == 0 {
+		if calls == nil {
+			calls = make(map[string]*configv1.OpenAPICallDefinition)
+		}
+		for _, tool := range pbTools {
+			toolName := tool.GetName()
+			// Create a default tool definition
+			definitions = append(definitions, configv1.ToolDefinition_builder{
+				Name:   proto.String(toolName),
+				CallId: proto.String(toolName),
+			}.Build())
+
+			// Create a default call definition if it doesn't exist
+			if _, ok := calls[toolName]; !ok {
+				calls[toolName] = configv1.OpenAPICallDefinition_builder{
+					Id: proto.String(toolName),
+				}.Build()
+			}
+		}
+	}
 
 	for _, definition := range definitions {
 		if definition.GetDisable() {

@@ -19,7 +19,9 @@ upstream_services:
   http_service:
     address: "https://api.figma.com"
     authentication:
-      token: "${FIGMA_API_TOKEN}"
+      token:
+
+        plain_text: "${FIGMA_API_TOKEN}"
     calls:
     - endpoint_path: "/v1/teams/{{team_id}}/projects"
       schema:

@@ -119,6 +119,29 @@ message UpstreamServiceConfig {
   bool disable = 19;
   // The priority of the service. Lower numbers have higher priority.
   int32 priority = 20;
+
+  // Policy to control which tools can be executed.
+  CallPolicy call_policy = 22;
+}
+
+message CallPolicy {
+  enum Action {
+    ALLOW = 0;
+    DENY = 1;
+  }
+  // Default action if no rules match.
+  Action default_action = 1;
+  // List of rules to apply. First match wins.
+  repeated PolicyRule rules = 2;
+}
+
+message PolicyRule {
+  CallPolicy.Action action = 1;
+  // Regex to match tool name. Empty means match all.
+  string tool_name_regex = 2;
+  // Regex to match request arguments (JSON stringified). Empty means match all.
+  // This is a simple regex match on the JSON representation of arguments.
+  string argument_regex = 3; 
 }
 
 // --- Upstream Service Types ---
@@ -229,8 +252,12 @@ message WebrtcUpstreamService {
 message OpenapiUpstreamService {
   // The base URL of the API.
   string address = 1;
-  // The OpenAPI specification content (JSON or YAML).
-  string openapi_spec = 2;
+  oneof spec_source {
+    // The OpenAPI specification content (JSON or YAML).
+    string spec_content = 2;
+    // The URL to fetch the OpenAPI specification from.
+    string spec_url = 9;
+  }
   // Health check configuration.
   HttpHealthCheck health_check = 3;
   // TLS configuration for the connection.
