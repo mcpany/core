@@ -24,7 +24,6 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
-	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/jsonschema-go v0.3.0
 	github.com/google/uuid v1.6.0
@@ -43,6 +42,7 @@ require (
 	github.com/prometheus/client_golang v1.19.0
 	github.com/puzpuzpuz/xsync/v4 v4.2.0
 	github.com/redis/go-redis/v9 v9.16.0
+	github.com/rs/zerolog v1.34.0
 	github.com/samber/lo v1.51.0
 	github.com/spf13/afero v1.14.0
 	github.com/spf13/cobra v1.9.1
@@ -96,6 +96,8 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matryer/is v1.4.1 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/minio/highwayhash v1.0.3 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect

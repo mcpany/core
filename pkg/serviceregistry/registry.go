@@ -58,6 +58,7 @@ type ServiceRegistry struct {
 	promptManager   prompt.PromptManagerInterface
 	resourceManager resource.ResourceManagerInterface
 	authManager     *auth.AuthManager
+	healthChecker   health.Checker
 }
 
 // New creates a new ServiceRegistry instance, which is responsible for managing
@@ -71,7 +72,7 @@ type ServiceRegistry struct {
 //   - authManager: The manager for registering service-specific authenticators.
 //
 // Returns a new instance of `ServiceRegistry`.
-func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
+func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager, healthChecker health.Checker) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
@@ -81,6 +82,7 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 		promptManager:   promptManager,
 		resourceManager: resourceManager,
 		authManager:     authManager,
+		healthChecker:   healthChecker,
 	}
 }
 
@@ -139,6 +141,9 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		}
 	}
 
+	// Start health check if configured
+	r.startHealthCheck(serviceID, u, serviceConfig)
+
 	return serviceID, discoveredTools, discoveredResources, nil
 }
 
@@ -193,6 +198,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 		delete(r.upstreams, serviceName)
 	}
 
+	r.healthChecker.Stop(serviceName)
 	delete(r.serviceConfigs, serviceName)
 	delete(r.serviceInfo, serviceName)
 	r.toolManager.ClearToolsForService(serviceName)
@@ -200,6 +206,32 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	r.resourceManager.ClearResourcesForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
 	return nil
+}
+
+func (r *ServiceRegistry) startHealthCheck(serviceID string, u upstream.Upstream, serviceConfig *config.UpstreamServiceConfig) {
+	var checker health.Checkable
+	var err error
+
+	switch sc := serviceConfig.ServiceConfig.(type) {
+	case *config.UpstreamServiceConfig_HttpService:
+		if sc.HttpService.GetHealthCheck() != nil {
+			checker, err = health.NewHttpChecker(serviceID, sc.HttpService.GetHealthCheck(), u)
+		}
+	case *config.UpstreamServiceConfig_GrpcService:
+		if sc.GrpcService.GetHealthCheck() != nil {
+			checker, err = health.NewGrpcChecker(serviceID, sc.GrpcService.GetHealthCheck(), u)
+		}
+	}
+
+	if err != nil {
+		log.Error().Err(err).Str("service_id", serviceID).Msg("Failed to create health checker")
+		return
+	}
+
+	if checker != nil {
+		log.Info().Str("service_id", serviceID).Msg("Starting health check")
+		r.healthChecker.Start(checker)
+	}
 }
 
 // GetAllServices returns a list of all registered services.

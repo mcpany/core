@@ -5,43 +5,57 @@ package testutil
 
 import (
 	"context"
+	"fmt"
+	"net"
 	"net/http"
-	"testing"
 	"time"
-
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/pool"
-	"github.com/stretchr/testify/require"
 )
 
-// NewTestPoolManager creates a new pool.Manager for testing purposes.
-// It initializes a default HTTP connection pool and registers it with the manager.
-func NewTestPoolManager(t *testing.T) *pool.Manager {
-	t.Helper()
-	pm := pool.NewManager()
-	httpPool, err := pool.New(
-		func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: &http.Client{Timeout: 5 * time.Second}}, nil
-		},
-		1,
-		10,
-		int(1*time.Minute),
-		false,
-	)
-	require.NoError(t, err)
-	pm.Register("test-service", httpPool)
-	return pm
-}
+// WaitForServerReady polls the health check endpoint of the server until it gets a 200 OK response
+// or the context is canceled.
+func WaitForServerReady(ctx context.Context, addr string, timeout time.Duration) error {
+	startTime := time.Now()
+	healthCheckURL := fmt.Sprintf("http://%s/healthz", addr)
 
-// MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
-type MockAuthenticator struct {
-	AuthenticateFunc func(req *http.Request) error
-}
+	for {
+		if time.Since(startTime) > timeout {
+			return fmt.Errorf("timed out waiting for server to be ready at %s", addr)
+		}
 
-// Authenticate calls the mock AuthenticateFunc if set, otherwise returns nil.
-func (m *MockAuthenticator) Authenticate(req *http.Request) error {
-	if m.AuthenticateFunc != nil {
-		return m.AuthenticateFunc(req)
+		req, err := http.NewRequestWithContext(ctx, "GET", healthCheckURL, nil)
+		if err != nil {
+			return fmt.Errorf("failed to create health check request: %w", err)
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		if err == nil && resp.StatusCode == http.StatusOK {
+			resp.Body.Close()
+			return nil // Server is ready
+		}
+		if resp != nil {
+			resp.Body.Close()
+		}
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(100 * time.Millisecond):
+			// Continue polling
+		}
 	}
-	return nil
+}
+
+// GetFreePort asks the kernel for a free open port that is ready to use.
+func GetFreePort() (string, error) {
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		return "", err
+	}
+
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		return "", err
+	}
+	defer l.Close()
+	return l.Addr().String(), nil
 }

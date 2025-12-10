@@ -608,3 +608,101 @@ tls_config:
   client_cert_path: "/etc/ssl/private/client.pem"
   client_key_path: "/etc/ssl/private/client.key"
 ```
+
+## Health Checking
+
+MCP Any can be configured to actively monitor the health of your upstream services. If a service becomes unresponsive or returns errors, MCP Any will temporarily stop routing traffic to it until it recovers. This prevents cascading failures and improves the overall reliability of your system.
+
+Health checks are configured within the  or  definitions in your  file.
+
+### HTTP Health Check
+
+For HTTP services, you can configure a health check by adding a  section to your  configuration.
+
+**Configuration:**
+
+
+
+**Fields:**
+
+*    (string, required): The full URL of the health check endpoint.
+*    (duration, optional, default: ): How often to perform the health check.
+*    (duration, optional, default: ): The timeout for each health check attempt.
+*    (integer, optional, default: ): The expected HTTP status code for a successful health check.
+*    (string, optional): A substring that must be present in the response body for the check to pass.
+
+### gRPC Health Check
+
+For gRPC services, MCP Any uses the standard [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+**Configuration:**
+
+
+
+**Fields:**
+
+*    (string, optional): The name of the gRPC service to check. If empty, the overall health of the gRPC server is checked.
+*    (duration, optional, default: ): How often to perform the health check.
+*    (duration, optional, default: ): The timeout for each health check attempt.
+*    (boolean, optional, default: ): If , the health check will be performed without TLS.
+
+
+## Health Checking
+
+MCP Any can be configured to actively monitor the health of your upstream services. If a service becomes unresponsive or returns errors, MCP Any will temporarily stop routing traffic to it until it recovers. This prevents cascading failures and improves the overall reliability of your system.
+
+Health checks are configured within the `httpService` or `grpcService` definitions in your `config.yaml` file.
+
+### HTTP Health Check
+
+For HTTP services, you can configure a health check by adding a `healthCheck` section to your `httpService` configuration.
+
+**Configuration:**
+
+```yaml
+upstreamServices:
+  - name: "my-http-service"
+    httpService:
+      address: "https://api.example.com"
+      # ... other httpService settings ...
+      healthCheck:
+        url: "https://api.example.com/healthz"
+        interval: "15s"
+        timeout: "5s"
+        expectedCode: 200
+        expectedResponseBodyContains: "OK"
+```
+
+**Fields:**
+
+*   `url` (string, required): The full URL of the health check endpoint.
+*   `interval` (duration, optional, default: `"15s"`): How often to perform the health check.
+*   `timeout` (duration, optional, default: `"10s"`): The timeout for each health check attempt.
+*   `expectedCode` (integer, optional, default: `200`): The expected HTTP status code for a successful health check.
+*   `expectedResponseBodyContains` (string, optional): A substring that must be present in the response body for the check to pass.
+
+### gRPC Health Check
+
+For gRPC services, MCP Any uses the standard [gRPC Health Checking Protocol](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+**Configuration:**
+
+```yaml
+upstreamServices:
+  - name: "my-grpc-service"
+    grpcService:
+      address: "localhost:50051"
+      # ... other grpcService settings ...
+      healthCheck:
+        service: "my.package.MyService"
+        interval: "10s"
+        timeout: "2s"
+        insecure: false
+```
+
+**Fields:**
+
+*   `service` (string, optional): The name of the gRPC service to check. If empty, the overall health of the gRPC server is checked.
+*   `interval` (duration, optional, default: `"15s"`): How often to perform the health check.
+*   `timeout` (duration, optional, default: `"10s"`): The timeout for each health check attempt.
+*   `insecure` (boolean, optional, default: `false`): If `true`, the health check will be performed without TLS.

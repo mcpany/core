@@ -26,6 +26,7 @@ import (
 	"github.com/google/uuid"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -59,22 +60,24 @@ type ToolExecutionMiddleware interface {
 }
 
 type ToolManager struct {
-	tools       *xsync.Map[string, Tool]
-	serviceInfo *xsync.Map[string, *ServiceInfo]
-	mcpServer   MCPServerProvider
-	bus         *bus.BusProvider
-	mu          sync.RWMutex
-	middlewares []ToolExecutionMiddleware
-	cachedTools []Tool
-	toolsMutex  sync.RWMutex
+	tools         *xsync.Map[string, Tool]
+	serviceInfo   *xsync.Map[string, *ServiceInfo]
+	mcpServer     MCPServerProvider
+	bus           *bus.BusProvider
+	mu            sync.RWMutex
+	middlewares   []ToolExecutionMiddleware
+	cachedTools   []Tool
+	toolsMutex    sync.RWMutex
+	healthChecker health.Checker
 }
 
 // NewToolManager creates and returns a new, empty ToolManager.
-func NewToolManager(bus *bus.BusProvider) *ToolManager {
+func NewToolManager(bus *bus.BusProvider, healthChecker health.Checker) *ToolManager {
 	return &ToolManager{
-		bus:         bus,
-		tools:       xsync.NewMap[string, Tool](),
-		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
+		bus:           bus,
+		tools:         xsync.NewMap[string, Tool](),
+		serviceInfo:   xsync.NewMap[string, *ServiceInfo](),
+		healthChecker: healthChecker,
 	}
 }
 
@@ -108,6 +111,16 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 			log.Error("Tool not found")
 			return nil, ErrToolNotFound
 		}
+
+		// Health Check
+		if tm.healthChecker != nil {
+			serviceID := t.Tool().GetServiceId()
+			if tm.healthChecker.Status(serviceID) == health.StatusUnhealthy {
+				log.Warn().Msgf("Service %s is unhealthy, refusing to execute tool", serviceID)
+				return nil, fmt.Errorf("service %q is currently unavailable", serviceID)
+			}
+		}
+
 		ctx = NewContextWithTool(ctx, t)
 		result, err := t.Execute(ctx, req)
 		if err != nil {

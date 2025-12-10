@@ -287,6 +287,7 @@ MCP Any supports a variety of advanced configuration options, including:
   ```
 
 - **Resilience**: Configure retries for a gRPC service.
+- **Health Checking**: Automatically monitor the health of upstream services and route traffic away from unhealthy instances.
 - **Server Authentication**: Secure the MCP server with an API key.
 
   ```yaml

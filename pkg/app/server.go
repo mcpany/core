@@ -125,6 +125,7 @@ type Application struct {
 	PromptManager    prompt.PromptManagerInterface
 	ToolManager      tool.ToolManagerInterface
 	ResourceManager  resource.ResourceManagerInterface
+	healthChecker    health.Checker
 	configFiles      map[string]string
 }
 
@@ -135,11 +136,13 @@ type Application struct {
 // Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewBusProvider(nil)
+	healthChecker := health.NewManager()
 	return &Application{
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewPromptManager(),
-		ToolManager:      tool.NewToolManager(busProvider),
+		ToolManager:      tool.NewToolManager(busProvider, healthChecker),
 		ResourceManager:  resource.NewResourceManager(),
+		healthChecker:    healthChecker,
 		configFiles:      make(map[string]string),
 	}
 }
@@ -213,6 +216,7 @@ func (a *Application) Run(
 		a.PromptManager,
 		a.ResourceManager,
 		authManager,
+		a.healthChecker,
 	)
 
 	// New message bus and workers
