@@ -1,4 +1,4 @@
-# Copyright 2024 Author(s) of MCP Any
+# Copyright 2025 Author(s) of MCP Any
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,113 +16,12 @@
 
 upstream_services:
 - name: github
-  http_service:
+  upstream_authentication:
+    bearer_token:
+      token:
+
+        plain_text: "${GITHUB_TOKEN}"
+
+  openapi_service:
     address: "https://api.github.com"
-    authentication:
-      token: "Bearer ${GITHUB_TOKEN}"
-    calls:
-    - endpoint_path: "/users/{{username}}"
-      schema:
-        name: "get_user"
-        input_schema:
-          type: "object"
-          properties:
-            username:
-              type: "string"
-              description: "The GitHub username to look up."
-        output_schema:
-          type: "object"
-          properties:
-            login:
-              type: "string"
-            id:
-              type: "integer"
-            name:
-              type: "string"
-            company:
-              type: "string"
-            blog:
-              type: "string"
-            location:
-              type: "string"
-            email:
-              type: "string"
-            bio:
-              type: "string"
-            public_repos:
-              type: "integer"
-            followers:
-              type: "integer"
-            following:
-              type: "integer"
-      method: "HTTP_METHOD_GET"
-    - endpoint_path: "/users/{{username}}/repos"
-      schema:
-        name: "list_repos"
-        input_schema:
-          type: "object"
-          properties:
-            username:
-              type: "string"
-              description: "The GitHub username to list repositories for."
-        output_schema:
-          type: "array"
-          items:
-            type: "object"
-            properties:
-              id:
-                type: "integer"
-              name:
-                type: "string"
-              full_name:
-                type: "string"
-              private:
-                type: "boolean"
-              html_url:
-                type: "string"
-              description:
-                type: "string"
-              fork:
-                type: "boolean"
-              url:
-                type: "string"
-              created_at:
-                type: "string"
-              updated_at:
-                type: "string"
-              pushed_at:
-                type: "string"
-              git_url:
-                type: "string"
-              ssh_url:
-                type: "string"
-              clone_url:
-                type: "string"
-              homepage:
-                type: "string"
-              stargazers_count:
-                type: "integer"
-              watchers_count:
-                type: "integer"
-              language:
-                type: "string"
-              forks_count:
-                type: "integer"
-              open_issues_count:
-                type: "integer"
-              license:
-                type: "object"
-                properties:
-                  key:
-                    type: "string"
-                  name:
-                    type: "string"
-                  spdx_id:
-                    type: "string"
-                  url:
-                    type: "string"
-                  node_id:
-                    type: "string"
-              default_branch:
-                type: "string"
-      method: "HTTP_METHOD_GET"
+    spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"

@@ -20,8 +20,11 @@ upstream_services:
     address: "https://generativelanguage.googleapis.com"
     upstream_authentication:
         api_key:
-            header_name: "x-goog-api-key"
-            api_key: "${GEMINI_API_KEY}"
+
+          plain_text: header_name: "x-goog-api-key"
+            api_key:
+
+              plain_text: "${GEMINI_API_KEY}"
     calls:
     - endpoint_path: "/v1beta/models/gemini-1.5-flash:generateContent"
       schema:

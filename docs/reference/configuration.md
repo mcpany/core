@@ -261,6 +261,8 @@ service_config:
 | `cache`                 | `CacheConfig`                            | Caching configuration.                               |
 | `container_environment` | `ContainerEnvironment`                   | Container environment to run the command in.         |
 | `timeout`               | `duration`                               | Timeout for the command execution.                   |
+| `communication_protocol`| `enum`                                   | Protocol for communicating with the command (`JSON`).|
+| `local`                 | `bool`                                   | If true, execute locally instead of in a container.  |
 | `resources`             | `repeated ResourceDefinition`            | A list of resources served by this service.          |
 | `calls`                 | `map<string, CommandLineCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`               | `repeated PromptDefinition`              | A list of prompts served by this service.            |
@@ -469,6 +471,15 @@ resilience:
   - `number_of_retries`: The number of times to retry a failed request.
   - `base_backoff`: The base duration for the backoff between retries.
   - `max_backoff`: The maximum duration for the backoff.
+  - `max_elapsed_time`: The maximum total time to spend retrying.
+
+#### `ContainerEnvironment`
+
+| Field     | Type                  | Description                                                                          |
+| --------- | --------------------- | ------------------------------------------------------------------------------------ |
+| `name`    | `string`              | The name of the container.                                                           |
+| `image`   | `string`              | The image to use for the container.                                                  |
+| `volumes` | `map<string, string>` | The volumes to mount into the container, with destination as key and source as value.|
 
 ### Health Checks
 

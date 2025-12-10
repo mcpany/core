@@ -1,0 +1,16 @@
+upstream_services:
+  - id: "spotify"
+    name: "Spotify"
+    openapi_service:
+      spec_url: "https://raw.githubusercontent.com/sonallux/spotify-web-api-openapi/master/openapi.yml"
+    upstream_authentication:
+      api_key:
+        header_name: "Authorization"
+        api_key:
+          plain_text: "Bearer {{SPOTIFY_TOKEN}}"
+    call_policy:
+      default_action: ALLOW
+      rules:
+        # Example: Deny modifying playback state (POST/PUT on player) to be safe by default
+        - action: DENY
+          tool_name_regex: "^(start|pause|seek|set).*"
