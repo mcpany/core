@@ -287,6 +287,14 @@ upstream_services:
 
 	afero.WriteFile(fs, "configs/invalid.txt", []byte("invalid content"), 0o644)
 	afero.WriteFile(fs, "malformed.yaml", []byte("bad-yaml:"), 0o644)
+	afero.WriteFile(fs, "multiple_services.yaml", []byte(`
+upstream_services:
+  - name: "multi-type-service"
+    http_service:
+      address: "http://localhost:8080"
+    grpc_service:
+      address: "localhost:50051"
+`), 0o644)
 	require.NoError(t, fs.Mkdir("configs/subdir/empty", 0o755))
 
 	testCases := []struct {
@@ -331,6 +339,14 @@ upstream_services:
 			expectErr: true,
 			expectedErrFn: func(t *testing.T, err error) {
 				assert.Contains(t, err.Error(), "failed to unmarshal config")
+			},
+		},
+		{
+			name:      "Load with multiple service types",
+			paths:     []string{"multiple_services.yaml"},
+			expectErr: true,
+			expectedErrFn: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "service \"multi-type-service\" has multiple service types defined")
 			},
 		},
 		{
