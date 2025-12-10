@@ -463,6 +463,40 @@ func TestCheckVariousServices(t *testing.T) {
 			}.Build(),
 			want: health.StatusDown,
 		},
+		{
+			name: "Command Line Service No Health Check",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("cmd-service-no-health-check"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: lo.ToPtr("echo"),
+				}.Build(),
+			}.Build(),
+			want: health.StatusUp,
+		},
+		{
+			name: "MCP Service Stdio Connection",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("mcp-stdio-service"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: lo.ToPtr("echo"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			want: health.StatusUp,
+		},
+		{
+			name: "MCP Service Unreachable",
+			config: configv1.UpstreamServiceConfig_builder{
+				Name: lo.ToPtr("mcp-unreachable-service"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: lo.ToPtr("localhost:12345"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			want: health.StatusDown,
+		},
 	}
 
 	for _, tc := range testCases {
