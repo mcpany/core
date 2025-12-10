@@ -69,6 +69,12 @@ message GlobalSettings {
 // Upstream Service Definitions
 // ===================================================================
 
+// LoggingConfig defines the logging settings for an upstream service.
+message LoggingConfig {
+  // If true, tool call logging is enabled for this service.
+  bool enable = 1;
+}
+
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
 // that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
@@ -96,6 +102,9 @@ message UpstreamServiceConfig {
   LoadBalancingStrategy load_balancing_strategy = 7;
   // Advanced resiliency features to handle failures gracefully.
   ResilienceConfig resilience = 8;
+
+  // Logging configuration for the service.
+  LoggingConfig logging = 22;
 
   // The specific configuration for the type of upstream service.
   oneof service_config {

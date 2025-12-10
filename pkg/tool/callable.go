@@ -19,6 +19,7 @@ package tool
 import (
 	"context"
 
+	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -39,7 +40,19 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 
 // Execute handles the execution of the tool.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	return t.callable.Call(ctx, req)
+	log := logging.GetLogger()
+	if t.serviceConfig.GetLogging().GetEnable() {
+		log.Info("Executing tool", "tool", t.Tool().GetName(), "request", req)
+	}
+	resp, err := t.callable.Call(ctx, req)
+	if t.serviceConfig.GetLogging().GetEnable() {
+		if err != nil {
+			log.Error("Tool execution failed", "tool", t.Tool().GetName(), "error", err)
+		} else {
+			log.Info("Tool execution successful", "tool", t.Tool().GetName(), "response", resp)
+		}
+	}
+	return resp, err
 }
 
 // Callable returns the underlying Callable of the tool.

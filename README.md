@@ -242,6 +242,18 @@ MCP Any supports a variety of advanced configuration options, including:
         communicationProtocol: "JSON"
   ```
 
+- **Logging**: Configure logging for an upstream service.
+
+  ```yaml
+  upstreamServices:
+    - name: "my-logged-service"
+      httpService:
+        address: "https://api.example.com"
+        # ...
+      logging:
+        enable: true
+  ```
+
 - **Authentication**: Configure authentication for an upstream service.
 
   ```yaml
