@@ -383,6 +383,8 @@ message HttpHealthCheck {
   google.protobuf.Duration interval = 4;
   // The timeout for each health check attempt.
   google.protobuf.Duration timeout = 5;
+  // The HTTP method to use for the health check. Defaults to "GET".
+  string method = 6;
 }
 
 // Defines a health check for a gRPC-based service.
