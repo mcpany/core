@@ -19,7 +19,9 @@ upstream_services:
   http_service:
     address: "https://api.airtable.com"
     authentication:
-      token: "Bearer ${AIRTABLE_API_TOKEN}"
+      token:
+
+        plain_text: "Bearer ${AIRTABLE_API_TOKEN}"
     calls:
     - endpoint_path: "/v0/{{baseId}}/{{tableId}}"
       schema:

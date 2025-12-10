@@ -19,6 +19,8 @@ package openapi
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -140,7 +142,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test-service"),
 			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				OpenapiSpec: proto.String(""),
+				SpecContent: proto.String(""),
 			}.Build(),
 		}.Build()
 		expectedKey, _ := util.SanitizeServiceName("test-service")
@@ -154,7 +156,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test-service"),
 			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				OpenapiSpec: proto.String("invalid spec"),
+				SpecContent: proto.String("invalid spec"),
 			}.Build(),
 		}.Build()
 		expectedKey, _ := util.SanitizeServiceName("test-service")
@@ -163,6 +165,36 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
 	})
+}
+
+func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
+	ctx := context.Background()
+	mockToolManager := new(MockToolManager)
+	upstream := NewOpenAPIUpstream()
+
+	// Start a test server to serve the spec
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, sampleOpenAPISpecJSONForCacheTest)
+	}))
+	defer ts.Close()
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-url"),
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			SpecUrl: proto.String(ts.URL),
+		}.Build(),
+	}.Build()
+
+	expectedKey, _ := util.SanitizeServiceName("test-service-url")
+	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
+	mockToolManager.On("GetTool", mock.Anything).Return(nil, false)
+	mockToolManager.On("AddTool", mock.Anything).Return(nil)
+
+	// Register should fetch spec from URL
+	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
+	assert.NoError(t, err)
+	mockToolManager.AssertExpectations(t)
 }
 
 func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
@@ -261,7 +293,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 		Name: proto.String("test-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
 			Address:     proto.String("http://localhost"),
-			OpenapiSpec: proto.String(sampleOpenAPISpecJSONForCacheTest),
+			SpecContent: proto.String(sampleOpenAPISpecJSONForCacheTest),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
 					Name:   proto.String("getTest"),
@@ -326,7 +358,7 @@ paths:
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
-			OpenapiSpec: proto.String(spec),
+			SpecContent: proto.String(spec),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
 					Name:   proto.String("getUser"),

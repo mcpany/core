@@ -151,11 +151,14 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 			return fmt.Errorf("gRPC service has empty target_address")
 		}
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
-		if openapiService.GetAddress() == "" && openapiService.GetOpenapiSpec() == "" {
-			return fmt.Errorf("openapi service must have either an address or a spec path")
+		if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
+			return fmt.Errorf("openapi service must have either an address, spec content or spec url")
 		}
 		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
 			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
+		}
+		if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
+			return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
 		}
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
 		if commandLineService.GetCommand() == "" {

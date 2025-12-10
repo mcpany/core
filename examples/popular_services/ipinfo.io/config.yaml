@@ -17,7 +17,9 @@
 upstream_services:
 - name: ipinfo.io
   upstream_authentication:
-    token: "${IPINFO_API_TOKEN}"
+    token:
+
+      plain_text: "${IPINFO_API_TOKEN}"
   http_service:
     address: "https://ipinfo.io"
     calls:

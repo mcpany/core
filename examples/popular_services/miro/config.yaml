@@ -19,7 +19,9 @@ upstream_services:
   http_service:
     address: "https://api.miro.com"
     authentication:
-      token: "Bearer ${MIRO_API_TOKEN}"
+      token:
+
+        plain_text: "Bearer ${MIRO_API_TOKEN}"
     calls:
     - endpoint_path: "/v2/boards"
       schema:

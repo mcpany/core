@@ -205,7 +205,7 @@ paths:
 `
 		serviceName := "openapi-service"
 		openapiService := configv1.OpenapiUpstreamService_builder{
-			OpenapiSpec: &spec,
+			SpecContent: &spec,
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
 					Name:   proto.String("getUser"),

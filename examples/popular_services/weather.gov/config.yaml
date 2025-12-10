@@ -19,7 +19,9 @@ upstream_services:
   http_service:
     address: "https://api.weather.gov"
     authentication:
-      token: "unused" # weather.gov uses User-Agent for identification, not a token
+      token:
+
+        plain_text: "unused" # weather.gov uses User-Agent for identification, not a token
     calls:
     - endpoint_path: "/points/{{latitude}},{{longitude}}"
       schema:
@@ -46,7 +48,9 @@ upstream_services:
   http_service:
     address: "https://api.weather.gov" # This is a static address
     authentication:
-      token: "unused"
+      token:
+
+        plain_text: "unused"
     calls:
     - endpoint_path: "{{forecast_url}}"
       schema:

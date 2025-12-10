@@ -1,4 +1,4 @@
-# Copyright 2024 Author(s) of MCP Any
+# Copyright 2025 Author(s) of MCP Any
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,38 +16,13 @@
 
 upstream_services:
 - name: jira
-  http_service:
+  upstream_authentication:
+    basic_auth:
+      username: "${JIRA_USERNAME}"
+      password:
+
+        plain_text: "${JIRA_PAT}"
+
+  openapi_service:
     address: "https://${JIRA_DOMAIN}"
-    authentication:
-      basic_auth:
-        username: "${JIRA_USERNAME}"
-        password: "${JIRA_PAT}"
-    calls:
-    - endpoint_path: "/rest/api/2/issue/{issueIdOrKey}"
-      schema:
-        name: "get_issue"
-        description: "Get information about a Jira issue."
-        input_schema:
-          type: "object"
-          properties:
-            issueIdOrKey:
-              type: "string"
-              description: "The ID or key of the Jira issue."
-        output_schema:
-          type: "object"
-          properties:
-            id:
-              type: "string"
-            key:
-              type: "string"
-            fields:
-              type: "object"
-              properties:
-                summary:
-                  type: "string"
-                status:
-                  type: "object"
-                  properties:
-                    name:
-                      type: "string"
-      method: "HTTP_METHOD_GET"
+    spec_url: "https://developer.atlassian.com/cloud/jira/platform/swagger.v3.json"

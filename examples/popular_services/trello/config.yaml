@@ -19,7 +19,9 @@ upstream_services:
   http_service:
     address: "https://api.trello.com"
     authentication:
-      token: "${TRELLO_API_TOKEN}"
+      token:
+
+        plain_text: "${TRELLO_API_TOKEN}"
     calls:
     - endpoint_path: "/1/members/me/boards?key=${TRELLO_API_KEY}"
       schema:
