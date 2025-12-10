@@ -216,6 +216,31 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 
 		cfg := &configv1.McpAnyServerConfig{}
 		if err := engine.Unmarshal(b, cfg); err != nil {
+			if strings.Contains(err.Error(), "is already set") {
+				// Find the service name
+				var raw map[string]interface{}
+				if yaml.Unmarshal(b, &raw) == nil {
+					if services, ok := raw["upstream_services"].([]interface{}); ok {
+						for _, s := range services {
+							if service, ok := s.(map[string]interface{}); ok {
+								if name, ok := service["name"].(string); ok {
+									// Heuristic: if the raw service definition has more than one service type key, it's the culprit
+									keys := 0
+									serviceKeys := []string{"http_service", "grpc_service", "openapi_service", "command_line_service", "websocket_service", "webrtc_service", "graphql_service", "mcp_service"}
+									for _, k := range serviceKeys {
+										if _, ok := service[k]; ok {
+											keys++
+										}
+									}
+									if keys > 1 {
+										return nil, fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			return nil, fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
 		}
 
