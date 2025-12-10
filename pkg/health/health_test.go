@@ -259,6 +259,34 @@ func TestNewChecker(t *testing.T) {
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
+
+	t.Run("SuccessWithHeaders", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "bar", r.Header.Get("foo"))
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		serverURL := server.URL
+		serverAddr := server.Listener.Addr().String()
+
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("test-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &serverAddr,
+				HealthCheck: configv1.HttpHealthCheck_builder{
+					Url:          &serverURL,
+					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+					Headers:      map[string]string{"foo": "bar"},
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+		assert.True(t, upstreamConfig.GetHttpService().GetHealthCheck().HasUrl())
+	})
 }
 
 func TestCheckGRPCHealth(t *testing.T) {

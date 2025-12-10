@@ -112,6 +112,10 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 				return fmt.Errorf("failed to create health check request: %w", err)
 			}
 
+			for key, value := range c.GetHealthCheck().GetHeaders() {
+				req.Header.Set(key, value)
+			}
+
 			resp, err := client.Do(req)
 			if err != nil {
 				return fmt.Errorf("health check failed: %w", err)

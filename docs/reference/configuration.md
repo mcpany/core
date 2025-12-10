@@ -453,6 +453,7 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 | `expected_response_body_contains` | `string`   | A substring that must be present in the response body for the check to pass.  |
 | `interval`                        | `duration` | How often to perform the health check.                                        |
 | `timeout`                         | `duration` | The timeout for each health check attempt.                                    |
+| `headers`                         | `map`      | Optional headers to send with the health check request.                       |
 
 #### `GrpcHealthCheck`
 
