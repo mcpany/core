@@ -31,6 +31,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"nhooyr.io/websocket"
+	"strings"
 )
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
@@ -103,6 +105,41 @@ func TestNewChecker(t *testing.T) {
 				HealthCheck: configv1.HttpHealthCheck_builder{
 					Url:          &serverURL,
 					ExpectedCode: lo.ToPtr(int32(http.StatusOK)),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("WriteOnly", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			conn, err := websocket.Accept(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close(websocket.StatusInternalError, "")
+
+			_, msg, err := conn.Read(r.Context())
+			if err != nil {
+				return
+			}
+
+			if string(msg) == "ping" {
+				// Do nothing, just close the connection
+			}
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &addr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					Message: lo.ToPtr("ping"),
 				}.Build(),
 			}.Build(),
 		}.Build()
@@ -503,4 +540,110 @@ func TestCheckVariousServices(t *testing.T) {
 			assert.Equal(t, tc.want, checker.Check(ctx).Status)
 		})
 	}
+}
+
+func TestWebsocketCheck(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("Success", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			conn, err := websocket.Accept(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close(websocket.StatusInternalError, "")
+
+			_, msg, err := conn.Read(r.Context())
+			if err != nil {
+				return
+			}
+
+			if string(msg) == "ping" {
+				conn.Write(r.Context(), websocket.MessageText, []byte("pong"))
+			}
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &addr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					Message:                   lo.ToPtr("ping"),
+					ExpectedResponseContains: lo.ToPtr("pong"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("ResponseMismatch", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			conn, err := websocket.Accept(w, r, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close(websocket.StatusInternalError, "")
+
+			conn.Write(r.Context(), websocket.MessageText, []byte("unexpected"))
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &addr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					ExpectedResponseContains: lo.ToPtr("pong"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
+	t.Run("ServerUnreachable", func(t *testing.T) {
+		addr := "localhost:12345"
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("websocket-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{
+				Address: &addr,
+				HealthCheck: configv1.WebsocketHealthCheck_builder{
+					Timeout: durationpb.New(10 * time.Millisecond),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
+	t.Run("NilHealthCheck", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			conn, err := websocket.Accept(w, r, nil)
+			if err != nil {
+				return
+			}
+			conn.Close(websocket.StatusNormalClosure, "")
+		}))
+		defer server.Close()
+
+		addr := strings.TrimPrefix(server.URL, "http://")
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name:             lo.ToPtr("websocket-service"),
+			WebsocketService: configv1.WebsocketUpstreamService_builder{Address: &addr}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
 }
