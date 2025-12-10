@@ -36,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"nhooyr.io/websocket"
 )
 
 const (
@@ -67,7 +68,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		check = commandLineCheck(serviceName, uc.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		check = connectionCheck(serviceName, uc.GetWebsocketService().GetAddress())
+		check = websocketCheck(serviceName, uc.GetWebsocketService())
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
 		check = connectionCheck(serviceName, uc.GetWebrtcService().GetAddress())
 	case configv1.UpstreamServiceConfig_McpService_case:
@@ -131,6 +132,54 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 					return fmt.Errorf("health check response body does not contain expected string")
 				}
 			}
+			return nil
+		},
+	}
+}
+
+func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Check {
+	return health.Check{
+		Name:    name,
+		Timeout: 5 * time.Second,
+		Check: func(ctx context.Context) error {
+			if c.GetHealthCheck() == nil {
+				return checkConnection(c.GetAddress())
+			}
+
+			healthCheck := c.GetHealthCheck()
+			timeout := lo.Ternary(healthCheck.GetTimeout() != nil, healthCheck.GetTimeout().AsDuration(), 5*time.Second)
+
+			ctx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+
+			addr := c.GetAddress()
+			if !strings.HasPrefix(addr, "ws://") && !strings.HasPrefix(addr, "wss://") {
+				addr = "ws://" + addr
+			}
+
+			conn, _, err := websocket.Dial(ctx, addr, nil)
+			if err != nil {
+				return fmt.Errorf("failed to connect to websocket service: %w", err)
+			}
+			defer conn.Close(websocket.StatusNormalClosure, "")
+
+			if healthCheck.GetMessage() != "" {
+				err = conn.Write(ctx, websocket.MessageText, []byte(healthCheck.GetMessage()))
+				if err != nil {
+					return fmt.Errorf("failed to write message to websocket: %w", err)
+				}
+			}
+
+			if healthCheck.GetExpectedResponseContains() != "" {
+				_, msg, err := conn.Read(ctx)
+				if err != nil {
+					return fmt.Errorf("failed to read message from websocket: %w", err)
+				}
+				if !strings.Contains(string(msg), healthCheck.GetExpectedResponseContains()) {
+					return fmt.Errorf("websocket health check response did not contain expected string: %s", healthCheck.GetExpectedResponseContains())
+				}
+			}
+
 			return nil
 		},
 	}

@@ -313,6 +313,7 @@ service_config:
 | `address` | `string`                             | The endpoint URL of the GraphQL service.   |
 | `calls`   | `map<string, GraphqlCallDefinition>` | A map of call definitions to expose tools. |
 | `prompts` | `repeated PromptDefinition`          | A list of prompts served by this service.  |
+| `health_check` | `WebsocketHealthCheck` | Health check configuration. |
 
 ##### Use Case and Example
 
@@ -505,6 +506,15 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 | `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass. |
 | `interval`                   | `duration` | How often to perform the health check.                              |
 | `timeout`                    | `duration` | The timeout for each health check attempt.                          |
+
+#### `WebsocketHealthCheck`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | The message to send to the websocket service for the health check. |
+| `expected_response_contains` | `string` | A substring expected in the service's response for the check to pass. |
+| `interval` | `duration` | How often to perform the health check. |
+| `timeout` | `duration` | The timeout for each health check attempt. |
 
 ### Authentication
 
