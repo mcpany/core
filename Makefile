@@ -315,9 +315,15 @@ gen: clean prepare
 			{} +
 	@echo "Protobuf generation complete."
 
-build: gen
-	@echo "Building Go project locally..."
+build: build-server build-cli
+
+build-server: gen
+	@echo "Building server binary..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
+
+build-cli: gen
+	@echo "Building CLI binary..."
+	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/mcp-any-cli ./cmd/mcp-any-cli
 
 test: test-fast e2e test-public-api
 
