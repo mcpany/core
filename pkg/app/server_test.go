@@ -2179,8 +2179,10 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// Make a request with an incorrect API key
-	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	req, err = http.NewRequest("POST", "http://"+addr, strings.NewReader(`{"jsonrpc":"2.0","method":"tools/list","id":1}`))
 	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json, text/event-stream")
 	req.Header.Set("X-API-Key", "incorrect-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)

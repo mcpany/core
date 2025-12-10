@@ -29,13 +29,13 @@ The following features are fully implemented and tested:
   - Official Helm Chart
 - **Configuration**:
   - Hot Configuration Reloading
+- **Server Authentication**:
+  - API Key (`AuthenticationConfig`)
 
 ### Configured but Not Yet Implemented
 
 The following features are defined in the configuration schema (`proto/config/v1/config.proto`) but are **not yet implemented** in the server logic:
 
-- **Advanced Authentication**:
-  - Incoming request authentication (`AuthenticationConfig`)
 - **Service Health Checks**:
   - `HttpHealthCheck`
   - `GrpcHealthCheck`

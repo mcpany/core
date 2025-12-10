@@ -20,7 +20,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"crypto/subtle"
 	"io"
 	"net"
 	"net/http"
@@ -511,27 +510,14 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if apiKey != "" {
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
-					http.Error(w, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
-
 	mux := http.NewServeMux()
-	mux.Handle("/", authMiddleware(httpHandler))
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", httpHandler)
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
-	})))
-	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+	}))
+	mux.Handle("/metrics", metrics.Handler())
+	mux.Handle("/upload", http.HandlerFunc(a.uploadFile))
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
@@ -543,7 +529,7 @@ func (a *Application) runServerMode(
 		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 			return fmt.Errorf("failed to register gateway: %w", err)
 		}
-		mux.Handle("/v1/", authMiddleware(gwmux))
+		mux.Handle("/v1/", gwmux)
 	}
 
 	httpBindAddress := bindAddress
@@ -553,7 +539,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, mux, shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, AuthMiddleware(mux), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
