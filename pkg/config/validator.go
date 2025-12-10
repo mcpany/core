@@ -120,8 +120,8 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 }
 
 func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
-	if service.GetMcpService() == nil && service.GetHttpService() == nil && service.GetGrpcService() == nil && service.GetOpenapiService() == nil && service.GetCommandLineService() == nil && service.GetWebsocketService() == nil {
-		return fmt.Errorf("service %q has no service_config", service.GetName())
+	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
+		return fmt.Errorf("service type not specified")
 	}
 
 	if httpService := service.GetHttpService(); httpService != nil {
