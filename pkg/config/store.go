@@ -18,25 +18,25 @@ package config
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"os"
-	"regexp"
-	"time"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Engine defines the interface for configuration unmarshaling from different
@@ -220,36 +220,77 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	return mergedConfig, nil
 }
 
+// resolveAndCheckIP performs a DNS lookup for the given host, validates that
+// none of the resolved IP addresses are in private or loopback ranges, and
+// returns the first valid IP address. This is a security measure to prevent
+// Server-Side Request Forgery (SSRF) attacks.
+func resolveAndCheckIP(host string) (net.IP, error) {
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve host %s: %w", host, err)
+	}
+	if len(ips) == 0 {
+		return nil, fmt.Errorf("no IP addresses found for host: %s", host)
+	}
+
+	for _, ip := range ips {
+		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
+			return nil, fmt.Errorf("ssrf attempt blocked for host %s, resolved to private ip %s", host, ip.String())
+		}
+	}
+	return ips[0], nil
+}
+
 var httpClient = &http.Client{
 	Timeout: 5 * time.Second,
 	Transport: &http.Transport{
+		// DialContext is used for regular HTTP connections.
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			host, port, err := net.SplitHostPort(addr)
 			if err != nil {
 				return nil, err
 			}
 
-			ips, err := net.LookupIP(host)
+			ip, err := resolveAndCheckIP(host)
 			if err != nil {
 				return nil, err
 			}
 
-			var dialAddr string
-			for _, ip := range ips {
-				if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
-					return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
-				}
-				// Use the first valid IP address for the connection.
-				if dialAddr == "" {
-					dialAddr = net.JoinHostPort(ip.String(), port)
-				}
-			}
-
-			if dialAddr == "" {
-				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
-			}
-
+			dialAddr := net.JoinHostPort(ip.String(), port)
 			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+		},
+		// DialTLSContext is used for HTTPS connections. It performs the same SSRF checks
+		// as DialContext, but also ensures that the TLS handshake is performed with the
+		// original hostname for SNI support.
+		DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, port, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, err
+			}
+
+			ip, err := resolveAndCheckIP(host)
+			if err != nil {
+				return nil, err
+			}
+
+			// Establish the raw TCP connection to the resolved IP address.
+			dialAddr := net.JoinHostPort(ip.String(), port)
+			conn, err := (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+			if err != nil {
+				return nil, err
+			}
+
+			// Initiate the TLS handshake, providing the original hostname in the
+			// TLS config for SNI. This is crucial for servers that host multiple
+			// domains on a single IP address.
+			tlsConfig := &tls.Config{ServerName: host}
+			tlsConn := tls.Client(conn, tlsConfig)
+
+			if err := tlsConn.HandshakeContext(ctx); err != nil {
+				conn.Close()
+				return nil, fmt.Errorf("tls handshake with %s failed: %w", addr, err)
+			}
+			return tlsConn, nil
 		},
 	},
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {

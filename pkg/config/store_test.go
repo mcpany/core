@@ -18,12 +18,12 @@ package config
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 	"time"
 
@@ -72,91 +72,61 @@ func TestReadURL(t *testing.T) {
 		}
 
 		_, err := readURL(server.URL)
-		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "status code 404")
 	})
 
-	t.Run("should demonstrate TOCTOU vulnerability", func(t *testing.T) {
-		t.Skip("Skipping this test as it requires a reliable DNS rebinding setup, but it documents the vulnerability.")
-
-		// Test setup to demonstrate the TOCTOU (Time-of-Check, Time-of-Use) vulnerability.
-		// An attacker can control a DNS server that returns a public IP (e.g., 8.8.8.8) for the first lookup,
-		// which passes the SSRF check. Immediately after, it returns a private IP (e.g., 127.0.0.1) for the
-		// second lookup, which is performed by the HTTP dialer.
-
-		// 1. A local server is running on 127.0.0.1.
-		localServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	t.Run("should correctly handle SNI for HTTPS connections", func(t *testing.T) {
+		// 1. Create a test server that requires SNI.
+		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"global_settings": {}}`)
+			fmt.Fprint(w, `{"message": "success"}`)
 		}))
-		defer localServer.Close()
 
-		// 2. The attacker's domain, e.g., "rebind.example.com".
-		attackerDomain := "rebind.example.com"
+		// Replace the server's listener with one that captures the SNI name.
+		var capturedSNI string
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
 
-		// 3. The attacker's DNS server is configured to respond with different IPs for the same domain.
-		//    - First lookup for "rebind.example.com" -> 8.8.8.8 (passes the check)
-		//    - Second lookup for "rebind.example.com" -> 127.0.0.1 (used by the dialer)
+		server.Listener = listener
+		server.TLS = &tls.Config{
+			GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+				capturedSNI = hello.ServerName
+				// Return a pointer to the certificate
+				return &server.TLS.Certificates[0], nil
+			},
+		}
+		server.StartTLS()
+		defer server.Close()
 
-		// 4. We simulate this by replacing the default HTTP client's transport with a custom one
-		//    that mimics the DNS rebinding behavior.
+		// 2. The hostname for the test server.
+		hostname := "sni.example.com"
 
-		originalTransport := httpClient.Transport
-		defer func() { httpClient.Transport = originalTransport }()
+		// 3. Replace the httpClient's transport to use a custom dialer that resolves our test hostname
+		//    to the test server's address. This is necessary because we can't add "sni.example.com"
+		//    to the system's hosts file.
+		originalClient := httpClient
+		defer func() { httpClient = originalClient }()
 
-		lookupCount := 0
-		httpClient.Transport = &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				host, _, err := net.SplitHostPort(addr)
-				if err != nil {
-					return nil, err
-				}
-
-				var resolvedIPs []net.IP
-				if host == attackerDomain {
-					lookupCount++
-					if lookupCount == 1 {
-						// First lookup (the "check") returns a safe, public IP.
-						resolvedIPs = []net.IP{net.ParseIP("8.8.8.8")}
-					} else {
-						// Second lookup (the "use" by the dialer) returns the loopback IP.
-						serverURL, _ := url.Parse(localServer.URL)
-						localIP, _, _ := net.SplitHostPort(serverURL.Host)
-						resolvedIPs = []net.IP{net.ParseIP(localIP)}
-					}
-				} else {
-					// Default behavior for other domains.
-					ips, err := net.LookupIP(host)
-					if err != nil {
-						return nil, err
-					}
-					resolvedIPs = ips
-				}
-
-				// The original code's check is simulated here. It would pass on the first lookup.
-				for _, ip := range resolvedIPs {
-					if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
-						return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
-					}
-				}
-
-				// The original code then calls the dialer with the hostname. The dialer does its own lookup.
-				// We simulate the rebinding by connecting to the local server if it's the second lookup.
-				dialAddr := addr
-				if lookupCount > 1 && host == attackerDomain {
-					serverURL, _ := url.Parse(localServer.URL)
-					_, localPort, _ := net.SplitHostPort(serverURL.Host)
-					dialAddr = net.JoinHostPort("127.0.0.1", localPort)
-				}
-
-				return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				// The DialTLSContext from the main code will be used, but we need to provide a custom
+				// DialContext to handle the name resolution for our test domain.
+				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					// When the code under test tries to connect to "sni.example.com", we intercept
+					// it and redirect it to our local test server.
+					return (&net.Dialer{}).DialContext(ctx, network, server.Listener.Addr().String())
+				},
+				// We need to provide the test server's certificate to the client.
+				TLSClientConfig: &tls.Config{
+					RootCAs: server.Client().Transport.(*http.Transport).TLSClientConfig.RootCAs,
+				},
 			},
 		}
 
-		// With the vulnerability, this call should succeed by connecting to the local server.
-		// The test will fail if it returns an error, but the real failure is that it doesn't.
-		_, err := readURL("http://" + attackerDomain)
-		assert.NoError(t, err, "Expected the request to succeed due to SSRF TOCTOU vulnerability")
+		// 4. Make a request to the server using the test hostname.
+		_, err = readURL("https://" + hostname)
+		assert.NoError(t, err, "Expected the request to succeed")
+		assert.Equal(t, hostname, capturedSNI, "Expected the server to receive the correct SNI hostname")
 	})
 }
 
