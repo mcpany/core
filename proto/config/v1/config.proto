@@ -141,7 +141,7 @@ message PolicyRule {
   string tool_name_regex = 2;
   // Regex to match request arguments (JSON stringified). Empty means match all.
   // This is a simple regex match on the JSON representation of arguments.
-  string argument_regex = 3; 
+  string argument_regex = 3;
 }
 
 // --- Upstream Service Types ---

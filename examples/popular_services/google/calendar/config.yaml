@@ -24,13 +24,13 @@ upstream_services:
     #   # If UpstreamAPIKeyAuth enforces header, this might fail to auth, but registration might succeed.
     #   # The main issue was recursive replacement.
     #   # Fixed structure below:
-    #   api_key: 
+    #   api_key:
     #     plain_text: "${GOOGLE_API_KEY}"
     oauth2:
       token_url: "https://oauth2.googleapis.com/token"
-      client_id: 
+      client_id:
         plain_text: "${GOOGLE_OAUTH_CLIENT_ID}"
-      client_secret: 
+      client_secret:
         plain_text: "${GOOGLE_OAUTH_CLIENT_SECRET}"
       # refresh_token: "${GOOGLE_OAUTH_REFRESH_TOKEN}"
       scopes: "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.settings.readonly"

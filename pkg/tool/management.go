@@ -408,4 +408,3 @@ func (tm *ToolManager) checkPolicy(ctx context.Context, t Tool, req *ExecutionRe
 	}
 	return fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
 }
-
