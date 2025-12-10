@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -95,6 +96,7 @@ func NewServer(
 	serviceRegistry *serviceregistry.ServiceRegistry,
 	bus *bus.BusProvider,
 	debug bool,
+	ipAllowlist []string,
 ) (*Server, error) {
 	s := &Server{
 		router:          NewRouter(),
@@ -219,6 +221,14 @@ func NewServer(
 
 	s.server.AddReceivingMiddleware(routerMiddleware)
 	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
+
+	if len(ipAllowlist) > 0 {
+		allowlist, err := middleware.NewIPAllowlist(ipAllowlist)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create IP allowlist: %w", err)
+		}
+		s.server.AddReceivingMiddleware(allowlist.Handler)
+	}
 
 	return s, nil
 }

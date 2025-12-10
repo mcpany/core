@@ -244,6 +244,7 @@ func (a *Application) Run(
 		serviceRegistry,
 		busProvider,
 		config.GlobalSettings().IsDebug(),
+		cfg.GetGlobalSettings().GetIpAllowlist(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create mcp server: %w", err)
