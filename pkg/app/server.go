@@ -38,6 +38,7 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/service/health"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -125,6 +126,7 @@ type Application struct {
 	PromptManager    prompt.PromptManagerInterface
 	ToolManager      tool.ToolManagerInterface
 	ResourceManager  resource.ResourceManagerInterface
+	healthExecutor   *health.Executor
 	configFiles      map[string]string
 }
 
@@ -215,6 +217,9 @@ func (a *Application) Run(
 		authManager,
 	)
 
+	a.healthExecutor = health.NewExecutor(ctx, serviceRegistry)
+	defer a.healthExecutor.Stop()
+
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
@@ -278,6 +283,9 @@ func (a *Application) Run(
 	} else {
 		log.Info("No services found in config, skipping service registration.")
 	}
+
+	// Start the health check executor after initial services are registered.
+	a.healthExecutor.Start()
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)

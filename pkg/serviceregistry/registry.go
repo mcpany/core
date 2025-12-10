@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/healthstatus"
 	config "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -41,6 +42,8 @@ type ServiceRegistryInterface interface {
 	UnregisterService(ctx context.Context, serviceName string) error
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
+	SetHealthStatus(serviceID string, status healthstatus.HealthStatus)
+	GetService(serviceID string) (upstream.Upstream, error)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -53,6 +56,7 @@ type ServiceRegistry struct {
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
 	serviceInfo     map[string]*tool.ServiceInfo
 	upstreams       map[string]upstream.Upstream
+	healthStatus    map[string]healthstatus.HealthStatus
 	factory         factory.Factory
 	toolManager     tool.ToolManagerInterface
 	promptManager   prompt.PromptManagerInterface
@@ -76,12 +80,38 @@ func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptM
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		upstreams:       make(map[string]upstream.Upstream),
+		healthStatus:    make(map[string]healthstatus.HealthStatus),
 		factory:         factory,
 		toolManager:     toolManager,
 		promptManager:   promptManager,
 		resourceManager: resourceManager,
 		authManager:     authManager,
 	}
+}
+
+// SetHealthStatus updates the health status of a service.
+func (r *ServiceRegistry) SetHealthStatus(serviceID string, status healthstatus.HealthStatus) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.healthStatus[serviceID] = status
+}
+
+// GetService retrieves a service by its ID, but only if it is healthy.
+func (r *ServiceRegistry) GetService(serviceID string) (upstream.Upstream, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	status, ok := r.healthStatus[serviceID]
+	if !ok || status == healthstatus.UNHEALTHY {
+		return nil, fmt.Errorf("service %q is unhealthy or not found", serviceID)
+	}
+
+	us, ok := r.upstreams[serviceID]
+	if !ok {
+		return nil, fmt.Errorf("service %q not found", serviceID)
+	}
+
+	return us, nil
 }
 
 // RegisterService handles the registration of a new upstream service. It uses
@@ -122,6 +152,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 	r.serviceConfigs[serviceID] = serviceConfig
 	r.upstreams[serviceID] = u
+	r.healthStatus[serviceID] = healthstatus.UNKNOWN
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {

@@ -24,7 +24,6 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
-	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/jsonschema-go v0.3.0
 	github.com/google/uuid v1.6.0
@@ -49,8 +48,8 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.11.1
 	github.com/valyala/fasttemplate v1.2.2
+	github.com/ybbus/jsonrpc v2.1.2+incompatible
 	go.uber.org/goleak v1.3.0
-	go.uber.org/mock v0.4.0
 	golang.org/x/oauth2 v0.30.0
 	golang.org/x/sync v0.18.0
 	golang.org/x/time v0.14.0
@@ -140,6 +139,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/wlynxg/anet v0.0.3 // indirect
+	github.com/ybbus/jsonrpc/v2 v2.1.7 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 // indirect
@@ -150,6 +150,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	golang.org/x/crypto v0.44.0 // indirect
