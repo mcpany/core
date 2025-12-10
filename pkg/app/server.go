@@ -20,13 +20,13 @@ package app
 import (
 	"context"
 	"fmt"
-	"crypto/subtle"
 	"io"
 	"net"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+	"os"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -50,7 +50,6 @@ import (
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-	"os"
 )
 
 var healthCheckClient = &http.Client{
@@ -326,7 +325,12 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+	var apiKey string
+	if gs := cfg.GetGlobalSettings(); gs != nil {
+		apiKey = gs.GetApiKey()
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, apiKey)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -498,6 +502,7 @@ func (a *Application) runServerMode(
 	bus *bus.BusProvider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
+	apiKey string,
 ) error {
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -511,27 +516,16 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if apiKey != "" {
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
-					http.Error(w, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
+	authInterceptor := auth.NewAuthenticationInterceptor(apiKey)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", authMiddleware(httpHandler))
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", authInterceptor.Wrap(httpHandler))
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
-	})))
-	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+	}))
+	mux.Handle("/metrics", authInterceptor.Wrap(metrics.Handler()))
+	mux.Handle("/upload", authInterceptor.Wrap(http.HandlerFunc(a.uploadFile)))
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
@@ -543,7 +537,7 @@ func (a *Application) runServerMode(
 		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 			return fmt.Errorf("failed to register gateway: %w", err)
 		}
-		mux.Handle("/v1/", authMiddleware(gwmux))
+		mux.Handle("/v1/", authInterceptor.Wrap(gwmux))
 	}
 
 	httpBindAddress := bindAddress
@@ -571,6 +565,7 @@ func (a *Application) runServerMode(
 				"Registration",
 				lis,
 				shutdownTimeout,
+				authInterceptor,
 				func(s *gogrpc.Server) {
 					registrationServer, err := mcpserver.NewRegistrationServer(bus)
 					if err != nil {
@@ -697,6 +692,7 @@ func startGrpcServer(
 	name string,
 	lis net.Listener,
 	shutdownTimeout time.Duration,
+	authInterceptor *auth.AuthenticationInterceptor,
 	register func(*gogrpc.Server),
 ) {
 	wg.Add(1)
@@ -710,7 +706,10 @@ func startGrpcServer(
 					errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
 				}
 			}()
-			grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+			grpcServer := gogrpc.NewServer(
+				gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}),
+				gogrpc.UnaryInterceptor(authInterceptor.Unary()),
+			)
 			register(grpcServer)
 			reflection.Register(grpcServer)
 			return grpcServer

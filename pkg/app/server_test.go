@@ -845,7 +845,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, "")
 	}()
 
 	// Give the servers a moment to start up.
@@ -879,11 +879,11 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -951,10 +951,10 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
-
+			authInterceptor := auth.NewAuthenticationInterceptor("")
 			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {})
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -1072,11 +1072,11 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server with a service that will hang.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1151,11 +1151,11 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server with a mock service that hangs.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, authInterceptor, func(s *gogrpc.Server) {
 		// This service will hang for 10 seconds, which is much longer than our
 		// shutdown timeout.
 		hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -1224,9 +1224,9 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errchan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, authInterceptor, func(s *gogrpc.Server) {
 		hangservice := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1323,7 +1323,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	require.NoError(t, err)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, "")
 	}()
 
 	// Allow some time for the servers to start up
@@ -1475,10 +1475,10 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	defer cancel()
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	lis, err := net.Listen("tcp", ":0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		_, err := mcpserver.NewRegistrationServer(nil)
 		if err != nil {
 			errChan <- fmt.Errorf("failed to create API server: %w", err)
@@ -1525,10 +1525,10 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {})
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, authInterceptor, func(_ *gogrpc.Server) {})
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -1556,8 +1556,8 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(s *gogrpc.Server) {
+	authInterceptor := auth.NewAuthenticationInterceptor("")
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		// No-op registration.
 	})
 
@@ -1589,11 +1589,11 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			errChan := make(chan error, 1)
 			var wg sync.WaitGroup
-
+			authInterceptor := auth.NewAuthenticationInterceptor("")
 			// Start the gRPC server.
 			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -1798,9 +1798,9 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server with a service that will hang, preventing a graceful shutdown.
-	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, authInterceptor, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1855,9 +1855,9 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, authInterceptor, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1939,10 +1939,10 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 	defer cancel()
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	lis, err := net.Listen("tcp", ":0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		panic("test panic in registration")
 	})
 
@@ -1972,7 +1972,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second)
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, "")
 	}()
 
 	select {
@@ -1990,7 +1990,7 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 	defer cancel()
 	var wg sync.WaitGroup
 	errChan := make(chan error, 1)
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Create a dummy net.Listener
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -2004,7 +2004,7 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 		panic("registration failed")
 	}
 
-	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, authInterceptor, registerFunc)
 
 	// 3. Verification
 	select {
@@ -2037,7 +2037,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 	defer cancel()
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	defer lis.Close()
@@ -2046,7 +2046,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 		panic("panic during registration")
 	}
 
-	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, authInterceptor, registerFunc)
 
 	select {
 	case err := <-errChan:
@@ -2080,10 +2080,10 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, authInterceptor, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 10 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -2203,11 +2203,11 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-
+	authInterceptor := auth.NewAuthenticationInterceptor("")
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, authInterceptor, func(s *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 

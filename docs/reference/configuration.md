@@ -90,7 +90,7 @@ Contains server-wide operational parameters.
 | `mcp_basepath`       | `string`     | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
-| `api_key`            | `string`     | The API key for securing the MCP server.                                      |
+| `api_key`            | `string`     | The API key for securing the MCP server. **(Implemented)**                    |
 
 ### Use Case and Example
 
@@ -494,12 +494,12 @@ Configures the authentication method for incoming requests to the MCP Any server
 Secure the MCP Any server with API key authentication.
 
 ```yaml
-authentication:
-  api_key:
-    param_name: "X-Mcp-Api-Key"
-    in: "HEADER"
-    key_value: "my-secret-key"
+global_settings:
+  api_key: "my-secret-key"
 ```
+
+When the `api_key` is set in the `global_settings`, clients must provide the key in the `X-API-Key` header of their requests.
+
 
 ##### `APIKeyAuth`
 
