@@ -525,12 +525,34 @@ func (a *Application) runServerMode(
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", authMiddleware(httpHandler))
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", httpHandler)
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
-	})))
-	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	}))
+	mux.Handle("/metrics", metrics.Handler())
+	mux.Handle("/upload", http.HandlerFunc(a.uploadFile))
+
+	if grpcPort != "" {
+		gwmux := runtime.NewServeMux()
+		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+		endpoint := grpcPort
+		if strings.HasPrefix(endpoint, ":") {
+			endpoint = "localhost" + endpoint
+		}
+		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+			return fmt.Errorf("failed to register gateway: %w", err)
+		}
+		mux.Handle("/v1/", gwmux)
+	}
+
+	mux.Handle("/", authMiddleware(httpHandler))
+	// In the future, we may want to make this configurable.
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
+	}))
+	mux.Handle("/metrics", metrics.Handler())
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	if grpcPort != "" {
@@ -545,7 +567,6 @@ func (a *Application) runServerMode(
 		}
 		mux.Handle("/v1/", authMiddleware(gwmux))
 	}
-
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
 		httpBindAddress = "localhost:8070"

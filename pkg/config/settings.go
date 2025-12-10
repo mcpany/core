@@ -73,19 +73,29 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
-	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
+	apiKey := viper.GetString("api-key")
+
+	if len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
 		cfg, err := LoadServices(store, "server")
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
-		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
+		if !cmd.Flags().Changed("mcp-listen-address") && cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
+		if !cmd.Flags().Changed("api-key") && cfg.GetGlobalSettings().GetApiKey() != "" {
+			apiKey = cfg.GetGlobalSettings().GetApiKey()
+		}
 	}
+
+	if apiKey != "" && len(apiKey) < 16 {
+		return fmt.Errorf("API key must be at least 16 characters long")
+	}
+
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
-	s.proto.SetApiKey(s.APIKey())
+	s.proto.SetApiKey(apiKey)
 
 	return nil
 }

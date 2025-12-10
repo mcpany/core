@@ -2147,7 +2147,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	// Set the API key
-	viper.Set("api-key", "test-api-key")
+	viper.Set("api-key", "a-valid-api-key-that-is-long-enough")
 	defer viper.Set("api-key", "")
 
 	// Get the address from the listener
@@ -2173,7 +2173,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Make a request with the correct API key
 	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
 	require.NoError(t, err)
-	req.Header.Set("X-API-Key", "test-api-key")
+	req.Header.Set("X-API-Key", "a-valid-api-key-that-is-long-enough")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -2185,6 +2185,31 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+
+	// Test case where no API key is configured
+	viper.Set("api-key", "")
+	appNoAuth := NewApplication()
+	errChanNoAuth := make(chan error, 1)
+	lNoAuth, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addrNoAuth := lNoAuth.Addr().String()
+	lNoAuth.Close()
+	ctxNoAuth, cancelNoAuth := context.WithCancel(context.Background())
+	defer cancelNoAuth()
+
+	go func() {
+		errChanNoAuth <- appNoAuth.Run(ctxNoAuth, fs, false, addrNoAuth, "", nil, 5*time.Second)
+	}()
+
+	waitForServerReady(t, addrNoAuth)
+	req, err = http.NewRequest("GET", "http://"+addrNoAuth+"/healthz", nil)
+	require.NoError(t, err)
+	resp, err = http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	cancelNoAuth()
+	err = <-errChanNoAuth
+	assert.NoError(t, err)
 
 	cancel()
 	err = <-errChan

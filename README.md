@@ -287,14 +287,14 @@ MCP Any supports a variety of advanced configuration options, including:
   ```
 
 - **Resilience**: Configure retries for a gRPC service.
-- **Server Authentication**: Secure the MCP server with an API key.
+- **Server Authentication**: Secure all incoming requests to the MCP server with a global API key.
 
   ```yaml
   global_settings:
-    api_key: "my-secret-key"
+    api_key: "your-super-secret-and-long-api-key"
   ```
 
-  When the `api_key` is set, clients must provide the key in the `X-API-Key` header of their requests. The API key must be at least 16 characters long.
+  When the `api_key` is set in the global settings, all clients must provide the key in the `X-API-Key` header of their requests. If the key is missing or incorrect, the server will respond with a `401 Unauthorized` error. The API key must be at least 16 characters long for security reasons.
 
 ### Remote Configurations
 
