@@ -91,6 +91,22 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
 		},
+		{
+			name: "service with no service type specified",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "nil-service"
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "nil-service": service type not specified`,
+		},
 	}
 
 	for _, tt := range tests {
