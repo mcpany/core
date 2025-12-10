@@ -40,6 +40,10 @@ func TestValidate(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(caCertFile.Name())
 
+	clientCertDir, err := os.MkdirTemp("", "client-cert-dir")
+	require.NoError(t, err)
+	defer os.RemoveAll(clientCertDir)
+
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig
@@ -90,6 +94,32 @@ func TestValidate(t *testing.T) {
 			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a secure path: path contains '..', which is not allowed`,
+		},
+		{
+			name: "invalid mTLS config - client cert path is a directory",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "mtls-svc-1",
+							"http_service": {
+								"address": "https://example.com"
+							},
+							"upstream_authentication": {
+								"mtls": {
+									"client_cert_path": "`+clientCertDir+`",
+									"client_key_path": "`+clientKeyFile.Name()+`",
+									"ca_cert_path": "`+caCertFile.Name()+`"
+								}
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "mtls-svc-1": mtls 'client_cert_path' is not a file: path is a directory, not a file: ` + clientCertDir,
 		},
 	}
 

@@ -129,6 +129,21 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	return nil
 }
 
+// IsFile checks if a file exists at the given path.
+func IsFile(path string) error {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("file not found at path: %s", path)
+	}
+	if err != nil {
+		return fmt.Errorf("error checking file at path %s: %w", path, err)
+	}
+	if info.IsDir() {
+		return fmt.Errorf("path is a directory, not a file: %s", path)
+	}
+	return nil
+}
+
 // FileExists checks if a file exists at the given path.
 func FileExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {

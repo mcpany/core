@@ -24,6 +24,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsValidURL(t *testing.T) {
@@ -128,6 +129,52 @@ func TestFileExists(t *testing.T) {
 
 	// Test case where the file does not exist.
 	assert.Error(t, FileExists("non-existent-file"))
+}
+
+func TestIsFile(t *testing.T) {
+	// Create a temporary file for testing
+	tmpFile, err := os.CreateTemp("", "testfile-")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	// Create a temporary directory for testing
+	tmpDir, err := os.MkdirTemp("", "testdir-")
+	require.NoError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	tests := []struct {
+		name          string
+		path          string
+		expectedError string
+	}{
+		{
+			name:          "valid file path",
+			path:          tmpFile.Name(),
+			expectedError: "",
+		},
+		{
+			name:          "non-existent file path",
+			path:          "non-existent-file.txt",
+			expectedError: "file not found at path: non-existent-file.txt",
+		},
+		{
+			name:          "directory path",
+			path:          tmpDir,
+			expectedError: "path is a directory, not a file: " + tmpDir,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := IsFile(tt.path)
+			if tt.expectedError != "" {
+				require.Error(t, err)
+				assert.Equal(t, tt.expectedError, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestValidateHTTPServiceDefinition(t *testing.T) {
