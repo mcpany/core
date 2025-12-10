@@ -23,6 +23,8 @@ const (
 	ContentTypeTextEventStream = "text/event-stream"
 	// HeaderMcpSessionID is the standard header for the MCP session ID.
 	HeaderMcpSessionID = "Mcp-Session-Id"
+	// HeaderAPIKey is the standard header for the API key.
+	HeaderAPIKey = "X-API-Key"
 	// MethodConfigureCache is the MCP method for configuring the cache.
 	MethodConfigureCache = "configure_cache"
 	// OauthCallbackPath is the standard path for the OAuth2 callback.

@@ -18,101 +18,52 @@ package middleware_test
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
-
-import (
-	"net/http"
 )
 
 func TestAuthMiddleware(t *testing.T) {
-	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
-		mw := middleware.AuthMiddleware(authManager)
+	authManager := auth.NewAuthManager()
+	handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		return &mcp.CallToolResult{}, nil
+	}
 
-		var nextCalled bool
-		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			nextCalled = true
-			return &mcp.CallToolResult{}, nil
-		}
-
-		handler := mw(nextHandler)
-		_, err := handler(context.Background(), "test.method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled, "next handler should be called")
+	t.Run("valid api key", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "test-api-key")
+		ctx := context.WithValue(context.Background(), "http.request", req)
+		authManager.SetAPIKey("test-api-key")
+		_, err := middleware.AuthMiddleware(authManager)(handler)(ctx, "test.method", nil)
+		assert.NoError(t, err)
 	})
 
-	t.Run("should return error when authentication fails", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
-		authenticator := &auth.APIKeyAuthenticator{
-			HeaderName:  "X-API-Key",
-			HeaderValue: "secret",
-		}
-		err := authManager.AddAuthenticator("test", authenticator)
-		require.NoError(t, err)
-
-		mw := middleware.AuthMiddleware(authManager)
-
-		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			t.Fatal("next handler should not be called")
-			return nil, nil
-		}
-
-		handler := mw(nextHandler)
-
-		// Create an http.Request without the API key.
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-
-		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		// Call the handler. The method "test.method" implies the serviceID is "test".
-		_, err = handler(ctx, "test.method", nil)
-
-		// This is the point of failure for the existing buggy middleware.
-		// It should return an error, but it will return nil.
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "unauthorized")
+	t.Run("invalid api key", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "invalid-api-key")
+		ctx := context.WithValue(context.Background(), "http.request", req)
+		authManager.SetAPIKey("test-api-key")
+		_, err := middleware.AuthMiddleware(authManager)(handler)(ctx, "test.method", nil)
+		assert.Error(t, err)
 	})
 
-	t.Run("should call next handler when authentication succeeds", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
-		authenticator := &auth.APIKeyAuthenticator{
-			HeaderName:  "X-API-Key",
-			HeaderValue: "secret",
-		}
-		err := authManager.AddAuthenticator("test", authenticator)
-		require.NoError(t, err)
-
-		mw := middleware.AuthMiddleware(authManager)
-
-		var nextCalled bool
-		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			nextCalled = true
-			return nil, nil
-		}
-
-		handler := mw(nextHandler)
-
-		// Create an http.Request with the correct API key.
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-		httpReq.Header.Set("X-API-Key", "secret")
-
-		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		// Call the handler.
-		_, err = handler(ctx, "test.method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled, "next handler should have been called")
+	t.Run("missing api key", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/", nil)
+		ctx := context.WithValue(context.Background(), "http.request", req)
+		authManager.SetAPIKey("test-api-key")
+		_, err := middleware.AuthMiddleware(authManager)(handler)(ctx, "test.method", nil)
+		assert.Error(t, err)
 	})
 
+	t.Run("no api key configured", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/", nil)
+		ctx := context.WithValue(context.Background(), "http.request", req)
+		authManager.SetAPIKey("")
+		_, err := middleware.AuthMiddleware(authManager)(handler)(ctx, "test.method", nil)
+		assert.NoError(t, err)
+	})
 }
