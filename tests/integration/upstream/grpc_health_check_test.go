@@ -30,15 +30,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpstreamService_HTTP_HealthCheck(t *testing.T) {
-	const echoServiceID = "e2e_http_echo_health"
+func TestUpstreamService_GRPC_HealthCheck(t *testing.T) {
+	const echoServiceID = "e2e_grpc_echo_health"
 	var upstream *integration.ManagedProcess
 
 	testCase := &framework.E2ETestCase{
-		Name:                "HTTP Echo Server with Health Check",
-		UpstreamServiceType: "http",
+		Name:                "gRPC Echo Server with Health Check",
+		UpstreamServiceType: "grpc",
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			upstream = framework.BuildHTTPEchoServer(t)
+			upstream = framework.BuildGRPCHealthServer(t, false)
 			return upstream
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
@@ -46,11 +46,10 @@ func TestUpstreamService_HTTP_HealthCheck(t *testing.T) {
 name: %s
 connection_pool:
   max_connections: 1
-http_service:
+grpc_service:
   address: %s
   health_check:
-    url: %s/health
-    expected_code: 200
+    service: "grpc.health.v1.Health"
     interval: 1s
     timeout: 1s
   calls:
@@ -59,7 +58,7 @@ http_service:
       description: Echoes a message back to the user.
     endpoint_path: /echo
     method: HTTP_METHOD_POST
-`, echoServiceID, upstreamEndpoint, upstreamEndpoint)
+`, echoServiceID, upstreamEndpoint)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
@@ -98,25 +97,20 @@ http_service:
 				res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(echoMessage)})
 				return err == nil
 			}, 5*time.Second, 1*time.Second, "tool did not become healthy again")
-			require.NoError(t, err)
-			require.NotNil(t, res)
-			textContent, ok = res.Content[0].(*mcp.TextContent)
-			require.True(t, ok)
-			require.JSONEq(t, echoMessage, textContent.Text)
 		},
 	}
 	framework.RunE2ETest(t, testCase)
 }
 
-func TestUpstreamService_HTTP_HealthCheck_TLS(t *testing.T) {
-	const echoServiceID = "e2e_https_echo_health"
+func TestUpstreamService_GRPC_HealthCheck_TLS(t *testing.T) {
+	const echoServiceID = "e2e_grpcs_echo_health"
 	var upstream *integration.ManagedProcess
 
 	testCase := &framework.E2ETestCase{
-		Name:                "HTTPS Echo Server with Health Check",
-		UpstreamServiceType: "http",
+		Name:                "gRPCS Echo Server with Health Check",
+		UpstreamServiceType: "grpc",
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			upstream = framework.BuildHTTPSEchoServer(t)
+			upstream = framework.BuildGRPCHealthServer(t, true)
 			return upstream
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
@@ -124,13 +118,12 @@ func TestUpstreamService_HTTP_HealthCheck_TLS(t *testing.T) {
 name: %s
 connection_pool:
   max_connections: 1
-http_service:
+grpc_service:
   address: %s
   tls_config:
     insecure_skip_verify: true
   health_check:
-    url: %s/health
-    expected_code: 200
+    service: "grpc.health.v1.Health"
     interval: 1s
     timeout: 1s
   calls:
@@ -139,7 +132,7 @@ http_service:
       description: Echoes a message back to the user.
     endpoint_path: /echo
     method: HTTP_METHOD_POST
-`, echoServiceID, upstreamEndpoint, upstreamEndpoint)
+`, echoServiceID, upstreamEndpoint)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

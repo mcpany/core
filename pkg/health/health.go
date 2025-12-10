@@ -17,23 +17,26 @@
 package health
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/alexliesenfeld/health"
+	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
-	"bytes"
-	"io"
-	"strings"
-
-	"github.com/mcpany/core/pkg/command"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -46,6 +49,39 @@ const (
 type HTTPServiceWithHealthCheck interface {
 	GetAddress() string
 	GetHealthCheck() *configv1.HttpHealthCheck
+	GetTlsConfig() *configv1.TLSConfig
+}
+
+// newTLSConfig creates a new TLS configuration from the given TLS configuration.
+func newTLSConfig(c *configv1.TLSConfig) (*tls.Config, error) {
+	if c == nil {
+		return nil, nil
+	}
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: c.GetInsecureSkipVerify(),
+		ServerName:         c.GetServerName(),
+	}
+
+	if c.GetCaCertPath() != "" {
+		caCert, err := os.ReadFile(c.GetCaCertPath())
+		if err != nil {
+			return nil, fmt.Errorf("failed to read CA certificate: %w", err)
+		}
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+		tlsConfig.RootCAs = caCertPool
+	}
+
+	if c.GetClientCertPath() != "" && c.GetClientKeyPath() != "" {
+		clientCert, err := tls.LoadX509KeyPair(c.GetClientCertPath(), c.GetClientKeyPath())
+		if err != nil {
+			return nil, fmt.Errorf("failed to load client certificate: %w", err)
+		}
+		tlsConfig.Certificates = []tls.Certificate{clientCert}
+	}
+
+	return tlsConfig, nil
 }
 
 // NewChecker creates a new health checker for the given upstream service.
@@ -103,8 +139,16 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 				return checkConnection(c.GetAddress())
 			}
 
+			tlsConfig, err := newTLSConfig(c.GetTlsConfig())
+			if err != nil {
+				return fmt.Errorf("failed to create TLS config: %w", err)
+			}
+
 			client := &http.Client{
 				Timeout: lo.Ternary(c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
+				Transport: &http.Transport{
+					TLSClientConfig: tlsConfig,
+				},
 			}
 
 			req, err := http.NewRequestWithContext(ctx, "GET", c.GetHealthCheck().GetUrl(), nil)
@@ -145,7 +189,21 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 				return checkConnection(c.GetAddress())
 			}
 
-			conn, err := grpc.DialContext(ctx, c.GetAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+			tlsConfig, err := newTLSConfig(c.GetTlsConfig())
+			if err != nil {
+				return fmt.Errorf("failed to create TLS config: %w", err)
+			}
+
+			opts := []grpc.DialOption{
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+			}
+			if tlsConfig != nil {
+				opts = []grpc.DialOption{
+					grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)),
+				}
+			}
+
+			conn, err := grpc.DialContext(ctx, c.GetAddress(), opts...)
 			if err != nil {
 				return fmt.Errorf("failed to connect to gRPC service: %w", err)
 			}

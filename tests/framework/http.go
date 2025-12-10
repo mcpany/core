@@ -38,6 +38,16 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
+// BuildHTTPSEchoServer builds and starts a new instance of the HTTPS echo server.
+func BuildHTTPSEchoServer(t *testing.T) *integration.ManagedProcess {
+	port := integration.FindFreePort(t)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "https_echo_server", filepath.Join(root, "build/test/bin/http_echo_server"), []string{fmt.Sprintf("--port=%d", port), "--tls"}, nil)
+	proc.Port = port
+	return proc
+}
+
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
