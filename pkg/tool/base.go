@@ -46,3 +46,7 @@ func (t *baseTool) Tool() *v1.Tool {
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
+
+func (t *baseTool) ServiceID() string {
+	return t.serviceConfig.GetSanitizedName()
+}

@@ -63,6 +63,8 @@ type Tool interface {
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	GetCacheConfig() *configv1.CacheConfig
+	// ServiceID returns the ID of the service that the tool belongs to.
+	ServiceID() string
 }
 
 // ServiceInfo holds metadata about a registered upstream service, including its
@@ -76,7 +78,7 @@ type ServiceInfo struct {
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
-	ToolName   string
+	ToolName string
 	// ToolInputs is the raw JSON message of the tool inputs. It is used by
 	// tools that need to unmarshal the inputs into a specific struct.
 	ToolInputs json.RawMessage
@@ -153,6 +155,11 @@ func (t *GRPCTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *GRPCTool) ServiceID() string {
+	return t.serviceID
 }
 
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
@@ -249,6 +256,11 @@ func (t *HTTPTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *HTTPTool) ServiceID() string {
+	return t.serviceID
 }
 
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
@@ -467,6 +479,7 @@ type MCPTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
+	serviceID         string
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -481,6 +494,7 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
+		serviceID:         tool.GetServiceId(),
 	}
 }
 
@@ -492,6 +506,11 @@ func (t *MCPTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the MCP tool.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *MCPTool) ServiceID() string {
+	return t.serviceID
 }
 
 // Execute handles the execution of the MCP tool. It forwards the tool call,
@@ -594,6 +613,7 @@ type OpenAPITool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
+	serviceID         string
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -616,6 +636,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HttpClient, parameterDefs map[s
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
+		serviceID:         tool.GetServiceId(),
 	}
 }
 
@@ -627,6 +648,11 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *OpenAPITool) ServiceID() string {
+	return t.serviceID
 }
 
 // Execute handles the execution of the OpenAPI tool. It constructs an HTTP
@@ -806,6 +832,11 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDefinition.GetCache()
 }
 
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *LocalCommandTool) ServiceID() string {
+	return t.tool.GetServiceId()
+}
+
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
@@ -948,6 +979,11 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 		return nil
 	}
 	return t.callDefinition.GetCache()
+}
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *CommandTool) ServiceID() string {
+	return t.tool.GetServiceId()
 }
 
 // Execute handles the execution of the command-line tool. It constructs a command

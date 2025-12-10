@@ -20,15 +20,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
-	"time"
-
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -371,6 +371,26 @@ func (s *Server) ListTools() []tool.Tool {
 // CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
+
+	t, ok := s.GetTool(req.ToolName)
+	if !ok {
+		return nil, fmt.Errorf("tool %q not found", req.ToolName)
+	}
+	serviceID := t.ServiceID()
+
+	if httpReq, ok := middleware.HTTPRequestFromContext(ctx); ok {
+		var err error
+		ctx, err = s.authManager.Authenticate(ctx, serviceID, httpReq)
+		if err != nil {
+			metrics.IncrCounter([]string{"auth", "errors"}, 1)
+			metrics.IncrCounter([]string{"service", serviceID, "auth", "errors"}, 1)
+			logging.GetLogger().Error("Authentication failed", "serviceID", serviceID, "error", err)
+			return nil, fmt.Errorf("authentication failed for service %s: %w", serviceID, err)
+		}
+	} else {
+		logging.GetLogger().Warn("No HTTP request found in context for authentication", "toolName", req.ToolName)
+	}
+
 	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
 	metrics.IncrCounter([]string{"tool", req.ToolName, "call", "total"}, 1)
 	startTime := time.Now()

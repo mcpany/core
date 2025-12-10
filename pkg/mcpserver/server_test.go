@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -18,15 +19,22 @@ package mcpserver_test
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/go-jose/go-jose/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
@@ -65,6 +73,10 @@ func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (m *mockTool) ServiceID() string {
+	return m.tool.GetServiceId()
 }
 
 func TestToolListFiltering(t *testing.T) {
@@ -220,6 +232,10 @@ func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (m *mockErrorTool) ServiceID() string {
+	return m.tool.GetServiceId()
+}
+
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
@@ -327,6 +343,238 @@ func TestServer_CallTool(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "context deadline exceeded")
 	})
+}
+
+func TestServer_CallTool_WithAuth(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	// Setup a service with API key authentication
+	authedServiceID := "authed-service"
+	apiKey := "test-key"
+	authConfig := &configv1.AuthenticationConfig{}
+	apiKeyAuthConfig := &configv1.APIKeyAuth{}
+	apiKeyAuthConfig.SetParamName("X-API-Key")
+	apiKeyAuthConfig.SetKeyValue(apiKey)
+	authConfig.SetApiKey(apiKeyAuthConfig)
+
+	err = authManager.AddAuthenticator(authedServiceID, auth.NewAPIKeyAuthenticator(authConfig.GetApiKey()))
+	require.NoError(t, err)
+
+	authedTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("authed-tool"),
+			ServiceId: proto.String(authedServiceID),
+			Annotations: &v1.ToolAnnotations{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			},
+		},
+	}
+	server.AddTool(authedTool)
+
+	// Setup a service without authentication
+	unauthedServiceID := "unauthed-service"
+	unauthedTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("unauthed-tool"),
+			ServiceId: proto.String(unauthedServiceID),
+			Annotations: &v1.ToolAnnotations{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			},
+		},
+	}
+	server.AddTool(unauthedTool)
+
+	testCases := []struct {
+		name          string
+		toolName      string
+		headers       map[string]string
+		expectSuccess bool
+		expectErr     string
+	}{
+		{
+			name:          "authed tool with valid key",
+			toolName:      "authed-tool",
+			headers:       map[string]string{"X-API-Key": "test-key"},
+			expectSuccess: true,
+		},
+		{
+			name:      "authed tool with invalid key",
+			toolName:  "authed-tool",
+			headers:   map[string]string{"X-API-Key": "wrong-key"},
+			expectErr: "unauthorized",
+		},
+		{
+			name:      "authed tool with missing key",
+			toolName:  "authed-tool",
+			headers:   map[string]string{},
+			expectErr: "unauthorized",
+		},
+		{
+			name:          "unauthed tool",
+			toolName:      "unauthed-tool",
+			headers:       map[string]string{},
+			expectSuccess: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, _ := http.NewRequest("POST", "/", nil)
+			for k, v := range tc.headers {
+				req.Header.Set(k, v)
+			}
+			ctxWithReq := middleware.HTTPRequestToContext(context.Background(), req)
+			sanitizedToolName, err := util.SanitizeToolName(tc.toolName)
+			require.NoError(t, err)
+
+			var serviceID string
+			if tc.toolName == "authed-tool" {
+				serviceID = authedServiceID
+			} else {
+				serviceID = unauthedServiceID
+			}
+			toolID := serviceID + "." + sanitizedToolName
+
+			_, err = server.CallTool(ctxWithReq, &tool.ExecutionRequest{ToolName: toolID})
+			if tc.expectSuccess {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+				if tc.expectErr != "" {
+					assert.Contains(t, err.Error(), tc.expectErr)
+				}
+			}
+		})
+	}
+}
+
+// newTestKey creates a new RSA private key for signing JWTs.
+func newTestKey(t *testing.T) *rsa.PrivateKey {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+	return privateKey
+}
+
+// newIDToken creates a new JWT ID token with the specified claims.
+func newIDToken(t *testing.T, privateKey *rsa.PrivateKey, claims jwt.MapClaims) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	signedToken, err := token.SignedString(privateKey)
+	require.NoError(t, err)
+	return signedToken
+}
+
+func mustMarshal(t *testing.T, v interface{}) []byte {
+	bytes, err := json.Marshal(v)
+	require.NoError(t, err)
+	return bytes
+}
+
+func TestServer_CallTool_WithOAuth2Auth(t *testing.T) {
+	privateKey := newTestKey(t)
+
+	// Mock OIDC provider
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			w.Header().Set("Content-Type", "application/json")
+			_, err := w.Write([]byte(`{
+				"issuer": "http://` + r.Host + `",
+				"jwks_uri": "http://` + r.Host + `/jwks"
+			}`))
+			assert.NoError(t, err)
+		} else if r.URL.Path == "/jwks" {
+			w.Header().Set("Content-Type", "application/json")
+			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
+			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
+			assert.NoError(t, err)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	busProvider, err := bus.NewBusProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewToolManager(busProvider)
+	promptManager := prompt.NewPromptManager()
+	resourceManager := resource.NewResourceManager()
+	authManager := auth.NewAuthManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	mcpServer, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	// Setup a service with OAuth2 authentication
+	authedServiceID := "authed-service"
+	authConfig := &configv1.AuthenticationConfig{}
+	oauth2Config := &configv1.OAuth2Auth{}
+	oauth2Config.SetIssuerUrl(server.URL)
+	oauth2Config.SetAudience("test-audience")
+	authConfig.SetOauth2(oauth2Config)
+
+	err = mcpServer.AuthManager().AddOAuth2Authenticator(ctx, authedServiceID, &auth.OAuth2Config{
+		IssuerURL: server.URL,
+		Audience:  "test-audience",
+	})
+	require.NoError(t, err)
+
+	authedTool := &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("authed-tool"),
+			ServiceId: proto.String(authedServiceID),
+			Annotations: &v1.ToolAnnotations{
+				InputSchema: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":       structpb.NewStringValue("object"),
+						"properties": structpb.NewStructValue(&structpb.Struct{}),
+					},
+				},
+			},
+		},
+	}
+	mcpServer.AddTool(authedTool)
+
+	claims := jwt.MapClaims{
+		"iss": server.URL,
+		"aud": "test-audience",
+		"exp": time.Now().Add(time.Hour).Unix(),
+	}
+	token := newIDToken(t, privateKey, claims)
+
+	req, _ := http.NewRequest("POST", "/", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	ctxWithReq := middleware.HTTPRequestToContext(context.Background(), req)
+
+	sanitizedToolName, err := util.SanitizeToolName("authed-tool")
+	require.NoError(t, err)
+	toolID := authedServiceID + "." + sanitizedToolName
+
+	_, err = mcpServer.CallTool(ctxWithReq, &tool.ExecutionRequest{ToolName: toolID})
+	assert.NoError(t, err)
 }
 
 type testPrompt struct {
@@ -523,7 +771,12 @@ func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInf
 
 func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	m.getToolCalled = true
-	return &mockTool{}, true
+	return &mockTool{
+		tool: &v1.Tool{
+			Name:      proto.String("test-tool"),
+			ServiceId: proto.String("test-service"),
+		},
+	}, true
 }
 
 func (m *mockToolManager) ListTools() []tool.Tool {
@@ -583,7 +836,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	_ = server.ListTools()
 	assert.True(t, mockToolManager.listToolsCalled)
 
-	_, _ = server.CallTool(ctx, &tool.ExecutionRequest{})
+	_, _ = server.CallTool(ctx, &tool.ExecutionRequest{ToolName: "test-service.test-tool"})
 	assert.True(t, mockToolManager.executeToolCalled)
 
 	server.SetMCPServer(nil)
@@ -789,6 +1042,10 @@ func (m *chameleonTool) Execute(ctx context.Context, req *tool.ExecutionRequest)
 
 func (m *chameleonTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (m *chameleonTool) ServiceID() string {
+	return m.tool.GetServiceId()
 }
 
 // setName changes the name of the tool. This is used to simulate a tool that

@@ -46,3 +46,8 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
+
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *CallableTool) ServiceID() string {
+	return t.serviceConfig.GetSanitizedName()
+}

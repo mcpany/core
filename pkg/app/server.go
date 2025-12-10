@@ -508,6 +508,7 @@ func (a *Application) runServerMode(
 	var wg sync.WaitGroup
 
 	httpHandler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+		r = r.WithContext(middleware.HTTPRequestToContext(r.Context(), r))
 		return mcpSrv.Server()
 	}, nil)
 

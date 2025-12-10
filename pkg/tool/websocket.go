@@ -82,6 +82,11 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *WebsocketTool) ServiceID() string {
+	return t.serviceID
+}
+
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.

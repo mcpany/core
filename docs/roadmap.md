@@ -19,6 +19,9 @@ The following features are fully implemented and tested:
   - API Key
   - Bearer Token
   - OAuth 2.0
+- **Incoming Request Authentication**:
+  - API Key
+  - OAuth 2.0
 - **Dynamic Registration**: Services can be registered at runtime via the gRPC Registration API.
 - **Static Registration**: Services can be registered at startup via a YAML or JSON configuration file.
 - **Advanced Service Policies**:
@@ -36,7 +39,6 @@ The following features are fully implemented and tested:
 The following features are defined in the configuration schema (`proto/config/v1/config.proto`) but are **not yet implemented** in the server logic:
 
 - **Advanced Authentication**:
-  - Incoming request authentication (`AuthenticationConfig`)
 - **Service Health Checks**:
   - `HttpHealthCheck`
   - `GrpcHealthCheck`

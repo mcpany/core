@@ -132,6 +132,11 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
+// ServiceID returns the ID of the service that the tool belongs to.
+func (t *WebrtcTool) ServiceID() string {
+	return t.serviceID
+}
+
 // Execute handles the execution of the WebRTC tool. It establishes a new peer
 // connection, negotiates the session via an HTTP signaling server, sends the
 // tool inputs over the data channel, and waits for a response.
