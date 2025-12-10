@@ -207,6 +207,8 @@ message WebsocketUpstreamService {
   map<string, WebsocketCallDefinition> calls = 5;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 6;
+  // Health check configuration.
+  WebsocketHealthCheck health_check = 7;
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
@@ -388,6 +390,18 @@ message CommandLineHealthCheck {
   google.protobuf.Duration interval = 4;
   // The timeout for each health check attempt.
   google.protobuf.Duration timeout = 5;
+}
+
+// Defines a health check for a Websocket-based service.
+message WebsocketHealthCheck {
+  // The message to send as a ping.
+  string ping_message = 1;
+  // The expected message in response to the ping.
+  string expected_pong_message = 2;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 3;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 4;
 }
 
 // Defines the container environment for running a command.

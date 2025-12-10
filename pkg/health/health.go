@@ -33,14 +33,81 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/pkg/command"
+	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 const (
-	healthStatusGauge = "mcp_any_health_check_status"
+	healthStatusGauge                  = "mcp_any_health_check_status"
+	defaultWebsocketHealthCheckTimeout = 5 * time.Second
 )
+
+func websocketCheck(name string, c *configvtrv1.WebsocketUpstreamService) health.Check {
+	return health.Check{
+		Name: name,
+		Check: func(ctx context.Context) error {
+			healthCheck := c.GetHealthCheck()
+			if healthCheck == nil {
+				return checkConnection(c.GetAddress())
+			}
+
+			timeout := defaultWebsocketHealthCheckTimeout
+			if healthCheck.GetTimeout() != nil {
+				if d := healthCheck.GetTimeout().AsDuration(); d > 0 {
+					timeout = d
+				}
+			}
+
+			ctx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+
+			dialer := websocket.Dialer{
+				Proxy: http.ProxyFromEnvironment,
+			}
+
+			conn, _, err := dialer.DialContext(ctx, c.GetAddress(), nil)
+			if err != nil {
+				return fmt.Errorf("failed to connect to websocket service: %w", err)
+			}
+			defer conn.Close()
+
+			pongReceived := make(chan string, 1)
+			conn.SetPongHandler(func(appData string) error {
+				select {
+				case pongReceived <- appData:
+				default:
+				}
+				return nil
+			})
+
+			if err := conn.WriteMessage(websocket.PingMessage, []byte(healthCheck.GetPingMessage())); err != nil {
+				return fmt.Errorf("failed to send ping message: %w", err)
+			}
+
+			// We must read from the connection for the pong handler to be invoked.
+			// This read will be interrupted by the context's deadline.
+			go func() {
+				for {
+					if _, _, err := conn.ReadMessage(); err != nil {
+						return
+					}
+				}
+			}()
+
+			select {
+			case pongMsg := <-pongReceived:
+				if healthCheck.GetExpectedPongMessage() != "" && pongMsg != healthCheck.GetExpectedPongMessage() {
+					return fmt.Errorf("pong message mismatch: expected %q, got %q", healthCheck.GetExpectedPongMessage(), pongMsg)
+				}
+				return nil // Success
+			case <-ctx.Done():
+				return fmt.Errorf("timed out waiting for pong message")
+			}
+		},
+	}
+}
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
@@ -67,7 +134,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		check = commandLineCheck(serviceName, uc.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		check = connectionCheck(serviceName, uc.GetWebsocketService().GetAddress())
+		check = websocketCheck(serviceName, uc.GetWebsocketService())
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
 		check = connectionCheck(serviceName, uc.GetWebrtcService().GetAddress())
 	case configv1.UpstreamServiceConfig_McpService_case:

@@ -346,6 +346,7 @@ upstream_services:
 | `resources`  | `repeated ResourceDefinition`          | A list of resources served by this service.          |
 | `calls`      | `map<string, WebsocketCallDefinition>` | A map of call definitions, keyed by their unique ID. |
 | `prompts`    | `repeated PromptDefinition`            | A list of prompts served by this service.            |
+| `health_check` | `WebsocketHealthCheck`                 | Health check configuration.                          |
 
 ##### Use Case and Example
 
@@ -505,6 +506,15 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 | `expected_response_contains` | `string`   | A substring expected in the service's output for the check to pass. |
 | `interval`                   | `duration` | How often to perform the health check.                              |
 | `timeout`                    | `duration` | The timeout for each health check attempt.                          |
+
+#### `WebsocketHealthCheck`
+
+| Field                   | Type       | Description                                           |
+| ----------------------- | ---------- | ----------------------------------------------------- |
+| `ping_message`          | `string`   | The message to send as a ping.                        |
+| `expected_pong_message` | `string`   | The expected message in response to the ping.         |
+| `interval`              | `duration` | How often to perform the health check.                |
+| `timeout`               | `duration` | The timeout for each health check attempt.            |
 
 ### Authentication
 

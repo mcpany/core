@@ -29,9 +29,128 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
+	"github.com/gorilla/websocket"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
+
+func TestWebsocketHealthCheck(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	t.Run("Success", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			upgrader := websocket.Upgrader{}
+			conn, err := upgrader.Upgrade(w, r, nil)
+			if !assert.NoError(t, err) {
+				return
+			}
+			defer conn.Close()
+
+			conn.SetPingHandler(func(appData string) error {
+				if appData == "no-reply" {
+					return nil
+				}
+				return conn.WriteMessage(websocket.PongMessage, []byte("pong"))
+			})
+
+			// Keep the connection alive to handle pings
+			for {
+				if _, _, err := conn.ReadMessage(); err != nil {
+					break
+				}
+			}
+		}))
+		defer server.Close()
+
+		addr := server.Listener.Addr().String()
+		wsURL := "ws://" + addr
+
+		// Create a simple TCP server for the NoHealthCheck test case.
+		l, err := net.Listen("tcp", "localhost:0")
+		assert.NoError(t, err)
+		defer l.Close()
+		tcpAddr := l.Addr().String()
+
+		testCases := []struct {
+			name           string
+			config         *configv1.UpstreamServiceConfig
+			expectedStatus health.AvailabilityStatus
+		}{
+			{
+				name: "Success",
+				config: configv1.UpstreamServiceConfig_builder{
+					Name: lo.ToPtr("websocket-success"),
+					WebsocketService: configv1.WebsocketUpstreamService_builder{
+						Address: &wsURL,
+						HealthCheck: configv1.WebsocketHealthCheck_builder{
+							PingMessage:         lo.ToPtr("ping"),
+							ExpectedPongMessage: lo.ToPtr("pong"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				expectedStatus: health.StatusUp,
+			},
+			{
+				name: "ServerDown",
+				config: configv1.UpstreamServiceConfig_builder{
+					Name: lo.ToPtr("websocket-server-down"),
+					WebsocketService: configv1.WebsocketUpstreamService_builder{
+						Address: lo.ToPtr("ws://localhost:12345"),
+						HealthCheck: configv1.WebsocketHealthCheck_builder{
+							PingMessage: lo.ToPtr("ping"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				expectedStatus: health.StatusDown,
+			},
+			{
+				name: "Timeout",
+				config: configv1.UpstreamServiceConfig_builder{
+					Name: lo.ToPtr("websocket-timeout"),
+					WebsocketService: configv1.WebsocketUpstreamService_builder{
+						Address: &wsURL,
+						HealthCheck: configv1.WebsocketHealthCheck_builder{
+							PingMessage: lo.ToPtr("no-reply"),
+							Timeout:     durationpb.New(10 * time.Millisecond),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				expectedStatus: health.StatusDown,
+			},
+			{
+				name: "PongMismatch",
+				config: configv1.UpstreamServiceConfig_builder{
+					Name: lo.ToPtr("websocket-pong-mismatch"),
+					WebsocketService: configv1.WebsocketUpstreamService_builder{
+						Address: &wsURL,
+						HealthCheck: configv1.WebsocketHealthCheck_builder{
+							PingMessage:         lo.ToPtr("ping"),
+							ExpectedPongMessage: lo.ToPtr("not-pong"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				expectedStatus: health.StatusDown,
+			},
+			{
+				name: "NoHealthCheck",
+				config: configv1.UpstreamServiceConfig_builder{
+					Name:             lo.ToPtr("websocket-no-healthcheck"),
+					WebsocketService: configv1.WebsocketUpstreamService_builder{Address: &tcpAddr}.Build(),
+				}.Build(),
+				expectedStatus: health.StatusUp,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				checker := NewChecker(tc.config)
+				assert.NotNil(t, checker)
+				assert.Equal(t, tc.expectedStatus, checker.Check(ctx).Status)
+			})
+		}
+	})
+}
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
 type mockHealthServer struct {
