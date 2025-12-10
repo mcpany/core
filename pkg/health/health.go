@@ -106,8 +106,9 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 			client := &http.Client{
 				Timeout: lo.Ternary(c.GetHealthCheck().GetTimeout() != nil, c.GetHealthCheck().GetTimeout().AsDuration(), 5*time.Second),
 			}
+			method := lo.Ternary(c.GetHealthCheck().GetMethod() != "", c.GetHealthCheck().GetMethod(), http.MethodGet)
 
-			req, err := http.NewRequestWithContext(ctx, "GET", c.GetHealthCheck().GetUrl(), nil)
+			req, err := http.NewRequestWithContext(ctx, method, c.GetHealthCheck().GetUrl(), nil)
 			if err != nil {
 				return fmt.Errorf("failed to create health check request: %w", err)
 			}

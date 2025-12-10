@@ -4726,6 +4726,7 @@ type HttpHealthCheck struct {
 	xxx_hidden_ExpectedResponseBodyContains *string                `protobuf:"bytes,3,opt,name=expected_response_body_contains,json=expectedResponseBodyContains"`
 	xxx_hidden_Interval                     *durationpb.Duration   `protobuf:"bytes,4,opt,name=interval"`
 	xxx_hidden_Timeout                      *durationpb.Duration   `protobuf:"bytes,5,opt,name=timeout"`
+	xxx_hidden_Method                       *string                `protobuf:"bytes,6,opt,name=method"`
 	XXX_raceDetectHookData                  protoimpl.RaceDetectHookData
 	XXX_presence                            [1]uint32
 	unknownFields                           protoimpl.UnknownFields
@@ -4798,19 +4799,29 @@ func (x *HttpHealthCheck) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
+func (x *HttpHealthCheck) GetMethod() string {
+	if x != nil {
+		if x.xxx_hidden_Method != nil {
+			return *x.xxx_hidden_Method
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *HttpHealthCheck) SetUrl(v string) {
 	x.xxx_hidden_Url = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedCode(v int32) {
 	x.xxx_hidden_ExpectedCode = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedResponseBodyContains(v string) {
 	x.xxx_hidden_ExpectedResponseBodyContains = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *HttpHealthCheck) SetInterval(v *durationpb.Duration) {
@@ -4819,6 +4830,11 @@ func (x *HttpHealthCheck) SetInterval(v *durationpb.Duration) {
 
 func (x *HttpHealthCheck) SetTimeout(v *durationpb.Duration) {
 	x.xxx_hidden_Timeout = v
+}
+
+func (x *HttpHealthCheck) SetMethod(v string) {
+	x.xxx_hidden_Method = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *HttpHealthCheck) HasUrl() bool {
@@ -4856,6 +4872,13 @@ func (x *HttpHealthCheck) HasTimeout() bool {
 	return x.xxx_hidden_Timeout != nil
 }
 
+func (x *HttpHealthCheck) HasMethod() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
 func (x *HttpHealthCheck) ClearUrl() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Url = nil
@@ -4879,6 +4902,11 @@ func (x *HttpHealthCheck) ClearTimeout() {
 	x.xxx_hidden_Timeout = nil
 }
 
+func (x *HttpHealthCheck) ClearMethod() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Method = nil
+}
+
 type HttpHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -4892,6 +4920,8 @@ type HttpHealthCheck_builder struct {
 	Interval *durationpb.Duration
 	// The timeout for each health check attempt.
 	Timeout *durationpb.Duration
+	// The HTTP method to use for the health check. Defaults to "GET".
+	Method *string
 }
 
 func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
@@ -4899,19 +4929,23 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Url != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Url = b.Url
 	}
 	if b.ExpectedCode != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_ExpectedCode = *b.ExpectedCode
 	}
 	if b.ExpectedResponseBodyContains != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_ExpectedResponseBodyContains = b.ExpectedResponseBodyContains
 	}
 	x.xxx_hidden_Interval = b.Interval
 	x.xxx_hidden_Timeout = b.Timeout
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_Method = b.Method
+	}
 	return m0
 }
 
@@ -6490,13 +6524,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x14ConnectionPoolConfig\x12'\n" +
 	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
 	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
-	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vidleTimeout\"\xfb\x01\n" +
+	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vidleTimeout\"\x93\x02\n" +
 	"\x0fHttpHealthCheck\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12#\n" +
 	"\rexpected_code\x18\x02 \x01(\x05R\fexpectedCode\x12E\n" +
 	"\x1fexpected_response_body_contains\x18\x03 \x01(\tR\x1cexpectedResponseBodyContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\x92\x02\n" +
+	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x16\n" +
+	"\x06method\x18\x06 \x01(\tR\x06method\"\x92\x02\n" +
 	"\x0fGrpcHealthCheck\x12\x18\n" +
 	"\aservice\x18\x01 \x01(\tR\aservice\x12\x16\n" +
 	"\x06method\x18\x02 \x01(\tR\x06method\x12\x18\n" +
