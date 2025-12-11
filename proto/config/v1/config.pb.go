@@ -5008,6 +5008,7 @@ type WebsocketHealthCheck struct {
 	xxx_hidden_ExpectedResponseContains *string                `protobuf:"bytes,2,opt,name=expected_response_contains,json=expectedResponseContains"`
 	xxx_hidden_Interval                 *durationpb.Duration   `protobuf:"bytes,3,opt,name=interval"`
 	xxx_hidden_Timeout                  *durationpb.Duration   `protobuf:"bytes,4,opt,name=timeout"`
+	xxx_hidden_Url                      *string                `protobuf:"bytes,5,opt,name=url"`
 	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
 	XXX_presence                        [1]uint32
 	unknownFields                       protoimpl.UnknownFields
@@ -5073,14 +5074,24 @@ func (x *WebsocketHealthCheck) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
+func (x *WebsocketHealthCheck) GetUrl() string {
+	if x != nil {
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *WebsocketHealthCheck) SetMessage(v string) {
 	x.xxx_hidden_Message = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *WebsocketHealthCheck) SetExpectedResponseContains(v string) {
 	x.xxx_hidden_ExpectedResponseContains = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *WebsocketHealthCheck) SetInterval(v *durationpb.Duration) {
@@ -5089,6 +5100,11 @@ func (x *WebsocketHealthCheck) SetInterval(v *durationpb.Duration) {
 
 func (x *WebsocketHealthCheck) SetTimeout(v *durationpb.Duration) {
 	x.xxx_hidden_Timeout = v
+}
+
+func (x *WebsocketHealthCheck) SetUrl(v string) {
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *WebsocketHealthCheck) HasMessage() bool {
@@ -5119,6 +5135,13 @@ func (x *WebsocketHealthCheck) HasTimeout() bool {
 	return x.xxx_hidden_Timeout != nil
 }
 
+func (x *WebsocketHealthCheck) HasUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
 func (x *WebsocketHealthCheck) ClearMessage() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Message = nil
@@ -5137,6 +5160,11 @@ func (x *WebsocketHealthCheck) ClearTimeout() {
 	x.xxx_hidden_Timeout = nil
 }
 
+func (x *WebsocketHealthCheck) ClearUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Url = nil
+}
+
 type WebsocketHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -5148,6 +5176,8 @@ type WebsocketHealthCheck_builder struct {
 	Interval *durationpb.Duration
 	// The timeout for each health check attempt.
 	Timeout *durationpb.Duration
+	// The URL to send the health check request to.
+	Url *string
 }
 
 func (b0 WebsocketHealthCheck_builder) Build() *WebsocketHealthCheck {
@@ -5155,15 +5185,19 @@ func (b0 WebsocketHealthCheck_builder) Build() *WebsocketHealthCheck {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Message != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Message = b.Message
 	}
 	if b.ExpectedResponseContains != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_ExpectedResponseContains = b.ExpectedResponseContains
 	}
 	x.xxx_hidden_Interval = b.Interval
 	x.xxx_hidden_Timeout = b.Timeout
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_Url = b.Url
+	}
 	return m0
 }
 
@@ -6923,12 +6957,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x1fexpected_response_body_contains\x18\x03 \x01(\tR\x1cexpectedResponseBodyContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
 	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x16\n" +
-	"\x06method\x18\x06 \x01(\tR\x06method\"\xda\x01\n" +
+	"\x06method\x18\x06 \x01(\tR\x06method\"\xec\x01\n" +
 	"\x14WebsocketHealthCheck\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12<\n" +
 	"\x1aexpected_response_contains\x18\x02 \x01(\tR\x18expectedResponseContains\x125\n" +
 	"\binterval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
-	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\x92\x02\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x10\n" +
+	"\x03url\x18\x05 \x01(\tR\x03url\"\x92\x02\n" +
 	"\x0fGrpcHealthCheck\x12\x18\n" +
 	"\aservice\x18\x01 \x01(\tR\aservice\x12\x16\n" +
 	"\x06method\x18\x02 \x01(\tR\x06method\x12\x18\n" +
