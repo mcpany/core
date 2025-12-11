@@ -15,6 +15,7 @@ The following features are fully implemented and tested:
   - GraphQL
   - Stdio
   - MCP-to-MCP Proxy
+  - WebSocket
 - **Upstream Authentication**:
   - API Key
   - Bearer Token
@@ -28,6 +29,12 @@ The following features are fully implemented and tested:
 - **Deployment**:
   - Official Helm Chart
   - Docker Container
+- **Service Health Checks**:
+  - HTTP
+  - gRPC
+  - WebSocket
+  - WebRTC
+  - Command Line
 - **Configuration**:
   - Hot Configuration Reloading
 
@@ -37,12 +44,6 @@ The following features are defined in the configuration schema (`proto/config/v1
 
 - **Advanced Authentication**:
   - Incoming request authentication (`AuthenticationConfig`)
-- **Service Health Checks**:
-  - `HttpHealthCheck`
-  - `GrpcHealthCheck`
-  - `StdioHealthCheck`
-  - `WebsocketHealthCheck`
-  - `WebRTCHealthCheck`
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
@@ -61,12 +62,11 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## Ongoing Goals
 
-- [ ] **Implement Health Checking**: Build the logic for performing service health checks and routing traffic accordingly.
 - [ ] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
 - [ ] **Improve Error Handling**: Enhance error messages and provide more context for debugging.
 
 ## Long-Term Goals (6-12+ Months)
 
-- [ ] **Add Support for More Service Types**: Extend the server to support additional protocols, such as WebSockets.
+- [ ] **Add Support for More Service Types**: Extend the server to support additional protocols.
 - [ ] **Implement a Web-Based UI**: Create a user interface for easier management and monitoring of the server.
