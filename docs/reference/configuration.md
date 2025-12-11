@@ -252,20 +252,20 @@ service_config:
 
 #### `CommandLineUpstreamService`
 
-| Field                   | Type                                     | Description                                          |
-| ----------------------- | ---------------------------------------- | ---------------------------------------------------- |
-| `command`               | `string`                                 | The command to execute the service.                  |
-| `working_directory`     | `string`                                 | The working directory for the command.               |
-| `tools`                 | `repeated ToolDefinition`                | Manually defined mappings from MCP tools.            |
-| `health_check`          | `CommandLineHealthCheck`                 | Health check configuration.                          |
-| `cache`                 | `CacheConfig`                            | Caching configuration.                               |
-| `container_environment` | `ContainerEnvironment`                   | Container environment to run the command in.         |
-| `timeout`               | `duration`                               | Timeout for the command execution.                   |
-| `communication_protocol`| `enum`                                   | Protocol for communicating with the command (`JSON`).|
-| `local`                 | `bool`                                   | If true, execute locally instead of in a container.  |
-| `resources`             | `repeated ResourceDefinition`            | A list of resources served by this service.          |
-| `calls`                 | `map<string, CommandLineCallDefinition>` | A map of call definitions, keyed by their unique ID. |
-| `prompts`               | `repeated PromptDefinition`              | A list of prompts served by this service.            |
+| Field                    | Type                                     | Description                                           |
+| ------------------------ | ---------------------------------------- | ----------------------------------------------------- |
+| `command`                | `string`                                 | The command to execute the service.                   |
+| `working_directory`      | `string`                                 | The working directory for the command.                |
+| `tools`                  | `repeated ToolDefinition`                | Manually defined mappings from MCP tools.             |
+| `health_check`           | `CommandLineHealthCheck`                 | Health check configuration.                           |
+| `cache`                  | `CacheConfig`                            | Caching configuration.                                |
+| `container_environment`  | `ContainerEnvironment`                   | Container environment to run the command in.          |
+| `timeout`                | `duration`                               | Timeout for the command execution.                    |
+| `communication_protocol` | `enum`                                   | Protocol for communicating with the command (`JSON`). |
+| `local`                  | `bool`                                   | If true, execute locally instead of in a container.   |
+| `resources`              | `repeated ResourceDefinition`            | A list of resources served by this service.           |
+| `calls`                  | `map<string, CommandLineCallDefinition>` | A map of call definitions, keyed by their unique ID.  |
+| `prompts`                | `repeated PromptDefinition`              | A list of prompts served by this service.             |
 
 ##### Use Case and Example
 
@@ -310,12 +310,12 @@ service_config:
 
 #### `GraphqlUpstreamService`
 
-| Field     | Type                                 | Description                                |
-| --------- | ------------------------------------ | ------------------------------------------ |
-| `address` | `string`                             | The endpoint URL of the GraphQL service.   |
-| `calls`   | `map<string, GraphqlCallDefinition>` | A map of call definitions to expose tools. |
-| `prompts` | `repeated PromptDefinition`          | A list of prompts served by this service.  |
-| `health_check` | `WebsocketHealthCheck` | Health check configuration. |
+| Field          | Type                                 | Description                                |
+| -------------- | ------------------------------------ | ------------------------------------------ |
+| `address`      | `string`                             | The endpoint URL of the GraphQL service.   |
+| `calls`        | `map<string, GraphqlCallDefinition>` | A map of call definitions to expose tools. |
+| `prompts`      | `repeated PromptDefinition`          | A list of prompts served by this service.  |
+| `health_check` | `WebsocketHealthCheck`               | Health check configuration.                |
 
 ##### Use Case and Example
 
@@ -476,11 +476,11 @@ resilience:
 
 #### `ContainerEnvironment`
 
-| Field     | Type                  | Description                                                                          |
-| --------- | --------------------- | ------------------------------------------------------------------------------------ |
-| `name`    | `string`              | The name of the container.                                                           |
-| `image`   | `string`              | The image to use for the container.                                                  |
-| `volumes` | `map<string, string>` | The volumes to mount into the container, with destination as key and source as value.|
+| Field     | Type                  | Description                                                                           |
+| --------- | --------------------- | ------------------------------------------------------------------------------------- |
+| `name`    | `string`              | The name of the container.                                                            |
+| `image`   | `string`              | The image to use for the container.                                                   |
+| `volumes` | `map<string, string>` | The volumes to mount into the container, with destination as key and source as value. |
 
 ### Health Checks
 
@@ -520,12 +520,12 @@ MCP Any can perform health checks on upstream services to ensure they are availa
 
 #### `WebsocketHealthCheck`
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `message` | `string` | The message to send to the websocket service for the health check. |
-| `expected_response_contains` | `string` | A substring expected in the service's response for the check to pass. |
-| `interval` | `duration` | How often to perform the health check. |
-| `timeout` | `duration` | The timeout for each health check attempt. |
+| Field                        | Type       | Description                                                           |
+| ---------------------------- | ---------- | --------------------------------------------------------------------- |
+| `message`                    | `string`   | The message to send to the websocket service for the health check.    |
+| `expected_response_contains` | `string`   | A substring expected in the service's response for the check to pass. |
+| `interval`                   | `duration` | How often to perform the health check.                                |
+| `timeout`                    | `duration` | The timeout for each health check attempt.                            |
 
 ### Authentication
 
