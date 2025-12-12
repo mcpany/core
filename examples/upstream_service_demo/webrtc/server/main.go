@@ -38,7 +38,7 @@ type Signal struct {
 
 // handleWebSocket manages the WebRTC signaling over a WebSocket connection.
 func handleWebSocket(conn *websocket.Conn) {
-	defer conn.Close() // Ensure the WebSocket connection is closed when the handler exits
+	defer func() { _ = conn.Close() }() // Ensure the WebSocket connection is closed when the handler exits
 
 	peerConnection, err := webrtc.NewPeerConnection(webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
@@ -51,7 +51,7 @@ func handleWebSocket(conn *websocket.Conn) {
 		log.Print("Failed to create peer connection:", err) // Changed from Fatal
 		return
 	}
-	defer peerConnection.Close() // Ensure the peer connection is closed
+	defer func() { _ = peerConnection.Close() }() // Ensure the peer connection is closed
 
 	dataChannel, err := peerConnection.CreateDataChannel("data", nil)
 	if err != nil {

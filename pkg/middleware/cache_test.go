@@ -31,6 +31,13 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
+const (
+	testToolName        = "test-tool"
+	testServiceName     = "test-service"
+	testServiceToolName = "test-service.test-tool"
+	successResult       = "success"
+)
+
 // mockTool is a mock implementation of the tool.Tool interface for testing.
 type mockTool struct {
 	tool         *v1.Tool
@@ -44,7 +51,7 @@ func (m *mockTool) Tool() *v1.Tool {
 
 func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	m.executeCount++
-	return "success", nil
+	return successResult, nil
 }
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
@@ -87,7 +94,7 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	}
 
 	req := &tool.ExecutionRequest{
-		ToolName: "test-service.test-tool",
+		ToolName: testServiceToolName,
 	}
 
 	// Create a context with the tool
@@ -102,13 +109,13 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// 1. First call - should execute the tool
 	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
 	require.NoError(t, err)
-	assert.Equal(t, "success", res)
+	assert.Equal(t, successResult, res)
 	assert.Equal(t, 1, testTool.executeCount, "Tool should have been executed on the first call")
 
 	// 2. Second call - should hit the cache
 	res, err = cacheMiddleware.Execute(ctx, req, nextFunc)
 	require.NoError(t, err)
-	assert.Equal(t, "success", res)
+	assert.Equal(t, successResult, res)
 	assert.Equal(t, 1, testTool.executeCount, "Tool should not have been executed again; result should come from cache")
 }
 
@@ -120,8 +127,8 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 
 	testTool := &mockTool{
 		tool: &v1.Tool{
-			Name:      proto.String("test-tool"),
-			ServiceId: proto.String("test-service"),
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
 		},
 		cacheConfig: &configv1.CacheConfig{
 			IsEnabled: proto.Bool(true),
@@ -146,7 +153,7 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 	// 3. Third call - should execute the tool again
 	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
 	require.NoError(t, err)
-	assert.Equal(t, "success", res)
+	assert.Equal(t, successResult, res)
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache expiry")
 }
 
@@ -156,8 +163,8 @@ func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 	testTool := &mockTool{
 		tool: &v1.Tool{
-			Name:      proto.String("test-tool"),
-			ServiceId: proto.String("test-service"),
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
 		},
 		cacheConfig: &configv1.CacheConfig{
 			IsEnabled: proto.Bool(false), // Cache is explicitly disabled
@@ -188,12 +195,12 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 	testTool := &mockTool{
 		tool: &v1.Tool{
-			Name:      proto.String("test-tool"),
-			ServiceId: proto.String("test-service"),
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
 		},
 		cacheConfig: nil, // No cache config provided for the tool
 	}
-	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
 	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 		t, _ := tool.GetFromContext(ctx)

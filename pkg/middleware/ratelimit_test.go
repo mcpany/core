@@ -27,6 +27,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/protobuf/proto"
 )
 
 type rateLimitMockTool struct {
@@ -61,12 +62,14 @@ func (m *rateLimitMockToolManager) GetServiceInfo(serviceID string) (*tool.Servi
 }
 
 func TestRateLimitMiddleware(t *testing.T) {
+	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := &configv1.RateLimitConfig{}
@@ -95,7 +98,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		result, err := rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
 	})
 
@@ -103,8 +106,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := &configv1.RateLimitConfig{}
@@ -132,7 +136,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// First request should succeed
 		result, err := rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 
 		// Immediate second request should fail
 		_, err = rlMiddleware.Execute(ctx, req, next)
@@ -189,7 +193,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// 1. Allowed (Config 1: 10 RPS)
 		result, err := rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 
 		// 2. Allowed (Config 2: 1 RPS, Burst 1)
 		// Since we updated burst to 1, and we have tokens (from 10), but burst cap reduces tokens to 1.
@@ -197,7 +201,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// Allow() consumes 1. Tokens -> 0. Success.
 		result, err = rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 
 		// 3. Blocked (Config 2: 1 RPS, Burst 1, Tokens 0)
 		_, err = rlMiddleware.Execute(ctx, req, next)

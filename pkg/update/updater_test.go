@@ -42,12 +42,12 @@ func TestUpdater(t *testing.T) {
 	checksumsContent := fmt.Sprintf("%s  %s\n", hex.EncodeToString(assetHash[:]), assetName)
 
 	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(assetContent))
+	_, _ = w.Write([]byte(assetContent))
 	}))
 	defer assetServer.Close()
 
 	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(checksumsContent))
+		_, _ = w.Write([]byte(checksumsContent))
 	}))
 	defer checksumsServer.Close()
 
@@ -142,7 +142,7 @@ func TestUpdater(t *testing.T) {
 			// create a new checksums server with a bad checksum
 			badChecksumsContent := "badchecksum  " + assetName + "\n"
 			badChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte(badChecksumsContent))
+			_, _ = w.Write([]byte(badChecksumsContent))
 			}))
 			defer badChecksumsServer.Close()
 			release.Assets[1].BrowserDownloadURL = github.String(badChecksumsServer.URL)
@@ -237,7 +237,7 @@ func TestUpdater(t *testing.T) {
 				release := &github.RepositoryRelease{
 					TagName: github.String("v1.0.1"),
 				}
-				json.NewEncoder(w).Encode(release)
+				_ = json.NewEncoder(w).Encode(release)
 			}))
 			defer server.Close()
 
@@ -257,7 +257,7 @@ func TestUpdater(t *testing.T) {
 				release := &github.RepositoryRelease{
 					TagName: github.String("v1.0.0"),
 				}
-				json.NewEncoder(w).Encode(release)
+				_ = json.NewEncoder(w).Encode(release)
 			}))
 			defer server.Close()
 

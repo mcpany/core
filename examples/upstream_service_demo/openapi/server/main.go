@@ -25,7 +25,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
-		fmt.Fprintf(w, "Hello, world!")
+		_, _ = fmt.Fprintf(w, "Hello, world!")
 	})
 
 	log.Println("Starting server on :8080")

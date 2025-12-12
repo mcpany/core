@@ -36,7 +36,7 @@ func main() {
 		cancel()
 		log.Fatalf("Failed to connect to MCPANY server: %v", err)
 	}
-	defer cs.Close()
+	defer func() { _ = cs.Close() }()
 
 	result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {

@@ -54,7 +54,9 @@ func TestHTTPClientImpl_Do(t *testing.T) {
 	assert.NoError(t, err)
 
 	resp, err := impl.Do(req)
-
+	if resp != nil {
+		defer func() { _ = resp.Body.Close() }()
+	}
 	assert.NoError(t, err)
 	assert.Same(t, mockResp, resp)
 	assert.Same(t, req, capturedReq)

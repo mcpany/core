@@ -64,16 +64,16 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	cmd.Stderr = errW
 
 	if err := cmd.Start(); err != nil {
-		outW.Close()
-		errW.Close()
+		_ = outW.Close()
+		_ = errW.Close()
 		return nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
 	}
 
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
-		defer outW.Close()
-		defer errW.Close()
+		defer func() { _ = outW.Close() }()
+		defer func() { _ = errW.Close() }()
 
 		err := cmd.Wait()
 		if err != nil {
@@ -218,13 +218,13 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	stderrReader, stderrWriter := io.Pipe()
 
 	go func() {
-		defer out.Close()
+		defer func() { _ = out.Close() }()
 		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, out)
 		if err != nil {
 			log.Error("Failed to demultiplex docker stream", "error", err)
 		}
-		stdoutWriter.Close()
-		stderrWriter.Close()
+		_ = stdoutWriter.Close()
+		_ = stderrWriter.Close()
 	}()
 
 	return stdoutReader, stderrReader, exitCodeChan, nil
@@ -315,8 +315,8 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	stderrReader, stderrWriter := io.Pipe()
 
 	go func() {
-		defer stdoutWriter.Close()
-		defer stderrWriter.Close()
+		defer func() { _ = stdoutWriter.Close() }()
+		defer func() { _ = stderrWriter.Close() }()
 		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, attachResp.Reader)
 		if err != nil {
 			log.Error("Failed to demultiplex docker stream", "error", err)

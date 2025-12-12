@@ -36,6 +36,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestSlogWriter(t *testing.T) {
@@ -100,7 +101,7 @@ func TestDockerConn_Read_UnmarshalError(t *testing.T) {
 			encoder: json.NewEncoder(rwc),
 		}
 		invalidHeaderMsg := `{"method": 123}`
-		rwc.WriteString(invalidHeaderMsg + "\n")
+		_, _ = rwc.WriteString(invalidHeaderMsg + "\n")
 
 		_, err := conn.Read(ctx)
 		if assert.Error(t, err) {
@@ -117,7 +118,7 @@ func TestDockerConn_Read_UnmarshalError(t *testing.T) {
 		}
 		// This is syntactically invalid, and will cause `decoder.Decode` to fail.
 		invalidMsg := `{"method": "test"`
-		rwc.WriteString(invalidMsg + "\n")
+		_, _ = rwc.WriteString(invalidMsg + "\n")
 
 		_, err := conn.Read(ctx)
 		assert.Error(t, err)
@@ -131,8 +132,9 @@ func TestDockerTransport_Connect_ClientError(t *testing.T) {
 	}
 	defer func() { newDockerClient = originalNewDockerClient }()
 
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("test-image")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("test-image"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 	_, err := transport.Connect(context.Background())
 	assert.Error(t, err)
@@ -153,8 +155,9 @@ func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
 	}
 	defer func() { newDockerClient = originalNewDockerClient }()
 
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("test-image")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("test-image"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 	_, err := transport.Connect(context.Background())
 	assert.Error(t, err)
@@ -175,8 +178,9 @@ func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
 	}
 	defer func() { newDockerClient = originalNewDockerClient }()
 
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("test-image")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("test-image"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 	_, err := transport.Connect(context.Background())
 	assert.Error(t, err)
@@ -197,8 +201,9 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 	}
 	defer func() { newDockerClient = originalNewDockerClient }()
 
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("test-image")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("test-image"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 	_, err := transport.Connect(context.Background())
 	assert.Error(t, err)
@@ -212,10 +217,11 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("alpine:latest")
-	stdioConfig.SetCommand("printf")
-	stdioConfig.SetArgs([]string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`})
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("alpine:latest"),
+		Command:        proto.String("printf"),
+		Args:           []string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`},
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	conn, err := transport.Connect(ctx)
@@ -241,9 +247,10 @@ func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetContainerImage("this-image-does-not-exist-ever:latest")
-	stdioConfig.SetCommand("echo")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		ContainerImage: proto.String("this-image-does-not-exist-ever:latest"),
+		Command:        proto.String("echo"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	_, err := transport.Connect(ctx)
@@ -252,8 +259,9 @@ func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 
 func TestDockerTransport_Connect_NoImage(t *testing.T) {
 	ctx := context.Background()
-	stdioConfig := &configv1.McpStdioConnection{}
-	stdioConfig.SetCommand("echo")
+	stdioConfig := configv1.McpStdioConnection_builder{
+		Command: proto.String("echo"),
+	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	_, err := transport.Connect(ctx)

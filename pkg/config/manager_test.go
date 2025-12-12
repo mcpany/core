@@ -44,7 +44,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/collection1":
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "2.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "2.0"}]}`))
 		case "/collection2":
 			w.Write([]byte(`{"services": [{"name": "service3", "version": "1.0"}]}`))
 		case "/collection3":

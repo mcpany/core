@@ -184,7 +184,7 @@ func processProtoCollection(
 			}
 
 			destPath := filepath.Join(tempDir, relPath)
-			if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
+			if err := os.MkdirAll(filepath.Dir(destPath), 0o750); err != nil {
 				return fmt.Errorf("failed to create directory for proto file: %w", err)
 			}
 
@@ -226,7 +226,7 @@ func processProtoCollection(
 
 func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, error) {
 	filePath := filepath.Join(tempDir, protoFile.GetFileName())
-	if err := os.MkdirAll(filepath.Dir(filePath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(filePath), 0o750); err != nil {
 		return "", fmt.Errorf("failed to create directory for proto file: %w", err)
 	}
 

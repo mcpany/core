@@ -32,12 +32,12 @@ func TestVersionCmdExitCode(t *testing.T) {
 	r, w, err := os.Pipe()
 	require.NoError(t, err)
 	rootCmd.SetOut(w)
-	w.Close() // Close the write end of the pipe immediately to cause a write error
+	_ = w.Close() // Close the write end of the pipe immediately to cause a write error
 	rootCmd.SetArgs([]string{"version"})
 
 	// Run the command and check the error
 	err = rootCmd.Execute()
-	r.Close()
+	_ = r.Close()
 
 	// The command should return an error
 	require.Error(t, err)

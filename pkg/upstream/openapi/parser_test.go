@@ -26,6 +26,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	listAllPetsSummary = "List all pets"
+	createPetSummary   = "Create a pet"
+	petsPath           = "/pets"
+	petIDParam         = "petId"
+	stringType         = "string"
+	contentTypeJSON    = "application/json"
+)
+
 const sampleOpenAPISpecJSON = `
 {
   "openapi": "3.0.0",
@@ -289,16 +298,16 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	if !ok {
 		t.Fatalf("Operation 'listPets' not found")
 	}
-	if opListPets.Path != "/pets" {
+	if opListPets.Path != petsPath {
 		t.Errorf("Expected listPets Path '/pets', got '%s'", opListPets.Path)
 	}
 	if opListPets.Method != "GET" {
 		t.Errorf("Expected listPets Method 'GET', got '%s'", opListPets.Method)
 	}
-	if opListPets.Summary != "List all pets" {
+	if opListPets.Summary != listAllPetsSummary {
 		t.Errorf("Expected listPets Summary 'List all pets', got '%s'", opListPets.Summary)
 	}
-	if _, ok := opListPets.ResponseSchemas["200"]["application/json"]; !ok {
+	if _, ok := opListPets.ResponseSchemas["200"][contentTypeJSON]; !ok {
 		t.Error("Expected listPets to have 200 application/json response schema")
 	}
 
@@ -307,16 +316,16 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	if !ok {
 		t.Fatalf("Operation 'createPet' not found")
 	}
-	if opCreatePet.Path != "/pets" { // createPet also uses /pets path
+	if opCreatePet.Path != petsPath { // createPet also uses /pets path
 		t.Errorf("Expected createPet Path '/pets', got '%s'", opCreatePet.Path)
 	}
 	if opCreatePet.Method != "POST" {
 		t.Errorf("Expected createPet Method 'POST', got '%s'", opCreatePet.Method)
 	}
-	if opCreatePet.Summary != "Create a pet" {
+	if opCreatePet.Summary != createPetSummary {
 		t.Errorf("Expected createPet Summary 'Create a pet', got '%s'", opCreatePet.Summary)
 	}
-	if _, ok := opCreatePet.RequestBodySchema["application/json"]; !ok {
+	if _, ok := opCreatePet.RequestBodySchema[contentTypeJSON]; !ok {
 		t.Error("Expected createPet to have application/json request body schema")
 	}
 
@@ -359,7 +368,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedListPetsName)
 	}
 
-	if toolListPets.GetDisplayName() != "List all pets" {
+	if toolListPets.GetDisplayName() != listAllPetsSummary {
 		t.Errorf("Expected listPets DisplayName 'List all pets', got '%s'", toolListPets.GetDisplayName())
 	}
 	if toolListPets.GetServiceId() != mcpServerServiceKey {
@@ -372,7 +381,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if toolListPets.GetAnnotations() == nil {
 		t.Fatalf("listPets Annotations is nil")
 	}
-	if toolListPets.GetAnnotations().GetTitle() != "List all pets" {
+	if toolListPets.GetAnnotations().GetTitle() != listAllPetsSummary {
 		t.Errorf("listPets Annotations.Title: got '%s', want 'List all pets'", toolListPets.GetAnnotations().GetTitle())
 	}
 	if toolListPets.GetAnnotations().GetReadOnlyHint() != true { // GET is read-only
@@ -400,14 +409,14 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if !ok {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedCreatePetName)
 	}
-	if toolCreatePet.GetDisplayName() != "Create a pet" {
+	if toolCreatePet.GetDisplayName() != createPetSummary {
 		t.Errorf("Expected createPet DisplayName 'Create a pet', got '%s'", toolCreatePet.GetDisplayName())
 	}
 	// Annotations for createPet (POST)
 	if toolCreatePet.GetAnnotations() == nil {
 		t.Fatalf("createPet Annotations is nil")
 	}
-	if toolCreatePet.GetAnnotations().GetTitle() != "Create a pet" {
+	if toolCreatePet.GetAnnotations().GetTitle() != createPetSummary {
 		t.Errorf("createPet Annotations.Title: got '%s', want 'Create a pet'", toolCreatePet.GetAnnotations().GetTitle())
 	}
 	if toolCreatePet.GetAnnotations().GetIdempotentHint() != false { // POST is not idempotent
@@ -427,14 +436,14 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'name'")
 	}
-	if propName.GetStructValue().GetFields()["type"].GetStringValue() != "string" {
+	if propName.GetStructValue().GetFields()["type"].GetStringValue() != stringType {
 		t.Errorf("createPet 'name' property type: got %s, want string", propName.GetStructValue().GetFields()["type"].GetStringValue())
 	}
 	propStatus, ok := propertiesCreatePet.GetFields()["status"]
 	if !ok {
 		t.Fatalf("createPet InputSchema.Properties missing 'status'")
 	}
-	if propStatus.GetStructValue().GetFields()["type"].GetStringValue() != "string" {
+	if propStatus.GetStructValue().GetFields()["type"].GetStringValue() != stringType {
 		t.Errorf("createPet 'status' property type: got %s, want string", propStatus.GetStructValue().GetFields()["type"].GetStringValue())
 	}
 	if propStatus.GetStructValue().GetFields()["description"].GetStringValue() != "pet status in the store" {
@@ -470,11 +479,11 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if propertiesShowPetByID.GetFields() == nil {
 		t.Fatalf("showPetById InputSchema.Properties or its fields are nil")
 	}
-	propPetID, ok := propertiesShowPetByID.GetFields()["petId"]
+	propPetID, ok := propertiesShowPetByID.GetFields()[petIDParam]
 	if !ok {
 		t.Fatalf("showPetById InputSchema.Properties missing 'petId'")
 	}
-	if propPetID.GetStructValue().GetFields()["type"].GetStringValue() != "string" {
+	if propPetID.GetStructValue().GetFields()["type"].GetStringValue() != stringType {
 		t.Errorf("showPetById 'petId' property type: got %s, want string", propPetID.GetStructValue().GetFields()["type"].GetStringValue())
 	}
 	if propPetID.GetStructValue().GetFields()["description"].GetStringValue() != "The id of the pet to retrieve" {

@@ -47,13 +47,23 @@ func newIDToken(t *testing.T, privateKey *rsa.PrivateKey, claims jwt.MapClaims) 
 	return signedToken
 }
 
+const (
+	testAudience      = "test-audience"
+	testEmail         = "test@example.com"
+	wellKnownPath     = "/.well-known/openid-configuration"
+	jwksPath          = "/jwks"
+	contentTypeJSON   = "application/json"
+	authHeader        = "Authorization"
+	bearerPrefix      = "Bearer "
+)
+
 func TestNewOAuth2Authenticator(t *testing.T) {
 	privateKey := newTestKey(t)
 
 	// Mock OIDC provider
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/.well-known/openid-configuration" {
-			w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path == wellKnownPath {
+			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{
 				"issuer": "http://` + r.Host + `",
 				"jwks_uri": "http://` + r.Host + `/jwks"
@@ -85,15 +95,15 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 	// Mock OIDC provider
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/.well-known/openid-configuration" {
-			w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path == wellKnownPath {
+			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{
 				"issuer": "http://` + r.Host + `",
 				"jwks_uri": "http://` + r.Host + `/jwks"
 			}`))
 			assert.NoError(t, err)
-		} else if r.URL.Path == "/jwks" {
-			w.Header().Set("Content-Type", "application/json")
+		} else if r.URL.Path == jwksPath {
+			w.Header().Set("Content-Type", contentTypeJSON)
 			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
 			assert.NoError(t, err)
@@ -122,11 +132,11 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 		token := newIDToken(t, privateKey, claims)
 
 		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set(authHeader, bearerPrefix+token)
 
 		ctx, err := authenticator.Authenticate(context.Background(), req)
 		require.NoError(t, err)
-		assert.Equal(t, "test@example.com", ctx.Value("user"))
+		assert.Equal(t, testEmail, ctx.Value("user"))
 	})
 
 	t.Run("missing_authorization_header", func(t *testing.T) {
@@ -138,7 +148,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 	t.Run("invalid_authorization_header_format", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("Authorization", "invalid-token")
+		req.Header.Set(authHeader, "invalid-token")
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, "invalid Authorization header format", err.Error())
@@ -156,7 +166,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 		token := newIDToken(t, wrongKey, claims)
 
 		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set(authHeader, bearerPrefix+token)
 
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
@@ -166,14 +176,14 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 	t.Run("expired_token", func(t *testing.T) {
 		claims := jwt.MapClaims{
 			"iss":   server.URL,
-			"aud":   "test-audience",
+			"aud":   testAudience,
 			"exp":   time.Now().Add(-time.Hour).Unix(),
-			"email": "test@example.com",
+			"email": testEmail,
 		}
 		token := newIDToken(t, privateKey, claims)
 
 		req := httptest.NewRequest("GET", "/", nil)
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set(authHeader, bearerPrefix+token)
 
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
@@ -199,12 +209,12 @@ func TestNewOAuth2Authenticator_Error(t *testing.T) {
 func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
 	privateKey := newTestKey(t)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/.well-known/openid-configuration" {
-			w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path == wellKnownPath {
+			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{"issuer": "http://` + r.Host + `", "jwks_uri": "http://` + r.Host + `/jwks"}`))
 			assert.NoError(t, err)
-		} else if r.URL.Path == "/jwks" {
-			w.Header().Set("Content-Type", "application/json")
+		} else if r.URL.Path == jwksPath {
+			w.Header().Set("Content-Type", contentTypeJSON)
 			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
 			assert.NoError(t, err)
@@ -216,7 +226,7 @@ func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
 
 	config := &OAuth2Config{
 		IssuerURL: server.URL,
-		Audience:  "test-audience",
+		Audience:  testAudience,
 	}
 
 	authenticator, err := NewOAuth2Authenticator(context.Background(), config)
@@ -225,14 +235,14 @@ func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
 
 	claims := jwt.MapClaims{
 		"iss":   server.URL,
-		"aud":   "test-audience",
+		"aud":   testAudience,
 		"exp":   time.Now().Add(time.Hour).Unix(),
 		"email": 123, // Invalid email claim
 	}
 	token := newIDToken(t, privateKey, claims)
 
 	req := httptest.NewRequest("GET", "/", nil)
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set(authHeader, bearerPrefix+token)
 
 	_, err = authenticator.Authenticate(context.Background(), req)
 	assert.Error(t, err)

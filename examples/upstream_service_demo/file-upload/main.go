@@ -36,7 +36,7 @@ func main() {
 			http.Error(w, "failed to get file from form", http.StatusBadRequest)
 			return
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 
 		// Create a temporary file to store the uploaded content
 		tmpfile, err := os.CreateTemp("", "upload-*.txt")
@@ -44,7 +44,7 @@ func main() {
 			http.Error(w, "failed to create temporary file", http.StatusInternalServerError)
 			return
 		}
-		defer os.Remove(tmpfile.Name()) // clean up
+		defer func() { _ = os.Remove(tmpfile.Name()) }() // clean up
 
 		// Copy the uploaded file to the temporary file
 		if _, err := io.Copy(tmpfile, file); err != nil {
@@ -53,7 +53,7 @@ func main() {
 		}
 
 		// Respond with the file name and size
-		fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
+		_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
 	})
 
 	fmt.Println("Server started on :8081")

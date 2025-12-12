@@ -112,7 +112,7 @@ func TestGrpcClientWrapper(t *testing.T) {
 
 		conn, err := grpc.NewClient(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		require.NoError(t, err)
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 
 		configJSON := `{"grpc_service": {"address": "bufnet"}}`
 		config := &configv1.UpstreamServiceConfig{}
@@ -136,7 +136,7 @@ func TestWebsocketClientWrapper(t *testing.T) {
 		}
 		defer conn.Close()
 		// Just handle control messages for the health check
-		conn.SetReadDeadline(time.Now().Add(time.Second * 5))
+		_ = conn.SetReadDeadline(time.Now().Add(time.Second * 5))
 		for {
 			if _, _, err := conn.NextReader(); err != nil {
 				break

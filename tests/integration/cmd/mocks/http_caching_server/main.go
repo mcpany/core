@@ -36,7 +36,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt64(&counter, 1)
-		fmt.Fprintf(w, "This is a cacheable response. Call count: %d", atomic.LoadInt64(&counter))
+		_, _ = fmt.Fprintf(w, "This is a cacheable response. Call count: %d", atomic.LoadInt64(&counter))
 	})
 
 	http.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {

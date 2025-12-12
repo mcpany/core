@@ -34,7 +34,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
-	defer c.Close()
+	defer func() { _ = c.Close() }()
 	for {
 		mt, message, err := c.ReadMessage()
 		if err != nil {

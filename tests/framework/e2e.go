@@ -143,9 +143,10 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
 			}
 			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
-			if method == GRPCRegistration {
+			switch method {
+			case GRPCRegistration:
 				testCase.RegisterUpstream(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
-			} else if method == JSONRPCRegistration {
+			case JSONRPCRegistration:
 				testCase.RegisterUpstreamWithJSONRPC(t, mcpanyTestServerInfo.HTTPEndpoint, upstreamEndpoint)
 			}
 			t.Logf("INFO: Upstream service registered.")
@@ -197,8 +198,9 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 
 func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_grpc_authed_weather"
-	secret := &configv1.SecretValue{}
-	secret.SetPlainText("test-bearer-token")
+	secret := configv1.SecretValue_builder{
+		PlainText: proto.String("test-bearer-token"),
+	}.Build()
 	authConfig := configv1.UpstreamAuthentication_builder{
 		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
 			Token: secret,
@@ -335,8 +337,9 @@ paths:
 	require.NoError(t, err)
 	err = tmpfile.Close()
 	require.NoError(t, err)
-	secret := &configv1.SecretValue{}
-	secret.SetPlainText("test-api-key")
+	secret := configv1.SecretValue_builder{
+		PlainText: proto.String("test-api-key"),
+	}.Build()
 	authConfig := configv1.UpstreamAuthentication_builder{
 		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 			HeaderName: proto.String("X-Api-Key"),

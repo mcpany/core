@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRedisBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
+func TestBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "concurrent-subscribers"
@@ -36,7 +36,7 @@ func TestRedisBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 
 	for i := 0; i < numSubscribers; i++ {
 		go func() {
-			unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+			unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 				// Each subscriber should receive the message
 				wg.Done()
 			})
@@ -54,7 +54,7 @@ func TestRedisBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
+func TestBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-unsubscribe-from-handler"
@@ -92,7 +92,7 @@ func TestRedisBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
 
-func TestRedisBus_Subscribe_CloseClient(t *testing.T) {
+func TestBus_Subscribe_CloseClient(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-client"
@@ -126,7 +126,7 @@ func TestRedisBus_Subscribe_CloseClient(t *testing.T) {
 	assert.False(t, ok, "subscription should be removed after client is closed")
 }
 
-func TestRedisBus_Subscribe_CloseClient_Race(t *testing.T) {
+func TestBus_Subscribe_CloseClient_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-client-race"
@@ -149,7 +149,7 @@ func TestRedisBus_Subscribe_CloseClient_Race(t *testing.T) {
 	unsubOnce.Do(unsub)
 }
 
-func TestRedisBus_Unsubscribe_Race(t *testing.T) {
+func TestBus_Unsubscribe_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-unsubscribe-race"
@@ -169,7 +169,7 @@ func TestRedisBus_Unsubscribe_Race(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_Subscribe_And_Unsubscribe_Race(t *testing.T) {
+func TestBus_Subscribe_And_Unsubscribe_Race(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-and-unsubscribe-race"
