@@ -20,10 +20,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
-	"time"
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/consts"
@@ -206,8 +206,8 @@ func NewServer(
 					mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
 					if err != nil {
 						logging.GetLogger().
-						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)
-					return nil, fmt.Errorf("failed to convert tool %q to MCP format: %w", toolInstance.Tool().GetName(), err)
+							Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)
+						return nil, fmt.Errorf("failed to convert tool %q to MCP format: %w", toolInstance.Tool().GetName(), err)
 					}
 					refreshedTools = append(refreshedTools, mcpTool)
 				}

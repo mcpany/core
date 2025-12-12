@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/logging"
+	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -114,8 +114,6 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
-
-
 func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
@@ -185,7 +183,6 @@ func TestRedisBus_SubscribeOnce_Correctness(t *testing.T) {
 	assert.Equal(t, 1, callCount, "handler should be called exactly once")
 	mu.Unlock()
 }
-
 
 func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	client := setupRedisIntegrationTest(t)

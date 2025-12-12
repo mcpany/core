@@ -75,7 +75,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rlConfig.SetBurst(1)
 
 		serviceInfo := &tool.ServiceInfo{
-			Name: "test-service",
+			Name:   "test-service",
 			Config: &configv1.UpstreamServiceConfig{},
 		}
 		serviceInfo.Config.SetRateLimit(rlConfig)
@@ -113,7 +113,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rlConfig.SetBurst(1)
 
 		serviceInfo := &tool.ServiceInfo{
-			Name: "test-service",
+			Name:   "test-service",
 			Config: &configv1.UpstreamServiceConfig{},
 		}
 		serviceInfo.Config.SetRateLimit(rlConfig)
@@ -155,7 +155,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rlConfig1.SetBurst(10)
 
 		serviceInfo1 := &tool.ServiceInfo{
-			Name: "test-service",
+			Name:   "test-service",
 			Config: &configv1.UpstreamServiceConfig{},
 		}
 		serviceInfo1.Config.SetRateLimit(rlConfig1)
@@ -167,7 +167,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rlConfig2.SetBurst(1)
 
 		serviceInfo2 := &tool.ServiceInfo{
-			Name: "test-service",
+			Name:   "test-service",
 			Config: &configv1.UpstreamServiceConfig{},
 		}
 		serviceInfo2.Config.SetRateLimit(rlConfig2)
@@ -217,7 +217,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		rlConfig.SetIsEnabled(false)
 
 		serviceInfo := &tool.ServiceInfo{
-			Name: "test-service",
+			Name:   "test-service",
 			Config: &configv1.UpstreamServiceConfig{},
 		}
 		serviceInfo.Config.SetRateLimit(rlConfig)
@@ -268,5 +268,4 @@ func TestRateLimitMiddleware(t *testing.T) {
 		assert.Equal(t, "success", result)
 		assert.True(t, nextCalled)
 	})
-
 }

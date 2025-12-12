@@ -326,11 +326,13 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@if test -f "$(GOLANGCI_LINT_BIN)"; then \
-		echo "golangci-lint is already installed."; \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "version 2.0.0"); \
+	if test -f "$(GOLANGCI_LINT_BIN)" && [ -n "$$LINT_VER_CHECK" ]; then \
+		echo "golangci-lint v2.0.0 is already installed."; \
 	else \
-		echo "Installing golangci-lint to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		echo "Installing golangci-lint v2.0.0 to $(TOOL_INSTALL_DIR)..."; \
+		rm -f "$(GOLANGCI_LINT_BIN)"; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.0.0; \
 		echo "Downloading go modules..."; \
 		go mod download; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
@@ -396,7 +398,7 @@ COVERAGE_FILE ?= coverage.out
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /tests/integration/upstream)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build)
 	@-pkill -f file-upload-server
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker

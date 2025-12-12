@@ -18,10 +18,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -122,9 +125,27 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := os.Getenv("HTTP_PORT")
-	if port == "" {
-		port = "8091"
+	var addr string
+	flag := flag.NewFlagSet("weather-server", flag.ExitOnError)
+	flag.StringVar(&addr, "addr", "", "address to listen on")
+	flag.Parse(os.Args[1:])
+
+	if addr == "" {
+		port := os.Getenv("HTTP_PORT")
+		if port == "" {
+			port = "8091"
+		}
+		addr = ":" + port
+	}
+
+	// Handle "localhost:port" or ":port"
+	if host, port, err := net.SplitHostPort(addr); err == nil {
+		if host == "localhost" {
+			addr = "127.0.0.1:" + port
+		}
+	} else if len(addr) > 0 && addr[0] != ':' && !strings.Contains(addr, ":") {
+		// Assume it's just a port
+		addr = ":" + addr
 	}
 
 	mux := http.NewServeMux()
@@ -132,8 +153,8 @@ func main() {
 	mux.HandleFunc("/weather", weatherHandler)
 	mux.HandleFunc("/ws", wsHandler)
 
-	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	log.Printf("Server starting on %s", addr)
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }

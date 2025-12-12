@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -31,8 +32,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"mime/multipart"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -1500,7 +1499,6 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	case <-time.After(2 * time.Second):
 		t.Fatal("timed out waiting for error from startGrpcServer")
 	}
-
 }
 
 func TestHTTPServer_GracefulShutdown(t *testing.T) {
@@ -1771,7 +1769,6 @@ func TestRun_NoConfig(t *testing.T) {
 	assert.NoError(t, runErr, "app.Run should return nil on graceful shutdown")
 }
 
-
 // closableListener is a mock net.Listener that wraps a real net.Listener and
 // tracks whether its Close method has been called. This is used to verify
 // that server shutdown logic correctly closes the listener.
@@ -1811,7 +1808,9 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
 			HandlerType: (*interface{})(nil),
-			Methods:     []gogrpc.MethodDesc{{MethodName: "Hang", Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) { return srv.(*mockHangService).Hang(ctx, nil) }}},
+			Methods: []gogrpc.MethodDesc{{MethodName: "Hang", Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
+				return srv.(*mockHangService).Hang(ctx, nil)
+			}}},
 		}
 		s.RegisterService(desc, hangService)
 	})

@@ -36,12 +36,12 @@ import (
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
-	called                  bool
-	capturedStdio           bool
+	called                   bool
+	capturedStdio            bool
 	capturedMcpListenAddress string
-	capturedGrpcPort        string
-	capturedConfigPaths     []string
-	capturedShutdownTimeout time.Duration
+	capturedGrpcPort         string
+	capturedConfigPaths      []string
+	capturedShutdownTimeout  time.Duration
 }
 
 func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
@@ -128,12 +128,15 @@ func TestRootCmd(t *testing.T) {
 	tmpFilePath := tmpFile.Name()
 	tmpFile.Close()
 
+	port := findFreePort(t)
+	grpcPort := findFreePort(t)
+
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{
 		"run",
 		"--stdio",
-		"--mcp-listen-address", "8081",
-		"--grpc-port", "8082",
+		"--mcp-listen-address", fmt.Sprintf("localhost:%d", port),
+		"--grpc-port", fmt.Sprintf("%d", grpcPort),
 		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
 		"--shutdown-timeout", "10s",
 	})
@@ -141,8 +144,8 @@ func TestRootCmd(t *testing.T) {
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
-	assert.Equal(t, "localhost:8081", mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
-	assert.Equal(t, "8082", mock.capturedGrpcPort, "grpc-port should be captured")
+	assert.Equal(t, fmt.Sprintf("localhost:%d", port), mock.capturedMcpListenAddress, "mcp-listen-address should be captured")
+	assert.Equal(t, fmt.Sprintf("%d", grpcPort), mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{tmpFilePath, tmpDir}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
 }
@@ -214,7 +217,7 @@ func TestHealthCmdFlagPrecedence(t *testing.T) {
 	err = os.WriteFile(configFile, []byte(`
 global_settings:
   bind_address: "localhost:9090"
-`), 0644)
+`), 0o644)
 	assert.NoError(t, err)
 
 	rootCmd := newRootCmd()
@@ -303,15 +306,15 @@ invalid-yaml
 	invalidConfigFile.Close()
 
 	tests := []struct {
-		name          string
-		args          []string
-		expectError   bool
+		name           string
+		args           []string
+		expectError    bool
 		expectedOutput string
 	}{
 		{
-			name:          "valid config",
-			args:          []string{"config", "validate", "--config-path", validConfigFile.Name()},
-			expectError:   false,
+			name:           "valid config",
+			args:           []string{"config", "validate", "--config-path", validConfigFile.Name()},
+			expectError:    false,
 			expectedOutput: "Configuration is valid.\n",
 		},
 		{
@@ -320,9 +323,9 @@ invalid-yaml
 			expectError: true,
 		},
 		{
-			name:          "no config file",
-			args:          []string{"config", "validate"},
-			expectError:   false,
+			name:           "no config file",
+			args:           []string{"config", "validate"},
+			expectError:    false,
 			expectedOutput: "Configuration is valid.\n",
 		},
 	}

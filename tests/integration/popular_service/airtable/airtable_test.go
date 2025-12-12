@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package airtable_test
 
@@ -39,7 +39,6 @@ func TestUpstreamService_Airtable(t *testing.T) {
 	if os.Getenv("AIRTABLE_TABLE_ID") == "" {
 		t.Skip("AIRTABLE_TABLE_ID is not set")
 	}
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()

@@ -73,14 +73,14 @@ func TestRegister_DynamicResource(t *testing.T) {
 	mcpService.SetStdioConnection(stdioConnection)
 
 	toolDef := configv1.ToolDefinition_builder{
-		Name: proto.String("test-tool"),
+		Name:   proto.String("test-tool"),
 		CallId: proto.String("call-1"),
 	}.Build()
 	mcpService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	resDef := configv1.ResourceDefinition_builder{
 		Name: proto.String("dynamic-resource"),
-		Uri: proto.String("test://dynamic"),
+		Uri:  proto.String("test://dynamic"),
 		Dynamic: configv1.DynamicResource_builder{
 			McpCall: configv1.MCPCallDefinition_builder{
 				Id: proto.String("call-1"),
@@ -146,14 +146,14 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	mcpService.SetHttpConnection(httpConnection)
 
 	toolDef := configv1.ToolDefinition_builder{
-		Name: proto.String("test-tool-http"),
+		Name:   proto.String("test-tool-http"),
 		CallId: proto.String("call-http-1"),
 	}.Build()
 	mcpService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	resDef := configv1.ResourceDefinition_builder{
 		Name: proto.String("dynamic-resource-http"),
-		Uri: proto.String("test://dynamic-http"),
+		Uri:  proto.String("test://dynamic-http"),
 		Dynamic: configv1.DynamicResource_builder{
 			McpCall: configv1.MCPCallDefinition_builder{
 				Id: proto.String("call-http-1"),

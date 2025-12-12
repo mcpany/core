@@ -1,3 +1,5 @@
+//go:build e2e_public_api
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e_public_api
 
 package public_api
 
@@ -101,7 +101,7 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)} )
+		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 		if err == nil {
 			break // Success
 		}

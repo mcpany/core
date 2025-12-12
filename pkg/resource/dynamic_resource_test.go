@@ -161,3 +161,16 @@ func TestDynamicResource_Read(t *testing.T) {
 		assert.Contains(t, err.Error(), "failed to execute tool")
 	})
 }
+
+func TestDynamicResource_Subscribe(t *testing.T) {
+	def := configv1.ResourceDefinition_builder{
+		Uri: proto.String("test-uri"),
+	}.Build()
+	mockTool := new(MockTool)
+	mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
+	dr, _ := NewDynamicResource(def, mockTool)
+
+	err := dr.Subscribe(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "subscribing to dynamic resources is not yet implemented")
+}
