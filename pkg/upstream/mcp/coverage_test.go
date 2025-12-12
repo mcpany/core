@@ -65,18 +65,10 @@ func TestRegister_DynamicResource(t *testing.T) {
 	defer func() { connectForTesting = originalConnect }()
 
 	// Config with dynamic resource
-	config := &configv1.UpstreamServiceConfig{}
-	config.SetName("test-service-dynamic")
-	mcpService := &configv1.McpUpstreamService{}
-	stdioConnection := &configv1.McpStdioConnection{}
-	stdioConnection.SetCommand("echo")
-	mcpService.SetStdioConnection(stdioConnection)
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name:   proto.String("test-tool"),
 		CallId: proto.String("call-1"),
 	}.Build()
-	mcpService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	resDef := configv1.ResourceDefinition_builder{
 		Name: proto.String("dynamic-resource"),
@@ -87,9 +79,19 @@ func TestRegister_DynamicResource(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}.Build()
-	mcpService.SetResources([]*configv1.ResourceDefinition{resDef})
 
-	config.SetMcpService(mcpService)
+	mcpService := configv1.McpUpstreamService_builder{
+		StdioConnection: configv1.McpStdioConnection_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{resDef},
+	}.Build()
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name:       proto.String("test-service-dynamic"),
+		McpService: mcpService,
+	}.Build()
 
 	serviceID, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -138,18 +140,10 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	}
 	defer func() { connectForTesting = originalConnect }()
 
-	config := &configv1.UpstreamServiceConfig{}
-	config.SetName("test-service-http-dynamic")
-	mcpService := &configv1.McpUpstreamService{}
-	httpConnection := &configv1.McpStreamableHttpConnection{}
-	httpConnection.SetHttpAddress(server.URL)
-	mcpService.SetHttpConnection(httpConnection)
-
 	toolDef := configv1.ToolDefinition_builder{
 		Name:   proto.String("test-tool-http"),
 		CallId: proto.String("call-http-1"),
 	}.Build()
-	mcpService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	resDef := configv1.ResourceDefinition_builder{
 		Name: proto.String("dynamic-resource-http"),
@@ -160,9 +154,19 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}.Build()
-	mcpService.SetResources([]*configv1.ResourceDefinition{resDef})
 
-	config.SetMcpService(mcpService)
+	mcpService := configv1.McpUpstreamService_builder{
+		HttpConnection: configv1.McpStreamableHttpConnection_builder{
+			HttpAddress: proto.String(server.URL),
+		}.Build(),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{resDef},
+	}.Build()
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name:       proto.String("test-service-http-dynamic"),
+		McpService: mcpService,
+	}.Build()
 
 	serviceID, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -215,27 +219,28 @@ func TestRegister_DisabledItems(t *testing.T) {
 	}
 	defer func() { connectForTesting = originalConnect }()
 
-	config := &configv1.UpstreamServiceConfig{}
-	config.SetName("test-service-disabled")
-	mcpService := &configv1.McpUpstreamService{}
-	stdioConnection := &configv1.McpStdioConnection{}
-	stdioConnection.SetCommand("echo")
-	mcpService.SetStdioConnection(stdioConnection)
-
 	// Configure disabled items
-	mcpService.SetTools([]*configv1.ToolDefinition{
-		configv1.ToolDefinition_builder{Name: proto.String("disabled-tool"), Disable: proto.Bool(true)}.Build(),
-	})
-	mcpService.SetPrompts([]*configv1.PromptDefinition{
-		configv1.PromptDefinition_builder{Name: proto.String("disabled-prompt"), Disable: proto.Bool(true)}.Build(),
-		configv1.PromptDefinition_builder{Name: proto.String("config-disabled-prompt"), Disable: proto.Bool(true)}.Build(), // Also test config-only items
-	})
-	mcpService.SetResources([]*configv1.ResourceDefinition{
-		configv1.ResourceDefinition_builder{Name: proto.String("disabled-resource"), Disable: proto.Bool(true)}.Build(),
-		configv1.ResourceDefinition_builder{Name: proto.String("config-disabled-resource"), Disable: proto.Bool(true)}.Build(),
-	})
+	mcpService := configv1.McpUpstreamService_builder{
+		StdioConnection: configv1.McpStdioConnection_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+		Tools: []*configv1.ToolDefinition{
+			configv1.ToolDefinition_builder{Name: proto.String("disabled-tool"), Disable: proto.Bool(true)}.Build(),
+		},
+		Prompts: []*configv1.PromptDefinition{
+			configv1.PromptDefinition_builder{Name: proto.String("disabled-prompt"), Disable: proto.Bool(true)}.Build(),
+			configv1.PromptDefinition_builder{Name: proto.String("config-disabled-prompt"), Disable: proto.Bool(true)}.Build(), // Also test config-only items
+		},
+		Resources: []*configv1.ResourceDefinition{
+			configv1.ResourceDefinition_builder{Name: proto.String("disabled-resource"), Disable: proto.Bool(true)}.Build(),
+			configv1.ResourceDefinition_builder{Name: proto.String("config-disabled-resource"), Disable: proto.Bool(true)}.Build(),
+		},
+	}.Build()
 
-	config.SetMcpService(mcpService)
+	config := configv1.UpstreamServiceConfig_builder{
+		Name:       proto.String("test-service-disabled"),
+		McpService: mcpService,
+	}.Build()
 
 	serviceID, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -364,23 +369,23 @@ func TestRegister_CallDefinitionMatching(t *testing.T) {
 	}
 	defer func() { connectForTesting = originalConnect }()
 
-	config := &configv1.UpstreamServiceConfig{}
-	config.SetName("test-service-calls")
-	mcpService := &configv1.McpUpstreamService{}
-	stdioConnection := &configv1.McpStdioConnection{}
-	stdioConnection.SetCommand("echo")
-	mcpService.SetStdioConnection(stdioConnection)
+	mcpService := configv1.McpUpstreamService_builder{
+		StdioConnection: configv1.McpStdioConnection_builder{
+			Command: proto.String("echo"),
+		}.Build(),
+		Tools: []*configv1.ToolDefinition{
+			configv1.ToolDefinition_builder{Name: proto.String("tool-with-call"), CallId: proto.String("call-1")}.Build(),
+			configv1.ToolDefinition_builder{Name: proto.String("tool-without-call")}.Build(), // No CallId
+		},
+		Calls: map[string]*configv1.MCPCallDefinition{
+			"call-1": configv1.MCPCallDefinition_builder{Id: proto.String("call-1")}.Build(),
+		},
+	}.Build()
 
-	mcpService.SetTools([]*configv1.ToolDefinition{
-		configv1.ToolDefinition_builder{Name: proto.String("tool-with-call"), CallId: proto.String("call-1")}.Build(),
-		configv1.ToolDefinition_builder{Name: proto.String("tool-without-call")}.Build(), // No CallId
-	})
-
-	mcpService.SetCalls(map[string]*configv1.MCPCallDefinition{
-		"call-1": configv1.MCPCallDefinition_builder{Id: proto.String("call-1")}.Build(),
-	})
-
-	config.SetMcpService(mcpService)
+	config := configv1.UpstreamServiceConfig_builder{
+		Name:       proto.String("test-service-calls"),
+		McpService: mcpService,
+	}.Build()
 
 	serviceID, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)

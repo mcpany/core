@@ -146,7 +146,7 @@ func TestGitHub_List(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`[{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}]`))
+		_, _ = w.Write([]byte(`[{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}]`))
 	}))
 	defer server.Close()
 
@@ -185,7 +185,7 @@ func TestGitHub_List(t *testing.T) {
 func TestGitHub_List_With_Single_File(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}`))
+		_, _ = w.Write([]byte(`{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md"}`))
 	}))
 	defer server.Close()
 
@@ -218,7 +218,7 @@ func TestGitHub_List_ssrf(t *testing.T) {
 	// This test verifies that the GitHub client blocks requests to loopback addresses.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`[{"type": "file"}]`))
+		_, _ = w.Write([]byte(`[{"type": "file"}]`))
 	}))
 	defer server.Close()
 

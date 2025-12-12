@@ -129,9 +129,12 @@ func TestWSHandler(t *testing.T) {
 
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
-	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	conn, dialResp, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	if dialResp != nil {
+		defer func() { _ = dialResp.Body.Close() }()
+	}
 	require.NoError(t, err)
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	reqBody := map[string]string{"location": "new york"}
 	err = conn.WriteJSON(reqBody)
@@ -153,8 +156,8 @@ func TestWSHandler_LocationNotFound(t *testing.T) {
 
 	conn, httpResp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	require.NoError(t, err)
-	defer httpResp.Body.Close()
-	defer conn.Close()
+	defer func() { _ = httpResp.Body.Close() }()
+	defer func() { _ = conn.Close() }()
 
 	reqBody := map[string]string{"location": "berlin"}
 	err = conn.WriteJSON(reqBody)

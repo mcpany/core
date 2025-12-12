@@ -26,8 +26,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisBus is a Redis-backed implementation of the Bus interface.
-type RedisBus[T any] struct {
+// Bus is a Redis-backed implementation of the Bus interface.
+type Bus[T any] struct {
 	client *redis.Client
 	mu     sync.RWMutex
 	// We need to keep track of pubsub clients to close them
@@ -35,7 +35,7 @@ type RedisBus[T any] struct {
 }
 
 // New creates a new RedisBus.
-func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
+func New[T any](redisConfig *bus.RedisBus) *Bus[T] {
 	var options redis.Options
 	if redisConfig != nil {
 		options.Addr = redisConfig.GetAddress()
@@ -46,15 +46,15 @@ func New[T any](redisConfig *bus.RedisBus) *RedisBus[T] {
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
-func NewWithClient[T any](client *redis.Client) *RedisBus[T] {
-	return &RedisBus[T]{
+func NewWithClient[T any](client *redis.Client) *Bus[T] {
+	return &Bus[T]{
 		client:  client,
 		pubsubs: make(map[string]*redis.PubSub),
 	}
 }
 
 // Publish publishes a message to a Redis channel.
-func (b *RedisBus[T]) Publish(ctx context.Context, topic string, msg T) error {
+func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -63,13 +63,13 @@ func (b *RedisBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Redis channel.
-func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		panic("redis bus: handler cannot be nil")
 	}
 	b.mu.Lock()
 	if ps, ok := b.pubsubs[topic]; ok {
-		ps.Close()
+		_ = ps.Close()
 	}
 
 	pubsub := b.client.Subscribe(ctx, topic)
@@ -82,7 +82,7 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 			b.mu.Lock()
 			defer b.mu.Unlock()
 			if ps, ok := b.pubsubs[topic]; ok && ps == pubsub {
-				ps.Close()
+				_ = ps.Close()
 				delete(b.pubsubs, topic)
 			}
 		})
@@ -123,7 +123,7 @@ func (b *RedisBus[T]) Subscribe(ctx context.Context, topic string, handler func(
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
-func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		panic("redis bus: handler cannot be nil")
 	}
@@ -140,7 +140,7 @@ func (b *RedisBus[T]) SubscribeOnce(ctx context.Context, topic string, handler f
 }
 
 // Close closes the Redis client and all pubsub connections.
-func (b *RedisBus[T]) Close() error {
+func (b *Bus[T]) Close() error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 

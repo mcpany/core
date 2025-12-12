@@ -129,7 +129,7 @@ func New[T ClosableClient](
 	for i := 0; i < minSize; i++ {
 		client, err := factory(context.Background())
 		if err != nil {
-			p.Close()
+			_ = p.Close()
 			return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 		}
 		p.clients <- client
@@ -188,7 +188,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			lo.Try(client.Close)
+			_ = lo.Try(client.Close)
 			p.sem.Release(1)
 			continue // Retry.
 		default:
@@ -210,7 +210,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				lo.Try(client.Close)
+				_ = lo.Try(client.Close)
 				p.sem.Release(1)
 				continue // Retry.
 			default:
@@ -233,7 +233,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				p.mu.Lock()
 				if p.closed {
 					p.mu.Unlock()
-					lo.Try(client.Close)
+					_ = lo.Try(client.Close)
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
@@ -253,7 +253,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			lo.Try(client.Close)
+			_ = lo.Try(client.Close)
 			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
@@ -280,7 +280,7 @@ func (p *poolImpl[T]) Put(client T) {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
-		lo.Try(client.Close)
+		_ = lo.Try(client.Close)
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
 	}
@@ -288,7 +288,7 @@ func (p *poolImpl[T]) Put(client T) {
 	// Use a background context for health checks in Put to avoid blocking.
 	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
 		p.mu.Unlock()
-		lo.Try(client.Close)
+		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 		return
 	}
@@ -303,7 +303,7 @@ func (p *poolImpl[T]) Put(client T) {
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
 		p.mu.Unlock()
-		lo.Try(client.Close)
+		_ = lo.Try(client.Close)
 	}
 }
 
@@ -321,7 +321,7 @@ func (p *poolImpl[T]) Close() error {
 
 	// Drain the channel and close all idle clients
 	for client := range p.clients {
-		lo.Try(client.Close)
+		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 	}
 	return nil
@@ -371,7 +371,7 @@ func (m *Manager) Register(name string, pool any) {
 	if oldPool, ok := m.pools[name]; ok {
 		if p, isCloser := oldPool.(io.Closer); isCloser {
 			logging.GetLogger().Info("Closing old entry", "name", name)
-			lo.Try(p.Close)
+			_ = lo.Try(p.Close)
 		}
 	}
 	m.pools[name] = pool
@@ -422,7 +422,7 @@ func (m *Manager) CloseAll() {
 	for name, untypedPool := range m.pools {
 		logging.GetLogger().Info("Closing pool", "name", name)
 		if p, ok := untypedPool.(io.Closer); ok {
-			lo.Try(p.Close)
+			_ = lo.Try(p.Close)
 		}
 	}
 }

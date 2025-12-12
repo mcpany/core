@@ -147,7 +147,7 @@ func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch contents from github api: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to fetch contents from github api: status code %d", resp.StatusCode)

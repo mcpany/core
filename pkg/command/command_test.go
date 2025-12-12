@@ -191,11 +191,11 @@ func TestDockerExecutor(t *testing.T) {
 		// Create a dummy file to mount
 		tmpfile, err := os.CreateTemp(".", "test-volume-mount")
 		require.NoError(t, err)
-		defer os.Remove(tmpfile.Name())
+		defer func() { _ = os.Remove(tmpfile.Name()) }()
 
 		_, err = tmpfile.WriteString("hello from the host")
 		require.NoError(t, err)
-		tmpfile.Close()
+		_ = tmpfile.Close()
 
 		absPath, err := filepath.Abs(tmpfile.Name())
 		require.NoError(t, err)
@@ -295,13 +295,13 @@ func TestCombinedOutput(t *testing.T) {
 	r, w := io.Pipe()
 
 	go func() {
-		defer w.Close()
+		defer func() { _ = w.Close() }()
 		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
-		io.Copy(writer, stdout)
+		_, _ = io.Copy(writer, stdout)
 	}()
 	go func() {
 		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
-		io.Copy(writer, stderr)
+		_, _ = io.Copy(writer, stderr)
 	}()
 
 	_, err = io.ReadAll(r)
@@ -349,7 +349,7 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 		require.NoError(t, err)
 
 		go func() {
-			defer stdin.Close()
+			defer func() { _ = stdin.Close() }()
 			_, err := stdin.Write([]byte("hello\n"))
 			require.NoError(t, err)
 		}()
@@ -395,7 +395,7 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		require.NoError(t, err)
 
 		go func() {
-			defer stdin.Close()
+			defer func() { _ = stdin.Close() }()
 			_, err := stdin.Write([]byte("hello\n"))
 			require.NoError(t, err)
 		}()

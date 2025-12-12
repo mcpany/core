@@ -194,11 +194,14 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, _, err := websocket.Dial(ctx, healthCheckURL, nil) //nolint:staticcheck
+	conn, resp, err := websocket.Dial(ctx, healthCheckURL, nil) //nolint:staticcheck
+	if resp != nil {
+		defer func() { _ = resp.Body.Close() }()
+	}
 	if err != nil {
 		return fmt.Errorf("WebSocket health check failed: %w", err)
 	}
-	defer conn.Close(websocket.StatusNormalClosure, "")
+	defer func() { _ = conn.Close(websocket.StatusNormalClosure, "") }()
 
 	if hc.GetMessage() != "" {
 		err = conn.Write(ctx, websocket.MessageText, []byte(hc.GetMessage()))
@@ -239,7 +242,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 			if err != nil {
 				return fmt.Errorf("failed to connect to gRPC service: %w", err)
 			}
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 
 			healthClient := healthpb.NewHealthClient(conn)
 			resp, err := healthClient.Check(
@@ -290,7 +293,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 			}
 
 			var stdoutBuf bytes.Buffer
-			io.Copy(&stdoutBuf, stdout)
+			_, _ = io.Copy(&stdoutBuf, stdout)
 			exitCode := <-exitCodeChan
 
 			if exitCode != 0 {

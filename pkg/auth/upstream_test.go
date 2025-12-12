@@ -40,7 +40,7 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	t.Run("OAuth2", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(oauth2.Token{
+			_ = json.NewEncoder(w).Encode(oauth2.Token{
 				AccessToken: "test-token",
 				TokenType:   "Bearer",
 				Expiry:      time.Now().Add(time.Hour),

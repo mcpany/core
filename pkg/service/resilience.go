@@ -70,7 +70,7 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 	if retries < 0 {
 		retries = 0
 	}
-	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx)
+	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx) //nolint:gosec // safe cast
 }
 
 func isRetryable(err error) bool {

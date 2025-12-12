@@ -41,7 +41,7 @@ func TestDefaultBus(t *testing.T) {
 			wg.Done()
 		})
 
-		bus.Publish(context.Background(), "test", "hello")
+		_ = bus.Publish(context.Background(), "test", "hello")
 		wg.Wait()
 	})
 
@@ -57,9 +57,9 @@ func TestDefaultBus(t *testing.T) {
 			wg.Done()
 		})
 
-		bus.Publish(context.Background(), "test", "hello")
+		_ = bus.Publish(context.Background(), "test", "hello")
 		// This second publish should not be received by the handler
-		bus.Publish(context.Background(), "test", "world")
+		_ = bus.Publish(context.Background(), "test", "world")
 		wg.Wait()
 
 		// Allow some time for any extra messages to be processed
@@ -76,7 +76,7 @@ func TestDefaultBus(t *testing.T) {
 		})
 
 		unsub()
-		bus.Publish(context.Background(), "test", "hello")
+		_ = bus.Publish(context.Background(), "test", "hello")
 		time.Sleep(10 * time.Millisecond) // Give it a moment to process
 		assert.False(t, received)
 	})
@@ -102,7 +102,7 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	}
 
 	for i := 0; i < numPublishers; i++ {
-		go bus.Publish(context.Background(), topic, i)
+		go func(val int) { _ = bus.Publish(context.Background(), topic, val) }(i)
 	}
 
 	// Wait for all messages to be received, with a timeout.
@@ -146,11 +146,11 @@ func TestDefaultBus_PublishTimeout(t *testing.T) {
 	// The first message will be consumed by the handler, which will block.
 	// The next 128 messages will fill the channel's buffer.
 	for i := 0; i < 129; i++ {
-		bus.Publish(context.Background(), "test_timeout", "fill")
+		_ = bus.Publish(context.Background(), "test_timeout", "fill")
 	}
 
 	// 5. Publish the message that should time out
-	bus.Publish(context.Background(), "test_timeout", "should_drop")
+	_ = bus.Publish(context.Background(), "test_timeout", "should_drop")
 
 	// 6. Check the log output for the dropped message warning
 	assert.Eventually(t, func() bool {
@@ -173,7 +173,7 @@ func TestDefaultBus_SubscribeOnce_Unsubscribe(t *testing.T) {
 	unsub()
 
 	// Publish a message to the topic
-	bus.Publish(context.Background(), "test_unsub_once", "hello")
+	_ = bus.Publish(context.Background(), "test_unsub_once", "hello")
 
 	// Wait a moment to ensure the handler is not called
 	time.Sleep(10 * time.Millisecond)

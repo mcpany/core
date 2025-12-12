@@ -316,12 +316,12 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	// First registration, should parse and cache
 	_, _, _, err := u.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()))
+	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len())) //nolint:gosec // safe cast
 
 	// Second registration with same spec, should use cache
 	_, _, _, err = u.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()), "Cache length should not increase")
+	assert.Equal(t, uint64(1), uint64(ou.openapiCache.Len()), "Cache length should not increase") //nolint:gosec // safe cast
 
 	mockToolManager.AssertExpectations(t)
 }

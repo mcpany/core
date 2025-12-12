@@ -56,17 +56,17 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	require.NoError(t, err)
 
-	certFile, err := os.Create(filepath.Join(tempDir, "cert.pem"))
+	certFile, err := os.Create(filepath.Join(tempDir, "cert.pem")) //nolint:gosec // test
 	require.NoError(t, err)
-	pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
-	certFile.Close()
+	_ = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	_ = certFile.Close()
 
-	keyFile, err := os.Create(filepath.Join(tempDir, "key.pem"))
+	keyFile, err := os.Create(filepath.Join(tempDir, "key.pem")) //nolint:gosec // test
 	require.NoError(t, err)
 	privBytes, err := x509.MarshalPKCS8PrivateKey(priv)
 	require.NoError(t, err)
-	pem.Encode(keyFile, &pem.Block{Type: "PRIVATE KEY", Bytes: privBytes})
-	keyFile.Close()
+	_ = pem.Encode(keyFile, &pem.Block{Type: "PRIVATE KEY", Bytes: privBytes})
+	_ = keyFile.Close()
 
 	return certFile.Name(), keyFile.Name()
 }

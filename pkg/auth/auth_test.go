@@ -95,7 +95,7 @@ func TestAuthManager(t *testing.T) {
 	apiKeyAuth := NewAPIKeyAuthenticator(config)
 
 	serviceID := "test-service"
-	authManager.AddAuthenticator(serviceID, apiKeyAuth)
+	_ = authManager.AddAuthenticator(serviceID, apiKeyAuth)
 
 	t.Run("get_authenticator", func(t *testing.T) {
 		authenticator, ok := authManager.GetAuthenticator(serviceID)
@@ -149,7 +149,7 @@ func TestAuthManager(t *testing.T) {
 
 	t.Run("remove_authenticator", func(t *testing.T) {
 		// Add an authenticator to remove
-		authManager.AddAuthenticator("service-to-remove", apiKeyAuth)
+		_ = authManager.AddAuthenticator("service-to-remove", apiKeyAuth)
 
 		// Verify it was added
 		_, ok := authManager.GetAuthenticator("service-to-remove")
@@ -202,10 +202,11 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 
 	// Mock OIDC provider
 	var server *httptest.Server
+	const wellKnownPath = "/.well-known/openid-configuration"
 	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/.well-known/openid-configuration" {
+		if r.URL.Path == wellKnownPath {
 			w.Header().Set("Content-Type", "application/json")
-			fmt.Fprintln(w, `{"issuer": "`+server.URL+`", "jwks_uri": "`+server.URL+`/jwks"}`)
+			_, _ = fmt.Fprintln(w, `{"issuer": "`+server.URL+`", "jwks_uri": "`+server.URL+`/jwks"}`)
 		}
 	}))
 	defer server.Close()

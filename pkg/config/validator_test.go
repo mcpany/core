@@ -30,15 +30,15 @@ func TestValidate(t *testing.T) {
 	// Create temporary files for mTLS tests
 	clientCertFile, err := os.CreateTemp("", "client.crt")
 	require.NoError(t, err)
-	defer os.Remove(clientCertFile.Name())
+	defer func() { _ = os.Remove(clientCertFile.Name()) }()
 
 	clientKeyFile, err := os.CreateTemp("", "client.key")
 	require.NoError(t, err)
-	defer os.Remove(clientKeyFile.Name())
+	defer func() { _ = os.Remove(clientKeyFile.Name()) }()
 
 	caCertFile, err := os.CreateTemp("", "ca.crt")
 	require.NoError(t, err)
-	defer os.Remove(caCertFile.Name())
+	defer func() { _ = os.Remove(caCertFile.Name()) }()
 
 	tests := []struct {
 		name                string

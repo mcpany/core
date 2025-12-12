@@ -92,7 +92,7 @@ func TestIntegration(t *testing.T) {
 			BaseMessage: BaseMessage{CID: req.CorrelationID()},
 			Result:      resultData,
 		}
-		resBus.Publish(context.Background(), req.CorrelationID(), res)
+		_ = resBus.Publish(context.Background(), req.CorrelationID(), res)
 	})
 
 	// Client subscribing to results
@@ -113,7 +113,7 @@ func TestIntegration(t *testing.T) {
 		ToolName:    "test-tool",
 		ToolInputs:  inputData,
 	}
-	reqBus.Publish(context.Background(), "request", req)
+	_ = reqBus.Publish(context.Background(), "request", req)
 
 	wg.Wait()
 }
@@ -169,8 +169,8 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 		wg.Done()
 	})
 
-	bus.Publish(context.Background(), "test-message", "hello")
-	bus.Publish(context.Background(), "test-message", "world")
+	_ = bus.Publish(context.Background(), "test-message", "hello")
+	_ = bus.Publish(context.Background(), "test-message", "world")
 
 	wg.Wait()
 
@@ -201,12 +201,12 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 		receivedMessages = append(receivedMessages, msg)
 	})
 
-	bus.Publish(context.Background(), "test-message", "hello")
+	_ = bus.Publish(context.Background(), "test-message", "hello")
 	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
 
 	unsubscribe()
 
-	bus.Publish(context.Background(), "test-message", "world")
+	_ = bus.Publish(context.Background(), "test-message", "world")
 	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
 
 	assert.Len(t, receivedMessages, 1)
@@ -248,7 +248,7 @@ func TestRedisBus_Concurrent(t *testing.T) {
 	}
 
 	for i := 0; i < numMessages; i++ {
-		bus.Publish(context.Background(), "test-message", "hello")
+		_ = bus.Publish(context.Background(), "test-message", "hello")
 	}
 
 	wg.Wait()

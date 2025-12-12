@@ -87,7 +87,7 @@ func TestReadURL(t *testing.T) {
 		// 1. A local server is running on 127.0.0.1.
 		localServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"global_settings": {}}`)
+			_, _ = fmt.Fprint(w, `{"global_settings": {}}`)
 		}))
 		defer localServer.Close()
 
@@ -268,7 +268,7 @@ func TestFileStore_Load(t *testing.T) {
 
 	// Setup directory and config files
 	require.NoError(t, fs.MkdirAll("configs/subdir", 0o755))
-	afero.WriteFile(fs, "configs/01_base.yaml", []byte(`
+	_ = afero.WriteFile(fs, "configs/01_base.yaml", []byte(`
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
   log_level: "LOG_LEVEL_INFO"
@@ -277,7 +277,7 @@ upstream_services:
   name: "first-service"
 `), 0o644)
 
-	afero.WriteFile(fs, "configs/02_override.yaml", []byte(`
+	_ = afero.WriteFile(fs, "configs/02_override.yaml", []byte(`
 global_settings:
   mcp_listen_address: "127.0.0.1:9090"
 upstream_services:
@@ -285,9 +285,9 @@ upstream_services:
   name: "second-service"
 `), 0o644)
 
-	afero.WriteFile(fs, "configs/invalid.txt", []byte("invalid content"), 0o644)
-	afero.WriteFile(fs, "malformed.yaml", []byte("bad-yaml:"), 0o644)
-	afero.WriteFile(fs, "multiple_services.yaml", []byte(`
+	_ = afero.WriteFile(fs, "configs/invalid.txt", []byte("invalid content"), 0o644)
+	_ = afero.WriteFile(fs, "malformed.yaml", []byte("bad-yaml:"), 0o644)
+	_ = afero.WriteFile(fs, "multiple_services.yaml", []byte(`
 upstream_services:
   - name: "multi-type-service"
     http_service:
