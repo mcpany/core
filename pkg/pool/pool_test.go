@@ -706,7 +706,7 @@ func TestPool_Get_RaceWithPut(t *testing.T) {
 	factory := func(ctx context.Context) (*mockClient, error) {
 		atomic.AddInt32(&factoryCallCount, 1)
 		close(factoryWillBlock) // Signal that we are in the factory
-		<-factoryProceed      // Wait for the test to allow us to proceed
+		<-factoryProceed        // Wait for the test to allow us to proceed
 		return &mockClient{isHealthy: true}, nil
 	}
 
@@ -808,6 +808,7 @@ func TestPool_Get_WaitsForClientThenGetsUnhealthy(t *testing.T) {
 	// Goroutine 1 should discard the unhealthy client and create a new healthy one.
 	wg.Wait()
 }
+
 func TestManager_ConcurrentAccess(t *testing.T) {
 	m := NewManager()
 	var wg sync.WaitGroup

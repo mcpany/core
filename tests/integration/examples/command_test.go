@@ -59,7 +59,7 @@ upstream_services:
         - "-I"
 `
 			configPath := filepath.Join(t.TempDir(), "config.yaml")
-			err := os.WriteFile(configPath, []byte(configContent), 0644)
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
 			require.NoError(t, err)
 			return configPath
 		},
@@ -153,7 +153,7 @@ upstream_services:
         - "2"
 `
 			configPath := filepath.Join(t.TempDir(), "config.yaml")
-			err := os.WriteFile(configPath, []byte(configContent), 0644)
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
 			require.NoError(t, err)
 			return configPath
 		},
@@ -221,7 +221,7 @@ upstream_services:
         description: "Get the current date"
 `
 			configPath := filepath.Join(t.TempDir(), "config.yaml")
-			err := os.WriteFile(configPath, []byte(configContent), 0644)
+			err := os.WriteFile(configPath, []byte(configContent), 0o644)
 			require.NoError(t, err)
 			return configPath
 		},

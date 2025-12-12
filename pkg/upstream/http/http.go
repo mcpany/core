@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-
 	"sort"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -60,7 +59,6 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 		return "", fmt.Errorf("unsupported HTTP method: %v", method)
 	}
 }
-
 
 // HTTPUpstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints. It handles the registration of tools

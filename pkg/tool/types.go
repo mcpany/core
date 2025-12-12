@@ -76,7 +76,7 @@ type ServiceInfo struct {
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
-	ToolName   string
+	ToolName string
 	// ToolInputs is the raw JSON message of the tool inputs. It is used by
 	// tools that need to unmarshal the inputs into a specific struct.
 	ToolInputs json.RawMessage
@@ -276,6 +276,7 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//
 //nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())

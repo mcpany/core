@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -26,8 +25,8 @@ import (
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
-	ToolFunc       func() *v1.Tool
-	ExecuteFunc    func(ctx context.Context, req *ExecutionRequest) (any, error)
+	ToolFunc           func() *v1.Tool
+	ExecuteFunc        func(ctx context.Context, req *ExecutionRequest) (any, error)
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 

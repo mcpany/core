@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -14,15 +16,13 @@
  * limitations under the License.
  */
 
-//go:build e2e
-
 package popular_service_test
 
 import (
 	"context"
 	"encoding/json"
-	"testing"
 	"os"
+	"testing"
 
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"

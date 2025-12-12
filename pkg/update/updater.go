@@ -139,7 +139,7 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 		return fmt.Errorf("checksum mismatch: expected %s, got %s", expectedChecksum, actualChecksum)
 	}
 
-	if err := fs.Chmod(tmpFile.Name(), 0755); err != nil {
+	if err := fs.Chmod(tmpFile.Name(), 0o755); err != nil {
 		return fmt.Errorf("failed to set executable permission: %w", err)
 	}
 
