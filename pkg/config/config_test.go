@@ -56,17 +56,17 @@ func TestBindFlags(t *testing.T) {
 	assert.NotNil(t, cmd.Flags().Lookup("stdio"))
 
 	// Check that the values are correctly bound to viper
-	cmd.Flags().Set("grpc-port", "8081")
+	_ = cmd.Flags().Set("grpc-port", "8081")
 	assert.Equal(t, "8081", viper.GetString("grpc-port"))
 
-	cmd.Flags().Set("stdio", "true")
+	_ = cmd.Flags().Set("stdio", "true")
 	assert.True(t, viper.GetBool("stdio"))
 }
 
 func TestGRPCPortEnvVar(t *testing.T) {
 	viper.Reset() // Reset viper to avoid state leakage from other tests.
-	os.Setenv("MCPANY_GRPC_PORT", "9090")
-	defer os.Unsetenv("MCPANY_GRPC_PORT")
+	_ = os.Setenv("MCPANY_GRPC_PORT", "9090")
+	defer func() { _ = os.Unsetenv("MCPANY_GRPC_PORT") }()
 
 	cmd := &cobra.Command{}
 	BindFlags(cmd)

@@ -121,7 +121,7 @@ func TestFileExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary file: %v", err)
 	}
-	defer os.Remove(file.Name())
+	defer func() { _ = os.Remove(file.Name()) }()
 
 	// Test case where the file exists.
 	assert.NoError(t, FileExists(file.Name()))

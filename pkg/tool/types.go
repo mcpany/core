@@ -412,20 +412,23 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		resp, err = httpClient.Do(httpReq)
+
+		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
 			return fmt.Errorf("failed to execute http request: %w", err)
 		}
 
-		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-			resp.Body.Close()
-			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)}
+		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
+			_ = attemptResp.Body.Close()
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
 		}
 
-		if resp.StatusCode >= 500 {
-			resp.Body.Close()
-			return fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
+		if attemptResp.StatusCode >= 500 {
+			_ = attemptResp.Body.Close()
+			return fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)
 		}
+
+		resp = attemptResp
 		return nil
 	}
 
@@ -434,7 +437,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
 	respBody, err := io.ReadAll(resp.Body)
@@ -727,7 +730,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute http request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -895,10 +898,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer stdin.Close()
+		defer func() { _ = stdin.Close() }()
 
 		go func() {
-			defer stderr.Close()
+			defer func() { _ = stderr.Close() }()
 			_, _ = io.Copy(io.Discard, stderr)
 		}()
 
@@ -925,12 +928,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	go func() {
 		defer wg.Done()
-		defer stdout.Close()
+		defer func() { _ = stdout.Close() }()
 		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
-		defer stderr.Close()
+		defer func() { _ = stderr.Close() }()
 		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 

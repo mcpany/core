@@ -27,7 +27,7 @@ import (
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "OK")
+	_, _ = fmt.Fprintln(w, "OK")
 }
 
 func timeHandler(w http.ResponseWriter, r *http.Request) {

@@ -44,8 +44,8 @@ func TestManager(t *testing.T) {
 		manager := NewManager(config)
 
 		// Fail twice to open the circuit
-		manager.Execute(func() error { return errors.New("error") })
-		manager.Execute(func() error { return errors.New("error") })
+		_ = manager.Execute(func() error { return errors.New("error") })
+		_ = manager.Execute(func() error { return errors.New("error") })
 
 		// Third request should be blocked
 		err := manager.Execute(func() error { return nil })

@@ -68,11 +68,11 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("FilePath", func(t *testing.T) {
 		tmpfile, err := os.CreateTemp("", "secret")
 		assert.NoError(t, err)
-		defer os.Remove(tmpfile.Name())
+		defer func() { _ = os.Remove(tmpfile.Name()) }()
 
 		_, err = tmpfile.WriteString("my-file-secret")
 		assert.NoError(t, err)
-		tmpfile.Close()
+		_ = tmpfile.Close()
 
 		secret := &configv1.SecretValue{}
 		secret.SetFilePath(tmpfile.Name())
@@ -90,7 +90,7 @@ func TestResolveSecret(t *testing.T) {
 
 	t.Run("RemoteContent", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprint(w, "my-remote-secret")
+			_, _ = fmt.Fprint(w, "my-remote-secret")
 		}))
 		defer server.Close()
 
@@ -107,7 +107,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("RemoteContent with API Key", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "my-api-key", r.Header.Get("X-API-Key"))
-			fmt.Fprint(w, "my-remote-secret")
+			_, _ = fmt.Fprint(w, "my-remote-secret")
 		}))
 		defer server.Close()
 
@@ -136,7 +136,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("RemoteContent with Bearer Token", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "Bearer my-bearer-token", r.Header.Get("Authorization"))
-			fmt.Fprint(w, "my-remote-secret")
+			_, _ = fmt.Fprint(w, "my-remote-secret")
 		}))
 		defer server.Close()
 
@@ -167,7 +167,7 @@ func TestResolveSecret(t *testing.T) {
 			assert.True(t, ok)
 			assert.Equal(t, "my-user", username)
 			assert.Equal(t, "my-password", password)
-			fmt.Fprint(w, "my-remote-secret")
+			_, _ = fmt.Fprint(w, "my-remote-secret")
 		}))
 		defer server.Close()
 

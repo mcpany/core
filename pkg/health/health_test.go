@@ -65,7 +65,7 @@ func newMockGRPCHealthServer(
 	}
 	s := grpc.NewServer()
 	grpc_health_v1.RegisterHealthServer(s, &mockHealthServer{status: status})
-	go s.Serve(lis)
+	go func() { _ = s.Serve(lis) }()
 	return s, lis
 }
 
@@ -89,7 +89,7 @@ func newMockGRPCHealthServerWithFailure() (*grpc.Server, net.Listener) { //nolin
 	}
 	s := grpc.NewServer()
 	grpc_health_v1.RegisterHealthServer(s, &mockHealthServerWithFailure{})
-	go s.Serve(lis)
+	go func() { _ = s.Serve(lis) }()
 	return s, lis
 }
 
@@ -214,7 +214,7 @@ func TestNewChecker(t *testing.T) {
 				if err != nil {
 					return
 				}
-				defer c.Close(websocket.StatusInternalError, "the sky is falling")
+				defer func() { _ = c.Close(websocket.StatusInternalError, "the sky is falling") }()
 			}),
 		)
 		defer mockWSServer.Close()
@@ -580,7 +580,7 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 			if err != nil {
 				return
 			}
-			defer c.Close(websocket.StatusInternalError, "the sky is falling")
+			defer func() { _ = c.Close(websocket.StatusInternalError, "the sky is falling") }()
 		}),
 	)
 	defer mockServer.Close()

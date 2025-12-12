@@ -299,7 +299,9 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 				ToolInputs: req.Params.Arguments,
 			}
 			execReq.SetCorrelationID(correlationID)
-			requestBus.Publish(ctx, "request", execReq)
+			if err := requestBus.Publish(ctx, "request", execReq); err != nil {
+				return nil, fmt.Errorf("failed to publish request: %w", err)
+			}
 
 			select {
 			case result := <-resultChan:

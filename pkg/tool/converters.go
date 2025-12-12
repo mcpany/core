@@ -39,31 +39,23 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
 	}
 
-	pbTool := &pb.Tool{}
-	pbTool.Reset()
-	pbTool.SetName(tool.Name)
-	pbTool.SetDescription(tool.Description)
-
-	// Set display name based on precedence: Title, Annotations.Title, then Name
+	displayName := tool.Name
 	if tool.Title != "" {
-		pbTool.SetDisplayName(tool.Title)
+		displayName = tool.Title
 	} else if tool.Annotations != nil && tool.Annotations.Title != "" {
-		pbTool.SetDisplayName(tool.Annotations.Title)
-	} else {
-		pbTool.SetDisplayName(tool.Name)
+		displayName = tool.Annotations.Title
 	}
 
-	pbAnnotations := &pb.ToolAnnotations{}
-	pbAnnotations.Reset()
+	annotationsBuilder := pb.ToolAnnotations_builder{}
 	if tool.Annotations != nil {
-		pbAnnotations.SetTitle(tool.Annotations.Title)
-		pbAnnotations.SetReadOnlyHint(tool.Annotations.ReadOnlyHint)
-		pbAnnotations.SetIdempotentHint(tool.Annotations.IdempotentHint)
+		annotationsBuilder.Title = proto.String(tool.Annotations.Title)
+		annotationsBuilder.ReadOnlyHint = proto.Bool(tool.Annotations.ReadOnlyHint)
+		annotationsBuilder.IdempotentHint = proto.Bool(tool.Annotations.IdempotentHint)
 		if tool.Annotations.DestructiveHint != nil {
-			pbAnnotations.SetDestructiveHint(*tool.Annotations.DestructiveHint)
+			annotationsBuilder.DestructiveHint = proto.Bool(*tool.Annotations.DestructiveHint)
 		}
 		if tool.Annotations.OpenWorldHint != nil {
-			pbAnnotations.SetOpenWorldHint(*tool.Annotations.OpenWorldHint)
+			annotationsBuilder.OpenWorldHint = proto.Bool(*tool.Annotations.OpenWorldHint)
 		}
 	}
 
@@ -72,15 +64,14 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert input schema: %w", err)
 		}
-		pbAnnotations.SetInputSchema(inputSchema)
+		annotationsBuilder.InputSchema = inputSchema
 	} else {
-		// If InputSchema is nil, create a default empty object schema
 		inputSchema, err := structpb.NewStruct(map[string]interface{}{
 			"type":       "object",
 			"properties": map[string]interface{}{},
 		})
 		if err == nil {
-			pbAnnotations.SetInputSchema(inputSchema)
+			annotationsBuilder.InputSchema = inputSchema
 		}
 	}
 
@@ -89,10 +80,15 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert output schema: %w", err)
 		}
-		pbAnnotations.SetOutputSchema(outputSchema)
+		annotationsBuilder.OutputSchema = outputSchema
 	}
 
-	pbTool.SetAnnotations(pbAnnotations)
+	pbTool := pb.Tool_builder{
+		Name:        proto.String(tool.Name),
+		Description: proto.String(tool.Description),
+		DisplayName: proto.String(displayName),
+		Annotations: annotationsBuilder.Build(),
+	}.Build()
 
 	return pbTool, nil
 }
@@ -158,19 +154,18 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition) (*pb.Tool, e
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
 	}
 
-	pbTool := &pb.Tool{}
-	pbTool.Reset()
-	pbTool.SetName(toolDef.GetName())
-	pbTool.SetDescription(toolDef.GetDescription())
-	pbTool.SetDisplayName(toolDef.GetTitle())
-	pbTool.SetServiceId(toolDef.GetServiceId())
+	annotationsBuilder := pb.ToolAnnotations_builder{
+		InputSchema:  toolDef.GetInputSchema(),
+		OutputSchema: toolDef.GetOutputSchema(),
+	}
 
-	pbAnnotations := &pb.ToolAnnotations{}
-	pbAnnotations.Reset()
-	pbAnnotations.SetInputSchema(toolDef.GetInputSchema())
-	pbAnnotations.SetOutputSchema(toolDef.GetOutputSchema())
-
-	pbTool.SetAnnotations(pbAnnotations)
+	pbTool := pb.Tool_builder{
+		Name:        proto.String(toolDef.GetName()),
+		Description: proto.String(toolDef.GetDescription()),
+		DisplayName: proto.String(toolDef.GetTitle()),
+		ServiceId:   proto.String(toolDef.GetServiceId()),
+		Annotations: annotationsBuilder.Build(),
+	}.Build()
 
 	return pbTool, nil
 }

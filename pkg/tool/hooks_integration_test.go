@@ -61,7 +61,8 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 			// ExecuteFunc should not be called if hook denies
 		}
 
-		tm.AddTool(mockTool)
+		err := tm.AddTool(mockTool)
+		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
 			Config: &configv1.UpstreamServiceConfig{
 				PreCallHooks: []*configv1.CallHook{
@@ -77,7 +78,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}
-		_, err := tm.ExecuteTool(context.Background(), req)
+		_, err = tm.ExecuteTool(context.Background(), req)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "denied")
 	})
@@ -91,7 +92,8 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 			},
 		}
 
-		tm.AddTool(mockTool)
+		err := tm.AddTool(mockTool)
+		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
 			Config: &configv1.UpstreamServiceConfig{
 				PostCallHooks: []*configv1.CallHook{
@@ -118,7 +120,8 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 			ToolFunc: func() *v1.Tool { return protoTool },
 		}
 
-		tm.AddTool(mockTool)
+		err := tm.AddTool(mockTool)
+		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
 			Config: &configv1.UpstreamServiceConfig{
 				CallPolicy: &configv1.CallPolicy{
@@ -128,7 +131,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}
-		_, err := tm.ExecuteTool(context.Background(), req)
+		_, err = tm.ExecuteTool(context.Background(), req)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "denied")
 	})
@@ -139,7 +142,8 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		mockTool := &MockTool{
 			ToolFunc: func() *v1.Tool { return protoTool },
 		}
-		tm.AddTool(mockTool)
+		err := tm.AddTool(mockTool)
+		require.NoError(t, err)
 
 		tool, ok := tm.GetTool(toolID)
 		assert.True(t, ok)
@@ -177,7 +181,8 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 				return "ok", nil
 			},
 		}
-		tmWithMw.AddTool(mockToolMw)
+		err := tmWithMw.AddTool(mockToolMw)
+		require.NoError(t, err)
 
 		req := &ExecutionRequest{ToolName: toolID}
 		res, err := tmWithMw.ExecuteTool(context.Background(), req)

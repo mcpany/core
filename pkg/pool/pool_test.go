@@ -71,7 +71,7 @@ func TestPool_New(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		assert.Equal(t, 1, p.Len())
-		p.Close()
+		_ = p.Close()
 	})
 	t.Run("invalid config", func(t *testing.T) {
 		t.Parallel()
@@ -120,7 +120,7 @@ func TestPool_New(t *testing.T) {
 func TestPool_GetPut(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	// Get initial client
 	c1, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -191,7 +191,7 @@ func TestPool_Close(t *testing.T) {
 	}
 	p, err := New(factory, 1, 1, 100, false)
 	require.NoError(t, err)
-	p.Close()
+	_ = p.Close()
 	assert.True(t, client.isClosed)
 }
 
@@ -283,7 +283,7 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, c)
 	// Close the pool while the client is checked out
-	p.Close()
+	_ = p.Close()
 	// Now, put the client back into the closed pool.
 	// This is where the semaphore leak occurs in the original code.
 	p.Put(c)
@@ -602,7 +602,7 @@ func TestPool_ConcurrentClose(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func() {
 			defer wg.Done()
-			pool.Close()
+			_ = pool.Close()
 		}()
 	}
 	wg.Wait()
@@ -680,7 +680,7 @@ func TestPool_Get_RaceWithClose(t *testing.T) {
 
 	// At this point, the semaphore is acquired, but the client is not created yet.
 	// Now, close the pool.
-	p.Close()
+	_ = p.Close()
 
 	// Allow the factory to proceed. The Get call should now fail because the pool is closed.
 	close(factoryProceed)

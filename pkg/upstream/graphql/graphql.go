@@ -30,6 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -227,9 +228,10 @@ func (g *graphqlUpstream) Register(
 	log.Printf("Registering tools for service: %s", serviceConfig.GetName())
 	for _, t := range respData.Schema.Types {
 		operationType := ""
-		if t.Name == respData.Schema.QueryType.Name {
+		switch t.Name {
+		case respData.Schema.QueryType.Name:
 			operationType = "query"
-		} else if t.Name == respData.Schema.MutationType.Name {
+		case respData.Schema.MutationType.Name:
 			operationType = "mutation"
 		}
 
@@ -261,12 +263,13 @@ func (g *graphqlUpstream) Register(
 				}
 
 				callID := "graphql"
-				toolDef := &configv1.ToolDefinition{}
-				toolDef.SetName(toolName)
-				toolDef.SetDescription(field.Name)
-				toolDef.SetCallId(callID)
-				toolDef.SetInputSchema(inputSchema)
-				toolDef.SetServiceId(serviceConfig.GetName())
+				toolDef := configv1.ToolDefinition_builder{
+					Name:        proto.String(toolName),
+					Description: proto.String(field.Name),
+					CallId:      proto.String(callID),
+					InputSchema: inputSchema,
+					ServiceId:   proto.String(serviceConfig.GetName()),
+				}.Build()
 
 				toolDefs = append(toolDefs, toolDef)
 

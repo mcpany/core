@@ -30,21 +30,28 @@ var client = &http.Client{
 }
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	resp, err := client.Get("http://localhost:8080")
 	if err != nil {
-		log.Fatalf("Failed to make request: %v", err)
+		return fmt.Errorf("failed to make request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Failed to read response body: %v", err)
+		return fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	var result map[string]string
 	if err := json.Unmarshal(body, &result); err != nil {
-		log.Fatalf("Failed to unmarshal response: %v", err)
+		return fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	fmt.Printf("Current time: %s, Timezone: %s\n", result["current_time"], result["timezone"])
+	return nil
 }

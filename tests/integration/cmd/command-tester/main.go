@@ -42,11 +42,11 @@ func main() {
 	}
 
 	if stdout != "" {
-		fmt.Fprint(os.Stdout, stdout)
+		_, _ = fmt.Fprint(os.Stdout, stdout)
 	}
 
 	if stderr != "" {
-		fmt.Fprint(os.Stderr, stderr)
+		_, _ = fmt.Fprint(os.Stderr, stderr)
 	}
 
 	os.Exit(exitCode)

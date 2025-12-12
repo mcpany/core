@@ -30,6 +30,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 	"sigs.k8s.io/yaml"
 
 	"github.com/Masterminds/semver/v3"
@@ -111,16 +112,17 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 
 		for _, content := range contents {
 			if content.Type == "dir" {
-				newCollection := &configv1.UpstreamServiceCollection{}
-				newCollection.SetName(collection.GetName())
-				newCollection.SetHttpUrl(content.HTMLURL)
-				newCollection.SetPriority(collection.GetPriority())
-				newCollection.SetAuthentication(collection.GetAuthentication())
+				newCollection := configv1.UpstreamServiceCollection_builder{
+					Name:           proto.String(collection.GetName()),
+					HttpUrl:        proto.String(content.HTMLURL),
+					Priority:       proto.Int32(collection.GetPriority()),
+					Authentication: collection.GetAuthentication(),
+				}.Build()
 				if err := m.loadAndMergeCollection(ctx, newCollection); err != nil {
 					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
 				}
 			} else if content.Type == "file" {
-				if !(strings.HasSuffix(content.HTMLURL, ".yaml") || strings.HasSuffix(content.HTMLURL, ".yml") || strings.HasSuffix(content.HTMLURL, ".json")) {
+				if !strings.HasSuffix(content.HTMLURL, ".yaml") && !strings.HasSuffix(content.HTMLURL, ".yml") && !strings.HasSuffix(content.HTMLURL, ".json") {
 					continue
 				}
 				if err := m.loadFromURL(ctx, content.DownloadURL, collection); err != nil {
@@ -150,7 +152,7 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 	if err != nil {
 		return fmt.Errorf("failed to fetch collection from url %s: %w", url, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to fetch collection from url %s: status code %d", url, resp.StatusCode)

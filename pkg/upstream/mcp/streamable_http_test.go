@@ -578,7 +578,10 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 	}
 
 	req, _ := http.NewRequest("GET", "http://localhost", nil)
-	_, err := rt.RoundTrip(req)
+	resp, err := rt.RoundTrip(req)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	assert.NoError(t, err)
 	assert.True(t, authenticatorCalled)
 }
@@ -686,7 +689,7 @@ func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
 			}
 			resp.Result, _ = json.Marshal(result)
 		}
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 
@@ -862,7 +865,7 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 func TestStreamableHTTP_RoundTrip(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "hello")
+		_, _ = fmt.Fprint(w, "hello")
 	}))
 	defer server.Close()
 

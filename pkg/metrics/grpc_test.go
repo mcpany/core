@@ -62,7 +62,7 @@ func TestGrpcStatsHandler(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Read the response body
 	body, err := io.ReadAll(resp.Body)

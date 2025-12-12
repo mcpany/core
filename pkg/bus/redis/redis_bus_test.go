@@ -35,7 +35,7 @@ func TestNewWithClient(t *testing.T) {
 	require.NotNil(t, b)
 }
 
-func TestRedisBus_Close(t *testing.T) {
+func TestBus_Close(t *testing.T) {
 	t.Parallel()
 
 	t.Run("should close the client and pubsubs successfully", func(t *testing.T) {
@@ -50,7 +50,7 @@ func TestRedisBus_Close(t *testing.T) {
 	})
 }
 
-func TestRedisBus_Publish(t *testing.T) {
+func TestBus_Publish(t *testing.T) {
 	t.Parallel()
 
 	type testCase struct {
@@ -84,7 +84,7 @@ func TestRedisBus_Publish(t *testing.T) {
 
 			db, mock := redismock.NewClientMock()
 			b := redis.NewWithClient[map[string]string](db)
-			t.Cleanup(func() { b.Close() })
+			t.Cleanup(func() { _ = b.Close() })
 
 			tc.setupMock(mock)
 
@@ -106,18 +106,18 @@ func TestRedisBus_Publish(t *testing.T) {
 		db, _ := redismock.NewClientMock()
 		// Use a channel, which cannot be marshalled to JSON
 		b := redis.NewWithClient[chan int](db)
-		t.Cleanup(func() { b.Close() })
+		t.Cleanup(func() { _ = b.Close() })
 
 		err := b.Publish(context.Background(), "test-topic", make(chan int))
 		assert.Error(t, err)
 	})
 }
 
-func TestRedisBus_Subscribe(t *testing.T) {
+func TestBus_Subscribe(t *testing.T) {
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
-	t.Cleanup(func() { b.Close() })
+	t.Cleanup(func() { _ = b.Close() })
 	t.Run("should panic if handler is nil", func(t *testing.T) {
 		t.Parallel()
 		assert.Panics(t, func() {
@@ -126,7 +126,7 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	})
 }
 
-func TestRedisBus_SubscribeOnce(t *testing.T) {
+func TestBus_SubscribeOnce(t *testing.T) {
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)

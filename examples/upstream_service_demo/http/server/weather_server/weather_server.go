@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -43,7 +44,7 @@ var weatherData = map[string]string{
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "OK")
+	_, _ = fmt.Fprintln(w, "OK")
 }
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +92,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	for {
 		_, msg, err := conn.ReadMessage()
@@ -128,7 +129,7 @@ func main() {
 	var addr string
 	flag := flag.NewFlagSet("weather-server", flag.ExitOnError)
 	flag.StringVar(&addr, "addr", "", "address to listen on")
-	flag.Parse(os.Args[1:])
+	_ = flag.Parse(os.Args[1:])
 
 	if addr == "" {
 		port := os.Getenv("HTTP_PORT")
@@ -154,7 +155,12 @@ func main() {
 	mux.HandleFunc("/ws", wsHandler)
 
 	log.Printf("Server starting on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
