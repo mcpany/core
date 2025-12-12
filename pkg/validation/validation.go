@@ -90,11 +90,8 @@ func IsValidURL(s string) bool {
 		if u.Opaque == "" && u.Path == "" {
 			return false
 		}
-	} else {
-		// If a host is present, it must not be only a port.
-		if strings.HasPrefix(u.Host, ":") {
-			return false
-		}
+	} else if strings.HasPrefix(u.Host, ":") { // If a host is present, it must not be only a port.
+		return false
 	}
 
 	return true

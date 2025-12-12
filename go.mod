@@ -15,6 +15,7 @@ require (
 	github.com/antchfx/xpath v1.3.5
 	github.com/armon/go-metrics v0.4.1
 	github.com/cenkalti/backoff/v4 v4.3.0
+	github.com/coder/websocket v1.8.14
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
 	github.com/eko/gocache/lib/v4 v4.2.0
@@ -24,7 +25,6 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
-	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/jsonschema-go v0.3.0
 	github.com/google/uuid v1.6.0
@@ -44,6 +44,7 @@ require (
 	github.com/puzpuzpuz/xsync/v4 v4.2.0
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/samber/lo v1.51.0
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/afero v1.14.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.18.2
@@ -161,5 +162,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251103181224-f26f9409b101 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
-	nhooyr.io/websocket v1.8.17 // indirect
 )

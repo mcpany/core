@@ -6,9 +6,9 @@ edition = "2023";
 package mcpany.api.v1;
 
 import "google/api/annotations.proto";
-import "proto/config/v1/config.proto";
+import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/resource.proto";
-import "proto/config/v1/call.proto";
+import "proto/config/v1/tool.proto";
 
 
 option go_package = "github.com/mcpany/core/proto/api/v1";

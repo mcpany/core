@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package main
 
 import (
@@ -68,7 +67,8 @@ func TestHealthCmd(t *testing.T) {
 	// Start a mock HTTP server on a custom port
 	port := "50051"
 	server := &http.Server{
-		Addr: ":" + port,
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}),
@@ -93,7 +93,8 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 	// Start a mock HTTP server on a custom port
 	port := "8088"
 	server := &http.Server{
-		Addr: ":" + port,
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}),
@@ -190,7 +191,8 @@ func TestHealthCmdFlagPrecedence(t *testing.T) {
 	// Start a mock HTTP server on a custom port
 	port := "8089"
 	server := &http.Server{
-		Addr: ":" + port,
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}),
@@ -257,7 +259,7 @@ func TestGracefulShutdown(t *testing.T) {
 		return
 	}
 
-	cmd := exec.Command(os.Args[0], "-test.run=^TestGracefulShutdown$")
+	cmd := exec.Command(os.Args[0], "-test.run=^TestGracefulShutdown$") //nolint:gosec
 	cmd.Env = append(os.Environ(), "GO_TEST_GRACEFUL_SHUTDOWN=1")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Setpgid: true,

@@ -35,7 +35,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/proto/bus"
+	bus "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -44,7 +44,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"gopkg.in/yaml.v3"
 
 	"github.com/mcpany/core/pkg/app"
 	"github.com/spf13/afero"
@@ -53,21 +52,21 @@ import (
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
+	// Build the configuration
 	mcpanyConfig := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{config},
 	}.Build()
 
-	data, err := yaml.Marshal(mcpanyConfig)
+	// Use protojson to ensure correct field names and handle opaque structs
+	data, err := protojson.Marshal(mcpanyConfig)
 	require.NoError(t, err)
 
-	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
+	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.json")
 	require.NoError(t, err)
 
 	_, err = tempFile.Write(data)
 	require.NoError(t, err)
-
-	err = tempFile.Close()
-	require.NoError(t, err)
+	require.NoError(t, tempFile.Close())
 
 	return tempFile.Name()
 }
@@ -75,27 +74,29 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
+	natsURL := "${NATS_URL}"
+	// Build the configuration
 	mcpanyConfig := configv1.McpAnyServerConfig_builder{
 		GlobalSettings: configv1.GlobalSettings_builder{
 			MessageBus: bus.MessageBus_builder{
-				Nats: bus.NatsBus_builder{}.Build(),
+				Nats: bus.NatsBus_builder{
+					ServerUrl: &natsURL,
+				}.Build(),
 			}.Build(),
 		}.Build(),
 	}.Build()
 
-	data, err := yaml.Marshal(mcpanyConfig)
+	// Use protojson to ensure correct field names (snake_case/camelCase as expected by proto)
+	data, err := protojson.Marshal(mcpanyConfig)
 	require.NoError(t, err)
 
-	tempFile, err := os.CreateTemp(t.TempDir(), "mcpany-nats-config-*.yaml")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "nats-config-*.json")
 	require.NoError(t, err)
-
-	_, err = tempFile.Write(data)
+	_, err = tmpFile.Write(data)
 	require.NoError(t, err)
-
-	err = tempFile.Close()
+	err = tmpFile.Close()
 	require.NoError(t, err)
-
-	return tempFile.Name()
+	return tmpFile.Name()
 }
 
 // A thread-safe buffer for capturing process output concurrently.
@@ -134,6 +135,8 @@ const (
 	TestWaitTimeLong           = 5 * time.Minute
 	RetryInterval              = 250 * time.Millisecond
 	localHeaderMcpSessionID    = "Mcp-Session-Id"
+	dockerCmd                  = "docker"
+	sudoCmd                    = "sudo"
 )
 
 var (
@@ -149,33 +152,33 @@ func getDockerCommand() (string, []string) {
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
 		if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-			dockerCommand = "sudo"
-			dockerArgs = []string{"docker"}
+			dockerCommand = sudoCmd
+			dockerArgs = []string{dockerCmd}
 			return
 		}
 
 		// First, try running docker directly.
 		if _, err := exec.LookPath("docker"); err == nil {
-			cmd := exec.Command("docker", "info")
+			cmd := exec.Command(dockerCmd, "info")
 			if err := cmd.Run(); err == nil {
-				dockerCommand = "docker"
+				dockerCommand = dockerCmd
 				dockerArgs = []string{}
 				return
 			}
 		}
 
 		// If direct access fails, check for passwordless sudo.
-		if _, err := exec.LookPath("sudo"); err == nil {
-			cmd := exec.Command("sudo", "-n", "docker", "info")
+		if _, err := exec.LookPath(sudoCmd); err == nil {
+			cmd := exec.Command(sudoCmd, "-n", dockerCmd, "info")
 			if err := cmd.Run(); err == nil {
-				dockerCommand = "sudo"
-				dockerArgs = []string{"docker"}
+				dockerCommand = sudoCmd
+				dockerArgs = []string{dockerCmd}
 				return
 			}
 		}
 
 		// Fallback to plain docker if all else fails.
-		dockerCommand = "docker"
+		dockerCommand = dockerCmd
 		dockerArgs = []string{}
 	})
 	return dockerCommand, dockerArgs
@@ -594,8 +597,9 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	})
 
 	server := &http.Server{
-		Addr:    addr,
-		Handler: handler,
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	go func() {
@@ -712,11 +716,25 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
-	root, err := GetProjectRoot()
-	require.NoError(t, err)
-	natsServerBin := filepath.Join(root, "build/env/bin/nats-server")
-	_, err = os.Stat(natsServerBin)
-	require.NoError(t, err, "nats-server binary not found at %s. Run 'make prepare'.", natsServerBin)
+
+	var natsServerBin string
+	// Try to find nats-server in PATH first
+	pathBin, err := exec.LookPath("nats-server")
+	if err == nil {
+		natsServerBin = pathBin
+	} else {
+		// Check /tools/nats-server (Docker)
+		if _, err := os.Stat("/tools/nats-server"); err == nil {
+			natsServerBin = "/tools/nats-server"
+		} else {
+			root, err := GetProjectRoot()
+			require.NoError(t, err)
+			natsServerBin = filepath.Join(root, "build/env/bin/nats-server")
+			_, err = os.Stat(natsServerBin)
+			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
+		}
+	}
+
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
 	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
@@ -724,7 +742,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	require.NoError(t, err)
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
 	cleanup := func() {
-		cmd.Process.Kill()
+		_ = cmd.Process.Kill()
 	}
 	return natsURL, cleanup
 }
@@ -754,7 +772,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
-		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping")
+		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic
 		cmd := exec.Command(dockerExe, pingArgs...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -1219,7 +1237,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	reqBody, err := json.Marshal(jsonRPCReq)
 	require.NoError(t, err)
 
-	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody)) //nolint:gosec
 	require.NoError(t, err)
 	defer resp.Body.Close()
 

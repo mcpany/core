@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
+	dockererrdefs "github.com/docker/docker/errdefs"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -58,6 +59,7 @@ func canConnectToDocker(t *testing.T) bool {
 }
 
 func TestLocalExecutor(t *testing.T) {
+	t.Parallel()
 	t.Run("Success", func(t *testing.T) {
 		executor := NewExecutor(nil)
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
@@ -274,7 +276,7 @@ func TestDockerExecutor(t *testing.T) {
 		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		require.NoError(t, err)
 		_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
-		assert.True(t, client.IsErrNotFound(err), "Expected container to be removed")
+		assert.True(t, dockererrdefs.IsNotFound(err), "Expected container to be removed") //nolint:staticcheck
 	})
 }
 

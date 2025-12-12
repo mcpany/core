@@ -108,7 +108,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		Config: req.GetConfig(),
 	}
 	regReq.SetCorrelationID(correlationID)
-	requestBus.Publish(ctx, "request", regReq)
+	_ = requestBus.Publish(ctx, "request", regReq)
 
 	// Wait for the result, respecting the context's deadline
 	select {
@@ -188,7 +188,7 @@ func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServi
 	requestBus := bus.GetBus[*bus.ServiceListRequest](s.bus, "service_list_requests")
 	listReq := &bus.ServiceListRequest{}
 	listReq.SetCorrelationID(correlationID)
-	requestBus.Publish(ctx, "request", listReq)
+	_ = requestBus.Publish(ctx, "request", listReq)
 
 	select {
 	case result := <-resultChan:

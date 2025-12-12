@@ -69,6 +69,7 @@ func NewGrpcPool(
 			transportCreds = credentials.NewTLS(&tls.Config{
 				Certificates: []tls.Certificate{certificate},
 				RootCAs:      caCertPool,
+				MinVersion:   tls.VersionTLS12,
 			})
 		} else {
 			transportCreds = insecure.NewCredentials()

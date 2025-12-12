@@ -17,12 +17,12 @@
 package memory
 
 import (
-	"context"
-	"sync"
-	"sync/atomic"
 	"bytes"
+	"context"
 	"log/slog"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -71,7 +71,7 @@ func TestDefaultBus(t *testing.T) {
 		bus := New[string]()
 		received := false
 
-		unsub := bus.Subscribe(context.Background(), "test", func(msg string) {
+		unsub := bus.Subscribe(context.Background(), "test", func(_ string) {
 			received = true
 		})
 
@@ -94,7 +94,7 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 	wg.Add(expectedReceives)
 
 	for i := 0; i < numSubscribers; i++ {
-		unsub := bus.Subscribe(context.Background(), topic, func(msg int) {
+		unsub := bus.Subscribe(context.Background(), topic, func(_ int) {
 			atomic.AddInt32(&receivedCount, 1)
 			wg.Done()
 		})
@@ -120,7 +120,7 @@ func TestDefaultBus_Concurrent(t *testing.T) {
 		t.Fatalf("Timed out waiting for messages. Got %d of %d.", atomic.LoadInt32(&receivedCount), expectedReceives)
 	}
 
-	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount))
+	assert.Equal(t, int32(expectedReceives), atomic.LoadInt32(&receivedCount)) //nolint:gosec
 }
 
 func TestDefaultBus_PublishTimeout(t *testing.T) {
@@ -136,7 +136,7 @@ func TestDefaultBus_PublishTimeout(t *testing.T) {
 	// 3. Create a subscriber with a full channel that will not receive messages
 	var wg sync.WaitGroup
 	wg.Add(1)
-	unsub := bus.Subscribe(context.Background(), "test_timeout", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), "test_timeout", func(_ string) {
 		// This handler will block, preventing further messages from being processed
 		wg.Wait()
 	})
@@ -165,7 +165,7 @@ func TestDefaultBus_SubscribeOnce_Unsubscribe(t *testing.T) {
 	bus := New[string]()
 	handlerCalled := false
 
-	unsub := bus.SubscribeOnce(context.Background(), "test_unsub_once", func(msg string) {
+	unsub := bus.SubscribeOnce(context.Background(), "test_unsub_once", func(_ string) {
 		handlerCalled = true
 	})
 

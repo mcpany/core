@@ -30,6 +30,7 @@ import (
 )
 
 func TestE2ECaching(t *testing.T) {
+	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
 		Name:                "caching",
 		UpstreamServiceType: "http",
@@ -68,7 +69,7 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 	})
 	require.NoError(t, err)
 
-	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(requestBody))
+	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(requestBody)) //nolint:gosec
 	require.NoError(t, err)
 	defer resp.Body.Close()
 

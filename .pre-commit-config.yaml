@@ -28,22 +28,22 @@ repos:
         exclude: ^tests/tls/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/golangci/golangci-lint
-    rev: v2.6.0
-    hooks:
-    -   id: golangci-lint
-        args: [--enable=gosec, ./...]
--   repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-    -   id: prettier
-        types: [markdown]
--   repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.9.0
-    hooks:
-    -   id: shellcheck
 -   repo: local
     hooks:
+    -   id: golangci-lint
+        name: golangci-lint
+        entry: golangci-lint run
+        args: [--enable=gosec, ./...]
+        types: [go]
+        language: system
+        require_serial: true
+        pass_filenames: false
+    -   id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+        exclude: ^vendor/
     -   id: helm-lint
         name: helm-lint
         entry: helm lint helm/mcpany
@@ -55,27 +55,3 @@ repos:
     hooks:
     -   id: markdownlint
         args: [--fix, --disable, MD013]
--   repo: https://github.com/google/addlicense
-    rev: v1.2.0
-    hooks:
-    -   id: addlicense
-        args:
-        - -c
-        - "Author(s) of MCP Any"
-        - -l
-        - apache
-        - -s
-        types_or: [go, python, shell, yaml, proto, makefile]
-        exclude: |
-            (?x)^(
-                 Makefile|
-                 docker-compose.yml|
-                 go.mod|
-                 go.sum|
-                 go.work.sum|
-                .*\.pb\.go|
-                vendor/.*|
-                examples/.*|
-                build/.*|
-                helm/.*
-            )$

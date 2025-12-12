@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package schemaconv
 
 import (
@@ -24,6 +23,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
+)
+
+const (
+	TypeNumber  = "number"
+	TypeInteger = "integer"
+	TypeBoolean = "boolean"
 )
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -41,13 +46,13 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 
 		switch field.Kind() {
 		case protoreflect.DoubleKind, protoreflect.FloatKind:
-			schema["type"] = "number"
+			schema["type"] = TypeNumber
 		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
 			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
 			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
-			schema["type"] = "integer"
+			schema["type"] = TypeInteger
 		case protoreflect.BoolKind:
-			schema["type"] = "boolean"
+			schema["type"] = TypeBoolean
 		}
 
 		structValue, err := structpb.NewStruct(schema)
@@ -75,13 +80,13 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 
 		switch field.Kind() {
 		case protoreflect.DoubleKind, protoreflect.FloatKind:
-			schema["type"] = "number"
+			schema["type"] = TypeNumber
 		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
 			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
 			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
-			schema["type"] = "integer"
+			schema["type"] = TypeInteger
 		case protoreflect.BoolKind:
-			schema["type"] = "boolean"
+			schema["type"] = TypeBoolean
 		}
 
 		structValue, err := structpb.NewStruct(schema)
@@ -151,11 +156,11 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 		scalarType := strings.ToLower(strings.TrimPrefix(param.GetType(), "TYPE_"))
 		switch scalarType {
 		case "double", "float":
-			schema["type"] = "number"
+			schema["type"] = TypeNumber
 		case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
-			schema["type"] = "integer"
+			schema["type"] = TypeInteger
 		case "bool":
-			schema["type"] = "boolean"
+			schema["type"] = TypeBoolean
 		}
 
 		structValue, err := structpb.NewStruct(schema)

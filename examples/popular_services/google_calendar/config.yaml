@@ -20,11 +20,9 @@ upstream_services:
     address: "https://www.googleapis.com"
     upstream_authentication:
         api_key:
-
-          plain_text: header_name: "x-goog-api-key"
-            api_key:
-
-              plain_text: "${GOOGLE_API_KEY}"
+          header_name: "x-goog-api-key"
+          api_key:
+            plain_text: "${GOOGLE_API_KEY}"
     calls:
     - endpoint_path: "/calendar/v3/calendars/{{calendarId}}/events"
       schema:

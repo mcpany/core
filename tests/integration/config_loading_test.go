@@ -68,10 +68,8 @@ func TestConfigLoading(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
-			natsConfigFile := CreateTempNatsConfigFile(t)
-
 			if tc.name == "disabled config" {
-				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
+				mcpAny := StartMCPANYServerWithNoHealthCheck(t, "config-loading-"+tc.name, "--config-path", absConfigFile)
 				// The server should exit quickly because there are no enabled services.
 				// We just need to wait for the process to terminate.
 				select {
@@ -86,10 +84,10 @@ func TestConfigLoading(t *testing.T) {
 				return
 			}
 
-			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile, "--config-path", natsConfigFile)
+			mcpAny := StartMCPANYServer(t, "config-loading-"+tc.name, "--config-path", absConfigFile)
 			defer mcpAny.CleanupFunc()
 
-			conn, err := grpc.Dial(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := grpc.NewClient(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
 			defer conn.Close()
 

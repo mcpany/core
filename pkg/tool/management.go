@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"regexp"
 	"sync"
 	"time"
 
@@ -28,7 +27,6 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
@@ -111,13 +109,62 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 			return nil, ErrToolNotFound
 		}
 
-		if err := tm.checkPolicy(ctx, t, req); err != nil {
-			log.Warn("Tool execution denied by policy", "error", err)
-			return nil, err
+		// Resolve Service Config for Hooks
+		serviceID := t.Tool().GetServiceId()
+		serviceInfo, ok := tm.GetServiceInfo(serviceID)
+
+		var preHooks []PreCallHook
+		var postHooks []PostCallHook
+
+		if ok && serviceInfo.Config != nil {
+			// 1. Legacy Call Policy -> converted to PreHook
+			if serviceInfo.Config.GetCallPolicy() != nil { //nolint:staticcheck
+				preHooks = append(preHooks, NewPolicyHook(serviceInfo.Config.GetCallPolicy())) //nolint:staticcheck
+			}
+			// 2. PreCallHooks
+			for _, hCfg := range serviceInfo.Config.GetPreCallHooks() {
+				if p := hCfg.GetCallPolicy(); p != nil {
+					preHooks = append(preHooks, NewPolicyHook(p))
+				}
+				// TODO: Webhook support
+			}
+			// 3. PostCallHooks
+			for _, hCfg := range serviceInfo.Config.GetPostCallHooks() {
+				if tt := hCfg.GetTextTruncation(); tt != nil {
+					postHooks = append(postHooks, NewTextTruncationHook(tt))
+				}
+			}
+		}
+
+		// Execute Pre Hooks
+		for _, h := range preHooks {
+			action, modifiedReq, err := h.ExecutePre(ctx, req)
+			if err != nil {
+				log.Warn("Tool execution denied by pre-hook error", "error", err)
+				return nil, err
+			}
+			if action == ActionDeny {
+				log.Warn("Tool execution denied by pre-hook")
+				return nil, fmt.Errorf("tool execution denied by hook")
+			}
+			if modifiedReq != nil {
+				req = modifiedReq
+			}
 		}
 
 		ctx = NewContextWithTool(ctx, t)
 		result, err := t.Execute(ctx, req)
+
+		// Execute Post Hooks
+		for _, h := range postHooks {
+			newResult, hkErr := h.ExecutePost(ctx, req, result)
+			if hkErr != nil {
+				log.Warn("Post-hook execution failed", "error", hkErr)
+				return nil, hkErr
+			}
+			result = newResult
+		}
+
 		if err != nil {
 			log.Error("Tool execution failed", "error", err)
 		} else {
@@ -322,7 +369,7 @@ func (tm *ToolManager) ListTools() []Tool {
 	}
 
 	var tools []Tool
-	tm.tools.Range(func(key string, value Tool) bool {
+	tm.tools.Range(func(_ string, value Tool) bool {
 		tools = append(tools, value)
 		return true
 	})
@@ -355,56 +402,4 @@ func (tm *ToolManager) ClearToolsForService(serviceID string) {
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
-}
-
-// checkPolicy enforces the CallPolicy for a tool execution.
-func (tm *ToolManager) checkPolicy(ctx context.Context, t Tool, req *ExecutionRequest) error {
-	serviceID := t.Tool().GetServiceId()
-	info, ok := tm.GetServiceInfo(serviceID)
-	// If no service info or no specific policy, we default to ALLOW (open by default).
-	if !ok || info.Config == nil || info.Config.GetCallPolicy() == nil {
-		return nil
-	}
-
-	policy := info.Config.GetCallPolicy()
-	// Determine default action
-	allowed := policy.GetDefaultAction() == configv1.CallPolicy_ALLOW
-
-	for _, rule := range policy.GetRules() {
-		// 1. Match Tool Name
-		if rule.GetToolNameRegex() != "" {
-			matched, err := regexp.MatchString(rule.GetToolNameRegex(), req.ToolName)
-			if err != nil {
-				logging.GetLogger().Error("Invalid tool name regex in policy", "regex", rule.GetToolNameRegex(), "error", err)
-				continue // Skip invalid rule
-			}
-			if !matched {
-				continue // Rule doesn't apply
-			}
-		}
-
-		// 2. Match Arguments
-		if rule.GetArgumentRegex() != "" {
-			// req.ToolInputs is json.RawMessage ([]byte)
-			matched, err := regexp.MatchString(rule.GetArgumentRegex(), string(req.ToolInputs))
-			if err != nil {
-				logging.GetLogger().Error("Invalid argument regex in policy", "regex", rule.GetArgumentRegex(), "error", err)
-				continue
-			}
-			if !matched {
-				continue
-			}
-		}
-
-		// Rule matched!
-		if rule.GetAction() == configv1.CallPolicy_ALLOW {
-			return nil
-		}
-		return fmt.Errorf("tool execution denied by policy rule: %s", req.ToolName)
-	}
-
-	if allowed {
-		return nil
-	}
-	return fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
 }

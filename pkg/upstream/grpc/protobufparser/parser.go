@@ -192,7 +192,7 @@ func processProtoCollection(
 			if err != nil {
 				return fmt.Errorf("failed to read proto file %s: %w", path, err)
 			}
-			if err := os.WriteFile(destPath, content, 0o644); err != nil {
+			if err := os.WriteFile(destPath, content, 0o600); err != nil {
 				return fmt.Errorf("failed to write proto file to temp dir: %w", err)
 			}
 			protoFiles = append(protoFiles, destPath)
@@ -245,7 +245,7 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 		return "", fmt.Errorf("proto file definition for '%s' has neither content nor a path", protoFile.GetFileName())
 	}
 
-	if err := os.WriteFile(filePath, content, 0o644); err != nil {
+	if err := os.WriteFile(filePath, content, 0o600); err != nil {
 		return "", fmt.Errorf("failed to write proto file: %w", err)
 	}
 	return filePath, nil

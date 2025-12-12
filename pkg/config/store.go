@@ -102,7 +102,26 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	// Finally, unmarshal the JSON into the protobuf message.
-	return protojson.Unmarshal(jsonData, v)
+	if err := protojson.Unmarshal(jsonData, v); err != nil {
+		return err
+	}
+
+	// Validate the unmarshaled message against the schema
+	// We marshal back to JSON to ensure canonical format (camelCase) matches the schema generated from Go structs.
+	canonicalJSON, err := protojson.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("failed to marshal proto for validation: %w", err)
+	}
+	var canonicalMap map[string]interface{}
+	if err := json.Unmarshal(canonicalJSON, &canonicalMap); err != nil {
+		return fmt.Errorf("failed to unmarshal canonical json: %w", err)
+	}
+
+	if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
+		return fmt.Errorf("schema validation failed: %w", err)
+	}
+
+	return nil
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration

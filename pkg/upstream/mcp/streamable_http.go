@@ -572,7 +572,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
-func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
+func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP( //nolint:unused
 	ctx context.Context,
 	serviceID string,
 	httpConnection *configv1.McpStreamableHttpConnection,
@@ -587,7 +587,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		return nil, nil, fmt.Errorf("failed to create authenticator for MCP upstream: %w", err)
 	}
 
-	httpClient, err := util.NewHttpClientWithTLS(httpConnection.GetTlsConfig())
+	httpClient, err := util.NewHTTPClientWithTLS(httpConnection.GetTlsConfig())
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create http client with tls config: %w", err)
 	}

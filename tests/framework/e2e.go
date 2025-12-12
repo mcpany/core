@@ -279,7 +279,7 @@ func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_openapi_weather"
 	openapiSpecEndpoint := fmt.Sprintf("%s/openapi.json", upstreamEndpoint)
-	resp, err := http.Get(openapiSpecEndpoint)
+	resp, err := http.Get(openapiSpecEndpoint) //nolint:gosec
 	require.NoError(t, err, "Failed to fetch OpenAPI spec from server")
 	defer resp.Body.Close()
 	specContent, err := io.ReadAll(resp.Body)

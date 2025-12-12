@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package main
 
 import (
@@ -95,7 +94,10 @@ func newRootCmd() *cobra.Command {
 			}
 			logging.Init(logLevel, logOutput)
 
-			metrics.Initialize()
+			if err := metrics.Initialize(); err != nil {
+				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
+				os.Exit(1)
+			}
 			log := logging.GetLogger().With("service", "mcpany")
 
 			bindAddress := cfg.MCPListenAddress()

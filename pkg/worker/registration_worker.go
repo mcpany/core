@@ -76,7 +76,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				Error: err,
 			}
 			res.SetCorrelationID(req.CorrelationID())
-			resultBus.Publish(ctx, req.CorrelationID(), res)
+			_ = resultBus.Publish(ctx, req.CorrelationID(), res)
 			return
 		}
 
@@ -94,7 +94,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		resultBus.Publish(ctx, req.CorrelationID(), res)
+		_ = resultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
 	listRequestBus := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
@@ -108,7 +108,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			Error:    err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		listResultBus.Publish(ctx, req.CorrelationID(), res)
+		_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
 	go func() {

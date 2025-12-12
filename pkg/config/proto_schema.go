@@ -1,0 +1,161 @@
+// Copyright 2025 Author(s) of MCP Any
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+package config
+
+import (
+	"encoding/json"
+	"strings"
+
+	"github.com/santhosh-tekuri/jsonschema/v5"
+	"google.golang.org/protobuf/reflect/protoreflect"
+)
+
+type schemaGenerator struct {
+	defs map[string]interface{}
+}
+
+// GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
+func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
+	gen := &schemaGenerator{
+		defs: make(map[string]interface{}),
+	}
+
+	rootRef := gen.getOrAddDefinition(msg.Descriptor())
+
+	schemaMap := map[string]interface{}{
+		"$schema": "https://json-schema.org/draft/2020-12/schema",
+		"$defs":   gen.defs,
+		"$ref":    rootRef["$ref"],
+	}
+
+	return compileSchema(schemaMap)
+}
+
+func compileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
+	compiler := jsonschema.NewCompiler()
+	url := "config.schema.json"
+
+	b, err := json.Marshal(schemaMap)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := compiler.AddResource(url, strings.NewReader(string(b))); err != nil {
+		return nil, err
+	}
+	return compiler.Compile(url)
+}
+
+func (g *schemaGenerator) getOrAddDefinition(
+	desc protoreflect.MessageDescriptor,
+) map[string]interface{} {
+	fullName := string(desc.FullName())
+	ref := map[string]interface{}{
+		"$ref": "#/$defs/" + fullName,
+	}
+
+	if _, exists := g.defs[fullName]; exists {
+		return ref
+	}
+
+	// Create placeholder to prevent infinite recursion
+	g.defs[fullName] = map[string]interface{}{}
+
+	schema := g.protoMessageToSchema(desc)
+	g.defs[fullName] = schema
+
+	return ref
+}
+
+func (g *schemaGenerator) protoMessageToSchema(
+	desc protoreflect.MessageDescriptor,
+) map[string]interface{} {
+	if desc.FullName() == "google.protobuf.Duration" {
+		return map[string]interface{}{
+			"type":    "string",
+			"pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$",
+		}
+	}
+
+	properties := make(map[string]interface{})
+	fields := desc.Fields()
+	for i := 0; i < fields.Len(); i++ {
+		field := fields.Get(i)
+		fieldName := field.JSONName()
+		if fieldName == "" {
+			fieldName = string(field.Name())
+		}
+
+		properties[fieldName] = g.protoFieldToSchema(field)
+	}
+
+	return map[string]interface{}{
+		"type":       "object",
+		"properties": properties,
+		// strict validation? additionalProperties: false
+		// For now let's be strict to prove it works.
+		"additionalProperties": false,
+	}
+}
+
+func (g *schemaGenerator) protoFieldToSchema(
+	field protoreflect.FieldDescriptor,
+) map[string]interface{} {
+	if field.IsMap() {
+		valSchema := g.protoFieldTypeToSchema(field.MapValue())
+		return map[string]interface{}{
+			"type":                 "object",
+			"additionalProperties": valSchema,
+		}
+	}
+
+	if field.IsList() {
+		return map[string]interface{}{
+			"type":  "array",
+			"items": g.protoFieldTypeToSchema(field),
+		}
+	}
+
+	return g.protoFieldTypeToSchema(field)
+}
+
+func (g *schemaGenerator) protoFieldTypeToSchema(
+	field protoreflect.FieldDescriptor,
+) map[string]interface{} {
+	switch field.Kind() {
+	case protoreflect.MessageKind:
+		return g.getOrAddDefinition(field.Message())
+	case protoreflect.StringKind:
+		return map[string]interface{}{"type": "string"}
+	case protoreflect.BoolKind:
+		return map[string]interface{}{"type": "boolean"}
+	case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Uint32Kind,
+		protoreflect.Fixed32Kind, protoreflect.Sfixed32Kind:
+		return map[string]interface{}{"type": "integer"}
+	case protoreflect.Int64Kind, protoreflect.Uint64Kind,
+		protoreflect.Sint64Kind, protoreflect.Fixed64Kind,
+		protoreflect.Sfixed64Kind:
+		return map[string]interface{}{"type": "string"} // ProtoJSON: 64-bit ints are strings
+	case protoreflect.FloatKind, protoreflect.DoubleKind:
+		return map[string]interface{}{"type": "number"}
+	case protoreflect.BytesKind:
+		return map[string]interface{}{"type": "string", "contentEncoding": "base64"}
+	case protoreflect.EnumKind:
+		return map[string]interface{}{"type": "string"} // Simplified
+	}
+	return map[string]interface{}{}
+}

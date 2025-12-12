@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/pion/webrtc/v3"
 )
@@ -118,8 +119,7 @@ func setupPeerConnection() error {
 		})
 		d.OnMessage(func(msg webrtc.DataChannelMessage) {
 			slog.Info("webrtc_weather_server: Received message", "message", string(msg.Data))
-			location := string(msg.Data)
-			weather, ok := weatherData[location]
+			weather, ok := weatherData[string(msg.Data)]
 			if !ok {
 				weather = "Location not found"
 			}
@@ -162,13 +162,14 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signal", signalHandler)
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 	})
 
 	server := &http.Server{
-		Handler: mux,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {

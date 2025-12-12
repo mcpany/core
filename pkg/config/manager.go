@@ -25,8 +25,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -42,10 +42,14 @@ type UpstreamServiceManager struct {
 	servicePriorities map[string]int32
 	httpClient        *http.Client
 	newGitHub         func(ctx context.Context, rawURL string) (*GitHub, error)
+	enabledProfiles   []string
 }
 
 // NewUpstreamServiceManager creates a new UpstreamServiceManager.
-func NewUpstreamServiceManager() *UpstreamServiceManager {
+func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
+	if len(enabledProfiles) == 0 {
+		enabledProfiles = []string{"default"}
+	}
 	return &UpstreamServiceManager{
 		log:               logging.GetLogger().With("component", "UpstreamServiceManager"),
 		services:          make(map[string]*configv1.UpstreamServiceConfig),
@@ -55,7 +59,8 @@ func NewUpstreamServiceManager() *UpstreamServiceManager {
 				DialContext: util.SafeDialContext,
 			},
 		},
-		newGitHub: NewGitHub,
+		newGitHub:       NewGitHub,
+		enabledProfiles: enabledProfiles,
 	}
 }
 
@@ -78,7 +83,7 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	}
 
 	// Return the final list of services
-	var services []*configv1.UpstreamServiceConfig
+	services := make([]*configv1.UpstreamServiceConfig, 0, len(m.services))
 	for _, service := range m.services {
 		services = append(services, service)
 	}
@@ -167,7 +172,9 @@ func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, co
 		if service.HasPriority() {
 			priority = service.GetPriority()
 		}
-		m.addService(service, priority)
+		if err := m.addService(service, priority); err != nil {
+			m.log.Warn("Failed to add service from collection", "service", service.GetName(), "error", err)
+		}
 	}
 
 	m.log.Info("Successfully loaded and merged upstream service collection", "name", collection.GetName(), "url", url, "services_loaded", len(services))
@@ -265,6 +272,33 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	if service == nil {
 		return nil
 	}
+
+	// Filter by profile
+	serviceProfiles := service.GetProfiles()
+	if len(serviceProfiles) == 0 {
+		// Default to "default" profile if none specified
+		serviceProfiles = []*configv1.Profile{{Name: "default"}}
+	}
+
+	allowed := false
+	for _, sp := range serviceProfiles {
+		for _, ep := range m.enabledProfiles {
+			if sp.GetName() == ep {
+				allowed = true
+				break
+			}
+		}
+		if allowed {
+			break
+		}
+	}
+
+
+	if !allowed {
+		m.log.Debug("Skipping service due to profile mismatch", "service_name", service.GetName(), "service_profiles", serviceProfiles, "enabled_profiles", m.enabledProfiles)
+		return nil
+	}
+
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {
 		if priority < existingPriority {

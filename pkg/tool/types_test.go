@@ -82,8 +82,8 @@ func TestHTTPTool_Execute_PoolError(t *testing.T) {
 
 func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HttpClientWrapper](func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{}, nil
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
@@ -96,8 +96,8 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 
 func TestHTTPTool_Execute_BadURL(t *testing.T) {
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HttpClientWrapper](func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{}, nil
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
@@ -108,14 +108,14 @@ func TestHTTPTool_Execute_BadURL(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HttpClientWrapper](func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 
@@ -138,8 +138,8 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HttpClientWrapper](func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 

@@ -14,6 +14,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+//go:build e2e
+
 package e2e
 
 import (
@@ -77,7 +79,7 @@ func TestUpdateCommand(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	dummyExecutablePath := tempDir + "/dummy-server"
-	err = os.WriteFile(dummyExecutablePath, []byte("old content"), 0755)
+	err = os.WriteFile(dummyExecutablePath, []byte("old content"), 0600)
 	assert.NoError(t, err)
 
 	// Run the update command against the dummy file
