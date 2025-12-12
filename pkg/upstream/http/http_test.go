@@ -325,7 +325,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		expectedKey, _ := util.SanitizeServiceName("test-service")
 		assert.Equal(t, expectedKey, serviceID)
 		assert.Len(t, discoveredTools, 1)
-		p, ok := pool.Get[*client.HttpClientWrapper](pm, serviceID)
+		p, ok := pool.Get[*client.HTTPClientWrapper](pm, serviceID)
 		assert.True(t, ok)
 		assert.NotNil(t, p)
 	})
@@ -483,7 +483,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		defer func() { NewHttpPool = originalNewHttpPool }()
 
 		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HttpClientWrapper], error) {
+		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
@@ -528,7 +528,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		defer func() { NewHttpPool = originalNewHttpPool }()
 
 		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HttpClientWrapper], error) {
+		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout

@@ -23,6 +23,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/mcpany/core/pkg/consts"
 )
@@ -97,7 +98,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/openapi.json", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/openapi.json", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
 		_, _ = w.Write([]byte(openAPISpec))
 	})
@@ -123,7 +124,8 @@ func main() {
 	})
 
 	server := &http.Server{
-		Handler: mux,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {

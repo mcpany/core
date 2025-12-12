@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package testutil
 
 import (
@@ -42,10 +41,10 @@ func (m *mockClientStream) CloseSend() error {
 func (m *mockClientStream) Context() context.Context {
 	return context.Background()
 }
-func (m *mockClientStream) SendMsg(v interface{}) error {
+func (m *mockClientStream) SendMsg(_ interface{}) error {
 	return nil
 }
-func (m *mockClientStream) RecvMsg(v interface{}) error {
+func (m *mockClientStream) RecvMsg(_ interface{}) error {
 	return nil
 }
 func TestMockClientConn(t *testing.T) {

@@ -27,6 +27,7 @@ import (
 )
 
 func TestGRPCHelperFunctions(t *testing.T) {
+	t.Parallel()
 	t.Run("unauthenticated", func(t *testing.T) {
 		t.Parallel()
 		proc := BuildGRPCWeatherServer(t)

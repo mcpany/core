@@ -47,7 +47,7 @@ func TestMTLSAuthentication(t *testing.T) {
 	serverCert, err := tls.LoadX509KeyPair("../tls/server.crt", "../tls/server.key")
 	require.NoError(t, err)
 
-	server.TLS = &tls.Config{
+	server.TLS = &tls.Config{ //nolint:gosec
 		ClientCAs:    caCertPool,
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 		Certificates: []tls.Certificate{serverCert},

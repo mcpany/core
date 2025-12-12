@@ -24,6 +24,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"sort"
+
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/pool"
@@ -35,7 +37,6 @@ import (
 	"github.com/mcpany/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"sort"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -262,6 +263,19 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 				"type":       structpb.NewStringValue("object"),
 				"properties": structpb.NewStructValue(properties),
 			},
+		}
+
+		if len(requiredParams) > 0 {
+			requiredList := make([]any, len(requiredParams))
+			for i, v := range requiredParams {
+				requiredList[i] = v
+			}
+			requiredValue, err := structpb.NewList(requiredList)
+			if err != nil {
+				log.Error("Failed to create required params list", "error", err)
+				continue
+			}
+			inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
 		}
 
 		newToolProto := pb.Tool_builder{

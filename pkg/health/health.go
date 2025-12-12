@@ -1,5 +1,3 @@
-//nolint:staticcheck,bodyclose
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -29,6 +27,7 @@ import (
 	"time"
 
 	"github.com/alexliesenfeld/health"
+	"github.com/coder/websocket"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
@@ -37,7 +36,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-	"nhooyr.io/websocket"
 )
 
 const (
@@ -111,18 +109,20 @@ func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthC
 		return fmt.Errorf("failed to create health check request: %w", err)
 	}
 
-	resp, err := client.Do(req) //nolint:bodyclose
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != int(hc.GetExpectedCode()) {
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
 	if hc.GetExpectedResponseBodyContains() != "" {
-		body, err := io.ReadAll(resp.Body) //nolint:bodyclose
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to read health check response body: %w", err)
 		}
@@ -232,8 +232,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 				return checkConnection(c.GetAddress())
 			}
 
-			conn, err := grpc.DialContext(
-				ctx,
+			conn, err := grpc.NewClient(
 				c.GetAddress(),
 				grpc.WithTransportCredentials(insecure.NewCredentials()),
 			)
@@ -311,7 +310,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	}
 }
 
-func connectionCheck(name, address string) health.Check {
+func connectionCheck(name, address string) health.Check { //nolint:unused
 	return health.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,

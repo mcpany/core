@@ -39,6 +39,7 @@ type Settings struct {
 	logLevel        string
 	logFile         string
 	shutdownTimeout time.Duration
+	profiles        []string
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -70,6 +71,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
+	s.profiles = viper.GetStringSlice("profiles")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -140,6 +142,14 @@ func (s *Settings) APIKey() string {
 		return s.proto.GetApiKey()
 	}
 	return viper.GetString("api-key")
+}
+
+// Profiles returns the active profiles.
+func (s *Settings) Profiles() []string {
+	if len(s.profiles) == 0 {
+		return []string{"default"}
+	}
+	return s.profiles
 }
 
 func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {

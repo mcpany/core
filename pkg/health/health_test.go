@@ -1,5 +1,3 @@
-//nolint
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -28,13 +26,13 @@ import (
 	"time"
 
 	"github.com/alexliesenfeld/health"
+	"github.com/coder/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"nhooyr.io/websocket"
 )
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
@@ -45,13 +43,13 @@ type mockHealthServer struct {
 
 func (s *mockHealthServer) Check(
 	ctx context.Context,
-	in *grpc_health_v1.HealthCheckRequest,
+	_ *grpc_health_v1.HealthCheckRequest,
 ) (*grpc_health_v1.HealthCheckResponse, error) {
 	return &grpc_health_v1.HealthCheckResponse{Status: s.status}, nil
 }
 
 func (s *mockHealthServer) Watch(
-	in *grpc_health_v1.HealthCheckRequest,
+	_ *grpc_health_v1.HealthCheckRequest,
 	srv grpc_health_v1.Health_WatchServer,
 ) error {
 	return srv.Send(&grpc_health_v1.HealthCheckResponse{Status: s.status})
@@ -72,19 +70,19 @@ func newMockGRPCHealthServer(
 }
 
 // mockHealthServerWithFailure is a mock implementation of the gRPC health check server that returns an error.
-type mockHealthServerWithFailure struct {
+type mockHealthServerWithFailure struct { //nolint:unused
 	grpc_health_v1.UnimplementedHealthServer
 }
 
 func (s *mockHealthServerWithFailure) Check(
 	ctx context.Context,
-	in *grpc_health_v1.HealthCheckRequest,
-) (*grpc_health_v1.HealthCheckResponse, error) {
+	_ *grpc_health_v1.HealthCheckRequest,
+) (*grpc_health_v1.HealthCheckResponse, error) { //nolint:unused
 	return nil, assert.AnError
 }
 
 // newMockGRPCHealthServerWithFailure starts a gRPC server with the mock health service that returns an error.
-func newMockGRPCHealthServerWithFailure() (*grpc.Server, net.Listener) {
+func newMockGRPCHealthServerWithFailure() (*grpc.Server, net.Listener) { //nolint:unused
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		panic(err)
@@ -626,7 +624,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 
 	// Mock HTTP server for signaling
 	mockSignalingServer := httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}),
 	)

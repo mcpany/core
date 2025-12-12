@@ -553,7 +553,7 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return &tool.ServiceInfo{}, true
 }
 
-func (m *mockToolManager) ClearToolsForService(serviceKey string) {
+func (m *mockToolManager) ClearToolsForService(_ string) {
 	m.clearToolsForServiceCalled = true
 }
 

@@ -5,7 +5,7 @@ edition = "2023";
 
 package mcpany.config.v1;
 
-import "proto/config/v1/config.proto";
+import "proto/config/v1/upstream_service.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 

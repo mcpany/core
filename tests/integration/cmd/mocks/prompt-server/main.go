@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -40,7 +41,7 @@ func main() {
 		Name:        "hello",
 		Description: "A simple hello world prompt",
 	}
-	server.AddPrompt(prompt, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	server.AddPrompt(prompt, func(_ context.Context, _ *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		return &mcp.GetPromptResult{
 			Messages: []*mcp.PromptMessage{
 				{
@@ -52,14 +53,19 @@ func main() {
 	})
 
 	// 3. Create a streamable HTTP handler
-	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
+	handler := mcp.NewStreamableHTTPHandler(func(_ *http.Request) *mcp.Server {
 		return server
 	}, nil)
 
 	// 4. Serve the handler over HTTP
 	addr := fmt.Sprintf(":%d", *port)
 	log.Printf("server listening at %s", addr)
-	if err := http.ListenAndServe(addr, handler); err != nil {
+	srv := &http.Server{
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

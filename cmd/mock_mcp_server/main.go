@@ -45,7 +45,7 @@ func main() {
 			},
 			"required": []string{"path"},
 		},
-	}, func(ctx context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	}, func(_ context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var args map[string]interface{}
 		// request.Params.Arguments is []byte / json.RawMessage
 		if err := json.Unmarshal(request.Params.Arguments, &args); err != nil {
@@ -78,7 +78,7 @@ func main() {
 			},
 			"required": []string{"path"},
 		},
-	}, func(ctx context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	}, func(_ context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return &mcp.CallToolResult{
 			Content: []mcp.Content{
 				&mcp.TextContent{

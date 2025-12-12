@@ -120,6 +120,29 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).  |
 | `disable`                 | `bool`                   | If true, this upstream service is disabled.                                                   |
 | `priority`                | `int32`                  | The priority of the service. Lower numbers have higher priority.                              |
+| `profiles`                | `repeated Profile`       | A list of profiles this service belongs to. Defaults to `[{name: "default"}]` if empty.       |
+
+### Profiles
+
+Profiles allow you to categorize and selectively enable services, tools, resources, and prompts based on the runtime environment (e.g., "dev", "prod", "staging"). You can start the server with specific profiles enabled using the `--profiles` command-line flag (e.g., `--profiles=dev,staging`).
+
+If a configuration item (service, tool, etc.) has an empty `profiles` list, it is treated as belonging to the "default" profile.
+Items are enabled if they share at least one profile with the enabled profiles list.
+
+#### Use Case and Example
+
+Enable "debug-tools" only when the "dev" profile is active.
+
+```yaml
+upstream_services:
+  - name: "debug-service"
+    profiles:
+      - name: "dev"
+    service_config:
+      # ...
+```
+
+To run this service, start the server with `--profiles=dev` (or `--profiles=dev,default`).
 
 ### Use Case and Example
 

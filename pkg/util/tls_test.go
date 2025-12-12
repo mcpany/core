@@ -72,15 +72,15 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 	return certFile.Name(), keyFile.Name()
 }
 
-func TestNewHttpClientWithTLS(t *testing.T) {
+func TestNewHTTPClientWithTLS(t *testing.T) {
 	t.Run("nil config returns default client", func(t *testing.T) {
-		client, err := NewHttpClientWithTLS(nil)
+		client, err := NewHTTPClientWithTLS(nil)
 		require.NoError(t, err)
 		assert.Equal(t, http.DefaultClient, client)
 	})
 
 	t.Run("empty config returns a valid client", func(t *testing.T) {
-		client, err := NewHttpClientWithTLS(&configv1.TLSConfig{})
+		client, err := NewHTTPClientWithTLS(&configv1.TLSConfig{})
 		require.NoError(t, err)
 		assert.NotNil(t, client)
 		assert.NotEqual(t, http.DefaultClient, client)
@@ -93,7 +93,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 	t.Run("insecure skip verify is set correctly", func(t *testing.T) {
 		config := &configv1.TLSConfig{}
 		config.SetInsecureSkipVerify(true)
-		client, err := NewHttpClientWithTLS(config)
+		client, err := NewHTTPClientWithTLS(config)
 		require.NoError(t, err)
 		transport, ok := client.Transport.(*http.Transport)
 		require.True(t, ok)
@@ -105,7 +105,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 		caCertPath, _ := generateTestCerts(t, tempDir)
 		config := &configv1.TLSConfig{}
 		config.SetCaCertPath(caCertPath)
-		client, err := NewHttpClientWithTLS(config)
+		client, err := NewHTTPClientWithTLS(config)
 		require.NoError(t, err)
 		transport, ok := client.Transport.(*http.Transport)
 		require.True(t, ok)
@@ -115,7 +115,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 	t.Run("with invalid CA cert path", func(t *testing.T) {
 		config := &configv1.TLSConfig{}
 		config.SetCaCertPath("/path/to/nonexistent/cert.pem")
-		_, err := NewHttpClientWithTLS(config)
+		_, err := NewHTTPClientWithTLS(config)
 		require.Error(t, err)
 	})
 
@@ -127,7 +127,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 
 		config := &configv1.TLSConfig{}
 		config.SetCaCertPath(malformedCertPath)
-		_, err = NewHttpClientWithTLS(config)
+		_, err = NewHTTPClientWithTLS(config)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to append CA certs from PEM")
 	})
@@ -138,7 +138,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 		config := &configv1.TLSConfig{}
 		config.SetClientCertPath(clientCertPath)
 		config.SetClientKeyPath(clientKeyPath)
-		client, err := NewHttpClientWithTLS(config)
+		client, err := NewHTTPClientWithTLS(config)
 		require.NoError(t, err)
 		transport, ok := client.Transport.(*http.Transport)
 		require.True(t, ok)
@@ -151,7 +151,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 		config := &configv1.TLSConfig{}
 		config.SetClientCertPath("/path/to/nonexistent/cert.pem")
 		config.SetClientKeyPath(clientKeyPath)
-		_, err := NewHttpClientWithTLS(config)
+		_, err := NewHTTPClientWithTLS(config)
 		require.Error(t, err)
 	})
 
@@ -167,7 +167,7 @@ func TestNewHttpClientWithTLS(t *testing.T) {
 		config.SetClientCertPath(clientCertPath)
 		config.SetClientKeyPath(clientKeyPath)
 
-		client, err := NewHttpClientWithTLS(config)
+		client, err := NewHTTPClientWithTLS(config)
 		require.NoError(t, err)
 		transport, ok := client.Transport.(*http.Transport)
 		require.True(t, ok)

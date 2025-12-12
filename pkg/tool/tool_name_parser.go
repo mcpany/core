@@ -38,9 +38,7 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 		namespace = ""
 	}
 
-	if strings.HasPrefix(tool, "--") {
-		tool = strings.TrimPrefix(tool, "--")
-	}
+	tool = strings.TrimPrefix(tool, "--")
 
 	if tool == "" || tool == "/" {
 		return "", "", fmt.Errorf("invalid tool name: %s", toolName)

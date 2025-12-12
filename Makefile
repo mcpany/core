@@ -17,20 +17,43 @@
 # Variables
 GO = go
 GO_CMD := $(GO)
+ifdef INSIDE_DOCKER_CONTAINER
+GO_CMD := /usr/local/go/bin/go
+endif
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
 VERSION := $(shell git describe --tags --always --dirty)
 LDFLAGS := -ldflags="-X main.Version=$(VERSION)"
+
+# Dockerized Build Logic
+BUILD_MODE ?= local
+DOCKER_COMPOSE_REGULAR_FILE ?= docker/docker-compose.dev.yml
+ifeq ($(BUILD_MODE),docker)
+ifneq ($(INSIDE_DOCKER_CONTAINER),1)
+	SHOULD_PROXY_TO_DOCKER := true
+	DOCKER_PROXY_CMD := env UID=$(shell id -u) GID=$(shell id -g) docker compose -f $(DOCKER_COMPOSE_REGULAR_FILE) run --rm dev make INSIDE_DOCKER_CONTAINER=1
+endif
+endif
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
 # Check if docker can be run without sudo
 ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_CMD := docker
 	DOCKER_BUILDX_CMD := docker buildx
+	ifeq ($(shell docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
+		DOCKER_BUILD_CMD := docker buildx build --load
+	else
+		DOCKER_BUILD_CMD := docker build
+	endif
 	SUDO_MSG := " (no sudo)"
 	NEEDS_SUDO_FOR_DOCKER := 0
 else
 	DOCKER_CMD := sudo docker
 	DOCKER_BUILDX_CMD := sudo docker buildx
+	ifeq ($(shell sudo docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
+		DOCKER_BUILD_CMD := sudo docker buildx build --load
+	else
+		DOCKER_BUILD_CMD := sudo docker build
+	endif
 	NEEDS_SUDO_FOR_DOCKER := 1
 endif
 
@@ -41,7 +64,12 @@ PROTOC_GEN_GO_VERSION ?= latest
 PROTOC_GEN_GO_GRPC_VERSION ?= latest
 GRPC_GATEWAY_VERSION ?= v2.27.3
 PROTOC_ZIP := protoc.zip
-TOOL_INSTALL_DIR := $(CURDIR)/build/env/bin
+# Debug TOOL_INSTALL_DIR
+$(info TOOL_INSTALL_DIR is $(TOOL_INSTALL_DIR))
+ifdef INSIDE_DOCKER_CONTAINER
+TOOL_INSTALL_DIR := /tools
+endif
+TOOL_INSTALL_DIR ?= $(CURDIR)/build/env/bin
 PROTOC_VERSION := v33.1
 
 # Detect architecture for protoc
@@ -76,7 +104,7 @@ HELM_DOWNLOAD_URL_BASE ?= https://get.helm.sh
 ifeq ($(CI),)
 	PYTHON_EXEC := $(CURDIR)/build/venv/bin/python
 else
-	PYTHON_EXEC := python
+	PYTHON_EXEC := python3
 endif
 # ==============================================================================
 # Release Targets
@@ -145,10 +173,10 @@ prepare:
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
-	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
-	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
-	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION)
-	@GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION)
+	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
+	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -193,7 +221,10 @@ prepare:
 		if test -n "$$PYTHON_CMD"; then \
 			echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
 			VENV_DIR=$(CURDIR)/build/venv; \
-			$$PYTHON_CMD -m venv $$VENV_DIR; \
+			if ! test -d "$$VENV_DIR"; then \
+				echo "Creating virtual environment..."; \
+				$$PYTHON_CMD -m venv $$VENV_DIR; \
+			fi; \
 			if ! test -f "$$VENV_DIR/bin/python"; then \
 				echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
 				echo "\033[1;31mThis is likely because the 'venv' module is not installed for $$PYTHON_CMD.\033[0m"; \
@@ -201,8 +232,11 @@ prepare:
 				echo "\033[1;31mFor Debian/Ubuntu, run: sudo apt-get update && sudo apt-get install python3-venv\033[0m"; \
 				exit 1; \
 			fi; \
-			$(PYTHON_EXEC) -m pip install --upgrade pip; \
-			$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+			if ! test -f "$$VENV_DIR/.installed"; then \
+				$(PYTHON_EXEC) -m pip install --upgrade pip; \
+				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+				touch "$$VENV_DIR/.installed"; \
+			fi; \
 			if ! GIT_CONFIG_GLOBAL=/dev/null $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
@@ -290,10 +324,36 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
+	@# Install golangci-lint
+	@echo "Checking for golangci-lint..."
+	@if test -f "$(GOLANGCI_LINT_BIN)"; then \
+		echo "golangci-lint is already installed."; \
+	else \
+		echo "Installing golangci-lint to $(TOOL_INSTALL_DIR)..."; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		echo "Downloading go modules..."; \
+		go mod download; \
+		if test -f "$(GOLANGCI_LINT_BIN)"; then \
+			echo "golangci-lint installed successfully."; \
+		else \
+			echo "golangci-lint installation failed."; \
+			exit 1; \
+		fi; \
+	fi
+	@echo "Current GOPATH: $$(go env GOPATH)"
+	@echo "Setting GOPATH to $(TOOL_INSTALL_DIR)/go"
+	@export GOPATH=$(TOOL_INSTALL_DIR)/go && \
+	export GOPATH=$(TOOL_INSTALL_DIR)/go && \
+	echo "Downloading go modules..." && \
+	go mod download
 	@echo "Preparation complete."
 
 
-gen: clean prepare
+
+gen: $(if $(SHOULD_PROXY_TO_DOCKER),,clean-protos prepare)
+ifdef SHOULD_PROXY_TO_DOCKER
+	@$(DOCKER_PROXY_CMD) gen
+else
 	@echo "Removing old protobuf files..."
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
@@ -314,6 +374,7 @@ gen: clean prepare
 			--grpc-gateway_opt=module=github.com/mcpany/core \
 			{} +
 	@echo "Protobuf generation complete."
+endif
 
 build: gen
 	@echo "Building Go project locally..."
@@ -323,19 +384,24 @@ build-mock-server: gen
 	@echo "Building mock server..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/mock_server ./cmd/mock_mcp_server
 
+ifdef SHOULD_PROXY_TO_DOCKER
+test:
+	@$(DOCKER_PROXY_CMD) test
+else
 test: test-fast e2e test-public-api
+endif
 
 COVERAGE_FILE ?= coverage.out
 
 e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running E2E Go tests locally with a 300s timeout..."
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /tests/integration/upstream)
 	@-pkill -f file-upload-server
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./... | grep -v /tests/public_api | grep -v /pkg/command)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e)
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server
@@ -356,22 +422,30 @@ build-examples: build-weather-server
 build-weather-server:
 	@echo "Building weather server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
-	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server upstream_service/http/server/weather_server/weather_server.go
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream_service_demo/http/server/weather_server/weather_server.go
 
 .PHONY: build-file-upload-server
 build-file-upload-server:
 	@echo "Building file upload server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
-	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server upstream_service/file-upload/main.go
+	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server examples/upstream_service_demo/file-upload/main.go
 
 # ==============================================================================
 # Other Commands
 # ==============================================================================
 
-lint: gen
+lint: $(if $(SHOULD_PROXY_TO_DOCKER),,gen)
+ifdef SHOULD_PROXY_TO_DOCKER
+	@$(DOCKER_PROXY_CMD) lint
+else
 	@echo "Running all pre-commit hooks..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	$(PYTHON_EXEC) -m pre_commit run --all-files
+	if [ -n "$(CI)" ]; then \
+		pip3 install --user --break-system-packages pre-commit || pip3 install --user pre-commit; \
+		export PATH=$$HOME/.local/bin:$$PATH; \
+	fi; \
+	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off pre-commit run --all-files --show-diff-on-failure --color=always
+endif
 
 .PHONY: fix-license-header
 fix-license-header:
@@ -380,9 +454,13 @@ fix-license-header:
 	@echo "Running make lint to restore headers..."
 	@$(MAKE) lint
 
-clean:
-	@echo "Cleaning generated protobuf files and build artifacts..."
-	@-find . -name "*.pb.go" -delete
+clean-protos:
+	@echo "Cleaning generated protobuf files..."
+	@-find . \( -name ".cache" -o -name "build" \) -prune -o -name "*.pb.go" -type f -exec rm -f {} +
+
+clean: clean-protos
+	@echo "Cleaning build artifacts..."
+	@-chmod -R +w $(CURDIR)/build 2>/dev/null || true
 	@rm -rf $(CURDIR)/build
 
 run: build
@@ -426,7 +504,7 @@ $(E2E_BIN_DIR):
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
-	@$(DOCKER_BUILDX_CMD) build 		--load 		-t mcpany-e2e-time-server 		-f tests/integration/examples/Dockerfile.timeserver 		$(if $(CACHE_TO),--cache-to=$(CACHE_TO)) 		$(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) 		tests/integration/examples
+	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
@@ -496,7 +574,7 @@ EVERYTHING_IMAGE_TAG ?= mcpany/everything:latest
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
-	@$(DOCKER_BUILDX_CMD) build --load -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
+	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
 	@echo "Everything server Docker image build complete."
 else
 	@echo "Docker not found. Cannot build everything server image."

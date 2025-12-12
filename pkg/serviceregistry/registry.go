@@ -126,7 +126,9 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
 			authenticator := auth.NewAPIKeyAuthenticator(apiKeyConfig)
-			r.authManager.AddAuthenticator(serviceID, authenticator)
+			if err := r.authManager.AddAuthenticator(serviceID, authenticator); err != nil {
+				return "", nil, nil, fmt.Errorf("failed to add api key authenticator: %w", err)
+			}
 		}
 		if oauth2Config := authConfig.GetOauth2(); oauth2Config != nil {
 			config := &auth.OAuth2Config{

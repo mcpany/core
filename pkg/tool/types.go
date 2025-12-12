@@ -116,6 +116,28 @@ type Callable interface {
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
+// Action defines the decision made by a pre-call hook.
+type Action int
+
+const (
+	ActionAllow Action = 0
+	ActionDeny  Action = 1
+)
+
+// PreCallHook defines the interface for hooks executed before a tool call.
+type PreCallHook interface {
+	// ExecutePre runs the hook. It returns an action (Allow/Deny),
+	// a potentially modified request (or nil if unchanged), and an error.
+	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
+}
+
+// PostCallHook defines the interface for hooks executed after a tool call.
+type PostCallHook interface {
+	// ExecutePost runs the hook. It returns the potentially modified result
+	// (or original if unchanged) and an error.
+	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
+}
+
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
@@ -254,10 +276,11 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 
-	httpPool, ok := pool.Get[*client.HttpClientWrapper](t.poolManager, t.serviceID)
+	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceID)
@@ -345,7 +368,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		var bodyForAttempt io.Reader
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
-				seeker.Seek(0, io.SeekStart)
+				if _, err := seeker.Seek(0, io.SeekStart); err != nil {
+					return &resilience.PermanentError{Err: fmt.Errorf("failed to seek body: %w", err)}
+				}
 				bodyForAttempt = body
 			} else {
 				return &resilience.PermanentError{Err: fmt.Errorf("cannot retry request with non-seekable body")}
@@ -392,10 +417,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+			resp.Body.Close()
 			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)}
 		}
 
 		if resp.StatusCode >= 500 {
+			resp.Body.Close()
 			return fmt.Errorf("upstream HTTP request failed with status %d", resp.StatusCode)
 		}
 		return nil
@@ -586,7 +613,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // operation definition.
 type OpenAPITool struct {
 	tool              *v1.Tool
-	client            client.HttpClient
+	client            client.HTTPClient
 	parameterDefs     map[string]string
 	method            string
 	url               string
@@ -605,7 +632,7 @@ type OpenAPITool struct {
 // url is the URL template for the endpoint.
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains configuration for input/output transformations.
-func NewOpenAPITool(tool *v1.Tool, client client.HttpClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
+func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	return &OpenAPITool{
 		tool:              tool,
 		client:            client,
@@ -871,7 +898,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 		go func() {
 			defer stderr.Close()
-			io.Copy(io.Discard, stderr)
+			_, _ = io.Copy(io.Discard, stderr)
 		}()
 
 		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
@@ -897,16 +924,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	go func() {
 		defer wg.Done()
-		if closer, ok := stdout.(io.ReadCloser); ok {
-			defer closer.Close()
-		}
-		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+		defer stdout.Close()
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
-		if closer, ok := stderr.(io.ReadCloser); ok {
-			defer closer.Close()
-		}
+		defer stderr.Close()
 		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 
@@ -1041,16 +1064,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	go func() {
 		defer wg.Done()
-		if closer, ok := stdout.(io.ReadCloser); ok {
-			defer closer.Close()
-		}
+		defer stdout.Close()
 		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
-		if closer, ok := stderr.(io.ReadCloser); ok {
-			defer closer.Close()
-		}
+		defer stderr.Close()
 		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 

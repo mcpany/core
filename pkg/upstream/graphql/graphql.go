@@ -23,13 +23,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/machinebox/graphql"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/machinebox/graphql"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -304,17 +304,15 @@ func (g *graphqlUpstream) Register(
 
 				if selectionSet != "" {
 					sb.WriteString(selectionSet)
-				} else {
-					if len(field.Type.Fields) > 0 {
-						sb.WriteString("{ ")
-						for i, f := range field.Type.Fields {
-							sb.WriteString(f.Name)
-							if i < len(field.Type.Fields)-1 {
-								sb.WriteString(" ")
-							}
+				} else if len(field.Type.Fields) > 0 {
+					sb.WriteString("{ ")
+					for i, f := range field.Type.Fields {
+						sb.WriteString(f.Name)
+						if i < len(field.Type.Fields)-1 {
+							sb.WriteString(" ")
 						}
-						sb.WriteString(" }")
 					}
+					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")

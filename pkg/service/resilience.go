@@ -66,7 +66,11 @@ func newBackoff(ctx context.Context, retryConfig *configv1.RetryConfig) backoff.
 		b.InitialInterval = 100 * time.Millisecond
 	}
 	b.Reset()
-	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retryConfig.GetNumberOfRetries())), ctx)
+	retries := retryConfig.GetNumberOfRetries()
+	if retries < 0 {
+		retries = 0
+	}
+	return backoff.WithContext(backoff.WithMaxRetries(b, uint64(retries)), ctx)
 }
 
 func isRetryable(err error) bool {

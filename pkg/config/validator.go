@@ -33,6 +33,8 @@ const (
 	Server BinaryType = iota
 	// Worker represents the worker binary.
 	Worker
+	// Client represents the client binary.
+	Client
 )
 
 // ValidationError encapsulates a validation error for a specific service.
@@ -98,10 +100,10 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 				return fmt.Errorf("invalid mcp_listen_address: %w", err)
 			}
 		}
-	}
-
-	if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
-		return fmt.Errorf("API key must be at least 16 characters long")
+	} else if binaryType == Client {
+		if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
+			return fmt.Errorf("API key must be at least 16 characters long")
+		}
 	}
 
 	if bus := gs.GetMessageBus(); bus != nil {
@@ -119,7 +121,7 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(service)
 }
 
-func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
+func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //nolint:gocyclo
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
 		return fmt.Errorf("service type not specified")
 	}

@@ -30,7 +30,6 @@ type CircuitBreaker struct {
 
 	state        State
 	failures     int
-	lastFailure  time.Time
 	openTime     time.Time
 	halfOpenHits int
 

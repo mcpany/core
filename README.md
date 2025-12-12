@@ -70,27 +70,12 @@ global_settings:
   log_level: "INFO"
 
 upstream_services:
-  - name: "weather"
-    http_service:
-      address: "https://wttr.in"
-      calls:
-        get_weather:
-          id: "get_weather"
-          endpoint_path: "/{city}?format=j1"
-          method: "HTTP_METHOD_GET"
-          parameters:
-            - schema:
-                name: "city"
-                type: "STRING"
-      tools:
-        - name: "get_weather"
-          description: "Get current weather for a specific city."
-          call_id: "get_weather"
-          input_schema:
-            type: "object"
-            properties:
-              city:
-                type: "string"
+  - name: "weather-service"
+    service_config:
+      http_service:
+        url: "http://localhost:8080"
+    profiles:
+      - name: "default"
 ```
 
 ### 3. Run with Docker

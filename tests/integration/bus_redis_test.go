@@ -45,7 +45,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	defer cancel()
 
 	topic := "test-topic"
-	msg := "hello"
+	msg := "hello" //nolint:goconst
 
 	var wg sync.WaitGroup
 	wg.Add(1)

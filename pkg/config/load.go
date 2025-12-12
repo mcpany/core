@@ -50,7 +50,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		fileConfig = &configv1.McpAnyServerConfig{}
 	}
 
-	manager := NewUpstreamServiceManager()
+	manager := NewUpstreamServiceManager(GlobalSettings().Profiles())
 	services, err := manager.LoadAndMergeServices(context.Background(), fileConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load and merge services: %w", err)

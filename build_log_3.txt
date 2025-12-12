@@ -1,0 +1,117 @@
+TOOL_INSTALL_DIR is
+TOOL_INSTALL_DIR is /tools
+Cleaning generated protobuf files...
+Preparing development environment...
+protoc version v33.1 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+CI environment detected, skipping local Python venv setup.
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@google/gemini-cli@0.11.3',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@google/gemini-cli-core@0.11.3',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@google/genai@1.16.0',
+npm WARN EBADENGINE   required: { node: '>=20.0.0' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'decompress-response@10.0.0',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'got@14.6.1',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'ink@6.4.0',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'is-in-ci@2.0.0',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'responselike@4.0.2',
+npm WARN EBADENGINE   required: { node: '>=20' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'undici@7.16.0',
+npm WARN EBADENGINE   required: { node: '>=20.18.1' },
+npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }
+npm WARN EBADENGINE }
+
+up to date, audited 619 packages in 1s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+2 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+Playwright Host validation warning:
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Please install them with the following command:      ║
+║                                                      ║
+║     sudo npx playwright install-deps                 ║
+║                                                      ║
+║ Alternatively, use apt:                              ║
+║     sudo apt-get install libnspr4\                   ║
+║         libnss3\                                     ║
+║         libatk1.0-0\                                 ║
+║         libatk-bridge2.0-0\                          ║
+║         libcups2\                                    ║
+║         libxkbcommon0\                               ║
+║         libatspi2.0-0\                               ║
+║         libxdamage1\                                 ║
+║         libcairo2\                                   ║
+║         libpango-1.0-0\                              ║
+║         libasound2                                   ║
+║                                                      ║
+║ <3 Playwright Team                                   ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/workspace/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at async Registry._validateHostRequirements (/workspace/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:961:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/workspace/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1083:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/workspace/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1072:7)
+    at async i.<anonymous> (/workspace/tests/integration/upstream/node_modules/playwright-core/lib/cli/program.js:217:7)
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Checking for golangci-lint...
+Installing golangci-lint to /tools...
+golangci/golangci-lint info checking GitHub for tag 'v1.64.5'
+golangci/golangci-lint info found version: 1.64.5 for v1.64.5/linux/amd64
+golangci/golangci-lint info installed /tools/golangci-lint
+Downloading go modules...
+golangci-lint installed successfully.
+Current GOPATH: /go
+Setting GOPATH to /tools/go
+Downloading go modules...
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.1
+Protobuf generation complete.
