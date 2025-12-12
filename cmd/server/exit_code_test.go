@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package main
 
 import (
@@ -66,7 +65,7 @@ func TestMain_FailingExitCode(t *testing.T) {
 		return
 	}
 
-	cmd := exec.Command(os.Args[0], "-test.run=^TestMain_FailingExitCode$")
+	cmd := exec.Command(os.Args[0], "-test.run=^TestMain_FailingExitCode$") //nolint:gosec
 	cmd.Env = append(os.Environ(), "GO_TEST_EXIT_CODE=1")
 
 	err := cmd.Run()

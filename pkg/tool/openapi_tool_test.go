@@ -33,13 +33,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// mockHttpClient for testing
-type mockHttpClient struct {
-	client.HttpClient
+// mockHTTPClient for testing
+type mockHTTPClient struct {
+	client.HTTPClient
 	doFunc func(req *http.Request) (*http.Response, error)
 }
 
-func (m *mockHttpClient) Do(req *http.Request) (*http.Response, error) {
+func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	if m.doFunc != nil {
 		return m.doFunc(req)
 	}
@@ -56,7 +56,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		}))
 		defer server.Close()
 
-		mockClient := &mockHttpClient{
+		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
@@ -84,7 +84,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		}))
 		defer server.Close()
 
-		mockClient := &mockHttpClient{
+		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
@@ -103,7 +103,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		}))
 		defer server.Close()
 
-		mockClient := &mockHttpClient{
+		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 

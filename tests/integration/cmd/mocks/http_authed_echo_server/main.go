@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 const (
@@ -42,7 +43,12 @@ func main() {
 
 	addr := fmt.Sprintf(":%d", *port)
 	log.Printf("INFO http_authed_echo_server: Listening on port port=%d", *port)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
 }

@@ -35,6 +35,7 @@ import (
 )
 
 func TestUpdater(t *testing.T) {
+	const executablePath = "/usr/local/bin/server"
 	assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
 	assetContent := "dummy content"
 	assetHash := sha256.Sum256([]byte(assetContent))
@@ -66,7 +67,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -85,7 +86,7 @@ func TestUpdater(t *testing.T) {
 				Assets:  []*github.ReleaseAsset{},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -107,7 +108,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -133,7 +134,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -166,7 +167,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -191,7 +192,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 
@@ -220,7 +221,7 @@ func TestUpdater(t *testing.T) {
 				},
 			}
 			fs := afero.NewMemMapFs()
-			executablePath := "/usr/local/bin/server"
+			// executablePath defined in outer scope
 			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
 			require.NoError(t, err)
 

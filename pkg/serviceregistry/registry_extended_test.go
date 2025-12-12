@@ -91,7 +91,7 @@ func (m *threadSafeToolManager) GetTool(name string) (tool.Tool, bool) {
 func (m *threadSafeToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	var tools []tool.Tool
+	tools := make([]tool.Tool, 0, len(m.tools))
 	for _, t := range m.tools {
 		tools = append(tools, t)
 	}

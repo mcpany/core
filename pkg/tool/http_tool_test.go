@@ -55,8 +55,8 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 	server := httptest.NewServer(handler)
 	poolManager := pool.NewManager()
 
-	p, err := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	p, err := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, true)
 	require.NoError(t, err)
 
@@ -213,7 +213,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("pool_get_error", func(t *testing.T) {
 		poolManager := pool.NewManager()
-		errorFactory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
+		errorFactory := func(ctx context.Context) (*client.HTTPClientWrapper, error) {
 			return nil, errors.New("pool factory error")
 		}
 		p, err := pool.New(errorFactory, 0, 1, 0, true)
@@ -229,8 +229,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("invalid_method_fqn", func(t *testing.T) {
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 		invalidTool := v1.Tool_builder{UnderlyingMethodFqn: lo.ToPtr("INVALID")}.Build()
@@ -268,8 +268,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 		// Re-create tool with authenticator
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 		mcpTool := v1.Tool_builder{
@@ -292,8 +292,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -404,8 +404,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -433,8 +433,8 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -499,8 +499,8 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	p, err := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-		return &client.HttpClientWrapper{Client: server.Client()}, nil
+	p, err := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, true)
 	require.NoError(t, err)
 	poolManager.Register("test-service", p)
@@ -543,8 +543,8 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -573,8 +573,8 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -604,8 +604,8 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
@@ -644,8 +644,8 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: server.Client()}, nil
+		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 

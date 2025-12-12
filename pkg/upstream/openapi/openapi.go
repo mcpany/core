@@ -214,14 +214,14 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 }
 
 // httpClientImpl is a simple wrapper around *http.Client that implements the
-// client.HttpClient interface. This is used to adapt the standard library's
+// client.HTTPClient interface. This is used to adapt the standard library's
 // HTTP client for use in components that expect this interface.
 type httpClientImpl struct {
 	client *http.Client
 }
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
-// client.HttpClient interface.
+// client.HTTPClient interface.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

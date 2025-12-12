@@ -65,6 +65,7 @@ func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, 
 }
 
 func TestPool_New(t *testing.T) {
+	t.Parallel()
 	t.Run("valid config", func(t *testing.T) {
 		p, err := New(newMockClientFactory(true), 1, 5, 100, false)
 		require.NoError(t, err)
@@ -318,12 +319,12 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 					cancel()
 					// It's acceptable to get an error under high contention when the pool is full
 					// and the context times out.
-					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond) //nolint:gosec
 					continue
 				}
 				require.NotNil(t, client, "Goroutine %d received a nil client", goroutineID)
 				// Simulate some work with random duration
-				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
+				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond) //nolint:gosec //nolint:gosec
 				p.Put(client)
 				cancel()
 			}
@@ -559,7 +560,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 				// if the test machine is slow. This is acceptable.
 				return
 			}
-			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond) //nolint:gosec
 			p.Put(client)
 		}()
 	}

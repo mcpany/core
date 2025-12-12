@@ -21,10 +21,8 @@ upstream_services:
         url: "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
     upstream_authentication:
       api_key:
-
-        plain_text: query_parameter_name: "key"
+        query_parameter_name: "key"
         api_key:
-
           plain_text: "${GOOGLE_API_KEY}"
       oauth2:
         token_url: "https://oauth2.googleapis.com/token"

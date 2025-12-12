@@ -20,6 +20,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -289,7 +290,7 @@ services:
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			manager := NewUpstreamServiceManager()
+			manager := NewUpstreamServiceManager(nil)
 			manager.httpClient = &http.Client{}
 			loadedServices, err := manager.LoadAndMergeServices(context.Background(), tc.initialConfig)
 
@@ -315,8 +316,74 @@ services:
 	}
 }
 
+func TestLoadAndMergeServices_Profiles(t *testing.T) {
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name:     proto.String("default-service"),
+				Profiles: []*configv1.Profile{}, // Should default to "default"
+			},
+			{
+				Name:     proto.String("dev-service"),
+				Profiles: []*configv1.Profile{{Name: "dev"}},
+			},
+			{
+				Name:     proto.String("prod-service"),
+				Profiles: []*configv1.Profile{{Name: "prod"}},
+			},
+			{
+				Name:     proto.String("mixed-service"),
+				Profiles: []*configv1.Profile{{Name: "dev"}, {Name: "prod"}},
+			},
+		},
+	}
+
+	tests := []struct {
+		name            string
+		enabledProfiles []string
+		expectedNames   []string
+	}{
+		{
+			name:            "Default Profile",
+			enabledProfiles: nil, // Defaults to "default"
+			expectedNames:   []string{"default-service"},
+		},
+		{
+			name:            "Dev Profile",
+			enabledProfiles: []string{"dev"},
+			expectedNames:   []string{"dev-service", "mixed-service"},
+		},
+		{
+			name:            "Prod Profile",
+			enabledProfiles: []string{"prod"},
+			expectedNames:   []string{"mixed-service", "prod-service"},
+		},
+		{
+			name:            "Multiple Profiles",
+			enabledProfiles: []string{"dev", "default"},
+			expectedNames:   []string{"default-service", "dev-service", "mixed-service"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			manager := NewUpstreamServiceManager(tt.enabledProfiles)
+			services, err := manager.LoadAndMergeServices(context.Background(), config)
+			assert.NoError(t, err)
+
+			var names []string
+			for _, s := range services {
+				names = append(names, s.GetName())
+			}
+			sort.Strings(names)
+			sort.Strings(tt.expectedNames)
+			assert.Equal(t, tt.expectedNames, names)
+		})
+	}
+}
+
 func TestUnmarshalServices(t *testing.T) {
-	manager := NewUpstreamServiceManager()
+	manager := NewUpstreamServiceManager(nil)
 
 	t.Run("unmarshal single service from JSON", func(t *testing.T) {
 		jsonData := `{"name": "single-service", "version": "1.0"}`

@@ -4,6 +4,6 @@ toolchain go1.24.11
 
 use (
 	.
-	./upstream_service/grpc/client
-	./upstream_service/grpc/greeter_server
+	./examples/upstream_service_demo/grpc/client
+	./examples/upstream_service_demo/grpc/greeter_server
 )

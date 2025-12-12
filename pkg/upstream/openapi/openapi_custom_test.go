@@ -33,7 +33,7 @@ func (m *MockRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) 
 	return m.RoundTripFunc(req)
 }
 
-func TestHttpClientImpl_Do(t *testing.T) {
+func TestHTTPClientImpl_Do(t *testing.T) {
 	var capturedReq *http.Request
 	mockResp := &http.Response{
 		StatusCode: http.StatusOK,

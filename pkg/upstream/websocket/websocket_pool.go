@@ -45,7 +45,7 @@ func NewWebsocketPool(maxSize int, idleTimeout time.Duration, address string) (W
 		if err != nil {
 			return nil, fmt.Errorf("failed to connect to websocket server %s: %w", address, err)
 		}
-		defer resp.Body.Close() //nolint:errcheck
+		defer resp.Body.Close()
 		return &client.WebsocketClientWrapper{Conn: conn}, nil
 	}
 

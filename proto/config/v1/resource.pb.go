@@ -7,12 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/resource.proto
 
+//go:build !protoopaque
+
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/gofeaturespb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -26,14 +27,20 @@ const (
 )
 
 type ResourceAnnotation struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Audience     []string               `protobuf:"bytes,1,rep,name=audience"`
-	xxx_hidden_Priority     float64                `protobuf:"fixed64,2,opt,name=priority"`
-	xxx_hidden_LastModified *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_modified,json=lastModified"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// An array indicating the intended audience(s) for this
+	// resource. Valid values are "user" and "assistant". For example,
+	// ["user", "assistant"] indicates content useful for both.
+	Audience []string `protobuf:"bytes,1,rep,name=audience" json:"audience,omitempty"`
+	// A number from 0.0 to 1.0 indicating the importance of
+	// this resource. A value of 1 means “most important” (effectively
+	// required), while 0 means “least important” (entirely optional).
+	Priority *float64 `protobuf:"fixed64,2,opt,name=priority" json:"priority,omitempty"`
+	// An ISO 8601 formatted timestamp indicating when the
+	// resource was last modified (e.g., "2025-01-12T15:00:58Z").
+	LastModified  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_modified,json=lastModified" json:"last_modified,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ResourceAnnotation) Reset() {
@@ -63,59 +70,57 @@ func (x *ResourceAnnotation) ProtoReflect() protoreflect.Message {
 
 func (x *ResourceAnnotation) GetAudience() []string {
 	if x != nil {
-		return x.xxx_hidden_Audience
+		return x.Audience
 	}
 	return nil
 }
 
 func (x *ResourceAnnotation) GetPriority() float64 {
-	if x != nil {
-		return x.xxx_hidden_Priority
+	if x != nil && x.Priority != nil {
+		return *x.Priority
 	}
 	return 0
 }
 
 func (x *ResourceAnnotation) GetLastModified() *timestamppb.Timestamp {
 	if x != nil {
-		return x.xxx_hidden_LastModified
+		return x.LastModified
 	}
 	return nil
 }
 
 func (x *ResourceAnnotation) SetAudience(v []string) {
-	x.xxx_hidden_Audience = v
+	x.Audience = v
 }
 
 func (x *ResourceAnnotation) SetPriority(v float64) {
-	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.Priority = &v
 }
 
 func (x *ResourceAnnotation) SetLastModified(v *timestamppb.Timestamp) {
-	x.xxx_hidden_LastModified = v
+	x.LastModified = v
 }
 
 func (x *ResourceAnnotation) HasPriority() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Priority != nil
 }
 
 func (x *ResourceAnnotation) HasLastModified() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_LastModified != nil
+	return x.LastModified != nil
 }
 
 func (x *ResourceAnnotation) ClearPriority() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Priority = 0
+	x.Priority = nil
 }
 
 func (x *ResourceAnnotation) ClearLastModified() {
-	x.xxx_hidden_LastModified = nil
+	x.LastModified = nil
 }
 
 type ResourceAnnotation_builder struct {
@@ -138,30 +143,32 @@ func (b0 ResourceAnnotation_builder) Build() *ResourceAnnotation {
 	m0 := &ResourceAnnotation{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Audience = b.Audience
-	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Priority = *b.Priority
-	}
-	x.xxx_hidden_LastModified = b.LastModified
+	x.Audience = b.Audience
+	x.Priority = b.Priority
+	x.LastModified = b.LastModified
 	return m0
 }
 
 type ResourceDefinition struct {
-	state                   protoimpl.MessageState            `protogen:"opaque.v1"`
-	xxx_hidden_Uri          *string                           `protobuf:"bytes,1,opt,name=uri"`
-	xxx_hidden_Name         *string                           `protobuf:"bytes,2,opt,name=name"`
-	xxx_hidden_Title        *string                           `protobuf:"bytes,3,opt,name=title"`
-	xxx_hidden_Description  *string                           `protobuf:"bytes,4,opt,name=description"`
-	xxx_hidden_MimeType     *string                           `protobuf:"bytes,5,opt,name=mime_type,json=mimeType"`
-	xxx_hidden_Size         int64                             `protobuf:"varint,6,opt,name=size"`
-	xxx_hidden_Annotations  *ResourceAnnotation               `protobuf:"bytes,7,opt,name=annotations"`
-	xxx_hidden_ResourceType isResourceDefinition_ResourceType `protobuf_oneof:"resource_type"`
-	xxx_hidden_Disable      bool                              `protobuf:"varint,10,opt,name=disable"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	state       protoimpl.MessageState `protogen:"hybrid.v1"`
+	Uri         *string                `protobuf:"bytes,1,opt,name=uri" json:"uri,omitempty"`
+	Name        *string                `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	Title       *string                `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
+	Description *string                `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	MimeType    *string                `protobuf:"bytes,5,opt,name=mime_type,json=mimeType" json:"mime_type,omitempty"`
+	Size        *int64                 `protobuf:"varint,6,opt,name=size" json:"size,omitempty"`
+	Annotations *ResourceAnnotation    `protobuf:"bytes,7,opt,name=annotations" json:"annotations,omitempty"`
+	// Types that are valid to be assigned to ResourceType:
+	//
+	//	*ResourceDefinition_Static
+	//	*ResourceDefinition_Dynamic
+	ResourceType isResourceDefinition_ResourceType `protobuf_oneof:"resource_type"`
+	// If true, this resource is disabled.
+	Disable *bool `protobuf:"varint,10,opt,name=disable" json:"disable,omitempty"`
+	// A list of profiles this resource belongs to.
+	Profiles      []*Profile `protobuf:"bytes,11,rep,name=profiles" json:"profiles,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ResourceDefinition) Reset() {
@@ -190,72 +197,64 @@ func (x *ResourceDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ResourceDefinition) GetUri() string {
-	if x != nil {
-		if x.xxx_hidden_Uri != nil {
-			return *x.xxx_hidden_Uri
-		}
-		return ""
+	if x != nil && x.Uri != nil {
+		return *x.Uri
 	}
 	return ""
 }
 
 func (x *ResourceDefinition) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *ResourceDefinition) GetTitle() string {
-	if x != nil {
-		if x.xxx_hidden_Title != nil {
-			return *x.xxx_hidden_Title
-		}
-		return ""
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
 
 func (x *ResourceDefinition) GetDescription() string {
-	if x != nil {
-		if x.xxx_hidden_Description != nil {
-			return *x.xxx_hidden_Description
-		}
-		return ""
+	if x != nil && x.Description != nil {
+		return *x.Description
 	}
 	return ""
 }
 
 func (x *ResourceDefinition) GetMimeType() string {
-	if x != nil {
-		if x.xxx_hidden_MimeType != nil {
-			return *x.xxx_hidden_MimeType
-		}
-		return ""
+	if x != nil && x.MimeType != nil {
+		return *x.MimeType
 	}
 	return ""
 }
 
 func (x *ResourceDefinition) GetSize() int64 {
-	if x != nil {
-		return x.xxx_hidden_Size
+	if x != nil && x.Size != nil {
+		return *x.Size
 	}
 	return 0
 }
 
 func (x *ResourceDefinition) GetAnnotations() *ResourceAnnotation {
 	if x != nil {
-		return x.xxx_hidden_Annotations
+		return x.Annotations
+	}
+	return nil
+}
+
+func (x *ResourceDefinition) GetResourceType() isResourceDefinition_ResourceType {
+	if x != nil {
+		return x.ResourceType
 	}
 	return nil
 }
 
 func (x *ResourceDefinition) GetStatic() *StaticResource {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Static); ok {
+		if x, ok := x.ResourceType.(*ResourceDefinition_Static); ok {
 			return x.Static
 		}
 	}
@@ -264,7 +263,7 @@ func (x *ResourceDefinition) GetStatic() *StaticResource {
 
 func (x *ResourceDefinition) GetDynamic() *DynamicResource {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Dynamic); ok {
+		if x, ok := x.ResourceType.(*ResourceDefinition_Dynamic); ok {
 			return x.Dynamic
 		}
 	}
@@ -272,128 +271,132 @@ func (x *ResourceDefinition) GetDynamic() *DynamicResource {
 }
 
 func (x *ResourceDefinition) GetDisable() bool {
-	if x != nil {
-		return x.xxx_hidden_Disable
+	if x != nil && x.Disable != nil {
+		return *x.Disable
 	}
 	return false
 }
 
+func (x *ResourceDefinition) GetProfiles() []*Profile {
+	if x != nil {
+		return x.Profiles
+	}
+	return nil
+}
+
 func (x *ResourceDefinition) SetUri(v string) {
-	x.xxx_hidden_Uri = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+	x.Uri = &v
 }
 
 func (x *ResourceDefinition) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+	x.Name = &v
 }
 
 func (x *ResourceDefinition) SetTitle(v string) {
-	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+	x.Title = &v
 }
 
 func (x *ResourceDefinition) SetDescription(v string) {
-	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+	x.Description = &v
 }
 
 func (x *ResourceDefinition) SetMimeType(v string) {
-	x.xxx_hidden_MimeType = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+	x.MimeType = &v
 }
 
 func (x *ResourceDefinition) SetSize(v int64) {
-	x.xxx_hidden_Size = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+	x.Size = &v
 }
 
 func (x *ResourceDefinition) SetAnnotations(v *ResourceAnnotation) {
-	x.xxx_hidden_Annotations = v
+	x.Annotations = v
 }
 
 func (x *ResourceDefinition) SetStatic(v *StaticResource) {
 	if v == nil {
-		x.xxx_hidden_ResourceType = nil
+		x.ResourceType = nil
 		return
 	}
-	x.xxx_hidden_ResourceType = &resourceDefinition_Static{v}
+	x.ResourceType = &ResourceDefinition_Static{v}
 }
 
 func (x *ResourceDefinition) SetDynamic(v *DynamicResource) {
 	if v == nil {
-		x.xxx_hidden_ResourceType = nil
+		x.ResourceType = nil
 		return
 	}
-	x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{v}
+	x.ResourceType = &ResourceDefinition_Dynamic{v}
 }
 
 func (x *ResourceDefinition) SetDisable(v bool) {
-	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
+	x.Disable = &v
+}
+
+func (x *ResourceDefinition) SetProfiles(v []*Profile) {
+	x.Profiles = v
 }
 
 func (x *ResourceDefinition) HasUri() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Uri != nil
 }
 
 func (x *ResourceDefinition) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Name != nil
 }
 
 func (x *ResourceDefinition) HasTitle() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Title != nil
 }
 
 func (x *ResourceDefinition) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Description != nil
 }
 
 func (x *ResourceDefinition) HasMimeType() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.MimeType != nil
 }
 
 func (x *ResourceDefinition) HasSize() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.Size != nil
 }
 
 func (x *ResourceDefinition) HasAnnotations() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Annotations != nil
+	return x.Annotations != nil
 }
 
 func (x *ResourceDefinition) HasResourceType() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ResourceType != nil
+	return x.ResourceType != nil
 }
 
 func (x *ResourceDefinition) HasStatic() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Static)
+	_, ok := x.ResourceType.(*ResourceDefinition_Static)
 	return ok
 }
 
@@ -401,7 +404,7 @@ func (x *ResourceDefinition) HasDynamic() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Dynamic)
+	_, ok := x.ResourceType.(*ResourceDefinition_Dynamic)
 	return ok
 }
 
@@ -409,62 +412,55 @@ func (x *ResourceDefinition) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+	return x.Disable != nil
 }
 
 func (x *ResourceDefinition) ClearUri() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Uri = nil
+	x.Uri = nil
 }
 
 func (x *ResourceDefinition) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *ResourceDefinition) ClearTitle() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Title = nil
+	x.Title = nil
 }
 
 func (x *ResourceDefinition) ClearDescription() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Description = nil
+	x.Description = nil
 }
 
 func (x *ResourceDefinition) ClearMimeType() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_MimeType = nil
+	x.MimeType = nil
 }
 
 func (x *ResourceDefinition) ClearSize() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_Size = 0
+	x.Size = nil
 }
 
 func (x *ResourceDefinition) ClearAnnotations() {
-	x.xxx_hidden_Annotations = nil
+	x.Annotations = nil
 }
 
 func (x *ResourceDefinition) ClearResourceType() {
-	x.xxx_hidden_ResourceType = nil
+	x.ResourceType = nil
 }
 
 func (x *ResourceDefinition) ClearStatic() {
-	if _, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Static); ok {
-		x.xxx_hidden_ResourceType = nil
+	if _, ok := x.ResourceType.(*ResourceDefinition_Static); ok {
+		x.ResourceType = nil
 	}
 }
 
 func (x *ResourceDefinition) ClearDynamic() {
-	if _, ok := x.xxx_hidden_ResourceType.(*resourceDefinition_Dynamic); ok {
-		x.xxx_hidden_ResourceType = nil
+	if _, ok := x.ResourceType.(*ResourceDefinition_Dynamic); ok {
+		x.ResourceType = nil
 	}
 }
 
 func (x *ResourceDefinition) ClearDisable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
-	x.xxx_hidden_Disable = false
+	x.Disable = nil
 }
 
 const ResourceDefinition_ResourceType_not_set_case case_ResourceDefinition_ResourceType = 0
@@ -475,10 +471,10 @@ func (x *ResourceDefinition) WhichResourceType() case_ResourceDefinition_Resourc
 	if x == nil {
 		return ResourceDefinition_ResourceType_not_set_case
 	}
-	switch x.xxx_hidden_ResourceType.(type) {
-	case *resourceDefinition_Static:
+	switch x.ResourceType.(type) {
+	case *ResourceDefinition_Static:
 		return ResourceDefinition_Static_case
-	case *resourceDefinition_Dynamic:
+	case *ResourceDefinition_Dynamic:
 		return ResourceDefinition_Dynamic_case
 	default:
 		return ResourceDefinition_ResourceType_not_set_case
@@ -495,53 +491,35 @@ type ResourceDefinition_builder struct {
 	MimeType    *string
 	Size        *int64
 	Annotations *ResourceAnnotation
-	// Fields of oneof xxx_hidden_ResourceType:
+	// Fields of oneof ResourceType:
 	Static  *StaticResource
 	Dynamic *DynamicResource
-	// -- end of xxx_hidden_ResourceType
+	// -- end of ResourceType
 	// If true, this resource is disabled.
 	Disable *bool
+	// A list of profiles this resource belongs to.
+	Profiles []*Profile
 }
 
 func (b0 ResourceDefinition_builder) Build() *ResourceDefinition {
 	m0 := &ResourceDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Uri != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
-		x.xxx_hidden_Uri = b.Uri
-	}
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
-		x.xxx_hidden_Title = b.Title
-	}
-	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
-		x.xxx_hidden_Description = b.Description
-	}
-	if b.MimeType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
-		x.xxx_hidden_MimeType = b.MimeType
-	}
-	if b.Size != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
-		x.xxx_hidden_Size = *b.Size
-	}
-	x.xxx_hidden_Annotations = b.Annotations
+	x.Uri = b.Uri
+	x.Name = b.Name
+	x.Title = b.Title
+	x.Description = b.Description
+	x.MimeType = b.MimeType
+	x.Size = b.Size
+	x.Annotations = b.Annotations
 	if b.Static != nil {
-		x.xxx_hidden_ResourceType = &resourceDefinition_Static{b.Static}
+		x.ResourceType = &ResourceDefinition_Static{b.Static}
 	}
 	if b.Dynamic != nil {
-		x.xxx_hidden_ResourceType = &resourceDefinition_Dynamic{b.Dynamic}
+		x.ResourceType = &ResourceDefinition_Dynamic{b.Dynamic}
 	}
-	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
-		x.xxx_hidden_Disable = *b.Disable
-	}
+	x.Disable = b.Disable
+	x.Profiles = b.Profiles
 	return m0
 }
 
@@ -559,23 +537,27 @@ type isResourceDefinition_ResourceType interface {
 	isResourceDefinition_ResourceType()
 }
 
-type resourceDefinition_Static struct {
+type ResourceDefinition_Static struct {
 	Static *StaticResource `protobuf:"bytes,8,opt,name=static,oneof"`
 }
 
-type resourceDefinition_Dynamic struct {
+type ResourceDefinition_Dynamic struct {
 	Dynamic *DynamicResource `protobuf:"bytes,9,opt,name=dynamic,oneof"`
 }
 
-func (*resourceDefinition_Static) isResourceDefinition_ResourceType() {}
+func (*ResourceDefinition_Static) isResourceDefinition_ResourceType() {}
 
-func (*resourceDefinition_Dynamic) isResourceDefinition_ResourceType() {}
+func (*ResourceDefinition_Dynamic) isResourceDefinition_ResourceType() {}
 
 type StaticResource struct {
-	state                  protoimpl.MessageState       `protogen:"opaque.v1"`
-	xxx_hidden_ContentType isStaticResource_ContentType `protobuf_oneof:"content_type"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to ContentType:
+	//
+	//	*StaticResource_TextContent
+	//	*StaticResource_BinaryContent
+	ContentType   isStaticResource_ContentType `protobuf_oneof:"content_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StaticResource) Reset() {
@@ -603,9 +585,16 @@ func (x *StaticResource) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *StaticResource) GetContentType() isStaticResource_ContentType {
+	if x != nil {
+		return x.ContentType
+	}
+	return nil
+}
+
 func (x *StaticResource) GetTextContent() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ContentType.(*staticResource_TextContent); ok {
+		if x, ok := x.ContentType.(*StaticResource_TextContent); ok {
 			return x.TextContent
 		}
 	}
@@ -614,7 +603,7 @@ func (x *StaticResource) GetTextContent() string {
 
 func (x *StaticResource) GetBinaryContent() []byte {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ContentType.(*staticResource_BinaryContent); ok {
+		if x, ok := x.ContentType.(*StaticResource_BinaryContent); ok {
 			return x.BinaryContent
 		}
 	}
@@ -622,28 +611,28 @@ func (x *StaticResource) GetBinaryContent() []byte {
 }
 
 func (x *StaticResource) SetTextContent(v string) {
-	x.xxx_hidden_ContentType = &staticResource_TextContent{v}
+	x.ContentType = &StaticResource_TextContent{v}
 }
 
 func (x *StaticResource) SetBinaryContent(v []byte) {
 	if v == nil {
 		v = []byte{}
 	}
-	x.xxx_hidden_ContentType = &staticResource_BinaryContent{v}
+	x.ContentType = &StaticResource_BinaryContent{v}
 }
 
 func (x *StaticResource) HasContentType() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ContentType != nil
+	return x.ContentType != nil
 }
 
 func (x *StaticResource) HasTextContent() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ContentType.(*staticResource_TextContent)
+	_, ok := x.ContentType.(*StaticResource_TextContent)
 	return ok
 }
 
@@ -651,23 +640,23 @@ func (x *StaticResource) HasBinaryContent() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ContentType.(*staticResource_BinaryContent)
+	_, ok := x.ContentType.(*StaticResource_BinaryContent)
 	return ok
 }
 
 func (x *StaticResource) ClearContentType() {
-	x.xxx_hidden_ContentType = nil
+	x.ContentType = nil
 }
 
 func (x *StaticResource) ClearTextContent() {
-	if _, ok := x.xxx_hidden_ContentType.(*staticResource_TextContent); ok {
-		x.xxx_hidden_ContentType = nil
+	if _, ok := x.ContentType.(*StaticResource_TextContent); ok {
+		x.ContentType = nil
 	}
 }
 
 func (x *StaticResource) ClearBinaryContent() {
-	if _, ok := x.xxx_hidden_ContentType.(*staticResource_BinaryContent); ok {
-		x.xxx_hidden_ContentType = nil
+	if _, ok := x.ContentType.(*StaticResource_BinaryContent); ok {
+		x.ContentType = nil
 	}
 }
 
@@ -679,10 +668,10 @@ func (x *StaticResource) WhichContentType() case_StaticResource_ContentType {
 	if x == nil {
 		return StaticResource_ContentType_not_set_case
 	}
-	switch x.xxx_hidden_ContentType.(type) {
-	case *staticResource_TextContent:
+	switch x.ContentType.(type) {
+	case *StaticResource_TextContent:
 		return StaticResource_TextContent_case
-	case *staticResource_BinaryContent:
+	case *StaticResource_BinaryContent:
 		return StaticResource_BinaryContent_case
 	default:
 		return StaticResource_ContentType_not_set_case
@@ -692,10 +681,10 @@ func (x *StaticResource) WhichContentType() case_StaticResource_ContentType {
 type StaticResource_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_ContentType:
+	// Fields of oneof ContentType:
 	TextContent   *string
 	BinaryContent []byte
-	// -- end of xxx_hidden_ContentType
+	// -- end of ContentType
 }
 
 func (b0 StaticResource_builder) Build() *StaticResource {
@@ -703,10 +692,10 @@ func (b0 StaticResource_builder) Build() *StaticResource {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.TextContent != nil {
-		x.xxx_hidden_ContentType = &staticResource_TextContent{*b.TextContent}
+		x.ContentType = &StaticResource_TextContent{*b.TextContent}
 	}
 	if b.BinaryContent != nil {
-		x.xxx_hidden_ContentType = &staticResource_BinaryContent{b.BinaryContent}
+		x.ContentType = &StaticResource_BinaryContent{b.BinaryContent}
 	}
 	return m0
 }
@@ -725,23 +714,31 @@ type isStaticResource_ContentType interface {
 	isStaticResource_ContentType()
 }
 
-type staticResource_TextContent struct {
+type StaticResource_TextContent struct {
 	TextContent string `protobuf:"bytes,1,opt,name=text_content,json=textContent,oneof"`
 }
 
-type staticResource_BinaryContent struct {
+type StaticResource_BinaryContent struct {
 	BinaryContent []byte `protobuf:"bytes,2,opt,name=binary_content,json=binaryContent,oneof"`
 }
 
-func (*staticResource_TextContent) isStaticResource_ContentType() {}
+func (*StaticResource_TextContent) isStaticResource_ContentType() {}
 
-func (*staticResource_BinaryContent) isStaticResource_ContentType() {}
+func (*StaticResource_BinaryContent) isStaticResource_ContentType() {}
 
 type DynamicResource struct {
-	state                     protoimpl.MessageState           `protogen:"opaque.v1"`
-	xxx_hidden_CallDefinition isDynamicResource_CallDefinition `protobuf_oneof:"call_definition"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to CallDefinition:
+	//
+	//	*DynamicResource_HttpCall
+	//	*DynamicResource_GrpcCall
+	//	*DynamicResource_WebsocketCall
+	//	*DynamicResource_WebrtcCall
+	//	*DynamicResource_CommandLineCall
+	//	*DynamicResource_McpCall
+	CallDefinition isDynamicResource_CallDefinition `protobuf_oneof:"call_definition"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DynamicResource) Reset() {
@@ -769,9 +766,16 @@ func (x *DynamicResource) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *DynamicResource) GetCallDefinition() isDynamicResource_CallDefinition {
+	if x != nil {
+		return x.CallDefinition
+	}
+	return nil
+}
+
 func (x *DynamicResource) GetHttpCall() *HttpCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_HttpCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_HttpCall); ok {
 			return x.HttpCall
 		}
 	}
@@ -780,7 +784,7 @@ func (x *DynamicResource) GetHttpCall() *HttpCallDefinition {
 
 func (x *DynamicResource) GetGrpcCall() *GrpcCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_GrpcCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_GrpcCall); ok {
 			return x.GrpcCall
 		}
 	}
@@ -789,7 +793,7 @@ func (x *DynamicResource) GetGrpcCall() *GrpcCallDefinition {
 
 func (x *DynamicResource) GetWebsocketCall() *WebsocketCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebsocketCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_WebsocketCall); ok {
 			return x.WebsocketCall
 		}
 	}
@@ -798,7 +802,7 @@ func (x *DynamicResource) GetWebsocketCall() *WebsocketCallDefinition {
 
 func (x *DynamicResource) GetWebrtcCall() *WebrtcCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebrtcCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_WebrtcCall); ok {
 			return x.WebrtcCall
 		}
 	}
@@ -807,7 +811,7 @@ func (x *DynamicResource) GetWebrtcCall() *WebrtcCallDefinition {
 
 func (x *DynamicResource) GetCommandLineCall() *CommandLineCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_CommandLineCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_CommandLineCall); ok {
 			return x.CommandLineCall
 		}
 	}
@@ -816,7 +820,7 @@ func (x *DynamicResource) GetCommandLineCall() *CommandLineCallDefinition {
 
 func (x *DynamicResource) GetMcpCall() *MCPCallDefinition {
 	if x != nil {
-		if x, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_McpCall); ok {
+		if x, ok := x.CallDefinition.(*DynamicResource_McpCall); ok {
 			return x.McpCall
 		}
 	}
@@ -825,64 +829,64 @@ func (x *DynamicResource) GetMcpCall() *MCPCallDefinition {
 
 func (x *DynamicResource) SetHttpCall(v *HttpCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_HttpCall{v}
+	x.CallDefinition = &DynamicResource_HttpCall{v}
 }
 
 func (x *DynamicResource) SetGrpcCall(v *GrpcCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_GrpcCall{v}
+	x.CallDefinition = &DynamicResource_GrpcCall{v}
 }
 
 func (x *DynamicResource) SetWebsocketCall(v *WebsocketCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_WebsocketCall{v}
+	x.CallDefinition = &DynamicResource_WebsocketCall{v}
 }
 
 func (x *DynamicResource) SetWebrtcCall(v *WebrtcCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_WebrtcCall{v}
+	x.CallDefinition = &DynamicResource_WebrtcCall{v}
 }
 
 func (x *DynamicResource) SetCommandLineCall(v *CommandLineCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_CommandLineCall{v}
+	x.CallDefinition = &DynamicResource_CommandLineCall{v}
 }
 
 func (x *DynamicResource) SetMcpCall(v *MCPCallDefinition) {
 	if v == nil {
-		x.xxx_hidden_CallDefinition = nil
+		x.CallDefinition = nil
 		return
 	}
-	x.xxx_hidden_CallDefinition = &dynamicResource_McpCall{v}
+	x.CallDefinition = &DynamicResource_McpCall{v}
 }
 
 func (x *DynamicResource) HasCallDefinition() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_CallDefinition != nil
+	return x.CallDefinition != nil
 }
 
 func (x *DynamicResource) HasHttpCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_HttpCall)
+	_, ok := x.CallDefinition.(*DynamicResource_HttpCall)
 	return ok
 }
 
@@ -890,7 +894,7 @@ func (x *DynamicResource) HasGrpcCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_GrpcCall)
+	_, ok := x.CallDefinition.(*DynamicResource_GrpcCall)
 	return ok
 }
 
@@ -898,7 +902,7 @@ func (x *DynamicResource) HasWebsocketCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebsocketCall)
+	_, ok := x.CallDefinition.(*DynamicResource_WebsocketCall)
 	return ok
 }
 
@@ -906,7 +910,7 @@ func (x *DynamicResource) HasWebrtcCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebrtcCall)
+	_, ok := x.CallDefinition.(*DynamicResource_WebrtcCall)
 	return ok
 }
 
@@ -914,7 +918,7 @@ func (x *DynamicResource) HasCommandLineCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_CommandLineCall)
+	_, ok := x.CallDefinition.(*DynamicResource_CommandLineCall)
 	return ok
 }
 
@@ -922,47 +926,47 @@ func (x *DynamicResource) HasMcpCall() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_McpCall)
+	_, ok := x.CallDefinition.(*DynamicResource_McpCall)
 	return ok
 }
 
 func (x *DynamicResource) ClearCallDefinition() {
-	x.xxx_hidden_CallDefinition = nil
+	x.CallDefinition = nil
 }
 
 func (x *DynamicResource) ClearHttpCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_HttpCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_HttpCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
 func (x *DynamicResource) ClearGrpcCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_GrpcCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_GrpcCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
 func (x *DynamicResource) ClearWebsocketCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebsocketCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_WebsocketCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
 func (x *DynamicResource) ClearWebrtcCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_WebrtcCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_WebrtcCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
 func (x *DynamicResource) ClearCommandLineCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_CommandLineCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_CommandLineCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
 func (x *DynamicResource) ClearMcpCall() {
-	if _, ok := x.xxx_hidden_CallDefinition.(*dynamicResource_McpCall); ok {
-		x.xxx_hidden_CallDefinition = nil
+	if _, ok := x.CallDefinition.(*DynamicResource_McpCall); ok {
+		x.CallDefinition = nil
 	}
 }
 
@@ -978,18 +982,18 @@ func (x *DynamicResource) WhichCallDefinition() case_DynamicResource_CallDefinit
 	if x == nil {
 		return DynamicResource_CallDefinition_not_set_case
 	}
-	switch x.xxx_hidden_CallDefinition.(type) {
-	case *dynamicResource_HttpCall:
+	switch x.CallDefinition.(type) {
+	case *DynamicResource_HttpCall:
 		return DynamicResource_HttpCall_case
-	case *dynamicResource_GrpcCall:
+	case *DynamicResource_GrpcCall:
 		return DynamicResource_GrpcCall_case
-	case *dynamicResource_WebsocketCall:
+	case *DynamicResource_WebsocketCall:
 		return DynamicResource_WebsocketCall_case
-	case *dynamicResource_WebrtcCall:
+	case *DynamicResource_WebrtcCall:
 		return DynamicResource_WebrtcCall_case
-	case *dynamicResource_CommandLineCall:
+	case *DynamicResource_CommandLineCall:
 		return DynamicResource_CommandLineCall_case
-	case *dynamicResource_McpCall:
+	case *DynamicResource_McpCall:
 		return DynamicResource_McpCall_case
 	default:
 		return DynamicResource_CallDefinition_not_set_case
@@ -999,14 +1003,14 @@ func (x *DynamicResource) WhichCallDefinition() case_DynamicResource_CallDefinit
 type DynamicResource_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_CallDefinition:
+	// Fields of oneof CallDefinition:
 	HttpCall        *HttpCallDefinition
 	GrpcCall        *GrpcCallDefinition
 	WebsocketCall   *WebsocketCallDefinition
 	WebrtcCall      *WebrtcCallDefinition
 	CommandLineCall *CommandLineCallDefinition
 	McpCall         *MCPCallDefinition
-	// -- end of xxx_hidden_CallDefinition
+	// -- end of CallDefinition
 }
 
 func (b0 DynamicResource_builder) Build() *DynamicResource {
@@ -1014,22 +1018,22 @@ func (b0 DynamicResource_builder) Build() *DynamicResource {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.HttpCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_HttpCall{b.HttpCall}
+		x.CallDefinition = &DynamicResource_HttpCall{b.HttpCall}
 	}
 	if b.GrpcCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_GrpcCall{b.GrpcCall}
+		x.CallDefinition = &DynamicResource_GrpcCall{b.GrpcCall}
 	}
 	if b.WebsocketCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_WebsocketCall{b.WebsocketCall}
+		x.CallDefinition = &DynamicResource_WebsocketCall{b.WebsocketCall}
 	}
 	if b.WebrtcCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_WebrtcCall{b.WebrtcCall}
+		x.CallDefinition = &DynamicResource_WebrtcCall{b.WebrtcCall}
 	}
 	if b.CommandLineCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_CommandLineCall{b.CommandLineCall}
+		x.CallDefinition = &DynamicResource_CommandLineCall{b.CommandLineCall}
 	}
 	if b.McpCall != nil {
-		x.xxx_hidden_CallDefinition = &dynamicResource_McpCall{b.McpCall}
+		x.CallDefinition = &DynamicResource_McpCall{b.McpCall}
 	}
 	return m0
 }
@@ -1048,51 +1052,51 @@ type isDynamicResource_CallDefinition interface {
 	isDynamicResource_CallDefinition()
 }
 
-type dynamicResource_HttpCall struct {
+type DynamicResource_HttpCall struct {
 	HttpCall *HttpCallDefinition `protobuf:"bytes,1,opt,name=http_call,json=httpCall,oneof"`
 }
 
-type dynamicResource_GrpcCall struct {
+type DynamicResource_GrpcCall struct {
 	GrpcCall *GrpcCallDefinition `protobuf:"bytes,2,opt,name=grpc_call,json=grpcCall,oneof"`
 }
 
-type dynamicResource_WebsocketCall struct {
+type DynamicResource_WebsocketCall struct {
 	WebsocketCall *WebsocketCallDefinition `protobuf:"bytes,3,opt,name=websocket_call,json=websocketCall,oneof"`
 }
 
-type dynamicResource_WebrtcCall struct {
+type DynamicResource_WebrtcCall struct {
 	WebrtcCall *WebrtcCallDefinition `protobuf:"bytes,4,opt,name=webrtc_call,json=webrtcCall,oneof"`
 }
 
-type dynamicResource_CommandLineCall struct {
+type DynamicResource_CommandLineCall struct {
 	CommandLineCall *CommandLineCallDefinition `protobuf:"bytes,5,opt,name=command_line_call,json=commandLineCall,oneof"`
 }
 
-type dynamicResource_McpCall struct {
+type DynamicResource_McpCall struct {
 	McpCall *MCPCallDefinition `protobuf:"bytes,6,opt,name=mcp_call,json=mcpCall,oneof"`
 }
 
-func (*dynamicResource_HttpCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_HttpCall) isDynamicResource_CallDefinition() {}
 
-func (*dynamicResource_GrpcCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_GrpcCall) isDynamicResource_CallDefinition() {}
 
-func (*dynamicResource_WebsocketCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_WebsocketCall) isDynamicResource_CallDefinition() {}
 
-func (*dynamicResource_WebrtcCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_WebrtcCall) isDynamicResource_CallDefinition() {}
 
-func (*dynamicResource_CommandLineCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_CommandLineCall) isDynamicResource_CallDefinition() {}
 
-func (*dynamicResource_McpCall) isDynamicResource_CallDefinition() {}
+func (*DynamicResource_McpCall) isDynamicResource_CallDefinition() {}
 
 var File_proto_config_v1_resource_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\"\x8d\x01\n" +
+	"\x1eproto/config/v1/resource.proto\x12\x10mcpany.config.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1aproto/config/v1/call.proto\x1a\x1dproto/config/v1/profile.proto\"\x8d\x01\n" +
 	"\x12ResourceAnnotation\x12\x1a\n" +
 	"\baudience\x18\x01 \x03(\tR\baudience\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x01R\bpriority\x12?\n" +
-	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\x91\x03\n" +
+	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xc8\x03\n" +
 	"\x12ResourceDefinition\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -1104,7 +1108,8 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\x06static\x18\b \x01(\v2 .mcpany.config.v1.StaticResourceH\x00R\x06static\x12=\n" +
 	"\adynamic\x18\t \x01(\v2!.mcpany.config.v1.DynamicResourceH\x00R\adynamic\x12\x18\n" +
 	"\adisable\x18\n" +
-	" \x01(\bR\adisableB\x0f\n" +
+	" \x01(\bR\adisable\x125\n" +
+	"\bprofiles\x18\v \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofilesB\x0f\n" +
 	"\rresource_type\"n\n" +
 	"\x0eStaticResource\x12#\n" +
 	"\ftext_content\x18\x01 \x01(\tH\x00R\vtextContent\x12'\n" +
@@ -1118,7 +1123,7 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"webrtcCall\x12Y\n" +
 	"\x11command_line_call\x18\x05 \x01(\v2+.mcpany.config.v1.CommandLineCallDefinitionH\x00R\x0fcommandLineCall\x12@\n" +
 	"\bmcp_call\x18\x06 \x01(\v2#.mcpany.config.v1.MCPCallDefinitionH\x00R\amcpCallB\x11\n" +
-	"\x0fcall_definitionB?B\rResourceProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\x0fcall_definitionB7B\rResourceProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_config_v1_resource_proto_goTypes = []any{
@@ -1127,29 +1132,31 @@ var file_proto_config_v1_resource_proto_goTypes = []any{
 	(*StaticResource)(nil),            // 2: mcpany.config.v1.StaticResource
 	(*DynamicResource)(nil),           // 3: mcpany.config.v1.DynamicResource
 	(*timestamppb.Timestamp)(nil),     // 4: google.protobuf.Timestamp
-	(*HttpCallDefinition)(nil),        // 5: mcpany.config.v1.HttpCallDefinition
-	(*GrpcCallDefinition)(nil),        // 6: mcpany.config.v1.GrpcCallDefinition
-	(*WebsocketCallDefinition)(nil),   // 7: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),      // 8: mcpany.config.v1.WebrtcCallDefinition
-	(*CommandLineCallDefinition)(nil), // 9: mcpany.config.v1.CommandLineCallDefinition
-	(*MCPCallDefinition)(nil),         // 10: mcpany.config.v1.MCPCallDefinition
+	(*Profile)(nil),                   // 5: mcpany.config.v1.Profile
+	(*HttpCallDefinition)(nil),        // 6: mcpany.config.v1.HttpCallDefinition
+	(*GrpcCallDefinition)(nil),        // 7: mcpany.config.v1.GrpcCallDefinition
+	(*WebsocketCallDefinition)(nil),   // 8: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),      // 9: mcpany.config.v1.WebrtcCallDefinition
+	(*CommandLineCallDefinition)(nil), // 10: mcpany.config.v1.CommandLineCallDefinition
+	(*MCPCallDefinition)(nil),         // 11: mcpany.config.v1.MCPCallDefinition
 }
 var file_proto_config_v1_resource_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.ResourceAnnotation.last_modified:type_name -> google.protobuf.Timestamp
 	0,  // 1: mcpany.config.v1.ResourceDefinition.annotations:type_name -> mcpany.config.v1.ResourceAnnotation
 	2,  // 2: mcpany.config.v1.ResourceDefinition.static:type_name -> mcpany.config.v1.StaticResource
 	3,  // 3: mcpany.config.v1.ResourceDefinition.dynamic:type_name -> mcpany.config.v1.DynamicResource
-	5,  // 4: mcpany.config.v1.DynamicResource.http_call:type_name -> mcpany.config.v1.HttpCallDefinition
-	6,  // 5: mcpany.config.v1.DynamicResource.grpc_call:type_name -> mcpany.config.v1.GrpcCallDefinition
-	7,  // 6: mcpany.config.v1.DynamicResource.websocket_call:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	8,  // 7: mcpany.config.v1.DynamicResource.webrtc_call:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	9,  // 8: mcpany.config.v1.DynamicResource.command_line_call:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	10, // 9: mcpany.config.v1.DynamicResource.mcp_call:type_name -> mcpany.config.v1.MCPCallDefinition
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	5,  // 4: mcpany.config.v1.ResourceDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	6,  // 5: mcpany.config.v1.DynamicResource.http_call:type_name -> mcpany.config.v1.HttpCallDefinition
+	7,  // 6: mcpany.config.v1.DynamicResource.grpc_call:type_name -> mcpany.config.v1.GrpcCallDefinition
+	8,  // 7: mcpany.config.v1.DynamicResource.websocket_call:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	9,  // 8: mcpany.config.v1.DynamicResource.webrtc_call:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	10, // 9: mcpany.config.v1.DynamicResource.command_line_call:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	11, // 10: mcpany.config.v1.DynamicResource.mcp_call:type_name -> mcpany.config.v1.MCPCallDefinition
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_resource_proto_init() }
@@ -1158,21 +1165,22 @@ func file_proto_config_v1_resource_proto_init() {
 		return
 	}
 	file_proto_config_v1_call_proto_init()
+	file_proto_config_v1_profile_proto_init()
 	file_proto_config_v1_resource_proto_msgTypes[1].OneofWrappers = []any{
-		(*resourceDefinition_Static)(nil),
-		(*resourceDefinition_Dynamic)(nil),
+		(*ResourceDefinition_Static)(nil),
+		(*ResourceDefinition_Dynamic)(nil),
 	}
 	file_proto_config_v1_resource_proto_msgTypes[2].OneofWrappers = []any{
-		(*staticResource_TextContent)(nil),
-		(*staticResource_BinaryContent)(nil),
+		(*StaticResource_TextContent)(nil),
+		(*StaticResource_BinaryContent)(nil),
 	}
 	file_proto_config_v1_resource_proto_msgTypes[3].OneofWrappers = []any{
-		(*dynamicResource_HttpCall)(nil),
-		(*dynamicResource_GrpcCall)(nil),
-		(*dynamicResource_WebsocketCall)(nil),
-		(*dynamicResource_WebrtcCall)(nil),
-		(*dynamicResource_CommandLineCall)(nil),
-		(*dynamicResource_McpCall)(nil),
+		(*DynamicResource_HttpCall)(nil),
+		(*DynamicResource_GrpcCall)(nil),
+		(*DynamicResource_WebsocketCall)(nil),
+		(*DynamicResource_WebrtcCall)(nil),
+		(*DynamicResource_CommandLineCall)(nil),
+		(*DynamicResource_McpCall)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

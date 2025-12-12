@@ -71,6 +71,7 @@ func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
 	cmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
 	cmd.Flags().String("api-key", "", "API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY")
+	cmd.Flags().StringSlice("profiles", []string{"default"}, "Comma-separated list of active profiles. Env: MCPANY_PROFILES")
 
 	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {
 		fmt.Printf("Error binding grpc-port flag: %v\n", err)
@@ -86,6 +87,10 @@ func BindServerFlags(cmd *cobra.Command) {
 	}
 	if err := viper.BindPFlag("api-key", cmd.Flags().Lookup("api-key")); err != nil {
 		fmt.Printf("Error binding api-key flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("profiles", cmd.Flags().Lookup("profiles")); err != nil {
+		fmt.Printf("Error binding profiles flag: %v\n", err)
 		os.Exit(1)
 	}
 }

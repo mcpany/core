@@ -48,10 +48,10 @@ type GrpcClient interface {
 	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
 }
 
-// HttpClient defines a standard interface for an HTTP client, abstracting the
+// HTTPClient defines a standard interface for an HTTP client, abstracting the
 // underlying implementation. This interface is compatible with the standard
 // `*http.Client`.
-type HttpClient interface {
+type HTTPClient interface {
 	// Do sends an HTTP request and returns an HTTP response.
 	//
 	// Parameters:

@@ -52,7 +52,7 @@ func TestNewWebsocketTool(t *testing.T) {
 var upgrader = websocket.Upgrader{}
 
 func mockWebsocketServer(
-	t *testing.T,
+	_ *testing.T,
 	handler func(w http.ResponseWriter, r *http.Request),
 ) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(handler))
@@ -306,7 +306,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
-			putFunc: func(c *client.WebsocketClientWrapper) { /* no-op, already closed */ },
+			putFunc: func(_ *client.WebsocketClientWrapper) { /* no-op, already closed */ },
 		}
 		serviceID := "ws-write-error"
 		pm.Register(serviceID, mockPool)
@@ -341,11 +341,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		})
 		defer server.Close()
 
-		conn, _, err := websocket.DefaultDialer.Dial(
+		conn, resp, err := websocket.DefaultDialer.Dial(
 			strings.Replace(server.URL, "http", "ws", 1),
 			nil,
 		)
 		require.NoError(t, err)
+		defer resp.Body.Close()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -383,11 +384,12 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		})
 		defer server.Close()
 
-		conn, _, err := websocket.DefaultDialer.Dial(
+		conn, resp, err := websocket.DefaultDialer.Dial(
 			strings.Replace(server.URL, "http", "ws", 1),
 			nil,
 		)
 		require.NoError(t, err)
+		defer resp.Body.Close()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()

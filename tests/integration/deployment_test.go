@@ -63,7 +63,7 @@ func TestDockerCompose(t *testing.T) {
 	// Build the images first to avoid race conditions
 	buildCmdArgs := dockerCmd
 	buildCmdArgs = append(buildCmdArgs, "compose", "-f", dockerComposeFile, "build")
-	buildCmd := exec.Command(buildCmdArgs[0], buildCmdArgs[1:]...)
+	buildCmd := exec.Command(buildCmdArgs[0], buildCmdArgs[1:]...) //nolint:gosec
 	buildCmd.Dir = rootDir
 	buildOutput, err := buildCmd.CombinedOutput()
 	require.NoError(t, err, "docker compose build should not fail: %s", string(buildOutput))
@@ -71,7 +71,7 @@ func TestDockerCompose(t *testing.T) {
 	// Run in detached mode
 	upCmdArgs := dockerCmd
 	upCmdArgs = append(upCmdArgs, "compose", "-f", dockerComposeFile, "up", "-d")
-	upCmd := exec.Command(upCmdArgs[0], upCmdArgs[1:]...)
+	upCmd := exec.Command(upCmdArgs[0], upCmdArgs[1:]...) //nolint:gosec
 	upCmd.Dir = rootDir
 	upOutput, err := upCmd.CombinedOutput()
 	require.NoError(t, err, "docker compose up -d should not fail: %s", string(upOutput))
@@ -81,7 +81,7 @@ func TestDockerCompose(t *testing.T) {
 		t.Log("Cleaning up docker compose services...")
 		downCmdArgs := dockerCmd
 		downCmdArgs = append(downCmdArgs, "compose", "-f", dockerComposeFile, "down", "--volumes")
-		downCmd := exec.Command(downCmdArgs[0], downCmdArgs[1:]...)
+		downCmd := exec.Command(downCmdArgs[0], downCmdArgs[1:]...) //nolint:gosec
 		downCmd.Dir = rootDir
 		downOutput, err := downCmd.CombinedOutput()
 		if err != nil {
@@ -95,7 +95,7 @@ func TestDockerCompose(t *testing.T) {
 	require.Eventually(t, func() bool {
 		psCmdArgs := dockerCmd
 		psCmdArgs = append(psCmdArgs, "compose", "-f", dockerComposeFile, "ps", "--format", "json")
-		psCmd := exec.Command(psCmdArgs[0], psCmdArgs[1:]...)
+		psCmd := exec.Command(psCmdArgs[0], psCmdArgs[1:]...) //nolint:gosec
 		psCmd.Dir = rootDir
 		psOutput, err := psCmd.CombinedOutput()
 		if err != nil {

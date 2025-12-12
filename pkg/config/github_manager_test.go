@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -62,7 +63,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 	githubAPIURL = server.URL
 	githubRawContentURL = server.URL
 
-	manager := NewUpstreamServiceManager()
+	manager := NewUpstreamServiceManager(nil)
 	manager.httpClient = &http.Client{}
 	manager.newGitHub = func(ctx context.Context, rawURL string) (*GitHub, error) {
 		g, err := NewGitHub(ctx, rawURL)

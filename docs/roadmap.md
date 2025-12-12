@@ -29,12 +29,9 @@ The following features are fully implemented and tested:
 - **Deployment**:
   - Official Helm Chart
   - Docker Container
-- **Service Health Checks**:
-  - HTTP
-  - gRPC
-  - WebSocket
-  - WebRTC
-  - Command Line
+- [x] **Health Checks**: Implement health check endpoints for upstream services (HTTP, gRPC, WebSocket, WebRTC, Command Line).
+- [x] **Schema Validation**: Integrate JSON Schema to validate configuration files before loading.
+- [x] **Service Profiles**: Categorize and selectively enable services using profiles (`--profiles` flag).
 - **Configuration**:
   - Hot Configuration Reloading
 
@@ -49,10 +46,9 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## High Priority (Next 1-3 Months)
 
-- [ ] **Role-Based Access Control (RBAC)**: Implement granular access control for tools and resources based on user roles.
-- [ ] **Secret Management Integration**: Support sourcing secrets from Vault, AWS Secrets Manager, and other providers directly in configuration.
-- [ ] **Schema Validation**: Integrate CUE or JSON Schema to validate configuration files before loading.
-- [ ] **Distributed Tracing**: Integrate with OpenTelemetry to provide end-to-end visibility into request flows across microservices.
+- [ ] **RBAC**: Role-Based Access Control for managing user permissions.
+- [ ] **Secrets Management**: Secure handling of sensitive data (API keys, passwords).
+- [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
 - [ ] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
 - [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
 - [ ] **IP Allowlisting & Security Policies**: Implement fine-grained security policies, including IP allowlisting and request validation.

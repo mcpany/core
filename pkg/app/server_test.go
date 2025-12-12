@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package app
 
 import (
@@ -33,6 +32,8 @@ import (
 	"testing"
 	"time"
 
+	"mime/multipart"
+
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
@@ -46,10 +47,10 @@ import (
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
-	"mime/multipart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestReloadConfig(t *testing.T) {
@@ -346,6 +347,7 @@ func TestHealthCheck(t *testing.T) {
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			}),
+			ReadHeaderTimeout: 5 * time.Second,
 		}
 		go func() {
 			_ = server.Serve(countingLis)
@@ -377,6 +379,7 @@ func TestHealthCheck(t *testing.T) {
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			}),
+			ReadHeaderTimeout: 5 * time.Second,
 		}
 		go func() {
 			_ = server.Serve(countingLis)
@@ -1026,7 +1029,10 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	time.Sleep(50 * time.Millisecond) // give server time to start
 
 	go func() {
-		_, _ = http.Get(fmt.Sprintf("http://localhost:%d", port))
+		resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+		if err == nil {
+			resp.Body.Close()
+		}
 	}()
 
 	// Wait for the handler to receive the request before we shutdown
@@ -1100,7 +1106,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 
 	// Make a call to the hanging RPC in a separate goroutine.
 	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -1181,7 +1187,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			// If we can't connect, there's no point in continuing the test.
 			t.Logf("Failed to dial gRPC server: %v", err)
@@ -1251,7 +1257,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countinglis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -1476,7 +1482,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", ":0")
+	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(s *gogrpc.Server) {
 		_, err := mcpserver.NewRegistrationServer(nil)
@@ -1812,7 +1818,7 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 
 	// Make a call to the hanging RPC to ensure the server is busy.
 	go func() {
-		conn, err := gogrpc.Dial(mockLis.Addr().String(), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(mockLis.Addr().String(), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err == nil {
 			defer conn.Close()
 			_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
@@ -1882,7 +1888,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countingLis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -1940,7 +1946,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", ":0")
+	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
 		panic("test panic in registration")
@@ -2105,7 +2111,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	go func() {
-		conn, err := gogrpc.Dial(fmt.Sprintf("localhost:%d", port), gogrpc.WithInsecure(), gogrpc.WithBlock())
+		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -2168,6 +2174,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	require.NoError(t, err)
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
+	resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
 	// Make a request with the correct API key
@@ -2176,6 +2183,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	req.Header.Set("X-API-Key", "test-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
+	resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// Make a request with an incorrect API key
@@ -2184,6 +2192,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	req.Header.Set("X-API-Key", "incorrect-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
+	resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
 	cancel()
