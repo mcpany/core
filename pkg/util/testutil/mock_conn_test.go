@@ -32,21 +32,27 @@ type mockClientStream struct {
 func (m *mockClientStream) Header() (metadata.MD, error) {
 	return nil, nil
 }
+
 func (m *mockClientStream) Trailer() metadata.MD {
 	return nil
 }
+
 func (m *mockClientStream) CloseSend() error {
 	return nil
 }
+
 func (m *mockClientStream) Context() context.Context {
 	return context.Background()
 }
+
 func (m *mockClientStream) SendMsg(_ interface{}) error {
 	return nil
 }
+
 func (m *mockClientStream) RecvMsg(_ interface{}) error {
 	return nil
 }
+
 func TestMockClientConn(t *testing.T) {
 	mockConn := NewMockClientConn(t)
 	assert.NotNil(t, mockConn)

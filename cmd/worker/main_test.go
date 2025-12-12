@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/suite"
 	buspb "github.com/mcpany/core/proto/bus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type MainTestSuite struct {

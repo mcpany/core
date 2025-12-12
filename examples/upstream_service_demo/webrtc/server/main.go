@@ -20,9 +20,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
-
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/pion/webrtc/v3"

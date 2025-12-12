@@ -79,7 +79,7 @@ func TestUpdateCommand(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	dummyExecutablePath := tempDir + "/dummy-server"
-	err = os.WriteFile(dummyExecutablePath, []byte("old content"), 0600)
+	err = os.WriteFile(dummyExecutablePath, []byte("old content"), 0o600)
 	assert.NoError(t, err)
 
 	// Run the update command against the dummy file

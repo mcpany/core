@@ -20,17 +20,23 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev
+      args:
+        UID: "${UID:-1000}"
+        GID: "${GID:-1000}"
     volumes:
       - ..:/workspace
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/.cache:/home/user/.cache
     working_dir: /workspace
     # Mount Go cache to speed up subsequent builds
     # Environment variables to force Go to use the mapped directory
     environment:
-      - HOME=/workspace/.cache/home
-      - GOCACHE=/workspace/.cache/gocache
-      - GOMODCACHE=/workspace/.cache/gomodcache
-      - XDG_CACHE_HOME=/workspace/.cache/xdg_cache
-      - npm_config_cache=/workspace/.cache/npm_cache
+      - HOME=/home/user
+      - GOCACHE=/home/user/.cache/go-build
+      - GOMODCACHE=/home/user/.cache/go-mod
+      - XDG_CACHE_HOME=/home/user/.cache
+      - npm_config_cache=/home/user/.cache/npm
       - CI=true
-    user: "${UID}:${GID}"
+      - UID=${UID:-1000}
+      - GID=${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"

@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package twilio_test
 
@@ -46,8 +46,8 @@ func TestUpstreamService_Twilio(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"sid":    "SM12345",
-			"status": "queued",
+			"sid":           "SM12345",
+			"status":        "queued",
 			"error_message": nil,
 		})
 	}))

@@ -450,7 +450,6 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	tm := NewToolManager(nil)
 	serviceID := "test-service" //nolint:goconst

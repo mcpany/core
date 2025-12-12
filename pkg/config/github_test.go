@@ -23,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 func TestIsGitHubURL(t *testing.T) {
@@ -127,10 +127,10 @@ func TestNewGitHub(t *testing.T) {
 
 func TestGitHub_ToRawContentURL(t *testing.T) {
 	g := &GitHub{
-		Owner:       "mcpany",
-		Repo:        "core",
-		Ref:         "main",
-		Path:        "README.md",
+		Owner:         "mcpany",
+		Repo:          "core",
+		Ref:           "main",
+		Path:          "README.md",
 		rawContentURL: "https://raw.githubusercontent.com",
 	}
 	expected := "https://raw.githubusercontent.com/mcpany/core/main/README.md"
@@ -224,11 +224,11 @@ func TestGitHub_List_ssrf(t *testing.T) {
 
 	// The httptest.Server URL uses a loopback address (e.g., 127.0.0.1), which should be blocked.
 	g := &GitHub{
-		Owner:   "mcpany",
-		Repo:    "core",
-		Ref:     "main",
-		Path:    "examples",
-		apiURL:  server.URL,
+		Owner:  "mcpany",
+		Repo:   "core",
+		Ref:    "main",
+		Path:   "examples",
+		apiURL: server.URL,
 		httpClient: &http.Client{
 			Transport: &http.Transport{
 				DialContext: util.SafeDialContext,

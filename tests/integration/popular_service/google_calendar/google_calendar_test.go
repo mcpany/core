@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package google_calendar_test
 
@@ -56,12 +56,12 @@ func TestUpstreamService_GoogleCalendar(t *testing.T) {
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name          string
-		calendarId    string
+		name       string
+		calendarId string
 	}{
 		{
-			name:          "List events from a public calendar",
-			calendarId:    "en.usa#holiday@group.v.calendar.google.com",
+			name:       "List events from a public calendar",
+			calendarId: "en.usa#holiday@group.v.calendar.google.com",
 		},
 	}
 

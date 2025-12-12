@@ -68,7 +68,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -87,7 +87,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -109,7 +109,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -135,7 +135,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -168,7 +168,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -193,7 +193,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
@@ -222,7 +222,7 @@ func TestUpdater(t *testing.T) {
 			}
 			fs := afero.NewMemMapFs()
 			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0755)
+			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)

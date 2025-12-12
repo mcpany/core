@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package stripe_test
 
@@ -41,10 +41,10 @@ func TestUpstreamService_Stripe(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"id":      "ch_12345",
-			"amount":  1000,
+			"id":       "ch_12345",
+			"amount":   1000,
 			"currency": "usd",
-			"status":  "succeeded",
+			"status":   "succeeded",
 		})
 	}))
 	defer mockServer.Close()

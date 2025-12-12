@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package util
 
 import (
@@ -271,11 +270,11 @@ func TestGenerateUUID(t *testing.T) {
 
 func TestParseToolName(t *testing.T) {
 	testCases := []struct {
-		name               string
-		toolName           string
-		expectedService    string
-		expectedBareTool   string
-		expectError        bool
+		name             string
+		toolName         string
+		expectedService  string
+		expectedBareTool string
+		expectError      bool
 	}{
 		{
 			name:             "valid tool name",

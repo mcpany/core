@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package ipinfo_test
 
@@ -54,21 +54,21 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name          string
-		ip            string
-		expectedCity  string
+		name            string
+		ip              string
+		expectedCity    string
 		expectedCountry string
 	}{
 		{
-			name:          "IPv4 address",
-			ip:            "130.184.0.1",
-			expectedCity:  "Tulsa",
+			name:            "IPv4 address",
+			ip:              "130.184.0.1",
+			expectedCity:    "Tulsa",
 			expectedCountry: "US",
 		},
 		{
-			name:          "IPv6 address",
-			ip:            "2607:f6d0:0:53::64:53",
-			expectedCity:  "San Jose",
+			name:            "IPv6 address",
+			ip:              "2607:f6d0:0:53::64:53",
+			expectedCity:    "San Jose",
 			expectedCountry: "US",
 		},
 	}
@@ -102,7 +102,6 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 			}
 			require.Equal(t, tc.expectedCity, ipInfoResponse["city"], "The city should match the expected value")
 			require.Equal(t, tc.expectedCountry, ipInfoResponse["country"], "The country should match the expected value")
-
 
 			// --- 6. Test with token ---
 			if os.Getenv("IPINFO_API_TOKEN") != "" {

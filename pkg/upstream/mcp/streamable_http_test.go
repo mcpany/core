@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -29,10 +28,10 @@ import (
 
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
-	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -563,7 +562,6 @@ func TestMCPUpstream_Register(t *testing.T) {
 		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 }
-
 
 func TestAuthenticatedRoundTripper(t *testing.T) {
 	var authenticatorCalled bool

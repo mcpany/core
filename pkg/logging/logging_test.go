@@ -22,9 +22,9 @@ import (
 	"strings"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 func TestGetLogger(t *testing.T) {
@@ -87,6 +87,7 @@ func TestInit_Once(t *testing.T) {
 	assert.True(t, strings.Contains(buf1.String(), "second init"), "Logger should not be re-initialized by the second call")
 	assert.Empty(t, buf2.String(), "Second Init call should be a no-op")
 }
+
 func TestToSlogLevel(t *testing.T) {
 	testCases := []struct {
 		name     string

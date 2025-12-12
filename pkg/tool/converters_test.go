@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -20,8 +19,8 @@ package tool
 import (
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -55,11 +54,11 @@ func TestConvertToolDefinitionToProto(t *testing.T) {
 		})
 
 		toolDef := &configv1.ToolDefinition{
-			Name:        proto.String("test-tool"),
-			Description: proto.String("A test tool"),
-			Title:       proto.String("Test Tool"),
-			ServiceId:   proto.String("test-service"),
-			InputSchema: inputSchema,
+			Name:         proto.String("test-tool"),
+			Description:  proto.String("A test tool"),
+			Title:        proto.String("Test Tool"),
+			ServiceId:    proto.String("test-service"),
+			InputSchema:  inputSchema,
 			OutputSchema: outputSchema,
 		}
 
@@ -177,7 +176,7 @@ func TestConvertMCPToolToProto(t *testing.T) {
 				DestructiveHint: &destructiveHint,
 				OpenWorldHint:   &openWorldHint,
 			},
-			InputSchema: map[string]interface{}{"type": "string"},
+			InputSchema:  map[string]interface{}{"type": "string"},
 			OutputSchema: map[string]interface{}{"type": "number"},
 		}
 

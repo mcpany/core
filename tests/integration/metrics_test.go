@@ -50,7 +50,7 @@ upstreamServices:
           endpointPath: "/echo"
 `
 	configPath := filepath.Join(tempDir, "config.yaml")
-	err = os.WriteFile(configPath, []byte(configContent), 0644)
+	err = os.WriteFile(configPath, []byte(configContent), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithCancel(context.Background())

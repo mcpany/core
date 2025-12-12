@@ -183,7 +183,7 @@ func (m *MockResourceManager) GetResource(name string) (resource.Resource, bool)
 	return r, ok
 }
 
-func (m* MockResourceManager) RemoveResource(uri string) {
+func (m *MockResourceManager) RemoveResource(uri string) {
 }
 
 func (m *MockResourceManager) ListResources() []resource.Resource {

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -36,6 +35,7 @@ func newMockToolManager() *mockToolManager {
 		tools: make(map[string]tool.Tool),
 	}
 }
+
 func (m *mockToolManager) AddTool(t tool.Tool) error {
 	m.tools[t.Tool().GetName()] = t
 	return nil

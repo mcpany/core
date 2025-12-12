@@ -23,11 +23,10 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
-
-	"os"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/mcpany/core/pkg/auth"
