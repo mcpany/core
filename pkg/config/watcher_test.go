@@ -28,7 +28,7 @@ func TestWatcher(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(file.Name())
+	defer func() { _ = os.Remove(file.Name()) }()
 
 	// Create a new watcher.
 	watcher, err := NewWatcher()

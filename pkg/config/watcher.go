@@ -89,5 +89,5 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) {
 // Close stops the file watcher.
 func (w *Watcher) Close() {
 	close(w.done)
-	w.watcher.Close()
+	_ = w.watcher.Close()
 }

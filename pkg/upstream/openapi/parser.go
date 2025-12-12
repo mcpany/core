@@ -267,7 +267,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 // useful hint for AI models using the tools.
 func isOperationIdempotent(method string) bool {
 	switch strings.ToUpper(method) {
-	case "GET", "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE":
+	case methodGet, "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE":
 		return true
 	default: // POST, PATCH etc. are generally not idempotent
 		return false

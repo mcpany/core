@@ -63,7 +63,7 @@ print("Hello")
 
 	// Create a subdirectory and a file in it
 	subDir := filepath.Join(tmpDir, "subdir")
-	if err := os.Mkdir(subDir, 0755); err != nil {
+	if err := os.Mkdir(subDir, 0750); err != nil {
 		t.Fatalf("Failed to create subdirectory: %v", err)
 	}
 	subFileContent := dummyGoFileContent
@@ -74,25 +74,25 @@ print("Hello")
 
 	// Create a .git directory to be skipped
 	gitDir := filepath.Join(tmpDir, ".git")
-	if err := os.Mkdir(gitDir, 0755); err != nil {
+	if err := os.Mkdir(gitDir, 0750); err != nil {
 		t.Fatalf("Failed to create .git directory: %v", err)
 	}
 
 	// Create a vendor directory to be skipped
 	vendorDir := filepath.Join(tmpDir, "vendor")
-	if err := os.Mkdir(vendorDir, 0755); err != nil {
+	if err := os.Mkdir(vendorDir, 0750); err != nil {
 		t.Fatalf("Failed to create vendor directory: %v", err)
 	}
 
 	// Create a build directory to be skipped
 	buildDir := filepath.Join(tmpDir, "build")
-	if err := os.Mkdir(buildDir, 0755); err != nil {
+	if err := os.Mkdir(buildDir, 0750); err != nil {
 		t.Fatalf("Failed to create build directory: %v", err)
 	}
 
 	// Create a node_modules directory to be skipped
 	nodeModulesDir := filepath.Join(tmpDir, "node_modules")
-	if err := os.Mkdir(nodeModulesDir, 0755); err != nil {
+	if err := os.Mkdir(nodeModulesDir, 0750); err != nil {
 		t.Fatalf("Failed to create node_modules directory: %v", err)
 	}
 
@@ -111,14 +111,14 @@ print("Hello")
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatalf("Failed to change working directory: %v", err)
 	}
-	defer os.Chdir(oldWd)
+	defer func() { _ = os.Chdir(oldWd) }()
 
 	// Call the main function
 	os.Args = []string{"license-header-remover", "."}
 	main()
 
 	// Check if the license header has been removed from the go file
-	goFileContentAfter, err := os.ReadFile(goFilePath)
+	goFileContentAfter, err := os.ReadFile(goFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read go file: %v", err)
 	}
@@ -127,7 +127,7 @@ print("Hello")
 	}
 
 	// Check if the license header has been removed from the python file
-	pyFileContentAfter, err := os.ReadFile(pyFilePath)
+	pyFileContentAfter, err := os.ReadFile(pyFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read python file: %v", err)
 	}
@@ -136,7 +136,7 @@ print("Hello")
 	}
 
 	// Check if the license header has been removed from the file in the subdirectory
-	subFileContentAfter, err := os.ReadFile(subFilePath)
+	subFileContentAfter, err := os.ReadFile(subFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read sub file: %v", err)
 	}
@@ -145,7 +145,7 @@ print("Hello")
 	}
 
 	// Check if the .pb.go file is untouched
-	pbgoFileContentAfter, err := os.ReadFile(pbgoFilePath)
+	pbgoFileContentAfter, err := os.ReadFile(pbgoFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read .pb.go file: %v", err)
 	}
@@ -284,7 +284,7 @@ syntax = "proto3";`,
 			sanitizedName = strings.ReplaceAll(sanitizedName, "/", "_")
 			sanitizedName = strings.ReplaceAll(sanitizedName, "*", "_")
 			testDir := filepath.Join(tmpDir, sanitizedName)
-			if err := os.Mkdir(testDir, 0755); err != nil {
+			if err := os.Mkdir(testDir, 0750); err != nil {
 				t.Fatalf("Failed to create test directory: %v", err)
 			}
 			tmpFile := filepath.Join(testDir, "testfile")
@@ -294,7 +294,7 @@ syntax = "proto3";`,
 
 			processFile(tmpFile)
 
-			content, err := os.ReadFile(tmpFile)
+			content, err := os.ReadFile(tmpFile) //nolint:gosec // test
 			if err != nil {
 				t.Fatalf("Failed to read temporary file: %v", err)
 			}

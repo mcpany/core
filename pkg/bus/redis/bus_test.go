@@ -25,6 +25,8 @@ import (
 	"testing"
 	"time"
 
+	"os"
+
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/logging"
 	bus_pb "github.com/mcpany/core/proto/bus"
@@ -35,10 +37,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-import (
-	"os"
-	// ... other imports
-)
+// ... other imports
 
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
@@ -57,7 +56,7 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	return client
 }
 
-func TestRedisBus_Publish(t *testing.T) {
+func TestBus_Publish(t *testing.T) {
 	client, mock := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -68,7 +67,7 @@ func TestRedisBus_Publish(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestRedisBus_Publish_MarshalError(t *testing.T) {
+func TestBus_Publish_MarshalError(t *testing.T) {
 	client, _ := redismock.NewClientMock()
 	bus := NewWithClient[chan int](client)
 
@@ -77,7 +76,7 @@ func TestRedisBus_Publish_MarshalError(t *testing.T) {
 	assert.IsType(t, &json.UnsupportedTypeError{}, err)
 }
 
-func TestRedisBus_Publish_RedisError(t *testing.T) {
+func TestBus_Publish_RedisError(t *testing.T) {
 	client, mock := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -89,7 +88,7 @@ func TestRedisBus_Publish_RedisError(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
-func TestRedisBus_Subscribe(t *testing.T) {
+func TestBus_Subscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe"
@@ -114,7 +113,7 @@ func TestRedisBus_Subscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
+func TestBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "handler-panic-topic"
@@ -139,7 +138,7 @@ func TestRedisBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_MultipleUnsubCalls(t *testing.T) {
+func TestBus_MultipleUnsubCalls(t *testing.T) {
 	client, _ := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
@@ -152,7 +151,7 @@ func TestRedisBus_MultipleUnsubCalls(t *testing.T) {
 	assert.NotPanics(t, unsub)
 }
 
-func TestRedisBus_SubscribeOnce_Correctness(t *testing.T) {
+func TestBus_SubscribeOnce_Correctness(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "correctness-topic"
@@ -184,7 +183,7 @@ func TestRedisBus_SubscribeOnce_Correctness(t *testing.T) {
 	mu.Unlock()
 }
 
-func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
+func TestBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-concurrent-publish"
@@ -206,7 +205,7 @@ func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			bus.Publish(context.Background(), topic, "message")
+			_ = bus.Publish(context.Background(), topic, "message")
 		}()
 	}
 	wg.Wait()
@@ -222,7 +221,7 @@ func TestRedisBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	close(handlerCalled)
 }
 
-func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
+func TestBus_Subscribe_UnmarshalError(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 
@@ -257,7 +256,7 @@ func TestRedisBus_Subscribe_UnmarshalError(t *testing.T) {
 	assert.Contains(t, logBuffer.String(), "Failed to unmarshal message")
 }
 
-func TestRedisBus_Subscribe_NullPayload(t *testing.T) {
+func TestBus_Subscribe_NullPayload(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[*string](client)
 	topic := "test-null-payload"
@@ -283,12 +282,12 @@ func TestRedisBus_Subscribe_NullPayload(t *testing.T) {
 	wg.Wait()
 }
 
-// TestRedisBus_SubscribeOnce tests that a handler for a topic is only called once.
+// TestBus_SubscribeOnce tests that a handler for a topic is only called once.
 // Note: Go's coverage tool may report 0% coverage for this function. This is a
 // known issue with the tool's ability to track coverage in goroutines,
 // especially in short-lived test scenarios. The test is valid and does
 // exercise the code path.
-func TestRedisBus_SubscribeOnce(t *testing.T) {
+func TestBus_SubscribeOnce(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-once"
@@ -340,7 +339,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	}
 }
 
-func TestRedisBus_SubscribeOnce_NilHandler(t *testing.T) {
+func TestBus_SubscribeOnce_NilHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
@@ -350,7 +349,7 @@ func TestRedisBus_SubscribeOnce_NilHandler(t *testing.T) {
 	})
 }
 
-func TestRedisBus_Unsubscribe(t *testing.T) {
+func TestBus_Unsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 
@@ -383,7 +382,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	}
 }
 
-func TestRedisBus_New(t *testing.T) {
+func TestBus_New(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address:  proto.String("localhost:6379"),
 		Password: proto.String("password"),
@@ -399,7 +398,7 @@ func TestRedisBus_New(t *testing.T) {
 	assert.Equal(t, 1, options.DB)
 }
 
-func TestRedisBus_New_WithValidConfig(t *testing.T) {
+func TestBus_New_WithValidConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address:  proto.String("localhost:6380"),
 		Password: proto.String("testpassword"),
@@ -415,8 +414,8 @@ func TestRedisBus_New_WithValidConfig(t *testing.T) {
 	assert.Equal(t, 2, options.DB)
 }
 
-func TestRedisBus_New_NilConfig(t *testing.T) {
-	var bus *RedisBus[string]
+func TestBus_New_NilConfig(t *testing.T) {
+	var bus *Bus[string]
 	assert.NotPanics(t, func() {
 		bus = New[string](nil)
 	})
@@ -428,7 +427,7 @@ func TestRedisBus_New_NilConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestRedisBus_New_PartialConfig(t *testing.T) {
+func TestBus_New_PartialConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
 		Address: proto.String("localhost:6381"),
 	}.Build()
@@ -442,7 +441,7 @@ func TestRedisBus_New_PartialConfig(t *testing.T) {
 	assert.Equal(t, 0, options.DB)
 }
 
-func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
+func TestBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "concurrent-topic"
@@ -465,7 +464,7 @@ func TestRedisBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 	wg.Wait()
 }
 
-func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *testing.T) {
+func TestBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-resubscribe-replace"
@@ -498,7 +497,7 @@ func TestRedisBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *tes
 	unsub1()
 }
 
-func TestRedisBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *testing.T) {
+func TestBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-resubscribe-stop-receiving"
@@ -544,7 +543,7 @@ func TestRedisBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *
 	unsub1()
 }
 
-func TestRedisBus_Subscribe_NilHandler(t *testing.T) {
+func TestBus_Subscribe_NilHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
@@ -554,7 +553,7 @@ func TestRedisBus_Subscribe_NilHandler(t *testing.T) {
 	})
 }
 
-func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
+func TestBus_Subscribe_CloseSubscription(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-close-subscription"
@@ -589,7 +588,7 @@ func TestRedisBus_Subscribe_CloseSubscription(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
+func TestBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-unsubscribe-before-message"
@@ -623,7 +622,7 @@ func TestRedisBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
 	}
 }
 
-func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
+func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-panic"
@@ -649,8 +648,8 @@ func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not appear")
 
 	// Even if the handler panics, the subscription should remain active
-	bus.Publish(context.Background(), topic, "first message")
-	bus.Publish(context.Background(), topic, "second message")
+	_ = bus.Publish(context.Background(), topic, "first message")
+	_ = bus.Publish(context.Background(), topic, "second message")
 
 	// Wait for both messages to be processed
 	<-handlerCalled
@@ -659,7 +658,7 @@ func TestRedisBus_Subscribe_HandlerPanic(t *testing.T) {
 	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
 }
 
-func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
+func TestBus_Subscribe_ContextCancellation(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-context-cancellation"
@@ -698,7 +697,7 @@ func TestRedisBus_Subscribe_ContextCancellation(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
+func TestBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "already-cancelled-context"
@@ -727,7 +726,7 @@ func TestRedisBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
-func TestRedisBus_PublishAndSubscribe(t *testing.T) {
+func TestBus_PublishAndSubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-publish-subscribe"
@@ -778,7 +777,7 @@ func TestRedisBus_PublishAndSubscribe(t *testing.T) {
 	}
 }
 
-func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
+func TestBus_UnsubscribeFromHandler(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "unsubscribe-from-handler"
@@ -816,7 +815,7 @@ func TestRedisBus_UnsubscribeFromHandler(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after unsubscribing from handler")
 }
 
-func TestRedisBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
+func TestBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "test-stale-unsubscribe"
@@ -876,7 +875,7 @@ func TestRedisBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
 	}
 }
 
-func TestRedisBus_SubscribeOnce_CancelledContext(t *testing.T) {
+func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 	client := setupRedisIntegrationTest(t)
 	bus := NewWithClient[string](client)
 	topic := "once-cancelled-context"

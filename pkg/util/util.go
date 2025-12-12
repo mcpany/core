@@ -170,10 +170,11 @@ func SanitizeOperationID(input string) string {
 // GetDockerCommand returns the command and base arguments for running Docker,
 // respecting the USE_SUDO_FOR_DOCKER environment variable.
 func GetDockerCommand() (string, []string) {
+	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-		return "sudo", []string{"docker"}
+		return "sudo", []string{dockerCmd}
 	}
-	return "docker", []string{}
+	return dockerCmd, []string{}
 }
 
 func ReplaceURLPath(urlPath string, params map[string]interface{}) string {

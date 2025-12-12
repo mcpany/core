@@ -482,7 +482,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
-	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...)
+	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...) //nolint:gosec // test
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -507,7 +507,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	}
 
 	// Ensure the container is not already running from a previous failed run
-	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
 	_ = stopCmd.Run() // Ignore error, it might not be running
 	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
 	_ = rmCmd.Run() // Ignore error, it might not exist

@@ -32,8 +32,8 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		cb.Execute(func() error { return errors.New("error") })
-		cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		require.Equal(t, StateOpen, cb.state)
 
@@ -52,8 +52,8 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		cb.Execute(func() error { return errors.New("error") })
-		cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
@@ -74,8 +74,8 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		cb.Execute(func() error { return errors.New("error") })
-		cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
@@ -109,7 +109,7 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail once to open the circuit
-		cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
@@ -140,7 +140,7 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail once to open the circuit
-		cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)

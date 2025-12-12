@@ -52,7 +52,7 @@ message TestResponse {
 }
 `
 		protoFilePath := filepath.Join(tempDir, "test.proto")
-		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
+		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o600)
 		require.NoError(t, err)
 
 		// Create a ProtoCollection
@@ -125,13 +125,14 @@ func TestProcessProtoCollection(t *testing.T) {
 
 	protoContent := `syntax = "proto3"; package test; message Test {}`
 	protoFilePath := filepath.Join(tempDir, "test.proto")
-	err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
+	err = os.WriteFile(protoFilePath, []byte(protoContent), 0o600)
 	require.NoError(t, err)
 
-	collection := &configv1.ProtoCollection{}
-	collection.SetRootPath(tempDir)
-	collection.SetPathMatchRegex(".*\\.proto")
-	collection.SetIsRecursive(true)
+	collection := configv1.ProtoCollection_builder{
+		RootPath:       &tempDir,
+		PathMatchRegex: proto.String(".*\\.proto"),
+		IsRecursive:    proto.Bool(true),
+	}.Build()
 
 	files, err := processProtoCollection(collection, tempDir)
 	require.NoError(t, err)
@@ -145,9 +146,10 @@ func TestWriteProtoFile(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	t.Run("from_content", func(t *testing.T) {
-		protoFile := &configv1.ProtoFile{}
-		protoFile.SetFileName("test.proto")
-		protoFile.SetFileContent(`syntax = "proto3"; package test; message Test {}`)
+		protoFile := configv1.ProtoFile_builder{
+			FileName:    proto.String("test.proto"),
+			FileContent: proto.String(`syntax = "proto3"; package test; message Test {}`),
+		}.Build()
 		filePath, err := writeProtoFile(protoFile, tempDir)
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
@@ -160,12 +162,13 @@ func TestWriteProtoFile(t *testing.T) {
 	t.Run("from_path", func(t *testing.T) {
 		protoContent := `syntax = "proto3"; package test; message Test {}`
 		protoFilePath := filepath.Join(tempDir, "source.proto")
-		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o644)
+		err = os.WriteFile(protoFilePath, []byte(protoContent), 0o600)
 		require.NoError(t, err)
 
-		protoFile := &configv1.ProtoFile{}
-		protoFile.SetFileName("test.proto")
-		protoFile.SetFilePath(protoFilePath)
+		protoFile := configv1.ProtoFile_builder{
+			FileName: proto.String("test.proto"),
+			FilePath: proto.String(protoFilePath),
+		}.Build()
 		filePath, err := writeProtoFile(protoFile, tempDir)
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)

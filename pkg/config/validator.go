@@ -94,13 +94,14 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 }
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
-	if binaryType == Server {
+	switch binaryType {
+	case Server:
 		if gs.GetMcpListenAddress() != "" {
 			if err := validation.IsValidBindAddress(gs.GetMcpListenAddress()); err != nil {
 				return fmt.Errorf("invalid mcp_listen_address: %w", err)
 			}
 		}
-	} else if binaryType == Client {
+	case Client:
 		if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
 			return fmt.Errorf("API key must be at least 16 characters long")
 		}

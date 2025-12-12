@@ -149,7 +149,7 @@ func TestHttpPool_KeepAliveEnabled(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	transport, ok := client.Client.Transport.(*http.Transport)
+	transport, ok := client.Transport.(*http.Transport)
 	require.True(t, ok, "Transport is not an *http.Transport")
 
 	assert.False(t, transport.DisableKeepAlives, "KeepAlives should be enabled")

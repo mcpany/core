@@ -30,6 +30,8 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
+const testProtoFilename = "test.proto"
+
 // MockServerReflectionStream is a mock implementation of the ServerReflection_ServerReflectionInfoClient
 type MockServerReflectionStream struct {
 	mock.Mock
@@ -57,16 +59,15 @@ func (m *MockServerReflectionStream) CloseSend() error {
 func TestGetFileDescriptorByFilename(t *testing.T) {
 	t.Run("successful retrieval", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
-		testFilename := "test.proto"
 		fdp := &descriptorpb.FileDescriptorProto{
-			Name: proto.String(testFilename),
+			Name: proto.String(testProtoFilename),
 		}
 		fdpBytes, err := proto.Marshal(fdp)
 		require.NoError(t, err)
 
 		req := &reflectpb.ServerReflectionRequest{
 			MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
-				FileByFilename: testFilename,
+				FileByFilename: testProtoFilename,
 			},
 		}
 		resp := &reflectpb.ServerReflectionResponse{
@@ -80,7 +81,7 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 		mockStream.On("Send", req).Return(nil)
 		mockStream.On("Recv").Return(resp, nil)
 
-		resultFdp, err := getFileDescriptorByFilename(mockStream, testFilename)
+		resultFdp, err := getFileDescriptorByFilename(mockStream, testProtoFilename)
 		require.NoError(t, err)
 		assert.True(t, proto.Equal(fdp, resultFdp), "The returned FileDescriptorProto should match the expected one.")
 
@@ -89,18 +90,17 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 
 	t.Run("send error", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
-		testFilename := "test.proto"
 		sendErr := errors.New("send error")
 
 		req := &reflectpb.ServerReflectionRequest{
 			MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
-				FileByFilename: testFilename,
+				FileByFilename: testProtoFilename,
 			},
 		}
 
 		mockStream.On("Send", req).Return(sendErr)
 
-		_, err := getFileDescriptorByFilename(mockStream, testFilename)
+		_, err := getFileDescriptorByFilename(mockStream, testProtoFilename)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), sendErr.Error())
 
@@ -109,19 +109,18 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 
 	t.Run("receive error", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
-		testFilename := "test.proto"
 		recvErr := errors.New("receive error")
 
 		req := &reflectpb.ServerReflectionRequest{
 			MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
-				FileByFilename: testFilename,
+				FileByFilename: testProtoFilename,
 			},
 		}
 
 		mockStream.On("Send", req).Return(nil)
 		mockStream.On("Recv").Return(nil, recvErr)
 
-		_, err := getFileDescriptorByFilename(mockStream, testFilename)
+		_, err := getFileDescriptorByFilename(mockStream, testProtoFilename)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), recvErr.Error())
 
@@ -130,11 +129,10 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 
 	t.Run("empty response", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
-		testFilename := "test.proto"
 
 		req := &reflectpb.ServerReflectionRequest{
 			MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
-				FileByFilename: testFilename,
+				FileByFilename: testProtoFilename,
 			},
 		}
 		resp := &reflectpb.ServerReflectionResponse{
@@ -148,7 +146,7 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 		mockStream.On("Send", req).Return(nil)
 		mockStream.On("Recv").Return(resp, nil)
 
-		_, err := getFileDescriptorByFilename(mockStream, testFilename)
+		_, err := getFileDescriptorByFilename(mockStream, testProtoFilename)
 		assert.Error(t, err)
 
 		mockStream.AssertExpectations(t)
@@ -156,12 +154,11 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 
 	t.Run("unmarshal error", func(t *testing.T) {
 		mockStream := new(MockServerReflectionStream)
-		testFilename := "test.proto"
 		invalidBytes := []byte("invalid proto bytes")
 
 		req := &reflectpb.ServerReflectionRequest{
 			MessageRequest: &reflectpb.ServerReflectionRequest_FileByFilename{
-				FileByFilename: testFilename,
+				FileByFilename: testProtoFilename,
 			},
 		}
 		resp := &reflectpb.ServerReflectionResponse{
@@ -175,7 +172,7 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 		mockStream.On("Send", req).Return(nil)
 		mockStream.On("Recv").Return(resp, nil)
 
-		_, err := getFileDescriptorByFilename(mockStream, testFilename)
+		_, err := getFileDescriptorByFilename(mockStream, testProtoFilename)
 		assert.Error(t, err)
 
 		mockStream.AssertExpectations(t)

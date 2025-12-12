@@ -34,19 +34,19 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/repos/mcpany/core/contents/examples":
-			w.Write([]byte(fmt.Sprintf(`[
+			_, _ = fmt.Fprintf(w, `[
 				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/service.yaml", "download_url": "%s/service.yaml"},
 				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/README.md", "download_url": "%s/README.md"},
 				{"type": "dir", "html_url": "https://github.com/mcpany/core/tree/main/examples/nested", "download_url": null}
-			]`, server.URL, server.URL)))
+			]`, server.URL, server.URL)
 		case "/service.yaml":
-			w.Write([]byte(`{"services": [{"name": "github-service", "version": "1.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "github-service", "version": "1.0"}]}`))
 		case "/repos/mcpany/core/contents/examples/nested":
-			w.Write([]byte(fmt.Sprintf(`[
+			_, _ = fmt.Fprintf(w, `[
 				{"type": "file", "html_url": "https://github.com/mcpany/core/blob/main/examples/nested/service.json", "download_url": "%s/service.json"}
-			]`, server.URL)))
+			]`, server.URL)
 		case "/service.json":
-			w.Write([]byte(`{"services": [{"name": "nested-service", "version": "1.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "nested-service", "version": "1.0"}]}`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}

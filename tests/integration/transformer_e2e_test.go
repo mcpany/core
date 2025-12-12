@@ -121,6 +121,7 @@ func callTool(t *testing.T, serverInfo *MCPANYTestServerInfo, toolName string) m
 			t.Logf("tool call request failed for %s: %v", toolName, err)
 			return false
 		}
+		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
 	}, 10*time.Second, 250*time.Millisecond, "Failed to get a successful response from mcpany for tool %s", toolName)
 

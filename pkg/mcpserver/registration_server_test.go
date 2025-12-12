@@ -55,7 +55,7 @@ func (s *mockWeatherServer) GetWeather(ctx context.Context, in *pb.GetWeatherReq
 }
 
 func startMockServer(t *testing.T) (*grpc.Server, string) {
-	lis, err := net.Listen("tcp", ":0")
+	lis, err := net.Listen("tcp", ":0") //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("failed to listen: %v", err)
 	}
