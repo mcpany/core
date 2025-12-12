@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package reddit_test
 
@@ -53,12 +53,12 @@ func TestUpstreamService_Reddit(t *testing.T) {
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name        string
-		subreddit   string
+		name      string
+		subreddit string
 	}{
 		{
-			name:        "Get hot posts from r/golang",
-			subreddit:   "golang",
+			name:      "Get hot posts from r/golang",
+			subreddit: "golang",
 		},
 	}
 

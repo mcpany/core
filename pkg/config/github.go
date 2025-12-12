@@ -21,15 +21,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
-	"strings"
 	"regexp"
-	"log/slog"
+	"strings"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 var (
@@ -38,21 +38,21 @@ var (
 )
 
 const (
-	githubURLRegex      = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
+	githubURLRegex = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
 )
 
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 type GitHub struct {
-	Owner       string
-	Repo        string
-	Path        string
-	Ref         string
-	URLType     string
-	log         *slog.Logger
-	apiURL      string
+	Owner         string
+	Repo          string
+	Path          string
+	Ref           string
+	URLType       string
+	log           *slog.Logger
+	apiURL        string
 	rawContentURL string
-	httpClient *http.Client
+	httpClient    *http.Client
 }
 
 // NewGitHub creates a new GitHub client by parsing a GitHub URL. It supports
@@ -87,13 +87,13 @@ func NewGitHub(ctx context.Context, rawURL string) (*GitHub, error) {
 	}
 
 	return &GitHub{
-		Owner:       matches[1],
-		Repo:        matches[2],
-		Ref:         ref,
-		Path:        matches[5],
-		URLType:     urlType,
-		log:         logging.GetLogger().With("component", "GitHub"),
-		apiURL:      githubAPIURL,
+		Owner:         matches[1],
+		Repo:          matches[2],
+		Ref:           ref,
+		Path:          matches[5],
+		URLType:       urlType,
+		log:           logging.GetLogger().With("component", "GitHub"),
+		apiURL:        githubAPIURL,
 		rawContentURL: githubRawContentURL,
 		httpClient: &http.Client{
 			Transport: &http.Transport{

@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package gemini_test
 
@@ -56,12 +56,12 @@ func TestUpstreamService_Gemini(t *testing.T) {
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name          string
-		prompt        string
+		name   string
+		prompt string
 	}{
 		{
-			name:          "Generate content with a valid prompt",
-			prompt:        "Write a story about a magic backpack.",
+			name:   "Generate content with a valid prompt",
+			prompt: "Write a story about a magic backpack.",
 		},
 	}
 

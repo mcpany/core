@@ -1,3 +1,5 @@
+//go:build e2e
+
 /*
  * Copyright 2024 Author(s) of MCP Any
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//go:build e2e
 
 package weather_gov_test
 
@@ -51,16 +51,16 @@ func TestUpstreamService_WeatherGov(t *testing.T) {
 
 	// --- 3. Test Cases ---
 	testCases := []struct {
-		name          string
-		latitude      string
-		longitude     string
-		expectedCity  string
+		name         string
+		latitude     string
+		longitude    string
+		expectedCity string
 	}{
 		{
-			name:          "Get weather for a valid location",
-			latitude:      "39.7456",
-			longitude:     "-97.0892",
-			expectedCity:  "Fairbury",
+			name:         "Get weather for a valid location",
+			latitude:     "39.7456",
+			longitude:    "-97.0892",
+			expectedCity: "Fairbury",
 		},
 	}
 

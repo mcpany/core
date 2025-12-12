@@ -44,16 +44,16 @@ const (
 )
 
 type E2ETestCase struct {
-	Name                   string
-	UpstreamServiceType    string
-	BuildUpstream          func(t *testing.T) *integration.ManagedProcess
-	RegisterUpstream       func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
-	ValidateTool           func(t *testing.T, mcpanyEndpoint string)
-	ValidateMiddlewares    func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
-	InvokeAIClient         func(t *testing.T, mcpanyEndpoint string)
-	RegistrationMethods    []RegistrationMethod
-	GenerateUpstreamConfig func(upstreamEndpoint string) string
-	StartMCPANYServer      func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
+	Name                        string
+	UpstreamServiceType         string
+	BuildUpstream               func(t *testing.T) *integration.ManagedProcess
+	RegisterUpstream            func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
+	ValidateTool                func(t *testing.T, mcpanyEndpoint string)
+	ValidateMiddlewares         func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
+	InvokeAIClient              func(t *testing.T, mcpanyEndpoint string)
+	RegistrationMethods         []RegistrationMethod
+	GenerateUpstreamConfig      func(upstreamEndpoint string) string
+	StartMCPANYServer           func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
 	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
@@ -211,7 +211,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
 	proc.Port = port
 	return proc
 }

@@ -34,8 +34,8 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
-	"github.com/stretchr/testify/assert"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSlogWriter(t *testing.T) {

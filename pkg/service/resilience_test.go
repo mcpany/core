@@ -15,6 +15,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
+
 func TestIsRetryable(t *testing.T) {
 	testCases := []struct {
 		name     string

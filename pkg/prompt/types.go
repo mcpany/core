@@ -27,9 +27,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-var (
-	ErrPromptNotFound = errors.New("prompt not found")
-)
+var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
 type Prompt interface {

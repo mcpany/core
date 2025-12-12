@@ -293,7 +293,6 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		}
 	}
 
-
 	if !allowed {
 		m.log.Debug("Skipping service due to profile mismatch", "service_name", service.GetName(), "service_profiles", serviceProfiles, "enabled_profiles", m.enabledProfiles)
 		return nil

@@ -114,5 +114,4 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 		assert.True(t, nextCalled, "next handler should have been called")
 	})
-
 }

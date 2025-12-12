@@ -35,7 +35,7 @@ func createTempConfigFile(t *testing.T, content string) string {
 	t.Helper()
 	tmpDir := t.TempDir()
 	filePath := filepath.Join(tmpDir, "test_config.textproto")
-	err := os.WriteFile(filePath, []byte(content), 0600)
+	err := os.WriteFile(filePath, []byte(content), 0o600)
 	require.NoError(t, err, "Failed to write temp config file")
 	return filePath
 }
