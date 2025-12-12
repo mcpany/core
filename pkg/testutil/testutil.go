@@ -20,8 +20,8 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()
 	httpPool, err := pool.New(
-		func(ctx context.Context) (*client.HttpClientWrapper, error) {
-			return &client.HttpClientWrapper{Client: &http.Client{Timeout: 5 * time.Second}}, nil
+		func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+			return &client.HTTPClientWrapper{Client: &http.Client{Timeout: 5 * time.Second}}, nil
 		},
 		1,
 		10,

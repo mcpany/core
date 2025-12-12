@@ -23,6 +23,7 @@ import (
 	"log"
 	"net/http"
 	"sync/atomic"
+	"time"
 )
 
 var (
@@ -45,11 +46,15 @@ func main() {
 
 	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]int64{"counter": atomic.LoadInt64(&counter)})
+		_ = json.NewEncoder(w).Encode(map[string]int64{"counter": atomic.LoadInt64(&counter)})
 	})
 
 	log.Printf("Starting caching test server on port %d...", *port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%d", *port),
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

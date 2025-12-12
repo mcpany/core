@@ -34,7 +34,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHttpClientWrapper(t *testing.T) {
+func TestHTTPClientWrapper(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -44,7 +44,7 @@ func TestHttpClientWrapper(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	client := NewHttpClientWrapper(&http.Client{}, config)
+	client := NewHTTPClientWrapper(&http.Client{}, config)
 	assert.NotNil(t, client)
 
 	t.Run("IsHealthy", func(t *testing.T) {

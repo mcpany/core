@@ -28,6 +28,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	typeObject = "object"
+	typeString = "string"
+	methodGet  = "GET"
+)
+
 // ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
 // specification, such as metadata, server details, and the defined paths.
 type ParsedOpenAPIData struct {
@@ -205,7 +211,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
+				"type":       structpb.NewStringValue(typeObject),
 				"properties": structpb.NewStructValue(properties),
 			},
 		}
@@ -230,7 +236,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 
 		outputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
+				"type":       structpb.NewStringValue(typeObject),
 				"properties": structpb.NewStructValue(outputProperties),
 			},
 		}
@@ -246,7 +252,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			Annotations: pb.ToolAnnotations_builder{
 				Title:          proto.String(op.Summary),
 				IdempotentHint: proto.Bool(isOperationIdempotent(op.Method)),
-				ReadOnlyHint:   proto.Bool(op.Method == "GET"),
+				ReadOnlyHint:   proto.Bool(op.Method == methodGet),
 				OpenWorldHint:  proto.Bool(true), // Default, can be refined
 				InputSchema:    inputSchema,
 				OutputSchema:   outputSchema,
@@ -408,13 +414,13 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		return nil, fmt.Errorf("schema value is nil for %s", name)
 	}
 
-	schemaType := "object" // Default
+	schemaType := typeObject // Default
 	if sVal.Type != nil && len(*sVal.Type) > 0 {
 		schemaType = (*sVal.Type)[0]
 	}
 	// If type is missing but AllOf is present, treat as object
 	if (sVal.Type == nil || len(*sVal.Type) == 0) && len(sVal.AllOf) > 0 {
-		schemaType = "object"
+		schemaType = typeObject
 	}
 
 	description := sVal.Description
@@ -439,7 +445,7 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 
 	switch schemaType {
 	case openapi3.TypeObject:
-		fieldSchema["type"] = "object"
+		fieldSchema["type"] = typeObject
 		nestedProps := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
 		mergedProps, err := mergeSchemaProperties(sVal, doc)
@@ -476,7 +482,7 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		fieldSchema["type"] = (*sVal.Type)[0]
 	default:
 		fmt.Printf("Warning: unhandled schema type '%s' for field '%s'. Defaulting to 'string'.\n", schemaType, name)
-		fieldSchema["type"] = "string"
+		fieldSchema["type"] = typeString
 	}
 
 	finalSchemaStruct, err := structpb.NewStruct(fieldSchema)

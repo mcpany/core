@@ -1,0 +1,53 @@
+# Copyright 2025 Author(s) of MCP Any
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+FROM golang:1.24-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    make \
+    unzip \
+    sudo \
+    python3 \
+    python3-pip \
+    python3-venv \
+    nodejs \
+    npm \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Copy necessary files for 'make prepare'
+COPY Makefile go.mod go.sum requirements.txt ./
+COPY tools/ ./tools/
+COPY proto/ ./proto/
+
+# Run make prepare to install tools
+ENV TOOL_INSTALL_DIR=/tools
+# Install pre-commit globally to be available in CI mode
+RUN pip3 install --break-system-packages pre-commit fastmcp
+# Set CI=true to skip venv setup in Makefile
+ENV CI=true
+RUN mkdir -p /tools && make prepare && chmod -R 777 /tools
+
+# Add installed tools to PATH
+ENV PATH="/tools:${PATH}"
+ENV GOPATH="/tools/go"
+ENV PATH="$GOPATH/bin:$PATH"
+
+CMD ["/bin/bash"]

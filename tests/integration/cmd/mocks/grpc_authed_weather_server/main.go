@@ -49,7 +49,7 @@ var weatherData = map[string]string{
 	"tokyo":    "Rainy, 20°C",
 }
 
-func (s *server) GetWeather(ctx context.Context, req *weatherV1.GetWeatherRequest) (*weatherV1.GetWeatherResponse, error) {
+func (s *server) GetWeather(_ context.Context, req *weatherV1.GetWeatherRequest) (*weatherV1.GetWeatherResponse, error) {
 	log.Printf("INFO grpc_authed_weather_server: GetWeather called location=%s", req.GetLocation())
 	weather, ok := weatherData[req.GetLocation()]
 	if !ok {
@@ -60,7 +60,7 @@ func (s *server) GetWeather(ctx context.Context, req *weatherV1.GetWeatherReques
 	return response, nil
 }
 
-func authInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func authInterceptor(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "missing metadata")

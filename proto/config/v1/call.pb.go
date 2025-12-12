@@ -187,15 +187,15 @@ type HttpCallDefinition struct {
 	// The unique identifier for the call.
 	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	// The path of the HTTP endpoint (e.g., "/users/{userId}").
-	EndpointPath *string `protobuf:"bytes,3,opt,name=endpoint_path,json=endpointPath" json:"endpoint_path,omitempty"`
+	EndpointPath *string `protobuf:"bytes,3,opt,name=endpoint_path" json:"endpoint_path,omitempty"`
 	// The HTTP method to use for the request.
 	Method *HttpCallDefinition_HttpMethod `protobuf:"varint,4,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod" json:"method,omitempty"`
 	// Defines the parameters for the HTTP request.
 	Parameters []*HttpParameterMapping `protobuf:"bytes,5,rep,name=parameters" json:"parameters,omitempty"`
 	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,6,opt,name=input_transformer,json=inputTransformer" json:"input_transformer,omitempty"`
+	InputTransformer *InputTransformer `protobuf:"bytes,6,opt,name=input_transformer" json:"input_transformer,omitempty"`
 	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,7,opt,name=output_transformer,json=outputTransformer" json:"output_transformer,omitempty"`
+	OutputTransformer *OutputTransformer `protobuf:"bytes,7,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache         *CacheConfig `protobuf:"bytes,8,opt,name=cache" json:"cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -411,9 +411,9 @@ type WebsocketCallDefinition struct {
 	// Defines the parameters for the websocket message.
 	Parameters []*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters" json:"parameters,omitempty"`
 	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer" json:"input_transformer,omitempty"`
+	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer" json:"input_transformer,omitempty"`
 	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer" json:"output_transformer,omitempty"`
+	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache         *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -579,9 +579,9 @@ type WebrtcCallDefinition struct {
 	// Defines the parameters for the webrtc message.
 	Parameters []*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters" json:"parameters,omitempty"`
 	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer,json=inputTransformer" json:"input_transformer,omitempty"`
+	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer" json:"input_transformer,omitempty"`
 	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer,json=outputTransformer" json:"output_transformer,omitempty"`
+	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache         *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -954,7 +954,7 @@ type OutputTransformer struct {
 	// - JSON: JSONPath expressions.
 	// - XML: XPath expressions.
 	// - TEXT: Regular expressions (first capture group is used).
-	ExtractionRules map[string]string `protobuf:"bytes,2,rep,name=extraction_rules,json=extractionRules" json:"extraction_rules,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ExtractionRules map[string]string `protobuf:"bytes,2,rep,name=extraction_rules" json:"extraction_rules,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// An optional template to render the extracted data into a final string.
 	// If this is not provided, the raw extracted data will be returned.
 	Template      *string `protobuf:"bytes,3,opt,name=template" json:"template,omitempty"`
@@ -1231,9 +1231,9 @@ type OpenAPICallDefinition struct {
 	// The unique identifier for the call.
 	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer,json=inputTransformer" json:"input_transformer,omitempty"`
+	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer" json:"input_transformer,omitempty"`
 	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer,json=outputTransformer" json:"output_transformer,omitempty"`
+	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache         *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1383,9 +1383,9 @@ type MCPCallDefinition struct {
 	// The unique identifier for the call.
 	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer,json=inputTransformer" json:"input_transformer,omitempty"`
+	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer" json:"input_transformer,omitempty"`
 	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer,json=outputTransformer" json:"output_transformer,omitempty"`
+	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache         *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1537,13 +1537,13 @@ type GraphQLCallDefinition struct {
 	// The GraphQL query to execute.
 	Query *string `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
 	// The GraphQL operation name.
-	OperationName *string `protobuf:"bytes,3,opt,name=operation_name,json=operationName" json:"operation_name,omitempty"`
+	OperationName *string `protobuf:"bytes,3,opt,name=operation_name" json:"operation_name,omitempty"`
 	// A map of variables for the GraphQL query.
 	Variables *structpb.Struct `protobuf:"bytes,4,opt,name=variables" json:"variables,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
 	// The selection set for the GraphQL query.
-	SelectionSet  *string `protobuf:"bytes,6,opt,name=selection_set,json=selectionSet" json:"selection_set,omitempty"`
+	SelectionSet  *string `protobuf:"bytes,6,opt,name=selection_set" json:"selection_set,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1745,9 +1745,9 @@ type ParameterSchema struct {
 	// The data type of the parameter.
 	Type *ParameterType `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType" json:"type,omitempty"`
 	// Whether the parameter is required.
-	IsRequired *bool `protobuf:"varint,4,opt,name=is_required,json=isRequired" json:"is_required,omitempty"`
+	IsRequired *bool `protobuf:"varint,4,opt,name=is_required" json:"is_required,omitempty"`
 	// The default value of the parameter.
-	DefaultValue  *structpb.Value `protobuf:"bytes,5,opt,name=default_value,json=defaultValue" json:"default_value,omitempty"`
+	DefaultValue  *structpb.Value `protobuf:"bytes,5,opt,name=default_value" json:"default_value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2309,7 +2309,7 @@ func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMappi
 // CacheConfig is a dummy message for now.
 type CacheConfig struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	IsEnabled     *bool                  `protobuf:"varint,1,opt,name=is_enabled,json=isEnabled" json:"is_enabled,omitempty"`
+	IsEnabled     *bool                  `protobuf:"varint,1,opt,name=is_enabled" json:"is_enabled,omitempty"`
 	Ttl           *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl" json:"ttl,omitempty"`
 	Strategy      *string                `protobuf:"bytes,3,opt,name=strategy" json:"strategy,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -2425,435 +2425,20 @@ func (b0 CacheConfig_builder) Build() *CacheConfig {
 	return m0
 }
 
-// ToolDefinition describes a single capability or "tool" offered by a service.
-type ToolDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the tool, which will be used to invoke it.
-	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// The ID of the service that provides the tool.
-	ServiceId *string `protobuf:"bytes,13,opt,name=service_id,json=serviceId" json:"service_id,omitempty"`
-	// A human-readable description of what the tool does.
-	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct `protobuf:"bytes,3,opt,name=input_schema,json=inputSchema" json:"input_schema,omitempty"`
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct `protobuf:"bytes,4,opt,name=output_schema,json=outputSchema" json:"output_schema,omitempty"`
-	// Indicates if the tool produces a continuous stream of responses.
-	IsStream *bool `protobuf:"varint,5,opt,name=is_stream,json=isStream" json:"is_stream,omitempty"`
-	// A human-readable title for the tool.
-	Title *string `protobuf:"bytes,6,opt,name=title" json:"title,omitempty"`
-	// If true, the tool does not modify its environment.
-	// Default: false
-	ReadOnlyHint *bool `protobuf:"varint,7,opt,name=read_only_hint,json=readOnlyHint" json:"read_only_hint,omitempty"`
-	// If true, the tool may perform destructive updates to its environment. If
-	// false, the tool performs only additive updates.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: true
-	DestructiveHint *bool `protobuf:"varint,8,opt,name=destructive_hint,json=destructiveHint" json:"destructive_hint,omitempty"`
-	// If true, calling the tool repeatedly with the same arguments will have no
-	// additional effect on its environment.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: false
-	IdempotentHint *bool `protobuf:"varint,9,opt,name=idempotent_hint,json=idempotentHint" json:"idempotent_hint,omitempty"`
-	// If true, this tool may interact with an "open world" of external entities. If
-	// false, the tool's domain of interaction is closed. For example, the world of
-	// a web search tool is open, whereas that of a memory tool is not.
-	// Default: true
-	OpenWorldHint *bool `protobuf:"varint,10,opt,name=open_world_hint,json=openWorldHint" json:"open_world_hint,omitempty"`
-	// The ID of the call definition to use for this tool.
-	CallId *string `protobuf:"bytes,11,opt,name=call_id,json=callId" json:"call_id,omitempty"`
-	// If true, this tool is disabled.
-	Disable       *bool `protobuf:"varint,12,opt,name=disable" json:"disable,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ToolDefinition) Reset() {
-	*x = ToolDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ToolDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ToolDefinition) ProtoMessage() {}
-
-func (x *ToolDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ToolDefinition) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetServiceId() string {
-	if x != nil && x.ServiceId != nil {
-		return *x.ServiceId
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.InputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetOutputSchema() *structpb.Struct {
-	if x != nil {
-		return x.OutputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetIsStream() bool {
-	if x != nil && x.IsStream != nil {
-		return *x.IsStream
-	}
-	return false
-}
-
-func (x *ToolDefinition) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetReadOnlyHint() bool {
-	if x != nil && x.ReadOnlyHint != nil {
-		return *x.ReadOnlyHint
-	}
-	return false
-}
-
-func (x *ToolDefinition) GetDestructiveHint() bool {
-	if x != nil && x.DestructiveHint != nil {
-		return *x.DestructiveHint
-	}
-	return false
-}
-
-func (x *ToolDefinition) GetIdempotentHint() bool {
-	if x != nil && x.IdempotentHint != nil {
-		return *x.IdempotentHint
-	}
-	return false
-}
-
-func (x *ToolDefinition) GetOpenWorldHint() bool {
-	if x != nil && x.OpenWorldHint != nil {
-		return *x.OpenWorldHint
-	}
-	return false
-}
-
-func (x *ToolDefinition) GetCallId() string {
-	if x != nil && x.CallId != nil {
-		return *x.CallId
-	}
-	return ""
-}
-
-func (x *ToolDefinition) GetDisable() bool {
-	if x != nil && x.Disable != nil {
-		return *x.Disable
-	}
-	return false
-}
-
-func (x *ToolDefinition) SetName(v string) {
-	x.Name = &v
-}
-
-func (x *ToolDefinition) SetServiceId(v string) {
-	x.ServiceId = &v
-}
-
-func (x *ToolDefinition) SetDescription(v string) {
-	x.Description = &v
-}
-
-func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
-}
-
-func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
-}
-
-func (x *ToolDefinition) SetIsStream(v bool) {
-	x.IsStream = &v
-}
-
-func (x *ToolDefinition) SetTitle(v string) {
-	x.Title = &v
-}
-
-func (x *ToolDefinition) SetReadOnlyHint(v bool) {
-	x.ReadOnlyHint = &v
-}
-
-func (x *ToolDefinition) SetDestructiveHint(v bool) {
-	x.DestructiveHint = &v
-}
-
-func (x *ToolDefinition) SetIdempotentHint(v bool) {
-	x.IdempotentHint = &v
-}
-
-func (x *ToolDefinition) SetOpenWorldHint(v bool) {
-	x.OpenWorldHint = &v
-}
-
-func (x *ToolDefinition) SetCallId(v string) {
-	x.CallId = &v
-}
-
-func (x *ToolDefinition) SetDisable(v bool) {
-	x.Disable = &v
-}
-
-func (x *ToolDefinition) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return x.Name != nil
-}
-
-func (x *ToolDefinition) HasServiceId() bool {
-	if x == nil {
-		return false
-	}
-	return x.ServiceId != nil
-}
-
-func (x *ToolDefinition) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return x.Description != nil
-}
-
-func (x *ToolDefinition) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.InputSchema != nil
-}
-
-func (x *ToolDefinition) HasOutputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.OutputSchema != nil
-}
-
-func (x *ToolDefinition) HasIsStream() bool {
-	if x == nil {
-		return false
-	}
-	return x.IsStream != nil
-}
-
-func (x *ToolDefinition) HasTitle() bool {
-	if x == nil {
-		return false
-	}
-	return x.Title != nil
-}
-
-func (x *ToolDefinition) HasReadOnlyHint() bool {
-	if x == nil {
-		return false
-	}
-	return x.ReadOnlyHint != nil
-}
-
-func (x *ToolDefinition) HasDestructiveHint() bool {
-	if x == nil {
-		return false
-	}
-	return x.DestructiveHint != nil
-}
-
-func (x *ToolDefinition) HasIdempotentHint() bool {
-	if x == nil {
-		return false
-	}
-	return x.IdempotentHint != nil
-}
-
-func (x *ToolDefinition) HasOpenWorldHint() bool {
-	if x == nil {
-		return false
-	}
-	return x.OpenWorldHint != nil
-}
-
-func (x *ToolDefinition) HasCallId() bool {
-	if x == nil {
-		return false
-	}
-	return x.CallId != nil
-}
-
-func (x *ToolDefinition) HasDisable() bool {
-	if x == nil {
-		return false
-	}
-	return x.Disable != nil
-}
-
-func (x *ToolDefinition) ClearName() {
-	x.Name = nil
-}
-
-func (x *ToolDefinition) ClearServiceId() {
-	x.ServiceId = nil
-}
-
-func (x *ToolDefinition) ClearDescription() {
-	x.Description = nil
-}
-
-func (x *ToolDefinition) ClearInputSchema() {
-	x.InputSchema = nil
-}
-
-func (x *ToolDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
-}
-
-func (x *ToolDefinition) ClearIsStream() {
-	x.IsStream = nil
-}
-
-func (x *ToolDefinition) ClearTitle() {
-	x.Title = nil
-}
-
-func (x *ToolDefinition) ClearReadOnlyHint() {
-	x.ReadOnlyHint = nil
-}
-
-func (x *ToolDefinition) ClearDestructiveHint() {
-	x.DestructiveHint = nil
-}
-
-func (x *ToolDefinition) ClearIdempotentHint() {
-	x.IdempotentHint = nil
-}
-
-func (x *ToolDefinition) ClearOpenWorldHint() {
-	x.OpenWorldHint = nil
-}
-
-func (x *ToolDefinition) ClearCallId() {
-	x.CallId = nil
-}
-
-func (x *ToolDefinition) ClearDisable() {
-	x.Disable = nil
-}
-
-type ToolDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the tool, which will be used to invoke it.
-	Name *string
-	// The ID of the service that provides the tool.
-	ServiceId *string
-	// A human-readable description of what the tool does.
-	Description *string
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct
-	// Indicates if the tool produces a continuous stream of responses.
-	IsStream *bool
-	// A human-readable title for the tool.
-	Title *string
-	// If true, the tool does not modify its environment.
-	// Default: false
-	ReadOnlyHint *bool
-	// If true, the tool may perform destructive updates to its environment. If
-	// false, the tool performs only additive updates.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: true
-	DestructiveHint *bool
-	// If true, calling the tool repeatedly with the same arguments will have no
-	// additional effect on its environment.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: false
-	IdempotentHint *bool
-	// If true, this tool may interact with an "open world" of external entities. If
-	// false, the tool's domain of interaction is closed. For example, the world of
-	// a web search tool is open, whereas that of a memory tool is not.
-	// Default: true
-	OpenWorldHint *bool
-	// The ID of the call definition to use for this tool.
-	CallId *string
-	// If true, this tool is disabled.
-	Disable *bool
-}
-
-func (b0 ToolDefinition_builder) Build() *ToolDefinition {
-	m0 := &ToolDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Name = b.Name
-	x.ServiceId = b.ServiceId
-	x.Description = b.Description
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
-	x.IsStream = b.IsStream
-	x.Title = b.Title
-	x.ReadOnlyHint = b.ReadOnlyHint
-	x.DestructiveHint = b.DestructiveHint
-	x.IdempotentHint = b.IdempotentHint
-	x.OpenWorldHint = b.OpenWorldHint
-	x.CallId = b.CallId
-	x.Disable = b.Disable
-	return m0
-}
-
 var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xcf\x04\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xd2\x04\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
-	"\rendpoint_path\x18\x03 \x01(\tR\fendpointPath\x12G\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
+	"\rendpoint_path\x18\x03 \x01(\tR\rendpoint_path\x12G\n" +
 	"\x06method\x18\x04 \x01(\x0e2/.mcpany.config.v1.HttpCallDefinition.HttpMethodR\x06method\x12F\n" +
 	"\n" +
 	"parameters\x18\x05 \x03(\v2&.mcpany.config.v1.HttpParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"parameters\x12P\n" +
+	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
+	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
 	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
 	"\n" +
 	"HttpMethod\x12\x1b\n" +
@@ -2862,22 +2447,22 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xd0\x02\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xd2\x02\n" +
 	"\x17WebsocketCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12K\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2+.mcpany.config.v1.WebsocketParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xca\x02\n" +
+	"parameters\x12P\n" +
+	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xcc\x02\n" +
 	"\x14WebrtcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2(.mcpany.config.v1.WebrtcParameterMappingR\n" +
-	"parameters\x12O\n" +
-	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
+	"parameters\x12P\n" +
+	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
+	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
 	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xc3\x01\n" +
 	"\x19CommandLineCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12M\n" +
@@ -2887,10 +2472,10 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
 	"\x04args\x18\x05 \x03(\tR\x04args\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
-	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xde\x02\n" +
+	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xdf\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
-	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12c\n" +
-	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x0fextractionRules\x12\x1a\n" +
+	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12d\n" +
+	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x10extraction_rules\x12\x1a\n" +
 	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
 	"\x14ExtractionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2904,31 +2489,30 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x16\n" +
 	"\x06method\x18\x04 \x01(\tR\x06method\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x81\x02\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x83\x02\n" +
 	"\x15OpenAPICallDefinition\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12O\n" +
-	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xfd\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
+	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
+	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xff\x01\n" +
 	"\x11MCPCallDefinition\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12O\n" +
-	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x10inputTransformer\x12R\n" +
-	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x11outputTransformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf5\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
+	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
+	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf7\x01\n" +
 	"\x15GraphQLCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05query\x18\x02 \x01(\tR\x05query\x12%\n" +
-	"\x0eoperation_name\x18\x03 \x01(\tR\roperationName\x125\n" +
+	"\x05query\x18\x02 \x01(\tR\x05query\x12&\n" +
+	"\x0eoperation_name\x18\x03 \x01(\tR\x0eoperation_name\x125\n" +
 	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12#\n" +
-	"\rselection_set\x18\x06 \x01(\tR\fselectionSet\"\xda\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12$\n" +
+	"\rselection_set\x18\x06 \x01(\tR\rselection_set\"\xdc\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12\x1f\n" +
-	"\vis_required\x18\x04 \x01(\bR\n" +
-	"isRequired\x12;\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\fdefaultValue\"\x88\x01\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12 \n" +
+	"\vis_required\x18\x04 \x01(\bR\vis_required\x12<\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\x88\x01\n" +
 	"\x14HttpParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8d\x01\n" +
@@ -2940,28 +2524,13 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8f\x01\n" +
 	"\x1bCommandLineParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"u\n" +
-	"\vCacheConfig\x12\x1d\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"v\n" +
+	"\vCacheConfig\x12\x1e\n" +
 	"\n" +
-	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12+\n" +
+	"is_enabled\x18\x01 \x01(\bR\n" +
+	"is_enabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\"\xe7\x03\n" +
-	"\x0eToolDefinition\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
-	"\n" +
-	"service_id\x18\r \x01(\tR\tserviceId\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12\x1b\n" +
-	"\tis_stream\x18\x05 \x01(\bR\bisStream\x12\x14\n" +
-	"\x05title\x18\x06 \x01(\tR\x05title\x12$\n" +
-	"\x0eread_only_hint\x18\a \x01(\bR\freadOnlyHint\x12)\n" +
-	"\x10destructive_hint\x18\b \x01(\bR\x0fdestructiveHint\x12'\n" +
-	"\x0fidempotent_hint\x18\t \x01(\bR\x0eidempotentHint\x12&\n" +
-	"\x0fopen_world_hint\x18\n" +
-	" \x01(\bR\ropenWorldHint\x12\x17\n" +
-	"\acall_id\x18\v \x01(\tR\x06callId\x12\x18\n" +
-	"\adisable\x18\f \x01(\bR\adisable*X\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
@@ -2974,7 +2543,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_config_v1_call_proto_goTypes = []any{
 	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
 	(HttpCallDefinition_HttpMethod)(0),  // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -2995,12 +2564,11 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*WebrtcParameterMapping)(nil),      // 16: mcpany.config.v1.WebrtcParameterMapping
 	(*CommandLineParameterMapping)(nil), // 17: mcpany.config.v1.CommandLineParameterMapping
 	(*CacheConfig)(nil),                 // 18: mcpany.config.v1.CacheConfig
-	(*ToolDefinition)(nil),              // 19: mcpany.config.v1.ToolDefinition
-	nil,                                 // 20: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	(*structpb.Struct)(nil),             // 21: google.protobuf.Struct
-	(*structpb.Value)(nil),              // 22: google.protobuf.Value
-	(*SecretValue)(nil),                 // 23: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),         // 24: google.protobuf.Duration
+	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Struct)(nil),             // 20: google.protobuf.Struct
+	(*structpb.Value)(nil),              // 21: google.protobuf.Value
+	(*SecretValue)(nil),                 // 22: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 23: google.protobuf.Duration
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -3019,7 +2587,7 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	17, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
 	18, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	20, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
 	18, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
@@ -3027,26 +2595,24 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	7,  // 21: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
 	18, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	21, // 24: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	20, // 24: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
 	18, // 25: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	0,  // 26: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	22, // 27: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	21, // 27: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
 	13, // 28: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	23, // 29: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 29: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	13, // 30: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	23, // 31: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 31: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	13, // 32: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	23, // 33: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	22, // 33: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
 	13, // 34: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	23, // 35: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	24, // 36: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	21, // 37: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	21, // 38: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	39, // [39:39] is the sub-list for method output_type
-	39, // [39:39] is the sub-list for method input_type
-	39, // [39:39] is the sub-list for extension type_name
-	39, // [39:39] is the sub-list for extension extendee
-	0,  // [0:39] is the sub-list for field type_name
+	22, // 35: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	23, // 36: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	37, // [37:37] is the sub-list for method output_type
+	37, // [37:37] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -3061,7 +2627,7 @@ func file_proto_config_v1_call_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_call_proto_rawDesc), len(file_proto_config_v1_call_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   18,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

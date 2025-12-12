@@ -92,7 +92,7 @@ type poolImpl[T ClosableClient] struct {
 // Returns a new `Pool` instance or an error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
-	minSize, maxSize, idleTimeout int, // idleTimeout is not used yet
+	minSize, maxSize, _ int, // idleTimeout is not used yet
 	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {

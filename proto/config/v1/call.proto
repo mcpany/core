@@ -7,6 +7,7 @@ package mcpany.config.v1;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
+
 import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
@@ -25,15 +26,15 @@ message HttpCallDefinition {
     HTTP_METHOD_PATCH = 5;
   }
   // The path of the HTTP endpoint (e.g., "/users/{userId}").
-  string endpoint_path = 3;
+  string endpoint_path = 3 [json_name = "endpoint_path"];
   // The HTTP method to use for the request.
   HttpMethod method = 4;
   // Defines the parameters for the HTTP request.
   repeated HttpParameterMapping parameters = 5;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 6;
+  InputTransformer input_transformer = 6 [json_name = "input_transformer"];
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 7;
+  OutputTransformer output_transformer = 7 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 8;
 }
@@ -45,9 +46,9 @@ message WebsocketCallDefinition {
   // Defines the parameters for the websocket message.
   repeated WebsocketParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
+  InputTransformer input_transformer = 4 [json_name = "input_transformer"];
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
+  OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 6;
 }
@@ -59,9 +60,9 @@ message WebrtcCallDefinition {
   // Defines the parameters for the webrtc message.
   repeated WebrtcParameterMapping parameters = 3;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 4;
+  InputTransformer input_transformer = 4 [json_name = "input_transformer"];
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 5;
+  OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 6;
 }
@@ -101,7 +102,7 @@ message OutputTransformer {
   // - JSON: JSONPath expressions.
   // - XML: XPath expressions.
   // - TEXT: Regular expressions (first capture group is used).
-  map<string, string> extraction_rules = 2;
+  map<string, string> extraction_rules = 2 [json_name = "extraction_rules"];
   // An optional template to render the extracted data into a final string.
   // If this is not provided, the raw extracted data will be returned.
   string template = 3;
@@ -127,9 +128,9 @@ message OpenAPICallDefinition {
   // The unique identifier for the call.
   string id = 1;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 3;
+  InputTransformer input_transformer = 3 [json_name = "input_transformer"];
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 4;
+  OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
 }
@@ -139,9 +140,9 @@ message MCPCallDefinition {
   // The unique identifier for the call.
   string id = 1;
   // An optional input transformer to generate the request body.
-  InputTransformer input_transformer = 3;
+  InputTransformer input_transformer = 3 [json_name = "input_transformer"];
   // An optional output transformer to parse the response body.
-  OutputTransformer output_transformer = 4;
+  OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
 }
@@ -153,13 +154,13 @@ string id = 1;
 // The GraphQL query to execute.
 string query = 2;
 // The GraphQL operation name.
-string operation_name = 3;
+string operation_name = 3 [json_name = "operation_name"];
 // A map of variables for the GraphQL query.
 google.protobuf.Struct variables = 4;
 // Caching configuration to improve performance and reduce load on the upstream.
 CacheConfig cache = 5;
 // The selection set for the GraphQL query.
-string selection_set = 6;
+string selection_set = 6 [json_name = "selection_set"];
 }
 
 // ParameterType defines the data type of a parameter.
@@ -181,9 +182,9 @@ message ParameterSchema {
   // The data type of the parameter.
   ParameterType type = 3;
   // Whether the parameter is required.
-  bool is_required = 4;
+  bool is_required = 4 [json_name = "is_required"];
   // The default value of the parameter.
-  google.protobuf.Value default_value = 5;
+  google.protobuf.Value default_value = 5 [json_name = "default_value"];
 }
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
@@ -220,47 +221,7 @@ message CommandLineParameterMapping {
 
 // CacheConfig is a dummy message for now.
 message CacheConfig {
-  bool is_enabled = 1;
+  bool is_enabled = 1 [json_name = "is_enabled"];
   google.protobuf.Duration ttl = 2;
   string strategy = 3;
-}
-
-// ToolDefinition describes a single capability or "tool" offered by a service.
-message ToolDefinition {
-  // The name of the tool, which will be used to invoke it.
-  string name = 1;
-  // The ID of the service that provides the tool.
-  string service_id = 13;
-  // A human-readable description of what the tool does.
-  string description = 2;
-  // The schema for the input parameters required by the tool.
-  google.protobuf.Struct input_schema = 3;
-  // The schema for the output of the tool.
-  google.protobuf.Struct output_schema = 4;
-  // Indicates if the tool produces a continuous stream of responses.
-  bool is_stream = 5;
-  // A human-readable title for the tool.
-  string title = 6;
-  // If true, the tool does not modify its environment.
-  // Default: false
-  bool read_only_hint = 7;
-  // If true, the tool may perform destructive updates to its environment. If
-  // false, the tool performs only additive updates.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: true
-  bool destructive_hint = 8;
-  // If true, calling the tool repeatedly with the same arguments will have no
-  // additional effect on its environment.
-  // (This property is meaningful only when ReadOnlyHint == false.)
-  // Default: false
-  bool idempotent_hint = 9;
-  // If true, this tool may interact with an "open world" of external entities. If
-  // false, the tool's domain of interaction is closed. For example, the world of
-  // a web search tool is open, whereas that of a memory tool is not.
-  // Default: true
-  bool open_world_hint = 10;
-  // The ID of the call definition to use for this tool.
-  string call_id = 11;
-  // If true, this tool is disabled.
-  bool disable = 12;
 }

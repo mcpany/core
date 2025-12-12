@@ -5,12 +5,12 @@ edition = "2023";
 
 package mcpany.config.v1;
 
-import "google/protobuf/go_features.proto";
+
+import "proto/config/v1/profile.proto";
 import "proto/config/v1/resource.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "PromptProto";
-option features.(pb.go).api_level = API_OPAQUE;
 
 // PromptDefinition defines a prompt that can be used to interact with a language model.
 message PromptDefinition {
@@ -26,6 +26,8 @@ message PromptDefinition {
   repeated PromptMessage messages = 5;
   // If true, this prompt is disabled.
   bool disable = 6;
+  // A list of profiles this prompt belongs to.
+  repeated Profile profiles = 7;
 }
 
 // PromptArgument defines an argument for a prompt.

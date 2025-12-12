@@ -35,25 +35,30 @@ func TestIsSourceFile(t *testing.T) {
 	}
 }
 
+const dummyGoFileContent = `// Copyright 2025
+package main
+`
+
 func TestMain(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a dummy go file with a license header
-	goFileContent := `// Copyright 2025
-package main
-`
+	goFileContent := dummyGoFileContent
 	goFilePath := filepath.Join(tmpDir, "main.go")
-	if err := os.WriteFile(goFilePath, []byte(goFileContent), 0644); err != nil {
-		t.Fatalf("Failed to write to temporary file: %v", err)
+	// Create dummy Go file
+	if err := os.WriteFile(goFilePath, []byte(goFileContent), 0600); err != nil {
+		t.Fatalf("Failed to create dummy Go file: %v", err)
 	}
 
-	// Create a dummy python file with a license header
-	pyFileContent := `# Copyright 2025
-import os
+	// Create dummy Python file
+	pyFileContent := `
+# Copyright 2025
+# Header
+print("Hello")
 `
 	pyFilePath := filepath.Join(tmpDir, "script.py")
-	if err := os.WriteFile(pyFilePath, []byte(pyFileContent), 0644); err != nil {
-		t.Fatalf("Failed to write to temporary file: %v", err)
+	if err := os.WriteFile(pyFilePath, []byte(pyFileContent), 0600); err != nil {
+		t.Fatalf("Failed to create dummy Python file: %v", err)
 	}
 
 	// Create a subdirectory and a file in it
@@ -61,11 +66,9 @@ import os
 	if err := os.Mkdir(subDir, 0755); err != nil {
 		t.Fatalf("Failed to create subdirectory: %v", err)
 	}
-	subFileContent := `// Copyright 2025
-package main
-`
+	subFileContent := dummyGoFileContent
 	subFilePath := filepath.Join(subDir, "main.go")
-	if err := os.WriteFile(subFilePath, []byte(subFileContent), 0644); err != nil {
+	if err := os.WriteFile(subFilePath, []byte(subFileContent), 0600); err != nil {
 		t.Fatalf("Failed to write to temporary file: %v", err)
 	}
 
@@ -94,11 +97,9 @@ package main
 	}
 
 	// Create a .pb.go file to be skipped
-	pbgoFileContent := `// Copyright 2025
-package main
-`
+	pbgoFileContent := dummyGoFileContent
 	pbgoFilePath := filepath.Join(tmpDir, "main.pb.go")
-	if err := os.WriteFile(pbgoFilePath, []byte(pbgoFileContent), 0644); err != nil {
+	if err := os.WriteFile(pbgoFilePath, []byte(pbgoFileContent), 0600); err != nil {
 		t.Fatalf("Failed to write to temporary file: %v", err)
 	}
 
@@ -287,7 +288,7 @@ syntax = "proto3";`,
 				t.Fatalf("Failed to create test directory: %v", err)
 			}
 			tmpFile := filepath.Join(testDir, "testfile")
-			if err := os.WriteFile(tmpFile, []byte(tc.content), 0644); err != nil {
+			if err := os.WriteFile(tmpFile, []byte(tc.content), 0600); err != nil {
 				t.Fatalf("Failed to write to temporary file: %v", err)
 			}
 

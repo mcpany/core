@@ -64,8 +64,13 @@ func Handler() http.Handler {
 
 // StartServer starts an HTTP server to expose the metrics.
 func StartServer(addr string) error {
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           Handler(),
+		ReadHeaderTimeout: 3 * time.Second,
+	}
 	http.Handle("/metrics", Handler())
-	return http.ListenAndServe(addr, nil)
+	return server.ListenAndServe()
 }
 
 // SetGauge sets the value of a gauge.

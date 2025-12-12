@@ -103,17 +103,18 @@ func processFile(path string) {
 
 	var startIdx, endIdx int
 
-	if strings.HasPrefix(trimmed, "//") {
+	switch {
+	case strings.HasPrefix(trimmed, "//"):
 		startIdx, endIdx = findBlock(lines, copyrightLineIdx, "//")
 		endIdx = refineEndIndex(lines, startIdx, endIdx)
-	} else if strings.HasPrefix(trimmed, "#") {
+	case strings.HasPrefix(trimmed, "#"):
 		startIdx, endIdx = findBlock(lines, copyrightLineIdx, "#")
 		endIdx = refineEndIndex(lines, startIdx, endIdx)
-	} else if strings.HasPrefix(trimmed, "*") || strings.HasPrefix(trimmed, "/*") {
+	case strings.HasPrefix(trimmed, "*") || strings.HasPrefix(trimmed, "/*"):
 		// Assume C-style block comment
 		startIdx, endIdx = findBlockComment(lines, copyrightLineIdx)
 		// For /* */ we do not refine end index based on content, because we must remove until */
-	} else {
+	default:
 		// Should not happen due to check above
 		return
 	}

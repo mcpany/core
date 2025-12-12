@@ -14,12 +14,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package util
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -87,7 +86,7 @@ func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 			return "", fmt.Errorf("failed to fetch remote secret: status code %d", resp.StatusCode)
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return "", fmt.Errorf("failed to read remote secret body: %w", err)
 		}

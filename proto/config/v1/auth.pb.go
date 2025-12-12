@@ -7,12 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/auth.proto
 
+//go:build !protoopaque
+
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -69,10 +70,16 @@ func (x APIKeyAuth_Location) Number() protoreflect.EnumNumber {
 // SecretValue represents a value that should be treated as a secret.
 // It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
 type SecretValue struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value isSecretValue_Value    `protobuf_oneof:"value"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to Value:
+	//
+	//	*SecretValue_PlainText
+	//	*SecretValue_EnvironmentVariable
+	//	*SecretValue_FilePath
+	//	*SecretValue_RemoteContent
+	Value         isSecretValue_Value `protobuf_oneof:"value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SecretValue) Reset() {
@@ -100,9 +107,16 @@ func (x *SecretValue) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *SecretValue) GetValue() isSecretValue_Value {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
 func (x *SecretValue) GetPlainText() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_PlainText); ok {
+		if x, ok := x.Value.(*SecretValue_PlainText); ok {
 			return x.PlainText
 		}
 	}
@@ -111,7 +125,7 @@ func (x *SecretValue) GetPlainText() string {
 
 func (x *SecretValue) GetEnvironmentVariable() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable); ok {
+		if x, ok := x.Value.(*SecretValue_EnvironmentVariable); ok {
 			return x.EnvironmentVariable
 		}
 	}
@@ -120,7 +134,7 @@ func (x *SecretValue) GetEnvironmentVariable() string {
 
 func (x *SecretValue) GetFilePath() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_FilePath); ok {
+		if x, ok := x.Value.(*SecretValue_FilePath); ok {
 			return x.FilePath
 		}
 	}
@@ -129,7 +143,7 @@ func (x *SecretValue) GetFilePath() string {
 
 func (x *SecretValue) GetRemoteContent() *RemoteContent {
 	if x != nil {
-		if x, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent); ok {
+		if x, ok := x.Value.(*SecretValue_RemoteContent); ok {
 			return x.RemoteContent
 		}
 	}
@@ -137,37 +151,37 @@ func (x *SecretValue) GetRemoteContent() *RemoteContent {
 }
 
 func (x *SecretValue) SetPlainText(v string) {
-	x.xxx_hidden_Value = &secretValue_PlainText{v}
+	x.Value = &SecretValue_PlainText{v}
 }
 
 func (x *SecretValue) SetEnvironmentVariable(v string) {
-	x.xxx_hidden_Value = &secretValue_EnvironmentVariable{v}
+	x.Value = &SecretValue_EnvironmentVariable{v}
 }
 
 func (x *SecretValue) SetFilePath(v string) {
-	x.xxx_hidden_Value = &secretValue_FilePath{v}
+	x.Value = &SecretValue_FilePath{v}
 }
 
 func (x *SecretValue) SetRemoteContent(v *RemoteContent) {
 	if v == nil {
-		x.xxx_hidden_Value = nil
+		x.Value = nil
 		return
 	}
-	x.xxx_hidden_Value = &secretValue_RemoteContent{v}
+	x.Value = &SecretValue_RemoteContent{v}
 }
 
 func (x *SecretValue) HasValue() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Value != nil
+	return x.Value != nil
 }
 
 func (x *SecretValue) HasPlainText() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_PlainText)
+	_, ok := x.Value.(*SecretValue_PlainText)
 	return ok
 }
 
@@ -175,7 +189,7 @@ func (x *SecretValue) HasEnvironmentVariable() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable)
+	_, ok := x.Value.(*SecretValue_EnvironmentVariable)
 	return ok
 }
 
@@ -183,7 +197,7 @@ func (x *SecretValue) HasFilePath() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_FilePath)
+	_, ok := x.Value.(*SecretValue_FilePath)
 	return ok
 }
 
@@ -191,35 +205,35 @@ func (x *SecretValue) HasRemoteContent() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent)
+	_, ok := x.Value.(*SecretValue_RemoteContent)
 	return ok
 }
 
 func (x *SecretValue) ClearValue() {
-	x.xxx_hidden_Value = nil
+	x.Value = nil
 }
 
 func (x *SecretValue) ClearPlainText() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_PlainText); ok {
-		x.xxx_hidden_Value = nil
+	if _, ok := x.Value.(*SecretValue_PlainText); ok {
+		x.Value = nil
 	}
 }
 
 func (x *SecretValue) ClearEnvironmentVariable() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_EnvironmentVariable); ok {
-		x.xxx_hidden_Value = nil
+	if _, ok := x.Value.(*SecretValue_EnvironmentVariable); ok {
+		x.Value = nil
 	}
 }
 
 func (x *SecretValue) ClearFilePath() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_FilePath); ok {
-		x.xxx_hidden_Value = nil
+	if _, ok := x.Value.(*SecretValue_FilePath); ok {
+		x.Value = nil
 	}
 }
 
 func (x *SecretValue) ClearRemoteContent() {
-	if _, ok := x.xxx_hidden_Value.(*secretValue_RemoteContent); ok {
-		x.xxx_hidden_Value = nil
+	if _, ok := x.Value.(*SecretValue_RemoteContent); ok {
+		x.Value = nil
 	}
 }
 
@@ -233,14 +247,14 @@ func (x *SecretValue) WhichValue() case_SecretValue_Value {
 	if x == nil {
 		return SecretValue_Value_not_set_case
 	}
-	switch x.xxx_hidden_Value.(type) {
-	case *secretValue_PlainText:
+	switch x.Value.(type) {
+	case *SecretValue_PlainText:
 		return SecretValue_PlainText_case
-	case *secretValue_EnvironmentVariable:
+	case *SecretValue_EnvironmentVariable:
 		return SecretValue_EnvironmentVariable_case
-	case *secretValue_FilePath:
+	case *SecretValue_FilePath:
 		return SecretValue_FilePath_case
-	case *secretValue_RemoteContent:
+	case *SecretValue_RemoteContent:
 		return SecretValue_RemoteContent_case
 	default:
 		return SecretValue_Value_not_set_case
@@ -250,12 +264,12 @@ func (x *SecretValue) WhichValue() case_SecretValue_Value {
 type SecretValue_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_Value:
+	// Fields of oneof Value:
 	PlainText           *string
 	EnvironmentVariable *string
 	FilePath            *string
 	RemoteContent       *RemoteContent
-	// -- end of xxx_hidden_Value
+	// -- end of Value
 }
 
 func (b0 SecretValue_builder) Build() *SecretValue {
@@ -263,16 +277,16 @@ func (b0 SecretValue_builder) Build() *SecretValue {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.PlainText != nil {
-		x.xxx_hidden_Value = &secretValue_PlainText{*b.PlainText}
+		x.Value = &SecretValue_PlainText{*b.PlainText}
 	}
 	if b.EnvironmentVariable != nil {
-		x.xxx_hidden_Value = &secretValue_EnvironmentVariable{*b.EnvironmentVariable}
+		x.Value = &SecretValue_EnvironmentVariable{*b.EnvironmentVariable}
 	}
 	if b.FilePath != nil {
-		x.xxx_hidden_Value = &secretValue_FilePath{*b.FilePath}
+		x.Value = &SecretValue_FilePath{*b.FilePath}
 	}
 	if b.RemoteContent != nil {
-		x.xxx_hidden_Value = &secretValue_RemoteContent{b.RemoteContent}
+		x.Value = &SecretValue_RemoteContent{b.RemoteContent}
 	}
 	return m0
 }
@@ -291,39 +305,37 @@ type isSecretValue_Value interface {
 	isSecretValue_Value()
 }
 
-type secretValue_PlainText struct {
+type SecretValue_PlainText struct {
 	PlainText string `protobuf:"bytes,1,opt,name=plain_text,json=plainText,oneof"`
 }
 
-type secretValue_EnvironmentVariable struct {
+type SecretValue_EnvironmentVariable struct {
 	EnvironmentVariable string `protobuf:"bytes,2,opt,name=environment_variable,json=environmentVariable,oneof"`
 }
 
-type secretValue_FilePath struct {
+type SecretValue_FilePath struct {
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
 }
 
-type secretValue_RemoteContent struct {
+type SecretValue_RemoteContent struct {
 	RemoteContent *RemoteContent `protobuf:"bytes,4,opt,name=remote_content,json=remoteContent,oneof"`
 }
 
-func (*secretValue_PlainText) isSecretValue_Value() {}
+func (*SecretValue_PlainText) isSecretValue_Value() {}
 
-func (*secretValue_EnvironmentVariable) isSecretValue_Value() {}
+func (*SecretValue_EnvironmentVariable) isSecretValue_Value() {}
 
-func (*secretValue_FilePath) isSecretValue_Value() {}
+func (*SecretValue_FilePath) isSecretValue_Value() {}
 
-func (*secretValue_RemoteContent) isSecretValue_Value() {}
+func (*SecretValue_RemoteContent) isSecretValue_Value() {}
 
 // RemoteContent represents content that is fetched from a remote URL.
 type RemoteContent struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HttpUrl     *string                `protobuf:"bytes,1,opt,name=http_url,json=httpUrl"`
-	xxx_hidden_Auth        *Authentication        `protobuf:"bytes,2,opt,name=auth"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	HttpUrl       *string                `protobuf:"bytes,1,opt,name=http_url,json=httpUrl" json:"http_url,omitempty"`
+	Auth          *Authentication        `protobuf:"bytes,2,opt,name=auth" json:"auth,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RemoteContent) Reset() {
@@ -352,52 +364,47 @@ func (x *RemoteContent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *RemoteContent) GetHttpUrl() string {
-	if x != nil {
-		if x.xxx_hidden_HttpUrl != nil {
-			return *x.xxx_hidden_HttpUrl
-		}
-		return ""
+	if x != nil && x.HttpUrl != nil {
+		return *x.HttpUrl
 	}
 	return ""
 }
 
 func (x *RemoteContent) GetAuth() *Authentication {
 	if x != nil {
-		return x.xxx_hidden_Auth
+		return x.Auth
 	}
 	return nil
 }
 
 func (x *RemoteContent) SetHttpUrl(v string) {
-	x.xxx_hidden_HttpUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.HttpUrl = &v
 }
 
 func (x *RemoteContent) SetAuth(v *Authentication) {
-	x.xxx_hidden_Auth = v
+	x.Auth = v
 }
 
 func (x *RemoteContent) HasHttpUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.HttpUrl != nil
 }
 
 func (x *RemoteContent) HasAuth() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Auth != nil
+	return x.Auth != nil
 }
 
 func (x *RemoteContent) ClearHttpUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HttpUrl = nil
+	x.HttpUrl = nil
 }
 
 func (x *RemoteContent) ClearAuth() {
-	x.xxx_hidden_Auth = nil
+	x.Auth = nil
 }
 
 type RemoteContent_builder struct {
@@ -411,20 +418,23 @@ func (b0 RemoteContent_builder) Build() *RemoteContent {
 	m0 := &RemoteContent{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.HttpUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_HttpUrl = b.HttpUrl
-	}
-	x.xxx_hidden_Auth = b.Auth
+	x.HttpUrl = b.HttpUrl
+	x.Auth = b.Auth
 	return m0
 }
 
 // Authentication defines the authentication method to use when fetching remote content.
 type Authentication struct {
-	state                 protoimpl.MessageState      `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod isAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to AuthMethod:
+	//
+	//	*Authentication_ApiKey
+	//	*Authentication_BearerToken
+	//	*Authentication_BasicAuth
+	//	*Authentication_Oauth2
+	AuthMethod    isAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Authentication) Reset() {
@@ -452,9 +462,16 @@ func (x *Authentication) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *Authentication) GetAuthMethod() isAuthentication_AuthMethod {
+	if x != nil {
+		return x.AuthMethod
+	}
+	return nil
+}
+
 func (x *Authentication) GetApiKey() *UpstreamAPIKeyAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
+		if x, ok := x.AuthMethod.(*Authentication_ApiKey); ok {
 			return x.ApiKey
 		}
 	}
@@ -463,7 +480,7 @@ func (x *Authentication) GetApiKey() *UpstreamAPIKeyAuth {
 
 func (x *Authentication) GetBearerToken() *UpstreamBearerTokenAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
+		if x, ok := x.AuthMethod.(*Authentication_BearerToken); ok {
 			return x.BearerToken
 		}
 	}
@@ -472,7 +489,7 @@ func (x *Authentication) GetBearerToken() *UpstreamBearerTokenAuth {
 
 func (x *Authentication) GetBasicAuth() *UpstreamBasicAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
+		if x, ok := x.AuthMethod.(*Authentication_BasicAuth); ok {
 			return x.BasicAuth
 		}
 	}
@@ -481,7 +498,7 @@ func (x *Authentication) GetBasicAuth() *UpstreamBasicAuth {
 
 func (x *Authentication) GetOauth2() *UpstreamOAuth2Auth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
+		if x, ok := x.AuthMethod.(*Authentication_Oauth2); ok {
 			return x.Oauth2
 		}
 	}
@@ -490,48 +507,48 @@ func (x *Authentication) GetOauth2() *UpstreamOAuth2Auth {
 
 func (x *Authentication) SetApiKey(v *UpstreamAPIKeyAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authentication_ApiKey{v}
+	x.AuthMethod = &Authentication_ApiKey{v}
 }
 
 func (x *Authentication) SetBearerToken(v *UpstreamBearerTokenAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authentication_BearerToken{v}
+	x.AuthMethod = &Authentication_BearerToken{v}
 }
 
 func (x *Authentication) SetBasicAuth(v *UpstreamBasicAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authentication_BasicAuth{v}
+	x.AuthMethod = &Authentication_BasicAuth{v}
 }
 
 func (x *Authentication) SetOauth2(v *UpstreamOAuth2Auth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authentication_Oauth2{v}
+	x.AuthMethod = &Authentication_Oauth2{v}
 }
 
 func (x *Authentication) HasAuthMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_AuthMethod != nil
+	return x.AuthMethod != nil
 }
 
 func (x *Authentication) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey)
+	_, ok := x.AuthMethod.(*Authentication_ApiKey)
 	return ok
 }
 
@@ -539,7 +556,7 @@ func (x *Authentication) HasBearerToken() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken)
+	_, ok := x.AuthMethod.(*Authentication_BearerToken)
 	return ok
 }
 
@@ -547,7 +564,7 @@ func (x *Authentication) HasBasicAuth() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth)
+	_, ok := x.AuthMethod.(*Authentication_BasicAuth)
 	return ok
 }
 
@@ -555,35 +572,35 @@ func (x *Authentication) HasOauth2() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2)
+	_, ok := x.AuthMethod.(*Authentication_Oauth2)
 	return ok
 }
 
 func (x *Authentication) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
+	x.AuthMethod = nil
 }
 
 func (x *Authentication) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*Authentication_ApiKey); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *Authentication) ClearBearerToken() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BearerToken); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*Authentication_BearerToken); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *Authentication) ClearBasicAuth() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_BasicAuth); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*Authentication_BasicAuth); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *Authentication) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authentication_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*Authentication_Oauth2); ok {
+		x.AuthMethod = nil
 	}
 }
 
@@ -597,14 +614,14 @@ func (x *Authentication) WhichAuthMethod() case_Authentication_AuthMethod {
 	if x == nil {
 		return Authentication_AuthMethod_not_set_case
 	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *authentication_ApiKey:
+	switch x.AuthMethod.(type) {
+	case *Authentication_ApiKey:
 		return Authentication_ApiKey_case
-	case *authentication_BearerToken:
+	case *Authentication_BearerToken:
 		return Authentication_BearerToken_case
-	case *authentication_BasicAuth:
+	case *Authentication_BasicAuth:
 		return Authentication_BasicAuth_case
-	case *authentication_Oauth2:
+	case *Authentication_Oauth2:
 		return Authentication_Oauth2_case
 	default:
 		return Authentication_AuthMethod_not_set_case
@@ -614,12 +631,12 @@ func (x *Authentication) WhichAuthMethod() case_Authentication_AuthMethod {
 type Authentication_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_AuthMethod:
+	// Fields of oneof AuthMethod:
 	ApiKey      *UpstreamAPIKeyAuth
 	BearerToken *UpstreamBearerTokenAuth
 	BasicAuth   *UpstreamBasicAuth
 	Oauth2      *UpstreamOAuth2Auth
-	// -- end of xxx_hidden_AuthMethod
+	// -- end of AuthMethod
 }
 
 func (b0 Authentication_builder) Build() *Authentication {
@@ -627,16 +644,16 @@ func (b0 Authentication_builder) Build() *Authentication {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &authentication_ApiKey{b.ApiKey}
+		x.AuthMethod = &Authentication_ApiKey{b.ApiKey}
 	}
 	if b.BearerToken != nil {
-		x.xxx_hidden_AuthMethod = &authentication_BearerToken{b.BearerToken}
+		x.AuthMethod = &Authentication_BearerToken{b.BearerToken}
 	}
 	if b.BasicAuth != nil {
-		x.xxx_hidden_AuthMethod = &authentication_BasicAuth{b.BasicAuth}
+		x.AuthMethod = &Authentication_BasicAuth{b.BasicAuth}
 	}
 	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &authentication_Oauth2{b.Oauth2}
+		x.AuthMethod = &Authentication_Oauth2{b.Oauth2}
 	}
 	return m0
 }
@@ -655,40 +672,45 @@ type isAuthentication_AuthMethod interface {
 	isAuthentication_AuthMethod()
 }
 
-type authentication_ApiKey struct {
+type Authentication_ApiKey struct {
 	ApiKey *UpstreamAPIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
 }
 
-type authentication_BearerToken struct {
+type Authentication_BearerToken struct {
 	BearerToken *UpstreamBearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,json=bearerToken,oneof"`
 }
 
-type authentication_BasicAuth struct {
+type Authentication_BasicAuth struct {
 	BasicAuth *UpstreamBasicAuth `protobuf:"bytes,3,opt,name=basic_auth,json=basicAuth,oneof"`
 }
 
-type authentication_Oauth2 struct {
+type Authentication_Oauth2 struct {
 	Oauth2 *UpstreamOAuth2Auth `protobuf:"bytes,5,opt,name=oauth2,oneof"`
 }
 
-func (*authentication_ApiKey) isAuthentication_AuthMethod() {}
+func (*Authentication_ApiKey) isAuthentication_AuthMethod() {}
 
-func (*authentication_BearerToken) isAuthentication_AuthMethod() {}
+func (*Authentication_BearerToken) isAuthentication_AuthMethod() {}
 
-func (*authentication_BasicAuth) isAuthentication_AuthMethod() {}
+func (*Authentication_BasicAuth) isAuthentication_AuthMethod() {}
 
-func (*authentication_Oauth2) isAuthentication_AuthMethod() {}
+func (*Authentication_Oauth2) isAuthentication_AuthMethod() {}
 
 // UpstreamAuthentication defines the authentication method to use when mcpany communicates
 // with an upstream service.
 type UpstreamAuthentication struct {
-	state                             protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod             isUpstreamAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
-	xxx_hidden_UseEnvironmentVariable bool                                `protobuf:"varint,4,opt,name=use_environment_variable,json=useEnvironmentVariable"`
-	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
-	XXX_presence                      [1]uint32
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to AuthMethod:
+	//
+	//	*UpstreamAuthentication_ApiKey
+	//	*UpstreamAuthentication_BearerToken
+	//	*UpstreamAuthentication_BasicAuth
+	//	*UpstreamAuthentication_Oauth2
+	//	*UpstreamAuthentication_Mtls
+	AuthMethod             isUpstreamAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
+	UseEnvironmentVariable *bool                               `protobuf:"varint,4,opt,name=use_environment_variable,json=useEnvironmentVariable" json:"use_environment_variable,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpstreamAuthentication) Reset() {
@@ -716,9 +738,16 @@ func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *UpstreamAuthentication) GetAuthMethod() isUpstreamAuthentication_AuthMethod {
+	if x != nil {
+		return x.AuthMethod
+	}
+	return nil
+}
+
 func (x *UpstreamAuthentication) GetApiKey() *UpstreamAPIKeyAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey); ok {
+		if x, ok := x.AuthMethod.(*UpstreamAuthentication_ApiKey); ok {
 			return x.ApiKey
 		}
 	}
@@ -727,7 +756,7 @@ func (x *UpstreamAuthentication) GetApiKey() *UpstreamAPIKeyAuth {
 
 func (x *UpstreamAuthentication) GetBearerToken() *UpstreamBearerTokenAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken); ok {
+		if x, ok := x.AuthMethod.(*UpstreamAuthentication_BearerToken); ok {
 			return x.BearerToken
 		}
 	}
@@ -736,7 +765,7 @@ func (x *UpstreamAuthentication) GetBearerToken() *UpstreamBearerTokenAuth {
 
 func (x *UpstreamAuthentication) GetBasicAuth() *UpstreamBasicAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth); ok {
+		if x, ok := x.AuthMethod.(*UpstreamAuthentication_BasicAuth); ok {
 			return x.BasicAuth
 		}
 	}
@@ -745,7 +774,7 @@ func (x *UpstreamAuthentication) GetBasicAuth() *UpstreamBasicAuth {
 
 func (x *UpstreamAuthentication) GetOauth2() *UpstreamOAuth2Auth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2); ok {
+		if x, ok := x.AuthMethod.(*UpstreamAuthentication_Oauth2); ok {
 			return x.Oauth2
 		}
 	}
@@ -754,7 +783,7 @@ func (x *UpstreamAuthentication) GetOauth2() *UpstreamOAuth2Auth {
 
 func (x *UpstreamAuthentication) GetMtls() *UpstreamMTLSAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Mtls); ok {
+		if x, ok := x.AuthMethod.(*UpstreamAuthentication_Mtls); ok {
 			return x.Mtls
 		}
 	}
@@ -762,69 +791,68 @@ func (x *UpstreamAuthentication) GetMtls() *UpstreamMTLSAuth {
 }
 
 func (x *UpstreamAuthentication) GetUseEnvironmentVariable() bool {
-	if x != nil {
-		return x.xxx_hidden_UseEnvironmentVariable
+	if x != nil && x.UseEnvironmentVariable != nil {
+		return *x.UseEnvironmentVariable
 	}
 	return false
 }
 
 func (x *UpstreamAuthentication) SetApiKey(v *UpstreamAPIKeyAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_ApiKey{v}
+	x.AuthMethod = &UpstreamAuthentication_ApiKey{v}
 }
 
 func (x *UpstreamAuthentication) SetBearerToken(v *UpstreamBearerTokenAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_BearerToken{v}
+	x.AuthMethod = &UpstreamAuthentication_BearerToken{v}
 }
 
 func (x *UpstreamAuthentication) SetBasicAuth(v *UpstreamBasicAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{v}
+	x.AuthMethod = &UpstreamAuthentication_BasicAuth{v}
 }
 
 func (x *UpstreamAuthentication) SetOauth2(v *UpstreamOAuth2Auth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_Oauth2{v}
+	x.AuthMethod = &UpstreamAuthentication_Oauth2{v}
 }
 
 func (x *UpstreamAuthentication) SetMtls(v *UpstreamMTLSAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &upstreamAuthentication_Mtls{v}
+	x.AuthMethod = &UpstreamAuthentication_Mtls{v}
 }
 
 func (x *UpstreamAuthentication) SetUseEnvironmentVariable(v bool) {
-	x.xxx_hidden_UseEnvironmentVariable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+	x.UseEnvironmentVariable = &v
 }
 
 func (x *UpstreamAuthentication) HasAuthMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_AuthMethod != nil
+	return x.AuthMethod != nil
 }
 
 func (x *UpstreamAuthentication) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey)
+	_, ok := x.AuthMethod.(*UpstreamAuthentication_ApiKey)
 	return ok
 }
 
@@ -832,7 +860,7 @@ func (x *UpstreamAuthentication) HasBearerToken() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken)
+	_, ok := x.AuthMethod.(*UpstreamAuthentication_BearerToken)
 	return ok
 }
 
@@ -840,7 +868,7 @@ func (x *UpstreamAuthentication) HasBasicAuth() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth)
+	_, ok := x.AuthMethod.(*UpstreamAuthentication_BasicAuth)
 	return ok
 }
 
@@ -848,7 +876,7 @@ func (x *UpstreamAuthentication) HasOauth2() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2)
+	_, ok := x.AuthMethod.(*UpstreamAuthentication_Oauth2)
 	return ok
 }
 
@@ -856,7 +884,7 @@ func (x *UpstreamAuthentication) HasMtls() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Mtls)
+	_, ok := x.AuthMethod.(*UpstreamAuthentication_Mtls)
 	return ok
 }
 
@@ -864,46 +892,45 @@ func (x *UpstreamAuthentication) HasUseEnvironmentVariable() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.UseEnvironmentVariable != nil
 }
 
 func (x *UpstreamAuthentication) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
+	x.AuthMethod = nil
 }
 
 func (x *UpstreamAuthentication) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*UpstreamAuthentication_ApiKey); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *UpstreamAuthentication) ClearBearerToken() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BearerToken); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*UpstreamAuthentication_BearerToken); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *UpstreamAuthentication) ClearBasicAuth() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_BasicAuth); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*UpstreamAuthentication_BasicAuth); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *UpstreamAuthentication) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*UpstreamAuthentication_Oauth2); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *UpstreamAuthentication) ClearMtls() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*upstreamAuthentication_Mtls); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*UpstreamAuthentication_Mtls); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *UpstreamAuthentication) ClearUseEnvironmentVariable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_UseEnvironmentVariable = false
+	x.UseEnvironmentVariable = nil
 }
 
 const UpstreamAuthentication_AuthMethod_not_set_case case_UpstreamAuthentication_AuthMethod = 0
@@ -917,16 +944,16 @@ func (x *UpstreamAuthentication) WhichAuthMethod() case_UpstreamAuthentication_A
 	if x == nil {
 		return UpstreamAuthentication_AuthMethod_not_set_case
 	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *upstreamAuthentication_ApiKey:
+	switch x.AuthMethod.(type) {
+	case *UpstreamAuthentication_ApiKey:
 		return UpstreamAuthentication_ApiKey_case
-	case *upstreamAuthentication_BearerToken:
+	case *UpstreamAuthentication_BearerToken:
 		return UpstreamAuthentication_BearerToken_case
-	case *upstreamAuthentication_BasicAuth:
+	case *UpstreamAuthentication_BasicAuth:
 		return UpstreamAuthentication_BasicAuth_case
-	case *upstreamAuthentication_Oauth2:
+	case *UpstreamAuthentication_Oauth2:
 		return UpstreamAuthentication_Oauth2_case
-	case *upstreamAuthentication_Mtls:
+	case *UpstreamAuthentication_Mtls:
 		return UpstreamAuthentication_Mtls_case
 	default:
 		return UpstreamAuthentication_AuthMethod_not_set_case
@@ -936,13 +963,13 @@ func (x *UpstreamAuthentication) WhichAuthMethod() case_UpstreamAuthentication_A
 type UpstreamAuthentication_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_AuthMethod:
+	// Fields of oneof AuthMethod:
 	ApiKey      *UpstreamAPIKeyAuth
 	BearerToken *UpstreamBearerTokenAuth
 	BasicAuth   *UpstreamBasicAuth
 	Oauth2      *UpstreamOAuth2Auth
 	Mtls        *UpstreamMTLSAuth
-	// -- end of xxx_hidden_AuthMethod
+	// -- end of AuthMethod
 	UseEnvironmentVariable *bool
 }
 
@@ -951,24 +978,21 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_ApiKey{b.ApiKey}
+		x.AuthMethod = &UpstreamAuthentication_ApiKey{b.ApiKey}
 	}
 	if b.BearerToken != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_BearerToken{b.BearerToken}
+		x.AuthMethod = &UpstreamAuthentication_BearerToken{b.BearerToken}
 	}
 	if b.BasicAuth != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_BasicAuth{b.BasicAuth}
+		x.AuthMethod = &UpstreamAuthentication_BasicAuth{b.BasicAuth}
 	}
 	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_Oauth2{b.Oauth2}
+		x.AuthMethod = &UpstreamAuthentication_Oauth2{b.Oauth2}
 	}
 	if b.Mtls != nil {
-		x.xxx_hidden_AuthMethod = &upstreamAuthentication_Mtls{b.Mtls}
+		x.AuthMethod = &UpstreamAuthentication_Mtls{b.Mtls}
 	}
-	if b.UseEnvironmentVariable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_UseEnvironmentVariable = *b.UseEnvironmentVariable
-	}
+	x.UseEnvironmentVariable = b.UseEnvironmentVariable
 	return m0
 }
 
@@ -986,45 +1010,45 @@ type isUpstreamAuthentication_AuthMethod interface {
 	isUpstreamAuthentication_AuthMethod()
 }
 
-type upstreamAuthentication_ApiKey struct {
+type UpstreamAuthentication_ApiKey struct {
 	ApiKey *UpstreamAPIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
 }
 
-type upstreamAuthentication_BearerToken struct {
+type UpstreamAuthentication_BearerToken struct {
 	BearerToken *UpstreamBearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,json=bearerToken,oneof"`
 }
 
-type upstreamAuthentication_BasicAuth struct {
+type UpstreamAuthentication_BasicAuth struct {
 	BasicAuth *UpstreamBasicAuth `protobuf:"bytes,3,opt,name=basic_auth,json=basicAuth,oneof"`
 }
 
-type upstreamAuthentication_Oauth2 struct {
+type UpstreamAuthentication_Oauth2 struct {
 	Oauth2 *UpstreamOAuth2Auth `protobuf:"bytes,5,opt,name=oauth2,oneof"`
 }
 
-type upstreamAuthentication_Mtls struct {
+type UpstreamAuthentication_Mtls struct {
 	Mtls *UpstreamMTLSAuth `protobuf:"bytes,6,opt,name=mtls,oneof"`
 }
 
-func (*upstreamAuthentication_ApiKey) isUpstreamAuthentication_AuthMethod() {}
+func (*UpstreamAuthentication_ApiKey) isUpstreamAuthentication_AuthMethod() {}
 
-func (*upstreamAuthentication_BearerToken) isUpstreamAuthentication_AuthMethod() {}
+func (*UpstreamAuthentication_BearerToken) isUpstreamAuthentication_AuthMethod() {}
 
-func (*upstreamAuthentication_BasicAuth) isUpstreamAuthentication_AuthMethod() {}
+func (*UpstreamAuthentication_BasicAuth) isUpstreamAuthentication_AuthMethod() {}
 
-func (*upstreamAuthentication_Oauth2) isUpstreamAuthentication_AuthMethod() {}
+func (*UpstreamAuthentication_Oauth2) isUpstreamAuthentication_AuthMethod() {}
 
-func (*upstreamAuthentication_Mtls) isUpstreamAuthentication_AuthMethod() {}
+func (*UpstreamAuthentication_Mtls) isUpstreamAuthentication_AuthMethod() {}
 
 // UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.
 type UpstreamAPIKeyAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HeaderName  *string                `protobuf:"bytes,1,opt,name=header_name,json=headerName"`
-	xxx_hidden_ApiKey      *SecretValue           `protobuf:"bytes,2,opt,name=api_key,json=apiKey"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the header to carry the API key (e.g., "X-API-Key").
+	HeaderName *string `protobuf:"bytes,1,opt,name=header_name,json=headerName" json:"header_name,omitempty"`
+	// The API key value.
+	ApiKey        *SecretValue `protobuf:"bytes,2,opt,name=api_key,json=apiKey" json:"api_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamAPIKeyAuth) Reset() {
@@ -1053,52 +1077,47 @@ func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *UpstreamAPIKeyAuth) GetHeaderName() string {
-	if x != nil {
-		if x.xxx_hidden_HeaderName != nil {
-			return *x.xxx_hidden_HeaderName
-		}
-		return ""
+	if x != nil && x.HeaderName != nil {
+		return *x.HeaderName
 	}
 	return ""
 }
 
 func (x *UpstreamAPIKeyAuth) GetApiKey() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_ApiKey
+		return x.ApiKey
 	}
 	return nil
 }
 
 func (x *UpstreamAPIKeyAuth) SetHeaderName(v string) {
-	x.xxx_hidden_HeaderName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.HeaderName = &v
 }
 
 func (x *UpstreamAPIKeyAuth) SetApiKey(v *SecretValue) {
-	x.xxx_hidden_ApiKey = v
+	x.ApiKey = v
 }
 
 func (x *UpstreamAPIKeyAuth) HasHeaderName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.HeaderName != nil
 }
 
 func (x *UpstreamAPIKeyAuth) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ApiKey != nil
+	return x.ApiKey != nil
 }
 
 func (x *UpstreamAPIKeyAuth) ClearHeaderName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HeaderName = nil
+	x.HeaderName = nil
 }
 
 func (x *UpstreamAPIKeyAuth) ClearApiKey() {
-	x.xxx_hidden_ApiKey = nil
+	x.ApiKey = nil
 }
 
 type UpstreamAPIKeyAuth_builder struct {
@@ -1114,20 +1133,18 @@ func (b0 UpstreamAPIKeyAuth_builder) Build() *UpstreamAPIKeyAuth {
 	m0 := &UpstreamAPIKeyAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.HeaderName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_HeaderName = b.HeaderName
-	}
-	x.xxx_hidden_ApiKey = b.ApiKey
+	x.HeaderName = b.HeaderName
+	x.ApiKey = b.ApiKey
 	return m0
 }
 
 // UpstreamBearerTokenAuth defines authentication using a bearer token.
 type UpstreamBearerTokenAuth struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Token *SecretValue           `protobuf:"bytes,1,opt,name=token"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The bearer token.
+	Token         *SecretValue `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamBearerTokenAuth) Reset() {
@@ -1157,24 +1174,24 @@ func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
 
 func (x *UpstreamBearerTokenAuth) GetToken() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Token
+		return x.Token
 	}
 	return nil
 }
 
 func (x *UpstreamBearerTokenAuth) SetToken(v *SecretValue) {
-	x.xxx_hidden_Token = v
+	x.Token = v
 }
 
 func (x *UpstreamBearerTokenAuth) HasToken() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Token != nil
+	return x.Token != nil
 }
 
 func (x *UpstreamBearerTokenAuth) ClearToken() {
-	x.xxx_hidden_Token = nil
+	x.Token = nil
 }
 
 type UpstreamBearerTokenAuth_builder struct {
@@ -1188,19 +1205,17 @@ func (b0 UpstreamBearerTokenAuth_builder) Build() *UpstreamBearerTokenAuth {
 	m0 := &UpstreamBearerTokenAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Token = b.Token
+	x.Token = b.Token
 	return m0
 }
 
 // UpstreamBasicAuth defines authentication using a username and password.
 type UpstreamBasicAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Username    *string                `protobuf:"bytes,1,opt,name=username"`
-	xxx_hidden_Password    *SecretValue           `protobuf:"bytes,2,opt,name=password"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Username      *string                `protobuf:"bytes,1,opt,name=username" json:"username,omitempty"`
+	Password      *SecretValue           `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamBasicAuth) Reset() {
@@ -1229,52 +1244,47 @@ func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *UpstreamBasicAuth) GetUsername() string {
-	if x != nil {
-		if x.xxx_hidden_Username != nil {
-			return *x.xxx_hidden_Username
-		}
-		return ""
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
 
 func (x *UpstreamBasicAuth) GetPassword() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Password
+		return x.Password
 	}
 	return nil
 }
 
 func (x *UpstreamBasicAuth) SetUsername(v string) {
-	x.xxx_hidden_Username = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Username = &v
 }
 
 func (x *UpstreamBasicAuth) SetPassword(v *SecretValue) {
-	x.xxx_hidden_Password = v
+	x.Password = v
 }
 
 func (x *UpstreamBasicAuth) HasUsername() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Username != nil
 }
 
 func (x *UpstreamBasicAuth) HasPassword() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Password != nil
+	return x.Password != nil
 }
 
 func (x *UpstreamBasicAuth) ClearUsername() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Username = nil
+	x.Username = nil
 }
 
 func (x *UpstreamBasicAuth) ClearPassword() {
-	x.xxx_hidden_Password = nil
+	x.Password = nil
 }
 
 type UpstreamBasicAuth_builder struct {
@@ -1288,25 +1298,20 @@ func (b0 UpstreamBasicAuth_builder) Build() *UpstreamBasicAuth {
 	m0 := &UpstreamBasicAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Username != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Username = b.Username
-	}
-	x.xxx_hidden_Password = b.Password
+	x.Username = b.Username
+	x.Password = b.Password
 	return m0
 }
 
 // UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 type UpstreamOAuth2Auth struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_TokenUrl     *string                `protobuf:"bytes,1,opt,name=token_url,json=tokenUrl"`
-	xxx_hidden_ClientId     *SecretValue           `protobuf:"bytes,2,opt,name=client_id,json=clientId"`
-	xxx_hidden_ClientSecret *SecretValue           `protobuf:"bytes,3,opt,name=client_secret,json=clientSecret"`
-	xxx_hidden_Scopes       *string                `protobuf:"bytes,4,opt,name=scopes"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	TokenUrl      *string                `protobuf:"bytes,1,opt,name=token_url,json=tokenUrl" json:"token_url,omitempty"`
+	ClientId      *SecretValue           `protobuf:"bytes,2,opt,name=client_id,json=clientId" json:"client_id,omitempty"`
+	ClientSecret  *SecretValue           `protobuf:"bytes,3,opt,name=client_secret,json=clientSecret" json:"client_secret,omitempty"`
+	Scopes        *string                `protobuf:"bytes,4,opt,name=scopes" json:"scopes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamOAuth2Auth) Reset() {
@@ -1335,101 +1340,91 @@ func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *UpstreamOAuth2Auth) GetTokenUrl() string {
-	if x != nil {
-		if x.xxx_hidden_TokenUrl != nil {
-			return *x.xxx_hidden_TokenUrl
-		}
-		return ""
+	if x != nil && x.TokenUrl != nil {
+		return *x.TokenUrl
 	}
 	return ""
 }
 
 func (x *UpstreamOAuth2Auth) GetClientId() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_ClientId
+		return x.ClientId
 	}
 	return nil
 }
 
 func (x *UpstreamOAuth2Auth) GetClientSecret() *SecretValue {
 	if x != nil {
-		return x.xxx_hidden_ClientSecret
+		return x.ClientSecret
 	}
 	return nil
 }
 
 func (x *UpstreamOAuth2Auth) GetScopes() string {
-	if x != nil {
-		if x.xxx_hidden_Scopes != nil {
-			return *x.xxx_hidden_Scopes
-		}
-		return ""
+	if x != nil && x.Scopes != nil {
+		return *x.Scopes
 	}
 	return ""
 }
 
 func (x *UpstreamOAuth2Auth) SetTokenUrl(v string) {
-	x.xxx_hidden_TokenUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.TokenUrl = &v
 }
 
 func (x *UpstreamOAuth2Auth) SetClientId(v *SecretValue) {
-	x.xxx_hidden_ClientId = v
+	x.ClientId = v
 }
 
 func (x *UpstreamOAuth2Auth) SetClientSecret(v *SecretValue) {
-	x.xxx_hidden_ClientSecret = v
+	x.ClientSecret = v
 }
 
 func (x *UpstreamOAuth2Auth) SetScopes(v string) {
-	x.xxx_hidden_Scopes = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.Scopes = &v
 }
 
 func (x *UpstreamOAuth2Auth) HasTokenUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.TokenUrl != nil
 }
 
 func (x *UpstreamOAuth2Auth) HasClientId() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ClientId != nil
+	return x.ClientId != nil
 }
 
 func (x *UpstreamOAuth2Auth) HasClientSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ClientSecret != nil
+	return x.ClientSecret != nil
 }
 
 func (x *UpstreamOAuth2Auth) HasScopes() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Scopes != nil
 }
 
 func (x *UpstreamOAuth2Auth) ClearTokenUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_TokenUrl = nil
+	x.TokenUrl = nil
 }
 
 func (x *UpstreamOAuth2Auth) ClearClientId() {
-	x.xxx_hidden_ClientId = nil
+	x.ClientId = nil
 }
 
 func (x *UpstreamOAuth2Auth) ClearClientSecret() {
-	x.xxx_hidden_ClientSecret = nil
+	x.ClientSecret = nil
 }
 
 func (x *UpstreamOAuth2Auth) ClearScopes() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Scopes = nil
+	x.Scopes = nil
 }
 
 type UpstreamOAuth2Auth_builder struct {
@@ -1445,29 +1440,24 @@ func (b0 UpstreamOAuth2Auth_builder) Build() *UpstreamOAuth2Auth {
 	m0 := &UpstreamOAuth2Auth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.TokenUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_TokenUrl = b.TokenUrl
-	}
-	x.xxx_hidden_ClientId = b.ClientId
-	x.xxx_hidden_ClientSecret = b.ClientSecret
-	if b.Scopes != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_Scopes = b.Scopes
-	}
+	x.TokenUrl = b.TokenUrl
+	x.ClientId = b.ClientId
+	x.ClientSecret = b.ClientSecret
+	x.Scopes = b.Scopes
 	return m0
 }
 
 // UpstreamMTLSAuth defines authentication using mutual TLS.
 type UpstreamMTLSAuth struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ClientCertPath *string                `protobuf:"bytes,1,opt,name=client_cert_path,json=clientCertPath"`
-	xxx_hidden_ClientKeyPath  *string                `protobuf:"bytes,2,opt,name=client_key_path,json=clientKeyPath"`
-	xxx_hidden_CaCertPath     *string                `protobuf:"bytes,3,opt,name=ca_cert_path,json=caCertPath"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Path to the client certificate file.
+	ClientCertPath *string `protobuf:"bytes,1,opt,name=client_cert_path,json=clientCertPath" json:"client_cert_path,omitempty"`
+	// Path to the client private key file.
+	ClientKeyPath *string `protobuf:"bytes,2,opt,name=client_key_path,json=clientKeyPath" json:"client_key_path,omitempty"`
+	// Path to the CA certificate file for verifying the server's certificate.
+	CaCertPath    *string `protobuf:"bytes,3,opt,name=ca_cert_path,json=caCertPath" json:"ca_cert_path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamMTLSAuth) Reset() {
@@ -1496,84 +1486,69 @@ func (x *UpstreamMTLSAuth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *UpstreamMTLSAuth) GetClientCertPath() string {
-	if x != nil {
-		if x.xxx_hidden_ClientCertPath != nil {
-			return *x.xxx_hidden_ClientCertPath
-		}
-		return ""
+	if x != nil && x.ClientCertPath != nil {
+		return *x.ClientCertPath
 	}
 	return ""
 }
 
 func (x *UpstreamMTLSAuth) GetClientKeyPath() string {
-	if x != nil {
-		if x.xxx_hidden_ClientKeyPath != nil {
-			return *x.xxx_hidden_ClientKeyPath
-		}
-		return ""
+	if x != nil && x.ClientKeyPath != nil {
+		return *x.ClientKeyPath
 	}
 	return ""
 }
 
 func (x *UpstreamMTLSAuth) GetCaCertPath() string {
-	if x != nil {
-		if x.xxx_hidden_CaCertPath != nil {
-			return *x.xxx_hidden_CaCertPath
-		}
-		return ""
+	if x != nil && x.CaCertPath != nil {
+		return *x.CaCertPath
 	}
 	return ""
 }
 
 func (x *UpstreamMTLSAuth) SetClientCertPath(v string) {
-	x.xxx_hidden_ClientCertPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.ClientCertPath = &v
 }
 
 func (x *UpstreamMTLSAuth) SetClientKeyPath(v string) {
-	x.xxx_hidden_ClientKeyPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.ClientKeyPath = &v
 }
 
 func (x *UpstreamMTLSAuth) SetCaCertPath(v string) {
-	x.xxx_hidden_CaCertPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	x.CaCertPath = &v
 }
 
 func (x *UpstreamMTLSAuth) HasClientCertPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.ClientCertPath != nil
 }
 
 func (x *UpstreamMTLSAuth) HasClientKeyPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ClientKeyPath != nil
 }
 
 func (x *UpstreamMTLSAuth) HasCaCertPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.CaCertPath != nil
 }
 
 func (x *UpstreamMTLSAuth) ClearClientCertPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ClientCertPath = nil
+	x.ClientCertPath = nil
 }
 
 func (x *UpstreamMTLSAuth) ClearClientKeyPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ClientKeyPath = nil
+	x.ClientKeyPath = nil
 }
 
 func (x *UpstreamMTLSAuth) ClearCaCertPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_CaCertPath = nil
+	x.CaCertPath = nil
 }
 
 type UpstreamMTLSAuth_builder struct {
@@ -1591,27 +1566,22 @@ func (b0 UpstreamMTLSAuth_builder) Build() *UpstreamMTLSAuth {
 	m0 := &UpstreamMTLSAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.ClientCertPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_ClientCertPath = b.ClientCertPath
-	}
-	if b.ClientKeyPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_ClientKeyPath = b.ClientKeyPath
-	}
-	if b.CaCertPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_CaCertPath = b.CaCertPath
-	}
+	x.ClientCertPath = b.ClientCertPath
+	x.ClientKeyPath = b.ClientKeyPath
+	x.CaCertPath = b.CaCertPath
 	return m0
 }
 
 // AuthenticationConfig specifies the authentication method to use.
 type AuthenticationConfig struct {
-	state                 protoimpl.MessageState            `protogen:"opaque.v1"`
-	xxx_hidden_AuthMethod isAuthenticationConfig_AuthMethod `protobuf_oneof:"auth_method"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to AuthMethod:
+	//
+	//	*AuthenticationConfig_ApiKey
+	//	*AuthenticationConfig_Oauth2
+	AuthMethod    isAuthenticationConfig_AuthMethod `protobuf_oneof:"auth_method"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AuthenticationConfig) Reset() {
@@ -1639,9 +1609,16 @@ func (x *AuthenticationConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *AuthenticationConfig) GetAuthMethod() isAuthenticationConfig_AuthMethod {
+	if x != nil {
+		return x.AuthMethod
+	}
+	return nil
+}
+
 func (x *AuthenticationConfig) GetApiKey() *APIKeyAuth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey); ok {
+		if x, ok := x.AuthMethod.(*AuthenticationConfig_ApiKey); ok {
 			return x.ApiKey
 		}
 	}
@@ -1650,7 +1627,7 @@ func (x *AuthenticationConfig) GetApiKey() *APIKeyAuth {
 
 func (x *AuthenticationConfig) GetOauth2() *OAuth2Auth {
 	if x != nil {
-		if x, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2); ok {
+		if x, ok := x.AuthMethod.(*AuthenticationConfig_Oauth2); ok {
 			return x.Oauth2
 		}
 	}
@@ -1659,32 +1636,32 @@ func (x *AuthenticationConfig) GetOauth2() *OAuth2Auth {
 
 func (x *AuthenticationConfig) SetApiKey(v *APIKeyAuth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authenticationConfig_ApiKey{v}
+	x.AuthMethod = &AuthenticationConfig_ApiKey{v}
 }
 
 func (x *AuthenticationConfig) SetOauth2(v *OAuth2Auth) {
 	if v == nil {
-		x.xxx_hidden_AuthMethod = nil
+		x.AuthMethod = nil
 		return
 	}
-	x.xxx_hidden_AuthMethod = &authenticationConfig_Oauth2{v}
+	x.AuthMethod = &AuthenticationConfig_Oauth2{v}
 }
 
 func (x *AuthenticationConfig) HasAuthMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_AuthMethod != nil
+	return x.AuthMethod != nil
 }
 
 func (x *AuthenticationConfig) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey)
+	_, ok := x.AuthMethod.(*AuthenticationConfig_ApiKey)
 	return ok
 }
 
@@ -1692,23 +1669,23 @@ func (x *AuthenticationConfig) HasOauth2() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2)
+	_, ok := x.AuthMethod.(*AuthenticationConfig_Oauth2)
 	return ok
 }
 
 func (x *AuthenticationConfig) ClearAuthMethod() {
-	x.xxx_hidden_AuthMethod = nil
+	x.AuthMethod = nil
 }
 
 func (x *AuthenticationConfig) ClearApiKey() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_ApiKey); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*AuthenticationConfig_ApiKey); ok {
+		x.AuthMethod = nil
 	}
 }
 
 func (x *AuthenticationConfig) ClearOauth2() {
-	if _, ok := x.xxx_hidden_AuthMethod.(*authenticationConfig_Oauth2); ok {
-		x.xxx_hidden_AuthMethod = nil
+	if _, ok := x.AuthMethod.(*AuthenticationConfig_Oauth2); ok {
+		x.AuthMethod = nil
 	}
 }
 
@@ -1720,10 +1697,10 @@ func (x *AuthenticationConfig) WhichAuthMethod() case_AuthenticationConfig_AuthM
 	if x == nil {
 		return AuthenticationConfig_AuthMethod_not_set_case
 	}
-	switch x.xxx_hidden_AuthMethod.(type) {
-	case *authenticationConfig_ApiKey:
+	switch x.AuthMethod.(type) {
+	case *AuthenticationConfig_ApiKey:
 		return AuthenticationConfig_ApiKey_case
-	case *authenticationConfig_Oauth2:
+	case *AuthenticationConfig_Oauth2:
 		return AuthenticationConfig_Oauth2_case
 	default:
 		return AuthenticationConfig_AuthMethod_not_set_case
@@ -1733,10 +1710,10 @@ func (x *AuthenticationConfig) WhichAuthMethod() case_AuthenticationConfig_AuthM
 type AuthenticationConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_AuthMethod:
+	// Fields of oneof AuthMethod:
 	ApiKey *APIKeyAuth
 	Oauth2 *OAuth2Auth
-	// -- end of xxx_hidden_AuthMethod
+	// -- end of AuthMethod
 }
 
 func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
@@ -1744,10 +1721,10 @@ func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.ApiKey != nil {
-		x.xxx_hidden_AuthMethod = &authenticationConfig_ApiKey{b.ApiKey}
+		x.AuthMethod = &AuthenticationConfig_ApiKey{b.ApiKey}
 	}
 	if b.Oauth2 != nil {
-		x.xxx_hidden_AuthMethod = &authenticationConfig_Oauth2{b.Oauth2}
+		x.AuthMethod = &AuthenticationConfig_Oauth2{b.Oauth2}
 	}
 	return m0
 }
@@ -1766,28 +1743,28 @@ type isAuthenticationConfig_AuthMethod interface {
 	isAuthenticationConfig_AuthMethod()
 }
 
-type authenticationConfig_ApiKey struct {
+type AuthenticationConfig_ApiKey struct {
 	ApiKey *APIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
 }
 
-type authenticationConfig_Oauth2 struct {
+type AuthenticationConfig_Oauth2 struct {
 	Oauth2 *OAuth2Auth `protobuf:"bytes,2,opt,name=oauth2,oneof"` // Can be extended with other auth types like JWT, mTLS etc.
 }
 
-func (*authenticationConfig_ApiKey) isAuthenticationConfig_AuthMethod() {}
+func (*AuthenticationConfig_ApiKey) isAuthenticationConfig_AuthMethod() {}
 
-func (*authenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
+func (*AuthenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
 
 // APIKeyAuth defines authentication using an API key.
 type APIKeyAuth struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ParamName   *string                `protobuf:"bytes,1,opt,name=param_name,json=paramName"`
-	xxx_hidden_In          APIKeyAuth_Location    `protobuf:"varint,2,opt,name=in,enum=mcpany.config.v1.APIKeyAuth_Location"`
-	xxx_hidden_KeyValue    *string                `protobuf:"bytes,3,opt,name=key_value,json=keyValue"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
+	ParamName *string              `protobuf:"bytes,1,opt,name=param_name,json=paramName" json:"param_name,omitempty"`
+	In        *APIKeyAuth_Location `protobuf:"varint,2,opt,name=in,enum=mcpany.config.v1.APIKeyAuth_Location" json:"in,omitempty"`
+	// The actual API key value. It's recommended to use a secret management system.
+	KeyValue      *string `protobuf:"bytes,3,opt,name=key_value,json=keyValue" json:"key_value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *APIKeyAuth) Reset() {
@@ -1816,83 +1793,69 @@ func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *APIKeyAuth) GetParamName() string {
-	if x != nil {
-		if x.xxx_hidden_ParamName != nil {
-			return *x.xxx_hidden_ParamName
-		}
-		return ""
+	if x != nil && x.ParamName != nil {
+		return *x.ParamName
 	}
 	return ""
 }
 
 func (x *APIKeyAuth) GetIn() APIKeyAuth_Location {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_In
-		}
+	if x != nil && x.In != nil {
+		return *x.In
 	}
 	return APIKeyAuth_HEADER
 }
 
 func (x *APIKeyAuth) GetKeyValue() string {
-	if x != nil {
-		if x.xxx_hidden_KeyValue != nil {
-			return *x.xxx_hidden_KeyValue
-		}
-		return ""
+	if x != nil && x.KeyValue != nil {
+		return *x.KeyValue
 	}
 	return ""
 }
 
 func (x *APIKeyAuth) SetParamName(v string) {
-	x.xxx_hidden_ParamName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.ParamName = &v
 }
 
 func (x *APIKeyAuth) SetIn(v APIKeyAuth_Location) {
-	x.xxx_hidden_In = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.In = &v
 }
 
 func (x *APIKeyAuth) SetKeyValue(v string) {
-	x.xxx_hidden_KeyValue = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	x.KeyValue = &v
 }
 
 func (x *APIKeyAuth) HasParamName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.ParamName != nil
 }
 
 func (x *APIKeyAuth) HasIn() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.In != nil
 }
 
 func (x *APIKeyAuth) HasKeyValue() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.KeyValue != nil
 }
 
 func (x *APIKeyAuth) ClearParamName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ParamName = nil
+	x.ParamName = nil
 }
 
 func (x *APIKeyAuth) ClearIn() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_In = APIKeyAuth_HEADER
+	x.In = nil
 }
 
 func (x *APIKeyAuth) ClearKeyValue() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_KeyValue = nil
+	x.KeyValue = nil
 }
 
 type APIKeyAuth_builder struct {
@@ -1909,33 +1872,23 @@ func (b0 APIKeyAuth_builder) Build() *APIKeyAuth {
 	m0 := &APIKeyAuth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.ParamName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_ParamName = b.ParamName
-	}
-	if b.In != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_In = *b.In
-	}
-	if b.KeyValue != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_KeyValue = b.KeyValue
-	}
+	x.ParamName = b.ParamName
+	x.In = b.In
+	x.KeyValue = b.KeyValue
 	return m0
 }
 
 // OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 type OAuth2Auth struct {
-	state                       protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_TokenUrl         *string                `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl"`
-	xxx_hidden_AuthorizationUrl *string                `protobuf:"bytes,4,opt,name=authorization_url,json=authorizationUrl"`
-	xxx_hidden_Scopes           *string                `protobuf:"bytes,5,opt,name=scopes"`
-	xxx_hidden_IssuerUrl        *string                `protobuf:"bytes,6,opt,name=issuer_url,json=issuerUrl"`
-	xxx_hidden_Audience         *string                `protobuf:"bytes,7,opt,name=audience"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"hybrid.v1"`
+	TokenUrl         *string                `protobuf:"bytes,3,opt,name=token_url,json=tokenUrl" json:"token_url,omitempty"`
+	AuthorizationUrl *string                `protobuf:"bytes,4,opt,name=authorization_url,json=authorizationUrl" json:"authorization_url,omitempty"`
+	// Space-delimited list of scopes.
+	Scopes        *string `protobuf:"bytes,5,opt,name=scopes" json:"scopes,omitempty"`
+	IssuerUrl     *string `protobuf:"bytes,6,opt,name=issuer_url,json=issuerUrl" json:"issuer_url,omitempty"`
+	Audience      *string `protobuf:"bytes,7,opt,name=audience" json:"audience,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OAuth2Auth) Reset() {
@@ -1964,138 +1917,113 @@ func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OAuth2Auth) GetTokenUrl() string {
-	if x != nil {
-		if x.xxx_hidden_TokenUrl != nil {
-			return *x.xxx_hidden_TokenUrl
-		}
-		return ""
+	if x != nil && x.TokenUrl != nil {
+		return *x.TokenUrl
 	}
 	return ""
 }
 
 func (x *OAuth2Auth) GetAuthorizationUrl() string {
-	if x != nil {
-		if x.xxx_hidden_AuthorizationUrl != nil {
-			return *x.xxx_hidden_AuthorizationUrl
-		}
-		return ""
+	if x != nil && x.AuthorizationUrl != nil {
+		return *x.AuthorizationUrl
 	}
 	return ""
 }
 
 func (x *OAuth2Auth) GetScopes() string {
-	if x != nil {
-		if x.xxx_hidden_Scopes != nil {
-			return *x.xxx_hidden_Scopes
-		}
-		return ""
+	if x != nil && x.Scopes != nil {
+		return *x.Scopes
 	}
 	return ""
 }
 
 func (x *OAuth2Auth) GetIssuerUrl() string {
-	if x != nil {
-		if x.xxx_hidden_IssuerUrl != nil {
-			return *x.xxx_hidden_IssuerUrl
-		}
-		return ""
+	if x != nil && x.IssuerUrl != nil {
+		return *x.IssuerUrl
 	}
 	return ""
 }
 
 func (x *OAuth2Auth) GetAudience() string {
-	if x != nil {
-		if x.xxx_hidden_Audience != nil {
-			return *x.xxx_hidden_Audience
-		}
-		return ""
+	if x != nil && x.Audience != nil {
+		return *x.Audience
 	}
 	return ""
 }
 
 func (x *OAuth2Auth) SetTokenUrl(v string) {
-	x.xxx_hidden_TokenUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	x.TokenUrl = &v
 }
 
 func (x *OAuth2Auth) SetAuthorizationUrl(v string) {
-	x.xxx_hidden_AuthorizationUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	x.AuthorizationUrl = &v
 }
 
 func (x *OAuth2Auth) SetScopes(v string) {
-	x.xxx_hidden_Scopes = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	x.Scopes = &v
 }
 
 func (x *OAuth2Auth) SetIssuerUrl(v string) {
-	x.xxx_hidden_IssuerUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	x.IssuerUrl = &v
 }
 
 func (x *OAuth2Auth) SetAudience(v string) {
-	x.xxx_hidden_Audience = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	x.Audience = &v
 }
 
 func (x *OAuth2Auth) HasTokenUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.TokenUrl != nil
 }
 
 func (x *OAuth2Auth) HasAuthorizationUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.AuthorizationUrl != nil
 }
 
 func (x *OAuth2Auth) HasScopes() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Scopes != nil
 }
 
 func (x *OAuth2Auth) HasIssuerUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.IssuerUrl != nil
 }
 
 func (x *OAuth2Auth) HasAudience() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.Audience != nil
 }
 
 func (x *OAuth2Auth) ClearTokenUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_TokenUrl = nil
+	x.TokenUrl = nil
 }
 
 func (x *OAuth2Auth) ClearAuthorizationUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_AuthorizationUrl = nil
+	x.AuthorizationUrl = nil
 }
 
 func (x *OAuth2Auth) ClearScopes() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Scopes = nil
+	x.Scopes = nil
 }
 
 func (x *OAuth2Auth) ClearIssuerUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_IssuerUrl = nil
+	x.IssuerUrl = nil
 }
 
 func (x *OAuth2Auth) ClearAudience() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Audience = nil
+	x.Audience = nil
 }
 
 type OAuth2Auth_builder struct {
@@ -2113,26 +2041,11 @@ func (b0 OAuth2Auth_builder) Build() *OAuth2Auth {
 	m0 := &OAuth2Auth{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.TokenUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_TokenUrl = b.TokenUrl
-	}
-	if b.AuthorizationUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_AuthorizationUrl = b.AuthorizationUrl
-	}
-	if b.Scopes != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Scopes = b.Scopes
-	}
-	if b.IssuerUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_IssuerUrl = b.IssuerUrl
-	}
-	if b.Audience != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Audience = b.Audience
-	}
+	x.TokenUrl = b.TokenUrl
+	x.AuthorizationUrl = b.AuthorizationUrl
+	x.Scopes = b.Scopes
+	x.IssuerUrl = b.IssuerUrl
+	x.Audience = b.Audience
 	return m0
 }
 
@@ -2140,7 +2053,7 @@ var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\"\xd5\x01\n" +
+	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\xd5\x01\n" +
 	"\vSecretValue\x12\x1f\n" +
 	"\n" +
 	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
@@ -2207,7 +2120,7 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x06scopes\x18\x05 \x01(\tR\x06scopes\x12\x1d\n" +
 	"\n" +
 	"issuer_url\x18\x06 \x01(\tR\tissuerUrl\x12\x1a\n" +
-	"\baudience\x18\a \x01(\tR\baudienceB;B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\baudience\x18\a \x01(\tR\baudienceB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
@@ -2259,27 +2172,27 @@ func file_proto_config_v1_auth_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_msgTypes[0].OneofWrappers = []any{
-		(*secretValue_PlainText)(nil),
-		(*secretValue_EnvironmentVariable)(nil),
-		(*secretValue_FilePath)(nil),
-		(*secretValue_RemoteContent)(nil),
+		(*SecretValue_PlainText)(nil),
+		(*SecretValue_EnvironmentVariable)(nil),
+		(*SecretValue_FilePath)(nil),
+		(*SecretValue_RemoteContent)(nil),
 	}
 	file_proto_config_v1_auth_proto_msgTypes[2].OneofWrappers = []any{
-		(*authentication_ApiKey)(nil),
-		(*authentication_BearerToken)(nil),
-		(*authentication_BasicAuth)(nil),
-		(*authentication_Oauth2)(nil),
+		(*Authentication_ApiKey)(nil),
+		(*Authentication_BearerToken)(nil),
+		(*Authentication_BasicAuth)(nil),
+		(*Authentication_Oauth2)(nil),
 	}
 	file_proto_config_v1_auth_proto_msgTypes[3].OneofWrappers = []any{
-		(*upstreamAuthentication_ApiKey)(nil),
-		(*upstreamAuthentication_BearerToken)(nil),
-		(*upstreamAuthentication_BasicAuth)(nil),
-		(*upstreamAuthentication_Oauth2)(nil),
-		(*upstreamAuthentication_Mtls)(nil),
+		(*UpstreamAuthentication_ApiKey)(nil),
+		(*UpstreamAuthentication_BearerToken)(nil),
+		(*UpstreamAuthentication_BasicAuth)(nil),
+		(*UpstreamAuthentication_Oauth2)(nil),
+		(*UpstreamAuthentication_Mtls)(nil),
 	}
 	file_proto_config_v1_auth_proto_msgTypes[9].OneofWrappers = []any{
-		(*authenticationConfig_ApiKey)(nil),
-		(*authenticationConfig_Oauth2)(nil),
+		(*AuthenticationConfig_ApiKey)(nil),
+		(*AuthenticationConfig_Oauth2)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

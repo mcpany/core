@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package util
 
 import (
@@ -25,16 +24,18 @@ import (
 )
 
 var (
-	// IsDockerSocketAccessibleFunc is a function that can be replaced for testing purposes.
+	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
+	// It checks if the Docker socket is accessible.
 	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
 
-	dockerClient *client.Client
-	once         sync.Once
+	dockerClient     client.APIClient
+	initDockerClient = initDockerClientDefault
+	once             = &sync.Once{}
 )
 
-// initDockerClient initializes the shared Docker client. This function is
+// initDockerClientDefault initializes the shared Docker client. This function is
 // intended to be called only once.
-var initDockerClient = func() {
+var initDockerClientDefault = func() {
 	var err error
 	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {

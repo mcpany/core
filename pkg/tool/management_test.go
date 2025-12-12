@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2025 Author(s) of MCP Any
  *
@@ -23,13 +22,13 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/util"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
-	"github.com/stretchr/testify/assert"
-	"github.com/mcpany/core/pkg/bus"
 )
 
 type TestMCPServerProvider struct {
@@ -454,7 +453,7 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	tm := NewToolManager(nil)
-	serviceID := "test-service"
+	serviceID := "test-service" //nolint:goconst
 	serviceInfo := &ServiceInfo{
 		Name: "Test Service",
 	}

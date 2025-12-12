@@ -14,13 +14,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package app
 
 import (
 	"context"
-	"fmt"
 	"crypto/subtle"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -28,6 +27,9 @@ import (
 	"sync"
 	"time"
 
+	"os"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
@@ -45,12 +47,10 @@ import (
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-	"os"
 )
 
 var healthCheckClient = &http.Client{
@@ -273,7 +273,9 @@ func (a *Application) Run(
 			)
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 			// We don't need a correlation ID since we are not waiting for a response here
-			registrationBus.Publish(ctx, "request", regReq)
+			if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
+				log.Error("Failed to publish registration request", "error", err)
+			}
 		}
 	} else {
 		log.Info("No services found in config, skipping service registration.")
@@ -647,6 +649,7 @@ func startHTTPServer(
 					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
 				}
 			},
+			ReadHeaderTimeout: 10 * time.Second,
 		}
 
 		// localCtx is used to signal the shutdown goroutine to exit.

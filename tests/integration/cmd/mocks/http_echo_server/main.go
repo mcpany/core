@@ -80,8 +80,9 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    addr, // This will be overridden by the listener below for port 0 case
-		Handler: mux,
+		Addr:              addr, // This will be overridden by the listener below for port 0 case
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	// Channel to listen for OS signals

@@ -14,7 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-
 package util
 
 import (
@@ -27,7 +26,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// NewHttpClientWithTLS creates a new *http.Client configured with the specified
+// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
 // TLS settings. It supports setting a custom CA certificate, a client
 // certificate and key, the server name for SNI, and skipping verification. If
 // the provided tlsConfig is nil, it returns http.DefaultClient.
@@ -35,14 +34,14 @@ import (
 // tlsConfig contains the TLS settings to apply to the HTTP client's transport.
 // It returns a configured *http.Client or an error if the TLS configuration
 // is invalid or files cannot be read.
-func NewHttpClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
+func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	if tlsConfig == nil {
 		return http.DefaultClient, nil
 	}
 
 	config := &tls.Config{
 		ServerName:         tlsConfig.GetServerName(),
-		InsecureSkipVerify: tlsConfig.GetInsecureSkipVerify(),
+		InsecureSkipVerify: tlsConfig.GetInsecureSkipVerify(), //nolint:gosec
 	}
 
 	if tlsConfig.GetCaCertPath() != "" {

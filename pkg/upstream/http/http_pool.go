@@ -43,11 +43,11 @@ import (
 var NewHttpPool = func(
 	minSize, maxSize, idleTimeout int,
 	config *configv1.UpstreamServiceConfig,
-) (pool.Pool[*client.HttpClientWrapper], error) {
-	factory := func(ctx context.Context) (*client.HttpClientWrapper, error) {
+) (pool.Pool[*client.HTTPClientWrapper], error) {
+	factory := func(ctx context.Context) (*client.HTTPClientWrapper, error) {
 		tlsConfig := &tls.Config{
 			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(),
+			InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
 		}
 
 		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
@@ -66,7 +66,7 @@ var NewHttpPool = func(
 			tlsConfig.RootCAs = caCertPool
 		}
 
-		return client.NewHttpClientWrapper(
+		return client.NewHTTPClientWrapper(
 			&http.Client{
 				Transport: &http.Transport{
 					TLSClientConfig: tlsConfig,

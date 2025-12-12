@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"sync"
 	"time"
 
 	"github.com/mcpany/core/proto/bus"
@@ -28,16 +27,15 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-// NatsBus is a message bus implementation using NATS.
-type NatsBus[T any] struct {
+// Bus is a message bus implementation using NATS.
+type Bus[T any] struct {
 	nc     *nats.Conn
 	config *bus.NatsBus
 	s      *server.Server
-	mu     sync.Mutex
 }
 
 // New creates a new NATS bus.
-func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
+func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
 		var err error
@@ -56,7 +54,7 @@ func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
 	if err != nil {
 		return nil, err
 	}
-	return &NatsBus[T]{
+	return &Bus[T]{
 		nc:     nc,
 		config: config,
 		s:      s,
@@ -64,14 +62,14 @@ func New[T any](config *bus.NatsBus) (*NatsBus[T], error) {
 }
 
 // Close closes the NATS bus.
-func (b *NatsBus[T]) Close() {
+func (b *Bus[T]) Close() {
 	if b.s != nil {
 		b.s.Shutdown()
 	}
 }
 
 // Publish sends a message to a NATS topic.
-func (b *NatsBus[T]) Publish(ctx context.Context, topic string, msg T) error {
+func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -80,7 +78,7 @@ func (b *NatsBus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler for a NATS topic.
-func (b *NatsBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *nats.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {
@@ -88,12 +86,12 @@ func (b *NatsBus[T]) Subscribe(ctx context.Context, topic string, handler func(T
 		}
 	})
 	return func() {
-		sub.Unsubscribe()
+		_ = sub.Unsubscribe()
 	}
 }
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
-func (b *NatsBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *nats.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {
@@ -103,8 +101,8 @@ func (b *NatsBus[T]) SubscribeOnce(ctx context.Context, topic string, handler fu
 	if err != nil {
 		return func() {}
 	}
-	sub.AutoUnsubscribe(1)
+	_ = sub.AutoUnsubscribe(1)
 	return func() {
-		sub.Unsubscribe()
+		_ = sub.Unsubscribe()
 	}
 }

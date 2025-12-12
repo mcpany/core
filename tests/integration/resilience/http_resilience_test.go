@@ -21,6 +21,7 @@ import (
 )
 
 func TestHTTPResilience(t *testing.T) {
+	t.Parallel()
 	t.Run("retry", func(t *testing.T) {
 		t.Parallel()
 		var requestCount int32
