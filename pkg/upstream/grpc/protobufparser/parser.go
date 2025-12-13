@@ -102,7 +102,7 @@ func ParseProtoFromDefs(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temporary directory: %w", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	var protoFiles []string
 

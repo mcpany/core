@@ -145,7 +145,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		select {
 		case result := <-resultChan:
@@ -182,7 +183,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 
 		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
 		req.SetCorrelationID("test-fail")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		select {
 		case result := <-resultChan:
@@ -233,7 +235,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			Config:  &configv1.UpstreamServiceConfig{},
 		}
 		req.SetCorrelationID("test-req-ctx")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		select {
 		case result := <-resultChan:
@@ -277,7 +280,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-test")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		wg.Wait()
 		select {
@@ -318,7 +322,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-fail")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		wg.Wait()
 		select {
@@ -359,7 +364,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("marshal-fail-test")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		wg.Wait()
 		select {
@@ -401,7 +407,8 @@ func TestUpstreamWorker(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID("exec-partial-fail")
-		requestBus.Publish(ctx, "request", req)
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
 
 		wg.Wait()
 		select {
@@ -447,7 +454,8 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 			})
 			defer unsubscribe()
 
-			requestBus.Publish(ctx, "request", req)
+			err := requestBus.Publish(ctx, "request", req)
+			require.NoError(t, err)
 
 			select {
 			case result := <-resultChan:
@@ -560,7 +568,8 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 			})
 			defer unsubscribe()
 
-			requestBus.Publish(ctx, "request", req)
+			err := requestBus.Publish(ctx, "request", req)
+			require.NoError(t, err)
 
 			select {
 			case result := <-resultChan:

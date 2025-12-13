@@ -114,7 +114,7 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 				},
 			},
 		}
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}))
 	defer server.Close()
 
@@ -195,7 +195,7 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 				},
 			},
 		}
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}))
 	defer server.Close()
 
@@ -270,7 +270,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 				},
 			}
 		}
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}))
 	defer server.Close()
 
@@ -372,7 +372,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 					},
 				},
 			}
-			json.NewEncoder(w).Encode(response)
+			_ = json.NewEncoder(w).Encode(response)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
 		}
@@ -421,7 +421,7 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 				},
 			},
 		}
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}))
 	defer server.Close()
 
@@ -468,7 +468,7 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 				},
 			},
 		}
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}))
 	defer server.Close()
 
