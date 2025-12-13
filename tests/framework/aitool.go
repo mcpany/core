@@ -32,6 +32,7 @@ var (
 	ServiceStartupTimeout = 15 * time.Second
 )
 
+// AITool represents an AI tool.
 type AITool interface {
 	Install()
 	AddMCP(name, endpoint string)

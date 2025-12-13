@@ -69,7 +69,7 @@ func newRootCmd() *cobra.Command {
 	runCmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run the MCP Any server",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {
@@ -83,7 +83,7 @@ func newRootCmd() *cobra.Command {
 
 			var logOutput io.Writer = os.Stdout
 			if logfile := cfg.LogFile(); logfile != "" {
-				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) //nolint:gosec // file path is controlled by config
 				if err != nil {
 					return fmt.Errorf("failed to open logfile: %w", err)
 				}
@@ -162,7 +162,7 @@ func newRootCmd() *cobra.Command {
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of mcpany",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", appconsts.Name, Version)
 			if err != nil {
 				return fmt.Errorf("failed to print version: %w", err)
@@ -175,7 +175,7 @@ func newRootCmd() *cobra.Command {
 	updateCmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update the application to the latest version",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			token := os.Getenv("GITHUB_TOKEN")
 			var tc *http.Client
 			if token != "" {
@@ -224,7 +224,7 @@ func newRootCmd() *cobra.Command {
 	healthCmd := &cobra.Command{
 		Use:   "health",
 		Short: "Run a health check against a running server",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			fs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, fs); err != nil {
@@ -250,7 +250,7 @@ func newRootCmd() *cobra.Command {
 	generateCmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Generate configuration",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println("MCP Any CLI: Configuration Generator")
 
 			generator := config.NewGenerator()
@@ -270,7 +270,7 @@ func newRootCmd() *cobra.Command {
 	validateCmd := &cobra.Command{
 		Use:   "validate",
 		Short: "Validate the configuration file",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {

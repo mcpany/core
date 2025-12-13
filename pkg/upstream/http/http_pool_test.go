@@ -44,7 +44,7 @@ func TestHTTPPool_New(t *testing.T) {
 		p, err := NewHTTPPool(1, 5, 100, config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
-		defer p.Close()
+		defer func() { _ = p.Close() }()
 
 		assert.Equal(t, 1, p.Len())
 
@@ -98,7 +98,7 @@ func TestHTTPPool_UniqueClients(t *testing.T) {
 	p, err := NewHTTPPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 
 	client1, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -116,7 +116,7 @@ func TestHTTPPool_Close(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
-	p.Close()
+	_ = p.Close()
 
 	// After closing, get should fail
 	_, err = p.Get(context.Background())
@@ -143,7 +143,7 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 
 	client, err := p.Get(context.Background())
 	require.NoError(t, err)

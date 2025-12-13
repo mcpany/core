@@ -121,7 +121,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	stdoutReader, stdoutWriter := io.Pipe()
 
 	go func() {
-		defer stdoutWriter.Close()
+		defer func() { _ = stdoutWriter.Close() }()
 		logWriter := &slogWriter{log: log, level: slog.LevelError}
 		_, err := stdcopy.StdCopy(stdoutWriter, logWriter, hijackedResp.Reader)
 		if err != nil && err != io.EOF {
@@ -219,7 +219,7 @@ func (c *dockerReadWriteCloser) Close() error {
 		logging.GetLogger().Error("Failed to remove container", "containerID", c.containerID, "error", rmErr)
 	}
 
-	c.cli.Close()
+	_ = c.cli.Close()
 	return err
 }
 

@@ -478,7 +478,7 @@ func HealthCheckWithContext(
 		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
 	}
 
-	fmt.Fprintln(out, "Health check successful: server is running and healthy.")
+	_, _ = fmt.Fprintln(out, "Health check successful: server is running and healthy.")
 	return nil
 }
 
@@ -529,7 +529,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/", authMiddleware(httpHandler))
 	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "OK")
+		_, _ = fmt.Fprintln(w, "OK")
 	})))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))

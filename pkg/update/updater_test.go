@@ -41,12 +41,12 @@ func TestUpdater(t *testing.T) {
 	assetHash := sha256.Sum256([]byte(assetContent))
 	checksumsContent := fmt.Sprintf("%s  %s\n", hex.EncodeToString(assetHash[:]), assetName)
 
-	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 	_, _ = w.Write([]byte(assetContent))
 	}))
 	defer assetServer.Close()
 
-	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte(checksumsContent))
 	}))
 	defer checksumsServer.Close()
@@ -141,7 +141,7 @@ func TestUpdater(t *testing.T) {
 			updater := NewUpdater(nil)
 			// create a new checksums server with a bad checksum
 			badChecksumsContent := "badchecksum  " + assetName + "\n"
-			badChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			badChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = w.Write([]byte(badChecksumsContent))
 			}))
 			defer badChecksumsServer.Close()
@@ -203,7 +203,7 @@ func TestUpdater(t *testing.T) {
 		})
 
 		t.Run("malformed checksums file", func(t *testing.T) {
-			malformedChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			malformedChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				_, _ = w.Write([]byte(`{"latest_version": "v1.2.3"}`))
 			}))
 			defer malformedChecksumsServer.Close()
@@ -233,7 +233,7 @@ func TestUpdater(t *testing.T) {
 	})
 	t.Run("CheckForUpdate", func(t *testing.T) {
 		t.Run("new version available", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				release := &github.RepositoryRelease{
 					TagName: github.String("v1.0.1"),
 				}
@@ -253,7 +253,7 @@ func TestUpdater(t *testing.T) {
 			assert.Equal(t, "v1.0.1", release.GetTagName())
 		})
 		t.Run("no new version", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				release := &github.RepositoryRelease{
 					TagName: github.String("v1.0.0"),
 				}
@@ -273,7 +273,7 @@ func TestUpdater(t *testing.T) {
 		})
 
 		t.Run("api error", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 			}))
 			defer server.Close()

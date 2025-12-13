@@ -58,7 +58,7 @@ func TestRegister_DynamicResource(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -134,7 +134,7 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -213,7 +213,7 @@ func TestRegister_DisabledItems(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -308,7 +308,7 @@ func TestPrompt_Get_ComplexArgs(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -363,7 +363,7 @@ func TestRegister_CallDefinitionMatching(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}

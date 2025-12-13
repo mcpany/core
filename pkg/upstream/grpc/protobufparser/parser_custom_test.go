@@ -33,7 +33,7 @@ func TestParseProtoFromDefs(t *testing.T) {
 		// Create a temporary directory and a sample proto file
 		tempDir, err := os.MkdirTemp("", "test-proto-collection")
 		require.NoError(t, err)
-		defer os.RemoveAll(tempDir)
+		defer func() { _ = os.RemoveAll(tempDir) }()
 
 		protoContent := `
 syntax = "proto3";
@@ -121,7 +121,7 @@ message TestResponse2 {
 func TestProcessProtoCollection(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "proto-collection-*")
 	require.NoError(t, err)
-	defer os.RemoveAll(tempDir)
+	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	protoContent := `syntax = "proto3"; package test; message Test {}`
 	protoFilePath := filepath.Join(tempDir, "test.proto")
@@ -143,7 +143,7 @@ func TestProcessProtoCollection(t *testing.T) {
 func TestWriteProtoFile(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "proto-file-*")
 	require.NoError(t, err)
-	defer os.RemoveAll(tempDir)
+	defer func() { _ = os.RemoveAll(tempDir) }()
 
 	t.Run("from_content", func(t *testing.T) {
 		protoFile := configv1.ProtoFile_builder{
@@ -154,7 +154,7 @@ func TestWriteProtoFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
 
-		content, err := os.ReadFile(filePath)
+		content, err := os.ReadFile(filePath) //nolint:gosec // test
 		require.NoError(t, err)
 		assert.Equal(t, protoFile.GetFileContent(), string(content))
 	})
@@ -173,7 +173,7 @@ func TestWriteProtoFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
 
-		content, err := os.ReadFile(filePath)
+		content, err := os.ReadFile(filePath) //nolint:gosec // test
 		require.NoError(t, err)
 		assert.Equal(t, protoContent, string(content))
 	})

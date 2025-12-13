@@ -296,7 +296,7 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 		_, _ = w.Write(response)
 		go func() {
 			wg.Wait()
-			pc.Close()
+			_ = pc.Close()
 		}()
 	}))
 	defer signalingServer.Close()
@@ -339,7 +339,7 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
 		require.NoError(t, err)
-		pc.OnDataChannel(func(d *webrtc.DataChannel) {
+		pc.OnDataChannel(func(_ *webrtc.DataChannel) {
 			// No OnMessage handler, so it will never send a response
 		})
 		var offer webrtc.SessionDescription

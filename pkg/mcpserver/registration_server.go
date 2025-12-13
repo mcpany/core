@@ -175,6 +175,10 @@ func (s *RegistrationServer) GetServiceStatus(ctx context.Context, req *v1.GetSe
 
 func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 
+// PingResponse is a placeholder for a ping method.
+
+
+// ListServices lists all registered services.
 func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)

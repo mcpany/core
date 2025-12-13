@@ -35,14 +35,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// RegistrationMethod defines the method used to register an upstream service.
 type RegistrationMethod string
 
 const (
+	// FileRegistration uses a configuration file for registration.
 	FileRegistration    RegistrationMethod = "file"
+	// GRPCRegistration uses the RegistrationService via gRPC.
 	GRPCRegistration    RegistrationMethod = "grpc"
+	// JSONRPCRegistration uses the RegistrationService via JSON-RPC.
 	JSONRPCRegistration RegistrationMethod = "jsonrpc"
 )
 
+// E2ETestCase defines the structure for an end-to-end test case.
 type E2ETestCase struct {
 	Name                        string
 	UpstreamServiceType         string
@@ -52,11 +57,12 @@ type E2ETestCase struct {
 	ValidateMiddlewares         func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
 	InvokeAIClient              func(t *testing.T, mcpanyEndpoint string)
 	RegistrationMethods         []RegistrationMethod
-	GenerateUpstreamConfig      func(upstreamEndpoint string) string
+	GenerateUpstreamConfig      func(_ string) string
 	StartMCPANYServer           func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
 	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
+// ValidateRegisteredTool validates that the expected tool is registered.
 func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
@@ -69,7 +75,7 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
-	defer session.Close()
+	defer func() { _ = session.Close() }()
 
 	tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)
@@ -87,6 +93,7 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 	require.Equal(t, expectedTool.InputSchema, foundTool.InputSchema)
 }
 
+// RunE2ETest runs an end-to-end test case.
 func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 	for _, method := range testCase.RegistrationMethods {
 		method := method
@@ -285,12 +292,12 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 	openapiSpecEndpoint := fmt.Sprintf("%s/openapi.json", upstreamEndpoint)
 	resp, err := http.Get(openapiSpecEndpoint) //nolint:gosec
 	require.NoError(t, err, "Failed to fetch OpenAPI spec from server")
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	specContent, err := io.ReadAll(resp.Body)
 	require.NoError(t, err, "Failed to read OpenAPI spec content")
 	tmpfile, err := os.CreateTemp("", "openapi-*.json")
 	require.NoError(t, err, "Failed to create temp file for OpenAPI spec")
-	defer os.Remove(tmpfile.Name())
+	defer func() { _ = os.Remove(tmpfile.Name()) }()
 	_, err = tmpfile.Write(specContent)
 	require.NoError(t, err, "Failed to write spec to temp file")
 	err = tmpfile.Close()
@@ -334,7 +341,7 @@ paths:
 `, upstreamEndpoint)
 	tmpfile, err := os.CreateTemp("", "openapi-auth-*.json")
 	require.NoError(t, err)
-	defer os.Remove(tmpfile.Name())
+	defer func() { _ = os.Remove(tmpfile.Name()) }()
 	_, err = tmpfile.WriteString(openapiSpec)
 	require.NoError(t, err)
 	err = tmpfile.Close()
@@ -373,7 +380,7 @@ func VerifyMCPClient(t *testing.T, mcpanyEndpoint string) {
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 	require.NoError(t, err)
-	defer cs.Close()
+	defer func() { _ = cs.Close() }()
 
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	require.NoError(t, err)

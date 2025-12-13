@@ -33,6 +33,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -152,10 +153,12 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const serviceID = "e2e_http_oauth2_echo"
 			tokenURL := oauth2Server.URL + oauth2TestTokenPath
-			clientID := &configv1.SecretValue{}
-			clientID.SetPlainText(oauth2TestClientID)
-			clientSecret := &configv1.SecretValue{}
-			clientSecret.SetPlainText(oauth2TestClientSecret)
+			clientID := configv1.SecretValue_builder{
+				PlainText: proto.String(oauth2TestClientID),
+			}.Build()
+			clientSecret := configv1.SecretValue_builder{
+				PlainText: proto.String(oauth2TestClientSecret),
+			}.Build()
 			oauth2AuthConfig := configv1.UpstreamOAuth2Auth_builder{
 				TokenUrl:     &tokenURL,
 				ClientId:     clientID,
@@ -206,10 +209,12 @@ func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const serviceID = "e2e_http_oauth2_echo_invalid"
 			tokenURL := oauth2Server.URL + oauth2TestTokenPath
-			clientID := &configv1.SecretValue{}
-			clientID.SetPlainText(oauth2TestClientID)
-			clientSecret := &configv1.SecretValue{}
-			clientSecret.SetPlainText("invalid-secret")
+			clientID := configv1.SecretValue_builder{
+				PlainText: proto.String(oauth2TestClientID),
+			}.Build()
+			clientSecret := configv1.SecretValue_builder{
+				PlainText: proto.String("test-client-secret"),
+			}.Build()
 			oauth2AuthConfig := configv1.UpstreamOAuth2Auth_builder{
 				TokenUrl:     &tokenURL,
 				ClientId:     clientID,

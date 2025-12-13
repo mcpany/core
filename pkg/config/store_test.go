@@ -242,7 +242,7 @@ func (m *marshalError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("marshal error")
 }
 
-func (e *yamlEngine) UnmarshalWithFailingJSON(b []byte, v proto.Message) error {
+func (e *yamlEngine) UnmarshalWithFailingJSON(b []byte, _ proto.Message) error {
 	var yamlMap map[string]interface{}
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)

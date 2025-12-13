@@ -29,6 +29,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -38,6 +39,7 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
+// RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
@@ -54,8 +56,9 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 
 func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_authed_echo"
-	secret := &configv1.SecretValue{}
-	secret.SetPlainText("test-api-key")
+	secret := configv1.SecretValue_builder{
+		PlainText: proto.String("test-api-key"),
+	}.Build()
 	authConfig := configv1.UpstreamAuthentication_builder{
 		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 			HeaderName: proto.String("X-Api-Key"),

@@ -33,7 +33,7 @@ type mockWeatherServer struct {
 	v1.UnimplementedWeatherServiceServer
 }
 
-func (s *mockWeatherServer) GetWeather(ctx context.Context, req *v1.GetWeatherRequest) (*v1.GetWeatherResponse, error) {
+func (s *mockWeatherServer) GetWeather(_ context.Context, req *v1.GetWeatherRequest) (*v1.GetWeatherResponse, error) {
 	return v1.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 

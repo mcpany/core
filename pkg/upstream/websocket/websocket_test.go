@@ -93,9 +93,9 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 
 func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 
@@ -396,7 +396,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 		if err != nil {
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 	}))
 	defer server.Close()
 

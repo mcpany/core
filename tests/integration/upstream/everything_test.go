@@ -56,7 +56,7 @@ func TestUpstreamService_HTTP_Everything(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			serviceID, _ := util.SanitizeServiceName("e2e_everything_server_streamable")
 			sanitizedToolName, _ := util.SanitizeToolName("add")
