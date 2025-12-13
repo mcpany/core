@@ -86,7 +86,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
 			// 1. Generate Protobuf Files
 			if os.Getenv("SKIP_PROTO_GENERATION") != "true" {
-				generateCmd := exec.Command("./generate.sh") //nolint:gosec // test
+				generateCmd := exec.Command("./generate.sh")
 				generateCmd.Dir = root + "/examples/upstream_service_demo/grpc/greeter_server"
 				if err := generateCmd.Run(); err != nil {
 					require.NoError(t, err, "Failed to generate protobuf files")
@@ -102,7 +102,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 				"greeter_server",
 				"server",
 			)
-			tidyCmd := exec.Command("go", "mod", "tidy") //nolint:gosec // test
+			tidyCmd := exec.Command("go", "mod", "tidy")
 			tidyCmd.Dir = serverDir
 			if err := tidyCmd.Run(); err != nil {
 				require.NoError(t, err, "Failed to tidy go module for gRPC server")
