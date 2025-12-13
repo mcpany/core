@@ -578,10 +578,10 @@ func TestRun_BusProviderError(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	bus.NewBusProviderHook = func(messageBus *bus_pb.MessageBus) (*bus.BusProvider, error) {
+	bus.NewProviderHook = func(messageBus *bus_pb.MessageBus) (*bus.Provider, error) {
 		return nil, fmt.Errorf("injected bus provider error")
 	}
-	defer func() { bus.NewBusProviderHook = nil }()
+	defer func() { bus.NewProviderHook = nil }()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
@@ -816,15 +816,15 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	// Create dependencies
-	busProvider, err := bus.NewBusProvider(nil) // in-memory bus
+	busProvider, err := bus.NewProvider(nil) // in-memory bus
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
 		toolManager,
@@ -1308,12 +1308,12 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 
-	busProvider, err := bus.NewBusProvider(nil)
+	busProvider, err := bus.NewProvider(nil)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
@@ -1385,12 +1385,12 @@ func Test_runStdioMode_real(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	busProvider, err := bus.NewBusProvider(nil)
+	busProvider, err := bus.NewProvider(nil)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
 	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
@@ -1653,7 +1653,7 @@ upstream_services:
 
 	// Create a mock bus and set the hook.
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+	bus.GetBusHook = func(p *bus.Provider, topic string) any {
 		if topic == "service_registration_requests" {
 			return mockRegBus
 		}
@@ -1710,7 +1710,7 @@ upstream_services:
 	require.NoError(t, err)
 
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+	bus.GetBusHook = func(p *bus.Provider, topic string) any {
 		if topic == "service_registration_requests" {
 			return mockRegBus
 		}

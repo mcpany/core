@@ -37,7 +37,7 @@ import (
 // registration logic, allowing for a more modular and scalable architecture.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
-	bus *bus.BusProvider
+	bus *bus.Provider
 }
 
 // NewRegistrationServerHook is a test hook for overriding the creation of a
@@ -55,7 +55,7 @@ var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
 //
 // Returns a new instance of the RegistrationServer or an error if the bus is
 // nil.
-func NewRegistrationServer(bus *bus.BusProvider) (*RegistrationServer, error) {
+func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
 		return NewRegistrationServerHook(bus)

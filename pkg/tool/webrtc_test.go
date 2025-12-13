@@ -97,7 +97,7 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 
 		go func() {
 			wg.Wait()
-			pc.Close()
+			_ = pc.Close()
 		}()
 	}))
 	defer signalingServer.Close()
@@ -167,7 +167,7 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 		// Close connection after test is done
 		go func() {
 			wg.Wait()
-			peerConnection.Close()
+			_ = peerConnection.Close()
 		}()
 	}))
 	defer signalingServer.Close()
@@ -229,7 +229,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 		_, _ = w.Write(response)
 		go func() {
 			wg.Wait()
-			pc.Close()
+			_ = pc.Close()
 		}()
 	}))
 	defer signalingServer.Close()

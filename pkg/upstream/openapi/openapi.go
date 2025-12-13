@@ -84,9 +84,9 @@ func NewOpenAPIUpstream() upstream.Upstream {
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
@@ -228,7 +228,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -394,7 +394,7 @@ func (u *OpenAPIUpstream) createAndRegisterPrompts(
 	ctx context.Context,
 	serviceID string,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	promptManager prompt.PromptManagerInterface,
+	promptManager prompt.ManagerInterface,
 	isReload bool,
 ) {
 	log := logging.GetLogger()

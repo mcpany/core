@@ -83,11 +83,11 @@ func newRootCmd() *cobra.Command {
 
 			var logOutput io.Writer = os.Stdout
 			if logfile := cfg.LogFile(); logfile != "" {
-				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
 				if err != nil {
 					return fmt.Errorf("failed to open logfile: %w", err)
 				}
-				defer f.Close()
+				defer func() { _ = f.Close() }()
 				logOutput = f
 			} else if cfg.Stdio() {
 				logOutput = io.Discard // Disable logging in stdio mode to keep the channel clean for JSON-RPC

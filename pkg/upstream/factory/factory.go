@@ -77,11 +77,11 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 	case configv1.UpstreamServiceConfig_McpService_case:
 		return mcp.NewMCPUpstream(), nil
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
-		return command.NewCommandUpstream(), nil
+		return command.NewUpstream(), nil
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		return websocket.NewWebsocketUpstream(f.poolManager), nil
+		return websocket.NewUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		return webrtc.NewWebrtcUpstream(f.poolManager), nil
+		return webrtc.NewUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_GraphqlService_case:
 		return graphql.NewGraphQLUpstream(), nil
 	default:

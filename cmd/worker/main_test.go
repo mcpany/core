@@ -33,7 +33,7 @@ type MainTestSuite struct {
 
 func (s *MainTestSuite) TestSetup_InMemoryBus() {
 	// Ensure REDIS_ADDR is not set
-	os.Unsetenv("REDIS_ADDR")
+	_ = os.Unsetenv("REDIS_ADDR")
 
 	_, err := setup()
 	s.NoError(err, "setup() should not return an error when using in-memory bus")
@@ -55,7 +55,7 @@ func (s *MainTestSuite) TestSetup_InvalidRedisAddress() {
 
 func (s *MainTestSuite) TestMainLifecycle() {
 	// Ensure REDIS_ADDR is not set, so we use the in-memory bus
-	os.Unsetenv("REDIS_ADDR")
+	_ = os.Unsetenv("REDIS_ADDR")
 
 	mainDone := make(chan struct{})
 	go func() {
@@ -84,7 +84,7 @@ func TestMainTestSuite(t *testing.T) {
 
 func TestSetup_InMemoryBus(t *testing.T) {
 	// Unset REDIS_ADDR to fall back to in-memory bus
-	os.Unsetenv("REDIS_ADDR")
+	_ = os.Unsetenv("REDIS_ADDR")
 
 	_, err := setup()
 	assert.NoError(t, err, "setup() should not return an error when using in-memory bus")

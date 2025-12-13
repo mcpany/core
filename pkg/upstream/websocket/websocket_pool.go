@@ -26,11 +26,11 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 )
 
-// WebsocketPool is a type alias for a pool of WebSocket client connections.
+// Pool is a type alias for a pool of WebSocket client connections.
 // It simplifies the type signature for WebSocket connection pools.
-type WebsocketPool = pool.Pool[*client.WebsocketClientWrapper]
+type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
-// NewWebsocketPool creates a new connection pool for WebSocket clients. It
+// NewPool creates a new connection pool for WebSocket clients. It
 // configures the pool with a factory function that establishes new WebSocket
 // connections to the specified address.
 //
@@ -39,7 +39,7 @@ type WebsocketPool = pool.Pool[*client.WebsocketClientWrapper]
 // address is the target URL of the WebSocket server.
 // It returns a new WebSocket client pool or an error if the pool cannot be
 // created.
-func NewWebsocketPool(maxSize int, idleTimeout time.Duration, address string) (WebsocketPool, error) {
+func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)
 		if err != nil {

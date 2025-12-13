@@ -33,11 +33,11 @@ import (
 // functionality.
 type CachingMiddleware struct {
 	cache       *cache.Cache[any]
-	toolManager tool.ToolManagerInterface
+	toolManager tool.ManagerInterface
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddleware {
+func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
 	return &CachingMiddleware{

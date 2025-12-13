@@ -72,12 +72,12 @@ func TestToolListFiltering(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -88,7 +88,7 @@ func TestToolListFiltering(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
-	tm := server.ToolManager().(*tool.ToolManager)
+	tm := server.ToolManager().(*tool.Manager)
 
 	// Add a test tool
 	serviceID := "test-service"
@@ -143,19 +143,19 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
-	tm := server.ToolManager().(*tool.ToolManager)
+	tm := server.ToolManager().(*tool.Manager)
 
 	// Add a test tool
 	serviceID := "test-service"
@@ -225,12 +225,12 @@ func TestServer_CallTool(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -242,7 +242,7 @@ func TestServer_CallTool(t *testing.T) {
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
-	tm := server.ToolManager().(*tool.ToolManager)
+	tm := server.ToolManager().(*tool.Manager)
 
 	// Add test tools
 	successTool := &mockTool{
@@ -351,12 +351,12 @@ func TestServer_Prompts(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -429,12 +429,12 @@ func TestServer_Resources(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -486,12 +486,12 @@ func TestServer_Getters(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -506,7 +506,7 @@ func TestServer_Getters(t *testing.T) {
 }
 
 type mockToolManager struct {
-	tool.ToolManager
+	tool.Manager
 	addServiceInfoCalled       bool
 	getToolCalled              bool
 	listToolsCalled            bool
@@ -562,12 +562,12 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 	mockToolManager := &mockToolManager{}
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -604,12 +604,12 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -667,12 +667,12 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
@@ -719,19 +719,19 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	factory := factory.NewUpstreamServiceFactory(poolManager)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
-	tm := server.ToolManager().(*tool.ToolManager)
+	tm := server.ToolManager().(*tool.Manager)
 
 	// Add a tool that is initially valid but becomes invalid after being added.
 	chameleon := &chameleonTool{

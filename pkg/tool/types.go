@@ -1039,10 +1039,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer stdin.Close()
+		defer func() { _ = stdin.Close() }()
 
 		go func() {
-			defer stderr.Close()
+			defer func() { _ = stderr.Close() }()
 			_, _ = io.Copy(io.Discard, stderr)
 		}()
 
@@ -1069,12 +1069,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	go func() {
 		defer wg.Done()
-		defer stdout.Close()
+		defer func() { _ = stdout.Close() }()
 		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
-		defer stderr.Close()
+		defer func() { _ = stderr.Close() }()
 		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 

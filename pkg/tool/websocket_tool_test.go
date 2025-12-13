@@ -112,7 +112,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				return wrapper, nil
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) {
-				c.Close()
+				_ = c.Close()
 			},
 		}
 		serviceID := "ws-test-success"
@@ -163,7 +163,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 				return wrapper, nil
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) {
-				c.Close()
+				_ = c.Close()
 			},
 		}
 		serviceID := "ws-transform-test"
@@ -334,7 +334,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			// Read the incoming message and then immediately close with an error.
 			_, _, err = conn.ReadMessage()
 			require.NoError(t, err)
-			conn.WriteMessage(
+			_ = conn.WriteMessage(
 				websocket.CloseMessage,
 				websocket.FormatCloseMessage(websocket.CloseAbnormalClosure, "read error"),
 			)
@@ -354,7 +354,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
-			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
+			putFunc: func(c *client.WebsocketClientWrapper) { _ = c.Close() },
 		}
 		serviceID := "ws-read-error"
 		pm.Register(serviceID, mockPool)
@@ -379,8 +379,8 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			require.NoError(t, err)
 			defer conn.Close()
-			conn.ReadMessage()
-			conn.WriteMessage(websocket.TextMessage, []byte("this is not json"))
+			_, _, _ = conn.ReadMessage()
+			_ = conn.WriteMessage(websocket.TextMessage, []byte("this is not json"))
 		})
 		defer server.Close()
 

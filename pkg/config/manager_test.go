@@ -46,14 +46,14 @@ func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 		case "/collection1":
 			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "2.0"}]}`))
 		case "/collection2":
-			w.Write([]byte(`{"services": [{"name": "service3", "version": "1.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service3", "version": "1.0"}]}`))
 		case "/collection3":
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "3.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "3.0"}]}`))
 		case "/collection-invalid-semver":
-			w.Write([]byte(`{"version": "invalid", "services": [{"name": "service1", "version": "1.0"}]}`))
+			_, _ = w.Write([]byte(`{"version": "invalid", "services": [{"name": "service1", "version": "1.0"}]}`))
 		case "/collection-yaml":
 			w.Header().Set("Content-Type", "application/x-yaml")
-			w.Write([]byte(`
+			_, _ = w.Write([]byte(`
 services:
 - name: service1
   version: "2.0"
@@ -63,23 +63,23 @@ services:
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "4.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "4.0"}]}`))
 		case "/collection-apikey":
 			if r.Header.Get("X-API-Key") != "my-api-key" {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "5.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "5.0"}]}`))
 		case "/collection-basicauth":
 			user, pass, ok := r.BasicAuth()
 			if !ok || user != "testuser" || pass != "testpass" {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			w.Write([]byte(`{"services": [{"name": "service1", "version": "6.0"}]}`))
+			_, _ = w.Write([]byte(`{"services": [{"name": "service1", "version": "6.0"}]}`))
 		case "/collection-no-content-type":
 			w.Header().Del("Content-Type")
-			w.Write([]byte(`
+			_, _ = w.Write([]byte(`
 services:
 - name: service1
   version: "7.0"

@@ -40,7 +40,7 @@ func (p *TestMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{
@@ -61,7 +61,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 }
 
 func TestToolManager_ListTools(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{
@@ -87,7 +87,7 @@ func TestToolManager_ListTools(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{
@@ -126,7 +126,7 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
 	expectedResult := "success"
@@ -153,7 +153,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
 	_, err := tm.ExecuteTool(context.Background(), execReq)
 	assert.Error(t, err, "Should return an error for a non-existent tool")
@@ -161,7 +161,7 @@ func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 }
 
 func TestToolManager_ConcurrentAccess(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	var wg sync.WaitGroup
 	numRoutines := 50
 
@@ -198,7 +198,7 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 }
 
 func TestToolManager_AddTool_NoServiceID(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{
@@ -214,7 +214,7 @@ func TestToolManager_AddTool_NoServiceID(t *testing.T) {
 }
 
 func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{
@@ -230,7 +230,7 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
@@ -288,7 +288,7 @@ func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *Executio
 }
 
 func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
@@ -337,7 +337,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return &v1.Tool{ServiceId: proto.String("service-a"), Name: proto.String("tool-1")}
@@ -350,7 +350,7 @@ func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
 }
 
 func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	// Mock the mcp.Server's AddTool method to return an error.
 	// We can't directly do this, so we'll rely on the fact that a tool
 	// with an empty name will cause an error.
@@ -360,7 +360,7 @@ func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
 
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
-			// This tool is valid for the ToolManager, but will fail in the MCP server
+			// This tool is valid for the Manager, but will fail in the MCP server
 			// because the sanitized name is different from the original name, and we
 			// are passing a tool with an empty name to the MCP server.
 			inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
@@ -380,8 +380,8 @@ func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
-	busProvider, _ := bus.NewBusProvider(nil)
-	tm := NewToolManager(busProvider)
+	busProvider, _ := bus.NewProvider(nil)
+	tm := NewManager(busProvider)
 
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
@@ -418,7 +418,7 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
@@ -451,7 +451,7 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 }
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	serviceID := "test-service" //nolint:goconst
 	serviceInfo := &ServiceInfo{
 		Name: "Test Service",
@@ -468,14 +468,14 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 }
 
 func TestToolManager_SetMCPServer(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	provider := &TestMCPServerProvider{server: nil}
 	tm.SetMCPServer(provider)
 	assert.Equal(t, provider, tm.mcpServer, "MCPServerProvider should be set")
 }
 
 func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
 	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
@@ -501,7 +501,7 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 }
 
 func TestToolManager_ListTools_Caching(t *testing.T) {
-	tm := NewToolManager(nil)
+	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t1")} },
 	}

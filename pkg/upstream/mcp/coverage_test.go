@@ -36,9 +36,9 @@ import (
 )
 
 func TestRegister_DynamicResource(t *testing.T) {
-	toolManager := tool.NewToolManager(nil)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	toolManager := tool.NewManager(nil)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 	upstream := NewMCPUpstream()
 	ctx := context.Background()
 
@@ -112,9 +112,9 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	}))
 	defer server.Close()
 
-	toolManager := tool.NewToolManager(nil)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	toolManager := tool.NewManager(nil)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 	upstream := NewMCPUpstream()
 	ctx := context.Background()
 
@@ -182,9 +182,9 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 }
 
 func TestRegister_DisabledItems(t *testing.T) {
-	toolManager := tool.NewToolManager(nil)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	toolManager := tool.NewManager(nil)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 	upstream := NewMCPUpstream()
 	ctx := context.Background()
 
@@ -338,9 +338,9 @@ func TestResource_Subscribe(t *testing.T) {
 }
 
 func TestRegister_CallDefinitionMatching(t *testing.T) {
-	toolManager := tool.NewToolManager(nil)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	toolManager := tool.NewManager(nil)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 	upstream := NewMCPUpstream()
 	ctx := context.Background()
 

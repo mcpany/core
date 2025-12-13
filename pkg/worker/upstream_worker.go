@@ -32,15 +32,15 @@ import (
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
 type UpstreamWorker struct {
-	bus         *bus.BusProvider
-	toolManager tool.ToolManagerInterface
+	bus         *bus.Provider
+	toolManager tool.ManagerInterface
 }
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
 // bus is the event bus used for receiving requests and publishing results.
 // toolManager is the tool manager that will handle the actual tool execution.
-func NewUpstreamWorker(bus *bus.BusProvider, toolManager tool.ToolManagerInterface) *UpstreamWorker {
+func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
 		toolManager: toolManager,

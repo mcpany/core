@@ -46,7 +46,7 @@ type MockToolManager struct {
 	lastErr error
 }
 
-func NewMockToolManager(bus *bus.BusProvider) *MockToolManager {
+func NewMockToolManager(bus *bus.Provider) *MockToolManager {
 	return &MockToolManager{
 		tools: make(map[string]tool.Tool),
 	}
@@ -106,11 +106,11 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 }
 
-func TestWebsocketUpstream_Register_DisabledTool(t *testing.T) {
+func TestUpstream_Register_DisabledTool(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 	upstream := NewWebsocketUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -140,19 +140,19 @@ func TestWebsocketUpstream_Register_DisabledTool(t *testing.T) {
 	assert.Len(t, tools, 0)
 }
 
-func TestNewWebsocketUpstream(t *testing.T) {
+func TestNewUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 	require.NotNil(t, upstream)
-	assert.IsType(t, &WebsocketUpstream{}, upstream)
+	assert.IsType(t, &Upstream{}, upstream)
 }
 
-func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
+func TestUpstream_Register_Mocked(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 
 		upstream := NewWebsocketUpstream(poolManager)
 
@@ -190,8 +190,8 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	t.Run("nil service config", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
 		_, _, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
@@ -202,8 +202,8 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	t.Run("nil websocket service config", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -219,8 +219,8 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		toolManager.lastErr = errors.New("failed to add tool")
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
@@ -249,8 +249,8 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
@@ -284,8 +284,8 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 		upstream := NewWebsocketUpstream(poolManager)
 
 		// Fallback to description
@@ -388,7 +388,7 @@ func TestWebsocketUpstream_Register_Mocked(t *testing.T) {
 	})
 }
 
-func TestWebsocketUpstream_Register_Integration(t *testing.T) {
+func TestUpstream_Register_Integration(t *testing.T) {
 	upgrader := websocket.Upgrader{}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -403,7 +403,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 
 	t.Run("successful registration", func(t *testing.T) {
 		upstream := NewWebsocketUpstream(poolManager)
@@ -506,7 +506,7 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 	})
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewWebsocketUpstream(poolManager)
 
 		tool1 := configv1.ToolDefinition_builder{
@@ -543,14 +543,14 @@ func TestWebsocketUpstream_Register_Integration(t *testing.T) {
 	})
 }
 
-func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
+func TestUpstream_Register_WithReload(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer server.Close()
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewWebsocketUpstream(poolManager)
 
 	tool1 := configv1.ToolDefinition_builder{
@@ -586,11 +586,11 @@ func TestWebsocketUpstream_Register_WithReload(t *testing.T) {
 	assert.NotNil(t, retrievedTool)
 }
 
-func TestWebsocketUpstream_Register_DisabledItems(t *testing.T) {
+func TestUpstream_Register_DisabledItems(t *testing.T) {
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager(nil)
-	pm := prompt.NewPromptManager()
-	rm := resource.NewResourceManager()
+	tm := tool.NewManager(nil)
+	pm := prompt.NewManager()
+	rm := resource.NewManager()
 	upstream := NewWebsocketUpstream(poolManager)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
@@ -633,9 +633,9 @@ func TestWebsocketUpstream_Register_DisabledItems(t *testing.T) {
 	assert.Len(t, pm.ListPrompts(), 1, "Only enabled prompts should be registered")
 }
 
-func TestWebsocketUpstream_Register_MissingCallDefinition(t *testing.T) {
+func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
 	poolManager := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewWebsocketUpstream(poolManager)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))

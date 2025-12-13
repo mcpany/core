@@ -34,10 +34,10 @@ func ptrIntegration[T any](v T) *T {
 }
 
 func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
-	// Setup ToolManager
-	busProvider, err := bus.NewBusProvider(&busproto.MessageBus{})
+	// Setup Manager
+	busProvider, err := bus.NewProvider(&busproto.MessageBus{})
 	require.NoError(t, err)
-	tm := NewToolManager(busProvider)
+	tm := NewManager(busProvider)
 
 	// Define Tool
 	toolName := "my-tool"
@@ -172,7 +172,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 			},
 		}
 
-		tmWithMw := NewToolManager(busProvider)
+		tmWithMw := NewManager(busProvider)
 		tmWithMw.AddMiddleware(mw)
 
 		mockToolMw := &MockTool{

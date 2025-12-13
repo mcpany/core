@@ -34,7 +34,7 @@ type Config struct {
 
 // Worker is responsible for processing jobs from the bus.
 type Worker struct {
-	busProvider *bus.BusProvider
+	busProvider *bus.Provider
 	pond        pond.Pool
 	stopFuncs   []func()
 	mu          sync.Mutex
@@ -42,7 +42,7 @@ type Worker struct {
 }
 
 // New creates a new Worker.
-func New(busProvider *bus.BusProvider, cfg *Config) *Worker {
+func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
 		pond: pond.NewPool(

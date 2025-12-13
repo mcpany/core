@@ -321,7 +321,7 @@ func readURL(url string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Since redirects are disabled, a redirect attempt will result in a 3xx status code.
 	if resp.StatusCode >= 300 && resp.StatusCode <= 399 {

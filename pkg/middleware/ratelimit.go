@@ -29,12 +29,12 @@ import (
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
 type RateLimitMiddleware struct {
-	toolManager tool.ToolManagerInterface
+	toolManager tool.ManagerInterface
 	limiters    sync.Map // map[string]*rate.Limiter
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
-func NewRateLimitMiddleware(toolManager tool.ToolManagerInterface) *RateLimitMiddleware {
+func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddleware {
 	return &RateLimitMiddleware{
 		toolManager: toolManager,
 	}

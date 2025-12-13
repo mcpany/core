@@ -164,7 +164,7 @@ func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
 	upstream := NewGRPCUpstream(poolManager)
 	tm := NewMockToolManager()
 
-	promptManager := prompt.NewPromptManager()
+	promptManager := prompt.NewManager()
 	serviceConfig := &configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		GrpcService: configv1.GrpcUpstreamService_builder{
