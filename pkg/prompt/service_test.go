@@ -56,8 +56,8 @@ type MockErrorPrompt struct {
 }
 
 func (m *MockErrorPrompt) Get(
-	ctx context.Context,
-	args json.RawMessage,
+	_ context.Context,
+	_ json.RawMessage,
 ) (*mcp.GetPromptResult, error) {
 	return nil, fmt.Errorf("error from Get")
 }

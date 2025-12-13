@@ -112,12 +112,13 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			var mcpanyTestServerInfo *integration.MCPANYTestServerInfo
-			if testCase.StartMCPANYServer != nil {
+			switch {
+			case testCase.StartMCPANYServer != nil:
 				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name)
-			} else if method == FileRegistration {
+			case method == FileRegistration:
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
 				mcpanyTestServerInfo = integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
-			} else {
+			default:
 				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
 			}
 			defer mcpanyTestServerInfo.CleanupFunc()

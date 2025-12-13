@@ -147,7 +147,7 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 
 	callableTool, ok := userTool.(*tool.CallableTool)
 	require.True(t, ok)
-	callable, ok := callableTool.Callable().(*GraphQLCallable)
+	callable, ok := callableTool.Callable().(*Callable)
 	require.True(t, ok)
 
 	assert.Contains(t, callable.query, "user(id: $id) { id name }")
@@ -220,7 +220,7 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 
 	callableTool, ok := userTool.(*tool.CallableTool)
 	require.True(t, ok)
-	callable, ok := callableTool.Callable().(*GraphQLCallable)
+	callable, ok := callableTool.Callable().(*Callable)
 	require.True(t, ok)
 
 	assert.Contains(t, callable.query, "user(id: $id) { id }")
@@ -432,7 +432,7 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
 
-	callable := &GraphQLCallable{
+	callable := &Callable{
 		client: graphql.NewClient(server.URL),
 		query:  `query ($id: ID) { user(id: $id) { id name } }`,
 	}
@@ -479,7 +479,7 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
 
-	callable := &GraphQLCallable{
+	callable := &Callable{
 		client: graphql.NewClient(server.URL),
 		query:  `mutation ($name: String!) { createUser(name: $name) { id name } }`,
 	}

@@ -83,7 +83,7 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // ListPrompts returns a slice containing all the prompts currently registered.
 func (pm *Manager) ListPrompts() []Prompt {
 	var prompts []Prompt
-	pm.prompts.Range(func(key string, value Prompt) bool {
+	pm.prompts.Range(func(_ string, value Prompt) bool {
 		prompts = append(prompts, value)
 		return true
 	})

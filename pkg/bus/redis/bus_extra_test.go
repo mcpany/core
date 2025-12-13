@@ -154,7 +154,7 @@ func TestBus_Unsubscribe_Race(t *testing.T) {
 	bus := NewWithClient[string](client)
 	topic := "test-unsubscribe-race"
 
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	unsub := bus.Subscribe(context.Background(), topic, func(_ string) {})
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -179,14 +179,14 @@ func TestBus_Subscribe_And_Unsubscribe_Race(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+		unsub := bus.Subscribe(context.Background(), topic, func(_ string) {})
 		time.Sleep(10 * time.Millisecond)
 		unsub()
 	}()
 
 	go func() {
 		defer wg.Done()
-		unsub := bus.Subscribe(context.Background(), topic, func(msg string) {})
+		unsub := bus.Subscribe(context.Background(), topic, func(_ string) {})
 		time.Sleep(10 * time.Millisecond)
 		unsub()
 	}()

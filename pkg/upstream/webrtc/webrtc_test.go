@@ -85,19 +85,19 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
+func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
@@ -141,11 +141,11 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return prompts
 }
 
-func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *MockPromptManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 
-func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
+func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {
 }
 
 func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
@@ -183,7 +183,7 @@ func (m *MockResourceManager) GetResource(name string) (resource.Resource, bool)
 	return r, ok
 }
 
-func (m *MockResourceManager) RemoveResource(uri string) {
+func (m *MockResourceManager) RemoveResource(_ string) {
 }
 
 func (m *MockResourceManager) ListResources() []resource.Resource {
@@ -196,7 +196,7 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return resources
 }
 
-func (m *MockResourceManager) OnListChanged(f func()) {
+func (m *MockResourceManager) OnListChanged(_ func()) {
 }
 
 func (m *MockResourceManager) ClearResourcesForService(serviceID string) {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package bus defines the interface for a generic, type-safe event bus.
 package bus
 
 import (
@@ -111,21 +112,15 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	return provider, nil
 }
 
-// GetBusHook is a hook that allows for changing the behavior of GetBus.
-// bus for the given topic already exists, it is returned; otherwise, a new one
-// is created and stored for future use.
-//
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
-//
-// Parameters:
-//   - p: The Provider instance.
-//   - topic: The name of the topic for which to get the bus.
-//
-// Returns a Bus instance for the specified message type and topic.
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 var GetBusHook func(p *Provider, topic string) any
 
+// GetBus retrieves a bus for the given topic. If a bus for the given topic
+// already exists, it is returned; otherwise, a new one is created and stored for
+// future use.
+//
+// The type parameter T specifies the message type for the bus, ensuring
+// type safety for each topic.
 func GetBus[T any](p *Provider, topic string) Bus[T] {
 	if GetBusHook != nil {
 		if bus := GetBusHook(p, topic); bus != nil {

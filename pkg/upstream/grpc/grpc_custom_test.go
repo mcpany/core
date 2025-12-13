@@ -112,7 +112,7 @@ message TestResponse3 {
 	tm := newMockToolManager()
 	pm := pool.NewManager()
 	mockPromptManager := newMockPromptManager()
-	upstream := NewGRPCUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, mockPromptManager, nil, false)
 	require.NoError(t, err)

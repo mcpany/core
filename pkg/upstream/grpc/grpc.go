@@ -46,27 +46,27 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// GRPCUpstream implements the upstream.Upstream interface for gRPC services.
+// Upstream implements the upstream.Upstream interface for gRPC services.
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
-type GRPCUpstream struct {
+type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
 	toolManager     tool.ManagerInterface
 	serviceID       string
 }
 
-// NewGRPCUpstream creates a new instance of GRPCUpstream.
+// NewUpstream creates a new instance of Upstream.
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
-func NewGRPCUpstream(poolManager *pool.Manager) upstream.Upstream {
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
 	)
 	go cache.Start()
 
-	return &GRPCUpstream{
+	return &Upstream{
 		poolManager:     poolManager,
 		reflectionCache: cache,
 	}
@@ -74,7 +74,7 @@ func NewGRPCUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
-func (u *GRPCUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
@@ -83,7 +83,7 @@ func (u *GRPCUpstream) Shutdown(ctx context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
-func (u *GRPCUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
@@ -191,7 +191,7 @@ func (u *GRPCUpstream) Register(
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
-func (u *GRPCUpstream) createAndRegisterGRPCTools(
+func (u *Upstream) createAndRegisterGRPCTools(
 	ctx context.Context,
 	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
@@ -360,7 +360,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	return discoveredTools, nil
 }
 
-func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
+func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
 	ctx context.Context,
 	serviceID string,
 	tm tool.ManagerInterface,
@@ -553,12 +553,12 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 	return methodDesc, nil
 }
 
-func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
+func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 	ctx context.Context,
 	serviceID string,
 	tm tool.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ resource.ManagerInterface,
+	_ bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
@@ -643,7 +643,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	return discoveredTools, nil
 }
 
-func (u *GRPCUpstream) createAndRegisterPromptsFromConfig(
+func (u *Upstream) createAndRegisterPromptsFromConfig(
 	ctx context.Context,
 	serviceID string,
 	promptManager prompt.ManagerInterface,

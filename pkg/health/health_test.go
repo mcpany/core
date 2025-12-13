@@ -133,6 +133,7 @@ func TestNewChecker(t *testing.T) {
 
 			if string(msg) == "ping" {
 				// Do nothing, just close the connection
+				return
 			}
 		}))
 		defer server.Close()

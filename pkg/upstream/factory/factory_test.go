@@ -55,26 +55,47 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 	pm := pool.NewManager()
 	f := NewUpstreamServiceFactory(pm)
 
-	grpcConfig := &configv1.UpstreamServiceConfig{}
-	grpcConfig.SetGrpcService(&configv1.GrpcUpstreamService{})
+	grpcConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
+			GrpcService: &configv1.GrpcUpstreamService{},
+		},
+	}
 
-	httpConfig := &configv1.UpstreamServiceConfig{}
-	httpConfig.SetHttpService(&configv1.HttpUpstreamService{})
+	httpConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{},
+		},
+	}
 
-	openapiConfig := &configv1.UpstreamServiceConfig{}
-	openapiConfig.SetOpenapiService(&configv1.OpenapiUpstreamService{})
+	openapiConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
+			OpenapiService: &configv1.OpenapiUpstreamService{},
+		},
+	}
 
-	mcpConfig := &configv1.UpstreamServiceConfig{}
-	mcpConfig.SetMcpService(&configv1.McpUpstreamService{})
+	mcpConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+			McpService: &configv1.McpUpstreamService{},
+		},
+	}
 
-	commandLineConfig := &configv1.UpstreamServiceConfig{}
-	commandLineConfig.SetCommandLineService(&configv1.CommandLineUpstreamService{})
+	commandLineConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+			CommandLineService: &configv1.CommandLineUpstreamService{},
+		},
+	}
 
-	websocketConfig := &configv1.UpstreamServiceConfig{}
-	websocketConfig.SetWebsocketService(&configv1.WebsocketUpstreamService{})
+	websocketConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
+			WebsocketService: &configv1.WebsocketUpstreamService{},
+		},
+	}
 
-	webrtcConfig := &configv1.UpstreamServiceConfig{}
-	webrtcConfig.SetWebrtcService(&configv1.WebrtcUpstreamService{})
+	webrtcConfig := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+			WebrtcService: &configv1.WebrtcUpstreamService{},
+		},
+	}
 
 	testCases := []struct {
 		name        string
@@ -85,12 +106,12 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 		{
 			name:        "gRPC Service",
 			config:      grpcConfig,
-			expectedTyp: &grpc.GRPCUpstream{},
+			expectedTyp: &grpc.Upstream{},
 		},
 		{
 			name:        "HTTP Service",
 			config:      httpConfig,
-			expectedTyp: &http.HTTPUpstream{},
+			expectedTyp: &http.Upstream{},
 		},
 		{
 			name:        "OpenAPI Service",

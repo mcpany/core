@@ -69,9 +69,9 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 	}
 	switch config.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_GrpcService_case:
-		return grpc.NewGRPCUpstream(f.poolManager), nil
+		return grpc.NewUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		return http.NewHTTPUpstream(f.poolManager), nil
+		return http.NewUpstream(f.poolManager), nil
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
 		return openapi.NewOpenAPIUpstream(), nil
 	case configv1.UpstreamServiceConfig_McpService_case:

@@ -111,7 +111,7 @@ func TestUpstream_Register_DisabledTool(t *testing.T) {
 	poolManager := pool.NewManager()
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("echo"),
@@ -154,7 +154,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
 
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
 			Name:        proto.String("echo"),
@@ -192,7 +192,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		poolManager := pool.NewManager()
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		_, _, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
@@ -204,7 +204,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		poolManager := pool.NewManager()
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-websocket-service")
@@ -221,7 +221,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		poolManager := pool.NewManager()
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
 			Name:   proto.String("echo"),
@@ -251,7 +251,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		poolManager := pool.NewManager()
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
 			Name:   proto.String("echo"),
@@ -286,7 +286,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		poolManager := pool.NewManager()
 		var promptManager prompt.ManagerInterface
 		var resourceManager resource.ManagerInterface
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		// Fallback to description
 		toolDef1 := configv1.ToolDefinition_builder{
@@ -336,7 +336,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 	t.Run("correct input schema generation", func(t *testing.T) {
 		toolManager := NewMockToolManager(nil)
 		poolManager := pool.NewManager()
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		param1 := configv1.WebsocketParameterMapping_builder{
 			Schema: configv1.ParameterSchema_builder{
@@ -406,7 +406,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	tm := tool.NewManager(nil)
 
 	t.Run("successful registration", func(t *testing.T) {
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
 		apiKeyAuth.SetHeaderName("X-API-Key")
@@ -455,7 +455,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	})
 
 	t.Run("nil websocket service config", func(t *testing.T) {
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("nil-config-service")
 
@@ -465,7 +465,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	})
 
 	t.Run("invalid service name", func(t *testing.T) {
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("")
 		serviceConfig.SetWebsocketService(&configv1.WebsocketUpstreamService{})
@@ -476,7 +476,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	})
 
 	t.Run("authenticator creation fails", func(t *testing.T) {
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		tool1 := configv1.ToolDefinition_builder{
 			Name:   proto.String("test-op"),
@@ -507,7 +507,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		tm := tool.NewManager(nil)
-		upstream := NewWebsocketUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		tool1 := configv1.ToolDefinition_builder{
 			Description: proto.String("A test operation"),
@@ -551,7 +551,7 @@ func TestUpstream_Register_WithReload(t *testing.T) {
 
 	poolManager := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	tool1 := configv1.ToolDefinition_builder{
 		Name:   proto.String("test-op"),
@@ -591,7 +591,7 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	tm := tool.NewManager(nil)
 	pm := prompt.NewManager()
 	rm := resource.NewManager()
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer server.Close()
@@ -636,7 +636,7 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
 	poolManager := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer server.Close()

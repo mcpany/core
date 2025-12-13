@@ -254,7 +254,7 @@ type ManagedProcess struct {
 
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
-	cmd := exec.Command(command, args...)
+	cmd := exec.Command(command, args...) //nolint:gosec // test
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if env != nil {
 		cmd.Env = append(os.Environ(), env...)
@@ -509,7 +509,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Ensure the container is not already running from a previous failed run
 	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
 	_ = stopCmd.Run() // Ignore error, it might not be running
-	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
+	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // test
 	_ = rmCmd.Run() // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
@@ -517,7 +517,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	dockerRunArgs = append(dockerRunArgs, imageName)
 	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...)
+	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // test
 	// Capture stderr for better error reporting
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
@@ -529,7 +529,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
-		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
 		err := stopCleanupCmd.Run()
 		if err != nil {
 			// Log as error, but don't fail the test, as cleanup failure is secondary.
@@ -737,7 +737,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
-	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
+	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // test
 	err = cmd.Start()
 	require.NoError(t, err)
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
@@ -773,7 +773,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic
-		cmd := exec.Command(dockerExe, pingArgs...)
+		cmd := exec.Command(dockerExe, pingArgs...) //nolint:gosec // test
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))

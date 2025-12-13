@@ -60,27 +60,27 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	}
 }
 
-// HTTPUpstream implements the upstream.Upstream interface for services that are
+// Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints. It handles the registration of tools
 // defined in the service configuration.
-type HTTPUpstream struct {
+type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
 }
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
-func (u *HTTPUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
 
-// NewHTTPUpstream creates a new instance of HTTPUpstream.
+// NewUpstream creates a new instance of Upstream.
 //
 // poolManager is the connection pool manager to be used for managing HTTP
 // connections.
-func NewHTTPUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &HTTPUpstream{
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
 		poolManager: poolManager,
 	}
 }
@@ -88,7 +88,7 @@ func NewHTTPUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
-func (u *HTTPUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
@@ -147,7 +147,7 @@ func (u *HTTPUpstream) Register(
 		}
 	}
 
-	httpPool, err := NewHttpPool(maxIdleConnections, maxConnections, idleTimeout, serviceConfig)
+	httpPool, err := NewHTTPPool(maxIdleConnections, maxConnections, idleTimeout, serviceConfig)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceID, err)
 	}
@@ -171,7 +171,7 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -346,7 +346,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	return discoveredTools
 }
 
-func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	for _, promptDef := range httpService.GetPrompts() {

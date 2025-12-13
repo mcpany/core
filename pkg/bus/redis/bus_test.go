@@ -121,7 +121,7 @@ func TestBus_SubscribeOnce_HandlerPanic(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(_ string) {
 		defer wg.Done()
 		panic("test panic")
 	})
@@ -142,7 +142,7 @@ func TestBus_MultipleUnsubCalls(t *testing.T) {
 	client, _ := redismock.NewClientMock()
 	bus := NewWithClient[string](client)
 
-	unsub := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), "test-topic", func(_ string) {
 		// No-op handler
 	})
 
@@ -159,7 +159,7 @@ func TestBus_SubscribeOnce_Correctness(t *testing.T) {
 	callCount := 0
 	var mu sync.Mutex
 
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(_ string) {
 		mu.Lock()
 		callCount++
 		mu.Unlock()
@@ -233,7 +233,7 @@ func TestBus_Subscribe_UnmarshalError(t *testing.T) {
 
 	handlerCalled := make(chan bool, 1)
 
-	unsub := bus.Subscribe(context.Background(), "test-unmarshal-error", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), "test-unmarshal-error", func(_ string) {
 		handlerCalled <- true
 	})
 	defer unsub()
@@ -355,7 +355,7 @@ func TestBus_Unsubscribe(t *testing.T) {
 
 	handlerCalled := make(chan bool, 1)
 
-	unsub := bus.Subscribe(context.Background(), "test-unsubscribe", func(msg string) {
+	unsub := bus.Subscribe(context.Background(), "test-unsubscribe", func(_ string) {
 		handlerCalled <- true
 	})
 
@@ -453,7 +453,7 @@ func TestBus_ConcurrentSubscribeAndUnsubscribe(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+			unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 				// No-op handler
 			})
 			time.Sleep(10 * time.Millisecond) // Give a chance for other goroutines to run
@@ -469,7 +469,7 @@ func TestBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *testing.
 	bus := NewWithClient[string](client)
 	topic := "test-resubscribe-replace"
 
-	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	unsub1 := bus.Subscribe(context.Background(), topic, func(_ string) {})
 
 	require.Eventually(t, func() bool {
 		subs, err := client.PubSubNumSub(context.Background(), topic).Result()
@@ -480,7 +480,7 @@ func TestBus_Subscribe_Resubscribe_ShouldReplacePreviousSubscription(t *testing.
 		return false
 	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
 
-	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {})
+	unsub2 := bus.Subscribe(context.Background(), topic, func(_ string) {})
 	defer unsub2()
 
 	var subCount int64
@@ -505,7 +505,7 @@ func TestBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *testi
 	handler1Called := make(chan bool, 1)
 	handler2Called := make(chan bool, 1)
 
-	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub1 := bus.Subscribe(context.Background(), topic, func(_ string) {
 		handler1Called <- true
 	})
 
@@ -514,7 +514,7 @@ func TestBus_Subscribe_Resubscribe_ShouldStopReceivingOnOldSubscription(t *testi
 		return len(subs) > 0 && subs[topic] == 1
 	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
 
-	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub2 := bus.Subscribe(context.Background(), topic, func(_ string) {
 		handler2Called <- true
 	})
 	defer unsub2()
@@ -568,7 +568,7 @@ func TestBus_Subscribe_CloseSubscription(t *testing.T) {
 		goleak.IgnoreTopFunction("github.com/go-redis/redis/v9/internal/pool.(*ConnPool).reaper"),
 	)
 
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 		// This handler should not be called.
 		t.Error("handler called unexpectedly")
 	})
@@ -595,7 +595,7 @@ func TestBus_SubscribeOnce_UnsubscribeBeforeMessage(t *testing.T) {
 
 	handlerCalled := make(chan bool, 1)
 
-	unsub := bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+	unsub := bus.SubscribeOnce(context.Background(), topic, func(_ string) {
 		handlerCalled <- true
 	})
 
