@@ -106,7 +106,7 @@ func (m *mockToolManager) ClearToolsForService(serviceID string) {
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
 }
 
-func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 }
 
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {

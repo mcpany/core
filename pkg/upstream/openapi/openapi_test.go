@@ -85,7 +85,7 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 }
 
 func TestNewOpenAPIUpstream(t *testing.T) {

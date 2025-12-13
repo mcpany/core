@@ -577,7 +577,8 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 		base:          &mockRoundTripper{},
 	}
 
-	req, _ := http.NewRequest("GET", "http://localhost", nil)
+	req, err := http.NewRequest("GET", "http://localhost", nil)
+	require.NoError(t, err)
 	resp, err := rt.RoundTrip(req)
 	if resp != nil {
 		defer resp.Body.Close()

@@ -46,25 +46,26 @@ type ToolManagerInterface interface {
 	ClearToolsForService(serviceID string)
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	SetMCPServer(mcpServer MCPServerProvider)
-	AddMiddleware(middleware ToolExecutionMiddleware)
+	AddMiddleware(middleware ExecutionMiddleware)
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+}
+
+// ExecutionMiddleware defines the interface for tool execution middleware.
+type ExecutionMiddleware interface {
+	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
 // ToolManager is a thread-safe manager for registering, retrieving, and
 // executing tools. It also handles the registration of tools with an MCP server,
 // making them available for remote execution.
-type ToolExecutionMiddleware interface {
-	Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error)
-}
-
 type ToolManager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
 	mcpServer   MCPServerProvider
 	bus         *bus.BusProvider
 	mu          sync.RWMutex
-	middlewares []ToolExecutionMiddleware
+	middlewares []ExecutionMiddleware
 	cachedTools []Tool
 	toolsMutex  sync.RWMutex
 }
@@ -79,7 +80,7 @@ func NewToolManager(bus *bus.BusProvider) *ToolManager {
 }
 
 // AddMiddleware adds a middleware to the tool manager.
-func (tm *ToolManager) AddMiddleware(middleware ToolExecutionMiddleware) {
+func (tm *ToolManager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
@@ -176,7 +177,7 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 	chain := execute
 	for i := len(tm.middlewares) - 1; i >= 0; i-- {
 		m := tm.middlewares[i]
-		chain = func(next ToolExecutionFunc) ToolExecutionFunc {
+		chain = func(next ExecutionFunc) ExecutionFunc {
 			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
 				log.Debug("Executing middleware", "middleware", i)
 				return m.Execute(ctx, req, next)

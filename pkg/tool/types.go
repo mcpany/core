@@ -93,8 +93,8 @@ type ServiceRegistry interface {
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
-// ToolExecutionFunc represents the next middleware in the chain.
-type ToolExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
+// ExecutionFunc represents the next middleware in the chain.
+type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
 
@@ -120,6 +120,7 @@ type Callable interface {
 type Action int
 
 const (
+	// ActionAllow indicates that the action is allowed.
 	ActionAllow Action = 0
 	ActionDeny  Action = 1
 )

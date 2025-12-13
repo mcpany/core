@@ -41,7 +41,7 @@ func (m *MockToolManagerInterface) EXPECT() *MockToolManagerInterfaceMockRecorde
 }
 
 // AddMiddleware mocks base method.
-func (m *MockToolManagerInterface) AddMiddleware(middleware ToolExecutionMiddleware) {
+func (m *MockToolManagerInterface) AddMiddleware(middleware ExecutionMiddleware) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddMiddleware", middleware)
 }

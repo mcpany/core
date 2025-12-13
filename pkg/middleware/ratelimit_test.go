@@ -74,8 +74,8 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		rlConfig := configv1.RateLimitConfig_builder{
 			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float32(10),
-			Burst:             proto.Int32(1),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(1),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -115,8 +115,8 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		rlConfig := configv1.RateLimitConfig_builder{
 			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float32(1),
-			Burst:             proto.Int32(1),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -159,8 +159,8 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// Initial Config: 10 RPS, Burst 10
 		rlConfig1 := configv1.RateLimitConfig_builder{
 			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float32(10),
-			Burst:             proto.Int32(10),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
 		}.Build()
 
 		serviceInfo1 := &tool.ServiceInfo{
@@ -173,8 +173,8 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// Updated Config: 1 RPS, Burst 1
 		rlConfig2 := configv1.RateLimitConfig_builder{
 			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float32(1),
-			Burst:             proto.Int32(1),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
 		}.Build()
 
 		serviceInfo2 := &tool.ServiceInfo{

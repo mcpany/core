@@ -69,29 +69,7 @@ func newMockGRPCHealthServer(
 	return s, lis
 }
 
-// mockHealthServerWithFailure is a mock implementation of the gRPC health check server that returns an error.
-type mockHealthServerWithFailure struct { //nolint:unused
-	grpc_health_v1.UnimplementedHealthServer
-}
 
-func (s *mockHealthServerWithFailure) Check(
-	ctx context.Context,
-	_ *grpc_health_v1.HealthCheckRequest,
-) (*grpc_health_v1.HealthCheckResponse, error) { //nolint:unused
-	return nil, assert.AnError
-}
-
-// newMockGRPCHealthServerWithFailure starts a gRPC server with the mock health service that returns an error.
-func newMockGRPCHealthServerWithFailure() (*grpc.Server, net.Listener) { //nolint:unused
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		panic(err)
-	}
-	s := grpc.NewServer()
-	grpc_health_v1.RegisterHealthServer(s, &mockHealthServerWithFailure{})
-	go func() { _ = s.Serve(lis) }()
-	return s, lis
-}
 
 func TestNewChecker(t *testing.T) {
 	ctx := context.Background()
