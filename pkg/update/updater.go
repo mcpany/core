@@ -99,7 +99,7 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	if err != nil {
 		return fmt.Errorf("failed to download checksums: %w", err)
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
 	checksumsData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read checksums data: %w", err)
@@ -118,7 +118,7 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	if err != nil {
 		return fmt.Errorf("failed to download asset: %w", err)
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
 
 	// Create a temporary file to save the downloaded asset
 	tmpFile, err := afero.TempFile(fs, "", "mcpany-update-")

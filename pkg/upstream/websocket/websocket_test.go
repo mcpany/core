@@ -103,7 +103,7 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 }
 
 func TestWebsocketUpstream_Register_DisabledTool(t *testing.T) {

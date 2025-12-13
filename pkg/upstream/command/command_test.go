@@ -64,7 +64,7 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
 }
 
-func (m *mockToolManager) AddMiddleware(middleware tool.ToolExecutionMiddleware) {
+func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
 }
 
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {

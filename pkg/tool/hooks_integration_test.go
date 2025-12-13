@@ -166,7 +166,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 	t.Run("Middleware", func(t *testing.T) {
 		middlewareCalled := false
 		mw := &MockMiddleware{
-			ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+			ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
 				middlewareCalled = true
 				return next(ctx, req)
 			},
@@ -193,13 +193,13 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 }
 
 type MockMiddleware struct {
-	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error)
+	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
 func (m *MockMiddleware) Execute(
 	ctx context.Context,
 	req *ExecutionRequest,
-	next ToolExecutionFunc,
+	next ExecutionFunc,
 ) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req, next)
