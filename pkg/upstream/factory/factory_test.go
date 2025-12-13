@@ -105,17 +105,17 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 		{
 			name:        "Command Line Service",
 			config:      commandLineConfig,
-			expectedTyp: &command.CommandUpstream{},
+			expectedTyp: &command.Upstream{},
 		},
 		{
 			name:        "Websocket Service",
 			config:      websocketConfig,
-			expectedTyp: &websocket.WebsocketUpstream{},
+			expectedTyp: &websocket.Upstream{},
 		},
 		{
 			name:        "WebRTC Service",
 			config:      webrtcConfig,
-			expectedTyp: &webrtc.WebrtcUpstream{},
+			expectedTyp: &webrtc.Upstream{},
 		},
 		{
 			name:        "Unknown Service",

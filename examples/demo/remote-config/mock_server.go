@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -11,7 +12,13 @@ func main() {
 	})
 
 	log.Println("Starting mock server on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	server := &http.Server{
+		Addr:         ":8080",
+		Handler:      nil,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -77,7 +77,7 @@ func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPro
 }
 
 func TestPromptManager(t *testing.T) {
-	promptManager := NewPromptManager()
+	promptManager := NewManager()
 
 	t.Run("add and get prompt", func(t *testing.T) {
 		mockPrompt := new(MockPrompt)

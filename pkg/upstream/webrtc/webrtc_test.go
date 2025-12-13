@@ -209,21 +209,21 @@ func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
 	}
 }
 
-func TestNewWebrtcUpstream(t *testing.T) {
+func TestUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
-	upstream := NewWebrtcUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 	require.NotNil(t, upstream)
-	assert.IsType(t, &WebrtcUpstream{}, upstream)
+	assert.IsType(t, &Upstream{}, upstream)
 }
 
-func TestWebrtcUpstream_Register(t *testing.T) {
+func TestUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
 
-		upstream := NewWebrtcUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
 			Name:        proto.String("echo"),
@@ -259,9 +259,9 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 	t.Run("nil service config", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
-		upstream := NewWebrtcUpstream(poolManager)
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
+		upstream := NewUpstream(poolManager)
 
 		_, _, _, err := upstream.Register(context.Background(), nil, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
@@ -271,9 +271,9 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 	t.Run("nil webrtc service config", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
-		upstream := NewWebrtcUpstream(poolManager)
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
+		upstream := NewUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
@@ -288,9 +288,9 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		toolManager := NewMockToolManager()
 		toolManager.lastErr = errors.New("failed to add tool")
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
-		upstream := NewWebrtcUpstream(poolManager)
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
+		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
 			Name:   proto.String("echo"),
@@ -318,9 +318,9 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 	t.Run("authenticator error", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
-		upstream := NewWebrtcUpstream(poolManager)
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
+		upstream := NewUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
@@ -352,9 +352,9 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 	t.Run("missing call id", func(t *testing.T) {
 		toolManager := NewMockToolManager()
 		poolManager := pool.NewManager()
-		var promptManager prompt.PromptManagerInterface
-		var resourceManager resource.ResourceManagerInterface
-		upstream := NewWebrtcUpstream(poolManager)
+		var promptManager prompt.ManagerInterface
+		var resourceManager resource.ManagerInterface
+		upstream := NewUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
@@ -377,7 +377,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		poolManager := pool.NewManager()
 		promptManager := NewMockPromptManager()
 		resourceManager := NewMockResourceManager()
-		upstream := NewWebrtcUpstream(poolManager)
+		upstream := NewUpstream(poolManager)
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service-with-prompts-and-resources")
@@ -430,7 +430,7 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 		poolManager := pool.NewManager()
 		promptManager := NewMockPromptManager()
 		resourceManager := NewMockResourceManager()
-		upstream := NewWebrtcUpstream(poolManager).(*WebrtcUpstream)
+		upstream := NewUpstream(poolManager).(*Upstream)
 		upstream.toolNameSanitizer = func(name string) (string, error) {
 			return "", errors.New("sanitization failed")
 		}
@@ -470,12 +470,12 @@ func TestWebrtcUpstream_Register(t *testing.T) {
 	})
 }
 
-func TestWebrtcUpstream_Register_ToolNameGeneration(t *testing.T) {
+func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
 	toolManager := NewMockToolManager()
 	poolManager := pool.NewManager()
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
-	upstream := NewWebrtcUpstream(poolManager)
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+	upstream := NewUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
 		Description: proto.String("A test description"),

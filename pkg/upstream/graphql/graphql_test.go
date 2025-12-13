@@ -119,7 +119,7 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 	defer server.Close()
 
 	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewToolManager(nil)
+	toolManager := tool.NewManager(nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -200,7 +200,7 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	defer server.Close()
 
 	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewToolManager(nil)
+	toolManager := tool.NewManager(nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -275,7 +275,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 	defer server.Close()
 
 	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewToolManager(nil)
+	toolManager := tool.NewManager(nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -316,7 +316,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T)
 	defer server.Close()
 
 	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewToolManager(nil)
+	toolManager := tool.NewManager(nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -380,7 +380,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 	defer server.Close()
 
 	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewToolManager(nil)
+	toolManager := tool.NewManager(nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")

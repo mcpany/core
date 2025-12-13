@@ -34,17 +34,17 @@ var (
 func main() {
 	flag.Parse()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt64(&counter, 1)
 		_, _ = fmt.Fprintf(w, "This is a cacheable response. Call count: %d", atomic.LoadInt64(&counter))
 	})
 
-	http.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/reset", func(w http.ResponseWriter, _ *http.Request) {
 		atomic.StoreInt64(&counter, 0)
 		w.WriteHeader(http.StatusOK)
 	})
 
-	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/metrics", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]int64{"counter": atomic.LoadInt64(&counter)})
 	})

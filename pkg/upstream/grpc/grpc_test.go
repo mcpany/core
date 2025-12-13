@@ -128,8 +128,8 @@ func TestNewGRPCUpstream(t *testing.T) {
 }
 
 func TestGRPCUpstream_Register(t *testing.T) {
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
 	t.Run("nil service config", func(t *testing.T) {
 		poolManager := pool.NewManager()
@@ -296,8 +296,8 @@ func startMockServer(t *testing.T) (*grpc.Server, string) {
 }
 
 func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
 	server, addr := startMockServer(t)
 	defer server.Stop()

@@ -28,7 +28,7 @@ import (
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the
-// ResourceManager. Each implementation of a resource is responsible for
+// Manager. Each implementation of a resource is responsible for
 // providing its metadata and handling read and subscribe operations.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its
@@ -43,10 +43,10 @@ type Resource interface {
 	Subscribe(ctx context.Context) error
 }
 
-// ResourceManagerInterface defines the interface for managing a collection of
+// ManagerInterface defines the interface for managing a collection of
 // resources. It provides methods for adding, removing, retrieving, and listing
 // resources, as well as for subscribing to changes.
-type ResourceManagerInterface interface {
+type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	GetResource(uri string) (Resource, bool)
 	// AddResource adds a new resource to the manager.
@@ -62,18 +62,18 @@ type ResourceManagerInterface interface {
 	ClearResourcesForService(serviceID string)
 }
 
-// ResourceManager is a thread-safe implementation of the
-// ResourceManagerInterface. It uses a map to store resources and a mutex to
+// Manager is a thread-safe implementation of the
+// ManagerInterface. It uses a map to store resources and a mutex to
 // protect concurrent access.
-type ResourceManager struct {
+type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
 	onListChangedFunc func()
 }
 
-// NewResourceManager creates and returns a new, empty ResourceManager.
-func NewResourceManager() *ResourceManager {
-	return &ResourceManager{
+// NewManager creates and returns a new, empty Manager.
+func NewManager() *Manager {
+	return &Manager{
 		resources: make(map[string]Resource),
 	}
 }
@@ -83,7 +83,7 @@ func NewResourceManager() *ResourceManager {
 // uri is the URI of the resource to retrieve.
 // It returns the resource and a boolean indicating whether the resource was
 // found.
-func (rm *ResourceManager) GetResource(uri string) (Resource, bool) {
+func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
 	resource, ok := rm.resources[uri]
@@ -95,7 +95,7 @@ func (rm *ResourceManager) GetResource(uri string) (Resource, bool) {
 // triggers the OnListChanged callback if one is registered.
 //
 // resource is the resource to be added.
-func (rm *ResourceManager) AddResource(resource Resource) {
+func (rm *Manager) AddResource(resource Resource) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	rm.resources[resource.Resource().URI] = resource
@@ -109,7 +109,7 @@ func (rm *ResourceManager) AddResource(resource Resource) {
 // one is registered.
 //
 // uri is the URI of the resource to be removed.
-func (rm *ResourceManager) RemoveResource(uri string) {
+func (rm *Manager) RemoveResource(uri string) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	if _, ok := rm.resources[uri]; ok {
@@ -122,7 +122,7 @@ func (rm *ResourceManager) RemoveResource(uri string) {
 
 // ListResources returns a slice containing all the resources currently
 // registered in the manager.
-func (rm *ResourceManager) ListResources() []Resource {
+func (rm *Manager) ListResources() []Resource {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
 	resources := make([]Resource, 0, len(rm.resources))
@@ -136,7 +136,7 @@ func (rm *ResourceManager) ListResources() []Resource {
 // of resources is modified by adding or removing a resource.
 //
 // f is the callback function to be set.
-func (rm *ResourceManager) OnListChanged(f func()) {
+func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	rm.onListChangedFunc = f
@@ -147,7 +147,7 @@ func (rm *ResourceManager) OnListChanged(f func()) {
 // ctx is the context for the subscription.
 // uri is the URI of the resource to subscribe to.
 // It returns an error if the resource is not found or if the subscription fails.
-func (rm *ResourceManager) Subscribe(ctx context.Context, uri string) error {
+func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
 		return ErrResourceNotFound
@@ -156,7 +156,7 @@ func (rm *ResourceManager) Subscribe(ctx context.Context, uri string) error {
 }
 
 // ClearResourcesForService removes all resources associated with a given service ID.
-func (rm *ResourceManager) ClearResourcesForService(serviceID string) {
+func (rm *Manager) ClearResourcesForService(serviceID string) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	for uri, resource := range rm.resources {

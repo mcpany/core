@@ -52,7 +52,7 @@ import (
 type GRPCUpstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
-	toolManager     tool.ToolManagerInterface
+	toolManager     tool.ManagerInterface
 	serviceID       string
 }
 
@@ -86,9 +86,9 @@ func (u *GRPCUpstream) Shutdown(ctx context.Context) error {
 func (u *GRPCUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	u.toolManager = toolManager
@@ -195,8 +195,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 	ctx context.Context,
 	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
-	tm tool.ToolManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	tm tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
@@ -363,8 +363,8 @@ func (u *GRPCUpstream) createAndRegisterGRPCTools(
 func (u *GRPCUpstream) createAndRegisterGRPCToolsFromDescriptors(
 	ctx context.Context,
 	serviceID string,
-	tm tool.ToolManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	tm tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
@@ -556,8 +556,8 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 	ctx context.Context,
 	serviceID string,
-	tm tool.ToolManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	tm tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
 ) ([]*configv1.ToolDefinition, error) {
@@ -646,7 +646,7 @@ func (u *GRPCUpstream) createAndRegisterGRPCToolsFromConfig(
 func (u *GRPCUpstream) createAndRegisterPromptsFromConfig(
 	ctx context.Context,
 	serviceID string,
-	promptManager prompt.PromptManagerInterface,
+	promptManager prompt.ManagerInterface,
 	isReload bool,
 ) error {
 	log := logging.GetLogger()

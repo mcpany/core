@@ -134,7 +134,7 @@ func TestWebsocketClientWrapper(t *testing.T) {
 		if err != nil {
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		// Just handle control messages for the health check
 		_ = conn.SetReadDeadline(time.Now().Add(time.Second * 5))
 		for {

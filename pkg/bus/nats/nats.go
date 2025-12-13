@@ -69,7 +69,7 @@ func (b *Bus[T]) Close() {
 }
 
 // Publish sends a message to a NATS topic.
-func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
+func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler for a NATS topic.
-func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *nats.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {
@@ -91,7 +91,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
-func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
+func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *nats.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {

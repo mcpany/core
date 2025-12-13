@@ -97,12 +97,12 @@ func TestHttpMethodToString(t *testing.T) {
 func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 	// Create a test HTTPS server with a self-signed certificate
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK")) // This implicitly sets status to 200 OK if not already set
 	}))
 	defer server.Close()
 
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	configJSON := `{
@@ -140,7 +140,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 
 func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	configJSON := `{
@@ -188,8 +188,8 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
 
 	serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -228,7 +228,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 
 func TestDeterminismInToolNaming(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	configJSON := `{
@@ -265,7 +265,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	configJSON := `{
@@ -297,7 +297,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{
@@ -332,7 +332,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("nil http service config", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{"name": "test-service", "grpc_service": {}}`
@@ -346,7 +346,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("invalid service name", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{"name": "", "http_service": {}}`
@@ -360,7 +360,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{
@@ -417,7 +417,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{
@@ -451,7 +451,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("registration with connection pool config", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{
@@ -500,7 +500,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 	t.Run("registration with default connection pool config", func(t *testing.T) {
 		pm := pool.NewManager()
-		tm := tool.NewToolManager(nil)
+		tm := tool.NewManager(nil)
 		upstream := NewHTTPUpstream(pm)
 
 		configJSON := `{
@@ -576,8 +576,8 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, promptManager, resourceManager, false)
 
@@ -588,7 +588,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 
 func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	// Initial registration
@@ -648,7 +648,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 
 func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	pm := pool.NewManager()
-	tm := tool.NewToolManager(nil)
+	tm := tool.NewManager(nil)
 	upstream := NewHTTPUpstream(pm)
 
 	configJSON := `{
@@ -675,7 +675,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 
 // mockToolManager to simulate errors
 type mockToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	addError    error
 	addedTools  []tool.Tool
 	failOnClear bool
@@ -798,7 +798,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			pm := pool.NewManager()
-			tm := tool.NewToolManager(nil)
+			tm := tool.NewManager(nil)
 			upstream := NewHTTPUpstream(pm)
 
 			configJSON := `{

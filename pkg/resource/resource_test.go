@@ -50,13 +50,13 @@ func (r *mockResource) Subscribe(ctx context.Context) error {
 }
 
 func TestNewResourceManager(t *testing.T) {
-	rm := NewResourceManager()
+	rm := NewManager()
 	assert.NotNil(t, rm)
 	assert.NotNil(t, rm.resources)
 }
 
 func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
-	rm := NewResourceManager()
+	rm := NewManager()
 	resource1 := &mockResource{uri: "resource://one", service: "service1"}
 	resource2 := &mockResource{uri: "resource://two", service: "service2"}
 
@@ -90,7 +90,7 @@ func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
 }
 
 func TestResourceManager_OnListChanged(t *testing.T) {
-	rm := NewResourceManager()
+	rm := NewManager()
 	var changedCount int
 	rm.OnListChanged(func() {
 		changedCount++
@@ -110,7 +110,7 @@ func TestResourceManager_OnListChanged(t *testing.T) {
 }
 
 func TestResourceManager_Subscribe(t *testing.T) {
-	rm := NewResourceManager()
+	rm := NewManager()
 
 	t.Run("subscribe success", func(t *testing.T) {
 		res := &mockResource{uri: "res1"}
@@ -136,7 +136,7 @@ func TestResourceManager_Subscribe(t *testing.T) {
 }
 
 func TestResourceManager_ClearResourcesForService(t *testing.T) {
-	rm := NewResourceManager()
+	rm := NewManager()
 
 	// Track list changes
 	var changedCount int

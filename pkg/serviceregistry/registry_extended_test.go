@@ -53,7 +53,7 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 type threadSafeToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	mu    sync.RWMutex
 	tools map[string]tool.Tool
 }
@@ -111,7 +111,7 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 		},
 	}
 	tm := newThreadSafeToolManager()
-	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
 	// Register the first service with a tool
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
@@ -192,9 +192,9 @@ func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
 		},
 	}
 	tm := newThreadSafeToolManager()
-	pm := prompt.NewPromptManager()
-	rm := resource.NewResourceManager()
-	registry := New(f, tm, pm, rm, auth.NewAuthManager())
+	pm := prompt.NewManager()
+	rm := resource.NewManager()
+	registry := New(f, tm, pm, rm, auth.NewManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -240,7 +240,7 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 		},
 	}
 	tm := newThreadSafeToolManager()
-	registry := New(f, tm, prompt.NewPromptManager(), resource.NewResourceManager(), auth.NewAuthManager())
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
