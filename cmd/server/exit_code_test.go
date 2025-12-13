@@ -34,11 +34,11 @@ type mockFailingRunner struct{}
 
 func (m *mockFailingRunner) Run(
 	ctx context.Context,
-	fs afero.Fs,
-	stdio bool,
-	jsonrpcPort string,
-	registrationPort string,
-	configPaths []string,
+	_ afero.Fs,
+	_ bool,
+	_ string,
+	_ string,
+	_ []string,
 	shutdownTimeout time.Duration,
 ) error {
 	if shutdownTimeout != 10*time.Second {
@@ -47,11 +47,11 @@ func (m *mockFailingRunner) Run(
 	return errors.New("mock run failure")
 }
 
-func (m *mockFailingRunner) RunHealthServer(jsonrpcPort string) error {
+func (m *mockFailingRunner) RunHealthServer(_ string) error {
 	return nil
 }
 
-func (m *mockFailingRunner) ReloadConfig(fs afero.Fs, configPaths []string) error {
+func (m *mockFailingRunner) ReloadConfig(_ afero.Fs, _ []string) error {
 	return nil
 }
 

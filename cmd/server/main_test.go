@@ -54,11 +54,11 @@ func (m *mockRunner) Run(ctx context.Context, fs afero.Fs, stdio bool, mcpListen
 	return nil
 }
 
-func (m *mockRunner) ReloadConfig(fs afero.Fs, configPaths []string) error {
+func (m *mockRunner) ReloadConfig(_ afero.Fs, _ []string) error {
 	return nil
 }
 
-func (m *mockRunner) RunHealthServer(mcpListenAddress string) error {
+func (m *mockRunner) RunHealthServer(_ string) error {
 	return nil
 }
 
@@ -211,7 +211,7 @@ func TestHealthCmdFlagPrecedence(t *testing.T) {
 	// Create a temporary config file with a different port
 	dir, err := os.MkdirTemp("", "test-config")
 	assert.NoError(t, err)
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	configFile := dir + "/config.yaml"
 	err = os.WriteFile(configFile, []byte(`
@@ -256,7 +256,7 @@ func TestGracefulShutdown(t *testing.T) {
 			if err != nil {
 				return false
 			}
-			defer resp.Body.Close()
+			defer func() { _ = resp.Body.Close() }()
 			return resp.StatusCode == http.StatusOK
 		}, 5*time.Second, 100*time.Millisecond)
 		return
@@ -382,7 +382,7 @@ func TestConfigGenerateCmd(t *testing.T) {
 	go func() {
 		defer func() { _ = wIn.Close() }()
 		for _, input := range inputs {
-			fmt.Fprintln(wIn, input)
+			_, _ = fmt.Fprintln(wIn, input)
 		}
 	}()
 

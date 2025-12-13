@@ -52,7 +52,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			assert.Equal(t, "/users/123", r.URL.Path)
 			assert.Equal(t, "test", r.URL.Query().Get("q"))
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"id":"123", "name":"test"}`))
+			_, _ = w.Write([]byte(`{"id":"123", "name":"test"}`))
 		}))
 		defer server.Close()
 

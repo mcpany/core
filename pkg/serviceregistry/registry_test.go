@@ -42,14 +42,14 @@ type mockUpstream struct {
 	shutdownFunc func() error
 }
 
-func (m *mockUpstream) Shutdown(ctx context.Context) error {
+func (m *mockUpstream) Shutdown(_ context.Context) error {
 	if m.shutdownFunc != nil {
 		return m.shutdownFunc()
 	}
 	return nil
 }
 
-func (m *mockUpstream) Register(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+func (m *mockUpstream) Register(_ context.Context, serviceConfig *configv1.UpstreamServiceConfig, _ tool.ManagerInterface, _ prompt.ManagerInterface, _ resource.ManagerInterface, _ bool) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if m.registerFunc != nil {
 		return m.registerFunc(serviceConfig.GetName())
 	}
@@ -193,7 +193,7 @@ func TestServiceRegistry_RegisterService_UpstreamError(t *testing.T) {
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
 			return &mockUpstream{
-				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+				registerFunc: func(_ string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 					return "", nil, nil, upstreamErr
 				},
 			}, nil

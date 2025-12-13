@@ -85,10 +85,10 @@ func TestResourceListNotification(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Trigger multiple resource list changes to ensure:
 	// 1. Notifications are fired each time.

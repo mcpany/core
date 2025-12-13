@@ -100,19 +100,19 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return nil
 }
 
-func (m *mockToolManager) ClearToolsForService(serviceID string) {
+func (m *mockToolManager) ClearToolsForService(_ string) {
 }
 
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 }
 
-func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
 }
 
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 

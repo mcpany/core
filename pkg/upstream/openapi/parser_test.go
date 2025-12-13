@@ -35,7 +35,7 @@ const (
 	contentTypeJSON    = "application/json"
 	opListPets         = "listPets"
 	opCreatePet        = "createPet"
-	opShowPetById      = "showPetById"
+	opShowPetByID      = "showPetById"
 	methodPost         = "POST"
 )
 
@@ -334,7 +334,7 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 
 	// Check showPetByID
-	opShowPetByID, ok := opsMap[opShowPetById]
+	opShowPetByID, ok := opsMap[opShowPetByID]
 	if !ok {
 		t.Fatalf("Operation 'showPetById' not found")
 	}
@@ -349,6 +349,7 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 }
 
+//nolint:gocyclo
 func TestConvertMcpOperationsToTools(t *testing.T) {
 	doc := loadTestSpec(t)
 	ops := extractMcpOperationsFromOpenAPI(doc)
@@ -459,7 +460,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	}
 
 	// --- Assertions for "showPetById" tool ---
-	expectedShowPetByIDName := opShowPetById
+	expectedShowPetByIDName := opShowPetByID
 	toolShowPetByID, ok := toolsMap[expectedShowPetByIDName]
 	if !ok {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedShowPetByIDName)

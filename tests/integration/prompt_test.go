@@ -122,10 +122,10 @@ func TestPromptIntegration(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Verify that the server declared the prompts capability
 	assert.NotNil(t, clientSession.InitializeResult().Capabilities.Prompts, "Server did not declare prompts capability")
@@ -185,7 +185,7 @@ func TestPromptLifecycle(t *testing.T) {
 
 	clientSession, err := client.Connect(ctx, t2, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// 1. Verify that the server correctly declares the `prompts` capability on initialization.
 	serverInit := clientSession.InitializeResult()

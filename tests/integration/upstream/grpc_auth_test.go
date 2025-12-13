@@ -41,7 +41,7 @@ func TestUpstreamService_GRPC_WithBearerAuth(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const weatherServiceID = "e2e_grpc_authed_weather"
 			serviceID, _ := util.SanitizeServiceName(weatherServiceID)

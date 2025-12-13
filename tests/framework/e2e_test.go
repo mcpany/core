@@ -54,7 +54,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		}
 		session, err := client.Connect(ctx, transport, nil)
 		require.NoError(t, err)
-		defer session.Close()
+		defer func() { _ = session.Close() }()
 
 		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
 		require.NoError(t, err)
@@ -96,7 +96,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		}
 		session, err := client.Connect(ctx, transport, nil)
 		require.NoError(t, err)
-		defer session.Close()
+		defer func() { _ = session.Close() }()
 
 		tools, err := session.ListTools(ctx, &mcp.ListToolsParams{})
 		require.NoError(t, err)

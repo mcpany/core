@@ -72,7 +72,7 @@ func TestUnaryClientInterceptor_MaxElapsedTime(t *testing.T) {
 
 	interceptor := UnaryClientInterceptor(retryConfig)
 
-	invoker := func(ctx context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+	invoker := func(_ context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
 		return status.Error(codes.Unavailable, "unavailable")
 	}
 
@@ -94,7 +94,7 @@ func TestUnaryClientInterceptor_ContextCanceled(t *testing.T) {
 	}
 	interceptor := UnaryClientInterceptor(retryConfig.Build())
 
-	invoker := func(ctx context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+	invoker := func(_ context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
 		return status.Error(codes.Unavailable, "unavailable")
 	}
 
@@ -113,7 +113,7 @@ func TestUnaryClientInterceptor_NoBaseBackoff(t *testing.T) {
 	}
 	interceptor := UnaryClientInterceptor(retryConfig.Build())
 
-	invoker := func(ctx context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
+	invoker := func(_ context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, _ ...grpc.CallOption) error {
 		return status.Error(codes.Unavailable, "unavailable")
 	}
 

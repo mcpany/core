@@ -93,7 +93,7 @@ func (f *McpField) GetType() string {
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
 func ParseProtoFromDefs(
-	ctx context.Context,
+	_ context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
 	protoCollections []*configv1.ProtoCollection,
 ) (*descriptorpb.FileDescriptorSet, error) {
@@ -188,7 +188,7 @@ func processProtoCollection(
 				return fmt.Errorf("failed to create directory for proto file: %w", err)
 			}
 
-			content, err := os.ReadFile(path)
+			content, err := os.ReadFile(path) //nolint:gosec // file inclusion from validated path
 			if err != nil {
 				return fmt.Errorf("failed to read proto file %s: %w", path, err)
 			}
@@ -237,7 +237,7 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 		content = []byte(protoFile.GetFileContent())
 	case configv1.ProtoFile_FilePath_case:
 		filePathRef := protoFile.GetFilePath()
-		content, err = os.ReadFile(filePathRef)
+		content, err = os.ReadFile(filePathRef) //nolint:gosec // file inclusion from config
 		if err != nil {
 			return "", fmt.Errorf("failed to read proto file from path %s: %w", filePathRef, err)
 		}
@@ -288,7 +288,7 @@ func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.F
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC service at %s: %w", target, err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	return parseProtoWithExistingConnection(ctx, conn)
 }

@@ -89,7 +89,7 @@ func TestConfigLoading(t *testing.T) {
 
 			conn, err := grpc.NewClient(mcpAny.GrpcRegistrationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			require.NoError(t, err)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 
 			client := v1.NewRegistrationServiceClient(conn)
 

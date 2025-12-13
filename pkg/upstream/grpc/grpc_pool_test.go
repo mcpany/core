@@ -56,7 +56,7 @@ func TestGrpcPool_New(t *testing.T) {
 	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)
 	require.NoError(t, err)
 	assert.NotNil(t, p)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 
 	assert.Equal(t, 1, p.Len())
 

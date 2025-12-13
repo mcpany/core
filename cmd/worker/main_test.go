@@ -67,7 +67,7 @@ func (s *MainTestSuite) TestMainLifecycle() {
 	time.Sleep(100 * time.Millisecond)
 
 	// Send an interrupt signal to trigger shutdown
-	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+	_ = syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
 
 	// Wait for main to exit
 	select {

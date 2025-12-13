@@ -37,11 +37,11 @@ func TestFileUpload(t *testing.T) {
 	// Create a dummy file to upload
 	file, err := os.CreateTemp("", "upload-*.txt")
 	require.NoError(t, err)
-	defer os.Remove(file.Name())
+	defer func() { _ = os.Remove(file.Name()) }()
 
 	_, err = file.WriteString("hello world")
 	require.NoError(t, err)
-	file.Close()
+	_ = file.Close()
 
 	// Create a new multipart writer
 	body := &bytes.Buffer{}
@@ -54,12 +54,12 @@ func TestFileUpload(t *testing.T) {
 	// Open the dummy file
 	file, err = os.Open(file.Name())
 	require.NoError(t, err)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	// Copy the file to the form file
 	_, err = io.Copy(part, file)
 	require.NoError(t, err)
-	writer.Close()
+	require.NoError(t, writer.Close())
 
 	// Create a new request
 	req, err := http.NewRequest("POST", server.JSONRPCEndpoint+"/upload", body)
@@ -71,7 +71,7 @@ func TestFileUpload(t *testing.T) {
 	resp, err := client.Do(req)
 	require.NoError(t, err)
 	if resp != nil {
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 	}
 
 	// Check the response

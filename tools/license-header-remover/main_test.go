@@ -136,7 +136,7 @@ print("Hello")
 	}
 
 	// Check if the license header has been removed from the file in the subdirectory
-	subFileContentAfter, err := os.ReadFile(subFilePath)
+	subFileContentAfter, err := os.ReadFile(subFilePath) //nolint:gosec // test file
 	if err != nil {
 		t.Fatalf("Failed to read sub file: %v", err)
 	}
@@ -145,7 +145,7 @@ print("Hello")
 	}
 
 	// Check if the .pb.go file is untouched
-	pbgoFileContentAfter, err := os.ReadFile(pbgoFilePath)
+	pbgoFileContentAfter, err := os.ReadFile(pbgoFilePath) //nolint:gosec // test file
 	if err != nil {
 		t.Fatalf("Failed to read .pb.go file: %v", err)
 	}
@@ -294,7 +294,7 @@ syntax = "proto3";`,
 
 			processFile(tmpFile)
 
-			content, err := os.ReadFile(tmpFile)
+			content, err := os.ReadFile(tmpFile) //nolint:gosec // test file
 			if err != nil {
 				t.Fatalf("Failed to read temporary file: %v", err)
 			}

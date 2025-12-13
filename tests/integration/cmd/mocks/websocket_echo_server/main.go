@@ -44,7 +44,7 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Error("websocket_echo_server: Failed to upgrade connection", "error", err)
 		return
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	slog.Info("websocket_echo_server: Client connected")
 

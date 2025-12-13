@@ -30,14 +30,14 @@ func TestHTTPResilience(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			fmt.Fprintln(w, `{"message": "ok"}`)
+			_, _ = fmt.Fprintln(w, `{"message": "ok"}`)
 		}))
 		defer ts.Close()
 
 		testCase := &framework.E2ETestCase{
 			Name:                "HTTP Retry",
 			UpstreamServiceType: "http",
-			BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
+			BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
 				return &integration.ManagedProcess{}
 			},
 			GenerateUpstreamConfig: func(upstreamEndpoint string) string {
@@ -67,7 +67,7 @@ upstreamServices:
 				testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 				cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 				require.NoError(t, err)
-				defer cs.Close()
+				defer func() { _ = cs.Close() }()
 
 				serviceID, _ := util.SanitizeServiceName("retry-service")
 				sanitizedToolName, _ := util.SanitizeToolName("echo")
@@ -100,7 +100,7 @@ upstreamServices:
 		testCase := &framework.E2ETestCase{
 			Name:                "HTTP Circuit Breaker",
 			UpstreamServiceType: "http",
-			BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
+			BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
 				return &integration.ManagedProcess{}
 			},
 			GenerateUpstreamConfig: func(upstreamEndpoint string) string {
@@ -130,7 +130,7 @@ upstreamServices:
 				testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 				cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 				require.NoError(t, err)
-				defer cs.Close()
+				defer func() { _ = cs.Close() }()
 
 				serviceID, _ := util.SanitizeServiceName("cb-service")
 				sanitizedToolName, _ := util.SanitizeToolName("echo")
@@ -156,7 +156,7 @@ upstreamServices:
 				atomic.StoreInt32(&requestCount, 0)
 				ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					atomic.AddInt32(&requestCount, 1)
-					fmt.Fprintln(w, `{"message": "ok"}`)
+					_, _ = fmt.Fprintln(w, `{"message": "ok"}`)
 				})
 				res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 				require.NoError(t, err)

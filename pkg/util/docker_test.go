@@ -84,7 +84,7 @@ func TestIsDockerSocketAccessibleDefault(t *testing.T) {
 
 	t.Run("ping success", func(t *testing.T) {
 		once = &sync.Once{}
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("API-Version", "1.41")
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -105,7 +105,7 @@ func TestIsDockerSocketAccessibleDefault(t *testing.T) {
 
 	t.Run("ping failure", func(t *testing.T) {
 		once = &sync.Once{}
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer server.Close()

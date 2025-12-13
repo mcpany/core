@@ -164,7 +164,7 @@ func main() {
 	mux.HandleFunc("/signal", signalHandler)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "OK")
+		_, _ = fmt.Fprintln(w, "OK")
 	})
 
 	server := &http.Server{
