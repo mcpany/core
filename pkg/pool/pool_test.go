@@ -595,7 +595,7 @@ func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 	assert.NoError(t, err, "Should be able to get a client after putting nil, but it timed out, indicating a semaphore leak.")
 }
 
-func TestPool_ConcurrentClose(t *testing.T) {
+func TestPool_ConcurrentClose(_ *testing.T) {
 	pool, _ := New(newMockClientFactory(true), 0, 10, 0, false)
 	var wg sync.WaitGroup
 	wg.Add(10)
@@ -815,7 +815,7 @@ func TestManager_ConcurrentAccess(t *testing.T) {
 	numGoroutines := 50
 	wg.Add(numGoroutines)
 	for i := 0; i < numGoroutines; i++ {
-		go func(i int) {
+		go func(_ int) {
 			defer wg.Done()
 			poolName := "test_pool"
 			// Concurrently register and get pools

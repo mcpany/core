@@ -30,7 +30,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// NewHttpPool creates a new connection pool for HTTP clients. It is defined as
+// NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
 // a variable to allow for easy mocking in tests.
 //
 // minSize is the initial number of clients to create.

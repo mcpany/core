@@ -46,7 +46,7 @@ type MockToolManager struct {
 	lastErr error
 }
 
-func NewMockToolManager(bus *bus.Provider) *MockToolManager {
+func NewMockToolManager(_ *bus.Provider) *MockToolManager {
 	return &MockToolManager{
 		tools: make(map[string]tool.Tool),
 	}
@@ -91,7 +91,7 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
+func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
 
@@ -103,7 +103,7 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
 func TestUpstream_Register_DisabledTool(t *testing.T) {
@@ -544,7 +544,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 }
 
 func TestUpstream_Register_WithReload(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 	}))
 	defer server.Close()
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")

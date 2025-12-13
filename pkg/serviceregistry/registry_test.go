@@ -61,7 +61,7 @@ type mockFactory struct {
 	newUpstreamFunc func() (upstream.Upstream, error)
 }
 
-func (m *mockFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+func (m *mockFactory) NewUpstream(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if m.newUpstreamFunc != nil {
 		return m.newUpstreamFunc()
 	}
