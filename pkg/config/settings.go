@@ -152,6 +152,7 @@ func (s *Settings) Profiles() []string {
 	return s.profiles
 }
 
+// LogLevel returns the current log level as a protobuf enum.
 func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return v1.GlobalSettings_LOG_LEVEL_DEBUG

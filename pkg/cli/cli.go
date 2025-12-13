@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package cli provides a JSON executor for CLI commands.
 package cli
 
 import (

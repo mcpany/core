@@ -722,11 +722,11 @@ func (m *mockToolManager) ClearToolsForService(serviceID string) {
 	m.addedTools = remainingTools
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *mockToolManager) AddServiceInfo(_ string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("not implemented")
 }
