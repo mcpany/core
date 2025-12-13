@@ -934,7 +934,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 
 	wg.Wait()
@@ -1042,7 +1042,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 		go func() {
 			defer stderr.Close()
-			io.Copy(io.Discard, stderr)
+			_, _ = io.Copy(io.Discard, stderr)
 		}()
 
 		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
@@ -1069,12 +1069,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	go func() {
 		defer wg.Done()
 		defer stdout.Close()
-		io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
 	}()
 	go func() {
 		defer wg.Done()
 		defer stderr.Close()
-		io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
 	}()
 
 	wg.Wait()

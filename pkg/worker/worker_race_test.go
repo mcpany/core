@@ -32,8 +32,9 @@ import (
 // The test may not fail on every run because it depends on the scheduler, but it is likely to fail.
 func TestWorker_StartStopRace(t *testing.T) {
 	defer goleak.VerifyNone(t)
-	busConfig := &buspb.MessageBus{}
-	busConfig.SetInMemory(&buspb.InMemoryBus{})
+	busConfig := buspb.MessageBus_builder{
+		InMemory: &buspb.InMemoryBus{},
+	}.Build()
 	bp, err := bus.NewBusProvider(busConfig)
 	require.NoError(t, err)
 

@@ -175,12 +175,12 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 		if reflectionEnabled == "true" {
 			data.ReflectionEnabled = true
 			break
-		} else if reflectionEnabled == "false" {
+		}
+		if reflectionEnabled == "false" {
 			data.ReflectionEnabled = false
 			break
-		} else {
-			fmt.Println("Invalid input. Please enter 'true' or 'false'.")
 		}
+		fmt.Println("Invalid input. Please enter 'true' or 'false'.")
 	}
 
 	tmpl, err := template.New("grpcService").Parse(grpcServiceTemplate)

@@ -83,14 +83,14 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 
 	testTool := &mockTool{
-		tool: &v1.Tool{
+		tool: v1.Tool_builder{
 			Name:      proto.String("test-tool"),
 			ServiceId: proto.String("test-service"),
-		},
-		cacheConfig: &configv1.CacheConfig{
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
 			IsEnabled: proto.Bool(true),
 			Ttl:       durationpb.New(100 * time.Millisecond),
-		},
+		}.Build(),
 	}
 
 	req := &tool.ExecutionRequest{
@@ -126,14 +126,14 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 	ttl := 50 * time.Millisecond
 
 	testTool := &mockTool{
-		tool: &v1.Tool{
+		tool: v1.Tool_builder{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		},
-		cacheConfig: &configv1.CacheConfig{
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
 			IsEnabled: proto.Bool(true),
 			Ttl:       durationpb.New(ttl),
-		},
+		}.Build(),
 	}
 	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
@@ -162,14 +162,14 @@ func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 	testTool := &mockTool{
-		tool: &v1.Tool{
+		tool: v1.Tool_builder{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		},
-		cacheConfig: &configv1.CacheConfig{
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
 			IsEnabled: proto.Bool(false), // Cache is explicitly disabled
 			Ttl:       durationpb.New(1 * time.Hour),
-		},
+		}.Build(),
 	}
 	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
@@ -194,10 +194,10 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	tm := &mockToolManager{}
 	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 	testTool := &mockTool{
-		tool: &v1.Tool{
+		tool: v1.Tool_builder{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		},
+		}.Build(),
 		cacheConfig: nil, // No cache config provided for the tool
 	}
 	req := &tool.ExecutionRequest{ToolName: testServiceToolName}

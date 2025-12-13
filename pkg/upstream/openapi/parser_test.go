@@ -33,6 +33,10 @@ const (
 	petIDParam         = "petId"
 	stringType         = "string"
 	contentTypeJSON    = "application/json"
+	opListPets         = "listPets"
+	opCreatePet        = "createPet"
+	opShowPetById      = "showPetById"
+	methodPost         = "POST"
 )
 
 const sampleOpenAPISpecJSON = `
@@ -294,14 +298,14 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 
 	// Check listPets
-	opListPets, ok := opsMap["listPets"]
+	opListPets, ok := opsMap[opListPets]
 	if !ok {
 		t.Fatalf("Operation 'listPets' not found")
 	}
 	if opListPets.Path != petsPath {
 		t.Errorf("Expected listPets Path '/pets', got '%s'", opListPets.Path)
 	}
-	if opListPets.Method != "GET" {
+	if opListPets.Method != methodGet {
 		t.Errorf("Expected listPets Method 'GET', got '%s'", opListPets.Method)
 	}
 	if opListPets.Summary != listAllPetsSummary {
@@ -312,14 +316,14 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 
 	// Check createPet
-	opCreatePet, ok := opsMap["createPet"]
+	opCreatePet, ok := opsMap[opCreatePet]
 	if !ok {
 		t.Fatalf("Operation 'createPet' not found")
 	}
 	if opCreatePet.Path != petsPath { // createPet also uses /pets path
 		t.Errorf("Expected createPet Path '/pets', got '%s'", opCreatePet.Path)
 	}
-	if opCreatePet.Method != "POST" {
+	if opCreatePet.Method != methodPost {
 		t.Errorf("Expected createPet Method 'POST', got '%s'", opCreatePet.Method)
 	}
 	if opCreatePet.Summary != createPetSummary {
@@ -330,14 +334,14 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 
 	// Check showPetByID
-	opShowPetByID, ok := opsMap["showPetById"]
+	opShowPetByID, ok := opsMap[opShowPetById]
 	if !ok {
 		t.Fatalf("Operation 'showPetById' not found")
 	}
 	if opShowPetByID.Path != "/pets/{petId}" {
 		t.Errorf("Expected showPetById Path '/pets/{petId}', got '%s'", opShowPetByID.Path)
 	}
-	if opShowPetByID.Method != "GET" {
+	if opShowPetByID.Method != methodGet {
 		t.Errorf("Expected showPetById Method 'GET', got '%s'", opShowPetByID.Method)
 	}
 	if opShowPetByID.Summary != "Info for a specific pet" {
@@ -362,7 +366,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	}
 
 	// --- Assertions for "listPets" tool ---
-	expectedListPetsName := "listPets"
+	expectedListPetsName := opListPets
 	toolListPets, ok := toolsMap[expectedListPetsName]
 	if !ok {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedListPetsName)
@@ -404,7 +408,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	}
 
 	// --- Assertions for "createPet" tool ---
-	expectedCreatePetName := "createPet"
+	expectedCreatePetName := opCreatePet
 	toolCreatePet, ok := toolsMap[expectedCreatePetName]
 	if !ok {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedCreatePetName)
@@ -455,7 +459,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	}
 
 	// --- Assertions for "showPetById" tool ---
-	expectedShowPetByIDName := "showPetById"
+	expectedShowPetByIDName := opShowPetById
 	toolShowPetByID, ok := toolsMap[expectedShowPetByIDName]
 	if !ok {
 		t.Fatalf("Tool '%s' not found in converted tools", expectedShowPetByIDName)
@@ -551,7 +555,7 @@ func TestExtractMcpOperationsFromOpenAPI_XMLContent(t *testing.T) {
 		opsMap[op.OperationID] = op
 	}
 
-	opCreatePet, ok := opsMap["createPet"]
+	opCreatePet, ok := opsMap[opCreatePet]
 	if !ok {
 		t.Fatalf("Operation 'createPet' not found")
 	}
@@ -566,8 +570,8 @@ func TestIsOperationIdempotent(t *testing.T) {
 		method   string
 		expected bool
 	}{
-		{"GET", true},
-		{"POST", false},
+		{methodGet, true},
+		{methodPost, false},
 		{"PUT", true},
 		{"DELETE", true},
 		{"PATCH", false},
