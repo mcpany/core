@@ -74,9 +74,9 @@ func TestHealthCmd(t *testing.T) {
 		}),
 	}
 	go func() {
-		server.ListenAndServe()
+		_ = server.ListenAndServe()
 	}()
-	defer server.Shutdown(context.Background())
+	defer func() { _ = server.Shutdown(context.Background()) }()
 
 	// Wait for the server to start
 	time.Sleep(100 * time.Millisecond)
@@ -100,9 +100,9 @@ func TestHealthCmdWithCustomPort(t *testing.T) {
 		}),
 	}
 	go func() {
-		server.ListenAndServe()
+		_ = server.ListenAndServe()
 	}()
-	defer server.Shutdown(context.Background())
+	defer func() { _ = server.Shutdown(context.Background()) }()
 
 	// Wait for the server to start
 	time.Sleep(100 * time.Millisecond)
@@ -126,7 +126,7 @@ func TestRootCmd(t *testing.T) {
 	tmpFile, err := os.CreateTemp(tmpDir, "config*.yaml")
 	assert.NoError(t, err)
 	tmpFilePath := tmpFile.Name()
-	tmpFile.Close()
+	_ = tmpFile.Close()
 
 	port := findFreePort(t)
 	grpcPort := findFreePort(t)
@@ -140,7 +140,7 @@ func TestRootCmd(t *testing.T) {
 		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
 		"--shutdown-timeout", "10s",
 	})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
@@ -158,9 +158,9 @@ func TestVersionCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{"version"})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 
-	w.Close()
+	_ = w.Close()
 	out, _ := io.ReadAll(r)
 	os.Stdout = originalStdout
 
@@ -237,7 +237,7 @@ func findFreePort(t *testing.T) int {
 	if err != nil {
 		t.Fatalf("failed to listen on tcp addr: %v", err)
 	}
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	return l.Addr().(*net.TCPAddr).Port
 }
 
@@ -287,23 +287,23 @@ func TestConfigValidateCmd(t *testing.T) {
 	// Create a temporary valid config file
 	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")
 	assert.NoError(t, err)
-	defer os.Remove(validConfigFile.Name())
+	defer func() { _ = os.Remove(validConfigFile.Name()) }()
 	_, err = validConfigFile.WriteString(`
 global_settings:
   mcp_listen_address: "localhost:8080"
 `)
 	assert.NoError(t, err)
-	validConfigFile.Close()
+	_ = validConfigFile.Close()
 
 	// Create a temporary invalid config file
 	invalidConfigFile, err := os.CreateTemp("", "invalid-config-*.yaml")
 	assert.NoError(t, err)
-	defer os.Remove(invalidConfigFile.Name())
+	defer func() { _ = os.Remove(invalidConfigFile.Name()) }()
 	_, err = invalidConfigFile.WriteString(`
 invalid-yaml
 `)
 	assert.NoError(t, err)
-	invalidConfigFile.Close()
+	_ = invalidConfigFile.Close()
 
 	tests := []struct {
 		name           string
@@ -340,7 +340,7 @@ invalid-yaml
 			rootCmd.SetArgs(tt.args)
 			err := rootCmd.Execute()
 
-			w.Close()
+			_ = w.Close()
 			out, _ := io.ReadAll(r)
 			os.Stdout = originalStdout
 
@@ -380,7 +380,7 @@ func TestConfigGenerateCmd(t *testing.T) {
 	}
 
 	go func() {
-		defer wIn.Close()
+		defer func() { _ = wIn.Close() }()
 		for _, input := range inputs {
 			fmt.Fprintln(wIn, input)
 		}
@@ -390,7 +390,7 @@ func TestConfigGenerateCmd(t *testing.T) {
 	rootCmd.SetArgs([]string{"config", "generate"})
 	err := rootCmd.Execute()
 
-	wOut.Close()
+	_ = wOut.Close()
 	out, _ := io.ReadAll(rOut)
 
 	assert.NoError(t, err)

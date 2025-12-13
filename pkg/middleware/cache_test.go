@@ -58,7 +58,7 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return m.cacheConfig
 }
 
-// mockToolManager is a mock implementation of the tool.ToolManagerInterface.
+// mockToolManager is a mock implementation of the tool.ManagerInterface.
 type mockToolManager struct{}
 
 func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {

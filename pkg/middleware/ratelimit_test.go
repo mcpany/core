@@ -49,7 +49,7 @@ func (m *rateLimitMockTool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 type rateLimitMockToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	mock.Mock
 }
 

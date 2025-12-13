@@ -114,7 +114,7 @@ func New[T ClosableClient](
 		for i := 0; i < minSize; i++ {
 			client, err := factory(context.Background())
 			if err != nil {
-				p.Close()
+				_ = p.Close()
 				return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 			}
 			p.clients <- client

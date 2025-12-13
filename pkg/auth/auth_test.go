@@ -90,7 +90,7 @@ func TestAPIKeyAuthenticator(t *testing.T) {
 }
 
 func TestAuthManager(t *testing.T) {
-	authManager := NewAuthManager()
+	authManager := NewManager()
 	require.NotNil(t, authManager)
 
 	config := configv1.APIKeyAuth_builder{
@@ -202,7 +202,7 @@ func TestAuthManager(t *testing.T) {
 }
 
 func TestAddOAuth2Authenticator(t *testing.T) {
-	authManager := NewAuthManager()
+	authManager := NewManager()
 	require.NotNil(t, authManager)
 
 	// Mock OIDC provider

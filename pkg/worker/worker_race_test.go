@@ -35,7 +35,7 @@ func TestWorker_StartStopRace(t *testing.T) {
 	busConfig := buspb.MessageBus_builder{
 		InMemory: &buspb.InMemoryBus{},
 	}.Build()
-	bp, err := bus.NewBusProvider(busConfig)
+	bp, err := bus.NewProvider(busConfig)
 	require.NoError(t, err)
 
 	for i := 0; i < 100; i++ {

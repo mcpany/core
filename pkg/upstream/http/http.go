@@ -91,9 +91,9 @@ func NewHTTPUpstream(poolManager *pool.Manager) upstream.Upstream {
 func (u *HTTPUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
@@ -171,7 +171,7 @@ func (u *HTTPUpstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -346,7 +346,7 @@ func (u *HTTPUpstream) createAndRegisterHTTPTools(ctx context.Context, serviceID
 	return discoveredTools
 }
 
-func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+func (u *HTTPUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	for _, promptDef := range httpService.GetPrompts() {

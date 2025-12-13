@@ -54,10 +54,10 @@ type ServiceRegistry struct {
 	serviceInfo     map[string]*tool.ServiceInfo
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
-	toolManager     tool.ToolManagerInterface
-	promptManager   prompt.PromptManagerInterface
-	resourceManager resource.ResourceManagerInterface
-	authManager     *auth.AuthManager
+	toolManager     tool.ManagerInterface
+	promptManager   prompt.ManagerInterface
+	resourceManager resource.ManagerInterface
+	authManager     *auth.Manager
 }
 
 // New creates a new ServiceRegistry instance, which is responsible for managing
@@ -71,7 +71,7 @@ type ServiceRegistry struct {
 //   - authManager: The manager for registering service-specific authenticators.
 //
 // Returns a new instance of `ServiceRegistry`.
-func New(factory factory.Factory, toolManager tool.ToolManagerInterface, promptManager prompt.PromptManagerInterface, resourceManager resource.ResourceManagerInterface, authManager *auth.AuthManager) *ServiceRegistry {
+func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),

@@ -32,7 +32,7 @@ func TestBusProvider(t *testing.T) {
 	t.Run("InMemory", func(t *testing.T) {
 		messageBus := bus.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
-		provider, err := NewBusProvider(messageBus)
+		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -57,7 +57,7 @@ func TestBusProvider(t *testing.T) {
 		redisBus.SetAddress("localhost:6379")
 		messageBus.SetRedis(redisBus)
 
-		provider, err := NewBusProvider(messageBus)
+		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
 		bus1 := GetBus[string](provider, "strings")
@@ -73,7 +73,7 @@ func TestBusProvider(t *testing.T) {
 func TestIntegration(t *testing.T) {
 	messageBus := bus.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	// Simulate a tool execution request/response
@@ -121,7 +121,7 @@ func TestIntegration(t *testing.T) {
 func TestBusProvider_Concurrent(t *testing.T) {
 	messageBus := bus.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	numGoroutines := 100
@@ -155,7 +155,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
 
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")
@@ -191,7 +191,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
 
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")
@@ -226,7 +226,7 @@ func TestRedisBus_Concurrent(t *testing.T) {
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
 
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus := GetBus[string](provider, "test-topic")

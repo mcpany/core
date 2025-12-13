@@ -77,16 +77,16 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	// Setup bus and worker
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
 	// Setup components
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
@@ -333,16 +333,16 @@ func TestListServices(t *testing.T) {
 	// Setup bus and worker
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
 	// Setup components
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
@@ -382,7 +382,7 @@ func TestListServices(t *testing.T) {
 	t.Run("list services with bus error", func(t *testing.T) {
 		// To simulate a bus error, we'll use a new bus provider that isn't properly configured
 		// for the worker to publish results to.
-		errorBusProvider, err := bus.NewBusProvider(bus_pb.MessageBus_builder{}.Build())
+		errorBusProvider, err := bus.NewProvider(bus_pb.MessageBus_builder{}.Build())
 		require.NoError(t, err)
 
 		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider)
@@ -403,7 +403,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	ctx := context.Background()
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 	registrationServer, err := NewRegistrationServer(busProvider)
 	require.NoError(t, err)
@@ -458,7 +458,7 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	// Setup bus without a worker to simulate a timeout
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
 	registrationServer, err := NewRegistrationServer(busProvider)

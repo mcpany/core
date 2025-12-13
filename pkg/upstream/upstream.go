@@ -48,9 +48,9 @@ type Upstream interface {
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
-		toolManager tool.ToolManagerInterface,
-		promptManager prompt.PromptManagerInterface,
-		resourceManager resource.ResourceManagerInterface,
+		toolManager tool.ManagerInterface,
+		promptManager prompt.ManagerInterface,
+		resourceManager resource.ManagerInterface,
 		isReload bool,
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }

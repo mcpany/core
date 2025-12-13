@@ -345,6 +345,6 @@ func checkConnection(address string) error {
 		logging.GetLogger().Error("checkConnection failed", "address", address, "error", err)
 		return fmt.Errorf("failed to connect to address %s: %w", address, err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 	return nil
 }

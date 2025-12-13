@@ -31,7 +31,7 @@ import (
 func TestBusProvider_GetBus_InMemory(t *testing.T) {
 	messageBus := &bus.MessageBus{}
 	messageBus.SetInMemory(&bus.InMemoryBus{})
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus1 := GetBus[string](provider, "test_topic")
@@ -56,7 +56,7 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 	redisBus.SetAddress("localhost:6379")
 	messageBus.SetRedis(redisBus)
 
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus1 := GetBus[string](provider, "test_topic")
@@ -80,7 +80,7 @@ func TestBusProvider_GetBus_Nats(t *testing.T) {
 	natsBus.SetServerUrl(s.ClientURL())
 	messageBus.SetNats(natsBus)
 
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	bus1 := GetBus[string](provider, "test_topic")
@@ -93,7 +93,7 @@ func TestBusProvider_GetBus_Nats(t *testing.T) {
 func TestBusProvider_GetBus_Concurrent(t *testing.T) {
 	messageBus := &bus.MessageBus{}
 	messageBus.SetInMemory(&bus.InMemoryBus{})
-	provider, err := NewBusProvider(messageBus)
+	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
 	var wg sync.WaitGroup
@@ -120,7 +120,7 @@ func TestBusProvider_GetBus_Concurrent(t *testing.T) {
 }
 
 func TestBusProvider_DefaultBus(t *testing.T) {
-	provider, err := NewBusProvider(nil)
+	provider, err := NewProvider(nil)
 	assert.NoError(t, err)
 	assert.NotNil(t, provider.config)
 	assert.NotNil(t, provider.config.GetInMemory())

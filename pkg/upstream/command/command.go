@@ -35,30 +35,30 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CommandUpstream implements the upstream.Upstream interface for services that
+// Upstream implements the upstream.Upstream interface for services that
 // are exposed as command-line tools. It discovers and registers tools based on
 // a list of commands defined in the service configuration.
-type CommandUpstream struct{}
+type Upstream struct{}
 
 // Shutdown implements the upstream.Upstream interface.
-func (u *CommandUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	// Noop for command upstream
 	return nil
 }
 
-// NewCommandUpstream creates a new instance of CommandUpstream.
-func NewCommandUpstream() upstream.Upstream {
-	return &CommandUpstream{}
+// NewUpstream creates a new instance of CommandUpstream.
+func NewUpstream() upstream.Upstream {
+	return &Upstream{}
 }
 
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
-func (u *CommandUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
@@ -115,12 +115,12 @@ func (u *CommandUpstream) Register(
 // createAndRegisterCommandTools iterates through the command definitions in the
 // service configuration, creates a new CommandTool for each, and registers it
 // with the tool manager.
-func (u *CommandUpstream) createAndRegisterCommandTools(
+func (u *Upstream) createAndRegisterCommandTools(
 	_ context.Context,
 	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
-	toolManager tool.ToolManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	_ bool,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
@@ -260,11 +260,11 @@ func (u *CommandUpstream) createAndRegisterCommandTools(
 	return discoveredTools, nil
 }
 
-func (u *CommandUpstream) createAndRegisterPrompts(
+func (u *Upstream) createAndRegisterPrompts(
 	_ context.Context,
 	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
-	promptManager prompt.PromptManagerInterface,
+	promptManager prompt.ManagerInterface,
 	_ bool,
 ) {
 	log := logging.GetLogger()

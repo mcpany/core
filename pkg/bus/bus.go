@@ -62,7 +62,7 @@ type Bus[T any] interface {
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// BusProvider is a thread-safe container for managing multiple, type-safe bus
+// Provider is a thread-safe container for managing multiple, type-safe bus
 // instances, with each bus being dedicated to a specific topic. It ensures that
 // for any given topic, there is only one bus instance, creating one on demand
 // if it doesn't already exist.
@@ -70,21 +70,21 @@ type Bus[T any] interface {
 // This allows different parts of the application to get a bus for a specific
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
-type BusProvider struct {
+type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
 }
 
-// NewBusProviderHook is a test hook for overriding the NewBusProvider logic.
-var NewBusProviderHook func(*bus.MessageBus) (*BusProvider, error)
+// NewProviderHook is a test hook for overriding the NewProvider logic.
+var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewBusProvider creates and returns a new BusProvider, which is used to manage
+// NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
-func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
-	if NewBusProviderHook != nil {
-		return NewBusProviderHook(messageBus)
+func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
+	if NewProviderHook != nil {
+		return NewProviderHook(messageBus)
 	}
-	provider := &BusProvider{
+	provider := &Provider{
 		buses:  xsync.NewMap[string, any](),
 		config: messageBus,
 	}
@@ -111,7 +111,7 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 	return provider, nil
 }
 
-// GetBus retrieves or creates a bus for a specific topic and message type. If a
+// GetBusHook is a hook that allows for changing the behavior of GetBus.
 // bus for the given topic already exists, it is returned; otherwise, a new one
 // is created and stored for future use.
 //
@@ -119,14 +119,14 @@ func NewBusProvider(messageBus *bus.MessageBus) (*BusProvider, error) {
 // type safety for each topic.
 //
 // Parameters:
-//   - p: The BusProvider instance.
+//   - p: The Provider instance.
 //   - topic: The name of the topic for which to get the bus.
 //
 // Returns a Bus instance for the specified message type and topic.
 // GetBusHook is a test hook for overriding the bus retrieval logic.
-var GetBusHook func(p *BusProvider, topic string) any
+var GetBusHook func(p *Provider, topic string) any
 
-func GetBus[T any](p *BusProvider, topic string) Bus[T] {
+func GetBus[T any](p *Provider, topic string) Bus[T] {
 	if GetBusHook != nil {
 		if bus := GetBusHook(p, topic); bus != nil {
 			return bus.(Bus[T])

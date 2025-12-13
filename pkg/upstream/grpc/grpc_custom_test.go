@@ -30,7 +30,7 @@ import (
 )
 
 type mockToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	tools       map[string]tool.Tool
 	serviceInfo map[string]*tool.ServiceInfo
 }
@@ -62,7 +62,7 @@ func newMockToolManager() *mockToolManager {
 }
 
 type mockPromptManager struct {
-	prompt.PromptManagerInterface
+	prompt.ManagerInterface
 	prompts map[string]prompt.Prompt
 }
 

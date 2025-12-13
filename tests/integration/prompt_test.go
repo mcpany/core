@@ -73,13 +73,13 @@ func TestPromptIntegration(t *testing.T) {
 	// Server setup
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewBusProvider(messageBus)
+	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 	poolManager := pool.NewManager()
-	toolManager := tool.NewToolManager(busProvider)
-	promptManager := prompt.NewPromptManager()
-	resourceManager := resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(
 		factory.NewUpstreamServiceFactory(poolManager),
 		toolManager,

@@ -89,7 +89,7 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 
 		// Create a file in a subdirectory
 		subDir := filepath.Join(tempDir, "subdir")
-		err = os.Mkdir(subDir, 0o755)
+		err = os.Mkdir(subDir, 0o750)
 		require.NoError(t, err)
 		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0o600)
 		require.NoError(t, err)

@@ -39,7 +39,7 @@ import (
 //     requests.
 //
 // Returns an `mcp.Middleware` function.
-func AuthMiddleware(authManager *auth.AuthManager) mcp.Middleware {
+func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			// Extract serviceID from the method. Assuming the format is "service.method".

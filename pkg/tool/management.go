@@ -32,14 +32,14 @@ import (
 )
 
 // MCPServerProvider defines an interface for components that can provide an
-// instance of an *mcp.Server. This is used to decouple the ToolManager from the
+// instance of an *mcp.Server. This is used to decouple the Manager from the
 // concrete server implementation.
 type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
-// ToolManagerInterface defines the interface for a tool manager.
-type ToolManagerInterface interface {
+// ManagerInterface defines the interface for a tool manager.
+type ManagerInterface interface {
 	AddTool(tool Tool) error
 	GetTool(toolName string) (Tool, bool)
 	ListTools() []Tool
@@ -56,23 +56,21 @@ type ExecutionMiddleware interface {
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-// ToolManager is a thread-safe manager for registering, retrieving, and
-// executing tools. It also handles the registration of tools with an MCP server,
-// making them available for remote execution.
-type ToolManager struct {
+// Manager is a thread-safe manager for registering tooling.
+type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
 	mcpServer   MCPServerProvider
-	bus         *bus.BusProvider
+	bus         *bus.Provider
 	mu          sync.RWMutex
 	middlewares []ExecutionMiddleware
 	cachedTools []Tool
 	toolsMutex  sync.RWMutex
 }
 
-// NewToolManager creates and returns a new, empty ToolManager.
-func NewToolManager(bus *bus.BusProvider) *ToolManager {
-	return &ToolManager{
+// NewManager creates and returns a new, empty Manager.
+func NewManager(bus *bus.Provider) *Manager {
+	return &Manager{
 		bus:         bus,
 		tools:       xsync.NewMap[string, Tool](),
 		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
@@ -80,13 +78,13 @@ func NewToolManager(bus *bus.BusProvider) *ToolManager {
 }
 
 // AddMiddleware adds a middleware to the tool manager.
-func (tm *ToolManager) AddMiddleware(middleware ExecutionMiddleware) {
+func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
-// SetMCPServer provides the ToolManager with a reference to the MCP server.
+// SetMCPServer provides the Manager with a reference to the MCP server.
 // This is necessary for registering tool handlers with the server.
-func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
+func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.mcpServer = mcpServer
@@ -99,7 +97,7 @@ func (tm *ToolManager) SetMCPServer(mcpServer MCPServerProvider) {
 // req contains the name of the tool and its inputs.
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
-func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 
@@ -198,7 +196,7 @@ func (tm *ToolManager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (
 //
 // serviceID is the unique identifier for the service.
 // info is the ServiceInfo struct containing the service's metadata.
-func (tm *ToolManager) AddServiceInfo(serviceID string, info *ServiceInfo) {
+func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	tm.serviceInfo.Store(serviceID, info)
 }
 
@@ -206,7 +204,7 @@ func (tm *ToolManager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 //
 // serviceID is the unique identifier for the service.
 // It returns the ServiceInfo and a boolean indicating whether the service was found.
-func (tm *ToolManager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
+func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
 		return nil, false
@@ -220,7 +218,7 @@ func (tm *ToolManager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 //
 // tool is the tool to be added.
 // It returns an error if the tool ID cannot be generated.
-func (tm *ToolManager) AddTool(tool Tool) error {
+func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
@@ -236,7 +234,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 	}
 	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
 	log := logging.GetLogger().With("toolID", toolID)
-	log.Debug("Adding tool to ToolManager")
+	log.Debug("Adding tool to Manager")
 	tm.tools.Store(toolID, tool)
 
 	tm.toolsMutex.Lock()
@@ -344,7 +342,7 @@ func (tm *ToolManager) AddTool(tool Tool) error {
 //
 // toolName is the name of the tool to retrieve.
 // It returns the tool and a boolean indicating whether the tool was found.
-func (tm *ToolManager) GetTool(toolName string) (Tool, bool) {
+func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	tool, ok := tm.tools.Load(toolName)
 	if !ok {
 		return nil, false
@@ -354,7 +352,7 @@ func (tm *ToolManager) GetTool(toolName string) (Tool, bool) {
 
 // ListTools returns a slice containing all the tools currently registered with
 // the manager.
-func (tm *ToolManager) ListTools() []Tool {
+func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {
 		defer tm.toolsMutex.RUnlock()
@@ -386,7 +384,7 @@ func (tm *ToolManager) ListTools() []Tool {
 //
 // serviceID is the unique identifier for the service whose tools should be
 // cleared.
-func (tm *ToolManager) ClearToolsForService(serviceID string) {
+func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	log := logging.GetLogger().With("serviceID", serviceID)
