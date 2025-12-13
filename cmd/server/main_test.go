@@ -217,7 +217,7 @@ func TestHealthCmdFlagPrecedence(t *testing.T) {
 	err = os.WriteFile(configFile, []byte(`
 global_settings:
   bind_address: "localhost:9090"
-`), 0o644)
+`), 0o600)
 	assert.NoError(t, err)
 
 	rootCmd := newRootCmd()

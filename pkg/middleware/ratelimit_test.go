@@ -72,16 +72,18 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
-		rlConfig := &configv1.RateLimitConfig{}
-		rlConfig.SetIsEnabled(true)
-		rlConfig.SetRequestsPerSecond(10)
-		rlConfig.SetBurst(1)
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float32(10),
+			Burst:             proto.Int32(1),
+		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
-			Name:   "test-service",
-			Config: &configv1.UpstreamServiceConfig{},
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
 		}
-		serviceInfo.Config.SetRateLimit(rlConfig)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -93,7 +95,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		nextCalled := false
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
-			return "success", nil
+			return successResult, nil
 		}
 
 		result, err := rlMiddleware.Execute(ctx, req, next)
@@ -111,16 +113,18 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
-		rlConfig := &configv1.RateLimitConfig{}
-		rlConfig.SetIsEnabled(true)
-		rlConfig.SetRequestsPerSecond(1) // 1 RPS
-		rlConfig.SetBurst(1)
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float32(1),
+			Burst:             proto.Int32(1),
+		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
-			Name:   "test-service",
-			Config: &configv1.UpstreamServiceConfig{},
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
 		}
-		serviceInfo.Config.SetRateLimit(rlConfig)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -130,7 +134,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			return "success", nil
+			return successResult, nil
 		}
 
 		// First request should succeed
@@ -153,28 +157,32 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		// Initial Config: 10 RPS, Burst 10
-		rlConfig1 := &configv1.RateLimitConfig{}
-		rlConfig1.SetIsEnabled(true)
-		rlConfig1.SetRequestsPerSecond(10)
-		rlConfig1.SetBurst(10)
+		rlConfig1 := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float32(10),
+			Burst:             proto.Int32(10),
+		}.Build()
 
 		serviceInfo1 := &tool.ServiceInfo{
-			Name:   "test-service",
-			Config: &configv1.UpstreamServiceConfig{},
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig1,
+			}.Build(),
 		}
-		serviceInfo1.Config.SetRateLimit(rlConfig1)
 
 		// Updated Config: 1 RPS, Burst 1
-		rlConfig2 := &configv1.RateLimitConfig{}
-		rlConfig2.SetIsEnabled(true)
-		rlConfig2.SetRequestsPerSecond(1)
-		rlConfig2.SetBurst(1)
+		rlConfig2 := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float32(1),
+			Burst:             proto.Int32(1),
+		}.Build()
 
 		serviceInfo2 := &tool.ServiceInfo{
-			Name:   "test-service",
-			Config: &configv1.UpstreamServiceConfig{},
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig2,
+			}.Build(),
 		}
-		serviceInfo2.Config.SetRateLimit(rlConfig2)
 
 		// Mock sequence:
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo1, true).Once()
@@ -187,7 +195,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-			return "success", nil
+			return successResult, nil
 		}
 
 		// 1. Allowed (Config 1: 10 RPS)
@@ -217,14 +225,16 @@ func TestRateLimitMiddleware(t *testing.T) {
 		toolProto.SetServiceId("service")
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
-		rlConfig := &configv1.RateLimitConfig{}
-		rlConfig.SetIsEnabled(false)
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled: proto.Bool(false),
+		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
-			Name:   "test-service",
-			Config: &configv1.UpstreamServiceConfig{},
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
 		}
-		serviceInfo.Config.SetRateLimit(rlConfig)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -236,12 +246,12 @@ func TestRateLimitMiddleware(t *testing.T) {
 		nextCalled := false
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
-			return "success", nil
+			return successResult, nil
 		}
 
 		result, err := rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
 	})
 
@@ -264,12 +274,12 @@ func TestRateLimitMiddleware(t *testing.T) {
 		nextCalled := false
 		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
-			return "success", nil
+			return successResult, nil
 		}
 
 		result, err := rlMiddleware.Execute(ctx, req, next)
 		assert.NoError(t, err)
-		assert.Equal(t, "success", result)
+		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
 	})
 }

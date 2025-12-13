@@ -194,7 +194,7 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, resp, err := websocket.Dial(ctx, healthCheckURL, nil) //nolint:staticcheck
+	conn, resp, err := websocket.Dial(ctx, healthCheckURL, nil)
 	if resp != nil {
 		defer func() { _ = resp.Body.Close() }()
 	}
@@ -313,7 +313,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	}
 }
 
-func connectionCheck(name, address string) health.Check { //nolint:unused
+func connectionCheck(name, address string) health.Check {
 	return health.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,

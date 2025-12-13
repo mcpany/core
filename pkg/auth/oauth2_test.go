@@ -27,12 +27,12 @@ import (
 
 func TestOAuth2Auth_Authenticate(t *testing.T) {
 	t.Run("InvalidTokenURL", func(t *testing.T) {
-		clientID := (&configv1.SecretValue_builder{
+		clientID := configv1.SecretValue_builder{
 			PlainText: proto.String("id"),
-		}).Build()
-		clientSecret := (&configv1.SecretValue_builder{
+		}.Build()
+		clientSecret := configv1.SecretValue_builder{
 			PlainText: proto.String("secret"),
-		}).Build()
+		}.Build()
 		auth := &OAuth2Auth{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,

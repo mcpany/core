@@ -26,6 +26,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestNewAPIKeyAuthenticator(t *testing.T) {
@@ -35,29 +36,32 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 	})
 
 	t.Run("invalid_nil_config", func(t *testing.T) {
-		authenticator := NewAPIKeyAuthenticator(&configv1.APIKeyAuth{})
+		authenticator := NewAPIKeyAuthenticator(configv1.APIKeyAuth_builder{}.Build())
 		assert.Nil(t, authenticator)
 	})
 
 	t.Run("empty_param_name", func(t *testing.T) {
-		config := &configv1.APIKeyAuth{}
-		config.SetKeyValue("some-key")
+		config := configv1.APIKeyAuth_builder{
+			KeyValue: proto.String("some-key"),
+		}.Build()
 		authenticator := NewAPIKeyAuthenticator(config)
 		assert.Nil(t, authenticator)
 	})
 
 	t.Run("empty_key_value", func(t *testing.T) {
-		config := &configv1.APIKeyAuth{}
-		config.SetParamName("X-API-Key")
+		config := configv1.APIKeyAuth_builder{
+			ParamName: proto.String("X-API-Key"),
+		}.Build()
 		authenticator := NewAPIKeyAuthenticator(config)
 		assert.Nil(t, authenticator)
 	})
 }
 
 func TestAPIKeyAuthenticator(t *testing.T) {
-	config := &configv1.APIKeyAuth{}
-	config.SetParamName("X-API-Key")
-	config.SetKeyValue("secret-key")
+	config := configv1.APIKeyAuth_builder{
+		ParamName: proto.String("X-API-Key"),
+		KeyValue:  proto.String("secret-key"),
+	}.Build()
 
 	authenticator := NewAPIKeyAuthenticator(config)
 	require.NotNil(t, authenticator)
@@ -89,9 +93,10 @@ func TestAuthManager(t *testing.T) {
 	authManager := NewAuthManager()
 	require.NotNil(t, authManager)
 
-	config := &configv1.APIKeyAuth{}
-	config.SetParamName("X-API-Key")
-	config.SetKeyValue("secret-key")
+	config := configv1.APIKeyAuth_builder{
+		ParamName: proto.String("X-API-Key"),
+		KeyValue:  proto.String("secret-key"),
+	}.Build()
 	apiKeyAuth := NewAPIKeyAuthenticator(config)
 
 	serviceID := "test-service"
