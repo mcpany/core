@@ -88,11 +88,11 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return "mock-result", nil
 }
 
-func (m *mockToolManager) AddTool(tool tool.Tool) error {
+func (m *mockToolManager) AddTool(_ tool.Tool) error {
 	return nil
 }
 
-func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
 	return nil, false
 }
 
@@ -103,7 +103,7 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 func (m *mockToolManager) ClearToolsForService(serviceID string) {
 }
 
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 }
 
 func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
@@ -205,7 +205,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		defer workerCancel()
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+			registerFunc: func(ctx context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 				// Check if the worker context is done, but the request context is not.
 				if workerCtx.Err() != nil && ctx.Err() == nil {
 					return "success-key-request-context", nil, nil, nil
@@ -472,7 +472,7 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
 	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
-	bus.GetBusHook = func(p *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
 		if topic == bus.ToolExecutionRequestTopic {
 			return reqBusMock
 		}
@@ -497,7 +497,7 @@ func TestWorker_ContextPropagation(t *testing.T) {
 		return func() {}
 	}
 
-	resBusMock.publishFunc = func(ctx context.Context, topic string, msg *bus.ToolExecutionResult) error {
+	resBusMock.publishFunc = func(ctx context.Context, _ string, msg *bus.ToolExecutionResult) error {
 		defer wg.Done()
 		// Block until context is canceled. This proves the correct context was passed.
 		// If context.Background() was passed, this will block forever and the test will time out.
