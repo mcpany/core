@@ -29,6 +29,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type contextKey string
+
+const requestContextKey contextKey = "http.request"
+
 func TestAuthMiddleware(t *testing.T) {
 	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
 		authManager := auth.NewManager()
@@ -69,7 +73,7 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq) //nolint:staticcheck // de-facto standard
+		ctx := context.WithValue(context.Background(), requestContextKey, httpReq)
 
 		// Call the handler. The method "test.method" implies the serviceID is "test".
 		_, err = handler(ctx, "test.method", nil)
@@ -105,7 +109,7 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq.Header.Set("X-API-Key", "secret")
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq) //nolint:staticcheck // de-facto standard
+		ctx := context.WithValue(context.Background(), requestContextKey, httpReq)
 
 		// Call the handler.
 		_, err = handler(ctx, "test.method", nil)

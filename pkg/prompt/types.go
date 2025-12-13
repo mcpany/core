@@ -27,6 +27,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// ErrPromptNotFound is returned when a requested prompt is not found.
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
