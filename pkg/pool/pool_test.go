@@ -36,7 +36,7 @@ type mockClient struct {
 	mu        sync.RWMutex
 }
 
-func (c *mockClient) IsHealthy(ctx context.Context) bool {
+func (c *mockClient) IsHealthy(_ context.Context) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.isHealthy
@@ -58,7 +58,7 @@ func (c *mockClient) Close() error {
 var clientIDCounter int32
 
 func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, error) {
-	return func(ctx context.Context) (*mockClient, error) {
+	return func(_ context.Context) (*mockClient, error) {
 		id := atomic.AddInt32(&clientIDCounter, 1)
 		return &mockClient{id: int(id), isHealthy: healthy}, nil
 	}
@@ -138,7 +138,7 @@ func TestPool_GetPut(t *testing.T) {
 func TestPool_Get_Unhealthy(t *testing.T) {
 	// Factory creates one unhealthy client, then healthy ones.
 	var createdCount int32
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		count := atomic.AddInt32(&createdCount, 1)
 		// First client is unhealthy, subsequent are healthy.
 		return &mockClient{isHealthy: count > 1}, nil
@@ -172,7 +172,7 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 func TestPool_Full(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	// Get one client, pool should now be at max capacity
 	c1, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -186,7 +186,7 @@ func TestPool_Full(t *testing.T) {
 
 func TestPool_Close(t *testing.T) {
 	client := &mockClient{isHealthy: true}
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		return client, nil
 	}
 	p, err := New(factory, 1, 1, 100, false)
@@ -254,7 +254,7 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 	const maxSize = 2
 	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	// Cycle through clients, marking them as unhealthy before returning them.
 	// This should not exhaust the pool's semaphore.
 	for i := 0; i < maxSize+1; i++ {
@@ -306,7 +306,7 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 	)
 	p, err := New(newMockClientFactory(true), 10, maxSize, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	var wg sync.WaitGroup
 	wg.Add(numClients)
 	for i := 0; i < numClients; i++ {
@@ -380,7 +380,7 @@ func TestManager_Deregister(t *testing.T) {
 }
 
 func TestPool_New_FactoryError(t *testing.T) {
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		return nil, fmt.Errorf("factory error")
 	}
 	_, err := New(factory, 1, 1, 0, false)
@@ -497,7 +497,7 @@ func TestManager_Get_TypeSafety(t *testing.T) {
 func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
 	const maxSize = 2
 	var factoryCallCount int32
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		atomic.AddInt32(&factoryCallCount, 1)
 		return &mockClient{isHealthy: true}, nil
 	}

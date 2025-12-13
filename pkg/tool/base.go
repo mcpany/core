@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package tool defines the interface for tools that can be executed by the upstream service.
 package tool
 
 import (

@@ -124,8 +124,8 @@ func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 	}
 }
 
-// GraphQLCallable implements the Callable interface for GraphQL queries.
-type GraphQLCallable struct {
+// Callable implements the Callable interface for GraphQL queries.
+type Callable struct {
 	client        *graphql.Client
 	query         string
 	authenticator auth.UpstreamAuthenticator
@@ -133,7 +133,7 @@ type GraphQLCallable struct {
 }
 
 // Call executes the GraphQL query.
-func (c *GraphQLCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
 		graphqlReq.Var(key, value)
@@ -159,9 +159,9 @@ func (g *graphqlUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	promptManager prompt.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ prompt.ManagerInterface,
+	_ resource.ManagerInterface,
+	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	graphqlConfig := serviceConfig.GetGraphqlService()
 	if graphqlConfig == nil {
@@ -320,7 +320,7 @@ func (g *graphqlUpstream) Register(
 
 				sb.WriteString(" }")
 
-				callable := &GraphQLCallable{client: client, query: sb.String(), authenticator: authenticator, address: graphqlConfig.GetAddress()}
+				callable := &Callable{client: client, query: sb.String(), authenticator: authenticator, address: graphqlConfig.GetAddress()}
 
 				t, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
 				if err != nil {

@@ -20,15 +20,13 @@ import (
 	"context"
 	"testing"
 
+	"net/http"
+
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-)
-
-import (
-	"net/http"
 )
 
 func TestAuthMiddleware(t *testing.T) {
@@ -71,7 +69,7 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq) //nolint:staticcheck // de-facto standard
 
 		// Call the handler. The method "test.method" implies the serviceID is "test".
 		_, err = handler(ctx, "test.method", nil)
@@ -107,7 +105,7 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq.Header.Set("X-API-Key", "secret")
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq) //nolint:staticcheck // de-facto standard
 
 		// Call the handler.
 		_, err = handler(ctx, "test.method", nil)

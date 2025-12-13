@@ -35,7 +35,7 @@ func TestMockUpstreamAuthenticator(t *testing.T) {
 	t.Run("with_custom_function", func(t *testing.T) {
 		expectedErr := errors.New("authentication failed")
 		mock := &MockUpstreamAuthenticator{
-			AuthenticateFunc: func(req *http.Request) error {
+			AuthenticateFunc: func(_ *http.Request) error {
 				return expectedErr
 			},
 		}

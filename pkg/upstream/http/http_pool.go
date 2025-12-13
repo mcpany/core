@@ -40,7 +40,7 @@ import (
 // healthCheck is the configuration for the health check.
 // It returns a new HTTP client pool or an error if the pool cannot be
 // created.
-var NewHttpPool = func(
+var NewHTTPPool = func(
 	minSize, maxSize, idleTimeout int,
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HTTPClientWrapper], error) {

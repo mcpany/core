@@ -62,19 +62,20 @@ func TestNewOAuth2Authenticator(t *testing.T) {
 
 	// Mock OIDC provider
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == wellKnownPath {
+		switch r.URL.Path {
+		case wellKnownPath:
 			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{
 				"issuer": "http://` + r.Host + `",
 				"jwks_uri": "http://` + r.Host + `/jwks"
 			}`))
 			assert.NoError(t, err)
-		} else if r.URL.Path == "/jwks" {
+		case "/jwks":
 			w.Header().Set("Content-Type", "application/json")
 			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
 			assert.NoError(t, err)
-		} else {
+		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))
@@ -95,19 +96,20 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 	// Mock OIDC provider
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == wellKnownPath {
+		switch r.URL.Path {
+		case wellKnownPath:
 			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{
 				"issuer": "http://` + r.Host + `",
 				"jwks_uri": "http://` + r.Host + `/jwks"
 			}`))
 			assert.NoError(t, err)
-		} else if r.URL.Path == jwksPath {
+		case jwksPath:
 			w.Header().Set("Content-Type", contentTypeJSON)
 			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
 			assert.NoError(t, err)
-		} else {
+		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))
@@ -209,16 +211,17 @@ func TestNewOAuth2Authenticator_Error(t *testing.T) {
 func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
 	privateKey := newTestKey(t)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == wellKnownPath {
+		switch r.URL.Path {
+		case wellKnownPath:
 			w.Header().Set("Content-Type", contentTypeJSON)
 			_, err := w.Write([]byte(`{"issuer": "http://` + r.Host + `", "jwks_uri": "http://` + r.Host + `/jwks"}`))
 			assert.NoError(t, err)
-		} else if r.URL.Path == jwksPath {
+		case jwksPath:
 			w.Header().Set("Content-Type", contentTypeJSON)
 			jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 			_, err := w.Write([]byte(`{"keys": [` + string(mustMarshal(t, jwk)) + `]}`))
 			assert.NoError(t, err)
-		} else {
+		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))

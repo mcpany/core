@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package pool provides a generic connection pool implementation.
 package pool
 
 import (

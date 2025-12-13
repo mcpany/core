@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package consts defines common constants used across the application.
 package consts
 
 const (
