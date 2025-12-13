@@ -81,7 +81,7 @@ func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
 	// Connect to the server.
 	session, err := client.Connect(context.Background(), transport, nil)
 	require.NoError(t, err, "failed to connect to mcp server")
-	defer session.Close()
+	defer func() { _ = session.Close() }()
 
 	// Get the "hello" prompt.
 	result, err := session.GetPrompt(context.Background(), &mcp.GetPromptParams{

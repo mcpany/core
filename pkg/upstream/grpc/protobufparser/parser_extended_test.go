@@ -81,7 +81,7 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 	t.Run("non-recursive ProtoCollection", func(t *testing.T) {
 		tempDir, err := os.MkdirTemp("", "proto-collection-non-recursive-*")
 		require.NoError(t, err)
-		defer os.RemoveAll(tempDir)
+		defer func() { _ = os.RemoveAll(tempDir) }()
 
 		// Create a file in the root
 		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0o600)
@@ -125,7 +125,7 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 	require.NoError(t, err)
 	s := grpc.NewServer()
 	reflectpb.RegisterServerReflectionServer(s, server)
-	go s.Serve(lis)
+	go func() { _ = s.Serve(lis) }()
 	defer s.Stop()
 
 	t.Run("successful reflection", func(t *testing.T) {

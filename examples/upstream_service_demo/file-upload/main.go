@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a file upload demo server.
 package main
 
 import (

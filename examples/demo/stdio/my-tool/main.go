@@ -1,3 +1,4 @@
+// Package main implements a demo tool.
 package main
 
 import (
@@ -7,10 +8,12 @@ import (
 	"os"
 )
 
+// Request represents a tool request.
 type Request struct {
 	Name string `json:"name"`
 }
 
+// Response represents a tool response.
 type Response struct {
 	Message string `json:"message"`
 }

@@ -130,7 +130,7 @@ func TestBus_SubscribeOnce(t *testing.T) {
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
-	t.Cleanup(func() { b.Close() })
+	t.Cleanup(func() { _ = b.Close() })
 	t.Run("should panic if handler is nil", func(t *testing.T) {
 		t.Parallel()
 		assert.Panics(t, func() {

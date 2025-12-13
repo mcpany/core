@@ -68,7 +68,7 @@ http_service:
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)
 			sanitizedToolName, _ := util.SanitizeToolName("echo")
@@ -91,7 +91,7 @@ http_service:
 			require.Error(t, err)
 
 			// 4. Restart the upstream service
-			upstream.Start()
+			_ = upstream.Start()
 
 			// 5. Expect a successful call again
 			require.Eventually(t, func() bool {

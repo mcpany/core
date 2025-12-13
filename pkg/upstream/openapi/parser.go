@@ -531,17 +531,16 @@ func resolveSchemaRef(sr *openapi3.SchemaRef, doc *openapi3.T) (*openapi3.Schema
 	if sr == nil {
 		return nil, nil
 	}
-	if sr.Ref != "" {
-		refName := strings.TrimPrefix(sr.Ref, "#/components/schemas/")
-		if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
-			if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
-				return componentSchemaRef.Value, nil
-			} else {
-				return nil, fmt.Errorf("could not resolve schema reference: %s", sr.Ref)
-			}
-		} else {
-			return nil, fmt.Errorf("cannot resolve schema reference '%s' due to nil doc or components", sr.Ref)
-		}
+	if sr.Ref == "" {
+		return sr.Value, nil
 	}
-	return sr.Value, nil
+
+	refName := strings.TrimPrefix(sr.Ref, "#/components/schemas/")
+	if doc != nil && doc.Components != nil && doc.Components.Schemas != nil {
+		if componentSchemaRef, ok := doc.Components.Schemas[refName]; ok {
+			return componentSchemaRef.Value, nil
+		}
+		return nil, fmt.Errorf("could not resolve schema reference: %s", sr.Ref)
+	}
+	return nil, fmt.Errorf("cannot resolve schema reference '%s' due to nil doc or components", sr.Ref)
 }

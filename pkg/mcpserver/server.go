@@ -36,6 +36,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// AddReceivingMiddlewareHook is a hook for adding receiving middleware.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application. It orchestrates the handling of

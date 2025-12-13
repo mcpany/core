@@ -29,6 +29,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestE2ECaching tests the end-to-end caching functionality.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -44,6 +45,7 @@ func TestE2ECaching(t *testing.T) {
 	})
 }
 
+// BuildCachingServer builds and starts a caching server for testing.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -53,9 +55,14 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
+// RegisterCachingService registers the caching service with the MCP server.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_caching_server"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "get_data", "/", "GET", nil)
+}
+
+func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
+	return next
 }
 
 func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
@@ -71,16 +78,17 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 
 	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(requestBody)) //nolint:gosec
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
+// ValidateCaching validates that caching is working correctly.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	// 1. Reset the upstream server's counter.
 	resp, err := http.Post(fmt.Sprintf("http://%s/reset", upstreamEndpoint), "", nil)
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// 2. Make a request to the tool and check that the upstream service was called.
@@ -108,7 +116,7 @@ func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 func getUpstreamMetrics(t *testing.T, upstreamEndpoint string) map[string]int64 {
 	resp, err := http.Get(fmt.Sprintf("http://%s/metrics", upstreamEndpoint))
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var metrics map[string]int64
 	err = json.NewDecoder(resp.Body).Decode(&metrics)

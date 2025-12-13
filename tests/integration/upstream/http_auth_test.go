@@ -45,7 +45,7 @@ func TestUpstreamService_HTTP_WithAPIKeyAuth(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const echoServiceID = "e2e_http_authed_echo"
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)
@@ -74,8 +74,9 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
-			secret := &configv1.SecretValue{}
-			secret.SetPlainText("wrong-key")
+			secret := configv1.SecretValue_builder{
+				PlainText: proto.String("wrong-key"),
+			}.Build()
 			wrongAuthConfig := configv1.UpstreamAuthentication_builder{
 				ApiKey: configv1.UpstreamAPIKeyAuth_builder{
 					HeaderName: proto.String("X-Api-Key"),
@@ -91,7 +92,7 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const wrongAuthServiceID = "e2e_http_wrong_auth_echo"
 			wrongServiceKey, _ := util.SanitizeServiceName(wrongAuthServiceID)

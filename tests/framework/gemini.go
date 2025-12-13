@@ -62,6 +62,7 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	require.NoError(g.t, err, "failed to configure gemini-cli")
 }
 
+// RemoveMCP removes an MCP server from the Gemini CLI configuration.
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "remove", name)
@@ -71,6 +72,7 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 	}
 }
 
+// Run executes a prompt against the Gemini CLI using the provided API key.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
 	if apiKey == "" {

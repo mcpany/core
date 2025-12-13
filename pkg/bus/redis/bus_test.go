@@ -669,7 +669,7 @@ func TestBus_Subscribe_ContextCancellation(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+	unsub := bus.Subscribe(ctx, topic, func(_ string) {
 		// This handler should not be called after the context is canceled.
 		t.Error("handler called after context cancellation")
 	})
@@ -705,7 +705,7 @@ func TestBus_Subscribe_AlreadyCancelledContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	unsub := bus.Subscribe(ctx, topic, func(msg string) {
+	unsub := bus.Subscribe(ctx, topic, func(_ string) {
 		t.Error("handler should not be called")
 	})
 	defer unsub()
@@ -786,7 +786,7 @@ func TestBus_UnsubscribeFromHandler(t *testing.T) {
 	wg.Add(1)
 
 	var unsub func()
-	unsub = bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub = bus.Subscribe(context.Background(), topic, func(_ string) {
 		unsub()
 		wg.Done()
 	})
@@ -824,7 +824,7 @@ func TestBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
 	handler2Called := make(chan bool, 1)
 
 	// First subscription
-	unsub1 := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub1 := bus.Subscribe(context.Background(), topic, func(_ string) {
 		handler1Called <- true
 	})
 
@@ -834,7 +834,7 @@ func TestBus_Unsubscribe_StaleUnsubscribe(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond, "first subscriber did not appear")
 
 	// Second subscription (re-subscribe)
-	unsub2 := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub2 := bus.Subscribe(context.Background(), topic, func(_ string) {
 		handler2Called <- true
 	})
 	defer unsub2()
@@ -882,7 +882,7 @@ func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	unsub := bus.SubscribeOnce(ctx, topic, func(msg string) {
+	unsub := bus.SubscribeOnce(ctx, topic, func(_ string) {
 		t.Error("handler should not be called")
 	})
 	defer unsub()

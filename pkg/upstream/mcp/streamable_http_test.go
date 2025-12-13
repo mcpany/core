@@ -127,7 +127,7 @@ func TestMCPPrompt_Get(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -175,7 +175,7 @@ func TestMCPResource_Read(t *testing.T) {
 	}
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		defer wg.Done()
 		return mockCS, nil
 	}
@@ -222,20 +222,21 @@ func TestMCPUpstream_Register(t *testing.T) {
 		}
 
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			return mockCS, nil
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
-		config.SetName("test-service")
-		mcpService := &configv1.McpUpstreamService{}
-		stdioConnection := &configv1.McpStdioConnection{}
-		stdioConnection.SetCommand("echo")
-		stdioConnection.SetArgs([]string{"hello"})
-		mcpService.SetStdioConnection(stdioConnection)
-		config.SetMcpService(mcpService)
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-service"),
+			McpService: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: proto.String("echo"),
+					Args:    []string{"hello"},
+				}.Build(),
+			}.Build(),
+		}.Build()
 
 		serviceID, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -268,7 +269,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		var capturedTransport mcp.Transport
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			capturedTransport = transport
 
@@ -322,7 +323,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 
 		var capturedTransport mcp.Transport
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			capturedTransport = transport
 
@@ -377,7 +378,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		var capturedArgs []string
 		var capturedCmd string
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			cmdTransport, ok := transport.(*mcp.CommandTransport)
 			require.True(t, ok)
@@ -438,7 +439,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		}
 
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			return mockCS, nil
 		}
@@ -477,7 +478,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		wg.Add(1)
 
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			return nil, fmt.Errorf("connection failed")
 		}
@@ -513,7 +514,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		}
 
 		originalConnect := connectForTesting
-		connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
 			return mockCS, nil
 		}
@@ -566,7 +567,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 func TestAuthenticatedRoundTripper(t *testing.T) {
 	var authenticatorCalled bool
 	mockAuthenticator := &mockAuthenticator{
-		AuthenticateFunc: func(req *http.Request) error {
+		AuthenticateFunc: func(_ *http.Request) error {
 			authenticatorCalled = true
 			return nil
 		},
@@ -581,7 +582,7 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 	require.NoError(t, err)
 	resp, err := rt.RoundTrip(req)
 	if resp != nil {
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 	}
 	assert.NoError(t, err)
 	assert.True(t, authenticatorCalled)
@@ -610,7 +611,7 @@ func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return nil, errors.New("connection error")
 	}
 
@@ -651,7 +652,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 
 func TestWithMCPClientSession_NoTransport(t *testing.T) {
 	conn := &mcpConnection{}
-	err := conn.withMCPClientSession(context.Background(), func(cs ClientSession) error {
+	err := conn.withMCPClientSession(context.Background(), func(_ ClientSession) error {
 		return nil
 	})
 	assert.Error(t, err)
@@ -700,7 +701,7 @@ func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
 	upstream := NewMCPUpstream()
 
 	originalConnect := connectForTesting
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return &mockClientSession{
 			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 				return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool-http"}}}, nil
@@ -757,7 +758,7 @@ func TestMCPUpstream_Register_StdioConnectionError(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return nil, errors.New("connection error")
 	}
 
@@ -783,7 +784,7 @@ func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
 		},
 	}
 
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return mockCS, nil
 	}
 
@@ -812,7 +813,7 @@ func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
 		},
 	}
 
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return mockCS, nil
 	}
 
@@ -844,7 +845,7 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 		},
 	}
 
-	connectForTesting = func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return mockCS, nil
 	}
 
@@ -880,7 +881,7 @@ func TestStreamableHTTP_RoundTrip(t *testing.T) {
 
 	resp, err := tr.RoundTrip(req)
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }

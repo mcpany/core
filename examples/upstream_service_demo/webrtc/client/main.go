@@ -25,6 +25,7 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
+// Signal represents a WebRTC signal.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

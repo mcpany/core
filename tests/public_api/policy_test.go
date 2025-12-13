@@ -14,7 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package public_api
+package public_api //nolint:revive
 
 import (
 	"context"
@@ -67,7 +67,7 @@ upstream_services:
 		client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
 		require.NoError(t, err)
-		defer cs.Close()
+		defer func() { _ = cs.Close() }()
 
 		// List tools - should work, but EXECUTION is denied.
 		// Wait for discovery
@@ -122,7 +122,7 @@ upstream_services:
 		client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
 		require.NoError(t, err)
-		defer cs.Close()
+		defer func() { _ = cs.Close() }()
 
 		// Wait for tools to be discovered
 		var readFileTool, listDirTool string

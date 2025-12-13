@@ -38,7 +38,7 @@ func TestCacheMiddleware_CacheHit(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, `{"status": "ok"}`)
+		_, _ = fmt.Fprintln(w, `{"status": "ok"}`)
 	}))
 	defer upstream.Close()
 
@@ -94,7 +94,7 @@ func TestCacheMiddleware_CacheExpires(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, `{"status": "ok"}`)
+		_, _ = fmt.Fprintln(w, `{"status": "ok"}`)
 	}))
 	defer upstream.Close()
 

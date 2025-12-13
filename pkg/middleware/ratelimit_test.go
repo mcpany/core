@@ -152,8 +152,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		// Initial Config: 10 RPS, Burst 10
@@ -221,8 +222,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
@@ -259,8 +261,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := &v1.Tool{}
-		toolProto.SetServiceId("service")
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		mockToolManager.On("GetServiceInfo", "service").Return(nil, false)

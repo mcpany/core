@@ -36,7 +36,7 @@ func TestCreateTempConfigFile(t *testing.T) {
 
 	// Create a dummy config file
 	configFilePath := CreateTempConfigFile(t, config)
-	defer os.Remove(configFilePath)
+	defer func() { _ = os.Remove(configFilePath) }()
 
 	// Verify that the file was created
 	_, err := os.Stat(configFilePath)
@@ -87,7 +87,7 @@ func TestDockerHelpers(t *testing.T) {
 
 	// Verify the container is running
 	dockerExe, dockerArgs := getDockerCommand()
-	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...)
+	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // test command
 	out, err := psCmd.Output()
 	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
 	assert.Contains(t, string(out), containerName)

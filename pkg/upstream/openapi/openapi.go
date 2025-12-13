@@ -44,7 +44,7 @@ import (
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
-type OpenAPIUpstream struct {
+type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
 	mu           sync.Mutex
@@ -128,7 +128,7 @@ func (u *OpenAPIUpstream) Register(
 			if err != nil {
 				logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "error", err)
 			} else {
-				defer resp.Body.Close()
+				defer func() { _ = resp.Body.Close() }()
 				if resp.StatusCode != http.StatusOK {
 					logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "status", resp.StatusCode)
 				} else {

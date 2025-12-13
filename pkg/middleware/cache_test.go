@@ -61,7 +61,7 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 // mockToolManager is a mock implementation of the tool.ManagerInterface.
 type mockToolManager struct{}
 
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{},
 	}, true

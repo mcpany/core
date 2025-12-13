@@ -136,7 +136,7 @@ func TestUploadFile(t *testing.T) {
 		fileContent := "this is a test file"
 		_, err = io.WriteString(fileWriter, fileContent)
 		require.NoError(t, err)
-		writer.Close()
+		_ = writer.Close()
 
 		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
 		req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -281,7 +281,7 @@ func TestHealthCheck(t *testing.T) {
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
-		l.Close()
+		_ = l.Close()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -351,7 +351,7 @@ func TestHealthCheck(t *testing.T) {
 		go func() {
 			_ = server.Serve(countingLis)
 		}()
-		defer server.Close()
+		defer func() { _ = server.Close() }()
 
 		addr := countingLis.Addr().String()
 
@@ -383,7 +383,7 @@ func TestHealthCheck(t *testing.T) {
 		go func() {
 			_ = server.Serve(countingLis)
 		}()
-		defer server.Close()
+		defer func() { _ = server.Close() }()
 
 		addr := countingLis.Addr().String()
 
@@ -420,7 +420,7 @@ func TestHealthCheck(t *testing.T) {
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
-		l.Close()
+		_ = l.Close()
 
 		var out bytes.Buffer
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
@@ -660,7 +660,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		// Find a free port and occupy it
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
-		defer l.Close()
+		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
@@ -677,7 +677,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		// Find a free port and occupy it
 		l, err := net.Listen("tcp", "localhost:0")
 		require.NoError(t, err)
-		defer l.Close()
+		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
@@ -699,7 +699,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	// Occupy a port to ensure the HTTP server fails to start.
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	httpPort := l.Addr().(*net.TCPAddr).Port
 
 	app := NewApplication()
@@ -724,7 +724,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	// If it's not, we skip the test.
 	conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 	if err == nil {
-		conn.Close()
+		_ = conn.Close()
 		t.Skipf("port %s is already in use, skipping test", defaultAddr)
 	}
 
@@ -744,7 +744,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 		if err == nil {
-			conn.Close()
+			_ = conn.Close()
 			return true
 		}
 		return false
@@ -761,7 +761,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 		if err == nil {
-			conn.Close()
+			_ = conn.Close()
 			return false
 		}
 		return true
@@ -773,7 +773,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
-	l.Close()
+	_ = l.Close()
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -792,7 +792,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
 		if err == nil {
-			conn.Close()
+			_ = conn.Close()
 			return true
 		}
 		return false
@@ -876,7 +876,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
 	// This is to ensure the port is available for the gRPC server to use.
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -910,7 +910,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
 	if lis != nil {
-		lis.Close()
+		_ = lis.Close()
 	}
 }
 
@@ -948,7 +948,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			lis, err := net.Listen("tcp", "localhost:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
-			lis.Close() // Close immediately, we just needed a free port.
+			_ = lis.Close() // Close immediately, we just needed a free port.
 
 			ctx, cancel := context.WithCancel(context.Background())
 			errChan := make(chan error, 2)
@@ -978,7 +978,7 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	// Find a free port and occupy it
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1009,7 +1009,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -1072,7 +1072,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -1151,7 +1151,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -1279,7 +1279,7 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	// Find a free port and occupy it
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -1401,7 +1401,7 @@ func Test_runStdioMode_real(t *testing.T) {
 	}()
 
 	go func() {
-		defer inW.Close()
+		defer func() { _ = inW.Close() }()
 		initRequest := `{"jsonrpc":"2.0","method":"initialize","id":0,"params":{"protocolVersion":"1.0"}}` + "\n"
 		_, err := inW.Write([]byte(initRequest))
 		require.NoError(t, err)
@@ -1423,7 +1423,7 @@ func Test_runStdioMode_real(t *testing.T) {
 	cancel()
 	runErr := <-errChan
 	assert.NoError(t, runErr)
-	outW.Close()
+	_ = outW.Close()
 	wg.Wait()
 
 	response := buf.String()
@@ -1509,7 +1509,7 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	addr := lis.Addr().String()
-	lis.Close() // Close the listener immediately
+	_ = lis.Close() // Close the listener immediately
 
 	startHTTPServer(ctx, &wg, errChan, "TestHTTP", addr, nil, 5*time.Second)
 
@@ -1551,11 +1551,11 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
-	l.Close()
+	_ = l.Close()
 
 	closedListener, err := net.Listen("tcp", addr)
 	require.NoError(t, err)
-	closedListener.Close()
+	_ = closedListener.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -1588,7 +1588,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			lis, err := net.Listen("tcp", "localhost:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
-			lis.Close()
+			_ = lis.Close()
 
 			ctx, cancel := context.WithCancel(context.Background())
 			errChan := make(chan error, 1)
@@ -1968,7 +1968,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	// Occupy a port to force a listen error.
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
 
 	app := NewApplication()
@@ -2001,7 +2001,7 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create listener: %v", err)
 	}
-	defer lis.Close()
+	defer func() { _ = lis.Close() }()
 
 	// 2. Execution
 	// This registration function will panic, simulating a failure during service setup.
@@ -2045,7 +2045,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer lis.Close()
+	defer func() { _ = lis.Close() }()
 
 	registerFunc := func(s *gogrpc.Server) {
 		panic("panic during registration")
@@ -2080,7 +2080,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -2127,7 +2127,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
 	if l != nil {
-		l.Close()
+		_ = l.Close()
 	}
 }
 
@@ -2159,7 +2159,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
-	l.Close()
+	_ = l.Close()
 
 	go func() {
 		errChan <- app.Run(ctx, fs, false, addr, "", nil, 5*time.Second)
@@ -2206,7 +2206,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
 	// This is to ensure the port is available for the gRPC server to use.
-	lis.Close()
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
