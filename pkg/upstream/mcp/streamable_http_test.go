@@ -197,14 +197,14 @@ func TestMCPResource_Read(t *testing.T) {
 	wg.Wait()
 }
 
-func TestMCPUpstream_Register(t *testing.T) {
+func TestUpstream_Register(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("successful registration with stdio", func(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -262,7 +262,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -316,7 +316,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -370,7 +370,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -427,7 +427,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -472,7 +472,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -502,7 +502,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -538,7 +538,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("test-service-nil")
@@ -553,7 +553,7 @@ func TestMCPUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewMCPUpstream()
+		upstream := NewUpstream()
 
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("") // empty name
@@ -588,8 +588,8 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 	assert.True(t, authenticatorCalled)
 }
 
-func TestMCPUpstream_Register_HttpConnectionError(t *testing.T) {
-	u := NewMCPUpstream()
+func TestUpstream_Register_HttpConnectionError(t *testing.T) {
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-http-error"),
@@ -659,7 +659,7 @@ func TestWithMCPClientSession_NoTransport(t *testing.T) {
 	assert.Contains(t, err.Error(), "mcp transport is not configured")
 }
 
-func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
+func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	t.Skip("Skipping failing test for now")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req jsonrpc.Request
@@ -698,7 +698,7 @@ func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
 	toolManager := newMockToolManager()
 	promptManager := newMockPromptManager()
 	resourceManager := newMockResourceManager()
-	upstream := NewMCPUpstream()
+	upstream := NewUpstream()
 
 	originalConnect := connectForTesting
 	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
@@ -746,8 +746,8 @@ func TestMCPUpstream_Register_HTTP_Integration(t *testing.T) {
 	assert.True(t, ok)
 }
 
-func TestMCPUpstream_Register_StdioConnectionError(t *testing.T) {
-	u := NewMCPUpstream()
+func TestUpstream_Register_StdioConnectionError(t *testing.T) {
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-stdio-error"),
@@ -766,8 +766,8 @@ func TestMCPUpstream_Register_StdioConnectionError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
-	u := NewMCPUpstream()
+func TestUpstream_Register_ListToolsError(t *testing.T) {
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-tools-error"),
@@ -792,8 +792,8 @@ func TestMCPUpstream_Register_ListToolsError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
-	u := NewMCPUpstream()
+func TestUpstream_Register_ListPromptsError(t *testing.T) {
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-prompts-error"),
@@ -822,7 +822,7 @@ func TestMCPUpstream_Register_ListPromptsError(t *testing.T) {
 }
 
 func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
-	u := NewMCPUpstream()
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-resources-error"),
@@ -854,7 +854,7 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 }
 
 func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
-	u := NewMCPUpstream()
+	u := NewUpstream()
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-invalid-config"),

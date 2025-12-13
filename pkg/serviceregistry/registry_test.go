@@ -73,7 +73,7 @@ type mockToolManager struct {
 }
 
 func (m *mockToolManager) AddTool(_ tool.Tool) error                     { return nil }
-func (m *mockToolManager) ClearToolsForService(serviceID string)         {}
+func (m *mockToolManager) ClearToolsForService(_ string)         {}
 func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)         { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                        { return nil }
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}

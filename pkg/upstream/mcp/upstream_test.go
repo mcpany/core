@@ -46,7 +46,7 @@ func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 type mockPromptManager struct {
 	prompt.ManagerInterface
@@ -88,7 +88,7 @@ func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) 
 	return r, ok
 }
 
-func (m *mockResourceManager) OnListChanged(f func()) {}
+func (m *mockResourceManager) OnListChanged(_ func()) {}
 
 func (m *mockResourceManager) Subscribe(ctx context.Context, uri string) error {
 	return nil

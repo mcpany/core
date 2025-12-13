@@ -75,7 +75,7 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
 		return openapi.NewOpenAPIUpstream(), nil
 	case configv1.UpstreamServiceConfig_McpService_case:
-		return mcp.NewMCPUpstream(), nil
+		return mcp.NewUpstream(), nil
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		return command.NewUpstream(), nil
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
