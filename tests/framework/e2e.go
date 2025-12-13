@@ -128,19 +128,20 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 
 			// --- 3. Register Upstream Service with MCPANY ---
 			var upstreamEndpoint string
-			if testCase.UpstreamServiceType == "stdio" {
+			switch testCase.UpstreamServiceType {
+			case "stdio":
 				upstreamEndpoint = ""
-			} else if testCase.UpstreamServiceType == "grpc" {
+			case "grpc":
 				upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
-			} else if testCase.UpstreamServiceType == "websocket" {
+			case "websocket":
 				upstreamEndpoint = fmt.Sprintf("ws://localhost:%d/echo", upstreamServerProc.Port)
-			} else if testCase.UpstreamServiceType == "webrtc" {
+			case "webrtc":
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/signal", upstreamServerProc.Port)
-			} else if testCase.UpstreamServiceType == "openapi" {
+			case "openapi":
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
-			} else if testCase.UpstreamServiceType == "streamablehttp" {
+			case "streamablehttp":
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/mcp", upstreamServerProc.Port)
-			} else {
+			default:
 				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
 			}
 			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
