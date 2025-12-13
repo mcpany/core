@@ -228,7 +228,7 @@ func TestUpdater(t *testing.T) {
 			updater := NewUpdater(nil)
 			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "failed to parse checksums")
+			assert.Contains(t, err.Error(), "checksum for asset")
 		})
 	})
 	t.Run("CheckForUpdate", func(t *testing.T) {

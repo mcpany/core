@@ -33,7 +33,7 @@ import (
 
 func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 	poolManager := pool.NewManager()
-	upstream := NewGRPCUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()
 
 	serviceID := "test-service"
@@ -54,7 +54,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 	})
 
 	t.Run("nil fds", func(t *testing.T) {
-		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(
+		tools, err := upstream.(*Upstream).createAndRegisterGRPCToolsFromConfig(
 			context.Background(),
 			serviceID,
 			tm,
@@ -75,7 +75,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 				},
 			},
 		}
-		_, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(
+		_, err := upstream.(*Upstream).createAndRegisterGRPCToolsFromConfig(
 			context.Background(),
 			serviceID,
 			tm,
@@ -110,7 +110,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 			}.Build(),
 		})
 
-		tools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(
+		tools, err := upstream.(*Upstream).createAndRegisterGRPCToolsFromConfig(
 			context.Background(),
 			serviceID,
 			tm,
@@ -149,7 +149,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 
 		tm.AddServiceInfo(serviceID, &tool.ServiceInfo{Config: serviceConfig.Build()})
 
-		discoveredTools, err := upstream.(*GRPCUpstream).createAndRegisterGRPCToolsFromConfig(
+		discoveredTools, err := upstream.(*Upstream).createAndRegisterGRPCToolsFromConfig(
 			context.Background(), serviceID, tm, nil, false, fds,
 		)
 		require.NoError(t, err)
@@ -161,7 +161,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 
 func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
 	poolManager := pool.NewManager()
-	upstream := NewGRPCUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 	tm := NewMockToolManager()
 
 	promptManager := prompt.NewManager()
@@ -176,9 +176,9 @@ func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
 		}.Build(),
 	}
 	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig.Build()})
-	upstream.(*GRPCUpstream).toolManager = tm
+	upstream.(*Upstream).toolManager = tm
 
-	err := upstream.(*GRPCUpstream).createAndRegisterPromptsFromConfig(context.Background(), "test-service", promptManager, false)
+	err := upstream.(*Upstream).createAndRegisterPromptsFromConfig(context.Background(), "test-service", promptManager, false)
 	require.NoError(t, err)
 	_, ok := promptManager.GetPrompt("test-service.test-prompt")
 	assert.True(t, ok)

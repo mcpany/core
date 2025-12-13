@@ -133,7 +133,7 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `{"key":"value"}`)
+		_, _ = fmt.Fprint(w, `{"key":"value"}`)
 	}))
 	defer server.Close()
 
@@ -202,7 +202,7 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `{"key":"value"}`)
+		_, _ = fmt.Fprint(w, `{"key":"value"}`)
 	}))
 	defer server.Close()
 

@@ -78,7 +78,7 @@ func main() {
 			},
 			"required": []string{"path"},
 		},
-	}, func(_ context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	}, func(_ context.Context, _ *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return &mcp.CallToolResult{
 			Content: []mcp.Content{
 				&mcp.TextContent{

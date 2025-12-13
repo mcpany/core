@@ -122,6 +122,7 @@ type Action int
 const (
 	// ActionAllow indicates that the action is allowed.
 	ActionAllow Action = 0
+	// ActionDeny indicates that the action is denied.
 	ActionDeny  Action = 1
 )
 

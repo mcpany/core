@@ -25,12 +25,12 @@ import (
 	"time"
 )
 
-func healthHandler(w http.ResponseWriter, r *http.Request) {
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, _ = fmt.Fprintln(w, "OK")
 }
 
-func timeHandler(w http.ResponseWriter, r *http.Request) {
+func timeHandler(w http.ResponseWriter, _ *http.Request) {
 	response := map[string]string{
 		"current_time": time.Now().Format(time.RFC3339),
 		"timezone":     "UTC",

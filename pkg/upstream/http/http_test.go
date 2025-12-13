@@ -103,7 +103,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	configJSON := `{
 		"name": "insecure-test",
@@ -141,7 +141,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	configJSON := `{
 		"name": "disabled-tool-test",
@@ -229,7 +229,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 func TestDeterminismInToolNaming(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	configJSON := `{
 		"name": "test-determinism",
@@ -266,7 +266,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	configJSON := `{
 		"name": "test-service-missing-tool-name",
@@ -298,7 +298,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{
 			"name": "test-service",
@@ -333,7 +333,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("nil http service config", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{"name": "test-service", "grpc_service": {}}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -347,7 +347,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("invalid service name", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{"name": "", "http_service": {}}`
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -361,7 +361,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{
 			"name": "test-service-fallback",
@@ -418,7 +418,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{
 			"name": "auth-fail-service",
@@ -452,7 +452,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("registration with connection pool config", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{
 			"name": "test-service-with-pool",
@@ -478,16 +478,16 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		// We need to replace the NewHttpPool function with a mock to check the parameters.
-		originalNewHttpPool := NewHttpPool
-		defer func() { NewHttpPool = originalNewHttpPool }()
+		// We need to replace the NewHTTPPool function with a mock to check the parameters.
+		originalNewHTTPPool := NewHTTPPool
+		defer func() { NewHTTPPool = originalNewHTTPPool }()
 
 		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
+		NewHTTPPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
-			return originalNewHttpPool(minSize, maxSize, idleTimeout, config)
+			return originalNewHTTPPool(minSize, maxSize, idleTimeout, config)
 		}
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -501,7 +501,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	t.Run("registration with default connection pool config", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
-		upstream := NewHTTPUpstream(pm)
+		upstream := NewUpstream(pm)
 
 		configJSON := `{
 			"name": "test-service-with-default-pool",
@@ -523,16 +523,16 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		// We need to replace the NewHttpPool function with a mock to check the parameters.
-		originalNewHttpPool := NewHttpPool
-		defer func() { NewHttpPool = originalNewHttpPool }()
+		// We need to replace the NewHTTPPool function with a mock to check the parameters.
+		originalNewHTTPPool := NewHTTPPool
+		defer func() { NewHTTPPool = originalNewHTTPPool }()
 
 		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHttpPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
+		NewHTTPPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
-			return originalNewHttpPool(minSize, maxSize, idleTimeout, config)
+			return originalNewHTTPPool(minSize, maxSize, idleTimeout, config)
 		}
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -555,7 +555,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	mockTm := newMockToolManager()
 	mockTm.addError = errors.New("failed to add tool")
 
-	upstream := &HTTPUpstream{poolManager: pm}
+	upstream := &Upstream{poolManager: pm}
 
 	configJSON := `{
 		"name": "add-tool-fail-service",
@@ -589,7 +589,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	// Initial registration
 	configJSON1 := `{
@@ -649,7 +649,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
-	upstream := NewHTTPUpstream(pm)
+	upstream := NewUpstream(pm)
 
 	configJSON := `{
 		"name": "test-service-invalid-method",
@@ -799,7 +799,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			pm := pool.NewManager()
 			tm := tool.NewManager(nil)
-			upstream := NewHTTPUpstream(pm)
+			upstream := NewUpstream(pm)
 
 			configJSON := `{
 				"name": "url-test-service",

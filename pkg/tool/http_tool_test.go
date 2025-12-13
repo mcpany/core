@@ -43,7 +43,7 @@ type mockAuthenticator struct {
 	err error
 }
 
-func (m *mockAuthenticator) Authenticate(req *http.Request) error {
+func (m *mockAuthenticator) Authenticate(_ *http.Request) error {
 	return m.err
 }
 

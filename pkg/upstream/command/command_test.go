@@ -57,14 +57,14 @@ func (m *mockToolManager) AddTool(t tool.Tool) error {
 	return nil
 }
 
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 }
 
-func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
 func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
@@ -80,7 +80,7 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 func TestNewStdioUpstream(t *testing.T) {
 	u := NewUpstream()

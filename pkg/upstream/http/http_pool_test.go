@@ -30,7 +30,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHttpPool_New(t *testing.T) {
+func TestHTTPPool_New(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -41,7 +41,7 @@ func TestHttpPool_New(t *testing.T) {
 		config := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-		p, err := NewHttpPool(1, 5, 100, config)
+		p, err := NewHTTPPool(1, 5, 100, config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		defer p.Close()
@@ -58,12 +58,12 @@ func TestHttpPool_New(t *testing.T) {
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		_, err := NewHttpPool(5, 1, 10, &configv1.UpstreamServiceConfig{})
+		_, err := NewHTTPPool(5, 1, 10, &configv1.UpstreamServiceConfig{})
 		assert.Error(t, err)
 	})
 }
 
-func TestHttpPool_GetPut(t *testing.T) {
+func TestHTTPPool_GetPut(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -73,7 +73,7 @@ func TestHttpPool_GetPut(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	p, err := NewHttpPool(1, 1, 10, config)
+	p, err := NewHTTPPool(1, 1, 10, config)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -94,8 +94,8 @@ func TestHttpPool_GetPut(t *testing.T) {
 	assert.Same(t, client, client2)
 }
 
-func TestHttpPool_UniqueClients(t *testing.T) {
-	p, err := NewHttpPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
+func TestHTTPPool_UniqueClients(t *testing.T) {
+	p, err := NewHTTPPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer p.Close()
@@ -111,8 +111,8 @@ func TestHttpPool_UniqueClients(t *testing.T) {
 	assert.NotSame(t, client1.Client, client2.Client)
 }
 
-func TestHttpPool_Close(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
+func TestHTTPPool_Close(t *testing.T) {
+	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -123,8 +123,8 @@ func TestHttpPool_Close(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHttpPool_PoolFull(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 1, &configv1.UpstreamServiceConfig{})
+func TestHTTPPool_PoolFull(t *testing.T) {
+	p, err := NewHTTPPool(1, 1, 1, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -139,8 +139,8 @@ func TestHttpPool_PoolFull(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHttpPool_KeepAliveEnabled(t *testing.T) {
-	p, err := NewHttpPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
+func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
+	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer p.Close()

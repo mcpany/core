@@ -90,7 +90,8 @@ func handleWebSocket(conn *websocket.Conn) {
 
 	offer, err := peerConnection.CreateOffer(nil)
 	if err != nil {
-		log.Fatalf("Failed to create offer: %v", err) // Changed from Fatal
+		log.Printf("Failed to create offer: %v", err)
+		return
 	}
 	// Changed from Fatal
 	// return // This return is removed because log.Fatalf exits the program.
