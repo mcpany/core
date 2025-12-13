@@ -34,7 +34,7 @@ func main() {
 	cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: "http://localhost:8081"}, nil)
 	if err != nil {
 		cancel()
-		log.Fatalf("Failed to connect to MCPANY server: %v", err) // nolint:gocritic
+		log.Fatalf("Failed to connect to MCPANY server: %v", err) //nolint:gocritic
 	}
 	defer func() { _ = cs.Close() }()
 

@@ -254,7 +254,7 @@ type ManagedProcess struct {
 
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
-	cmd := exec.Command(command, args...) //nolint:gosec // test
+	cmd := exec.Command(command, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if env != nil {
 		cmd.Env = append(os.Environ(), env...)
@@ -508,9 +508,9 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	// Ensure the container is not already running from a previous failed run
 	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
-	_ = stopCmd.Run() // Ignore error, it might not be running
-	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // test
-	_ = rmCmd.Run() // Ignore error, it might not exist
+	_ = stopCmd.Run()                                                       // Ignore error, it might not be running
+	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)     //nolint:gosec // test
+	_ = rmCmd.Run()                                                         // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
@@ -773,7 +773,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic
-		cmd := exec.Command(dockerExe, pingArgs...) //nolint:gosec // test
+		cmd := exec.Command(dockerExe, pingArgs...)                                    //nolint:gosec // test
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
