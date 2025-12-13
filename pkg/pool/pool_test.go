@@ -405,7 +405,7 @@ func TestPool_New_DisableHealthCheck_WithUnhealthyClient(t *testing.T) {
 
 func TestPool_Get_FactoryError(t *testing.T) {
 	var callCount int32
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		if atomic.AddInt32(&callCount, 1) > 1 {
 			return nil, fmt.Errorf("factory error")
 		}
@@ -658,7 +658,7 @@ func TestPool_Get_RaceWithClose(t *testing.T) {
 	factoryStarted := make(chan struct{})
 	factoryProceed := make(chan struct{})
 
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		close(factoryStarted) // Signal that the factory has been entered
 		<-factoryProceed      // Wait for the signal to proceed
 		return &mockClient{isHealthy: true}, nil
@@ -703,7 +703,7 @@ func TestPool_Get_RaceWithPut(t *testing.T) {
 	factoryWillBlock := make(chan struct{})
 	factoryProceed := make(chan struct{})
 
-	factory := func(ctx context.Context) (*mockClient, error) {
+	factory := func(_ context.Context) (*mockClient, error) {
 		atomic.AddInt32(&factoryCallCount, 1)
 		close(factoryWillBlock) // Signal that we are in the factory
 		<-factoryProceed        // Wait for the test to allow us to proceed

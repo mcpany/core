@@ -33,7 +33,7 @@ repos:
     -   id: golangci-lint
         name: golangci-lint
         entry: golangci-lint run
-        args: [--enable=gosec, ./...]
+        args: [--enable=gosec, pkg/..., cmd/..., tests/..., examples/..., tools/...]
         types: [go]
         language: system
         require_serial: true

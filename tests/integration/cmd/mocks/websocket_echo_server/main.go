@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main provides a mock WebSocket echo server for integration tests.
 package main
 
 import (

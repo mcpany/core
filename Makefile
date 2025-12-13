@@ -60,8 +60,8 @@ endif
 # Variables for protoc installation
 PROTOC_VERSION_URL := https://api.github.com/repos/protocolbuffers/protobuf/releases/latest
 PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases/download
-PROTOC_GEN_GO_VERSION ?= latest
-PROTOC_GEN_GO_GRPC_VERSION ?= latest
+PROTOC_GEN_GO_VERSION ?= v1.36.11
+PROTOC_GEN_GO_GRPC_VERSION ?= v1.5.1
 GRPC_GATEWAY_VERSION ?= v2.27.3
 PROTOC_ZIP := protoc.zip
 # Debug TOOL_INSTALL_DIR
@@ -173,6 +173,20 @@ prepare:
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
+	@if test -f "$(PROTOC_GEN_GO)"; then \
+		INSTALLED_VER=$$($(PROTOC_GEN_GO) --version | awk '{print $$2}'); \
+		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_VERSION)" ]; then \
+			echo "protoc-gen-go version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_VERSION). Re-installing..."; \
+			rm -f "$(PROTOC_GEN_GO)"; \
+		fi; \
+	fi
+	@if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
+		INSTALLED_VER=$$($(PROTOC_GEN_GO_GRPC) --version | awk '{print $$2}'); \
+		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
+			echo "protoc-gen-go-grpc version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_GRPC_VERSION). Re-installing..."; \
+			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
+		fi; \
+	fi
 	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
 	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
 	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
@@ -446,6 +460,7 @@ else
 		pip3 install --user --break-system-packages pre-commit || pip3 install --user pre-commit; \
 		export PATH=$$HOME/.local/bin:$$PATH; \
 	fi; \
+	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GO_CMD) mod tidy; \
 	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off pre-commit run --all-files --show-diff-on-failure --color=always
 endif
 

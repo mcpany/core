@@ -121,7 +121,7 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 		{
 			name:        "MCP Service",
 			config:      mcpConfig,
-			expectedTyp: &mcp.MCPUpstream{},
+			expectedTyp: &mcp.Upstream{},
 		},
 		{
 			name:        "Command Line Service",

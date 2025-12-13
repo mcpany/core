@@ -53,7 +53,7 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
 	select {
 	case <-time.After(50 * time.Millisecond):
@@ -453,10 +453,10 @@ func TestServer_Resources(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	t.Run("list resources", func(t *testing.T) {
 		result, err := clientSession.ListResources(ctx, &mcp.ListResourcesParams{})
@@ -517,11 +517,11 @@ type mockToolManager struct {
 	clearToolsForServiceCalled bool
 }
 
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
 	m.addServiceInfoCalled = true
 }
 
-func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
 	m.getToolCalled = true
 	return &mockTool{}, true
 }
@@ -536,19 +536,19 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return nil, nil
 }
 
-func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 	m.setMCPServerCalled = true
 }
 
-func (m *mockToolManager) AddTool(t tool.Tool) error {
+func (m *mockToolManager) AddTool(_ tool.Tool) error {
 	m.addToolCalled = true
 	return nil
 }
 
-func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
+func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	m.getServiceInfoCalled = true
 	return &tool.ServiceInfo{}, true
 }
@@ -642,10 +642,10 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// The filtering middleware should use the ToolManager as the source of truth,
 	// not the (potentially stale) list from the underlying mcp.Server.
@@ -685,10 +685,10 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Add a tool to the tool manager, but not the mcp.Server.
 	testTool := &mockTool{
@@ -759,10 +759,10 @@ func TestToolListFilteringConversionError(t *testing.T) {
 
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Test tools/list and expect an error because the chameleonTool is now invalid.
 	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})

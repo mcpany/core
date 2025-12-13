@@ -89,7 +89,7 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("RemoteContent", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = fmt.Fprint(w, "my-remote-secret")
 		}))
 		defer server.Close()
