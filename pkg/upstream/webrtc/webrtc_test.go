@@ -431,7 +431,7 @@ func TestUpstream_Register(t *testing.T) {
 		promptManager := NewMockPromptManager()
 		resourceManager := NewMockResourceManager()
 		upstream := NewUpstream(poolManager).(*Upstream)
-		upstream.toolNameSanitizer = func(name string) (string, error) {
+		upstream.toolNameSanitizer = func(_ string) (string, error) {
 			return "", errors.New("sanitization failed")
 		}
 

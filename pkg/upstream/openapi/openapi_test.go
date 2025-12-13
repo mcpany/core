@@ -85,7 +85,7 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
 func TestNewOpenAPIUpstream(t *testing.T) {
@@ -398,8 +398,8 @@ paths:
 	assert.Contains(t, properties, "userId")
 	assert.Contains(t, properties, "format")
 
-	userIdProp := properties["userId"].GetStructValue().GetFields()
-	assert.Equal(t, "string", userIdProp["type"].GetStringValue())
+	userIDProp := properties["userId"].GetStructValue().GetFields()
+	assert.Equal(t, "string", userIDProp["type"].GetStringValue())
 
 	formatProp := properties["format"].GetStructValue().GetFields()
 	assert.Equal(t, "string", formatProp["type"].GetStringValue())
