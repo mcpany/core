@@ -77,7 +77,7 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Do(httpReq)
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -85,7 +85,7 @@ func TestHTTPGateway_RegisterService(t *testing.T) {
 	listURL := server.JSONRPCEndpoint + "/v1/services"
 	listResp, err := client.Get(listURL)
 	require.NoError(t, err)
-	defer listResp.Body.Close()
+	defer func() { _ = listResp.Body.Close() }()
 	require.Equal(t, http.StatusOK, listResp.StatusCode)
 
 	// Unmarshal response

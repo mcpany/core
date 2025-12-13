@@ -283,7 +283,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	if err != nil {
 		return fmt.Errorf("failed to connect to MCP server: %w", err)
 	}
-	defer cs.Close()
+	defer func() { _ = cs.Close() }()
 
 	return f(cs)
 }
@@ -392,7 +392,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
-	defer cs.Close()
+	defer func() { _ = cs.Close() }()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
@@ -574,6 +574,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
+//nolint:gocyclo
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceID string,
@@ -624,7 +625,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
-	defer cs.Close()
+	defer func() { _ = cs.Close() }()
 
 	// Register tools
 	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})

@@ -106,7 +106,7 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/xml")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(xmlResponse))
+		_, _ = w.Write([]byte(xmlResponse))
 	})
 
 	format := configv1.OutputTransformer_XML
@@ -138,7 +138,7 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(textResponse))
+		_, _ = w.Write([]byte(textResponse))
 	})
 
 	format := configv1.OutputTransformer_TEXT
@@ -169,7 +169,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok", "param": "test"}`))
+		_, _ = w.Write([]byte(`{"status": "ok", "param": "test"}`))
 	})
 
 	method := configv1.HttpCallDefinition_HTTP_METHOD_GET
@@ -194,7 +194,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 func TestHTTPTool_Execute_Errors(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 	server := httptest.NewServer(handler)
 	defer server.Close()
@@ -251,7 +251,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	t.Run("upstream_error", func(t *testing.T) {
 		errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("internal error"))
+			_, _ = w.Write([]byte("internal error"))
 		})
 		httpTool, server := setupHTTPToolTest(t, errHandler, &configv1.HttpCallDefinition{})
 		defer server.Close()
@@ -286,7 +286,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.True(t, strings.HasSuffix(r.URL.Path, "/users/123"), "URL path should contain the user ID")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status": "ok"}`))
+			_, _ = w.Write([]byte(`{"status": "ok"}`))
 		})
 		server := httptest.NewServer(pathHandler)
 		defer server.Close()
@@ -366,7 +366,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		// Handler returns invalid JSON
 		errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`not-json`))
+			_, _ = w.Write([]byte(`not-json`))
 		})
 
 		httpTool, server := setupHTTPToolTest(t, errHandler, callDef)
@@ -382,7 +382,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		// Handler returns non-JSON response
 		stringHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("just a string"))
+			_, _ = w.Write([]byte("just a string"))
 		})
 
 		httpTool, server := setupHTTPToolTest(t, stringHandler, &configv1.HttpCallDefinition{})
@@ -427,7 +427,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/json", r.URL.Path)
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status": "ok"}`))
+			_, _ = w.Write([]byte(`{"status": "ok"}`))
 		})
 		server := httptest.NewServer(pathHandler)
 		defer server.Close()
@@ -466,7 +466,7 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(http.StatusOK)
-		w.Write(rawBytesResponse)
+		_, _ = w.Write(rawBytesResponse)
 	})
 
 	format := configv1.OutputTransformer_RAW_BYTES
@@ -493,7 +493,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 		expectedPath := "/users/test%2Fuser"
 		assert.Equal(t, expectedPath, r.URL.RequestURI(), "URL path should be properly escaped")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 	server := httptest.NewServer(pathHandler)
 	defer server.Close()
@@ -537,7 +537,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status": "ok"}`))
+			_, _ = w.Write([]byte(`{"status": "ok"}`))
 		})
 		server := httptest.NewServer(handler)
 		defer server.Close()
@@ -638,7 +638,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status": "ok"}`))
+			_, _ = w.Write([]byte(`{"status": "ok"}`))
 		})
 		server := httptest.NewServer(handler)
 		defer server.Close()

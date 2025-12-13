@@ -91,7 +91,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			require.NoError(t, err)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			_, msg, err := conn.ReadMessage()
 			require.NoError(t, err)
 			// Echo the message back
@@ -103,7 +103,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -141,7 +141,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			require.NoError(t, err)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			_, msg, err := conn.ReadMessage()
 			require.NoError(t, err)
 			assert.Equal(t, `{"transformed_message":"hello"}`, string(msg))
@@ -154,7 +154,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -297,9 +297,9 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			nil,
 		)
 		require.NoError(t, err)
-		defer resp.Body.Close() // Close the connection on the client side immediately to ensure WriteMessage fails.
+		defer func() { _ = resp.Body.Close() }() // Close the connection on the client side immediately to ensure WriteMessage fails.
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
-		conn.Close()
+		_ = conn.Close()
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
@@ -330,7 +330,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			require.NoError(t, err)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			// Read the incoming message and then immediately close with an error.
 			_, _, err = conn.ReadMessage()
 			require.NoError(t, err)
@@ -346,7 +346,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			nil,
 		)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
@@ -378,7 +378,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			require.NoError(t, err)
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			_, _, _ = conn.ReadMessage()
 			_ = conn.WriteMessage(websocket.TextMessage, []byte("this is not json"))
 		})
@@ -389,13 +389,13 @@ func TestWebsocketTool_Execute(t *testing.T) {
 			nil,
 		)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		wrapper := &client.WebsocketClientWrapper{Conn: conn}
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
 			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) { return wrapper, nil },
-			putFunc: func(c *client.WebsocketClientWrapper) { c.Close() },
+			putFunc: func(c *client.WebsocketClientWrapper) { _ = c.Close() },
 		}
 		serviceID := "ws-non-json"
 		pm.Register(serviceID, mockPool)

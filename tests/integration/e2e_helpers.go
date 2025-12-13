@@ -410,7 +410,7 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 		if err != nil {
 			return false // Port is not open yet
 		}
-		conn.Close()
+		_ = conn.Close()
 		return true // Port is open
 	}, timeout, 250*time.Millisecond, "Port %d did not become available in time", port)
 }
@@ -429,7 +429,7 @@ func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 			t.Logf("gRPC server at %s not ready, error creating client: %v", grpcAddress, err)
 			return false
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 
 		// Wait for the connection to be ready.
 		for {
@@ -457,7 +457,7 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 			t.Logf("Websocket server at %s not ready: %v", url, err)
 			return false
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		conn.Close()
 		return true
 	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
@@ -474,7 +474,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 		if err != nil {
 			return false
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
@@ -578,7 +578,7 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 			t.Logf("Websocket upgrade error: %v", err)
 			return
 		}
-		defer c.Close()
+		defer func() { _ = c.Close() }()
 		for {
 			mt, message, err := c.ReadMessage()
 			if err != nil {
@@ -688,7 +688,7 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 		}
 		if !grpcRegConn.WaitForStateChange(ctx, state) {
 			t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
-			grpcRegConn.Close()
+			_ = grpcRegConn.Close()
 			return false
 		}
 		t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
@@ -707,7 +707,7 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 		CleanupFunc: func() {
 			cancel()
 			if grpcRegConn != nil {
-				grpcRegConn.Close()
+				_ = grpcRegConn.Close()
 			}
 		},
 		T: t,
@@ -850,7 +850,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			}
 			if !grpcRegConn.WaitForStateChange(ctx, state) {
 				t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
-				grpcRegConn.Close()
+				_ = grpcRegConn.Close()
 				return false
 			}
 			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
@@ -908,7 +908,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
-				grpcRegConn.Close()
+				_ = grpcRegConn.Close()
 			}
 			mcpProcess.Stop()
 			natsCleanup()
@@ -1159,7 +1159,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	require.NoError(t, err)
 	_, err = os.Stat(absSpecPath)
 	require.NoError(t, err, "OpenAPI spec file not found: %s", absSpecPath)
-	specContent, err := os.ReadFile(absSpecPath)
+	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // test file
 	require.NoError(t, err)
 	spec := string(specContent)
 

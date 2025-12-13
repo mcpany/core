@@ -33,7 +33,7 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 // It provides a method for registering new upstream services.
-type ServiceRegistryInterface interface {
+type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided
 	// configuration. It returns the generated service key, a list of any tools
 	// discovered during registration, and an error if the registration fails.

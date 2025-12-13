@@ -57,7 +57,7 @@ func TestNewPool(t *testing.T) {
 		pool, err := NewPool(5, 10*time.Second, wsURL)
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
-		defer pool.Close()
+		defer func() { _ = pool.Close() }()
 
 		client, err := pool.Get(context.Background())
 		require.NoError(t, err)
@@ -71,7 +71,7 @@ func TestNewPool(t *testing.T) {
 		pool, err := NewPool(5, 10*time.Second, "invalid-address")
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
-		defer pool.Close()
+		defer func() { _ = pool.Close() }()
 
 		_, err = pool.Get(context.Background())
 		require.Error(t, err)
@@ -84,7 +84,7 @@ func TestNewPool(t *testing.T) {
 		pool, err := NewPool(5, 10*time.Second, wsURL)
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
-		defer pool.Close()
+		defer func() { _ = pool.Close() }()
 
 		_, err = pool.Get(context.Background())
 		require.Error(t, err)

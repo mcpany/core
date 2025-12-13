@@ -111,7 +111,7 @@ func TestToolListFiltering(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}
-	tm.AddTool(testTool)
+	_ = tm.AddTool(testTool)
 
 	// Create client-server connection for demonstration
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
@@ -120,10 +120,10 @@ func TestToolListFiltering(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Test tools/list
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
@@ -178,7 +178,7 @@ func TestToolListFilteringServiceId(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}
-	tm.AddTool(testTool)
+	_ = tm.AddTool(testTool)
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
@@ -193,10 +193,10 @@ func TestToolListFilteringServiceId(t *testing.T) {
 
 	serverSession, err := server.Server().Connect(ctx, serverTransport, serverOpts)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
@@ -259,7 +259,7 @@ func TestServer_CallTool(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}
-	tm.AddTool(successTool)
+	_ = tm.AddTool(successTool)
 
 	errorTool := &mockErrorTool{
 		tool: v1.Tool_builder{
@@ -275,7 +275,7 @@ func TestServer_CallTool(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}
-	tm.AddTool(errorTool)
+	_ = tm.AddTool(errorTool)
 
 	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
@@ -284,10 +284,10 @@ func TestServer_CallTool(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	t.Run("successful tool call", func(t *testing.T) {
 		sanitizedToolName, _ := util.SanitizeToolName("success-tool")
@@ -375,10 +375,10 @@ func TestServer_Prompts(t *testing.T) {
 	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	t.Run("list prompts", func(t *testing.T) {
 		result, err := clientSession.ListPrompts(ctx, &mcp.ListPromptsParams{})
@@ -705,7 +705,7 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}
-	toolManager.AddTool(testTool)
+	_ = toolManager.AddTool(testTool)
 
 	// The middleware should still return the tool from the tool manager, even if the
 	// underlying mcp.Server's ListTools method returns an error.
@@ -748,7 +748,7 @@ func TestToolListFilteringConversionError(t *testing.T) {
 			},
 		},
 	}
-	tm.AddTool(chameleon)
+	_ = tm.AddTool(chameleon)
 
 	// Now, make the tool invalid by setting an empty name.
 	chameleon.setName("")

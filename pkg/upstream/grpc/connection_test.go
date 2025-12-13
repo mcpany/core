@@ -64,5 +64,5 @@ func TestNewConnection(t *testing.T) {
 	conn, err := factory.NewConnection(ctx, "bufnet")
 	assert.NoError(t, err, "NewConnection should not return an error")
 	assert.NotNil(t, conn, "NewConnection should return a non-nil connection")
-	conn.Close()
+	_ = conn.Close()
 }

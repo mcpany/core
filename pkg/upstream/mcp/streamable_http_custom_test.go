@@ -82,7 +82,7 @@ func TestMcpConnection_CallTool(t *testing.T) {
 	t.Run("successful call", func(t *testing.T) {
 		expectedResult := &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "success"}}}
 		originalConnect := connectForTesting
-		SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		SetConnectForTesting(func(_ *mcp.Client, ctx context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			mockSession := new(MockClientSession)
 			mockSession.On("CallTool", ctx, params).Return(expectedResult, nil)
 			mockSession.On("Close").Return(nil)
@@ -98,7 +98,7 @@ func TestMcpConnection_CallTool(t *testing.T) {
 	t.Run("connection error", func(t *testing.T) {
 		connectErr := errors.New("connection failed")
 		originalConnect := connectForTesting
-		SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		SetConnectForTesting(func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			return nil, connectErr
 		})
 		defer func() { connectForTesting = originalConnect }()
@@ -111,7 +111,7 @@ func TestMcpConnection_CallTool(t *testing.T) {
 	t.Run("tool call error", func(t *testing.T) {
 		toolErr := errors.New("tool call failed")
 		originalConnect := connectForTesting
-		SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		SetConnectForTesting(func(_ *mcp.Client, ctx context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			mockSession := new(MockClientSession)
 			mockSession.On("CallTool", ctx, params).Return(nil, toolErr)
 			mockSession.On("Close").Return(nil)
@@ -128,7 +128,7 @@ func TestMcpConnection_CallTool(t *testing.T) {
 func TestSetTestingHooks(t *testing.T) {
 	t.Run("SetNewClientImplForTesting", func(t *testing.T) {
 		var called bool
-		SetNewClientImplForTesting(func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient {
+		SetNewClientImplForTesting(func(_ *mcp.Client, _ *configv1.McpStdioConnection, _ string, _ *http.Client) client.MCPClient {
 			called = true
 			return nil
 		})
@@ -140,7 +140,7 @@ func TestSetTestingHooks(t *testing.T) {
 
 	t.Run("SetNewClientForTesting", func(t *testing.T) {
 		var called bool
-		SetNewClientForTesting(func(impl *mcp.Implementation) *mcp.Client {
+		SetNewClientForTesting(func(_ *mcp.Implementation) *mcp.Client {
 			called = true
 			return nil
 		})
@@ -152,12 +152,12 @@ func TestSetTestingHooks(t *testing.T) {
 
 	t.Run("SetConnectForTesting", func(t *testing.T) {
 		var called bool
-		SetConnectForTesting(func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error) {
+		SetConnectForTesting(func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			called = true
 			return nil, nil
 		})
 		assert.NotNil(t, connectForTesting)
-		connectForTesting(nil, context.Background(), nil, nil)
+		_, _ = connectForTesting(nil, context.Background(), nil, nil)
 		assert.True(t, called)
 		connectForTesting = nil // Reset for other tests
 	})

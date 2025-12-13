@@ -101,7 +101,8 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	// Give subscriber a moment to connect
 	time.Sleep(100 * time.Millisecond)
 
-	bus.Publish(ctx, topic, msg)
+	err := bus.Publish(ctx, topic, msg)
+	assert.NoError(t, err)
 
 	wg.Wait()
 }

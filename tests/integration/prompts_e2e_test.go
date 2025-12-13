@@ -133,10 +133,10 @@ func TestPromptsEndToEnd(t *testing.T) {
 	// Connect server and client
 	serverSession, err := mcpServer.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
-	defer serverSession.Close()
+	defer func() { _ = serverSession.Close() }()
 	clientSession, err := client.Connect(ctx, clientTransport, nil)
 	require.NoError(t, err)
-	defer clientSession.Close()
+	defer func() { _ = clientSession.Close() }()
 
 	// Test prompts/list
 	listResult, err := clientSession.ListPrompts(ctx, &mcp.ListPromptsParams{})

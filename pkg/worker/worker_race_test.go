@@ -61,7 +61,7 @@ func TestWorker_StartStopRace(t *testing.T) {
 
 		req := &bus.ToolExecutionRequest{}
 		req.SetCorrelationID(correlationID)
-		reqBus.Publish(context.Background(), bus.ToolExecutionRequestTopic, req)
+		_ = reqBus.Publish(context.Background(), bus.ToolExecutionRequestTopic, req)
 
 		select {
 		case <-resultChan:

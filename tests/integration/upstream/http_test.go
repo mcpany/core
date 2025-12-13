@@ -44,7 +44,7 @@ func TestUpstreamService_HTTP(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 			require.NoError(t, err)
@@ -85,7 +85,7 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
 			configPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpany_config.yaml")
-			content, err := os.ReadFile(configPath)
+			content, err := os.ReadFile(configPath) //nolint:gosec // test
 			require.NoError(t, err)
 			return string(content)
 		},
@@ -96,7 +96,7 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err, "Failed to connect to MCPANY server")
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			serviceID, _ := util.SanitizeServiceName("ip-info-service")
 			sanitizedToolName, _ := util.SanitizeToolName("get_time_by_ip")
