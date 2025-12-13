@@ -48,13 +48,13 @@ func newTestWSServer() *httptest.Server {
 	}))
 }
 
-func TestNewWebsocketPool(t *testing.T) {
+func TestNewPool(t *testing.T) {
 	t.Run("successful pool creation", func(t *testing.T) {
 		server := newTestWSServer()
 		defer server.Close()
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
-		pool, err := NewWebsocketPool(5, 10*time.Second, wsURL)
+		pool, err := NewPool(5, 10*time.Second, wsURL)
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
 		defer pool.Close()
@@ -68,7 +68,7 @@ func TestNewWebsocketPool(t *testing.T) {
 	})
 
 	t.Run("invalid address", func(t *testing.T) {
-		pool, err := NewWebsocketPool(5, 10*time.Second, "invalid-address")
+		pool, err := NewPool(5, 10*time.Second, "invalid-address")
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
 		defer pool.Close()
@@ -81,7 +81,7 @@ func TestNewWebsocketPool(t *testing.T) {
 	t.Run("connection failure", func(t *testing.T) {
 		// Use a port that is not listening
 		wsURL := "ws://localhost:9999"
-		pool, err := NewWebsocketPool(5, 10*time.Second, wsURL)
+		pool, err := NewPool(5, 10*time.Second, wsURL)
 		require.NoError(t, err)
 		assert.NotNil(t, pool)
 		defer pool.Close()
@@ -96,7 +96,7 @@ func TestNewWebsocketPool(t *testing.T) {
 		defer server.Close()
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
-		_, err := NewWebsocketPool(0, 10*time.Second, wsURL)
+		_, err := NewPool(0, 10*time.Second, wsURL)
 		require.Error(t, err)
 	})
 }

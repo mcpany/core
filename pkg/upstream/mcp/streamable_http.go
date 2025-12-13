@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package mcp implements the Model Context Protocol (MCP) upstream service.
 package mcp
 
 import (
@@ -328,7 +329,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	script := strings.Join(scriptCommands, " && ")
 
 	// run the script directly on the host.
-	cmd := exec.Command("/bin/sh", "-c", script)
+	cmd := exec.Command("/bin/sh", "-c", script) //nolint:gosec // controlled execution from config
 	cmd.Dir = stdio.GetWorkingDirectory()
 	return cmd
 }
@@ -337,6 +338,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 // that is connected via standard I/O (e.g., a local command or a Docker
 // container). It establishes the connection, discovers the service's
 // capabilities, and registers them.
+//nolint:gocyclo,funlen
 func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
 	serviceID string,

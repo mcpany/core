@@ -37,7 +37,7 @@ import (
 
 func TestReadURL(t *testing.T) {
 	t.Run("should block loopback addresses", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -58,7 +58,7 @@ func TestReadURL(t *testing.T) {
 	})
 
 	t.Run("should fail on non-200 status code", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 		defer server.Close()
@@ -85,7 +85,7 @@ func TestReadURL(t *testing.T) {
 		// second lookup, which is performed by the HTTP dialer.
 
 		// 1. A local server is running on 127.0.0.1.
-		localServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		localServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = fmt.Fprint(w, `{"global_settings": {}}`)
 		}))

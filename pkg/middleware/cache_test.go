@@ -49,7 +49,7 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	m.executeCount++
 	return successResult, nil
 }
@@ -66,16 +66,16 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 		Config: &configv1.UpstreamServiceConfig{},
 	}, true
 }
-func (m *mockToolManager) AddTool(t tool.Tool) error                             { return nil }
-func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool)             { return nil, false }
+func (m *mockToolManager) AddTool(_ tool.Tool) error                             { return nil }
+func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)             { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                                { return nil }
-func (m *mockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {}
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
+func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, nil
 }
-func (m *mockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider)           {}
-func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *mockToolManager) ClearToolsForService(serviceKey string)                  {}
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)           {}
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *mockToolManager) ClearToolsForService(_ string)                  {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup
