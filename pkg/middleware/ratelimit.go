@@ -41,7 +41,7 @@ func NewRateLimitMiddleware(toolManager tool.ToolManagerInterface) *RateLimitMid
 }
 
 // Execute executes the rate limiting middleware.
-func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ToolExecutionFunc) (any, error) {
+func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
 		return next(ctx, req)

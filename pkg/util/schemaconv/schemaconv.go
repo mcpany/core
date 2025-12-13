@@ -25,6 +25,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// JSON schema types
 const (
 	TypeNumber  = "number"
 	TypeInteger = "integer"

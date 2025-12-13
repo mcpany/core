@@ -277,10 +277,10 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 }
 
 type MockToolExecutionMiddleware struct {
-	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error)
+	ExecuteFunc func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req, next)
 	}
@@ -310,7 +310,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 
 	// Case 1: Middleware returns a result directly
 	middleware1 := &MockToolExecutionMiddleware{
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
 			return "middleware success", nil
 		},
 	}
@@ -325,7 +325,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 
 	// Case 2: Middleware calls the next function
 	middleware2 := &MockToolExecutionMiddleware{
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ToolExecutionFunc) (any, error) {
+		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
 			return next(ctx, req)
 		},
 	}

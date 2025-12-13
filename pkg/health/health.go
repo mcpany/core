@@ -173,6 +173,7 @@ func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Ch
 	}
 }
 
+
 func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
 	if hc == nil {
 		return checkConnection(address)
@@ -196,9 +197,14 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 
 	conn, resp, err := websocket.Dial(ctx, healthCheckURL, nil)
 	if resp != nil {
-		defer func() { _ = resp.Body.Close() }()
+		defer func() {
+			if resp.Body != nil {
+				_ = resp.Body.Close()
+			}
+		}()
 	}
 	if err != nil {
+		logging.GetLogger().Error("WebSocket health check failed", "url", healthCheckURL, "error", err)
 		return fmt.Errorf("WebSocket health check failed: %w", err)
 	}
 	defer func() { _ = conn.Close(websocket.StatusNormalClosure, "") }()
@@ -206,6 +212,7 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	if hc.GetMessage() != "" {
 		err = conn.Write(ctx, websocket.MessageText, []byte(hc.GetMessage()))
 		if err != nil {
+			logging.GetLogger().Error("Failed to write to websocket", "error", err)
 			return fmt.Errorf("failed to write message to websocket: %w", err)
 		}
 	}
@@ -213,9 +220,11 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	if hc.GetExpectedResponseContains() != "" {
 		_, msg, err := conn.Read(ctx)
 		if err != nil {
+			logging.GetLogger().Error("Failed to read from websocket", "error", err)
 			return fmt.Errorf("failed to read message from websocket: %w", err)
 		}
 		if !strings.Contains(string(msg), hc.GetExpectedResponseContains()) {
+			logging.GetLogger().Error("Websocket response mismatch", "expected", hc.GetExpectedResponseContains(), "actual", string(msg))
 			return fmt.Errorf(
 				"websocket health check response did not contain expected string: %s",
 				hc.GetExpectedResponseContains(),
@@ -313,15 +322,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	}
 }
 
-func connectionCheck(name, address string) health.Check {
-	return health.Check{
-		Name:    name,
-		Timeout: 5 * time.Second,
-		Check: func(ctx context.Context) error {
-			return checkConnection(address)
-		},
-	}
-}
+
 
 func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	return health.Check{
@@ -341,6 +342,7 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 func checkConnection(address string) error {
 	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
 	if err != nil {
+		logging.GetLogger().Error("checkConnection failed", "address", address, "error", err)
 		return fmt.Errorf("failed to connect to address %s: %w", address, err)
 	}
 	defer conn.Close()
