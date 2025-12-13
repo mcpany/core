@@ -204,7 +204,7 @@ func TestUpdater(t *testing.T) {
 
 		t.Run("malformed checksums file", func(t *testing.T) {
 			malformedChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("justonefield"))
+				_, _ = w.Write([]byte(`{"latest_version": "v1.2.3"}`))
 			}))
 			defer malformedChecksumsServer.Close()
 			release := &github.RepositoryRelease{

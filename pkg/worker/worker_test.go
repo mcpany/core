@@ -77,7 +77,7 @@ func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConf
 }
 
 type mockToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
@@ -123,7 +123,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -159,7 +159,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	t.Run("registration failure", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -196,7 +196,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 	t.Run("uses request context", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -252,7 +252,7 @@ func TestUpstreamWorker(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -292,7 +292,7 @@ func TestUpstreamWorker(t *testing.T) {
 	t.Run("execution failure", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -333,7 +333,7 @@ func TestUpstreamWorker(t *testing.T) {
 	t.Run("result marshaling failure", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -375,7 +375,7 @@ func TestUpstreamWorker(t *testing.T) {
 	t.Run("execution with partial result and error", func(t *testing.T) {
 		messageBus := bus_pb.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewBusProvider(messageBus)
+		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
@@ -421,7 +421,7 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	bp, err := bus.NewBusProvider(messageBus)
+	bp, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
 	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
@@ -466,13 +466,13 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	t.Log("Running TestWorker_ContextPropagation")
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	bp, err := bus.NewBusProvider(messageBus)
+	bp, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
 	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
 	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
-	bus.GetBusHook = func(p *bus.BusProvider, topic string) any {
+	bus.GetBusHook = func(p *bus.Provider, topic string) any {
 		if topic == bus.ToolExecutionRequestTopic {
 			return reqBusMock
 		}
@@ -534,7 +534,7 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	bp, err := bus.NewBusProvider(messageBus)
+	bp, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 	requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
 	resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)

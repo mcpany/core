@@ -39,27 +39,27 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// WebsocketUpstream implements the upstream.Upstream interface for services that
+// Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
-type WebsocketUpstream struct {
+type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
 }
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
-func (u *WebsocketUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
 
-// NewWebsocketUpstream creates a new instance of WebsocketUpstream.
+// NewUpstream creates a new instance of WebsocketUpstream.
 //
 // poolManager is the connection pool manager to be used for managing WebSocket
 // connections.
-func NewWebsocketUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &WebsocketUpstream{
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
 		poolManager: poolManager,
 	}
 }
@@ -67,12 +67,12 @@ func NewWebsocketUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
-func (u *WebsocketUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
@@ -101,7 +101,7 @@ func (u *WebsocketUpstream) Register(
 	}
 
 	address := websocketService.GetAddress()
-	wsPool, err := NewWebsocketPool(10, 300*time.Second, address)
+	wsPool, err := NewPool(10, 300*time.Second, address)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create websocket pool for %s: %w", serviceID, err)
 	}
@@ -123,7 +123,7 @@ func (u *WebsocketUpstream) Register(
 // createAndRegisterWebsocketTools iterates through the WebSocket call
 // definitions in the service configuration, creates a new WebsocketTool for each,
 // and registers it with the tool manager.
-func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *Upstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	definitions := websocketService.GetTools()
@@ -242,7 +242,7 @@ func (u *WebsocketUpstream) createAndRegisterWebsocketTools(ctx context.Context,
 	return discoveredTools
 }
 
-func (u *WebsocketUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	for _, promptDef := range websocketService.GetPrompts() {

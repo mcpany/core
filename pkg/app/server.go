@@ -69,7 +69,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get file from form", http.StatusBadRequest)
 		return
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	// Create a temporary file to store the uploaded content
 	tmpfile, err := os.CreateTemp("", "upload-*.txt")
@@ -77,7 +77,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create temporary file", http.StatusInternalServerError)
 		return
 	}
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() { _ = os.Remove(tmpfile.Name()) }() // clean up
 
 	// Copy the uploaded file to the temporary file
 	if _, err := io.Copy(tmpfile, file); err != nil {
@@ -86,7 +86,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with the file name and size
-	fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -121,9 +121,9 @@ type Runner interface {
 // method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
-	PromptManager    prompt.PromptManagerInterface
-	ToolManager      tool.ToolManagerInterface
-	ResourceManager  resource.ResourceManagerInterface
+	PromptManager    prompt.ManagerInterface
+	ToolManager      tool.ManagerInterface
+	ResourceManager  resource.ManagerInterface
 	configFiles      map[string]string
 }
 
@@ -133,12 +133,12 @@ type Application struct {
 //
 // Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
-	busProvider, _ := bus.NewBusProvider(nil)
+	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
 		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewPromptManager(),
-		ToolManager:      tool.NewToolManager(busProvider),
-		ResourceManager:  resource.NewResourceManager(),
+		PromptManager:    prompt.NewManager(),
+		ToolManager:      tool.NewManager(busProvider),
+		ResourceManager:  resource.NewManager(),
 		configFiles:      make(map[string]string),
 	}
 }
@@ -193,16 +193,16 @@ func (a *Application) Run(
 	}
 
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
-	busProvider, err := bus.NewBusProvider(busConfig)
+	busProvider, err := bus.NewProvider(busConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	a.ToolManager = tool.NewToolManager(busProvider)
-	a.PromptManager = prompt.NewPromptManager()
-	a.ResourceManager = resource.NewResourceManager()
-	authManager := auth.NewAuthManager()
+	a.ToolManager = tool.NewManager(busProvider)
+	a.PromptManager = prompt.NewManager()
+	a.ResourceManager = resource.NewManager()
+	authManager := auth.NewManager()
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
 		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
@@ -496,7 +496,7 @@ func HealthCheckWithContext(
 func (a *Application) runServerMode(
 	ctx context.Context,
 	mcpSrv *mcpserver.Server,
-	bus *bus.BusProvider,
+	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 ) error {
@@ -631,7 +631,7 @@ func startHTTPServer(
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
 		}
-		defer lis.Close()
+		defer func() { _ = lis.Close() }()
 
 		serverLog = serverLog.With("port", lis.Addr().String())
 

@@ -53,7 +53,13 @@ func main() {
 	mux.HandleFunc("/time", timeHandler)
 
 	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	server := &http.Server{
+		Addr:         ":" + port,
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }

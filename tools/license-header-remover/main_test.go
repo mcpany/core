@@ -118,7 +118,7 @@ print("Hello")
 	main()
 
 	// Check if the license header has been removed from the go file
-	goFileContentAfter, err := os.ReadFile(goFilePath)
+	goFileContentAfter, err := os.ReadFile(goFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read go file: %v", err)
 	}
@@ -127,7 +127,7 @@ print("Hello")
 	}
 
 	// Check if the license header has been removed from the python file
-	pyFileContentAfter, err := os.ReadFile(pyFilePath)
+	pyFileContentAfter, err := os.ReadFile(pyFilePath) //nolint:gosec // test
 	if err != nil {
 		t.Fatalf("Failed to read python file: %v", err)
 	}

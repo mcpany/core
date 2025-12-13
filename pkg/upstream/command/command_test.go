@@ -34,7 +34,7 @@ import (
 
 // mockToolManager to simulate errors
 type mockToolManager struct {
-	tool.ToolManagerInterface
+	tool.ManagerInterface
 	tools    map[string]tool.Tool
 	addError error
 }
@@ -83,17 +83,17 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
 
 func TestNewStdioUpstream(t *testing.T) {
-	u := NewCommandUpstream()
+	u := NewUpstream()
 	assert.NotNil(t, u)
-	_, ok := u.(*CommandUpstream)
+	_, ok := u.(*Upstream)
 	assert.True(t, ok)
 }
 
 func TestStdioUpstream_Register(t *testing.T) {
 	tm := newMockToolManager()
-	prm := prompt.NewPromptManager()
-	rm := resource.NewResourceManager()
-	u := NewCommandUpstream()
+	prm := prompt.NewManager()
+	rm := resource.NewManager()
+	u := NewUpstream()
 
 	t.Run("successful registration", func(t *testing.T) {
 		tm := newMockToolManager()
@@ -157,7 +157,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 	t.Run("successful prompt registration", func(t *testing.T) {
 		tm := newMockToolManager()
-		prm := prompt.NewPromptManager()
+		prm := prompt.NewManager()
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-prompt-service")
 		cmdService := &configv1.CommandLineUpstreamService{}
@@ -187,7 +187,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 	t.Run("successful dynamic resource registration", func(t *testing.T) {
 		tm := newMockToolManager()
-		rm := resource.NewResourceManager()
+		rm := resource.NewManager()
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-dynamic-resource-service")
 		cmdService := &configv1.CommandLineUpstreamService{}

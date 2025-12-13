@@ -39,7 +39,7 @@ func TestStartServer(t *testing.T) {
 	// Make a request to the /metrics endpoint
 	resp, err := http.Get(server.URL + "/metrics")
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

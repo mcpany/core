@@ -63,7 +63,7 @@ func TestBus_SubscribeOnce_UnsubscribeFromHandler(t *testing.T) {
 	wg.Add(1)
 
 	var unsub func()
-	unsub = bus.SubscribeOnce(context.Background(), topic, func(msg string) {
+	unsub = bus.SubscribeOnce(context.Background(), topic, func(_ string) {
 		unsub() // Call unsubscribe from within the handler
 		wg.Done()
 	})
@@ -100,7 +100,7 @@ func TestBus_Subscribe_CloseClient(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 		// This handler might be called once if a message is received before the client is closed
 		wg.Done()
 	})
@@ -134,7 +134,7 @@ func TestBus_Subscribe_CloseClient_Race(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
+	unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 		wg.Done()
 	})
 

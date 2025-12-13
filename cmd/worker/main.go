@@ -57,7 +57,7 @@ func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 		return nil, fmt.Errorf("config validation failed")
 	}
 
-	busProvider, err := bus.NewBusProvider(busConfig)
+	busProvider, err := bus.NewProvider(busConfig)
 	if err != nil {
 		return nil, err
 	}

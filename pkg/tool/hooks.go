@@ -30,10 +30,12 @@ type PolicyHook struct {
 	policy *configv1.CallPolicy
 }
 
+// NewPolicyHook creates a new PolicyHook with the given call policy.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	return &PolicyHook{policy: policy}
 }
 
+// ExecutePre executes the policy check before a tool is called.
 func (h *PolicyHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -87,10 +89,12 @@ type TextTruncationHook struct {
 	maxChars int
 }
 
+// NewTextTruncationHook creates a new TextTruncationHook with the given configuration.
 func NewTextTruncationHook(config *configv1.TextTruncationConfig) *TextTruncationHook {
 	return &TextTruncationHook{maxChars: int(config.GetMaxChars())}
 }
 
+// ExecutePost executes the text truncation logic after a tool is called.
 func (h *TextTruncationHook) ExecutePost(
 	ctx context.Context,
 	_ *ExecutionRequest,
@@ -150,6 +154,7 @@ type WebhookHook struct {
 	// client http.Client
 }
 
+// ExecutePre executes the webhook notification before a tool is called.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	_ *ExecutionRequest,

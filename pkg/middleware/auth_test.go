@@ -33,7 +33,7 @@ import (
 
 func TestAuthMiddleware(t *testing.T) {
 	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
+		authManager := auth.NewManager()
 		mw := middleware.AuthMiddleware(authManager)
 
 		var nextCalled bool
@@ -49,7 +49,7 @@ func TestAuthMiddleware(t *testing.T) {
 	})
 
 	t.Run("should return error when authentication fails", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
+		authManager := auth.NewManager()
 		authenticator := &auth.APIKeyAuthenticator{
 			HeaderName:  "X-API-Key",
 			HeaderValue: "secret",
@@ -83,7 +83,7 @@ func TestAuthMiddleware(t *testing.T) {
 	})
 
 	t.Run("should call next handler when authentication succeeds", func(t *testing.T) {
-		authManager := auth.NewAuthManager()
+		authManager := auth.NewManager()
 		authenticator := &auth.APIKeyAuthenticator{
 			HeaderName:  "X-API-Key",
 			HeaderValue: "secret",

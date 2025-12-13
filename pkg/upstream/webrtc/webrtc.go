@@ -40,25 +40,25 @@ import (
 
 type sanitizer func(string) (string, error)
 
-// WebrtcUpstream implements the upstream.Upstream interface for services that
+// Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
-type WebrtcUpstream struct {
+type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
 }
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
-func (u *WebrtcUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// NewWebrtcUpstream creates a new instance of WebrtcUpstream.
+// NewUpstream creates a new instance of WebrtcUpstream.
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
-func NewWebrtcUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &WebrtcUpstream{
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
 		poolManager:       poolManager,
 		toolNameSanitizer: util.SanitizeToolName,
 	}
@@ -66,12 +66,12 @@ func NewWebrtcUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and
 // registering tools for each call definition specified in the configuration.
-func (u *WebrtcUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if serviceConfig == nil {
@@ -115,7 +115,7 @@ func (u *WebrtcUpstream) Register(
 // createAndRegisterWebrtcTools iterates through the WebRTC call definitions in
 // the service configuration, creates a new WebrtcTool for each, and registers it
 // with the tool manager.
-func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ToolManagerInterface, resourceManager resource.ResourceManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *Upstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	definitions := webrtcService.GetTools()
@@ -238,7 +238,7 @@ func (u *WebrtcUpstream) createAndRegisterWebrtcTools(ctx context.Context, servi
 	return discoveredTools
 }
 
-func (u *WebrtcUpstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.PromptManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	for _, promptDef := range webrtcService.GetPrompts() {

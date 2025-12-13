@@ -30,13 +30,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestWebsocketUpstream_createAndRegisterWebsocketTools_DisabledTool(t *testing.T) {
+func TestUpstream_createAndRegisterWebsocketTools_DisabledTool(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("echo"),
@@ -59,13 +59,13 @@ func TestWebsocketUpstream_createAndRegisterWebsocketTools_DisabledTool(t *testi
 	assert.Empty(t, discoveredTools)
 }
 
-func TestWebsocketUpstream_createAndRegisterWebsocketTools_MissingCallDefinition(t *testing.T) {
+func TestUpstream_createAndRegisterWebsocketTools_MissingCallDefinition(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("echo"),
@@ -87,13 +87,13 @@ func TestWebsocketUpstream_createAndRegisterWebsocketTools_MissingCallDefinition
 	assert.Empty(t, discoveredTools)
 }
 
-func TestWebsocketUpstream_createAndRegisterWebsocketTools_MissingToolName(t *testing.T) {
+func TestUpstream_createAndRegisterWebsocketTools_MissingToolName(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()
-	var promptManager prompt.PromptManagerInterface
-	var resourceManager resource.ResourceManagerInterface
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
 
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	toolDef := configv1.ToolDefinition_builder{
 		Description: proto.String("Echoes a message"),
@@ -119,11 +119,11 @@ func TestWebsocketUpstream_createAndRegisterWebsocketTools_MissingToolName(t *te
 	assert.NotEmpty(t, discoveredTools)
 }
 
-func TestWebsocketUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *testing.T) {
-	toolManager := tool.NewToolManager(nil)
-	resourceManager := resource.NewResourceManager()
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
 	poolManager := pool.NewManager()
-	upstream := NewWebsocketUpstream(poolManager)
+	upstream := NewUpstream(poolManager)
 
 	dynamicResource := configv1.ResourceDefinition_builder{
 		Name: proto.String("test-resource"),

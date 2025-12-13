@@ -155,7 +155,7 @@ func (t *WebrtcTool) executeWithoutPool(ctx context.Context, req *ExecutionReque
 	if err != nil {
 		return nil, fmt.Errorf("failed to create peer connection: %w", err)
 	}
-	defer pc.Close()
+	defer func() { _ = pc.Close() }()
 
 	return t.executeWithPeerConnection(ctx, req, pc.PeerConnection)
 }
@@ -251,7 +251,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 	if err != nil {
 		return nil, fmt.Errorf("failed to send offer to signaling server: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var answer webrtc.SessionDescription
 	if err := json.NewDecoder(resp.Body).Decode(&answer); err != nil {
@@ -285,7 +285,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 // peer connection is created and closed within the Execute method.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
-		t.webrtcPool.Close()
+		_ = t.webrtcPool.Close()
 	}
 	return nil
 }

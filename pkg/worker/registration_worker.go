@@ -31,7 +31,7 @@ import (
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
 type ServiceRegistrationWorker struct {
-	bus             *bus.BusProvider
+	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 }
 
@@ -39,7 +39,7 @@ type ServiceRegistrationWorker struct {
 //
 // bus is the event bus used for receiving requests and publishing results.
 // serviceRegistry is the registry that will handle the actual registration logic.
-func NewServiceRegistrationWorker(bus *bus.BusProvider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
+func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
 		serviceRegistry: serviceRegistry,

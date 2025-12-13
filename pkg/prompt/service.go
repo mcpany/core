@@ -28,12 +28,12 @@ import (
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
 type Service struct {
-	promptManager PromptManagerInterface
+	promptManager ManagerInterface
 	mcpServer     *mcp.Server
 }
 
 // NewService creates and returns a new Service instance.
-func NewService(promptManager PromptManagerInterface) *Service {
+func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
 	}
@@ -56,7 +56,7 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // }
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
-// available prompts from the PromptManager, converts them to the MCP format, and
+// available prompts from the Manager, converts them to the MCP format, and
 // returns them to the client.
 func (s *Service) ListPrompts(
 	_ context.Context,
@@ -73,7 +73,7 @@ func (s *Service) ListPrompts(
 }
 
 // GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
-// prompt by name from the PromptManager and executes it with the provided
+// prompt by name from the Manager and executes it with the provided
 // arguments, returning the result. If the prompt is not found, it returns a
 // ErrPromptNotFound error.
 func (s *Service) GetPrompt(

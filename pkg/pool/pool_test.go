@@ -146,7 +146,7 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 	// Create pool with minSize=1, so it starts with one (unhealthy) client.
 	p, err := New(factory, 1, 2, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	// Get should discard the initial unhealthy client and create a new, healthy one.
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -156,7 +156,7 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 func TestPool_Put_Unhealthy(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 2, 100, false)
 	require.NoError(t, err)
-	defer p.Close()
+	defer func() { _ = p.Close() }()
 	// Get a client. This will acquire a semaphore.
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)

@@ -82,27 +82,27 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	return ctx, fmt.Errorf("unauthorized")
 }
 
-// AuthManager oversees the authentication process for the server. It maintains a
+// Manager oversees the authentication process for the server. It maintains a
 // registry of authenticators, each associated with a specific service ID, and
 // delegates the authentication of requests to the appropriate authenticator.
 // This allows for different authentication strategies to be used for different
 // services.
-type AuthManager struct {
+type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
 }
 
-// NewAuthManager creates and initializes a new AuthManager with an empty
+// NewManager creates and initializes a new Manager with an empty
 // authenticator registry. This manager can then be used to register and manage
 // authenticators for various services.
-func NewAuthManager() *AuthManager {
-	return &AuthManager{
+func NewManager() *Manager {
+	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
 	}
 }
 
 // SetAPIKey sets the global API key for the server.
-func (am *AuthManager) SetAPIKey(apiKey string) {
+func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
 
@@ -115,7 +115,7 @@ func (am *AuthManager) SetAPIKey(apiKey string) {
 //   - authenticator: The authenticator to be associated with the service.
 //
 // Returns an error if the provided authenticator is `nil`.
-func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
+func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
 	}
@@ -137,7 +137,7 @@ func (am *AuthManager) AddAuthenticator(serviceID string, authenticator Authenti
 //
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
-func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
+func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		if r.Header.Get("X-API-Key") == "" {
 			return ctx, fmt.Errorf("unauthorized: missing API key")
@@ -162,12 +162,12 @@ func (am *AuthManager) Authenticate(ctx context.Context, serviceID string, r *ht
 //
 // Returns the authenticator and a boolean indicating whether an authenticator
 // was found.
-func (am *AuthManager) GetAuthenticator(serviceID string) (Authenticator, bool) {
+func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	return am.authenticators.Load(serviceID)
 }
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
-func (am *AuthManager) RemoveAuthenticator(serviceID string) {
+func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }
 
@@ -184,7 +184,7 @@ func (am *AuthManager) RemoveAuthenticator(serviceID string) {
 //   - config: The OAuth2 configuration for the authenticator.
 //
 // Returns an error if the authenticator cannot be created.
-func (am *AuthManager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
+func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
 	if config == nil {
 		return nil
 	}

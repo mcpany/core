@@ -50,7 +50,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "mcpany",
 		Short: "MCP Any is a versatile proxy for backend services.",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			return nil
 		},
 	}
@@ -58,7 +58,7 @@ func newRootCmd() *cobra.Command {
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of mcpany",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			_, err := fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", "mcpany", "dev")
 			if err != nil {
 				return fmt.Errorf("failed to print version: %w", err)

@@ -46,12 +46,12 @@ var AddReceivingMiddlewareHook func(name string)
 type Server struct {
 	server          *mcp.Server
 	router          *Router
-	toolManager     tool.ToolManagerInterface
-	promptManager   prompt.PromptManagerInterface
-	resourceManager resource.ResourceManagerInterface
-	authManager     *auth.AuthManager
+	toolManager     tool.ManagerInterface
+	promptManager   prompt.ManagerInterface
+	resourceManager resource.ManagerInterface
+	authManager     *auth.Manager
 	serviceRegistry *serviceregistry.ServiceRegistry
-	bus             *bus.BusProvider
+	bus             *bus.Provider
 	reloadFunc      func() error
 	debug           bool
 }
@@ -88,12 +88,12 @@ func (s *Server) Server() *mcp.Server {
 // Returns a new instance of the Server and an error if initialization fails.
 func NewServer(
 	ctx context.Context,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
-	authManager *auth.AuthManager,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	authManager *auth.Manager,
 	serviceRegistry *serviceregistry.ServiceRegistry,
-	bus *bus.BusProvider,
+	bus *bus.Provider,
 	debug bool,
 ) (*Server, error) {
 	s := &Server{
@@ -323,25 +323,25 @@ func (s *Server) ReadResource(
 
 // AuthManager returns the server's authentication manager, which is responsible
 // for handling authentication for incoming requests.
-func (s *Server) AuthManager() *auth.AuthManager {
+func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
 // ToolManager returns the server's tool manager, which is responsible for
 // managing the lifecycle and access to tools.
-func (s *Server) ToolManager() tool.ToolManagerInterface {
+func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
 // PromptManager returns the server's prompt manager, which is responsible for
 // managing the lifecycle and access to prompts.
-func (s *Server) PromptManager() prompt.PromptManagerInterface {
+func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
 // ResourceManager returns the server's resource manager, which is responsible
 // for managing the lifecycle and access to resources.
-func (s *Server) ResourceManager() resource.ResourceManagerInterface {
+func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 

@@ -37,7 +37,7 @@ type Prompt interface {
 }
 
 // MCPServerProvider defines an interface for components that can provide an
-// instance of an *mcp.Server. This is used to decouple the PromptManager from the
+// instance of an *mcp.Server. This is used to decouple the Manager from the
 // concrete server implementation.
 type MCPServerProvider interface {
 	Server() *mcp.Server

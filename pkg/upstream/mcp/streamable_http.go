@@ -188,9 +188,9 @@ func (r *mcpResource) Subscribe(ctx context.Context) error {
 func (u *MCPUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
@@ -311,9 +311,9 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
-			return exec.Command("sudo", fullArgs...)
+			return exec.Command("sudo", fullArgs...) //nolint:gosec // controlled execution
 		}
-		return exec.Command(command, args...)
+		return exec.Command(command, args...) //nolint:gosec // controlled execution
 	}
 
 	// Combine all commands into a single script.
@@ -341,9 +341,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
 	serviceID string,
 	stdio *configv1.McpStdioConnection,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -576,9 +576,9 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceID string,
 	httpConnection *configv1.McpStreamableHttpConnection,
-	toolManager tool.ToolManagerInterface,
-	promptManager prompt.PromptManagerInterface,
-	resourceManager resource.ResourceManagerInterface,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
