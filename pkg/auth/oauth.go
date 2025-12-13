@@ -25,6 +25,10 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 )
 
+type contextKey string
+
+const userContextKey contextKey = "user"
+
 // OAuth2Authenticator implements the Authenticator interface for OAuth2-based
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
@@ -90,5 +94,5 @@ func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request)
 		return ctx, fmt.Errorf("failed to extract claims: %w", err)
 	}
 
-	return context.WithValue(ctx, "user", claims.Email), nil
+	return context.WithValue(ctx, userContextKey, claims.Email), nil
 }

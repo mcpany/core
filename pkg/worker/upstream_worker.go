@@ -89,7 +89,9 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 			metrics.IncrCounter([]string{"worker", "upstream", "request", "success"}, 1)
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		resultBus.Publish(ctx, req.CorrelationID(), res)
+		if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+			log.Error("Failed to publish tool execution result", "error", err)
+		}
 	})
 
 	go func() {
