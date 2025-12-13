@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package app provides the main application logic for the MCP Any server.
 package app
 
 import (
@@ -53,7 +54,7 @@ import (
 )
 
 var healthCheckClient = &http.Client{
-	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+	CheckRedirect: func(_ *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	},
 }
@@ -466,7 +467,7 @@ func HealthCheckWithContext(
 	if err != nil {
 		return fmt.Errorf("health check failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// We must read the body and close it to ensure the underlying connection can be reused.
 	_, err = io.Copy(io.Discard, resp.Body)
@@ -508,7 +509,7 @@ func (a *Application) runServerMode(
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
-	httpHandler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+	httpHandler := mcp.NewStreamableHTTPHandler(func(_ *http.Request) *mcp.Server {
 		return mcpSrv.Server()
 	}, nil)
 
@@ -527,7 +528,7 @@ func (a *Application) runServerMode(
 
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
 	})))
@@ -640,7 +641,7 @@ func startHTTPServer(
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
-			ConnState: func(conn net.Conn, state http.ConnState) {
+			ConnState: func(_ net.Conn, state http.ConnState) {
 				switch state {
 				case http.StateNew:
 					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)

@@ -76,22 +76,22 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 	connectForTesting = f
 }
 
-// MCPUpstream implements the upstream.Upstream interface for services that are
+// Upstream implements the upstream.Upstream interface for services that are
 // themselves MCP-compliant. It connects to the downstream MCP service, discovers
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
-type MCPUpstream struct{}
+type Upstream struct{}
 
 // Shutdown is a no-op for the MCP upstream, as the connections it manages are
 // transient and established on a per-call basis. There are no persistent
 // connections to tear down.
-func (u *MCPUpstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// NewMCPUpstream creates a new instance of MCPUpstream.
-func NewMCPUpstream() upstream.Upstream {
-	return &MCPUpstream{}
+// NewUpstream creates a new instance of Upstream.
+func NewUpstream() upstream.Upstream {
+	return &Upstream{}
 }
 
 // mcpPrompt is a wrapper around the standard mcp.Prompt that associates it with
@@ -186,7 +186,7 @@ func (r *mcpResource) Subscribe(ctx context.Context) error {
 // determines the connection type (stdio or HTTP), connects to the downstream
 // service, lists its available tools, prompts, and resources, and registers
 // them with the appropriate managers.
-func (u *MCPUpstream) Register(
+func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
@@ -339,14 +339,14 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 // container). It establishes the connection, discovers the service's
 // capabilities, and registers them.
 //nolint:gocyclo,funlen
-func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
+func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
 	serviceID string,
 	stdio *configv1.McpStdioConnection,
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if stdio == nil {
@@ -575,14 +575,14 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
 //nolint:gocyclo
-func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
+func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceID string,
 	httpConnection *configv1.McpStreamableHttpConnection,
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())

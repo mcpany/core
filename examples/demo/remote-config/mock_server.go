@@ -1,3 +1,4 @@
+// Package main is a mock config server.
 package main
 
 import (

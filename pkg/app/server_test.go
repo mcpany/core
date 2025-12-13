@@ -292,7 +292,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("health check with a hanging server", func(t *testing.T) {
 		// This handler will hang indefinitely, simulating a non-responsive server.
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 			<-r.Context().Done() // Wait until the client hangs up or the request is canceled.
 		}))
 		defer server.Close()
@@ -578,7 +578,7 @@ func TestRun_BusProviderError(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	bus.NewProviderHook = func(messageBus *bus_pb.MessageBus) (*bus.Provider, error) {
+	bus.NewProviderHook = func(_ *bus_pb.MessageBus) (*bus.Provider, error) {
 		return nil, fmt.Errorf("injected bus provider error")
 	}
 	defer func() { bus.NewProviderHook = nil }()
@@ -885,7 +885,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -956,7 +956,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 
 			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(_ *gogrpc.Server) {})
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -1030,7 +1030,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	go func() {
 		resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
 		if err == nil {
-			resp.Body.Close()
+			_ = resp.Body.Close()
 		}
 	}()
 
@@ -1089,7 +1089,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1110,7 +1110,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 	}()
 
@@ -1170,7 +1170,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1192,7 +1192,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 
 		// This call will hang until the server is forcefully shut down.
 		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
@@ -1239,7 +1239,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1260,7 +1260,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 	}()
 
@@ -1471,7 +1471,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 
 func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	// Inject an error for mcpserver.NewRegistrationServer
-	mcpserver.NewRegistrationServerHook = func(bus interface{}) (*mcpserver.RegistrationServer, error) {
+	mcpserver.NewRegistrationServerHook = func(_ interface{}) (*mcpserver.RegistrationServer, error) {
 		return nil, fmt.Errorf("injected registration server error")
 	}
 	defer func() { mcpserver.NewRegistrationServerHook = nil }()
@@ -1483,7 +1483,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(_ *gogrpc.Server) {
 		_, err := mcpserver.NewRegistrationServer(nil)
 		if err != nil {
 			errChan <- fmt.Errorf("failed to create API server: %w", err)
@@ -1653,7 +1653,7 @@ upstream_services:
 
 	// Create a mock bus and set the hook.
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(p *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
 		if topic == "service_registration_requests" {
 			return mockRegBus
 		}
@@ -1710,7 +1710,7 @@ upstream_services:
 	require.NoError(t, err)
 
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(p *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
 		if topic == "service_registration_requests" {
 			return mockRegBus
 		}
@@ -1819,7 +1819,7 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 	go func() {
 		conn, err := gogrpc.NewClient(mockLis.Addr().String(), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err == nil {
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 		}
 	}()
@@ -1891,7 +1891,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 	}()
 
@@ -2115,7 +2115,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		_ = conn.Invoke(context.Background(), "/testhang.HangService/Hang", &struct{}{}, &struct{}{})
 	}()
 
@@ -2138,7 +2138,7 @@ func waitForServerReady(t *testing.T, addr string) {
 		if err != nil {
 			return false
 		}
-		conn.Close()
+		_ = conn.Close()
 		return true
 	}, 5*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
 }
@@ -2173,7 +2173,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	require.NoError(t, err)
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
 	// Make a request with the correct API key
@@ -2182,7 +2182,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	req.Header.Set("X-API-Key", "test-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// Make a request with an incorrect API key
@@ -2191,7 +2191,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	req.Header.Set("X-API-Key", "incorrect-api-key")
 	resp, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
 	cancel()
@@ -2240,6 +2240,6 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down gracefully.")
 	if lis != nil {
-		lis.Close()
+		_ = lis.Close()
 	}
 }

@@ -50,7 +50,7 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 			testMCPClient := sdk.NewClient(&sdk.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &sdk.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err, "Failed to connect to MCPANY server")
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			toolName := "e2e-cowsay-server/-/say"
 

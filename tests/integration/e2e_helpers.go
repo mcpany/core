@@ -49,6 +49,7 @@ import (
 	"github.com/spf13/afero"
 )
 
+// CreateTempConfigFile creates a temporary configuration file for the configured upstream service.
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
@@ -71,6 +72,7 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 	return tempFile.Name()
 }
 
+// CreateTempNatsConfigFile creates a temporary configuration file for NATS.
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
@@ -120,6 +122,7 @@ func (b *threadSafeBuffer) String() string {
 	return b.b.String()
 }
 
+// ProjectRoot returns the absolute path to the project root.
 func ProjectRoot(t *testing.T) string {
 	t.Helper()
 	root, err := GetProjectRoot()
@@ -128,6 +131,7 @@ func ProjectRoot(t *testing.T) string {
 }
 
 const (
+	// McpAnyServerStartupTimeout is the timeout for the server to start.
 	McpAnyServerStartupTimeout = 30 * time.Second
 	ServiceStartupTimeout      = 15 * time.Second
 	TestWaitTimeShort          = 60 * time.Second
@@ -191,6 +195,7 @@ var (
 	findRootOnce sync.Once
 )
 
+// GetProjectRoot returns the absolute path to the project root.
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
@@ -221,6 +226,7 @@ func GetProjectRoot() (string, error) {
 // --- Helper: Find Free Port ---
 var portMutex sync.Mutex
 
+// FindFreePort finds a free TCP port on localhost.
 func FindFreePort(t *testing.T) int {
 	portMutex.Lock()
 	defer portMutex.Unlock()
@@ -239,6 +245,7 @@ func FindFreePort(t *testing.T) int {
 }
 
 // --- Process Management for External Services ---
+// ManagedProcess manages an external process for testing.
 type ManagedProcess struct {
 	cmd                 *exec.Cmd
 	t                   *testing.T
@@ -252,6 +259,7 @@ type ManagedProcess struct {
 	Dir                 string
 }
 
+// NewManagedProcess creates a new ManagedProcess instance.
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.Command(command, args...)
@@ -274,10 +282,12 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 	return mp
 }
 
+// Cmd returns the underlying exec.Cmd.
 func (mp *ManagedProcess) Cmd() *exec.Cmd {
 	return mp.cmd
 }
 
+// Start starts the process.
 func (mp *ManagedProcess) Start() error {
 	if mp.Dir != "" {
 		mp.cmd.Dir = mp.Dir
@@ -315,6 +325,7 @@ func (mp *ManagedProcess) Start() error {
 // Allow patching for testing
 var syscallKill = syscall.Kill
 
+// Stop stops the process, attempting graceful shutdown then force kill.
 func (mp *ManagedProcess) Stop() {
 	select {
 	case <-mp.waitDone:
@@ -391,7 +402,9 @@ func (mp *ManagedProcess) Stop() {
 	mp.t.Logf("[%s] Process %s stopped (SIGKILL or already exited).", mp.label, mp.cmd.Path)
 }
 
+// StdoutString returns the captured stdout as a string.
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
+// StderrString returns the captured stderr as a string.
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
 // WaitForText waits for specific text to appear in the process's stdout.
@@ -458,7 +471,7 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 			return false
 		}
 		defer func() { _ = resp.Body.Close() }()
-		conn.Close()
+		_ = conn.Close()
 		return true
 	}, timeout, RetryInterval, "Websocket server at %s did not become ready in time", url)
 }
@@ -491,6 +504,7 @@ func IsDockerSocketAccessible() bool {
 
 // --- Mock Service Start Helpers (External Processes) ---
 
+// StartDockerContainer starts a docker container with the given image and args.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
@@ -545,6 +559,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 }
 
 // --- MCPANY Server Helper (External Process) ---
+// MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
 type MCPANYTestServerInfo struct {
 	Process                  *ManagedProcess
 	JSONRPCEndpoint          string
@@ -560,11 +575,13 @@ type MCPANYTestServerInfo struct {
 }
 
 // --- Websocket Echo Server Helper ---
+// WebsocketEchoServerInfo contains information about a running mock WebSocket echo server.
 type WebsocketEchoServerInfo struct {
 	URL         string
 	CleanupFunc func()
 }
 
+// StartWebsocketEchoServer starts a mock WebSocket echo server.
 func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	t.Helper()
 
@@ -623,6 +640,7 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	}
 }
 
+// StartMCPANYServerWithConfig starts the MCP Any server with a provided config content.
 func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo {
 	t.Helper()
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -634,15 +652,18 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 	return StartMCPANYServer(t, testName, "--config-path", tmpFile.Name())
 }
 
+// StartMCPANYServer starts the MCP Any server with default settings.
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, true, extraArgs...)
 }
 
+// StartMCPANYServerWithNoHealthCheck starts the MCP Any server but skips the health check.
 func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, false, extraArgs...)
 }
 
-func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServerInfo {
+// StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
+func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
 	t.Helper()
 
 	_, err := GetProjectRoot()
@@ -714,6 +735,7 @@ func StartInProcessMCPANYServer(t *testing.T, testName string) *MCPANYTestServer
 	}
 }
 
+// StartNatsServer starts a NATS server for testing.
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
@@ -785,6 +807,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	return redisAddr, cleanup
 }
 
+// StartMCPANYServerWithClock starts the MCP Any server, optionally waiting for health.
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -886,7 +909,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 					t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
 					return false
 				}
-				defer resp.Body.Close()
+				defer func() { _ = resp.Body.Close() }()
 				// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
 				t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
 				return true
@@ -917,6 +940,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	}
 }
 
+// RegisterServiceViaAPI registers a service using the gRPC API.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeShort)
@@ -927,6 +951,7 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Logf("Service %s registered via API successfully. Message: %s, Discovered tools:\n%v", req.GetConfig().GetName(), resp.GetMessage(), resp.GetDiscoveredTools())
 }
 
+// RegisterHTTPService registers a simple HTTP service.
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	toolDef := configv1.ToolDefinition_builder{
@@ -935,6 +960,7 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 	RegisterHTTPServiceWithParams(t, regClient, serviceID, baseURL, toolDef, endpointPath, httpMethod, nil, authConfig)
 }
 
+// RegisterHTTPServiceWithParams registers an HTTP service with parameters.
 func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
@@ -975,6 +1001,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 	t.Logf("HTTP Service '%s' registration request sent via API: %s %s%s", serviceID, httpMethod, baseURL, endpointPath)
 }
 
+// RegisterWebsocketService registers a WebSocket service.
 func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1010,6 +1037,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 	t.Logf("Websocket Service '%s' registration request sent via API: %s", serviceID, baseURL)
 }
 
+// RegisterWebrtcService registers a WebRTC service.
 func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1045,10 +1073,11 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 	t.Logf("Webrtc Service '%s' registration request sent via API: %s", serviceID, baseURL)
 }
 
+// RegisterStreamableMCPService registers a streamable MCP service (SSE).
 func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 
-	mcpStreamableHttpConnection := configv1.McpStreamableHttpConnection_builder{
+	mcpStreamableHTTPConnection := configv1.McpStreamableHttpConnection_builder{
 		HttpAddress: &targetURL,
 	}.Build()
 
@@ -1066,7 +1095,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 		Name: &serviceID,
 		McpService: configv1.McpUpstreamService_builder{
 			ToolAutoDiscovery: &toolAutoDiscovery,
-			HttpConnection:    mcpStreamableHttpConnection,
+			HttpConnection:    mcpStreamableHTTPConnection,
 			Tools:             []*configv1.ToolDefinition{toolDef},
 			Calls:             map[string]*configv1.MCPCallDefinition{callID: callDef},
 		}.Build(),
@@ -1084,6 +1113,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 	t.Logf("Streamable MCP HTTP Service '%s' registration request sent via API: URL %s", serviceID, targetURL)
 }
 
+// RegisterStdioMCPService registers an MCP service using stdio.
 func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, command string, toolAutoDiscovery bool) {
 	t.Helper()
 	parts := strings.Fields(command)
@@ -1093,6 +1123,7 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 	RegisterStdioService(t, regClient, serviceID, commandName, toolAutoDiscovery, commandArgs...)
 }
 
+// RegisterGRPCService registers a gRPC service.
 func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 
@@ -1116,11 +1147,13 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 	t.Logf("gRPC Service '%s' registration request sent via API: target %s", serviceID, grpcTargetAddress)
 }
 
+// RegisterStdioService registers a raw stdio service.
 func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, commandArgs ...string) {
 	t.Helper()
 	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, commandArgs...)
 }
 
+// RegisterStdioServiceWithSetup registers a stdio service with setup steps.
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, commandArgs ...string) {
 	t.Helper()
 
@@ -1153,6 +1186,7 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 	RegisterServiceViaAPI(t, regClient, req)
 }
 
+// RegisterOpenAPIService registers an OpenAPI service.
 func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	absSpecPath, err := filepath.Abs(openAPISpecPath)
@@ -1185,6 +1219,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	t.Logf("OpenAPI Service '%s' registration request sent via API (spec: %s, intended server: %s)", serviceID, absSpecPath, serverURLOverride)
 }
 
+// RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
 func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
@@ -1239,7 +1274,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody)) //nolint:gosec
 	require.NoError(t, err)
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected status OK")
 
@@ -1254,6 +1289,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	t.Logf("HTTP Service '%s' registration request sent via JSON-RPC successfully.", serviceID)
 }
 
+// MCPJSONRPCError represents a JSON-RPC error.
 type MCPJSONRPCError struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
@@ -1264,6 +1300,7 @@ func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }
 
+// ListTools calls tools/list via JSON-RPC.
 func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1286,7 +1323,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
@@ -1309,6 +1346,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	return rpcResp.Result, nil
 }
 
+// CallTool calls tools/call via JSON-RPC.
 func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	reqBody, err := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -1331,7 +1369,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)

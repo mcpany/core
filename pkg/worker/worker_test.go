@@ -129,7 +129,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+			registerFunc: func(_ context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 				return "success-key", nil, []*configv1.ResourceDefinition{}, nil
 			},
 		}
@@ -167,7 +167,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		expectedErr := errors.New("registration failed")
 
 		registry := &mockServiceRegistry{
-			registerFunc: func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+			registerFunc: func(_ context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 				return "", nil, nil, expectedErr
 			},
 		}
@@ -263,7 +263,7 @@ func TestUpstreamWorker(t *testing.T) {
 		wg.Add(1)
 
 		tm := &mockToolManager{
-			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			executeFunc: func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 				return "success", nil
 			},
 		}
@@ -505,7 +505,7 @@ func TestWorker_ContextPropagation(t *testing.T) {
 		return func() {}
 	}
 
-	resBusMock.publishFunc = func(ctx context.Context, _ string, msg *bus.ToolExecutionResult) error {
+	resBusMock.publishFunc = func(ctx context.Context, _ string, _ *bus.ToolExecutionResult) error {
 		defer wg.Done()
 		// Block until context is canceled. This proves the correct context was passed.
 		// If context.Background() was passed, this will block forever and the test will time out.

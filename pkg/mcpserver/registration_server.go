@@ -179,7 +179,7 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 
 
 // ListServices lists all registered services.
-func (s *RegistrationServer) ListServices(ctx context.Context, req *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
+func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)
 
