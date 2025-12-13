@@ -1,3 +1,4 @@
+// Package main matches license headers and removes them.
 package main
 
 import (

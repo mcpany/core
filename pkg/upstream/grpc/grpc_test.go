@@ -98,7 +98,7 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	}
 }
 
-func (m *MockToolManager) SetMCPServer(provider tool.MCPServerProvider) {}
+func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
@@ -117,7 +117,7 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return nil, errors.New("not implemented")
 }
 
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
 func TestNewGRPCUpstream(t *testing.T) {
