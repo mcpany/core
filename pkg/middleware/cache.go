@@ -47,7 +47,7 @@ func NewCachingMiddleware(toolManager tool.ToolManagerInterface) *CachingMiddlew
 }
 
 // Execute executes the caching middleware.
-func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ToolExecutionFunc) (any, error) {
+func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
 		return next(ctx, req)

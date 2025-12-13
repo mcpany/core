@@ -113,5 +113,5 @@ func (m *mockRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) 
 	if m.roundTripFunc != nil {
 		return m.roundTripFunc(req)
 	}
-	return &http.Response{StatusCode: http.StatusOK}, nil
+	return &http.Response{StatusCode: http.StatusOK, Body: http.NoBody}, nil
 }
