@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main is a helper command for integration tests.
 package main
 
 import (

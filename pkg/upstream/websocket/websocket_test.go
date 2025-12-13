@@ -593,7 +593,7 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	rm := resource.NewManager()
 	upstream := NewUpstream(poolManager)
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 	defer server.Close()
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
@@ -638,7 +638,7 @@ func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(poolManager)
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 	defer server.Close()
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
 
