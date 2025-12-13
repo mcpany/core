@@ -84,14 +84,14 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 		defer os.RemoveAll(tempDir)
 
 		// Create a file in the root
-		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0o644)
+		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0o600)
 		require.NoError(t, err)
 
 		// Create a file in a subdirectory
 		subDir := filepath.Join(tempDir, "subdir")
 		err = os.Mkdir(subDir, 0o755)
 		require.NoError(t, err)
-		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0o644)
+		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0o600)
 		require.NoError(t, err)
 
 		protoCollection := configv1.ProtoCollection_builder{

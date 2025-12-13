@@ -263,11 +263,11 @@ func (m *MockFieldNumbers) Len() int {
 	return 0
 }
 
-func (m *MockFieldNumbers) Get(i int) protoreflect.FieldNumber {
+func (m *MockFieldNumbers) Get(_ int) protoreflect.FieldNumber {
 	panic("should not be called")
 }
 
-func (m *MockFieldNumbers) Has(n protoreflect.FieldNumber) bool {
+func (m *MockFieldNumbers) Has(_ protoreflect.FieldNumber) bool {
 	return false
 }
 

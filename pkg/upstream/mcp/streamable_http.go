@@ -311,9 +311,9 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
-			return exec.Command("sudo", fullArgs...) //nolint:gosec // user configuration
+			return exec.Command("sudo", fullArgs...)
 		}
-		return exec.Command(command, args...) //nolint:gosec // user configuration
+		return exec.Command(command, args...)
 	}
 
 	// Combine all commands into a single script.
@@ -328,7 +328,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	script := strings.Join(scriptCommands, " && ")
 
 	// run the script directly on the host.
-	cmd := exec.Command("/bin/sh", "-c", script) //nolint:gosec // user configuration
+	cmd := exec.Command("/bin/sh", "-c", script)
 	cmd.Dir = stdio.GetWorkingDirectory()
 	return cmd
 }
@@ -572,7 +572,7 @@ func (u *MCPUpstream) createAndRegisterMCPItemsFromStdio(
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
-func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP( //nolint:unused
+func (u *MCPUpstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceID string,
 	httpConnection *configv1.McpStreamableHttpConnection,
