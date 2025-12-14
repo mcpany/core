@@ -88,7 +88,7 @@ func (s *Server) Server() *mcp.Server {
 //
 // Returns a new instance of the Server and an error if initialization fails.
 func NewServer(
-	ctx context.Context,
+	_ context.Context,
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,

@@ -47,7 +47,7 @@ func (m *mockMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams
 func TestMCPTool_Execute(t *testing.T) {
 	t.Run("successful execution", func(t *testing.T) {
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			callToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				assert.Equal(t, "test-tool", params.Name)
 				args, ok := params.Arguments.(json.RawMessage)
 				require.True(t, ok)
@@ -79,7 +79,7 @@ func TestMCPTool_Execute(t *testing.T) {
 	t.Run("execution error", func(t *testing.T) {
 		expectedErr := errors.New("mcp error")
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			callToolFunc: func(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				return nil, expectedErr
 			},
 		}
@@ -101,7 +101,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 	t.Run("with input transformation", func(t *testing.T) {
 		mockClient := &mockMCPClient{
-			callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+			callToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 				args, ok := params.Arguments.(json.RawMessage)
 				require.True(t, ok)
 				assert.JSONEq(t, `{"transformed":true}`, string(args))

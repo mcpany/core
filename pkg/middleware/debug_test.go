@@ -33,7 +33,7 @@ func TestDebugMiddleware(t *testing.T) {
 	logging.Init(slog.LevelDebug, &logOutput)
 
 	mw := DebugMiddleware()
-	handler := mw(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+	handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 		return &mcp.ListToolsResult{
 			Tools: []*mcp.Tool{
 				{Name: "test-tool"},
@@ -57,7 +57,7 @@ func TestDebugMiddleware_NoLoggingWhenDisabled(t *testing.T) {
 	logging.Init(slog.LevelInfo, &logOutput)
 
 	mw := DebugMiddleware()
-	handler := mw(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+	handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 		return &mcp.ListToolsResult{
 			Tools: []*mcp.Tool{
 				{Name: "test-tool"},

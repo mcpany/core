@@ -54,7 +54,7 @@ import (
 )
 
 var healthCheckClient = &http.Client{
-	CheckRedirect: func(_ *http.Request, via []*http.Request) error {
+	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 		return http.ErrUseLastResponse
 	},
 }

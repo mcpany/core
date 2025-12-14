@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package logging provides logging utilities for the application.
 package logging
 
 import (

@@ -34,9 +34,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testServiceID = "test-service"
+)
+
 func TestNewWebsocketTool(t *testing.T) {
 	pm := pool.NewManager()
-	serviceID := "test-service"
+	serviceID := testServiceID
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
 	toolProto.SetServiceId(serviceID)
@@ -108,7 +112,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) {
@@ -159,7 +163,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) {
@@ -199,7 +203,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 	t.Run("pool get error", func(t *testing.T) {
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return nil, errors.New("pool error")
 			},
 		}
@@ -235,7 +239,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 	t.Run("bad tool input", func(t *testing.T) {
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return &client.WebsocketClientWrapper{}, nil
 			},
 		}
@@ -260,7 +264,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		// A pool must be registered for the service key, otherwise the function errors out
 		// before it gets to the input transformation logic.
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				// This part should not be reached if the template parsing fails first.
 				// We return a non-nil wrapper to satisfy the immediate checks.
 				return &client.WebsocketClientWrapper{}, nil
@@ -303,7 +307,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
 			putFunc: func(_ *client.WebsocketClientWrapper) { /* no-op, already closed */ },
@@ -351,7 +355,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 				return wrapper, nil
 			},
 			putFunc: func(c *client.WebsocketClientWrapper) { _ = c.Close() },
@@ -394,7 +398,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockWebsocketPool{
-			getFunc: func(ctx context.Context) (*client.WebsocketClientWrapper, error) { return wrapper, nil },
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) { return wrapper, nil },
 			putFunc: func(c *client.WebsocketClientWrapper) { _ = c.Close() },
 		}
 		serviceID := "ws-non-json"

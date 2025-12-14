@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package command provides interfaces and implementations for executing commands.
 package command
 
 import (

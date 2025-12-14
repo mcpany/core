@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package worker implements the worker functionality.
 package worker
 
 import (

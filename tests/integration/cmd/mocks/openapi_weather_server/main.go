@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main implements a mock OpenWeatherMap server.
 package main
 
 import (

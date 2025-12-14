@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package schemaconv provides utilities for converting between schema formats.
 package schemaconv
 
 import (

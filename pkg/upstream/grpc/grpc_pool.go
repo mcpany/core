@@ -50,7 +50,7 @@ func NewGrpcPool(
 	config *configv1.UpstreamServiceConfig,
 	disableHealthCheck bool,
 ) (pool.Pool[*client.GrpcClientWrapper], error) {
-	factory := func(ctx context.Context) (*client.GrpcClientWrapper, error) {
+	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
 		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
 			certificate, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package mcpserver implements the MCP server functionality.
 package mcpserver
 
 import (
@@ -151,25 +152,25 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 
 // UnregisterService is not yet implemented. It is intended to handle the
 // unregistration of a service.
-func (s *RegistrationServer) UnregisterService(ctx context.Context, req *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
+func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
 // InitiateOAuth2Flow is not yet implemented. It is intended to handle the
 // initiation of an OAuth2 flow for a service.
-func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
+func (s *RegistrationServer) InitiateOAuth2Flow(_ context.Context, _ *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
 }
 
 // RegisterTools is not yet implemented. It is intended to handle the
 // registration of tools for a service.
-func (s *RegistrationServer) RegisterTools(ctx context.Context, req *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
+func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 
 // GetServiceStatus is not yet implemented. It is intended to handle requests
 // for the status of a service.
-func (s *RegistrationServer) GetServiceStatus(ctx context.Context, req *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
+func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }
 

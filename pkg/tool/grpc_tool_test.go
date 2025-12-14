@@ -116,7 +116,7 @@ func setupGrpcTest(t *testing.T, srv weatherpb.WeatherServiceServer) *grpc.Clien
 
 	t.Cleanup(func() {
 		s.Stop()
-		conn.Close()
+		_ = conn.Close()
 	})
 
 	return conn
@@ -149,7 +149,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 	t.Run("successful execution", func(t *testing.T) {
 		server := &mockWeatherServer{
-			getWeatherFunc: func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
+			getWeatherFunc: func(_ context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
 				assert.Equal(t, "London", req.GetLocation())
 				return weatherpb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 			},
@@ -159,7 +159,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockGrpcPool{
-			getFunc: func(ctx context.Context) (*client.GrpcClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.GrpcClientWrapper, error) {
 				return wrapper, nil
 			},
 		}
@@ -177,7 +177,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 	t.Run("pool get error", func(t *testing.T) {
 		pm := pool.NewManager()
 		mockPool := &mockGrpcPool{
-			getFunc: func(ctx context.Context) (*client.GrpcClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.GrpcClientWrapper, error) {
 				return nil, errors.New("pool error")
 			},
 		}
@@ -191,7 +191,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 	t.Run("invoke error", func(t *testing.T) {
 		server := &mockWeatherServer{
-			getWeatherFunc: func(ctx context.Context, req *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
+			getWeatherFunc: func(_ context.Context, _ *weatherpb.GetWeatherRequest) (*weatherpb.GetWeatherResponse, error) {
 				return nil, errors.New("invoke error")
 			},
 		}
@@ -200,7 +200,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 		pm := pool.NewManager()
 		mockPool := &mockGrpcPool{
-			getFunc: func(ctx context.Context) (*client.GrpcClientWrapper, error) {
+			getFunc: func(_ context.Context) (*client.GrpcClientWrapper, error) {
 				return wrapper, nil
 			},
 		}

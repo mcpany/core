@@ -87,7 +87,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 	t.Run("PostCallHook_Truncate", func(t *testing.T) {
 		mockTool := &MockTool{
 			ToolFunc: func() *v1.Tool { return protoTool },
-			ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 				return "very long response", nil
 			},
 		}
@@ -177,7 +177,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 
 		mockToolMw := &MockTool{
 			ToolFunc: func() *v1.Tool { return protoTool },
-			ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+			ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 				return "ok", nil
 			},
 		}

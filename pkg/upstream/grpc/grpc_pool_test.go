@@ -45,7 +45,7 @@ func startMockGrpcServer(t *testing.T) *bufconn.Listener {
 
 func TestGrpcPool_New(t *testing.T) {
 	lis := startMockGrpcServer(t)
-	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+	dialer := func(_ context.Context, _ string) (net.Conn, error) {
 		return lis.Dial()
 	}
 

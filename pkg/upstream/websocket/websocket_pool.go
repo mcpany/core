@@ -40,7 +40,7 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // It returns a new WebSocket client pool or an error if the pool cannot be
 // created.
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
-	factory := func(ctx context.Context) (*client.WebsocketClientWrapper, error) {
+	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to connect to websocket server %s: %w", address, err)

@@ -31,7 +31,7 @@ func TestRouter(t *testing.T) {
 		expectedResult := &mcp.CallToolResult{
 			Content: []mcp.Content{&mcp.TextContent{Text: "test result"}},
 		}
-		handler := func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+		handler := func(_ context.Context, _ mcp.Request) (mcp.Result, error) {
 			return expectedResult, nil
 		}
 		router.Register("test/method", handler)

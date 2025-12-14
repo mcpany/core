@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package grpc provides gRPC connection primitives for upstream services.
 package grpc
 
 import (
@@ -54,7 +55,7 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // ctx is the context for the connection attempt.
 // targetAddress is the address of the gRPC service to connect to.
 // It returns a new *grpc.ClientConn or an error if the connection fails.
-func (f *ConnectionFactory) NewConnection(ctx context.Context, targetAddress string) (*grpc.ClientConn, error) {
+func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}

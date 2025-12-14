@@ -85,7 +85,7 @@ func (p *TemplatedPrompt) Service() string {
 }
 
 // Get executes the prompt with the provided arguments.
-func (p *TemplatedPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
 		return nil, err

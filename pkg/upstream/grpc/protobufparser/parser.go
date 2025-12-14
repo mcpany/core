@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package protobufparser provides a parser for Protocol Buffers.
 package protobufparser
 
 import (
@@ -188,7 +189,7 @@ func processProtoCollection(
 				return fmt.Errorf("failed to create directory for proto file: %w", err)
 			}
 
-			content, err := os.ReadFile(path) //nolint:gosec // file inclusion from validated path
+			content, err := os.ReadFile(path)
 			if err != nil {
 				return fmt.Errorf("failed to read proto file %s: %w", path, err)
 			}
@@ -237,7 +238,8 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 		content = []byte(protoFile.GetFileContent())
 	case configv1.ProtoFile_FilePath_case:
 		filePathRef := protoFile.GetFilePath()
-		content, err = os.ReadFile(filePathRef) //nolint:gosec // file inclusion from config
+
+		content, err = os.ReadFile(filePathRef)
 		if err != nil {
 			return "", fmt.Errorf("failed to read proto file from path %s: %w", filePathRef, err)
 		}

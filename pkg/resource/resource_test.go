@@ -41,11 +41,11 @@ func (r *mockResource) Service() string {
 	return r.service
 }
 
-func (r *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (r *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return &mcp.ReadResourceResult{}, nil
 }
 
-func (r *mockResource) Subscribe(ctx context.Context) error {
+func (r *mockResource) Subscribe(_ context.Context) error {
 	return r.subscribeErr
 }
 

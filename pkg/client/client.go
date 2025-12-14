@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package client provides client implementations for the application.
 package client
 
 import (

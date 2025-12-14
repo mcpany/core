@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package testutil provides mock implementations for testing.
 package testutil
 
 import (

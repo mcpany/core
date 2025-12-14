@@ -133,14 +133,19 @@ func ProjectRoot(t *testing.T) string {
 const (
 	// McpAnyServerStartupTimeout is the timeout for the server to start.
 	McpAnyServerStartupTimeout = 30 * time.Second
-	ServiceStartupTimeout      = 15 * time.Second
-	TestWaitTimeShort          = 60 * time.Second
-	TestWaitTimeMedium         = 240 * time.Second
-	TestWaitTimeLong           = 5 * time.Minute
-	RetryInterval              = 250 * time.Millisecond
-	localHeaderMcpSessionID    = "Mcp-Session-Id"
-	dockerCmd                  = "docker"
-	sudoCmd                    = "sudo"
+	// ServiceStartupTimeout is the timeout for services to start up.
+	ServiceStartupTimeout = 15 * time.Second
+	// TestWaitTimeShort is a short wait time for tests.
+	TestWaitTimeShort = 60 * time.Second
+	// TestWaitTimeMedium is the default timeout for medium duration tests.
+	TestWaitTimeMedium = 240 * time.Second
+	// TestWaitTimeLong is the default timeout for long duration tests.
+	TestWaitTimeLong = 5 * time.Minute
+	// RetryInterval is the interval between retries.
+	RetryInterval           = 250 * time.Millisecond
+	localHeaderMcpSessionID = "Mcp-Session-Id"
+	dockerCmd               = "docker"
+	sudoCmd                 = "sudo"
 )
 
 var (
@@ -244,6 +249,7 @@ func FindFreePort(t *testing.T) int {
 	return l.Addr().(*net.TCPAddr).Port
 }
 
+// ManagedProcess represents an external process managed by the test framework.
 // --- Process Management for External Services ---
 // ManagedProcess manages an external process for testing.
 type ManagedProcess struct {
@@ -404,6 +410,7 @@ func (mp *ManagedProcess) Stop() {
 
 // StdoutString returns the captured stdout as a string.
 func (mp *ManagedProcess) StdoutString() string { return mp.stdout.String() }
+
 // StderrString returns the captured stderr as a string.
 func (mp *ManagedProcess) StderrString() string { return mp.stderr.String() }
 
@@ -495,7 +502,8 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
-	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...) //nolint:gosec // test
+
+	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...)
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -521,17 +529,19 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	}
 
 	// Ensure the container is not already running from a previous failed run
-	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
-	_ = stopCmd.Run()                                                       // Ignore error, it might not be running
-	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)     //nolint:gosec // test
-	_ = rmCmd.Run()                                                         // Ignore error, it might not exist
+
+	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+	_ = stopCmd.Run() // Ignore error, it might not be running
+
+	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
+	_ = rmCmd.Run() // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
 	dockerRunArgs = append(dockerRunArgs, imageName)
 	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // test
+	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...)
 	// Capture stderr for better error reporting
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
@@ -543,7 +553,8 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
-		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // test
+
+		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
 		err := stopCleanupCmd.Run()
 		if err != nil {
 			// Log as error, but don't fail the test, as cleanup failure is secondary.
@@ -558,6 +569,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	return cleanupFunc
 }
 
+// MCPANYTestServerInfo contains information about a running MCPANY test server.
 // --- MCPANY Server Helper (External Process) ---
 // MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
 type MCPANYTestServerInfo struct {
@@ -574,6 +586,7 @@ type MCPANYTestServerInfo struct {
 	T                        *testing.T
 }
 
+// WebsocketEchoServerInfo contains information about a running Websocket echo server.
 // --- Websocket Echo Server Helper ---
 // WebsocketEchoServerInfo contains information about a running mock WebSocket echo server.
 type WebsocketEchoServerInfo struct {
@@ -759,7 +772,8 @@ func StartNatsServer(t *testing.T) (string, func()) {
 
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
-	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // test
+
+	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
 	err = cmd.Start()
 	require.NoError(t, err)
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
@@ -795,7 +809,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic
-		cmd := exec.Command(dockerExe, pingArgs...)                                    //nolint:gosec // test
+		cmd := exec.Command(dockerExe, pingArgs...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -1193,7 +1207,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	require.NoError(t, err)
 	_, err = os.Stat(absSpecPath)
 	require.NoError(t, err, "OpenAPI spec file not found: %s", absSpecPath)
-	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // test file
+	specContent, err := os.ReadFile(absSpecPath)
 	require.NoError(t, err)
 	spec := string(specContent)
 

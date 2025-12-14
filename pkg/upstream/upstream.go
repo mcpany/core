@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package upstream provides upstream service management.
 package upstream
 
 import (

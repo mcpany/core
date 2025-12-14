@@ -50,7 +50,7 @@ func (p *testPrompt) Service() string {
 	return "test-service"
 }
 
-func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var parsedArgs map[string]string
 	if err := json.Unmarshal(args, &parsedArgs); err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func TestPromptLifecycle(t *testing.T) {
 	listChanged := false
 
 	opts := &mcp.ClientOptions{
-		PromptListChangedHandler: func(ctx context.Context, req *mcp.PromptListChangedRequest) {
+		PromptListChangedHandler: func(_ context.Context, _ *mcp.PromptListChangedRequest) {
 			listChanged = true
 			wg.Done()
 		},
@@ -202,7 +202,7 @@ func TestPromptLifecycle(t *testing.T) {
 		Name:        "test-prompt",
 		Description: "A test prompt",
 	}
-	server.AddPrompt(prompt, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	server.AddPrompt(prompt, func(_ context.Context, _ *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		return &mcp.GetPromptResult{
 			Messages: []*mcp.PromptMessage{
 				{

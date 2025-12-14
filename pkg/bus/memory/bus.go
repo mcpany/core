@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package memory provides in-memory implementations of the bus interface.
 package memory
 
 import (

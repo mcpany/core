@@ -83,7 +83,7 @@ func newRootCmd() *cobra.Command {
 
 			var logOutput io.Writer = os.Stdout
 			if logfile := cfg.LogFile(); logfile != "" {
-				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) //nolint:gosec // file path is controlled by config
+				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
 				if err != nil {
 					return fmt.Errorf("failed to open logfile: %w", err)
 				}

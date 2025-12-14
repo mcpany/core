@@ -305,7 +305,7 @@ func TestUpstreamWorker(t *testing.T) {
 		expectedErr := errors.New("execution failed")
 
 		tm := &mockToolManager{
-			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			executeFunc: func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 				return nil, expectedErr
 			},
 		}
@@ -346,7 +346,7 @@ func TestUpstreamWorker(t *testing.T) {
 		wg.Add(1)
 
 		tm := &mockToolManager{
-			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			executeFunc: func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 				// Functions are not serializable to JSON
 				return func() {}, nil
 			},
@@ -390,7 +390,7 @@ func TestUpstreamWorker(t *testing.T) {
 		expectedErr := errors.New("execution partially failed")
 
 		tm := &mockToolManager{
-			executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			executeFunc: func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 				return "partial result", expectedErr
 			},
 		}
@@ -499,7 +499,7 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	readyToPublish := make(chan struct{})
 	var capturedHandler func(*bus.ToolExecutionRequest)
 
-	reqBusMock.subscribeFunc = func(ctx context.Context, topic string, handler func(*bus.ToolExecutionRequest)) func() {
+	reqBusMock.subscribeFunc = func(_ context.Context, _ string, handler func(*bus.ToolExecutionRequest)) func() {
 		capturedHandler = handler
 		close(readyToPublish)
 		return func() {}

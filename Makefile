@@ -340,15 +340,13 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "version 2.0.0"); \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v2.7.2"); \
 	if test -f "$(GOLANGCI_LINT_BIN)" && [ -n "$$LINT_VER_CHECK" ]; then \
-		echo "golangci-lint v2.0.0 is already installed."; \
+		echo "golangci-lint v2.7.2 is already installed."; \
 	else \
-		echo "Installing golangci-lint v2.0.0 to $(TOOL_INSTALL_DIR)..."; \
+		echo "Installing golangci-lint v2.7.2 to $(TOOL_INSTALL_DIR)..."; \
 		rm -f "$(GOLANGCI_LINT_BIN)"; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.0.0; \
-		echo "Downloading go modules..."; \
-		go mod download; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.7.2; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
@@ -460,8 +458,15 @@ else
 		pip3 install --user --break-system-packages pre-commit || pip3 install --user pre-commit; \
 		export PATH=$$HOME/.local/bin:$$PATH; \
 	fi; \
-	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GO_CMD) mod tidy; \
 	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off pre-commit run --all-files --show-diff-on-failure --color=always
+endif
+
+clean-pre-commit:
+ifdef SHOULD_PROXY_TO_DOCKER
+	@$(DOCKER_PROXY_CMD) clean-pre-commit
+else
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+	pre-commit clean
 endif
 
 .PHONY: fix-license-header

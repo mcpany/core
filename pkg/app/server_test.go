@@ -213,7 +213,7 @@ func TestHealthCheck(t *testing.T) {
 		// '127.0.0.1'. The HealthCheck function, as written, assumes
 		// 'localhost', which makes it fragile.
 
-		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		// Forcing the server to listen on the IPv4 loopback address.
@@ -234,7 +234,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("health check timeout", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			time.Sleep(100 * time.Millisecond)
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -263,7 +263,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("failed health check with non-200 status", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer server.Close()
@@ -316,7 +316,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("health check respects client timeout", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			time.Sleep(7 * time.Second) // Sleep longer than the timeout
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -343,7 +343,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Configure and start a test server.
 		server := &http.Server{
-			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			}),
 			ReadHeaderTimeout: 5 * time.Second,
@@ -375,7 +375,7 @@ func TestHealthCheck(t *testing.T) {
 
 		// Configure and start a test server.
 		server := &http.Server{
-			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			}),
 			ReadHeaderTimeout: 5 * time.Second,
@@ -402,7 +402,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("successful health check writes to writer", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -431,7 +431,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("health check respects context cancellation", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			time.Sleep(200 * time.Millisecond) // Simulate a slow response
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -451,7 +451,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("health check respects timeout from context", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			time.Sleep(100 * time.Millisecond) // Simulate a slow response.
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -469,7 +469,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("health check does not follow redirects", func(t *testing.T) {
 		// This server will redirect to a healthy endpoint.
-		healthyServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		healthyServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer healthyServer.Close()
@@ -488,7 +488,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("health check with hanging server should timeout", func(t *testing.T) {
 		// This handler will hang, simulating a non-responsive server.
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			time.Sleep(100 * time.Millisecond)
 			w.WriteHeader(http.StatusNoContent)
 		}))
@@ -610,7 +610,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 func TestRun_StdioMode(t *testing.T) {
 	var stdioModeCalled bool
-	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
+	mockStdioFunc := func(_ context.Context, _ *mcpserver.Server) error {
 		stdioModeCalled = true
 		return fmt.Errorf("stdio mode error")
 	}
@@ -1019,7 +1019,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	shutdownTimeout := 100 * time.Millisecond
 	handlerSleep := 5 * time.Second
 
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		close(handlerStarted)
 		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
@@ -1089,7 +1089,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1137,7 +1137,7 @@ type mockHangService struct {
 
 // Hang is a mock RPC that simulates a long-running operation by sleeping
 // for the configured hangTime.
-func (s *mockHangService) Hang(ctx context.Context, req interface{}) (interface{}, error) {
+func (s *mockHangService) Hang(_ context.Context, _ interface{}) (interface{}, error) {
 	time.Sleep(s.hangTime)
 	return &struct{}{}, nil
 }
@@ -1170,7 +1170,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1239,7 +1239,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1347,7 +1347,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 
 func TestRunStdioMode(t *testing.T) {
 	var called bool
-	mockStdioFunc := func(ctx context.Context, mcpSrv *mcpserver.Server) error {
+	mockStdioFunc := func(_ context.Context, _ *mcpserver.Server) error {
 		called = true
 		return nil
 	}
@@ -1561,7 +1561,7 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(_ *gogrpc.Server) {
 		// No-op registration.
 	})
 
@@ -1597,7 +1597,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			// Start the gRPC server.
 			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(s *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(_ *gogrpc.Server) {})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -1808,7 +1808,7 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
 			HandlerType: (*interface{})(nil),
-			Methods: []gogrpc.MethodDesc{{MethodName: "Hang", Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
+			Methods: []gogrpc.MethodDesc{{MethodName: "Hang", Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 				return srv.(*mockHangService).Hang(ctx, nil)
 			}}},
 		}
@@ -1870,7 +1870,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -1947,7 +1947,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(_ *gogrpc.Server) {
 		panic("test panic in registration")
 	})
 
@@ -2005,7 +2005,7 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 
 	// 2. Execution
 	// This registration function will panic, simulating a failure during service setup.
-	registerFunc := func(s *gogrpc.Server) {
+	registerFunc := func(_ *gogrpc.Server) {
 		panic("registration failed")
 	}
 
@@ -2047,7 +2047,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
 
-	registerFunc := func(s *gogrpc.Server) {
+	registerFunc := func(_ *gogrpc.Server) {
 		panic("panic during registration")
 	}
 
@@ -2096,7 +2096,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 			Methods: []gogrpc.MethodDesc{
 				{
 					MethodName: "Hang",
-					Handler: func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor gogrpc.UnaryServerInterceptor) (interface{}, error) {
+					Handler: func(srv interface{}, ctx context.Context, _ func(interface{}) error, _ gogrpc.UnaryServerInterceptor) (interface{}, error) {
 						return srv.(*mockHangService).Hang(ctx, nil)
 					},
 				},
@@ -2215,7 +2215,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, func(_ *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 

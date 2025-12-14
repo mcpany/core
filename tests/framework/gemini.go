@@ -27,16 +27,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// DefaultModel is the default Gemini model to use.
 const DefaultModel = "gemini-2.5-flash"
 
+// GeminiCLI handles interactions with the Gemini CLI tool for testing.
 type GeminiCLI struct {
 	t *testing.T
 }
 
+// NewGeminiCLI creates a new GeminiCLI instance.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }
 
+// Install installs the Gemini CLI tool.
 func (g *GeminiCLI) Install() {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -52,9 +56,10 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	root, err := integration.GetProjectRoot()
 	require.NoError(g.t, err)
 	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
-	return exec.Command(geminiPath, args...) //nolint:gosec // test framework
+	return exec.Command(geminiPath, args...)
 }
 
+// AddMCP adds an MCP server to the Gemini CLI configuration.
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)

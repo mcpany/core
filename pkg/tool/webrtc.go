@@ -46,7 +46,7 @@ func (w *peerConnectionWrapper) Close() error {
 	return w.PeerConnection.Close()
 }
 
-func (w *peerConnectionWrapper) IsHealthy(ctx context.Context) bool {
+func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	return w.PeerConnection != nil && w.ICEConnectionState() == webrtc.ICEConnectionStateConnected
 }
 
@@ -107,7 +107,7 @@ func NewWebrtcTool(
 	return t, nil
 }
 
-func (t *WebrtcTool) newPeerConnection(ctx context.Context) (*peerConnectionWrapper, error) {
+func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrapper, error) {
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{

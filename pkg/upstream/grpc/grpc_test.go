@@ -113,7 +113,7 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }
 
@@ -182,7 +182,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 
 	t.Run("reflection fails", func(t *testing.T) {
 		// Start a simple HTTP server, not a gRPC server
-		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer httpServer.Close()
@@ -275,7 +275,7 @@ type mockWeatherServer struct {
 	pb.UnimplementedWeatherServiceServer
 }
 
-func (s *mockWeatherServer) GetWeather(ctx context.Context, in *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
+func (s *mockWeatherServer) GetWeather(_ context.Context, _ *pb.GetWeatherRequest) (*pb.GetWeatherResponse, error) {
 	return pb.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
 }
 

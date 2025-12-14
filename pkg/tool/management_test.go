@@ -139,7 +139,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 				Name:      proto.String("exec-tool"),
 			}
 		},
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		ExecuteFunc: func(_ context.Context, req *ExecutionRequest) (any, error) {
 			assert.Equal(t, execReq, req)
 			return expectedResult, nil
 		},
@@ -267,7 +267,7 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 				},
 			}
 		},
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return nil, fmt.Errorf("tool error")
 		},
 	}
@@ -301,7 +301,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 				Name:      proto.String("exec-tool"),
 			}
 		},
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return "tool success", nil
 		},
 	}
@@ -310,7 +310,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 
 	// Case 1: Middleware returns a result directly
 	middleware1 := &MockToolExecutionMiddleware{
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest, _ ExecutionFunc) (any, error) {
 			return "middleware success", nil
 		},
 	}
@@ -403,7 +403,7 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 				Annotations: &v1.ToolAnnotations{InputSchema: inputSchema},
 			}
 		},
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return map[string]string{"status": "ok from tool"}, nil
 		},
 	}
@@ -452,7 +452,7 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	tm := NewManager(nil)
-	serviceID := "test-service" //nolint:goconst
+	serviceID := "test-service"
 	serviceInfo := &ServiceInfo{
 		Name: "Test Service",
 	}
@@ -488,7 +488,7 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 				Name:      proto.String("exec-tool"),
 			}
 		},
-		ExecuteFunc: func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return nil, expectedError
 		},
 	}

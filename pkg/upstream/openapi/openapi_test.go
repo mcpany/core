@@ -173,7 +173,7 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	upstream := NewOpenAPIUpstream()
 
 	// Start a test server to serve the spec
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = fmt.Fprint(w, sampleOpenAPISpecJSONForCacheTest)
 	}))

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package graphql provides GraphQL upstream functionality.
 package graphql
 
 import (
@@ -107,7 +108,7 @@ func NewGraphQLUpstream() upstream.Upstream {
 }
 
 // Shutdown shuts down the upstream.
-func (g *graphqlUpstream) Shutdown(ctx context.Context) error {
+func (g *graphqlUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 

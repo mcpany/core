@@ -38,13 +38,13 @@ func TestUpstreamService_NASAGIBS(t *testing.T) {
 	testCase := &framework.E2ETestCase{
 		Name:                "NASA GIBS Example",
 		UpstreamServiceType: "http",
-		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			// The example starts the server directly, so we don't need to build it here.
-			return &integration.ManagedProcess{}
+		BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
+			// NASA GIBS is a real external service, so no local process to build/start.
+			return nil
 		},
-		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+		GenerateUpstreamConfig: func(_ string) string {
 			configPath := filepath.Join(root, "examples", "popular_services", "nasa", "config.yaml")
-			content, err := os.ReadFile(configPath) //nolint:gosec // test
+			content, err := os.ReadFile(configPath)
 			require.NoError(t, err)
 			return string(content)
 		},
@@ -55,7 +55,7 @@ func TestUpstreamService_NASAGIBS(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err, "Failed to connect to MCPANY server")
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			serviceID, _ := util.SanitizeServiceName("nasa-gibs")
 			sanitizedToolName, _ := util.SanitizeToolName("get_tile")

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package openapi provides OpenAPI upstream functionality.
 package openapi
 
 import (
@@ -53,7 +54,7 @@ type OpenAPIUpstream struct { //nolint:revive
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
-func (u *OpenAPIUpstream) Shutdown(ctx context.Context) error {
+func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -228,7 +229,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -391,7 +392,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(ctx context.Context, pbTools []
 }
 
 func (u *OpenAPIUpstream) createAndRegisterPrompts(
-	ctx context.Context,
+	_ context.Context,
 	serviceID string,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	promptManager prompt.ManagerInterface,

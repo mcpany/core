@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package config provides configuration loading and validation.
 package config
 
 import (

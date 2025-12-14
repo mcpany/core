@@ -155,7 +155,7 @@ func TestDockerCompose(t *testing.T) {
 		return resp.StatusCode == http.StatusOK
 	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpany")
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	var result map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	require.NoError(t, err)
