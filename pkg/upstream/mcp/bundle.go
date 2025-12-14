@@ -1,0 +1,323 @@
+/*
+ * Copyright 2025 Author(s) of MCP Any
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package mcp
+
+import (
+	"archive/zip"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/docker/docker/api/types/mount"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+// Manifest represents the structure of the manifest.json file in an MCP bundle.
+type Manifest struct {
+	ManifestVersion string          `json:"manifest_version"`
+	Name            string          `json:"name"`
+	Version         string          `json:"version"`
+	Description     string          `json:"description"`
+	Server          ManifestServer  `json:"server"`
+	UserConfig      json.RawMessage `json:"user_config"`
+}
+
+type ManifestServer struct {
+	Type       string            `json:"type"`
+	EntryPoint string            `json:"entry_point"`
+	McpConfig  ManifestMcpConfig `json:"mcp_config"`
+}
+
+type ManifestMcpConfig struct {
+	Command string            `json:"command"`
+	Args    []string          `json:"args"`
+	Env     map[string]string `json:"env"`
+}
+
+// createAndRegisterMCPItemsFromBundle handles the registration of an MCP service
+// from a bundle.
+func (u *Upstream) createAndRegisterMCPItemsFromBundle(
+	ctx context.Context,
+	serviceID string,
+	bundleConfig *configv1.McpBundleConnection,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	_ bool, // isReload
+	serviceConfig *configv1.UpstreamServiceConfig,
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+	bundlePath := bundleConfig.GetBundlePath()
+	if bundlePath == "" {
+		return nil, nil, fmt.Errorf("bundle_path is required")
+	}
+
+	tempDir := filepath.Join(os.TempDir(), "mcp-bundles", serviceID)
+	// Clean up old dir if exists
+	_ = os.RemoveAll(tempDir)
+	if err := unzipBundle(bundlePath, tempDir); err != nil {
+		return nil, nil, fmt.Errorf("failed to unzip bundle: %w", err)
+	}
+
+	// 2. Read Manifest
+	manifestPath := filepath.Join(tempDir, "manifest.json")
+	manifestFile, err := os.Open(manifestPath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open manifest.json: %w", err)
+	}
+	defer manifestFile.Close()
+
+	var manifest Manifest
+	if err := json.NewDecoder(manifestFile).Decode(&manifest); err != nil {
+		return nil, nil, fmt.Errorf("failed to decode manifest.json: %w", err)
+	}
+
+	// 3. Determine Container Configuration
+	containerMountPath := "/app/bundle"
+
+	imageName := bundleConfig.GetContainerImage()
+	if imageName == "" {
+		imageName = inferImage(manifest.Server.Type)
+		if imageName == "" {
+			return nil, nil, fmt.Errorf("unable to infer container image for server type: %s", manifest.Server.Type)
+		}
+	}
+
+	command := manifest.Server.McpConfig.Command
+	args := manifest.Server.McpConfig.Args
+	env := manifest.Server.McpConfig.Env
+	if env == nil {
+		env = make(map[string]string)
+	}
+
+	// Merge config env (overrides manifest env)
+	for k, v := range bundleConfig.GetEnv() {
+		env[k] = v
+	}
+
+	// Default command/arg
+	const (
+		typeNode   = "node"
+		typePython = "python"
+	)
+
+	switch manifest.Server.Type {
+	case typeNode:
+		// Node.js
+		// We expect "mcp_config" -> command, args
+		mcpConfig := manifest.Server.McpConfig
+		command = mcpConfig.Command
+		if command == "" {
+			command = typeNode
+		}
+		args = mcpConfig.Args
+		// If entry_point is specified, it might be an argument to node.
+		if manifest.Server.EntryPoint != "" {
+			// Prepend entry point to args if not present?
+			// Usually entry point IS the script.
+			args = append([]string{manifest.Server.EntryPoint}, args...)
+		}
+		imageName = "node:18-alpine"
+
+	case typePython:
+		command = typePython
+		ep := manifest.Server.EntryPoint
+		if ep == "" {
+			ep = "main.py"
+		}
+		args = []string{filepath.Join(containerMountPath, ep)}
+	case "uv":
+		runCmd := []string{"uv", "run"}
+		ep := manifest.Server.EntryPoint
+		if ep != "" {
+			runCmd = append(runCmd, filepath.Join(containerMountPath, ep))
+		}
+		command = runCmd[0]
+		args = runCmd[1:]
+	}
+	// Default command/args based on types if not in mcp_config
+	if command == "" {
+		switch manifest.Server.Type {
+		case typeNode:
+			command = typeNode
+			// entry_point likely relative to bundle root
+			ep := manifest.Server.EntryPoint
+			if ep == "" {
+				ep = "index.js" // fallback
+			}
+			// Use absolute path in container
+			args = []string{filepath.Join(containerMountPath, ep)}
+		case typePython:
+			command = typePython
+			ep := manifest.Server.EntryPoint
+			if ep == "" {
+				ep = "main.py"
+			}
+			args = []string{filepath.Join(containerMountPath, ep)}
+		case "uv":
+			runCmd := []string{"uv", "run"}
+			ep := manifest.Server.EntryPoint
+			if ep != "" {
+				runCmd = append(runCmd, filepath.Join(containerMountPath, ep))
+			}
+			command = runCmd[0]
+			args = runCmd[1:]
+		}
+	} else {
+		// Variable substitution for ${__dirname}
+		for i, arg := range args {
+			args[i] = strings.ReplaceAll(arg, "${__dirname}", containerMountPath)
+		}
+	}
+
+	envList := make([]string, 0, len(env))
+	for k, v := range env {
+		envList = append(envList, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	// 4. Construct Transport
+	transport := &BundleDockerTransport{
+		Image:      imageName,
+		Command:    command,
+		Args:       args,
+		Env:        envList,
+		WorkingDir: containerMountPath,
+		Mounts: []mount.Mount{
+			{
+				Type:     mount.TypeBind,
+				Source:   tempDir,
+				Target:   containerMountPath,
+				ReadOnly: true,
+			},
+		},
+	}
+
+	// 5. Connect and Register
+	var mcpSdkClient *mcp.Client
+	if newClientForTesting != nil {
+		mcpSdkClient = newClientForTesting(&mcp.Implementation{
+			Name:    "mcpany",
+			Version: "0.1.0",
+		})
+	} else {
+		mcpSdkClient = mcp.NewClient(&mcp.Implementation{
+			Name:    "mcpany",
+			Version: "0.1.0",
+		}, nil)
+	}
+
+	var cs ClientSession
+	if connectForTesting != nil {
+		cs, err = connectForTesting(mcpSdkClient, ctx, transport, nil)
+	} else {
+		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
+	}
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to connect to MCP bundle service: %w", err)
+	}
+	defer func() { _ = cs.Close() }()
+
+	// List Tools
+	listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to list tools from MCP bundle: %w", err)
+	}
+
+	bundleConn := &mcpConnection{
+		client:          mcpSdkClient,
+		bundleTransport: transport,
+	}
+
+	return u.processMCPItems(ctx, serviceID, listToolsResult, bundleConn, bundleConn, cs, toolManager, promptManager, resourceManager, serviceConfig)
+}
+
+func unzipBundle(src, dest string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	if err := os.MkdirAll(dest, 0755); err != nil {
+		return err
+	}
+
+	for _, f := range r.File {
+		//nolint:gosec // Checked below
+		fpath := filepath.Join(dest, f.Name)
+		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", fpath)
+		}
+
+		if f.FileInfo().IsDir() {
+			if err := os.MkdirAll(fpath, os.ModePerm); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if err := os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return err
+		}
+
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			outFile.Close()
+			return err
+		}
+
+		// G110: Potential DoS vulnerability via decompression bomb
+		// We trust the bundle for now, but suppressing linter for this assignment.
+		//nolint:gosec
+		_, err = io.Copy(outFile, rc)
+
+		outFile.Close()
+		rc.Close()
+
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func inferImage(serverType string) string {
+	switch serverType {
+	case "node":
+		return "node:18-alpine"
+	case "python":
+		return "python:3.11-slim"
+	case "uv":
+		return "ghcr.io/astral-sh/uv:python3.11-bookworm-slim"
+	case "binary":
+		return "debian:bookworm-slim"
+	default:
+		return ""
+	}
+}

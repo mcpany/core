@@ -224,8 +224,13 @@ func (u *Upstream) Register(
 		if err != nil {
 			return "", nil, nil, err
 		}
+	case configv1.McpUpstreamService_BundleConnection_case:
+		discoveredTools, discoveredResources, err = u.createAndRegisterMCPItemsFromBundle(ctx, serviceID, mcpService.GetBundleConnection(), toolManager, promptManager, resourceManager, isReload, serviceConfig)
+		if err != nil {
+			return "", nil, nil, err
+		}
 	default:
-		return "", nil, nil, fmt.Errorf("MCPService definition requires either stdio_connection or http_connection")
+		return "", nil, nil, fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
 	}
 
 	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
@@ -236,10 +241,11 @@ func (u *Upstream) Register(
 // service, whether it's via stdio or HTTP. It also implements the
 // client.MCPClient interface, allowing it to be used as a proxy.
 type mcpConnection struct {
-	client      *mcp.Client
-	stdioConfig *configv1.McpStdioConnection
-	httpAddress string
-	httpClient  *http.Client
+	client          *mcp.Client
+	stdioConfig     *configv1.McpStdioConnection
+	bundleTransport *BundleDockerTransport
+	httpAddress     string
+	httpClient      *http.Client
 }
 
 // withMCPClientSession is a helper function that abstracts the process of
@@ -264,6 +270,8 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 				Command: cmd,
 			}
 		}
+	case c.bundleTransport != nil:
+		transport = c.bundleTransport
 	case c.httpAddress != "":
 		transport = &mcp.StreamableClientTransport{
 			Endpoint:   c.httpAddress,
@@ -404,16 +412,41 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		return nil, nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
 	}
 
-	var mcpClient client.MCPClient
+	var toolClient client.MCPClient
+	var promptConnection *mcpConnection
+
 	if newClientImplForTesting != nil {
-		mcpClient = newClientImplForTesting(mcpSdkClient, stdio, "", nil)
-	} else {
-		mcpClient = &mcpConnection{
+		toolClient = newClientImplForTesting(mcpSdkClient, stdio, "", nil)
+		// For prompts/resources, we use mcpConnection directly as per original logic pattern
+		promptConnection = &mcpConnection{
 			client:      mcpSdkClient,
 			stdioConfig: stdio,
 		}
+	} else {
+		conn := &mcpConnection{
+			client:      mcpSdkClient,
+			stdioConfig: stdio,
+		}
+		toolClient = conn
+		promptConnection = conn
 	}
 
+	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
+}
+
+// processMCPItems handles the common logic of registering tools, prompts, and resources.
+func (u *Upstream) processMCPItems(
+	ctx context.Context,
+	serviceID string,
+	listToolsResult *mcp.ListToolsResult,
+	toolClient client.MCPClient,
+	promptConnection *mcpConnection,
+	cs ClientSession,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	serviceConfig *configv1.UpstreamServiceConfig,
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	mcpService := serviceConfig.GetMcpService()
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
@@ -449,7 +482,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 
 		newTool := tool.NewMCPTool(
 			pbTool,
-			mcpClient,
+			toolClient,
 			callDef,
 		)
 		if err := toolManager.AddTool(newTool); err != nil {
@@ -482,12 +515,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 				}
 			}
 			promptManager.AddPrompt(&mcpPrompt{
-				mcpPrompt: mcpSDKPrompt,
-				service:   serviceID,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					stdioConfig: stdio,
-				},
+				mcpPrompt:     mcpSDKPrompt,
+				service:       serviceID,
+				mcpConnection: promptConnection,
 			})
 		}
 	}
@@ -523,12 +553,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 			}
 		}
 		resourceManager.AddResource(&mcpResource{
-			mcpResource: mcpSDKResource,
-			service:     serviceID,
-			mcpConnection: &mcpConnection{
-				client:      mcpSdkClient,
-				stdioConfig: stdio,
-			},
+			mcpResource:   mcpSDKResource,
+			service:       serviceID,
+			mcpConnection: promptConnection,
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
 	}
@@ -638,176 +665,27 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		return nil, nil, fmt.Errorf("failed to list tools from MCP service: %w", err)
 	}
 
-	var mcpClient client.MCPClient
+	var toolClient client.MCPClient
+	var promptConnection *mcpConnection
+
 	if newClientImplForTesting != nil {
-		mcpClient = newClientImplForTesting(mcpSdkClient, nil, httpAddress, httpClient)
-	} else {
-		mcpClient = &mcpConnection{
+		toolClient = newClientImplForTesting(mcpSdkClient, nil, httpAddress, httpClient)
+		promptConnection = &mcpConnection{
 			client:      mcpSdkClient,
 			httpAddress: httpAddress,
 			httpClient:  httpClient,
 		}
-	}
-
-	mcpService := serviceConfig.GetMcpService()
-	configToolDefs := mcpService.GetTools()
-	calls := mcpService.GetCalls()
-	configToolMap := make(map[string]*configv1.ToolDefinition)
-	for _, toolDef := range configToolDefs {
-		configToolMap[toolDef.GetName()] = toolDef
-	}
-
-	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
-	for _, mcpSDKTool := range listToolsResult.Tools {
-		var callDef *configv1.MCPCallDefinition
-		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
-			if configTool.GetDisable() {
-				logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
-				continue
-			}
-			if call, callOk := calls[configTool.GetCallId()]; callOk {
-				callDef = call
-			} else {
-				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
-				callDef = &configv1.MCPCallDefinition{}
-			}
-		} else {
-			callDef = &configv1.MCPCallDefinition{}
-		}
-
-		pbTool, err := tool.ConvertMCPToolToProto(mcpSDKTool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
-			continue
-		}
-		pbTool.SetServiceId(serviceID)
-
-		newTool := tool.NewMCPTool(
-			pbTool,
-			mcpClient,
-			callDef,
-		)
-		if err := toolManager.AddTool(newTool); err != nil {
-			logging.GetLogger().Error("Failed to add tool", "error", err)
-			continue
-		}
-		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(mcpSDKTool.Name),
-			Description: proto.String(mcpSDKTool.Description),
-		}.Build())
-	}
-
-	// Register prompts
-	listPromptsResult, err := cs.ListPrompts(ctx, &mcp.ListPromptsParams{})
-
-	configPromptMap := make(map[string]*configv1.PromptDefinition)
-	for _, p := range mcpService.GetPrompts() {
-		configPromptMap[p.GetName()] = p
-	}
-
-	if err != nil {
-		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
-		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
-			if configPrompt, ok := configPromptMap[mcpSDKPrompt.Name]; ok {
-				if configPrompt.GetDisable() {
-					logging.GetLogger().Info("Skipping disabled prompt (auto-discovered)", "promptName", mcpSDKPrompt.Name)
-					continue
-				}
-			}
-			promptManager.AddPrompt(&mcpPrompt{
-				mcpPrompt: mcpSDKPrompt,
-				service:   serviceID,
-				mcpConnection: &mcpConnection{
-					client:      mcpSdkClient,
-					httpAddress: httpAddress,
-					httpClient:  httpClient,
-				},
-			})
+		conn := &mcpConnection{
+			client:      mcpSdkClient,
+			httpAddress: httpAddress,
+			httpClient:  httpClient,
 		}
+		toolClient = conn
+		promptConnection = conn
 	}
 
-	for _, promptDef := range mcpService.GetPrompts() {
-		if promptDef.GetDisable() {
-			logging.GetLogger().Info("Skipping disabled prompt (config)", "promptName", promptDef.GetName())
-			continue
-		}
-		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
-		promptManager.AddPrompt(newPrompt)
-	}
-
-	// Register resources
-	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
-	if err != nil {
-		logging.GetLogger().Warn("Failed to list resources from MCP service", "error", err)
-		return discoveredTools, nil, nil
-	}
-
-	configResourceMap := make(map[string]*configv1.ResourceDefinition)
-	for _, r := range mcpService.GetResources() {
-		configResourceMap[r.GetName()] = r
-	}
-
-	discoveredResources := make([]*configv1.ResourceDefinition, 0, len(listResourcesResult.Resources))
-	for _, mcpSDKResource := range listResourcesResult.Resources {
-		if configResource, ok := configResourceMap[mcpSDKResource.Name]; ok {
-			if configResource.GetDisable() {
-				logging.GetLogger().Info("Skipping disabled resource (auto-discovered)", "resourceName", mcpSDKResource.Name)
-				continue
-			}
-		}
-		resourceManager.AddResource(&mcpResource{
-			mcpResource: mcpSDKResource,
-			service:     serviceID,
-			mcpConnection: &mcpConnection{
-				client:      mcpSdkClient,
-				httpAddress: httpAddress,
-				httpClient:  httpClient,
-			},
-		})
-		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
-	}
-
-	log := logging.GetLogger()
-	callIDToName := make(map[string]string)
-	for _, d := range configToolDefs {
-		callIDToName[d.GetCallId()] = d.GetName()
-	}
-	for _, resourceDef := range mcpService.GetResources() {
-		if resourceDef.GetDisable() {
-			log.Info("Skipping disabled resource (config)", "resourceName", resourceDef.GetName())
-			continue
-		}
-		if resourceDef.GetDynamic() != nil {
-			call := resourceDef.GetDynamic().GetMcpCall()
-			if call == nil {
-				continue
-			}
-			toolName, ok := callIDToName[call.GetId()]
-			if !ok {
-				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
-				continue
-			}
-			sanitizedToolName, err := util.SanitizeToolName(toolName)
-			if err != nil {
-				log.Error("Failed to sanitize tool name", "error", err)
-				continue
-			}
-			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
-			if !ok {
-				log.Error("Tool not found for dynamic resource", "toolName", toolName)
-				continue
-			}
-			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
-			if err != nil {
-				log.Error("Failed to create dynamic resource", "error", err)
-				continue
-			}
-			resourceManager.AddResource(dynamicResource)
-		}
-	}
-
-	return discoveredTools, discoveredResources, nil
+	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
 func convertMCPResourceToProto(resource *mcp.Resource) *configv1.ResourceDefinition {
