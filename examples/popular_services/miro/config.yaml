@@ -16,33 +16,35 @@
 
 upstream_services:
 - name: miro
+  upstream_authentication:
+    bearer_token:
+      token:
+        plain_text: "${MIRO_API_TOKEN}"
   http_service:
     address: "https://api.miro.com"
-    authentication:
-      token:
-
-        plain_text: "Bearer ${MIRO_API_TOKEN}"
+    tools:
+    - name: "get_boards"
+      call_id: "get_boards"
+      input_schema:
+        type: "object"
+        properties: {}
+      output_schema:
+        type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                id:
+                  type: "string"
+                name:
+                  type: "string"
+                description:
+                  type: "string"
+                viewLink:
+                  type: "string"
     calls:
-    - endpoint_path: "/v2/boards"
-      schema:
-        name: "get_boards"
-        input_schema:
-          type: "object"
-          properties: {}
-        output_schema:
-          type: "object"
-          properties:
-            data:
-              type: "array"
-              items:
-                type: "object"
-                properties:
-                  id:
-                    type: "string"
-                  name:
-                    type: "string"
-                  description:
-                    type: "string"
-                  viewLink:
-                    type: "string"
-      method: "HTTP_METHOD_GET"
+      get_boards:
+        endpoint_path: "/v2/boards"
+        method: "HTTP_METHOD_GET"

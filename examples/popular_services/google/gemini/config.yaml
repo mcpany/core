@@ -16,27 +16,41 @@
 
 upstream_services:
   - name: "gemini"
+    upstream_authentication:
+      api_key:
+        header_name: "x-goog-api-key"
+        api_key:
+          plain_text: "${GEMINI_API_KEY}"
     http_service:
       address: "https://generativelanguage.googleapis.com"
-      authentication:
-        api_key:
-          query_parameter_name: "key"
-          api_key:
-            plain_text: "${GEMINI_API_KEY}"
-      calls:
-        - operation_id: "generate_content"
-          method: "HTTP_METHOD_POST"
-          endpoint_path: "/v1beta/models/gemini-1.5-flash:generateContent"
-          description: "Generate content using the Gemini 1.5 Flash model."
-          request_content_type: "application/json"
-          response_content_type: "application/json"
-          schema:
-            input_schema:
-              type: "object"
-              properties:
-                contents:
-                  type: "array"
-                  items:
+      tools:
+      - name: "generate_content"
+        call_id: "generate_content"
+        description: "Generate content using the Gemini 1.5 Flash model."
+        input_schema:
+          type: "object"
+          properties:
+            contents:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  parts:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        text:
+                          type: "string"
+        output_schema:
+          type: "object"
+          properties:
+            candidates:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  content:
                     type: "object"
                     properties:
                       parts:
@@ -46,42 +60,12 @@ upstream_services:
                           properties:
                             text:
                               type: "string"
-            output_schema:
-              type: "object"
-              properties:
-                candidates:
-                  type: "array"
-                  items:
-                    type: "object"
-                    properties:
-                      content:
-                        type: "object"
-                        properties:
-                          parts:
-                            type: "array"
-                            items:
-                              type: "object"
-                              properties:
-                                text:
-                                  type: "string"
-                          role:
-                            type: "string"
-                      finishReason:
-                        type: "string"
-                      index:
-                        type: "integer"
-                      safetyRatings:
-                        type: "array"
-                        items:
-                          type: "object"
-                          properties:
-                            category:
-                              type: "string"
-                            probability:
-                              type: "string"
-                promptFeedback:
-                  type: "object"
-                  properties:
+                        role:
+                          type: "string"
+                    finishReason:
+                      type: "string"
+                    index:
+                      type: "integer"
                     safetyRatings:
                       type: "array"
                       items:
@@ -91,3 +75,19 @@ upstream_services:
                             type: "string"
                           probability:
                             type: "string"
+            promptFeedback:
+              type: "object"
+              properties:
+                safetyRatings:
+                  type: "array"
+                  items:
+                    type: "object"
+                    properties:
+                      category:
+                        type: "string"
+                      probability:
+                        type: "string"
+      calls:
+        generate_content:
+          endpoint_path: "/v1beta/models/gemini-1.5-flash:generateContent"
+          method: "HTTP_METHOD_POST"

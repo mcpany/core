@@ -26,3 +26,30 @@ curl -X POST -H "Content-Type: application/json" \
 ## Authentication
 
 This service does not require authentication.
+
+## Usage with Gemini CLI
+
+### 1. Start the MCP Server
+
+```bash
+# From repo root
+make build # if not already built
+# Export required environment variables
+export NASA_OPEN_API_KEY=YOUR_NASA_OPEN_API_KEY_VALUE
+
+./build/bin/server run --config-path examples/popular_services/nasa/config.yaml
+```
+
+### 2. Add to Gemini
+
+In a separate terminal:
+
+```bash
+gemini mcp add --transport http --trust nasa http://localhost:50050
+```
+
+### 3. Example Query
+
+```bash
+gemini -m gemini-2.5-flash -p "Use get_tile to NASA Global Imagery Browse Services"
+```
