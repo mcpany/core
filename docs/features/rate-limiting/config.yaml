@@ -1,0 +1,8 @@
+upstream_services:
+  - name: "rate-limited-service"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 50.0
+      burst: 100
+    http_service:
+      address: "https://example.com"

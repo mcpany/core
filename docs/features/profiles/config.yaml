@@ -1,0 +1,7 @@
+upstream_services:
+  - name: "profiled-service"
+    profiles:
+      - name: "dev"
+      - name: "staging"
+    http_service:
+      address: "https://example.com"

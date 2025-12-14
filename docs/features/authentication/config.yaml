@@ -1,0 +1,18 @@
+upstream_services:
+  - name: "incoming-auth-service"
+    authentication:
+      api_key:
+        param_name: "X-Auth"
+        in: "HEADER"
+        key_value: "s3cret"
+    http_service:
+      address: "https://example.com"
+
+  - name: "outgoing-auth-service"
+    upstream_authentication:
+      basic_auth:
+        username: "admin"
+        password:
+           plain_text: "password123"
+    http_service:
+      address: "https://example.com"

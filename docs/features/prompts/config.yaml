@@ -1,0 +1,11 @@
+upstream_services:
+  - name: "prompt-service"
+    http_service:
+      address: "https://example.com"
+      prompts:
+        - name: "hello-world"
+          description: "A simple hello world prompt"
+          messages:
+            - role: "USER"
+              text:
+                text: "Hello world"
