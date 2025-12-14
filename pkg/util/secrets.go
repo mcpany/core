@@ -22,11 +22,22 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/hashicorp/vault/api"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
+const maxSecretRecursionDepth = 10
+
 // ResolveSecret resolves a SecretValue into a string.
 func ResolveSecret(secret *configv1.SecretValue) (string, error) {
+	return resolveSecretRecursive(secret, 0)
+}
+
+func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, error) {
+	if depth > maxSecretRecursionDepth {
+		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
+	}
+
 	if secret == nil {
 		return "", nil
 	}
@@ -56,19 +67,19 @@ func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 
 		if auth := remote.GetAuth(); auth != nil {
 			if apiKey := auth.GetApiKey(); apiKey != nil {
-				apiKeyValue, err := ResolveSecret(apiKey.GetApiKey())
+				apiKeyValue, err := resolveSecretRecursive(apiKey.GetApiKey(), depth+1)
 				if err != nil {
 					return "", fmt.Errorf("failed to resolve api key for remote secret: %w", err)
 				}
 				req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
 			} else if bearer := auth.GetBearerToken(); bearer != nil {
-				token, err := ResolveSecret(bearer.GetToken())
+				token, err := resolveSecretRecursive(bearer.GetToken(), depth+1)
 				if err != nil {
 					return "", fmt.Errorf("failed to resolve bearer token for remote secret: %w", err)
 				}
 				req.Header.Set("Authorization", "Bearer "+token)
 			} else if basic := auth.GetBasicAuth(); basic != nil {
-				password, err := ResolveSecret(basic.GetPassword())
+				password, err := resolveSecretRecursive(basic.GetPassword(), depth+1)
 				if err != nil {
 					return "", fmt.Errorf("failed to resolve password for remote secret: %w", err)
 				}
@@ -91,6 +102,45 @@ func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 			return "", fmt.Errorf("failed to read remote secret body: %w", err)
 		}
 		return string(body), nil
+	case configv1.SecretValue_Vault_case:
+		vaultSecret := secret.GetVault()
+		config := &api.Config{
+			Address: vaultSecret.GetAddress(),
+		}
+		client, err := api.NewClient(config)
+		if err != nil {
+			return "", fmt.Errorf("failed to create vault client: %w", err)
+		}
+		token, err := resolveSecretRecursive(vaultSecret.GetToken(), depth+1)
+		if err != nil {
+			return "", fmt.Errorf("failed to resolve vault token: %w", err)
+		}
+		client.SetToken(token)
+		data, err := client.Logical().Read(vaultSecret.GetPath())
+		if err != nil {
+			return "", fmt.Errorf("failed to read secret from vault: %w", err)
+		}
+		if data == nil || data.Data == nil {
+			return "", fmt.Errorf("secret not found at path: %s", vaultSecret.GetPath())
+		}
+
+		// Handle KV v2 secrets, where data is nested under a "data" key.
+		secretData, ok := data.Data["data"].(map[string]interface{})
+		if !ok {
+			// If not nested, try to access as a KV v1 secret.
+			value, ok := data.Data[vaultSecret.GetKey()].(string)
+			if !ok {
+				return "", fmt.Errorf("key %q not found in secret at path %s, and secret format is not standard KV v1 or v2", vaultSecret.GetKey(), vaultSecret.GetPath())
+			}
+			return value, nil
+		}
+
+		// It's a KV v2 secret
+		value, ok := secretData[vaultSecret.GetKey()].(string)
+		if !ok {
+			return "", fmt.Errorf("key %q not found in secret data at path %s", vaultSecret.GetKey(), vaultSecret.GetPath())
+		}
+		return value, nil
 	default:
 		return "", nil
 	}

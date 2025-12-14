@@ -20,7 +20,20 @@ message SecretValue {
     string environment_variable = 2;
     string file_path = 3;
     RemoteContent remote_content = 4;
+    VaultSecret vault = 5;
   }
+}
+
+// VaultSecret defines the parameters for fetching a secret from HashiCorp Vault.
+message VaultSecret {
+  // The address of the Vault server (e.g., "https://vault.example.com").
+  string address = 1;
+  // The token to authenticate with Vault.
+  SecretValue token = 2;
+  // The path to the secret in Vault (e.g., "secret/data/my-app/db").
+  string path = 3;
+  // The key of the secret to retrieve from the path.
+  string key = 4;
 }
 
 // RemoteContent represents content that is fetched from a remote URL.
