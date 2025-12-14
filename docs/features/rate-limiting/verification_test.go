@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,4 +30,7 @@ func TestRateLimitConfig(t *testing.T) {
 	require.True(t, service.RateLimit.GetIsEnabled())
 	require.Equal(t, 50.0, service.RateLimit.GetRequestsPerSecond())
 	require.Equal(t, int64(100), service.RateLimit.GetBurst())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }

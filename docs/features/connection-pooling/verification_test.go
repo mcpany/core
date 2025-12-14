@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,4 +30,7 @@ func TestConnectionPoolConfig(t *testing.T) {
 	require.Equal(t, int32(50), service.ConnectionPool.GetMaxConnections())
 	require.Equal(t, int32(5), service.ConnectionPool.GetMaxIdleConnections())
 	require.Equal(t, int64(60), service.ConnectionPool.GetIdleTimeout().GetSeconds())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }

@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -33,4 +34,7 @@ func TestPromptsConfig(t *testing.T) {
 	require.Len(t, prompt.Messages, 1)
 	require.Equal(t, pb.PromptMessage_USER, prompt.Messages[0].GetRole())
 	require.Equal(t, "Hello world", prompt.Messages[0].GetText().GetText())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }

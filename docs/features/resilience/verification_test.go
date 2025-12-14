@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,4 +30,7 @@ func TestResilienceConfig(t *testing.T) {
 	require.NotNil(t, service.Resilience.CircuitBreaker)
 	require.Equal(t, 0.5, service.Resilience.CircuitBreaker.GetFailureRateThreshold())
 	require.Equal(t, int64(5), service.Resilience.CircuitBreaker.GetOpenDuration().GetSeconds())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }
