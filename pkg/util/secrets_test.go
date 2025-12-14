@@ -233,3 +233,129 @@ func TestResolveSecret(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestResolveSecret_Vault(t *testing.T) {
+	t.Run("Vault", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/v1/secret/data/my-app/db", r.URL.Path)
+			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprint(w, `{"data": {"data": {"my-key": "my-vault-secret"}}}`)
+		}))
+		defer server.Close()
+
+		tokenSecret := &configv1.SecretValue{}
+		tokenSecret.SetPlainText("my-vault-token")
+
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress(server.URL)
+		vaultSecret.SetToken(tokenSecret)
+		vaultSecret.SetPath("secret/data/my-app/db")
+		vaultSecret.SetKey("my-key")
+
+		secret := &configv1.SecretValue{}
+		secret.SetVault(vaultSecret)
+
+		resolved, err := ResolveSecret(secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "my-vault-secret", resolved)
+	})
+
+	t.Run("Vault secret not found", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer server.Close()
+
+		tokenSecret := &configv1.SecretValue{}
+		tokenSecret.SetPlainText("my-vault-token")
+
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress(server.URL)
+		vaultSecret.SetToken(tokenSecret)
+		vaultSecret.SetPath("secret/data/my-app/db")
+		vaultSecret.SetKey("my-key")
+
+		secret := &configv1.SecretValue{}
+		secret.SetVault(vaultSecret)
+
+		_, err := ResolveSecret(secret)
+		assert.Error(t, err)
+	})
+
+	t.Run("Vault key not found", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprint(w, `{"data": {"data": {"another-key": "another-value"}}}`)
+		}))
+		defer server.Close()
+
+		tokenSecret := &configv1.SecretValue{}
+		tokenSecret.SetPlainText("my-vault-token")
+
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress(server.URL)
+		vaultSecret.SetToken(tokenSecret)
+		vaultSecret.SetPath("secret/data/my-app/db")
+		vaultSecret.SetKey("my-key")
+
+		secret := &configv1.SecretValue{}
+		secret.SetVault(vaultSecret)
+
+		_, err := ResolveSecret(secret)
+		assert.Error(t, err)
+	})
+
+	t.Run("Vault KV v1", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/v1/secret/my-app/db", r.URL.Path)
+			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprint(w, `{"data": {"my-key": "my-vault-secret-v1"}}`)
+		}))
+		defer server.Close()
+
+		tokenSecret := &configv1.SecretValue{}
+		tokenSecret.SetPlainText("my-vault-token")
+
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress(server.URL)
+		vaultSecret.SetToken(tokenSecret)
+		vaultSecret.SetPath("secret/my-app/db")
+		vaultSecret.SetKey("my-key")
+
+		secret := &configv1.SecretValue{}
+		secret.SetVault(vaultSecret)
+
+		resolved, err := ResolveSecret(secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "my-vault-secret-v1", resolved)
+	})
+
+	t.Run("Secret resolution recursion limit", func(t *testing.T) {
+		// Create a circular dependency:
+		// secretA's token is secretB
+		// secretB's token is secretA
+		secretA := &configv1.SecretValue{}
+		vaultA := &configv1.VaultSecret{}
+		vaultA.SetAddress("http://fake-vault")
+		vaultA.SetPath("secret/a")
+		vaultA.SetKey("key")
+		secretA.SetVault(vaultA)
+
+		secretB := &configv1.SecretValue{}
+		vaultB := &configv1.VaultSecret{}
+		vaultB.SetAddress("http://fake-vault")
+		vaultB.SetPath("secret/b")
+		vaultB.SetKey("key")
+		secretB.SetVault(vaultB)
+
+		// Create the cycle
+		vaultA.SetToken(secretB)
+		vaultB.SetToken(secretA)
+
+		_, err := ResolveSecret(secretA)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
+	})
+}
