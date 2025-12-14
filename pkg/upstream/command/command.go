@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package command provides command execution functionality.
 package command
 
 import (
@@ -41,7 +42,7 @@ import (
 type Upstream struct{}
 
 // Shutdown implements the upstream.Upstream interface.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	// Noop for command upstream
 	return nil
 }

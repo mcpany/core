@@ -204,7 +204,7 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("RemoteContent with status not ok", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer server.Close()
@@ -219,7 +219,7 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("RemoteContent with read error", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Length", "1")
 		}))
 		defer server.Close()

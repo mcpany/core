@@ -23,10 +23,12 @@ import (
 
 	"github.com/mcpany/core/pkg/prompt"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
+	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
+
+var _ = mcpsdk.TextContent{}
 
 func TestTemplatedPrompt_Get(t *testing.T) {
 	role := configv1.PromptMessage_USER
@@ -56,14 +58,14 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 		args, _ := json.Marshal(map[string]string{"name": "world"})
 		result, err := templatedPrompt.Get(context.Background(), args)
 		assert.NoError(t, err)
-		assert.Equal(t, "Hello, world", result.Messages[0].Content.(*mcp.TextContent).Text)
+		assert.Equal(t, "Hello, world", result.Messages[0].Content.(*mcpsdk.TextContent).Text)
 	})
 
 	t.Run("with generic arguments", func(t *testing.T) {
 		args, _ := json.Marshal(map[string]any{"name": "world"})
 		result, err := templatedPrompt.Get(context.Background(), args)
 		assert.NoError(t, err)
-		assert.Equal(t, "Hello, world", result.Messages[0].Content.(*mcp.TextContent).Text)
+		assert.Equal(t, "Hello, world", result.Messages[0].Content.(*mcpsdk.TextContent).Text)
 	})
 }
 

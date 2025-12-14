@@ -93,7 +93,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
 			return successResult, nil
 		}
@@ -133,7 +133,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 			return successResult, nil
 		}
 
@@ -195,7 +195,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 			return successResult, nil
 		}
 
@@ -246,7 +246,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
 			return successResult, nil
 		}
@@ -275,7 +275,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
 		nextCalled := false
-		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 			nextCalled = true
 			return successResult, nil
 		}

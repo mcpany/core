@@ -99,7 +99,7 @@ func (m *mockClientSession) Close() error {
 }
 
 func TestMCPPrompt_Get(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -108,7 +108,7 @@ func TestMCPPrompt_Get(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		getPromptFunc: func(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+		getPromptFunc: func(_ context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
 			assert.Equal(t, "test-prompt", params.Name)
 			assert.Equal(t, "value1", params.Arguments["arg1"])
 			return &mcp.GetPromptResult{
@@ -149,7 +149,7 @@ func TestMCPPrompt_Get(t *testing.T) {
 }
 
 func TestMCPResource_Read(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -158,7 +158,7 @@ func TestMCPResource_Read(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		readResourceFunc: func(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
+		readResourceFunc: func(_ context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error) {
 			assert.Equal(t, "test-uri", params.URI)
 			return &mcp.ReadResourceResult{
 				Contents: []*mcp.ResourceContents{
@@ -210,13 +210,13 @@ func TestUpstream_Register(t *testing.T) {
 		wg.Add(1)
 
 		mockCS := &mockClientSession{
-			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 				return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool"}}}, nil
 			},
-			listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+			listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 				return &mcp.ListPromptsResult{Prompts: []*mcp.Prompt{{Name: "test-prompt"}}}, nil
 			},
-			listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+			listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 				return &mcp.ListResourcesResult{Resources: []*mcp.Resource{{URI: "test-resource"}}}, nil
 			},
 		}
@@ -275,13 +275,13 @@ func TestUpstream_Register(t *testing.T) {
 
 			// Return a mock session that returns an empty list of tools to prevent further processing
 			return &mockClientSession{
-				listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 					return &mcp.ListToolsResult{}, nil
 				},
-				listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+				listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 					return &mcp.ListPromptsResult{}, nil
 				},
-				listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+				listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 					return &mcp.ListResourcesResult{}, nil
 				},
 			}, nil
@@ -329,13 +329,13 @@ func TestUpstream_Register(t *testing.T) {
 
 			// Return a mock session that returns an empty list of tools to prevent further processing
 			return &mockClientSession{
-				listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 					return &mcp.ListToolsResult{}, nil
 				},
-				listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+				listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 					return &mcp.ListPromptsResult{}, nil
 				},
-				listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+				listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 					return &mcp.ListResourcesResult{}, nil
 				},
 			}, nil
@@ -387,13 +387,13 @@ func TestUpstream_Register(t *testing.T) {
 
 			// Return a mock session that returns an empty list of tools to prevent further processing
 			return &mockClientSession{
-				listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 					return &mcp.ListToolsResult{}, nil
 				},
-				listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+				listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 					return &mcp.ListPromptsResult{}, nil
 				},
-				listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+				listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 					return &mcp.ListResourcesResult{}, nil
 				},
 			}, nil
@@ -419,7 +419,7 @@ func TestUpstream_Register(t *testing.T) {
 	})
 
 	t.Run("successful registration with http", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -433,7 +433,7 @@ func TestUpstream_Register(t *testing.T) {
 		wg.Add(1)
 
 		mockCS := &mockClientSession{
-			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 				return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool-http"}}}, nil
 			},
 		}
@@ -508,7 +508,7 @@ func TestUpstream_Register(t *testing.T) {
 		wg.Add(1)
 
 		mockCS := &mockClientSession{
-			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 				return nil, fmt.Errorf("list tools failed")
 			},
 		}
@@ -703,13 +703,13 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	originalConnect := connectForTesting
 	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 		return &mockClientSession{
-			listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 				return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool-http"}}}, nil
 			},
-			listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+			listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 				return &mcp.ListPromptsResult{Prompts: []*mcp.Prompt{{Name: "test-prompt-http"}}}, nil
 			},
-			listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+			listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 				return &mcp.ListResourcesResult{Resources: []*mcp.Resource{{URI: "test-resource-http"}}}, nil
 			},
 		}, nil
@@ -779,7 +779,7 @@ func TestUpstream_Register_ListToolsError(t *testing.T) {
 	}.Build()
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return nil, errors.New("list tools error")
 		},
 	}
@@ -805,10 +805,10 @@ func TestUpstream_Register_ListPromptsError(t *testing.T) {
 	}.Build()
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return nil, errors.New("list prompts error")
 		},
 	}
@@ -834,13 +834,13 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 	}.Build()
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return &mcp.ListPromptsResult{}, nil
 		},
-		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+		listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 			return nil, errors.New("list resources error")
 		},
 	}
@@ -865,7 +865,7 @@ func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
 }
 
 func TestStreamableHTTP_RoundTrip(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, "hello")
 	}))

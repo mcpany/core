@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a demo WebRTC client.
 package main
 
 import (

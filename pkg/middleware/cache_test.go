@@ -49,7 +49,7 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	m.executeCount++
 	return successResult, nil
 }

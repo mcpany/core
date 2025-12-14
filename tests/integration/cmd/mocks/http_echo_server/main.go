@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main provides a mock HTTP echo server for integration testing.
 package main
 
 import (

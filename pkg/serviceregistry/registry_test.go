@@ -77,7 +77,7 @@ func (m *mockToolManager) ClearToolsForService(_ string)         {}
 func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)         { return nil, false }
 func (m *mockToolManager) ListTools() []tool.Tool                        { return nil }
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 

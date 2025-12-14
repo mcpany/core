@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package auth provides authentication implementations.
 package auth
 
 import (

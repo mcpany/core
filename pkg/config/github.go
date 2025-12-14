@@ -63,7 +63,7 @@ type GitHub struct {
 //   - rawURL: The GitHub URL to parse.
 //
 // Returns a new GitHub client or an error if the URL is invalid.
-func NewGitHub(ctx context.Context, rawURL string) (*GitHub, error) {
+func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)

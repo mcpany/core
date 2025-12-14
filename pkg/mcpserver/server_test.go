@@ -212,7 +212,7 @@ func (m *mockErrorTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *mockErrorTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("execution error")
 }
 
@@ -342,7 +342,7 @@ func (p *testPrompt) Service() string {
 	return p.ServiceValue
 }
 
-func (p *testPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (p *testPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{}, nil
 }
 
@@ -416,11 +416,11 @@ func (r *testResource) Service() string {
 	return r.ServiceValue
 }
 
-func (r *testResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (r *testResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return &mcp.ReadResourceResult{}, nil
 }
 
-func (r *testResource) Subscribe(ctx context.Context) error {
+func (r *testResource) Subscribe(_ context.Context) error {
 	return nil
 }
 
@@ -531,7 +531,7 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return []tool.Tool{}
 }
 
-func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	m.executeToolCalled = true
 	return nil, nil
 }
@@ -783,7 +783,7 @@ func (m *chameleonTool) Tool() *v1.Tool {
 	return m.tool
 }
 
-func (m *chameleonTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return "success", nil
 }
 

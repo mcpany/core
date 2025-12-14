@@ -46,13 +46,13 @@ func TestRegister_DynamicResource(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool"}}}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return &mcp.ListPromptsResult{}, nil
 		},
-		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+		listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 			return &mcp.ListResourcesResult{}, nil
 		},
 	}
@@ -107,7 +107,7 @@ func TestRegister_DynamicResource(t *testing.T) {
 }
 
 func TestRegister_Http_DynamicResource(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -122,13 +122,13 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "test-tool-http"}}}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return &mcp.ListPromptsResult{}, nil
 		},
-		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+		listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 			return &mcp.ListResourcesResult{}, nil
 		},
 	}
@@ -192,19 +192,19 @@ func TestRegister_DisabledItems(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{Tools: []*mcp.Tool{
 				{Name: "enabled-tool"},
 				{Name: "disabled-tool"},
 			}}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return &mcp.ListPromptsResult{Prompts: []*mcp.Prompt{
 				{Name: "enabled-prompt"},
 				{Name: "disabled-prompt"},
 			}}, nil
 		},
-		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+		listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 			return &mcp.ListResourcesResult{Resources: []*mcp.Resource{
 				{URI: "enabled-resource", Name: "enabled-resource"},
 				{URI: "disabled-resource", Name: "disabled-resource"},
@@ -284,7 +284,7 @@ func TestRegister_DisabledItems(t *testing.T) {
 }
 
 func TestPrompt_Get_ComplexArgs(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -293,7 +293,7 @@ func TestPrompt_Get_ComplexArgs(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		getPromptFunc: func(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
+		getPromptFunc: func(_ context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error) {
 			// Verify args converted to strings
 			assert.Equal(t, "123", params.Arguments["num"])
 			assert.Equal(t, "true", params.Arguments["bool"])
@@ -348,16 +348,16 @@ func TestRegister_CallDefinitionMatching(t *testing.T) {
 	wg.Add(1)
 
 	mockCS := &mockClientSession{
-		listToolsFunc: func(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+		listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
 			return &mcp.ListToolsResult{Tools: []*mcp.Tool{
 				{Name: "tool-with-call"},
 				{Name: "tool-without-call"},
 			}}, nil
 		},
-		listPromptsFunc: func(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
+		listPromptsFunc: func(_ context.Context, _ *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error) {
 			return &mcp.ListPromptsResult{}, nil
 		},
-		listResourcesFunc: func(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
+		listResourcesFunc: func(_ context.Context, _ *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error) {
 			return &mcp.ListResourcesResult{}, nil
 		},
 	}

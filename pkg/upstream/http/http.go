@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package http
+package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 
 import (
 	"context"
@@ -70,7 +70,7 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
@@ -346,7 +346,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	return discoveredTools
 }
 
-func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	for _, promptDef := range httpService.GetPrompts() {

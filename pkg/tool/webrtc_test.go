@@ -318,7 +318,7 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
-	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}))
 	defer signalingServer.Close()

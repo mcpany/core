@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package prompt provides prompt management functionality.
 package prompt
 
 import (

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main implements the worker binary.
 package main
 
 import (

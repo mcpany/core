@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main implements a mock gRPC authenticated weather server for testing.
 package main
 
 import (

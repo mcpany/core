@@ -40,7 +40,7 @@ func TestE2ECaching(t *testing.T) {
 		ValidateMiddlewares: func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 			ValidateCaching(t, mcpanyEndpoint, upstreamEndpoint)
 		},
-		InvokeAIClient:      func(t *testing.T, mcpanyEndpoint string) {},
+		InvokeAIClient:      func(_ *testing.T, _ string) {},
 		RegistrationMethods: []RegistrationMethod{GRPCRegistration},
 	})
 }
@@ -61,6 +61,7 @@ func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationS
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "get_data", "/", "GET", nil)
 }
 
+// NoOpMiddleware is a middleware that does nothing and calls the next handler.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }

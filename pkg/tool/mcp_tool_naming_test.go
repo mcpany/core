@@ -48,7 +48,7 @@ func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
 	// Upstream expects "my.tool".
 
 	mockClient := &mockMCPClient{
-		callToolFunc: func(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+		callToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 			// This assertion confirms the fix.
 			// It should send "my.tool", not "mytool_...".
 			if params.Name != originalName {

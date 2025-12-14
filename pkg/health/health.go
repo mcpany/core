@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package health provides health check functionality.
 package health
 
 import (
@@ -77,7 +78,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	}
 
 	opts := []health.CheckerOption{
-		health.WithStatusListener(func(ctx context.Context, state health.CheckerState) {
+		health.WithStatusListener(func(_ context.Context, state health.CheckerState) {
 			status := float32(0.0)
 			if state.Status == health.StatusUp {
 				status = 1.0
@@ -327,7 +328,7 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	return health.Check{
 		Name: name,
-		Check: func(ctx context.Context) error {
+		Check: func(_ context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
 				return checkConnection(conn.GetHttpAddress())
 			}

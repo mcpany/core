@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main implements a mock WebRTC weather server for testing.
 package main
 
 import (

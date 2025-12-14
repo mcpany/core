@@ -179,7 +179,7 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
-func (c *dockerConn) Write(ctx context.Context, msg jsonrpc.Message) error {
+func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(msg)
 }
 

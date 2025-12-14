@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package http
+package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 
 import (
 	"context"
@@ -32,7 +32,7 @@ import (
 
 func TestHTTPPool_New(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -64,7 +64,7 @@ func TestHTTPPool_New(t *testing.T) {
 }
 
 func TestHTTPPool_GetPut(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()

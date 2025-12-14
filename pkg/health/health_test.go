@@ -42,7 +42,7 @@ type mockHealthServer struct {
 }
 
 func (s *mockHealthServer) Check(
-	ctx context.Context,
+	_ context.Context,
 	_ *grpc_health_v1.HealthCheckRequest,
 ) (*grpc_health_v1.HealthCheckResponse, error) {
 	return &grpc_health_v1.HealthCheckResponse{Status: s.status}, nil
@@ -79,7 +79,7 @@ func TestNewChecker(t *testing.T) {
 	})
 
 	t.Run("Success", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
@@ -96,7 +96,7 @@ func TestNewChecker(t *testing.T) {
 	})
 
 	t.Run("Failure", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer server.Close()

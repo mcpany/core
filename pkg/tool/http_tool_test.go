@@ -55,7 +55,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 	server := httptest.NewServer(handler)
 	poolManager := pool.NewManager()
 
-	p, err := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, true)
 	require.NoError(t, err)
@@ -103,7 +103,7 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 	xmlResponse := `<user><id>123</id><name>Test</name></user>`
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/xml")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(xmlResponse))
@@ -135,7 +135,7 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 	textResponse := "User: test-user, Role: admin"
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(textResponse))
@@ -192,7 +192,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Errors(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
@@ -213,7 +213,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("pool_get_error", func(t *testing.T) {
 		poolManager := pool.NewManager()
-		errorFactory := func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		errorFactory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return nil, errors.New("pool factory error")
 		}
 		p, err := pool.New(errorFactory, 0, 1, 0, true)
@@ -229,7 +229,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("invalid_method_fqn", func(t *testing.T) {
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -249,7 +249,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("upstream_error", func(t *testing.T) {
-		errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		errHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, _ = w.Write([]byte("internal error"))
 		})
@@ -268,7 +268,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 		// Re-create tool with authenticator
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -292,7 +292,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -364,7 +364,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		}.Build()
 
 		// Handler returns invalid JSON
-		errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		errHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`not-json`))
 		})
@@ -380,7 +380,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 	t.Run("non_json_response", func(t *testing.T) {
 		// Handler returns non-JSON response
-		stringHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		stringHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("just a string"))
 		})
@@ -404,7 +404,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -433,7 +433,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -463,7 +463,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(rawBytesResponse)
@@ -499,7 +499,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	p, err := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, true)
 	require.NoError(t, err)
@@ -530,7 +530,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	t.Run("retry_succeeds", func(t *testing.T) {
 		attempt := 0
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			if attempt == 0 {
 				attempt++
 				w.WriteHeader(http.StatusInternalServerError)
@@ -543,7 +543,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -565,7 +565,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 	t.Run("retry_fails", func(t *testing.T) {
 		attempt := 0
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			attempt++
 			w.WriteHeader(http.StatusInternalServerError)
 		})
@@ -573,7 +573,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -596,7 +596,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 	t.Run("non_retriable_error", func(t *testing.T) {
 		attempt := 0
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			attempt++
 			w.WriteHeader(http.StatusBadRequest)
 		})
@@ -604,7 +604,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
@@ -644,7 +644,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-		p, _ := pool.New(func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)

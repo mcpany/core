@@ -25,7 +25,7 @@ func TestHTTPResilience(t *testing.T) {
 	t.Run("retry", func(t *testing.T) {
 		t.Parallel()
 		var requestCount int32
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			if atomic.AddInt32(&requestCount, 1) < 3 {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -40,7 +40,7 @@ func TestHTTPResilience(t *testing.T) {
 			BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
 				return &integration.ManagedProcess{}
 			},
-			GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+			GenerateUpstreamConfig: func(_ string) string {
 				return fmt.Sprintf(`
 upstreamServices:
   - name: "retry-service"
@@ -91,7 +91,7 @@ upstreamServices:
 	t.Run("circuit_breaker", func(t *testing.T) {
 		t.Parallel()
 		var requestCount int32
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			atomic.AddInt32(&requestCount, 1)
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
@@ -103,7 +103,7 @@ upstreamServices:
 			BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
 				return &integration.ManagedProcess{}
 			},
-			GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+			GenerateUpstreamConfig: func(_ string) string {
 				return fmt.Sprintf(`
 upstreamServices:
   - name: "cb-service"
@@ -154,7 +154,7 @@ upstreamServices:
 
 				// Fourth request should be allowed (half-open)
 				atomic.StoreInt32(&requestCount, 0)
-				ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				ts.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					atomic.AddInt32(&requestCount, 1)
 					_, _ = fmt.Fprintln(w, `{"message": "ok"}`)
 				})

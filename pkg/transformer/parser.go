@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package transformer provides functionality for transforming and parsing data.
 package transformer
 
 import (

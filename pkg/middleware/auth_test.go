@@ -37,7 +37,7 @@ func TestAuthMiddleware(t *testing.T) {
 		mw := middleware.AuthMiddleware(authManager)
 
 		var nextCalled bool
-		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 			nextCalled = true
 			return &mcp.CallToolResult{}, nil
 		}
@@ -71,7 +71,7 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add the http.Request to the context.
-		//nolint:revive // "http.request" is a string key used by convention
+		//nolint:revive,staticcheck // "http.request" is a string key used by convention
 		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Call the handler. The method "test.method" implies the serviceID is "test".
@@ -108,7 +108,7 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq.Header.Set("X-API-Key", "secret")
 
 		// Add the http.Request to the context.
-		//nolint:revive // "http.request" is a string key used by convention
+		//nolint:revive,staticcheck // "http.request" is a string key used by convention
 		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Call the handler.

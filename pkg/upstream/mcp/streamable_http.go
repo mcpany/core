@@ -85,7 +85,7 @@ type Upstream struct{}
 // Shutdown is a no-op for the MCP upstream, as the connections it manages are
 // transient and established on a per-call basis. There are no persistent
 // connections to tear down.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
@@ -178,7 +178,7 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 // Subscribe is not yet implemented for MCP resources. It returns an error
 // indicating that this functionality is not available.
-func (r *mcpResource) Subscribe(ctx context.Context) error {
+func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
 
@@ -312,9 +312,11 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
-			return exec.Command("sudo", fullArgs...) //nolint:gosec // controlled execution
+
+			return exec.Command("sudo", fullArgs...)
 		}
-		return exec.Command(command, args...) //nolint:gosec // controlled execution
+
+		return exec.Command(command, args...)
 	}
 
 	// Combine all commands into a single script.
@@ -329,7 +331,8 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	script := strings.Join(scriptCommands, " && ")
 
 	// run the script directly on the host.
-	cmd := exec.Command("/bin/sh", "-c", script) //nolint:gosec // controlled execution from config
+
+	cmd := exec.Command("/bin/sh", "-c", script)
 	cmd.Dir = stdio.GetWorkingDirectory()
 	return cmd
 }
@@ -338,6 +341,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 // that is connected via standard I/O (e.g., a local command or a Docker
 // container). It establishes the connection, discovers the service's
 // capabilities, and registers them.
+//
 //nolint:gocyclo,funlen
 func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
@@ -574,6 +578,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
+//
 //nolint:gocyclo
 func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,

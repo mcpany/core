@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package integration tests the Redis bus implementation.
 package integration
 
 import (
@@ -45,7 +46,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	defer cancel()
 
 	topic := "test-topic"
-	msg := "hello" //nolint:goconst
+	msg := "hello"
 
 	var wg sync.WaitGroup
 	wg.Add(1)

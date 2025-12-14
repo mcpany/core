@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package websocket provides WebSocket upstream functionality.
 package websocket
 
 import (
@@ -49,7 +50,7 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
@@ -123,7 +124,7 @@ func (u *Upstream) Register(
 // createAndRegisterWebsocketTools iterates through the WebSocket call
 // definitions in the service configuration, creates a new WebsocketTool for each,
 // and registers it with the tool manager.
-func (u *Upstream) createAndRegisterWebsocketTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	definitions := websocketService.GetTools()
@@ -242,7 +243,7 @@ func (u *Upstream) createAndRegisterWebsocketTools(ctx context.Context, serviceI
 	return discoveredTools
 }
 
-func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	websocketService := serviceConfig.GetWebsocketService()
 	for _, promptDef := range websocketService.GetPrompts() {

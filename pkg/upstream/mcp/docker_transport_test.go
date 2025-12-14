@@ -145,10 +145,10 @@ func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
-			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil
 			},
-			ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			ContainerCreateFunc: func(_ context.Context, _ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *v1.Platform, _ string) (container.CreateResponse, error) {
 				return container.CreateResponse{}, fmt.Errorf("container create error")
 			},
 		}, nil
@@ -168,10 +168,10 @@ func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
-			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil
 			},
-			ContainerAttachFunc: func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+			ContainerAttachFunc: func(_ context.Context, _ string, _ container.AttachOptions) (types.HijackedResponse, error) {
 				return types.HijackedResponse{}, fmt.Errorf("container attach error")
 			},
 		}, nil
@@ -191,10 +191,10 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
 	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
 		return &mockDockerClient{
-			ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil
 			},
-			ContainerStartFunc: func(ctx context.Context, container string, options container.StartOptions) error {
+			ContainerStartFunc: func(_ context.Context, _ string, _ container.StartOptions) error {
 				return fmt.Errorf("container start error")
 			},
 		}, nil
@@ -275,10 +275,10 @@ func TestDockerReadWriteCloser_Close_Error(t *testing.T) {
 	logging.Init(slog.LevelInfo, &buf)
 
 	mockClient := &mockDockerClient{
-		ContainerStopFunc: func(ctx context.Context, containerID string, options container.StopOptions) error {
+		ContainerStopFunc: func(_ context.Context, _ string, _ container.StopOptions) error {
 			return fmt.Errorf("stop error")
 		},
-		ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+		ContainerRemoveFunc: func(_ context.Context, _ string, _ container.RemoveOptions) error {
 			return fmt.Errorf("remove error")
 		},
 		CloseFunc: func() error {

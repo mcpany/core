@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package serviceregistry provides service registry functionality.
 package serviceregistry
 
 import (

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package webrtc provides WebRTC upstream functionality.
 package webrtc
 
 import (
@@ -49,7 +50,7 @@ type Upstream struct {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
@@ -115,7 +116,7 @@ func (u *Upstream) Register(
 // createAndRegisterWebrtcTools iterates through the WebRTC call definitions in
 // the service configuration, creates a new WebrtcTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool) []*configv1.ToolDefinition {
+func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	definitions := webrtcService.GetTools()
@@ -238,7 +239,7 @@ func (u *Upstream) createAndRegisterWebrtcTools(ctx context.Context, serviceID, 
 	return discoveredTools
 }
 
-func (u *Upstream) createAndRegisterPrompts(ctx context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
 	log := logging.GetLogger()
 	webrtcService := serviceConfig.GetWebrtcService()
 	for _, promptDef := range webrtcService.GetPrompts() {

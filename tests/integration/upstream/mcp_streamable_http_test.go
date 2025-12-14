@@ -43,7 +43,7 @@ func TestUpstreamService_MCP_StreamableHTTP(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			listToolsResult, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 			if err != nil {

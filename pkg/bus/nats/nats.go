@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package nats provides a NATS-based message bus implementation.
 package nats
 
 import (
@@ -24,12 +25,12 @@ import (
 
 	"github.com/mcpany/core/proto/bus"
 	"github.com/nats-io/nats-server/v2/server"
-	"github.com/nats-io/nats.go"
+	natsgo "github.com/nats-io/nats.go"
 )
 
 // Bus is a message bus implementation using NATS.
 type Bus[T any] struct {
-	nc     *nats.Conn
+	nc     *natsgo.Conn
 	config *bus.NatsBus
 	s      *server.Server
 }
@@ -50,7 +51,7 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 		}
 		config.SetServerUrl(s.ClientURL())
 	}
-	nc, err := nats.Connect(config.GetServerUrl())
+	nc, err := natsgo.Connect(config.GetServerUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 
 // Subscribe registers a handler for a NATS topic.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
-	sub, _ := b.nc.Subscribe(topic, func(m *nats.Msg) {
+	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {
 			handler(msg)
@@ -92,7 +93,7 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
-	sub, err := b.nc.Subscribe(topic, func(m *nats.Msg) {
+	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
 		if err := json.Unmarshal(m.Data, &msg); err == nil {
 			handler(msg)

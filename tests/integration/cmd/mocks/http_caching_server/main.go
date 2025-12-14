@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package main provides a mock HTTP caching server for integration testing.
 package main
 
 import (

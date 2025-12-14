@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a mock MCP server for testing.
 package main
 
 import (

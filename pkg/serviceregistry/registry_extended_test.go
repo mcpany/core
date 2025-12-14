@@ -44,7 +44,7 @@ func (m *mockTool) Tool() *mcp_routerv1.Tool {
 	return m.tool
 }
 
-func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 
@@ -153,7 +153,7 @@ func (m *mockPrompt) Service() string {
 	return m.serviceID
 }
 
-func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
+func (m *mockPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
 }
 
@@ -171,11 +171,11 @@ func (m *mockResource) Service() string {
 	return m.serviceID
 }
 
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (m *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return nil, nil
 }
 
-func (m *mockResource) Subscribe(ctx context.Context) error {
+func (m *mockResource) Subscribe(_ context.Context) error {
 	return nil
 }
 

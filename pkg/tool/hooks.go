@@ -37,7 +37,7 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 
 // ExecutePre executes the policy check before a tool is called.
 func (h *PolicyHook) ExecutePre(
-	ctx context.Context,
+	_ context.Context,
 	req *ExecutionRequest,
 ) (Action, *ExecutionRequest, error) {
 	// Determine default action
@@ -96,7 +96,7 @@ func NewTextTruncationHook(config *configv1.TextTruncationConfig) *TextTruncatio
 
 // ExecutePost executes the text truncation logic after a tool is called.
 func (h *TextTruncationHook) ExecutePost(
-	ctx context.Context,
+	_ context.Context,
 	_ *ExecutionRequest,
 	result any,
 ) (any, error) {
@@ -156,7 +156,7 @@ type WebhookHook struct {
 
 // ExecutePre executes the webhook notification before a tool is called.
 func (h *WebhookHook) ExecutePre(
-	ctx context.Context,
+	_ context.Context,
 	_ *ExecutionRequest,
 ) (Action, *ExecutionRequest, error) {
 	// TODO: Implement webhook call

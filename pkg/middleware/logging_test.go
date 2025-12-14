@@ -87,7 +87,7 @@ func TestLoggingMiddleware(t *testing.T) {
 		expectedErr := (error)(nil)
 
 		// Mock handler that will be wrapped by the middleware
-		mockHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		mockHandler := func(_ context.Context, method string, _ mcp.Request) (mcp.Result, error) {
 			assert.Equal(t, "test.method", method)
 			// Simulate some work
 			time.Sleep(10 * time.Millisecond)
@@ -115,7 +115,7 @@ func TestLoggingMiddleware(t *testing.T) {
 		// This test ensures that the middleware falls back to the default logger when nil is passed.
 		// As we can't easily capture the output of the global default logger without affecting other tests,
 		// we will just ensure that the middleware still executes the next handler and returns its results.
-		mockHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		mockHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 			return &mcp.CallToolResult{}, nil
 		}
 
@@ -130,7 +130,7 @@ func TestLoggingMiddleware(t *testing.T) {
 		mh.buf.Reset()
 		expectedErr := errors.New("handler error")
 
-		mockHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		mockHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 			return nil, expectedErr
 		}
 
