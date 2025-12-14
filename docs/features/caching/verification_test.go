@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -31,4 +32,7 @@ func TestCachingConfig(t *testing.T) {
 	require.NotNil(t, service.Cache)
 	require.True(t, service.Cache.GetIsEnabled())
 	require.Equal(t, int64(10), service.Cache.GetTtl().GetSeconds())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }

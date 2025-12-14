@@ -454,3 +454,53 @@ func TestUnmarshalServices(t *testing.T) {
 		assert.Len(t, services, 0)
 	})
 }
+
+func TestUpstreamServiceManager_ProfilesBehavior(t *testing.T) {
+	// Create a config with 3 services:
+	// 1. dev-service (profile: dev)
+	// 2. prod-service (profile: prod)
+	// 3. common-service (profile: dev, prod)
+	cfg := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name:     proto.String("dev-service"),
+				Profiles: []*configv1.Profile{{Name: "dev"}},
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://dev")},
+				},
+			},
+			{
+				Name:     proto.String("prod-service"),
+				Profiles: []*configv1.Profile{{Name: "prod"}},
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://prod")},
+				},
+			},
+			{
+				Name:     proto.String("common-service"),
+				Profiles: []*configv1.Profile{{Name: "dev"}, {Name: "prod"}},
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://common")},
+				},
+			},
+		},
+	}
+
+	// Case 1: Run with 'dev' profile
+	mgrDev := NewUpstreamServiceManager([]string{"dev"})
+	servicesDev, err := mgrDev.LoadAndMergeServices(context.Background(), cfg)
+	require.NoError(t, err)
+
+	require.Len(t, servicesDev, 2)
+	require.Equal(t, "common-service", servicesDev[0].GetName()) // sorted
+	require.Equal(t, "dev-service", servicesDev[1].GetName())
+
+	// Case 2: Run with 'prod' profile
+	mgrProd := NewUpstreamServiceManager([]string{"prod"})
+	servicesProd, err := mgrProd.LoadAndMergeServices(context.Background(), cfg)
+	require.NoError(t, err)
+
+	require.Len(t, servicesProd, 2)
+	require.Equal(t, "common-service", servicesProd[0].GetName())
+	require.Equal(t, "prod-service", servicesProd[1].GetName())
+}

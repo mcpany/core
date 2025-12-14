@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -39,4 +40,10 @@ func TestAuthenticationConfig(t *testing.T) {
 	require.NotNil(t, outgoingSvc.GetUpstreamAuthentication().GetBasicAuth())
 	require.Equal(t, "admin", outgoingSvc.GetUpstreamAuthentication().GetBasicAuth().GetUsername())
 	require.Equal(t, "password123", outgoingSvc.GetUpstreamAuthentication().GetBasicAuth().GetPassword().GetPlainText())
+
+	err = config.ValidateOrError(incomingSvc)
+	require.NoError(t, err)
+
+	err = config.ValidateOrError(outgoingSvc)
+	require.NoError(t, err)
 }
