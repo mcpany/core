@@ -137,6 +137,15 @@ func (x *SecretValue) GetRemoteContent() *RemoteContent {
 	return nil
 }
 
+func (x *SecretValue) GetVault() *VaultSecret {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Value.(*secretValue_Vault); ok {
+			return x.Vault
+		}
+	}
+	return nil
+}
+
 func (x *SecretValue) SetPlainText(v string) {
 	x.xxx_hidden_Value = &secretValue_PlainText{v}
 }
@@ -155,6 +164,14 @@ func (x *SecretValue) SetRemoteContent(v *RemoteContent) {
 		return
 	}
 	x.xxx_hidden_Value = &secretValue_RemoteContent{v}
+}
+
+func (x *SecretValue) SetVault(v *VaultSecret) {
+	if v == nil {
+		x.xxx_hidden_Value = nil
+		return
+	}
+	x.xxx_hidden_Value = &secretValue_Vault{v}
 }
 
 func (x *SecretValue) HasValue() bool {
@@ -196,6 +213,14 @@ func (x *SecretValue) HasRemoteContent() bool {
 	return ok
 }
 
+func (x *SecretValue) HasVault() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Value.(*secretValue_Vault)
+	return ok
+}
+
 func (x *SecretValue) ClearValue() {
 	x.xxx_hidden_Value = nil
 }
@@ -224,11 +249,18 @@ func (x *SecretValue) ClearRemoteContent() {
 	}
 }
 
+func (x *SecretValue) ClearVault() {
+	if _, ok := x.xxx_hidden_Value.(*secretValue_Vault); ok {
+		x.xxx_hidden_Value = nil
+	}
+}
+
 const SecretValue_Value_not_set_case case_SecretValue_Value = 0
 const SecretValue_PlainText_case case_SecretValue_Value = 1
 const SecretValue_EnvironmentVariable_case case_SecretValue_Value = 2
 const SecretValue_FilePath_case case_SecretValue_Value = 3
 const SecretValue_RemoteContent_case case_SecretValue_Value = 4
+const SecretValue_Vault_case case_SecretValue_Value = 5
 
 func (x *SecretValue) WhichValue() case_SecretValue_Value {
 	if x == nil {
@@ -243,6 +275,8 @@ func (x *SecretValue) WhichValue() case_SecretValue_Value {
 		return SecretValue_FilePath_case
 	case *secretValue_RemoteContent:
 		return SecretValue_RemoteContent_case
+	case *secretValue_Vault:
+		return SecretValue_Vault_case
 	default:
 		return SecretValue_Value_not_set_case
 	}
@@ -256,6 +290,7 @@ type SecretValue_builder struct {
 	EnvironmentVariable *string
 	FilePath            *string
 	RemoteContent       *RemoteContent
+	Vault               *VaultSecret
 	// -- end of xxx_hidden_Value
 }
 
@@ -274,6 +309,9 @@ func (b0 SecretValue_builder) Build() *SecretValue {
 	}
 	if b.RemoteContent != nil {
 		x.xxx_hidden_Value = &secretValue_RemoteContent{b.RemoteContent}
+	}
+	if b.Vault != nil {
+		x.xxx_hidden_Value = &secretValue_Vault{b.Vault}
 	}
 	return m0
 }
@@ -308,6 +346,10 @@ type secretValue_RemoteContent struct {
 	RemoteContent *RemoteContent `protobuf:"bytes,4,opt,name=remote_content,json=remoteContent,oneof"`
 }
 
+type secretValue_Vault struct {
+	Vault *VaultSecret `protobuf:"bytes,5,opt,name=vault,oneof"`
+}
+
 func (*secretValue_PlainText) isSecretValue_Value() {}
 
 func (*secretValue_EnvironmentVariable) isSecretValue_Value() {}
@@ -315,6 +357,182 @@ func (*secretValue_EnvironmentVariable) isSecretValue_Value() {}
 func (*secretValue_FilePath) isSecretValue_Value() {}
 
 func (*secretValue_RemoteContent) isSecretValue_Value() {}
+
+func (*secretValue_Vault) isSecretValue_Value() {}
+
+// VaultSecret defines the parameters for fetching a secret from HashiCorp Vault.
+type VaultSecret struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_Token       *SecretValue           `protobuf:"bytes,2,opt,name=token"`
+	xxx_hidden_Path        *string                `protobuf:"bytes,3,opt,name=path"`
+	xxx_hidden_Key         *string                `protobuf:"bytes,4,opt,name=key"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *VaultSecret) Reset() {
+	*x = VaultSecret{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VaultSecret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VaultSecret) ProtoMessage() {}
+
+func (x *VaultSecret) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *VaultSecret) GetAddress() string {
+	if x != nil {
+		if x.xxx_hidden_Address != nil {
+			return *x.xxx_hidden_Address
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *VaultSecret) GetToken() *SecretValue {
+	if x != nil {
+		return x.xxx_hidden_Token
+	}
+	return nil
+}
+
+func (x *VaultSecret) GetPath() string {
+	if x != nil {
+		if x.xxx_hidden_Path != nil {
+			return *x.xxx_hidden_Path
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *VaultSecret) GetKey() string {
+	if x != nil {
+		if x.xxx_hidden_Key != nil {
+			return *x.xxx_hidden_Key
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *VaultSecret) SetAddress(v string) {
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *VaultSecret) SetToken(v *SecretValue) {
+	x.xxx_hidden_Token = v
+}
+
+func (x *VaultSecret) SetPath(v string) {
+	x.xxx_hidden_Path = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *VaultSecret) SetKey(v string) {
+	x.xxx_hidden_Key = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+}
+
+func (x *VaultSecret) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *VaultSecret) HasToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Token != nil
+}
+
+func (x *VaultSecret) HasPath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *VaultSecret) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *VaultSecret) ClearAddress() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Address = nil
+}
+
+func (x *VaultSecret) ClearToken() {
+	x.xxx_hidden_Token = nil
+}
+
+func (x *VaultSecret) ClearPath() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Path = nil
+}
+
+func (x *VaultSecret) ClearKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Key = nil
+}
+
+type VaultSecret_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The address of the Vault server (e.g., "https://vault.example.com").
+	Address *string
+	// The token to authenticate with Vault.
+	Token *SecretValue
+	// The path to the secret in Vault (e.g., "secret/data/my-app/db").
+	Path *string
+	// The key of the secret to retrieve from the path.
+	Key *string
+}
+
+func (b0 VaultSecret_builder) Build() *VaultSecret {
+	m0 := &VaultSecret{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Address != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Address = b.Address
+	}
+	x.xxx_hidden_Token = b.Token
+	if b.Path != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Path = b.Path
+	}
+	if b.Key != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_Key = b.Key
+	}
+	return m0
+}
 
 // RemoteContent represents content that is fetched from a remote URL.
 type RemoteContent struct {
@@ -329,7 +547,7 @@ type RemoteContent struct {
 
 func (x *RemoteContent) Reset() {
 	*x = RemoteContent{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -341,7 +559,7 @@ func (x *RemoteContent) String() string {
 func (*RemoteContent) ProtoMessage() {}
 
 func (x *RemoteContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,7 +648,7 @@ type Authentication struct {
 
 func (x *Authentication) Reset() {
 	*x = Authentication{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +660,7 @@ func (x *Authentication) String() string {
 func (*Authentication) ProtoMessage() {}
 
 func (x *Authentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -645,7 +863,7 @@ func (b0 Authentication_builder) Build() *Authentication {
 type case_Authentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_Authentication_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[2].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[3].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -694,7 +912,7 @@ type UpstreamAuthentication struct {
 
 func (x *UpstreamAuthentication) Reset() {
 	*x = UpstreamAuthentication{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -706,7 +924,7 @@ func (x *UpstreamAuthentication) String() string {
 func (*UpstreamAuthentication) ProtoMessage() {}
 
 func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -976,7 +1194,7 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 type case_UpstreamAuthentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_UpstreamAuthentication_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[3].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[4].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -1030,7 +1248,7 @@ type UpstreamAPIKeyAuth struct {
 
 func (x *UpstreamAPIKeyAuth) Reset() {
 	*x = UpstreamAPIKeyAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1042,7 +1260,7 @@ func (x *UpstreamAPIKeyAuth) String() string {
 func (*UpstreamAPIKeyAuth) ProtoMessage() {}
 
 func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1133,7 +1351,7 @@ type UpstreamBearerTokenAuth struct {
 
 func (x *UpstreamBearerTokenAuth) Reset() {
 	*x = UpstreamBearerTokenAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +1363,7 @@ func (x *UpstreamBearerTokenAuth) String() string {
 func (*UpstreamBearerTokenAuth) ProtoMessage() {}
 
 func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1206,7 +1424,7 @@ type UpstreamBasicAuth struct {
 
 func (x *UpstreamBasicAuth) Reset() {
 	*x = UpstreamBasicAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1218,7 +1436,7 @@ func (x *UpstreamBasicAuth) String() string {
 func (*UpstreamBasicAuth) ProtoMessage() {}
 
 func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1312,7 +1530,7 @@ type UpstreamOAuth2Auth struct {
 
 func (x *UpstreamOAuth2Auth) Reset() {
 	*x = UpstreamOAuth2Auth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1324,7 +1542,7 @@ func (x *UpstreamOAuth2Auth) String() string {
 func (*UpstreamOAuth2Auth) ProtoMessage() {}
 
 func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1473,7 +1691,7 @@ type UpstreamMTLSAuth struct {
 
 func (x *UpstreamMTLSAuth) Reset() {
 	*x = UpstreamMTLSAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1485,7 +1703,7 @@ func (x *UpstreamMTLSAuth) String() string {
 func (*UpstreamMTLSAuth) ProtoMessage() {}
 
 func (x *UpstreamMTLSAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1617,7 +1835,7 @@ type AuthenticationConfig struct {
 
 func (x *AuthenticationConfig) Reset() {
 	*x = AuthenticationConfig{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1629,7 +1847,7 @@ func (x *AuthenticationConfig) String() string {
 func (*AuthenticationConfig) ProtoMessage() {}
 
 func (x *AuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1756,7 +1974,7 @@ func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
 type case_AuthenticationConfig_AuthMethod protoreflect.FieldNumber
 
 func (x case_AuthenticationConfig_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[9].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[10].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -1793,7 +2011,7 @@ type APIKeyAuth struct {
 
 func (x *APIKeyAuth) Reset() {
 	*x = APIKeyAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1805,7 +2023,7 @@ func (x *APIKeyAuth) String() string {
 func (*APIKeyAuth) ProtoMessage() {}
 
 func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1941,7 +2159,7 @@ type OAuth2Auth struct {
 
 func (x *OAuth2Auth) Reset() {
 	*x = OAuth2Auth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1953,7 +2171,7 @@ func (x *OAuth2Auth) String() string {
 func (*OAuth2Auth) ProtoMessage() {}
 
 func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2141,14 +2359,20 @@ var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\xd5\x01\n" +
+	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\x8c\x02\n" +
 	"\vSecretValue\x12\x1f\n" +
 	"\n" +
 	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
 	"\x14environment_variable\x18\x02 \x01(\tH\x00R\x13environmentVariable\x12\x1d\n" +
 	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePath\x12H\n" +
-	"\x0eremote_content\x18\x04 \x01(\v2\x1f.mcpany.config.v1.RemoteContentH\x00R\rremoteContentB\a\n" +
-	"\x05value\"`\n" +
+	"\x0eremote_content\x18\x04 \x01(\v2\x1f.mcpany.config.v1.RemoteContentH\x00R\rremoteContent\x125\n" +
+	"\x05vault\x18\x05 \x01(\v2\x1d.mcpany.config.v1.VaultSecretH\x00R\x05vaultB\a\n" +
+	"\x05value\"\x82\x01\n" +
+	"\vVaultSecret\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x123\n" +
+	"\x05token\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05token\x12\x12\n" +
+	"\x04path\x18\x03 \x01(\tR\x04path\x12\x10\n" +
+	"\x03key\x18\x04 \x01(\tR\x03key\"`\n" +
 	"\rRemoteContent\x12\x19\n" +
 	"\bhttp_url\x18\x01 \x01(\tR\ahttpUrl\x124\n" +
 	"\x04auth\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x04auth\"\xb6\x02\n" +
@@ -2211,47 +2435,50 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\baudience\x18\a \x01(\tR\baudienceB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),        // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),             // 1: mcpany.config.v1.SecretValue
-	(*RemoteContent)(nil),           // 2: mcpany.config.v1.RemoteContent
-	(*Authentication)(nil),          // 3: mcpany.config.v1.Authentication
-	(*UpstreamAuthentication)(nil),  // 4: mcpany.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),      // 5: mcpany.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil), // 6: mcpany.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),       // 7: mcpany.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),      // 8: mcpany.config.v1.UpstreamOAuth2Auth
-	(*UpstreamMTLSAuth)(nil),        // 9: mcpany.config.v1.UpstreamMTLSAuth
-	(*AuthenticationConfig)(nil),    // 10: mcpany.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),              // 11: mcpany.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),              // 12: mcpany.config.v1.OAuth2Auth
+	(*VaultSecret)(nil),             // 2: mcpany.config.v1.VaultSecret
+	(*RemoteContent)(nil),           // 3: mcpany.config.v1.RemoteContent
+	(*Authentication)(nil),          // 4: mcpany.config.v1.Authentication
+	(*UpstreamAuthentication)(nil),  // 5: mcpany.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),      // 6: mcpany.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil), // 7: mcpany.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),       // 8: mcpany.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),      // 9: mcpany.config.v1.UpstreamOAuth2Auth
+	(*UpstreamMTLSAuth)(nil),        // 10: mcpany.config.v1.UpstreamMTLSAuth
+	(*AuthenticationConfig)(nil),    // 11: mcpany.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),              // 12: mcpany.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),              // 13: mcpany.config.v1.OAuth2Auth
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
-	2,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
-	3,  // 1: mcpany.config.v1.RemoteContent.auth:type_name -> mcpany.config.v1.Authentication
-	5,  // 2: mcpany.config.v1.Authentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	6,  // 3: mcpany.config.v1.Authentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	7,  // 4: mcpany.config.v1.Authentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	8,  // 5: mcpany.config.v1.Authentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	5,  // 6: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	6,  // 7: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	7,  // 8: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	8,  // 9: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	9,  // 10: mcpany.config.v1.UpstreamAuthentication.mtls:type_name -> mcpany.config.v1.UpstreamMTLSAuth
-	1,  // 11: mcpany.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpany.config.v1.SecretValue
-	1,  // 12: mcpany.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpany.config.v1.SecretValue
-	1,  // 13: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
-	1,  // 14: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
-	1,  // 15: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
-	11, // 16: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
-	12, // 17: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
-	0,  // 18: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	3,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
+	2,  // 1: mcpany.config.v1.SecretValue.vault:type_name -> mcpany.config.v1.VaultSecret
+	1,  // 2: mcpany.config.v1.VaultSecret.token:type_name -> mcpany.config.v1.SecretValue
+	4,  // 3: mcpany.config.v1.RemoteContent.auth:type_name -> mcpany.config.v1.Authentication
+	6,  // 4: mcpany.config.v1.Authentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
+	7,  // 5: mcpany.config.v1.Authentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
+	8,  // 6: mcpany.config.v1.Authentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
+	9,  // 7: mcpany.config.v1.Authentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
+	6,  // 8: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
+	7,  // 9: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
+	8,  // 10: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
+	9,  // 11: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
+	10, // 12: mcpany.config.v1.UpstreamAuthentication.mtls:type_name -> mcpany.config.v1.UpstreamMTLSAuth
+	1,  // 13: mcpany.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpany.config.v1.SecretValue
+	1,  // 14: mcpany.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpany.config.v1.SecretValue
+	1,  // 15: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
+	1,  // 16: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
+	1,  // 17: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
+	12, // 18: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
+	13, // 19: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
+	0,  // 20: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_auth_proto_init() }
@@ -2264,21 +2491,22 @@ func file_proto_config_v1_auth_proto_init() {
 		(*secretValue_EnvironmentVariable)(nil),
 		(*secretValue_FilePath)(nil),
 		(*secretValue_RemoteContent)(nil),
+		(*secretValue_Vault)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[2].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[3].OneofWrappers = []any{
 		(*authentication_ApiKey)(nil),
 		(*authentication_BearerToken)(nil),
 		(*authentication_BasicAuth)(nil),
 		(*authentication_Oauth2)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[3].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[4].OneofWrappers = []any{
 		(*upstreamAuthentication_ApiKey)(nil),
 		(*upstreamAuthentication_BearerToken)(nil),
 		(*upstreamAuthentication_BasicAuth)(nil),
 		(*upstreamAuthentication_Oauth2)(nil),
 		(*upstreamAuthentication_Mtls)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[9].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[10].OneofWrappers = []any{
 		(*authenticationConfig_ApiKey)(nil),
 		(*authenticationConfig_Oauth2)(nil),
 	}
@@ -2288,7 +2516,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
