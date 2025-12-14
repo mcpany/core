@@ -16,99 +16,101 @@
 
 upstream_services:
 - name: google_calendar
+  upstream_authentication:
+      api_key:
+        header_name: "x-goog-api-key"
+        api_key:
+          plain_text: "${GOOGLE_API_KEY}"
   http_service:
     address: "https://www.googleapis.com"
-    upstream_authentication:
-        api_key:
-          header_name: "x-goog-api-key"
-          api_key:
-            plain_text: "${GOOGLE_API_KEY}"
-    calls:
-    - endpoint_path: "/calendar/v3/calendars/{{calendarId}}/events"
-      schema:
-        name: "list_events"
-        input_schema:
-          type: "object"
-          properties:
-            calendarId:
-              type: "string"
-              description: "The ID of the calendar to list events from."
-        output_schema:
-          type: "object"
-          properties:
-            kind:
-              type: "string"
-            etag:
-              type: "string"
-            summary:
-              type: "string"
-            updated:
-              type: "string"
-              format: "date-time"
-            timeZone:
-              type: "string"
-            accessRole:
-              type: "string"
-            defaultReminders:
-              type: "array"
-              items: {}
-            nextSyncToken:
-              type: "string"
+    tools:
+    - name: "list_events"
+      call_id: "list_events"
+      input_schema:
+        type: "object"
+        properties:
+          calendarId:
+            type: "string"
+            description: "The ID of the calendar to list events from."
+      output_schema:
+        type: "object"
+        properties:
+          kind:
+            type: "string"
+          etag:
+            type: "string"
+          summary:
+            type: "string"
+          updated:
+            type: "string"
+            format: "date-time"
+          timeZone:
+            type: "string"
+          accessRole:
+            type: "string"
+          defaultReminders:
+            type: "array"
+            items: {}
+          nextSyncToken:
+            type: "string"
+          items:
+            type: "array"
             items:
-              type: "array"
-              items:
-                type: "object"
-                properties:
-                  kind:
-                    type: "string"
-                  etag:
-                    type: "string"
-                  id:
-                    type: "string"
-                  status:
-                    type: "string"
-                  htmlLink:
-                    type: "string"
-                  created:
-                    type: "string"
-                    format: "date-time"
-                  updated:
-                    type: "string"
-                    format: "date-time"
-                  summary:
-                    type: "string"
-                  creator:
-                    type: "object"
-                    properties:
-                      email:
-                        type: "string"
-                  organizer:
-                    type: "object"
-                    properties:
-                      email:
-                        type: "string"
-                      displayName:
-                        type: "string"
-                      self:
-                        type: "boolean"
-                  start:
-                    type: "object"
-                    properties:
-                      date:
-                        type: "string"
-                        format: "date"
-                  end:
-                    type: "object"
-                    properties:
-                      date:
-                        type: "string"
-                        format: "date"
-                  transparency:
-                    type: "string"
-                  iCalUID:
-                    type: "string"
-                  sequence:
-                    type: "integer"
-                  eventType:
-                    type: "string"
-      method: "HTTP_METHOD_GET"
+              type: "object"
+              properties:
+                kind:
+                  type: "string"
+                etag:
+                  type: "string"
+                id:
+                  type: "string"
+                status:
+                  type: "string"
+                htmlLink:
+                  type: "string"
+                created:
+                  type: "string"
+                  format: "date-time"
+                updated:
+                  type: "string"
+                  format: "date-time"
+                summary:
+                  type: "string"
+                creator:
+                  type: "object"
+                  properties:
+                    email:
+                      type: "string"
+                organizer:
+                  type: "object"
+                  properties:
+                    email:
+                      type: "string"
+                    displayName:
+                      type: "string"
+                    self:
+                      type: "boolean"
+                start:
+                  type: "object"
+                  properties:
+                    date:
+                      type: "string"
+                      format: "date"
+                end:
+                  type: "object"
+                  properties:
+                    date:
+                      type: "string"
+                      format: "date"
+                transparency:
+                  type: "string"
+                iCalUID:
+                  type: "string"
+                sequence:
+                  type: "integer"
+                eventType:
+                  type: "string"
+    calls:
+      list_events:
+        endpoint_path: "/calendar/v3/calendars/{{calendarId}}/events"
+        method: "HTTP_METHOD_GET"

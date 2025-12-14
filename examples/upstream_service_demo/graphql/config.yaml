@@ -14,7 +14,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-upstreamServices:
+upstream_services:
   - name: "graphql-service"
-    graphqlService:
+    graphql_service:
       address: "http://localhost:8080/graphql"

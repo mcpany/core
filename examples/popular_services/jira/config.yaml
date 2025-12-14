@@ -18,11 +18,11 @@ upstream_services:
 - name: jira
   upstream_authentication:
     basic_auth:
-      username: "${JIRA_USERNAME}"
+      username: "${JIRA_USERNAME:user@example.com}"
       password:
 
-        plain_text: "${JIRA_PAT}"
+        plain_text: "${JIRA_PAT:dummy-token}"
 
   openapi_service:
-    address: "https://${JIRA_DOMAIN}"
+    address: "https://${JIRA_DOMAIN:jira.atlassian.com}"
     spec_url: "https://developer.atlassian.com/cloud/jira/platform/swagger.v3.json"

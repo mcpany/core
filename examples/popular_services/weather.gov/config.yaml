@@ -16,79 +16,85 @@
 
 upstream_services:
 - name: weather.gov
+  upstream_authentication:
+    api_key:
+      header_name: "User-Agent"
+      api_key:
+        plain_text: "mcpany-example/1.0"
   http_service:
     address: "https://api.weather.gov"
-    authentication:
-      token:
-
-        plain_text: "unused" # weather.gov uses User-Agent for identification, not a token
-    calls:
-    - endpoint_path: "/points/{{latitude}},{{longitude}}"
-      schema:
-        name: "get_grid"
-        input_schema:
-          type: "object"
+    tools:
+    - name: "get_grid"
+      call_id: "get_grid"
+      input_schema:
+        type: "object"
+        properties:
+          latitude:
+            type: "string"
+            description: "The latitude of the location."
+          longitude:
+            type: "string"
+            description: "The longitude of the location."
+      output_schema:
+        type: "object"
+        properties:
           properties:
-            latitude:
-              type: "string"
-              description: "The latitude of the location."
-            longitude:
-              type: "string"
-              description: "The longitude of the location."
-        output_schema:
-          type: "object"
-          properties:
+            type: "object"
             properties:
-              type: "object"
-              properties:
-                forecast:
-                  type: "string"
-      method: "HTTP_METHOD_GET"
+              forecast:
+                type: "string"
+    calls:
+      get_grid:
+        endpoint_path: "/points/{{latitude}},{{longitude}}"
+        method: "HTTP_METHOD_GET"
 - name: weather.gov-forecast
+  upstream_authentication:
+    api_key:
+      header_name: "User-Agent"
+      api_key:
+        plain_text: "mcpany-example/1.0"
   http_service:
-    address: "https://api.weather.gov" # This is a static address
-    authentication:
-      token:
-
-        plain_text: "unused"
-    calls:
-    - endpoint_path: "{{forecast_url}}"
-      schema:
-        name: "get_forecast"
-        input_schema:
-          type: "object"
+    address: "https://api.weather.gov"
+    tools:
+    - name: "get_forecast"
+      call_id: "get_forecast"
+      input_schema:
+        type: "object"
+        properties:
+          forecast_url:
+            type: "string"
+      output_schema:
+        type: "object"
+        properties:
           properties:
-            forecast_url:
-              type: "string"
-        output_schema:
-          type: "object"
-          properties:
+            type: "object"
             properties:
-              type: "object"
-              properties:
-                periods:
-                  type: "array"
-                  items:
-                    type: "object"
-                    properties:
-                      name:
-                        type: "string"
-                      startTime:
-                        type: "string"
-                      endTime:
-                        type: "string"
-                      isDaytime:
-                        type: "boolean"
-                      temperature:
-                        type: "integer"
-                      temperatureUnit:
-                        type: "string"
-                      windSpeed:
-                        type: "string"
-                      windDirection:
-                        type: "string"
-                      shortForecast:
-                        type: "string"
-                      detailedForecast:
-                        type: "string"
-      method: "HTTP_METHOD_GET"
+              periods:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    name:
+                      type: "string"
+                    startTime:
+                      type: "string"
+                    endTime:
+                      type: "string"
+                    isDaytime:
+                      type: "boolean"
+                    temperature:
+                      type: "integer"
+                    temperatureUnit:
+                      type: "string"
+                    windSpeed:
+                      type: "string"
+                    windDirection:
+                      type: "string"
+                    shortForecast:
+                      type: "string"
+                    detailedForecast:
+                      type: "string"
+    calls:
+      get_forecast:
+        endpoint_path: "{{forecast_url}}"
+        method: "HTTP_METHOD_GET"

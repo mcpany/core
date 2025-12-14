@@ -33,3 +33,30 @@ To use this example, you need to set the `GEMINI_API_KEY` environment variable t
      -d '{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "gemini/-/generateContent", "arguments": {"contents": [{"parts": [{"text": "Write a story about a magic backpack."}]}]}}, "id": 1}' \
      http://localhost:50050
    ```
+
+## Usage with Gemini CLI
+
+### 1. Start the MCP Server
+
+```bash
+# From repo root
+make build # if not already built
+# Export required environment variables
+export GEMINI_API_KEY=YOUR_GEMINI_API_KEY_VALUE
+
+./build/bin/server run --config-path examples/popular_services/gemini/config.yaml
+```
+
+### 2. Add to Gemini
+
+In a separate terminal:
+
+```bash
+gemini mcp add --transport http --trust gemini http://localhost:50050
+```
+
+### 3. Example Query
+
+```bash
+gemini -m gemini-2.5-flash -p "Use generateContent to call generateContent"
+```

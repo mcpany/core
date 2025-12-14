@@ -16,28 +16,27 @@
 
 upstream_services:
 - name: airtable
+  upstream_authentication:
+    bearer_token:
+      token:
+        plain_text: "${AIRTABLE_API_TOKEN}" # Removed manual 'Bearer ' prefix as bearer_token type should handle it
   http_service:
     address: "https://api.airtable.com"
-    authentication:
-      token:
-
-        plain_text: "Bearer ${AIRTABLE_API_TOKEN}"
-    calls:
-    - endpoint_path: "/v0/{{baseId}}/{{tableId}}"
-      schema:
-        name: "list_records"
-        input_schema:
-          type: "object"
-          properties:
-            baseId:
-              type: "string"
-              description: "The ID of the base."
-            tableId:
-              type: "string"
-              description: "The ID of the table."
-        output_schema:
-          type: "object"
-          properties:
+    tools:
+    - name: "list_records"
+      call_id: "list_records"
+      input_schema:
+        type: "object"
+        properties:
+          baseId:
+            type: "string"
+            description: "The ID of the base."
+          tableId:
+            type: "string"
+            description: "The ID of the table."
+      output_schema:
+        type: "object"
+        properties:
             records:
               type: "array"
               items:
@@ -49,4 +48,7 @@ upstream_services:
                     type: "string"
                   fields:
                     type: "object"
-      method: "HTTP_METHOD_GET"
+    calls:
+      list_records:
+        endpoint_path: "/v0/{{baseId}}/{{tableId}}"
+        method: "HTTP_METHOD_GET"
