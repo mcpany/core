@@ -1,0 +1,8 @@
+upstream_services:
+  - name: "pooled-service"
+    connection_pool:
+      max_connections: 50
+      max_idle_connections: 5
+      idle_timeout: "60s"
+    http_service:
+      address: "https://example.com"
