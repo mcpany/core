@@ -90,6 +90,12 @@ func (g *schemaGenerator) protoMessageToSchema(
 			"pattern": "^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$",
 		}
 	}
+	if desc.FullName() == "google.protobuf.Struct" {
+		return map[string]interface{}{
+			"type":                 "object",
+			"additionalProperties": true,
+		}
+	}
 
 	properties := make(map[string]interface{})
 	fields := desc.Fields()

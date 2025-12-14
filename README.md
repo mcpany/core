@@ -46,53 +46,45 @@ Ready to give your AI access to real-time data? Let's connect a public Weather A
 
 ### 1. Prerequisites
 
-- **Docker**: Ensure you have [Docker](https://docs.docker.com/get-docker/) installed and running.
+- **Go**: Ensure you have [Go](https://go.dev/doc/install) installed (1.23+ recommended).
 - **Gemini CLI**: If not installed, see the [installation guide](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli).
 
 _(Prefer building from source? See [Getting Started](docs/getting_started.md) for build instructions.)_
 
-### 2. Create Configuration
+### 2. Configuration
 
-Create a file named `weather-config.yaml` in your workspace. We will wrap `wttr.in`, a simple public weather service.
-
-**File Architecture:**
-
-```
-.
-└── weather-config.yaml # The config file we are creating
-```
-
-**`weather-config.yaml`**:
-
-```yaml
-global_settings:
-  mcp_listen_address: "0.0.0.0:50050"
-  log_level: "INFO"
-
-upstream_services:
-  - name: "weather-service"
-    service_config:
-      http_service:
-        url: "http://localhost:8080"
-    profiles:
-      - name: "default"
-```
+We will use the pre-built `wttr.in` configuration available in the examples directory: `examples/popular_services/wttr.in/config.yaml`.
 
 ### 3. Run with Docker
 
-Start the server using the official image. We mount the current directory so the container can read your config.
+Start the server using the development image. We mount the `examples` directory so the container can access the configuration files.
 
 ```bash
 docker run --rm \
-  -v $(pwd)/weather-config.yaml:/weather-config.yaml \
+  -v $(pwd)/examples:/examples \
   -p 50050:50050 \
-  ghcr.io/mcpany/core:latest \
-  run --config-path /weather-config.yaml
+  ghcr.io/mcpany/core:dev \
+  run --config-path /examples/popular_services/wttr.in/config.yaml
 ```
 
 The server will start and listen on port `50050`.
 
-### 4. Connect Your AI
+### 4. Build from Source (Alternative)
+
+If you prefer to build and run locally:
+
+1.  **Build the server**:
+
+    ```bash
+    make build
+    ```
+
+2.  **Run the server**:
+    ```bash
+    ./build/bin/server run --config-path ./examples/popular_services/wttr.in/config.yaml
+    ```
+
+### 5. Connect Your AI
 
 Tell your AI assistant how to reach the server.
 
@@ -106,7 +98,7 @@ gemini mcp add --transport http --trust weather-server http://localhost:50050
 
 _(Note: You may see an unrelated "GitHub requires OAuth" error in the CLI; this can be ignored if tools are working.)_
 
-### 5. Chat!
+### 6. Chat!
 
 Ask your AI about the weather:
 
@@ -116,9 +108,21 @@ gemini -m gemini-2.5-flash -p "What is the weather in London?"
 
 The AI will:
 
-1.  **Call** the `weather.get_weather` tool with `city="London"`.
-2.  `mcpany` will **proxy** the request to `https://wttr.in/London?format=j1`.
+1.  **Call** the tool (e.g., `wttrin_<hash>.get_weather`).
+2.  `mcpany` will **proxy** the request to `https://wttr.in`.
 3.  The AI receives the JSON response and answers your question!
+
+Ask about the moon phase:
+
+```bash
+gemini -m gemini-2.5-flash -p "What is the moon phase?"
+```
+
+The AI will:
+
+1.  **Call** the `get_moon_phase` tool.
+2.  `mcpany` will **proxy** the request to `https://wttr.in/moon`.
+3.  The AI receives the ASCII art response and describes it!
 
 ---
 
