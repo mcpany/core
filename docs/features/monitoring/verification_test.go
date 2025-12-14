@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,4 +30,7 @@ func TestMonitoringConfig(t *testing.T) {
 	require.Equal(t, "monitored-service", service.GetName())
 	require.Len(t, service.ServiceConfig.(*pb.UpstreamServiceConfig_HttpService).HttpService.Tools, 1)
 	require.Equal(t, "monitored-tool", service.ServiceConfig.(*pb.UpstreamServiceConfig_HttpService).HttpService.Tools[0].GetName())
+
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }

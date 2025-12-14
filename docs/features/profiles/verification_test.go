@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -28,4 +29,8 @@ func TestProfilesConfig(t *testing.T) {
 	require.Len(t, service.Profiles, 2)
 	require.Equal(t, "dev", service.Profiles[0].GetName())
 	require.Equal(t, "staging", service.Profiles[1].GetName())
+
+	// Validate config using internal validator
+	err = config.ValidateOrError(service)
+	require.NoError(t, err)
 }
