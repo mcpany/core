@@ -1,0 +1,6 @@
+upstream_services:
+  - name: "monitored-service"
+    http_service:
+      address: "https://example.com"
+      tools:
+        - name: "monitored-tool"

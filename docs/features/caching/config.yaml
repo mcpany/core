@@ -1,0 +1,9 @@
+upstream_services:
+  - name: "cached-service-example"
+    http_service:
+      address: "https://example.com"
+      tools:
+        - name: "example-tool"
+    cache:
+      is_enabled: true
+      ttl: "10s"

@@ -1,0 +1,8 @@
+upstream_services:
+  - name: "resilient-service"
+    resilience:
+      circuit_breaker:
+        failure_rate_threshold: 0.5
+        open_duration: "5s"
+    http_service:
+      address: "https://example.com"
