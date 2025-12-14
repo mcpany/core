@@ -311,6 +311,8 @@ message McpUpstreamService {
     McpStreamableHttpConnection http_connection = 1 [json_name = "http_connection"];
     // Connect via a stdio process.
     McpStdioConnection stdio_connection = 2 [json_name = "stdio_connection"];
+    // Connect via a bundle.
+    McpBundleConnection bundle_connection = 4 [json_name = "bundle_connection"];
   }
   // If true, mcpany will automatically discover and proxy all tools from the upstream.
   bool tool_auto_discovery = 3 [json_name = "tool_auto_discovery"];
@@ -343,6 +345,16 @@ message McpStreamableHttpConnection {
   string http_address = 1 [json_name = "http_address"];
   // TLS configuration, applicable if using an http_address.
   TLSConfig tls_config = 5 [json_name = "tls_config"];
+}
+
+// McpBundleConnection defines the parameters for a bundle-based connection.
+message McpBundleConnection {
+  // The path to the bundle file.
+  string bundle_path = 1 [json_name = "bundle_path"];
+  // Optional: The container image to use. If not provided, a default image will be used.
+  string container_image = 2 [json_name = "container_image"];
+  // Optional: Environment variables to pass to the container.
+  map<string, string> env = 3;
 }
 
 
