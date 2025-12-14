@@ -1,0 +1,57 @@
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: "INFO"
+
+upstream_services:
+  - name: "wttr.in"
+    upstream_authentication:
+      api_key:
+        header_name: "User-Agent"
+        api_key:
+          plain_text: "curl/8.5.0"
+    http_service:
+      address: "https://wttr.in"
+      tools:
+        - name: "get_weather"
+          description: |
+            Get the weather forecast for a location in JSON format.
+            By default uses 'en' language.
+          input_schema:
+            type: "object"
+            properties:
+              location:
+                type: "string"
+                description: |
+                  The location to query. Can be:
+                  - City name (e.g. "Paris")
+                  - Airport code (e.g. "muc")
+                  - Area code (e.g. "94107")
+                  - GPS coordinates (e.g. "-78.46,106.79")
+                  - Special locations: "~Eiffel+tower"
+              lang:
+                type: "string"
+                description: "Language code (e.g. 'en', 'fr', 'de'). Defaults to 'en'."
+                default: "en"
+            required:
+              - "location"
+          call_id: "get_weather_call"
+        - name: "get_moon_phase"
+          description: |
+            Get the Moon phase information (returns text/ASCII art).
+          input_schema:
+            type: "object"
+            properties:
+              args:
+                type: "string"
+                description: "Optional arguments to append (e.g. '@2016-10-25' for date, or ',London' for location)."
+                default: ""
+
+          call_id: "get_moon_phase_call"
+
+      calls:
+        get_weather_call:
+          endpoint_path: "/{{location}}?format=j1&lang={{lang}}"
+          method: "HTTP_METHOD_GET"
+        get_moon_phase_call:
+          endpoint_path: "/moon{{if .args}}{{.args}}{{end}}"
+          method: "HTTP_METHOD_GET"

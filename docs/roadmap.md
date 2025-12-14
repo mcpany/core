@@ -46,6 +46,7 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## High Priority (Next 1-3 Months)
 
+- [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
 - [ ] **Secrets Management**: Secure handling of sensitive data (API keys, passwords).
 - [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.

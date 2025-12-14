@@ -24,6 +24,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -174,7 +175,6 @@ func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Ch
 	}
 }
 
-
 func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
 	if hc == nil {
 		return checkConnection(address)
@@ -323,8 +323,6 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	}
 }
 
-
-
 func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	return health.Check{
 		Name: name,
@@ -341,10 +339,38 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 }
 
 func checkConnection(address string) error {
-	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
+	var target string
+	if strings.Contains(address, "://") {
+		u, err := url.Parse(address)
+		if err != nil {
+			return fmt.Errorf("failed to parse address %s: %w", address, err)
+		}
+		host := u.Hostname()
+		port := u.Port()
+		if port == "" {
+			if u.Scheme == "https" {
+				port = "443"
+			} else {
+				port = "80"
+			}
+		}
+		target = net.JoinHostPort(host, port)
+	} else {
+		// If no scheme, try to parse as host:port. If no port, assume 80.
+		host, port, err := net.SplitHostPort(address)
+		if err != nil {
+			// If SplitHostPort fails, it means no port was specified.
+			// Assume it's just a hostname and default to port 80.
+			host = address
+			port = "80"
+		}
+		target = net.JoinHostPort(host, port)
+	}
+
+	conn, err := net.DialTimeout("tcp", target, 5*time.Second)
 	if err != nil {
-		logging.GetLogger().Error("checkConnection failed", "address", address, "error", err)
-		return fmt.Errorf("failed to connect to address %s: %w", address, err)
+		logging.GetLogger().Error("checkConnection failed", "address", target, "error", err)
+		return fmt.Errorf("failed to connect to address %s: %w", target, err)
 	}
 	defer func() { _ = conn.Close() }()
 	return nil
