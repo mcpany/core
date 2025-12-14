@@ -619,6 +619,22 @@ upstream_authentication:
     scopes: "read:data write:data"
 ```
 
+##### Use Case and Example with Vault
+
+Authenticate with an upstream service using an API key stored in HashiCorp Vault.
+
+```yaml
+upstream_authentication:
+  api_key:
+    header_name: "X-API-Key"
+    api_key:
+      vault:
+        address: "https://vault.example.com"
+        token: "s.1234567890abcdef"
+        path: "secret/data/my-app"
+        key: "api_key"
+```
+
 ##### `UpstreamAPIKeyAuth`
 
 | Field         | Type          | Description                                  |
@@ -658,6 +674,16 @@ The `SecretValue` message provides a secure way to manage sensitive information 
 | `environment_variable` | `string`        | The name of an environment variable containing the secret.     |
 | `file_path`            | `string`        | The path to a file containing the secret.                      |
 | `remote_content`       | `RemoteContent` | Fetches the secret from a remote URL.                          |
+| `vault`                | `VaultSecret`   | Fetches the secret from a HashiCorp Vault instance.            |
+
+##### `VaultSecret`
+
+| Field     | Type     | Description                                                          |
+| --------- | -------- | -------------------------------------------------------------------- |
+| `address` | `string` | The address of the Vault server (e.g., "https://vault.example.com"). |
+| `token`   | `string` | The token to authenticate with Vault.                                |
+| `path`    | `string` | The path to the secret in Vault (e.g., "secret/data/my-app/db").     |
+| `key`     | `string` | The key of the secret to retrieve from the path.                     |
 
 ### TLS Configuration (`TLSConfig`)
 
