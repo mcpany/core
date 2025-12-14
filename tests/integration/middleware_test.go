@@ -35,7 +35,7 @@ import (
 func TestCacheMiddleware_CacheHit(t *testing.T) {
 	t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = fmt.Fprintln(w, `{"status": "ok"}`)
@@ -91,7 +91,7 @@ upstream_services:
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
 	t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = fmt.Fprintln(w, `{"status": "ok"}`)

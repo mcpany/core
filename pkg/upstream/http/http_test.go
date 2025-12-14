@@ -96,7 +96,7 @@ func TestHttpMethodToString(t *testing.T) {
 
 func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 	// Create a test HTTPS server with a self-signed certificate
-	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("OK")) // This implicitly sets status to 200 OK if not already set
 	}))
 	defer server.Close()
@@ -727,7 +727,7 @@ func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockToolManager) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *mockToolManager) CallTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, errors.New("not implemented")
 }
 

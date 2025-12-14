@@ -74,7 +74,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
@@ -192,7 +192,7 @@ func (u *Upstream) Register(
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
 func (u *Upstream) createAndRegisterGRPCTools(
-	ctx context.Context,
+	_ context.Context,
 	serviceID string,
 	parsedData *protobufparser.ParsedMcpAnnotations,
 	tm tool.ManagerInterface,
@@ -361,7 +361,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 }
 
 func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
-	ctx context.Context,
+	_ context.Context,
 	serviceID string,
 	tm tool.ManagerInterface,
 	resourceManager resource.ManagerInterface,
@@ -554,7 +554,7 @@ func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (pr
 }
 
 func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
-	ctx context.Context,
+	_ context.Context,
 	serviceID string,
 	tm tool.ManagerInterface,
 	_ resource.ManagerInterface,
@@ -644,7 +644,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 }
 
 func (u *Upstream) createAndRegisterPromptsFromConfig(
-	ctx context.Context,
+	_ context.Context,
 	serviceID string,
 	promptManager prompt.ManagerInterface,
 	isReload bool,

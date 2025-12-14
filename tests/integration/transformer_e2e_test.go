@@ -125,7 +125,7 @@ func callTool(t *testing.T, serverInfo *MCPANYTestServerInfo, toolName string) m
 		return resp.StatusCode == http.StatusOK
 	}, 10*time.Second, 250*time.Millisecond, "Failed to get a successful response from mcpany for tool %s", toolName)
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	var result map[string]any
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	require.NoError(t, err)

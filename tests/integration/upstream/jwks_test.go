@@ -46,7 +46,7 @@ func TestJwksSigner(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotEmpty(t, tokenString)
 
-		token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
 			return signer.key.Public(), nil
 		})
 		require.NoError(t, err)

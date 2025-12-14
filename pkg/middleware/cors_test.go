@@ -31,7 +31,7 @@ func TestCORSMiddleware(t *testing.T) {
 		mw := middleware.CORSMiddleware()
 
 		var nextCalled bool
-		nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 			nextCalled = true
 			return &mcp.CallToolResult{
 				Content: []mcp.Content{

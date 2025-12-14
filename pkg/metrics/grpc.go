@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package metrics provides gRPC metrics interception and reporting.
 package metrics
 
 import (

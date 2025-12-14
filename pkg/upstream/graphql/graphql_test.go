@@ -34,7 +34,7 @@ import (
 
 func TestGraphQLUpstream_Register(t *testing.T) {
 	// Create a mock GraphQL server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
 			"data": map[string]interface{}{
 				"__schema": map[string]interface{}{
@@ -155,7 +155,7 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 
 func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	// Create a mock GraphQL server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
 			"data": map[string]interface{}{
 				"__schema": map[string]interface{}{
@@ -310,7 +310,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 
 func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T) {
 	// Create a mock GraphQL server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
 	defer server.Close()
@@ -412,7 +412,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 
 func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 	// Create a mock GraphQL server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
 			"data": map[string]interface{}{
 				"user": map[string]interface{}{
@@ -459,7 +459,7 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 
 func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 	// Create a mock GraphQL server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
 			"data": map[string]interface{}{
 				"createUser": map[string]interface{}{

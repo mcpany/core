@@ -70,7 +70,7 @@ func newMockOAuth2Server(t *testing.T) *mockOAuth2Server {
 	return server
 }
 
-func (s *mockOAuth2Server) handleWellKnown(w http.ResponseWriter, r *http.Request) {
+func (s *mockOAuth2Server) handleWellKnown(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"issuer":                                s.issuer,
@@ -122,7 +122,7 @@ func (s *mockOAuth2Server) handleToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *mockOAuth2Server) handleJWKS(w http.ResponseWriter, r *http.Request) {
+func (s *mockOAuth2Server) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(s.signer.jwks())
 	if err != nil {
@@ -176,7 +176,7 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const echoServiceID = "e2e_http_oauth2_echo"
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)
@@ -232,7 +232,7 @@ func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const echoServiceID = "e2e_http_oauth2_echo_invalid"
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)
@@ -256,7 +256,7 @@ func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
 		UpstreamServiceType: "http",
 		BuildUpstream:       framework.BuildHTTPEchoServer,
 		RegisterUpstream:    framework.RegisterHTTPEchoService,
-		StartMCPANYServer: func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo {
+		StartMCPANYServer: func(t *testing.T, _ string, _ ...string) *integration.MCPANYTestServerInfo {
 			return buildMCPANYAuthedServer(t, oauth2Server.issuer, "test-audience")
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
@@ -279,7 +279,7 @@ func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
 			testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 			cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint, HTTPClient: httpClient}, nil)
 			require.NoError(t, err)
-			defer cs.Close()
+			defer func() { _ = cs.Close() }()
 
 			const echoServiceID = "e2e_http_echo"
 			serviceID, _ := util.SanitizeServiceName(echoServiceID)

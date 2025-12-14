@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package resource provides resource management functionality.
 package resource
 
 import (
@@ -115,6 +116,6 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 }
 
 // Subscribe is not yet implemented for dynamic resources.
-func (r *DynamicResource) Subscribe(ctx context.Context) error {
+func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

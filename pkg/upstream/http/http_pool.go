@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package http
+package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 
 import (
 	"context"
@@ -44,7 +44,7 @@ var NewHTTPPool = func(
 	minSize, maxSize, idleTimeout int,
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HTTPClientWrapper], error) {
-	factory := func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		tlsConfig := &tls.Config{
 			MinVersion:         tls.VersionTLS12,
 			InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec

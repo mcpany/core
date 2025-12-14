@@ -44,7 +44,7 @@ func createTempConfigFile(t *testing.T, content string) string {
 func TestLoadServices_ValidConfigs(t *testing.T) {
 	t.Run("Load from URL", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = w.Write([]byte(`
 upstream_services: {
 	name: "http-svc-from-url"
@@ -76,7 +76,7 @@ upstream_services: {
 
 	t.Run("Load from URL with 404 error", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 		defer server.Close()
@@ -95,7 +95,7 @@ upstream_services: {
 
 	t.Run("Load from URL with malformed content", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = w.Write([]byte(`
 upstream_services: {
 	name: "http-svc-from-url"
@@ -119,7 +119,7 @@ upstream_services: {
 
 	t.Run("Load from URL with response larger than 1MB", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Length", "1048577")
 			_, _ = w.Write(make([]byte, 1048577))
 		}))

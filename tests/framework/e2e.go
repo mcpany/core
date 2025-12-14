@@ -255,24 +255,24 @@ func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.Registr
 }
 
 // BuildStdioServer builds the stdio server (nop).
-func BuildStdioServer(t *testing.T) *integration.ManagedProcess {
+func BuildStdioServer(_ *testing.T) *integration.ManagedProcess {
 	return nil
 }
 
 // RegisterStdioService registers the stdio service.
-func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 	const serviceID = "e2e_everything_server_stdio"
 	serviceStdioEndpoint := "npx @modelcontextprotocol/server-everything stdio"
 	integration.RegisterStdioMCPService(t, registrationClient, serviceID, serviceStdioEndpoint, true)
 }
 
 // BuildStdioDockerServer builds the stdio docker server (nop).
-func BuildStdioDockerServer(t *testing.T) *integration.ManagedProcess {
+func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 	return nil
 }
 
 // RegisterStdioDockerService registers the stdio docker service.
-func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
+func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 	const serviceID = "e2e-cowsay-server"
 	command := "python3"
 	args := []string{"-u", "main.py", "--mcp-stdio"}

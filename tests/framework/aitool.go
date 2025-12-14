@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package framework provides testing framework utilities.
 package framework
 
 import (

@@ -73,7 +73,8 @@ func isSourceFile(path string) bool {
 }
 
 func processFile(path string) {
-	content, err := os.ReadFile(path) //nolint:gosec // build tool
+
+	content, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Failed to read %s: %v\n", path, err)
 		return

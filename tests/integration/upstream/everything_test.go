@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package upstream contains integration tests for upstream services.
 package upstream
 
 import (

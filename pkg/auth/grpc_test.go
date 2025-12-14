@@ -72,7 +72,7 @@ func TestPerRPCCredentials_GetRequestMetadata(t *testing.T) {
 	t.Run("AuthenticatorError", func(t *testing.T) {
 		expectedErr := fmt.Errorf("authentication failed")
 		mockAuth := &MockUpstreamAuthenticator{
-			AuthenticateFunc: func(r *http.Request) error {
+			AuthenticateFunc: func(_ *http.Request) error {
 				return expectedErr
 			},
 		}

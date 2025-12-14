@@ -25,7 +25,7 @@ import (
 	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
-	"github.com/puzpuzpuz/xsync/v4"
+	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
 // Bus defines the interface for a generic, type-safe event bus that facilitates

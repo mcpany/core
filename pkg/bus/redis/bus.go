@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package redis provides a Redis-backed implementation of the bus interface.
 package redis
 
 import (

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Package factory provides upstream factory functionality.
 package factory
 
 import (

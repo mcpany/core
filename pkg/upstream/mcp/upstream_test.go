@@ -90,7 +90,7 @@ func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) 
 
 func (m *mockResourceManager) OnListChanged(_ func()) {}
 
-func (m *mockResourceManager) Subscribe(ctx context.Context, uri string) error {
+func (m *mockResourceManager) Subscribe(_ context.Context, _ string) error {
 	return nil
 }
 

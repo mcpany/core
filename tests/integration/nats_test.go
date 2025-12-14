@@ -27,6 +27,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const testMessage = "hello"
+
+
 func TestNatsBus_EmbeddedServer(t *testing.T) {
 	serverInfo := StartInProcessMCPANYServer(t, "embedded-nats")
 	defer serverInfo.CleanupFunc()
@@ -45,13 +48,13 @@ func TestNatsBus_EmbeddedServer(t *testing.T) {
 	})
 	defer unsubscribe()
 
-	err = bus.Publish(context.Background(), "test-topic", "hello")
+	err = bus.Publish(context.Background(), "test-topic", testMessage)
 	assert.NoError(t, err)
 
 	assert.Eventually(t, func() bool {
 		mu.Lock()
 		defer mu.Unlock()
-		return receivedMsg == "hello"
+		return receivedMsg == testMessage
 	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
 }
 
@@ -74,12 +77,12 @@ func TestNatsBus_ExternalServer(t *testing.T) {
 	})
 	defer unsubscribe()
 
-	err = bus.Publish(context.Background(), "test-topic", "hello")
+	err = bus.Publish(context.Background(), "test-topic", testMessage)
 	assert.NoError(t, err)
 
 	assert.Eventually(t, func() bool {
 		mu.Lock()
 		defer mu.Unlock()
-		return receivedMsg == "hello"
+		return receivedMsg == testMessage
 	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
 }

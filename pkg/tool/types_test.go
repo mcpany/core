@@ -82,7 +82,7 @@ func TestHTTPTool_Execute_PoolError(t *testing.T) {
 
 func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
@@ -96,7 +96,7 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 
 func TestHTTPTool_Execute_BadURL(t *testing.T) {
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
@@ -114,7 +114,7 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
@@ -131,14 +131,14 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, `{"key":"value"}`)
 	}))
 	defer server.Close()
 
 	poolManager := pool.NewManager()
-	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(ctx context.Context) (*client.HTTPClientWrapper, error) {
+	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
 	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
@@ -184,7 +184,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -200,7 +200,7 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, `{"key":"value"}`)
 	}))
@@ -278,7 +278,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	mockConn.On("Invoke", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 	mockConn.On("GetState").Return(connectivity.Ready)
 
-	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(ctx context.Context) (*client.GrpcClientWrapper, error) {
+	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}), nil
 	}, 1, 1, 0, false)
 	poolManager.Register("grpc-service", grpcPool)

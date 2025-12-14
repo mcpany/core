@@ -14,6 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main_test tests the server exit codes.
 package main
 
 import (
@@ -33,7 +34,7 @@ import (
 type mockFailingRunner struct{}
 
 func (m *mockFailingRunner) Run(
-	ctx context.Context,
+	_ context.Context,
 	_ afero.Fs,
 	_ bool,
 	_ string,

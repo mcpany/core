@@ -79,13 +79,14 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 	testCase := &framework.E2ETestCase{
 		Name:                "HTTP IP Info Example",
 		UpstreamServiceType: "http",
-		BuildUpstream: func(t *testing.T) *integration.ManagedProcess {
-			// The example starts the server directly, so we don't need to build it here.
-			return &integration.ManagedProcess{}
+		BuildUpstream: func(_ *testing.T) *integration.ManagedProcess {
+			// This test assumes an external service is already running or mocked at the URL.
+			// For the E2E framework, we might need a dummy process or nil if using external URL.
+			return nil
 		},
-		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
+		GenerateUpstreamConfig: func(_ string) string {
 			configPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpany_config.yaml")
-			content, err := os.ReadFile(configPath) //nolint:gosec // test
+			content, err := os.ReadFile(configPath)
 			require.NoError(t, err)
 			return string(content)
 		},
