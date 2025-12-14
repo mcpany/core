@@ -123,7 +123,7 @@ const (
 	// ActionAllow indicates that the action is allowed.
 	ActionAllow Action = 0
 	// ActionDeny indicates that the action is denied.
-	ActionDeny  Action = 1
+	ActionDeny Action = 1
 )
 
 // PreCallHook defines the interface for hooks executed before a tool call.
@@ -183,6 +183,7 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
@@ -281,6 +282,7 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 //nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
@@ -388,13 +390,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if contentType != "" {
 			httpReq.Header.Set("Content-Type", contentType)
 		}
-		httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
+		// httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
 		httpReq.Header.Set("Accept", "*/*")
 
 		if t.authenticator != nil {
 			if err := t.authenticator.Authenticate(httpReq); err != nil {
 				return &resilience.PermanentError{Err: fmt.Errorf("failed to authenticate request: %w", err)}
 			}
+			logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
+		} else {
+			logging.GetLogger().Debug("No authenticator configured")
 		}
 
 		if method == http.MethodGet || method == http.MethodDelete {
@@ -413,7 +418,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				logging.GetLogger().Debug("sending http request", "request", string(reqDump))
 			}
 		}
-
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
@@ -532,6 +536,7 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -667,6 +672,7 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // sends the request, and processes the response, applying transformations as
 // needed.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -843,6 +849,7 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -983,6 +990,7 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)

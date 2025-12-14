@@ -20,7 +20,6 @@ upstream_services:
     address: "https://gibs.earthdata.nasa.gov"
     authentication:
       token:
-
         plain_text: "${NASA_OPEN_API_KEY}"
     calls:
     - endpoint_path: "/wmts/epsg4326/best/{{LayerIdentifier}}/default/{{Time}}/{{TileMatrixSet}}/{{TileMatrix}}/{{TileRow}}/{{TileCol}}.jpg"
