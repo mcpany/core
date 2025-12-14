@@ -16,32 +16,34 @@
 
 upstream_services:
 - name: trello
+  upstream_authentication:
+    bearer_token:
+      token:
+        plain_text: "${TRELLO_API_TOKEN}"
   http_service:
     address: "https://api.trello.com"
-    authentication:
-      token:
-
-        plain_text: "${TRELLO_API_TOKEN}"
-    calls:
-    - endpoint_path: "/1/members/me/boards?key=${TRELLO_API_KEY}"
-      schema:
-        name: "get_boards"
-        input_schema:
+    tools:
+    - name: "get_boards"
+      call_id: "get_boards"
+      input_schema:
+        type: "object"
+        properties: {}
+      output_schema:
+        type: "array"
+        items:
           type: "object"
-          properties: {}
-        output_schema:
-          type: "array"
-          items:
-            type: "object"
-            properties:
-              id:
-                type: "string"
-              name:
-                type: "string"
-              desc:
-                type: "string"
-              closed:
-                type: "boolean"
-              url:
-                type: "string"
-      method: "HTTP_METHOD_GET"
+          properties:
+            id:
+              type: "string"
+            name:
+              type: "string"
+            desc:
+              type: "string"
+            closed:
+              type: "boolean"
+            url:
+              type: "string"
+    calls:
+      get_boards:
+        endpoint_path: "/1/members/me/boards?key=${TRELLO_API_KEY}"
+        method: "HTTP_METHOD_GET"

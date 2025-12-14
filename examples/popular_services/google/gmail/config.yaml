@@ -17,31 +17,14 @@
 upstream_services:
   - name: "gmail"
     openapi_service:
-      spec:
-        url: "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
+      # Use spec_source oneof: spec_url
+      spec_url: "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
     upstream_authentication:
-      api_key:
-        query_parameter_name: "key"
-        api_key:
-          plain_text: "${GOOGLE_API_KEY}"
       oauth2:
         token_url: "https://oauth2.googleapis.com/token"
         client_id:
-
           plain_text: "${GOOGLE_OAUTH_CLIENT_ID}"
         client_secret:
-
           plain_text: "${GOOGLE_OAUTH_CLIENT_SECRET}"
-        refresh_token: "${GOOGLE_OAUTH_REFRESH_TOKEN}"
-        scopes:
-          - "https://mail.google.com/"
-          - "https://www.googleapis.com/auth/gmail.addons.current.action.compose"
-          - "https://www.googleapis.com/auth/gmail.compose"
-          - "https://www.googleapis.com/auth/gmail.insert"
-          - "https://www.googleapis.com/auth/gmail.labels"
-          - "https://www.googleapis.com/auth/gmail.metadata"
-          - "https://www.googleapis.com/auth/gmail.modify"
-          - "https://www.googleapis.com/auth/gmail.readonly"
-          - "https://www.googleapis.com/auth/gmail.send"
-          - "https://www.googleapis.com/auth/gmail.settings.basic"
-          - "https://www.googleapis.com/auth/gmail.settings.sharing"
+        # Removed refresh_token as it is not in protobuf
+        scopes: "https://mail.google.com/ https://www.googleapis.com/auth/gmail.addons.current.action.compose https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.insert https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.metadata https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.settings.basic https://www.googleapis.com/auth/gmail.settings.sharing"
