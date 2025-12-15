@@ -69,8 +69,6 @@ func newMockGRPCHealthServer(
 	return s, lis
 }
 
-
-
 func TestNewChecker(t *testing.T) {
 	ctx := context.Background()
 

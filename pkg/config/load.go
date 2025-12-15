@@ -23,6 +23,7 @@ import (
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // LoadServices loads, validates, and processes the MCP Any server configuration
@@ -56,6 +57,32 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		return nil, fmt.Errorf("failed to load and merge services: %w", err)
 	}
 	fileConfig.SetUpstreamServices(services)
+
+	// If no users are configured, create a default user that has access to all profiles
+	if len(fileConfig.GetUsers()) == 0 {
+		log.Info("No users configured, creating default user")
+		allProfileIDs := make(map[string]bool)
+		for _, svc := range fileConfig.GetUpstreamServices() {
+			for _, p := range svc.GetProfiles() {
+				if p.GetId() != "" {
+					allProfileIDs[p.GetId()] = true
+				}
+			}
+		}
+		var profileIDs []string
+		for id := range allProfileIDs {
+			profileIDs = append(profileIDs, id)
+		}
+
+		apiKey := GlobalSettings().APIKey()
+		fileConfig.Users = []*configv1.User{
+			{
+				Id:         proto.String("default"),
+				ApiKey:     proto.String(apiKey),
+				ProfileIds: profileIDs,
+			},
+		}
+	}
 
 	var bt BinaryType
 	switch binaryType {

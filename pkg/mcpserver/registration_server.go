@@ -178,7 +178,6 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 
 // PingResponse is a placeholder for a ping method.
 
-
 // ListServices lists all registered services.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()

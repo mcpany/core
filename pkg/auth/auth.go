@@ -26,6 +26,37 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
+type authContextKey string
+
+const (
+	// UserContextKey is the context key for the user ID.
+	UserContextKey authContextKey = "user_id"
+	// ProfileIDContextKey is the context key for the profile ID.
+	ProfileIDContextKey authContextKey = "profile_id"
+)
+
+// ContextWithUser returns a new context with the user ID.
+func ContextWithUser(ctx context.Context, userID string) context.Context {
+	return context.WithValue(ctx, UserContextKey, userID)
+}
+
+// UserFromContext returns the user ID from the context.
+func UserFromContext(ctx context.Context) (string, bool) {
+	val, ok := ctx.Value(UserContextKey).(string)
+	return val, ok
+}
+
+// ContextWithProfileID returns a new context with the profile ID.
+func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
+	return context.WithValue(ctx, ProfileIDContextKey, profileID)
+}
+
+// ProfileIDFromContext returns the profile ID from the context.
+func ProfileIDFromContext(ctx context.Context) (string, bool) {
+	val, ok := ctx.Value(ProfileIDContextKey).(string)
+	return val, ok
+}
+
 // Authenticator defines the interface for authentication strategies. Each
 // implementation is responsible for authenticating an incoming request and
 // returning a context, which may be modified to include authentication-related

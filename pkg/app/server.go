@@ -18,8 +18,10 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"crypto/subtle"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -328,7 +330,7 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers())
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -494,12 +496,24 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
+// runServerMode runs the server in the standard HTTP and gRPC server mode. It
+// starts the HTTP server for JSON-RPC and the gRPC server for service
+// registration, and handles graceful shutdown.
+//
+// ctx is the context for managing the server's lifecycle.
+// mcpSrv is the MCP server instance.
+// bus is the message bus for inter-component communication.
+// jsonrpcPort is the port for the JSON-RPC server.
+// grpcPort is the port for the gRPC registration server.
+//
+// It returns an error if any of the servers fail to start or run.
 func (a *Application) runServerMode(
 	ctx context.Context,
 	mcpSrv *mcpserver.Server,
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
+	users []*config_v1.User,
 ) error {
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -526,8 +540,245 @@ func (a *Application) runServerMode(
 		})
 	}
 
+	userMap := make(map[string]*config_v1.User)
+	for _, u := range users {
+		userMap[u.GetId()] = u
+	}
+
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
+
+	// Multi-user handler
+	// pattern: /mcp/u/{uid}/profile/{profile_id}
+	// We use a prefix match via stripping.
+	// NOTE: We manually handle the path parsing because we support subpaths like /sse or /messages
+	mux.HandleFunc("/mcp/u/", func(w http.ResponseWriter, r *http.Request) {
+		// Expected path: /mcp/u/{uid}/profile/{profileId}/...
+		parts := strings.Split(r.URL.Path, "/")
+		// parts[0] = ""
+		// parts[1] = "mcp"
+		// parts[2] = "u"
+		// parts[3] = {uid}
+		// parts[4] = "profile"
+		// parts[5] = {profileId}
+		if len(parts) < 6 || parts[4] != "profile" {
+			http.NotFound(w, r)
+			return
+		}
+		uid := parts[3]
+		profileID := parts[5]
+
+		user, ok := userMap[uid]
+		if !ok {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+
+		// Authentication Logic with Priority:
+		// 1. Profile Authentication
+		// 2. User Authentication
+		// 3. Global Authentication
+		// If a higher priority mechanism is configured, it MUST be satisfied. Lower priority checks are skipped.
+
+		// Resolve the specific profile config from the user's allowed profiles
+		// We need to find the profile config to check if it has an API Key.
+		// The user object only has profile IDs.
+		// We need to look up the profile definition.
+		// Profile definitions are inside UpstreamServiceConfigs.
+		// BUT, we are in the multi-user handler which routes to *any* service.
+		// Wait, the profile is conceptual here?
+		// The routing is /mcp/u/{uid}/profile/{profileId}
+		// The `profileId` corresponds to a profile defined in ONE OR MORE upstream services.
+		// Does a "Profile" exist independently?
+		// In `config.proto`, `UpstreamServiceConfig` has `repeated Profile profiles`.
+		// `Profile` has `id` and `api_key`.
+		// Since a profile ID can be shared across services (e.g. "prod"), which `api_key` do we use?
+		// If multiple services define "prod", do they share the same API key?
+		// Assumption: If "prod" is defined in multiple places, they should logically share the key or we pick one.
+		// Better approach: We iterate over all services to find the profile definition.
+
+		var profileAPIKey string
+		// We need access to the full config or tool manager to look up profiles.
+		// mcpSrv.ListTools() gives us tools, but we need service configs.
+		// mcpSrv.GetServiceInfo(id) gives us info.
+		// The server doesn't have a global index of profiles.
+		// We can iterate over all services in the ToolManager?
+		// Or we can rely on `mcpSrv.ServiceRegistry()`?
+		// `mcpSrv` is `*mcpserver.Server`. It has `ServiceRegistry()`.
+
+		// Let's iterate all registered services to find the profile key.
+		// Optimisation: build a map of profileID -> apiKey?
+		// For now, linear scan is fine as this is a handler change.
+
+		services, err := mcpSrv.ServiceRegistry().GetAllServices()
+		if err != nil {
+			logging.GetLogger().Error("Failed to list services for profile auth check", "error", err)
+		} else {
+			for _, svc := range services {
+				// svc is *config.UpstreamServiceConfig
+				for _, p := range svc.GetProfiles() {
+					if p.GetId() == profileID && p.GetApiKey() != "" {
+						profileAPIKey = p.GetApiKey()
+						break
+					}
+				}
+				if profileAPIKey != "" {
+					break
+				}
+			}
+		}
+
+		requestKey := r.Header.Get("X-API-Key")
+		if requestKey == "" {
+			authHeader := r.Header.Get("Authorization")
+			if strings.HasPrefix(authHeader, "Bearer ") {
+				requestKey = strings.TrimPrefix(authHeader, "Bearer ")
+			}
+		}
+
+		isAuthenticated := false
+
+		// 1. Profile Auth
+		if profileAPIKey != "" {
+			if subtle.ConstantTimeCompare([]byte(requestKey), []byte(profileAPIKey)) == 1 {
+				isAuthenticated = true
+			} else {
+				// Profile auth configured but failed
+				http.Error(w, "Unauthorized (Profile)", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			// 2. User Auth
+			if user.HasApiKey() {
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(user.GetApiKey())) == 1 {
+					isAuthenticated = true
+				} else {
+					// User auth configured but failed
+					http.Error(w, "Unauthorized (User)", http.StatusUnauthorized)
+					return
+				}
+			} else {
+				// 3. Global Auth
+				if apiKey != "" {
+					if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
+						isAuthenticated = true
+					} else {
+						// Global auth configured but failed
+						http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
+						return
+					}
+				} else {
+					// No auth configured
+					isAuthenticated = true
+				}
+			}
+		}
+
+		if !isAuthenticated {
+			// Should be unreachable if logic covers all cases, but safety net
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Profile access check
+		hasAccess := false
+		for _, pid := range user.GetProfileIds() {
+			if pid == profileID {
+				hasAccess = true
+				break
+			}
+		}
+		if !hasAccess {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		// Inject context
+		ctx := auth.ContextWithUser(r.Context(), uid)
+		ctx = auth.ContextWithProfileID(ctx, profileID)
+
+		// Strip the prefix so the underlying handler sees the relative path
+		prefix := fmt.Sprintf("/mcp/u/%s/profile/%s", uid, profileID)
+		delegate := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			logging.GetLogger().Info("Delegate Handler", "method", r.Method, "path", r.URL.Path)
+			// Support stateless JSON-RPC for simple clients
+			if r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "") {
+				var req struct {
+					JSONRPC string          `json:"jsonrpc"`
+					ID      any             `json:"id"`
+					Method  string          `json:"method"`
+					Params  json.RawMessage `json:"params"`
+				}
+				body, _ := io.ReadAll(r.Body)
+				r.Body = io.NopCloser(bytes.NewBuffer(body)) // Restore body just in case
+				if err := json.Unmarshal(body, &req); err != nil {
+					http.Error(w, "Invalid JSON", http.StatusBadRequest)
+					return
+				}
+
+				if req.Method == "tools/list" {
+					tools := mcpSrv.ListTools()
+					var responseTools []map[string]any
+					for _, t := range tools {
+						v1Tool := t.Tool()
+						serviceID := v1Tool.GetServiceId()
+						info, ok := mcpSrv.GetServiceInfo(serviceID)
+						if !ok {
+							continue
+						}
+
+						// Check profiles
+						allowed := false
+						if len(info.Config.GetProfiles()) == 0 {
+							allowed = true
+						} else {
+							// Check if current profileID matches any allowed profile
+							for _, p := range info.Config.GetProfiles() {
+								if p.GetId() == profileID {
+									allowed = true
+									break
+								}
+							}
+						}
+
+						if !allowed {
+							continue
+						}
+
+						responseTools = append(responseTools, map[string]any{
+							"name":        v1Tool.GetName(),
+							"description": v1Tool.GetDescription(),
+						})
+					}
+
+					// Ensure we return an empty list if no tools are found/allowed, not nil?
+					// JSON encoding nil slice as null is usually fine, but empty list [] is better for clients.
+					if responseTools == nil {
+						responseTools = []map[string]any{}
+					}
+
+					resp := map[string]any{
+						"jsonrpc": "2.0",
+						"id":      req.ID,
+						"result": map[string]any{
+							"tools": responseTools,
+						},
+					}
+					w.Header().Set("Content-Type", "application/json")
+					_ = json.NewEncoder(w).Encode(resp)
+					return
+				}
+
+				// Add logging to see unsupported methods
+				logging.GetLogger().Info("Unsupported stateless method", "method", req.Method)
+				http.Error(w, "Method not supported", http.StatusMethodNotAllowed)
+				return
+			}
+			httpHandler.ServeHTTP(w, r)
+		})
+		http.StripPrefix(prefix, delegate).ServeHTTP(w, r.WithContext(ctx))
+	})
+
 	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
