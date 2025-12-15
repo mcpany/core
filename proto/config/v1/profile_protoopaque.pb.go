@@ -39,12 +39,12 @@ const (
 )
 
 type Profile struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name   string                 `protobuf:"bytes,1,opt,name=name,proto3"`
-	xxx_hidden_Id     string                 `protobuf:"bytes,2,opt,name=id,proto3"`
-	xxx_hidden_ApiKey string                 `protobuf:"bytes,3,opt,name=api_key,proto3"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name           string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	xxx_hidden_Id             string                 `protobuf:"bytes,2,opt,name=id,proto3"`
+	xxx_hidden_Authentication *AuthenticationConfig  `protobuf:"bytes,3,opt,name=authentication,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Profile) Reset() {
@@ -86,11 +86,11 @@ func (x *Profile) GetId() string {
 	return ""
 }
 
-func (x *Profile) GetApiKey() string {
+func (x *Profile) GetAuthentication() *AuthenticationConfig {
 	if x != nil {
-		return x.xxx_hidden_ApiKey
+		return x.xxx_hidden_Authentication
 	}
-	return ""
+	return nil
 }
 
 func (x *Profile) SetName(v string) {
@@ -101,8 +101,19 @@ func (x *Profile) SetId(v string) {
 	x.xxx_hidden_Id = v
 }
 
-func (x *Profile) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = v
+func (x *Profile) SetAuthentication(v *AuthenticationConfig) {
+	x.xxx_hidden_Authentication = v
+}
+
+func (x *Profile) HasAuthentication() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Authentication != nil
+}
+
+func (x *Profile) ClearAuthentication() {
+	x.xxx_hidden_Authentication = nil
 }
 
 type Profile_builder struct {
@@ -112,8 +123,8 @@ type Profile_builder struct {
 	Name string
 	// The unique ID of the profile (UUID).
 	Id string
-	// The API key used for authentication.
-	ApiKey string
+	// The authentication configuration for the profile.
+	Authentication *AuthenticationConfig
 }
 
 func (b0 Profile_builder) Build() *Profile {
@@ -122,7 +133,7 @@ func (b0 Profile_builder) Build() *Profile {
 	_, _ = b, x
 	x.xxx_hidden_Name = b.Name
 	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_ApiKey = b.ApiKey
+	x.xxx_hidden_Authentication = b.Authentication
 	return m0
 }
 
@@ -130,22 +141,24 @@ var File_proto_config_v1_profile_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\"G\n" +
+	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"}\n" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +
-	"\aapi_key\x18\x03 \x01(\tR\aapi_keyB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x02id\x18\x02 \x01(\tR\x02id\x12N\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthenticationB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
 
 var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_profile_proto_goTypes = []any{
-	(*Profile)(nil), // 0: mcpany.config.v1.Profile
+	(*Profile)(nil),              // 0: mcpany.config.v1.Profile
+	(*AuthenticationConfig)(nil), // 1: mcpany.config.v1.AuthenticationConfig
 }
 var file_proto_config_v1_profile_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_profile_proto_init() }
@@ -153,6 +166,7 @@ func file_proto_config_v1_profile_proto_init() {
 	if File_proto_config_v1_profile_proto != nil {
 		return
 	}
+	file_proto_config_v1_auth_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

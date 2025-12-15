@@ -209,10 +209,10 @@ func createE2EBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "e2e_test.mcpb")
 	file, err := os.Create(bundlePath)
 	require.NoError(t, err)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	w := zip.NewWriter(file)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
 	// Add manifest.json
 	f, err := w.Create("manifest.json")

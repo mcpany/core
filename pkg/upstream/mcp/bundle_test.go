@@ -39,10 +39,10 @@ func createTestBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "test.mcpb")
 	file, err := os.Create(bundlePath)
 	require.NoError(t, err)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	w := zip.NewWriter(file)
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
 	manifest := `
 {

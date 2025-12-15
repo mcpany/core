@@ -60,6 +60,8 @@ For a complete list of all available configuration options, please see the [Conf
 ## Ongoing Goals
 
 - [x] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
+  - [x] Standardized `AuthenticationConfig` for Users and Profiles.
+  - [x] Priority-based authentication (Profile > User > Global).
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
 - [ ] **Improve Error Handling**: Enhance error messages and provide more context for debugging.
 

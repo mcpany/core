@@ -841,8 +841,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	args := []string{
 		"run",
-		"--mcp-listen-address", fmt.Sprintf("localhost:%d", jsonrpcPort),
-		"--grpc-port", fmt.Sprintf("localhost:%d", grpcRegPort),
+		"--mcp-listen-address", fmt.Sprintf("127.0.0.1:%d", jsonrpcPort),
+		"--grpc-port", fmt.Sprintf("127.0.0.1:%d", grpcRegPort),
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}

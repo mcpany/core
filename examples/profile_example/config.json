@@ -1,0 +1,40 @@
+{
+  "global_settings": {
+    "log_level": "LOG_LEVEL_DEBUG",
+    "mcp_listen_address": "0.0.0.0:8080"
+  },
+  "users": [
+    {
+      "id": "alice",
+      "authentication": {
+        "api_key": {
+          "param_name": "X-User-Key",
+          "key_value": "alice-secret",
+          "in": "HEADER"
+        }
+      },
+      "profile_ids": ["dev"]
+    }
+  ],
+  "upstream_services": [
+    {
+      "name": "echo-service",
+      "http_service": {
+        "address": "http://localhost:8081"
+      },
+      "profiles": [
+        {
+          "id": "dev",
+          "name": "Development Profile",
+          "authentication": {
+            "api_key": {
+              "param_name": "X-Profile-Key",
+              "key_value": "dev-secret",
+              "in": "HEADER"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
