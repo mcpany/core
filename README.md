@@ -141,7 +141,7 @@ For more complex examples, including gRPC, OpenAPI, and authentication, check ou
 Once the server is running, you can interact with it using its JSON-RPC API.
 
 - For detailed configuration options, see **[Configuration Reference](docs/reference/configuration.md)**.
-- For instructions on how to connect `mcpany` with your favorite AI coding assistant, see the **[Integration Guide](docs/integrations.md)**.
+- For instructions on how to connect `mcpany` with your favorite AI coding assistant (Gemini, Claude Code, VS Code), see the **[Integration Guide](docs/integrations.md)**.
 - For hands-on examples, see the **[Examples](docs/examples.md)**.
 - For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
 

@@ -148,8 +148,42 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
 3. **Configure your AI Assistant:**
    With the port forward running, `mcpany` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
 
+   ````bash
    ```bash
    gemini http add mcpany-k8s http://localhost:50050
-   ```
+   ````
+
+---
+
+## 4. Claude Desktop / Claude Code
+
+To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user) or Claude Code, configure it to run the `mcpany` Docker container.
+
+Add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcpany": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml",
+        "ghcr.io/mcpany/server:latest",
+        "run",
+        "--config-path",
+        "/etc/mcpany/config.yaml"
+      ]
+    }
+  }
+}
+```
+
+> **Note:** Replace `/absolute/path/to/your/config.yaml` with the actual path to your MCP Any configuration file.
+
+This setup ensures Claude launches a fresh `mcpany` container whenever it needs to access your tools.
 
 By following these instructions, you can connect `mcpany` to your favorite AI coding assistant, regardless of how you choose to run it.
