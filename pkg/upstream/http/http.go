@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
@@ -147,7 +148,7 @@ func (u *Upstream) Register(
 		}
 	}
 
-	httpPool, err := NewHTTPPool(maxIdleConnections, maxConnections, idleTimeout, serviceConfig)
+	httpPool, err := NewHTTPPool(maxIdleConnections, maxConnections, time.Duration(idleTimeout)*time.Second, serviceConfig)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceID, err)
 	}

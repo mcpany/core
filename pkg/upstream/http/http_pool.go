@@ -41,7 +41,8 @@ import (
 // It returns a new HTTP client pool or an error if the pool cannot be
 // created.
 var NewHTTPPool = func(
-	minSize, maxSize, idleTimeout int,
+	minSize, maxSize int,
+	idleTimeout time.Duration,
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HTTPClientWrapper], error) {
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
