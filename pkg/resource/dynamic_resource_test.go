@@ -160,6 +160,19 @@ func TestDynamicResource_Read(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to execute tool")
 	})
+
+	t.Run("json marshal error", func(t *testing.T) {
+		mockTool := new(MockTool)
+		// valid map but with a cyclic or unsupported value to trigger json.Marshal error
+		// Using a channel which is not marshalable
+		mapResult := map[string]interface{}{"key": make(chan int)}
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return(mapResult, nil)
+		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
+		dr, _ := NewDynamicResource(def, mockTool)
+		_, err := dr.Read(context.Background())
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to marshal tool result to JSON")
+	})
 }
 
 func TestDynamicResource_Subscribe(t *testing.T) {
@@ -173,4 +186,15 @@ func TestDynamicResource_Subscribe(t *testing.T) {
 	err := dr.Subscribe(context.Background())
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "subscribing to dynamic resources is not yet implemented")
+}
+
+func TestDynamicResource_Service(t *testing.T) {
+	def := configv1.ResourceDefinition_builder{
+		Uri: proto.String("test-uri"),
+	}.Build()
+	mockTool := new(MockTool)
+	mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
+	dr, _ := NewDynamicResource(def, mockTool)
+
+	assert.Equal(t, "test-service", dr.Service())
 }

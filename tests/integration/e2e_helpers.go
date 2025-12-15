@@ -27,6 +27,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"syscall"
@@ -831,18 +832,16 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	t.Logf("Using MCPANY binary from: %s", mcpanyBinary)
 
-	jsonrpcPort := FindFreePort(t)
-	grpcRegPort := FindFreePort(t)
-	for grpcRegPort == jsonrpcPort {
-		grpcRegPort = FindFreePort(t)
-	}
+	// Use port 0 to let the OS assign free ports
+	jsonrpcPortArg := "127.0.0.1:0"
+	grpcRegPortArg := "127.0.0.1:0"
 
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	args := []string{
 		"run",
-		"--mcp-listen-address", fmt.Sprintf("127.0.0.1:%d", jsonrpcPort),
-		"--grpc-port", fmt.Sprintf("127.0.0.1:%d", grpcRegPort),
+		"--mcp-listen-address", jsonrpcPortArg,
+		"--grpc-port", grpcRegPortArg,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
@@ -860,43 +859,39 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
-	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
-	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
+	// Wait for ports to be assigned and logged
+	var jsonrpcPort, grpcRegPort int
 
-	mcpRequestURL := jsonrpcEndpoint + "/mcp"
-	httpClient := &http.Client{Timeout: 2 * time.Second}
+	// Regex patterns to extract ports from logs.
+	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
+	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
+	grpcPortRegex := regexp.MustCompile(`msg="gRPC server listening".*?port=[^:]+:(\d+)`)
 
-	var grpcRegConn *grpc.ClientConn
-	var registrationClient apiv1.RegistrationServiceClient
-
-	if healthCheck {
-		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
-		require.Eventually(t, func() bool {
-			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-			defer cancel()
-			var errDial error
-			grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
-			if errDial != nil {
-				t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
-				return false
+	require.Eventually(t, func() bool {
+		stdout := mcpProcess.StdoutString()
+		if jsonrpcPort == 0 {
+			matches := httpPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				fmt.Sscanf(matches[1], "%d", &jsonrpcPort) //nolint:errcheck
 			}
-			state := grpcRegConn.GetState()
-			if state == connectivity.Ready || state == connectivity.Idle {
-				t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s with state %s", grpcRegEndpoint, state)
-				return true
+		}
+		if grpcRegPort == 0 {
+			matches := grpcPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				fmt.Sscanf(matches[1], "%d", &grpcRegPort) //nolint:errcheck
 			}
-			if !grpcRegConn.WaitForStateChange(ctx, state) {
-				t.Logf("MCPANY gRPC registration endpoint at %s did not transition from %s", grpcRegEndpoint, state)
-				_ = grpcRegConn.Close()
-				return false
-			}
-			t.Logf("Successfully connected to MCPANY gRPC registration endpoint at %s", grpcRegEndpoint)
-			return true
-		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC registration endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", grpcRegEndpoint, mcpProcess.StdoutString(), mcpProcess.StderrString())
+		}
+		// If we are stdio mode, we might not get HTTP port if listen address is not set?
+		// But we set --mcp-listen-address explicitly to 0. So it SHOULD listen.
+		// NOTE: if stdio mode is used, we still pass network flags, and the server runs both stdio and http usually?
+		// Or maybe not? runServerMode vs runStdioMode.
+		// If --stdio is passed, `Run` calls `runStdioModeFunc` which DOES NOT start HTTP server for MCP usually?
+		// But in `runServerMode`, we start HTTP.
+		// Let's check `Run` in `server.go`:
+		// if stdio { return a.runStdioModeFunc(...) }
+		// `runStdioMode` only runs stdio transport. NO HTTP server.
+		// So if --stdio is extracted from extraArgs, we won't get HTTP port log.
 
-		registrationClient = apiv1.NewRegistrationServiceClient(grpcRegConn)
-
-		// Wait for the server to be ready
 		isStdio := false
 		for _, arg := range extraArgs {
 			if arg == "--stdio" {
@@ -904,31 +899,74 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 				break
 			}
 		}
-
 		if isStdio {
-			mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout)
-		} else {
-			// Wait for the HTTP/JSON-RPC endpoint to be ready
-			require.Eventually(t, func() bool {
-				// Use a short timeout for the health check itself
-				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-				defer cancel()
-				req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
-				if err != nil {
-					t.Logf("Failed to create request for health check: %v", err)
-					return false
-				}
-				resp, err := httpClient.Do(req)
-				if err != nil {
-					t.Logf("MCPANY HTTP endpoint at %s not ready: %v", mcpRequestURL, err)
-					return false
-				}
-				defer func() { _ = resp.Body.Close() }()
-				// Any response (even an error like 405 Method Not Allowed) indicates the server is up and listening.
-				t.Logf("MCPANY HTTP endpoint at %s is ready (status: %s)", mcpRequestURL, resp.Status)
-				return true
-			}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint at %s did not become healthy in time.\nFinal Stdout: %s\nFinal Stderr: %s", mcpRequestURL, mcpProcess.StdoutString(), mcpProcess.StderrString())
+			// In stdio mode, we don't expect HTTP/gRPC ports to be logged or relevant for *connecting* via network (except maybe metrics?).
+			return true
 		}
+
+		return jsonrpcPort != 0 && grpcRegPort != 0
+	}, McpAnyServerStartupTimeout, RetryInterval, "Failed to discover bound ports from logs.\nStdout: %s\nStderr: %s", mcpProcess.StdoutString(), mcpProcess.StderrString())
+
+    // If stdio, we might not have ports.
+	jsonrpcEndpoint := ""
+	grpcRegEndpoint := ""
+	mcpRequestURL := ""
+
+	if jsonrpcPort != 0 {
+		jsonrpcEndpoint = fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
+		mcpRequestURL = jsonrpcEndpoint + "/mcp"
+	}
+	if grpcRegPort != 0 {
+		grpcRegEndpoint = fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
+	}
+
+	httpClient := &http.Client{Timeout: 2 * time.Second}
+	var grpcRegConn *grpc.ClientConn
+	var registrationClient apiv1.RegistrationServiceClient
+
+	if healthCheck && jsonrpcPort != 0 { // Only check health if we have a port
+		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
+
+		// Wait for gRPC readiness
+		require.Eventually(t, func() bool {
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			var errDial error
+			grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if errDial != nil {
+				return false
+			}
+			state := grpcRegConn.GetState()
+			if state == connectivity.Ready || state == connectivity.Idle {
+				return true
+			}
+			if !grpcRegConn.WaitForStateChange(ctx, state) {
+				_ = grpcRegConn.Close()
+				return false
+			}
+			return true
+		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY gRPC endpoint %s not healthy.\nStdout: %s", grpcRegEndpoint, mcpProcess.StdoutString())
+
+		registrationClient = apiv1.NewRegistrationServiceClient(grpcRegConn)
+
+		// Wait for HTTP readiness
+		require.Eventually(t, func() bool {
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+			req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
+			if err != nil {
+				return false
+			}
+			resp, err := httpClient.Do(req)
+			if err != nil {
+				return false
+			}
+			defer func() { _ = resp.Body.Close() }()
+			return true
+		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint %s not healthy.", mcpRequestURL)
+	} else if healthCheck {
+	    // stdio mode health check
+	    mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
 	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
@@ -953,6 +991,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		T: t,
 	}
 }
+
 
 // RegisterServiceViaAPI registers a service using the gRPC API.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
