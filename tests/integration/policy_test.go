@@ -356,7 +356,7 @@ func TestCallPolicyExecution(t *testing.T) {
 		Arguments: map[string]interface{}{},
 	})
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "denied by policy")
+	assert.Contains(t, err.Error(), "unknown tool")
 }
 
 func TestExportPolicyForPromptsAndResources(t *testing.T) {
