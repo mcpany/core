@@ -53,9 +53,9 @@ upstream_services:
       stdio_connection:
         command: "%s"
         args: []
-    call_policy:
-      default_action: DENY
-      rules: []
+    call_policies:
+      - default_action: DENY
+        rules: []
 `, mockServerPath)
 	t.Run("DenyAll", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyDenyAll", configDenyAll)
@@ -106,11 +106,11 @@ upstream_services:
       stdio_connection:
         command: "%s"
         args: []
-    call_policy:
-      default_action: ALLOW
-      rules:
-        - action: DENY
-          tool_name_regex: "read_file"
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          - action: DENY
+            name_regex: "read_file"
 `, mockServerPath)
 	t.Run("Filesystem_Policy", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestFs", configFs)

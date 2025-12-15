@@ -158,7 +158,7 @@ func TestDisabledHierarchyConfig(t *testing.T) {
 		}
 
 		// 2. Call Disabled
-		if !strings.Contains(logs, `Skipping disabled call" callID=disabled-call`) {
+		if !strings.Contains(logs, `Skipping blocked tool/call" toolName=disabled-call callID=disabled-call`) {
 			return false
 		}
 		// call-disabled-service should have 0 tools
@@ -172,7 +172,7 @@ func TestDisabledHierarchyConfig(t *testing.T) {
 			return false
 		}
 		// disabled-tool should be skipped
-		if !strings.Contains(logs, `Skipping disabled tool" toolName=disabled-tool`) {
+		if !strings.Contains(logs, `Skipping blocked tool/call" toolName=disabled-tool`) {
 			return false
 		}
 

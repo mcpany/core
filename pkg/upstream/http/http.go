@@ -221,7 +221,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	}
 	sort.Strings(sortedCallIDs)
 
-	callPolicy := serviceConfig.GetCallPolicy() //nolint:staticcheck
+	callPolicies := serviceConfig.GetCallPolicies()
 
 	for _, callID := range sortedCallIDs {
 		httpDef := calls[callID]
@@ -253,7 +253,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		if shouldBlock(callPolicy, toolNamePart, callID) {
+		if shouldBlock(callPolicies, toolNamePart, callID) {
 			log.Info("Skipping blocked tool/call", "toolName", toolNamePart, "callID", callID)
 			continue
 		}
@@ -423,26 +423,47 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 
 }
 
-func shouldBlock(policy *configv1.CallPolicy, toolName, callID string) bool {
-	if policy == nil {
-		return false
-	}
-	for _, rule := range policy.GetRules() {
-		matched := true
-		if rule.GetNameRegex() != "" {
-			if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
+func shouldBlock(policies []*configv1.CallPolicy, toolName, callID string) bool {
+	for _, policy := range policies {
+		if policy == nil {
+			continue
+		}
+		policyBlocked := false
+		matchedRule := false
+		for _, rule := range policy.GetRules() {
+			matched := true
+			if rule.GetNameRegex() != "" {
+				if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
+					matched = false
+				}
+			}
+			if matched && rule.GetCallIdRegex() != "" {
+				if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
+					matched = false
+				}
+			}
+			if matched && rule.GetArgumentRegex() != "" {
+				// Cannot match argument regex at registration time
 				matched = false
 			}
+
+			if matched {
+				matchedRule = true
+				if rule.GetAction() == configv1.CallPolicy_DENY {
+					policyBlocked = true
+				}
+				break // First match wins
+			}
 		}
-		if matched && rule.GetCallIdRegex() != "" {
-			if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
-				matched = false
+		if !matchedRule {
+			if policy.GetDefaultAction() == configv1.CallPolicy_DENY {
+				policyBlocked = true
 			}
 		}
 
-		if matched {
-			return rule.GetAction() == configv1.CallPolicy_DENY
+		if policyBlocked {
+			return true
 		}
 	}
-	return policy.GetDefaultAction() == configv1.CallPolicy_DENY
+	return false
 }
