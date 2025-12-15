@@ -1,0 +1,57 @@
+upstream_services:
+  - name: "disabled-service"
+    disable: true
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "tool-for-disabled-service"
+          description: "Should not be loaded"
+          call_id: "call-1"
+      calls:
+        call-1:
+          id: "call-1"
+          endpoint_path: "/echo"
+          method: "HTTP_METHOD_POST"
+
+  - name: "tool-disabled-service"
+    call_policy:
+      default_action: ALLOW
+      rules:
+        - action: DENY
+          tool_name_regex: "^tool-disabled-service\\.disabled-tool$"
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "disabled-tool"
+          description: "Tool is disabled via policy"
+          call_id: "call-3"
+        - name: "enabled-tool"
+          description: "Tool is enabled"
+          call_id: "call-2"
+      calls:
+        call-2:
+          id: "call-2"
+          endpoint_path: "/echo"
+          method: "HTTP_METHOD_POST"
+        call-3:
+          id: "call-3"
+          endpoint_path: "/echo"
+          method: "HTTP_METHOD_POST"
+
+  - name: "call-disabled-service"
+    call_policy:
+      default_action: ALLOW
+      rules:
+        - action: DENY
+          call_id_regex: "^disabled-call$"
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "tool-for-disabled-call"
+          description: "Call is disabled via policy"
+          call_id: "disabled-call"
+      calls:
+        disabled-call:
+          id: "disabled-call"
+          endpoint_path: "/echo"
+          method: "HTTP_METHOD_POST"
