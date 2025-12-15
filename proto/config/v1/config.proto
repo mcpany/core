@@ -55,6 +55,4 @@ message GlobalSettings {
   string api_key = 5 [json_name = "api_key"];
   // The profiles to enable.
   repeated string profiles = 6 [json_name = "profiles"];
-  // The URL of the NATS server.
-  string nats_url = 7 [json_name = "nats_url"];
 }
