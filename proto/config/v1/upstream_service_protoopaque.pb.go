@@ -1498,6 +1498,7 @@ type CallPolicyRule struct {
 	xxx_hidden_NameRegex     *string                `protobuf:"bytes,2,opt,name=name_regex"`
 	xxx_hidden_ArgumentRegex *string                `protobuf:"bytes,3,opt,name=argument_regex,json=argumentRegex"`
 	xxx_hidden_UrlRegex      *string                `protobuf:"bytes,4,opt,name=url_regex"`
+	xxx_hidden_CallIdRegex   *string                `protobuf:"bytes,5,opt,name=call_id_regex"`
 	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
 	XXX_presence             [1]uint32
 	unknownFields            protoimpl.UnknownFields
@@ -1568,24 +1569,39 @@ func (x *CallPolicyRule) GetUrlRegex() string {
 	return ""
 }
 
+func (x *CallPolicyRule) GetCallIdRegex() string {
+	if x != nil {
+		if x.xxx_hidden_CallIdRegex != nil {
+			return *x.xxx_hidden_CallIdRegex
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *CallPolicyRule) SetAction(v CallPolicy_Action) {
 	x.xxx_hidden_Action = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *CallPolicyRule) SetNameRegex(v string) {
 	x.xxx_hidden_NameRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *CallPolicyRule) SetArgumentRegex(v string) {
 	x.xxx_hidden_ArgumentRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *CallPolicyRule) SetUrlRegex(v string) {
 	x.xxx_hidden_UrlRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *CallPolicyRule) SetCallIdRegex(v string) {
+	x.xxx_hidden_CallIdRegex = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *CallPolicyRule) HasAction() bool {
@@ -1616,6 +1632,13 @@ func (x *CallPolicyRule) HasUrlRegex() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
+func (x *CallPolicyRule) HasCallIdRegex() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
 func (x *CallPolicyRule) ClearAction() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Action = CallPolicy_ALLOW
@@ -1636,6 +1659,11 @@ func (x *CallPolicyRule) ClearUrlRegex() {
 	x.xxx_hidden_UrlRegex = nil
 }
 
+func (x *CallPolicyRule) ClearCallIdRegex() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_CallIdRegex = nil
+}
+
 type CallPolicyRule_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1647,6 +1675,8 @@ type CallPolicyRule_builder struct {
 	ArgumentRegex *string
 	// Regex to match endpoint path or URL.
 	UrlRegex *string
+	// Regex to match call ID. Empty means match all.
+	CallIdRegex *string
 }
 
 func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
@@ -1654,20 +1684,24 @@ func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Action != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Action = *b.Action
 	}
 	if b.NameRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_NameRegex = b.NameRegex
 	}
 	if b.ArgumentRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
 		x.xxx_hidden_ArgumentRegex = b.ArgumentRegex
 	}
 	if b.UrlRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
 		x.xxx_hidden_UrlRegex = b.UrlRegex
+	}
+	if b.CallIdRegex != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_CallIdRegex = b.CallIdRegex
 	}
 	return m0
 }
@@ -6410,14 +6444,15 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x05rules\x18\x02 \x03(\v2 .mcpany.config.v1.CallPolicyRuleR\x05rules\"\x1d\n" +
 	"\x06Action\x12\t\n" +
 	"\x05ALLOW\x10\x00\x12\b\n" +
-	"\x04DENY\x10\x01\"\xb2\x01\n" +
+	"\x04DENY\x10\x01\"\xd8\x01\n" +
 	"\x0eCallPolicyRule\x12;\n" +
 	"\x06action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\x06action\x12\x1e\n" +
 	"\n" +
 	"name_regex\x18\x02 \x01(\tR\n" +
 	"name_regex\x12%\n" +
 	"\x0eargument_regex\x18\x03 \x01(\tR\rargumentRegex\x12\x1c\n" +
-	"\turl_regex\x18\x04 \x01(\tR\turl_regex\"\xd3\x01\n" +
+	"\turl_regex\x18\x04 \x01(\tR\turl_regex\x12$\n" +
+	"\rcall_id_regex\x18\x05 \x01(\tR\rcall_id_regex\"\xd3\x01\n" +
 	"\fExportPolicy\x12L\n" +
 	"\x0edefault_action\x18\x01 \x01(\x0e2%.mcpany.config.v1.ExportPolicy.ActionR\rdefaultAction\x122\n" +
 	"\x05rules\x18\x02 \x03(\v2\x1c.mcpany.config.v1.ExportRuleR\x05rules\"A\n" +

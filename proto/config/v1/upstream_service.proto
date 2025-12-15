@@ -120,6 +120,8 @@ message CallPolicyRule {
   string argument_regex = 3;
   // Regex to match endpoint path or URL.
   string url_regex = 4 [json_name = "url_regex"];
+  // Regex to match call ID. Empty means match all.
+  string call_id_regex = 5 [json_name = "call_id_regex"];
 }
 
 message ExportPolicy {
