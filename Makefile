@@ -459,13 +459,9 @@ lint: $(if $(SHOULD_PROXY_TO_DOCKER),,gen)
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
-	@echo "Running all pre-commit hooks..."
+	@echo "Running lint (using golangci-lint)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH; \
-	if [ -n "$(CI)" ]; then \
-		pip3 install --user --break-system-packages pre-commit || pip3 install --user pre-commit; \
-		export PATH=$$HOME/.local/bin:$$PATH; \
-	fi; \
-	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off pre-commit run --all-files --show-diff-on-failure --color=always
+	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GOLANGCI_LINT_BIN) run ./...
 endif
 
 clean-pre-commit:

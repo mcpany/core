@@ -15,16 +15,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: "disabled-service"
-  disable: true
-  http_service:
-    address: "http://localhost:8080"
-    tools:
-    - name: "disabled-tool"
-      description: "A tool that should not be loaded"
-      call_id: "disabled-call"
-    calls:
-      disabled-call:
-        id: "disabled-call"
-        endpoint_path: "/echo"
-        method: "HTTP_METHOD_POST"
+  - name: "disabled-service"
+    disable: true
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "disabled-tool"
+          description: "A tool that should not be loaded"
+          call_id: "disabled-call"
+      calls:
+        disabled-call:
+          id: "disabled-call"
+          endpoint_path: "/echo"
+          method: "HTTP_METHOD_POST"

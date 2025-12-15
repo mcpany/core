@@ -8,9 +8,9 @@ upstream_services:
         header_name: "Authorization"
         api_key:
           plain_text: "Bearer {{SPOTIFY_TOKEN}}"
-    call_policy:
-      default_action: ALLOW
-      rules:
-        # Example: Deny modifying playback state (POST/PUT on player) to be safe by default
-        - action: DENY
-          tool_name_regex: "^(start|pause|seek|set).*"
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          # Example: Deny modifying playback state (POST/PUT on player) to be safe by default
+          - action: DENY
+            name_regex: "^(start|pause|seek|set).*"
