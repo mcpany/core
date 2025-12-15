@@ -67,3 +67,4 @@ For a complete list of all available configuration options, please see the [Conf
 
 - [ ] **Add Support for More Service Types**: Extend the server to support additional protocols.
 - [ ] **Implement a Web-Based UI**: Create a user interface for easier management and monitoring of the server.
+- [ ] **MCP Any Config Registry**: A public registry where users can publish, subscribe to, and auto-update MCP configurations. This will enable a community-driven ecosystem of tool definitions.
