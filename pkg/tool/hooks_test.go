@@ -60,10 +60,10 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			name: "Explicit Allow Rule",
 			policy: &configv1.CallPolicy{
 				DefaultAction: ptr(configv1.CallPolicy_DENY),
-				Rules: []*configv1.PolicyRule{
+				Rules: []*configv1.CallPolicyRule{
 					{
 						Action:        ptr(configv1.CallPolicy_ALLOW),
-						ToolNameRegex: ptr("^allowed-.*"),
+						NameRegex: ptr("^allowed-.*"),
 					},
 				},
 			},
@@ -74,10 +74,10 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			name: "Explicit Deny Rule",
 			policy: &configv1.CallPolicy{
 				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
-				Rules: []*configv1.PolicyRule{
+				Rules: []*configv1.CallPolicyRule{
 					{
 						Action:        ptr(configv1.CallPolicy_DENY),
-						ToolNameRegex: ptr("^sensitive-.*"),
+						NameRegex: ptr("^sensitive-.*"),
 					},
 				},
 			},
@@ -89,7 +89,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			name: "Argument Regex Matching",
 			policy: &configv1.CallPolicy{
 				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
-				Rules: []*configv1.PolicyRule{
+				Rules: []*configv1.CallPolicyRule{
 					{
 						Action:        ptr(configv1.CallPolicy_DENY),
 						ArgumentRegex: ptr(".*secret.*"),
@@ -107,7 +107,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			name: "Argument Regex Matching Safe",
 			policy: &configv1.CallPolicy{
 				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
-				Rules: []*configv1.PolicyRule{
+				Rules: []*configv1.CallPolicyRule{
 					{
 						Action:        ptr(configv1.CallPolicy_DENY),
 						ArgumentRegex: ptr(".*secret.*"),

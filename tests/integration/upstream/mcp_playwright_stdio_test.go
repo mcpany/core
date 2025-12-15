@@ -36,7 +36,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
 			const serviceID = "playwright"
-			integration.RegisterStdioMCPService(t, registrationClient, serviceID, "npx @playwright/mcp@latest", true)
+			integration.RegisterStdioMCPService(t, registrationClient, serviceID, "npx -y @playwright/mcp@latest", true)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
