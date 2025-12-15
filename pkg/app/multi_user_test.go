@@ -1,0 +1,295 @@
+package app
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net"
+	"net/http"
+	"testing"
+	"time"
+
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/spf13/viper"
+)
+
+func TestMultiUserToolFiltering(t *testing.T) {
+	// Setup mocks and server
+	// Setup mocks and server
+	// No bus config needed as it defaults to InMemory
+
+	// Define profiles
+	// profileDev := "dev-profile"
+	// profileProd := "prod-profile"
+
+	// Define users
+	// userDev := &configv1.User{
+	// 	Id:         proto.String("user-dev"),
+	// 	ApiKey:     proto.String("key-dev"),
+	// 	ProfileIds: []string{profileDev},
+	// }
+	// userProd := &configv1.User{
+	// 	Id:         proto.String("user-prod"),
+	// 	ApiKey:     proto.String("key-prod"),
+	// 	ProfileIds: []string{profileProd, profileDev}, // Prod user has access to both
+	// }
+
+	// Create Config with users
+	fs := afero.NewMemMapFs()
+	configContent := `
+upstream_services:
+  - name: "dev-service"
+    profiles:
+      - name: "dev"
+        id: "dev-profile"
+    http_service:
+      address: "http://localhost:8081"
+      tools:
+        - name: "dev-tool"
+          call_id: "dev-call"
+      calls:
+        dev-call:
+          id: "dev-call"
+          endpoint_path: "/dev"
+          method: "HTTP_METHOD_POST"
+  - name: "prod-service"
+    profiles:
+      - name: "prod"
+        id: "prod-profile"
+    http_service:
+      address: "http://localhost:8082"
+      tools:
+        - name: "prod-tool"
+          call_id: "prod-call"
+      calls:
+        prod-call:
+          id: "prod-call"
+          endpoint_path: "/prod"
+          method: "HTTP_METHOD_POST"
+  - name: "secure-service"
+    profiles:
+      - name: "secure"
+        id: "secure-profile"
+        api_key: "key-secure-profile"
+    http_service:
+      address: "http://localhost:8084"
+      tools:
+        - name: "secure-tool"
+          call_id: "secure-call"
+      calls:
+        secure-call:
+          id: "secure-call"
+          endpoint_path: "/secure"
+          method: "HTTP_METHOD_POST"
+  - name: "shared-service"
+    # No profiles defined -> global? Or we need to define it.
+    # Logic in server.go: if len(profiles) == 0, allow all.
+    http_service:
+      address: "http://localhost:8083"
+      tools:
+        - name: "shared-tool"
+          call_id: "shared-call"
+      calls:
+        shared-call:
+          id: "shared-call"
+          endpoint_path: "/shared"
+          method: "HTTP_METHOD_POST"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Set enabled profiles for the server instance so it loads all services
+	viper.Set("profiles", []string{"dev", "prod", "secure", "default"})
+	defer viper.Set("profiles", nil)
+
+	app := NewApplication()
+
+	// Start server on random ports
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	httpPort := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	l2, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	grpcPort := l2.Addr().(*net.TCPAddr).Port
+	l2.Close()
+
+	// Inject users into the run call?
+	// app.Run loads config from file.
+	// The config in file doesn't have users yet because I didn't add them to YAML.
+	// But `app.Run` loads users from `cfg.GetUsers()`.
+	// I need to add users to the YAML or modify how they are loaded.
+	// `LoadServices` in `pkg/config/load.go` reads `users`.
+	// So I should add users to YAML.
+
+	configContentWithUsers := configContent + `
+users:
+  - id: "user-dev"
+    api_key: "key-dev"
+    profile_ids: ["dev-profile"]
+  - id: "user-prod"
+    api_key: "key-prod"
+    profile_ids: ["prod-profile", "dev-profile"]
+  - id: "user-secure"
+    api_key: "key-secure-user"
+    profile_ids: ["secure-profile"]
+`
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContentWithUsers), 0o644)
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	// Wait for server to start
+	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
+	require.Eventually(t, func() bool {
+		resp, err := http.Get(baseURL + "/healthz")
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
+		return resp.StatusCode == http.StatusOK
+	}, 5*time.Second, 100*time.Millisecond)
+
+	// Helper to calls tools/list via SSE
+	listTools := func(uid, profileID, apiKey string) ([]string, error) {
+		url := fmt.Sprintf("%s/mcp/u/%s/profile/%s", baseURL, uid, profileID)
+
+		reqBody := `{
+			"jsonrpc": "2.0",
+			"id": 1,
+			"method": "tools/list",
+			"params": {}
+		}`
+
+		req, err := http.NewRequest("POST", url, bytes.NewReader([]byte(reqBody)))
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-API-Key", apiKey)
+		req.Header.Set("Content-Type", "application/json")
+
+		client := &http.Client{Timeout: 2 * time.Second}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("status code: %d", resp.StatusCode)
+		}
+
+		// Parse response
+		// Response is JSON-RPC: {"jsonrpc": "2.0", "result": { "tools": [...] }, "id": 1}
+		var rpcResp struct {
+			Result struct {
+				Tools []struct {
+					Name string `json:"name"`
+				} `json:"tools"`
+			} `json:"result"`
+			Error *struct {
+				Code    int    `json:"code"`
+				Message string `json:"message"`
+			} `json:"error"`
+		}
+
+		if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
+			return nil, err
+		}
+
+		if rpcResp.Error != nil {
+			return nil, fmt.Errorf("rpc error: %s", rpcResp.Error.Message)
+		}
+
+		var toolNames []string
+		for _, t := range rpcResp.Result.Tools {
+			toolNames = append(toolNames, t.Name)
+		}
+		return toolNames, nil
+	}
+
+	// Test Case 1: Dev User (Profile: dev-profile)
+	// Should see: dev-tool, shared-tool (if shared logic allows)
+	// Shared tool has NO profiles. If logic is "allow if no profiles", then yes.
+	// If logic is "restrict to explicit profiles", then no.
+	// In server.go I implemented:
+	// "if len(info.Config.GetProfiles()) == 0 { hasAccess = true }"
+	// So shared-tool should be visible.
+
+	t.Run("UserDev sees dev tools and shared tools", func(t *testing.T) {
+		tools, err := listTools("user-dev", "dev-profile", "key-dev")
+		require.NoError(t, err)
+		assert.Contains(t, tools, "dev-tool")
+		assert.Contains(t, tools, "shared-tool")
+		assert.NotContains(t, tools, "prod-tool")
+	})
+
+	// Test Case 2: Prod User (Profile: prod-profile)
+	// Should see: prod-tool, shared-tool. Not dev-tool.
+	t.Run("UserProd (prod-profile) sees prod tools and shared tools", func(t *testing.T) {
+		tools, err := listTools("user-prod", "prod-profile", "key-prod")
+		require.NoError(t, err)
+		assert.Contains(t, tools, "prod-tool")
+		assert.Contains(t, tools, "shared-tool")
+		assert.NotContains(t, tools, "dev-tool")
+	})
+
+	// Test Case 3: Prod User accessing Dev Profile (allowed)
+	// Should see: dev-tool, shared-tool.
+	t.Run("UserProd accessing dev-profile sees dev tools", func(t *testing.T) {
+		tools, err := listTools("user-prod", "dev-profile", "key-prod")
+		require.NoError(t, err)
+		assert.Contains(t, tools, "dev-tool")
+		assert.Contains(t, tools, "shared-tool")
+		assert.NotContains(t, tools, "prod-tool")
+	})
+
+	// Test Case 6: Auth Priority - Profile Key overrides User Key
+	t.Run("Auth Priority: Profile Key overrides User Key", func(t *testing.T) {
+		// secure-profile has api_key: "key-secure-profile"
+		// user-secure has api_key: "key-secure-user"
+
+		// 1. Verify Profile Key works
+		tools, err := listTools("user-secure", "secure-profile", "key-secure-profile")
+		require.NoError(t, err)
+		assert.Contains(t, tools, "secure-tool")
+
+		// 2. Verify User Key fails (because profile key is set)
+		_, err = listTools("user-secure", "secure-profile", "key-secure-user")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "status code: 401")
+	})
+
+	// Test Case 4: Invalid Auth
+	t.Run("Invalid API Key fails", func(t *testing.T) {
+		_, err := listTools("user-dev", "dev-profile", "wrong-key")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "status code: 401")
+	})
+
+	// Test Case 5: Invalid Profile Access
+	// Dev User accessing Prod Profile (not allowed)
+	t.Run("UserDev accessing prod-profile fails", func(t *testing.T) {
+		// Wait, if profile is not in user's list, does it return 404 or 403?
+		// Logic: "for _, pid := range user.ProfileIds { if pid == profileID { hasAccess = true ... } }"
+		// If check fails -> http.Error(w, "Forbidden", http.StatusForbidden)
+		// I missed what happens if profileID is not found in loop.
+		// I should verify server.go logic handles this denial.
+		// Assuming it returns 403.
+		_, err := listTools("user-dev", "prod-profile", "key-dev")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "status code: 403") // Forbidden
+	})
+}

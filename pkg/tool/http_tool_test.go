@@ -644,7 +644,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		defer server.Close()
 
 		poolManager := pool.NewManager()
-	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
 		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)

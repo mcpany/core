@@ -146,6 +146,9 @@ func (s *Settings) APIKey() string {
 
 // Profiles returns the active profiles.
 func (s *Settings) Profiles() []string {
+	if viper.IsSet("profiles") {
+		return viper.GetStringSlice("profiles")
+	}
 	if len(s.profiles) == 0 {
 		return []string{"default"}
 	}

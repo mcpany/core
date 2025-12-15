@@ -29,7 +29,6 @@ import (
 
 const testMessage = "hello"
 
-
 func TestNatsBus_EmbeddedServer(t *testing.T) {
 	serverInfo := StartInProcessMCPANYServer(t, "embedded-nats")
 	defer serverInfo.CleanupFunc()
