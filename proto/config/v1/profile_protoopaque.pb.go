@@ -39,10 +39,12 @@ const (
 )
 
 type Profile struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name,proto3"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name   string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	xxx_hidden_Id     string                 `protobuf:"bytes,2,opt,name=id,proto3"`
+	xxx_hidden_ApiKey string                 `protobuf:"bytes,3,opt,name=api_key,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *Profile) Reset() {
@@ -77,8 +79,30 @@ func (x *Profile) GetName() string {
 	return ""
 }
 
+func (x *Profile) GetId() string {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return ""
+}
+
+func (x *Profile) GetApiKey() string {
+	if x != nil {
+		return x.xxx_hidden_ApiKey
+	}
+	return ""
+}
+
 func (x *Profile) SetName(v string) {
 	x.xxx_hidden_Name = v
+}
+
+func (x *Profile) SetId(v string) {
+	x.xxx_hidden_Id = v
+}
+
+func (x *Profile) SetApiKey(v string) {
+	x.xxx_hidden_ApiKey = v
 }
 
 type Profile_builder struct {
@@ -86,6 +110,10 @@ type Profile_builder struct {
 
 	// The name of the profile (e.g., "dev", "prod").
 	Name string
+	// The unique ID of the profile (UUID).
+	Id string
+	// The API key used for authentication.
+	ApiKey string
 }
 
 func (b0 Profile_builder) Build() *Profile {
@@ -93,6 +121,8 @@ func (b0 Profile_builder) Build() *Profile {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_ApiKey = b.ApiKey
 	return m0
 }
 
@@ -100,9 +130,11 @@ var File_proto_config_v1_profile_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\"\x1d\n" +
+	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\"G\n" +
 	"\aProfile\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04nameB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\x12\x18\n" +
+	"\aapi_key\x18\x03 \x01(\tR\aapi_keyB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
 
 var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_profile_proto_goTypes = []any{

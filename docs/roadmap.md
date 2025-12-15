@@ -40,7 +40,7 @@ The following features are fully implemented and tested:
 The following features are defined in the configuration schema (`proto/config/v1/config.proto`) but are **not yet implemented** in the server logic:
 
 - **Advanced Authentication**:
-  - Incoming request authentication (`AuthenticationConfig`)
+  - [x] Incoming request authentication (Profile > User > Global Priority)
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
@@ -59,7 +59,7 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## Ongoing Goals
 
-- [ ] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
+- [x] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
 - [ ] **Improve Error Handling**: Enhance error messages and provide more context for debugging.
 

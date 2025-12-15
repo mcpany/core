@@ -66,16 +66,16 @@ func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 		Config: &configv1.UpstreamServiceConfig{},
 	}, true
 }
-func (m *mockToolManager) AddTool(_ tool.Tool) error                             { return nil }
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)             { return nil, false }
-func (m *mockToolManager) ListTools() []tool.Tool                                { return nil }
+func (m *mockToolManager) AddTool(_ tool.Tool) error                { return nil }
+func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)       { return nil, false }
+func (m *mockToolManager) ListTools() []tool.Tool                   { return nil }
 func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, nil
 }
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)           {}
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)        {}
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *mockToolManager) ClearToolsForService(_ string)                  {}
+func (m *mockToolManager) ClearToolsForService(_ string)                {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup

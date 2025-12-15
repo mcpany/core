@@ -48,13 +48,13 @@ func newIDToken(t *testing.T, privateKey *rsa.PrivateKey, claims jwt.MapClaims) 
 }
 
 const (
-	testAudience      = "test-audience"
-	testEmail         = "test@example.com"
-	wellKnownPath     = "/.well-known/openid-configuration"
-	jwksPath          = "/jwks"
-	contentTypeJSON   = "application/json"
-	authHeader        = "Authorization"
-	bearerPrefix      = "Bearer "
+	testAudience    = "test-audience"
+	testEmail       = "test@example.com"
+	wellKnownPath   = "/.well-known/openid-configuration"
+	jwksPath        = "/jwks"
+	contentTypeJSON = "application/json"
+	authHeader      = "Authorization"
+	bearerPrefix    = "Bearer "
 )
 
 func TestNewOAuth2Authenticator(t *testing.T) {

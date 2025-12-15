@@ -23,4 +23,8 @@ option go_package = "github.com/mcpany/core/proto/config/v1";
 message Profile {
   // The name of the profile (e.g., "dev", "prod").
   string name = 1;
+  // The unique ID of the profile (UUID).
+  string id = 2;
+  // The API key used for authentication.
+  string api_key = 3 [json_name = "api_key"];
 }
