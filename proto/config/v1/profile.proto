@@ -16,6 +16,8 @@
 
 syntax = "proto3";
 
+import "proto/config/v1/auth.proto";
+
 package mcpany.config.v1;
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
@@ -25,6 +27,6 @@ message Profile {
   string name = 1;
   // The unique ID of the profile (UUID).
   string id = 2;
-  // The API key used for authentication.
-  string api_key = 3 [json_name = "api_key"];
+  // The authentication configuration for the profile.
+  AuthenticationConfig authentication = 3 [json_name = "authentication"];
 }
