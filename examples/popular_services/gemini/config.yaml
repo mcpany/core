@@ -15,41 +15,27 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: gemini
-  upstream_authentication:
+  - name: gemini
+    upstream_authentication:
       api_key:
         header_name: "x-goog-api-key"
         api_key:
           plain_text: "${GEMINI_API_KEY}"
-  http_service:
-    address: "https://generativelanguage.googleapis.com"
-    tools:
-    - name: "generateContent"
-      call_id: "generateContent"
-      input_schema:
-        type: "object"
-        properties:
-          contents:
-            type: "array"
-            items:
-              type: "object"
-              properties:
-                parts:
-                  type: "array"
-                  items:
-                    type: "object"
-                    properties:
-                      text:
-                        type: "string"
-      output_schema:
-        type: "object"
-        properties:
-          candidates:
-            type: "array"
-            items:
-              type: "object"
-              properties:
-                content:
+    http_service:
+      address: "https://generativelanguage.googleapis.com"
+      tools:
+        - name: "generateContent"
+          call_id: "generateContent"
+      calls:
+        generateContent:
+          endpoint_path: "/v1beta/models/gemini-1.5-flash:generateContent"
+          method: "HTTP_METHOD_POST"
+          input_schema:
+            type: "object"
+            properties:
+              contents:
+                type: "array"
+                items:
                   type: "object"
                   properties:
                     parts:
@@ -59,22 +45,36 @@ upstream_services:
                         properties:
                           text:
                             type: "string"
-                    role:
+          output_schema:
+            type: "object"
+            properties:
+              candidates:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    content:
+                      type: "object"
+                      properties:
+                        parts:
+                          type: "array"
+                          items:
+                            type: "object"
+                            properties:
+                              text:
+                                type: "string"
+                        role:
+                          type: "string"
+                    finishReason:
                       type: "string"
-                finishReason:
-                  type: "string"
-                index:
-                  type: "integer"
-                safetyRatings:
-                  type: "array"
-                  items:
-                    type: "object"
-                    properties:
-                      category:
-                        type: "string"
-                      probability:
-                        type: "string"
-    calls:
-      generateContent:
-        endpoint_path: "/v1beta/models/gemini-1.5-flash:generateContent"
-        method: "HTTP_METHOD_POST"
+                    index:
+                      type: "integer"
+                    safetyRatings:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          category:
+                            type: "string"
+                          probability:
+                            type: "string"

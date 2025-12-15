@@ -160,20 +160,25 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 			}
 		}
 
-		properties, err := schemaconv.ConfigSchemaToProtoProperties(wsDef.GetParameters())
-		if err != nil {
-			log.Error("Failed to convert schema to properties", "error", err)
-			continue
-		}
+		var inputSchema *structpb.Struct
+		if wsDef.GetInputSchema() != nil && len(wsDef.GetInputSchema().GetFields()) > 0 {
+			inputSchema = wsDef.GetInputSchema()
+		} else {
+			properties, err := schemaconv.ConfigSchemaToProtoProperties(wsDef.GetParameters())
+			if err != nil {
+				log.Error("Failed to convert schema to properties", "error", err)
+				continue
+			}
 
-		if properties == nil {
-			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
-		}
-		inputSchema := &structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(properties),
-			},
+			if properties == nil {
+				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+			}
+			inputSchema = &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type":       structpb.NewStringValue("object"),
+					"properties": structpb.NewStructValue(properties),
+				},
+			}
 		}
 
 		newToolProto := pb.Tool_builder{
@@ -187,6 +192,7 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
 				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
+				OutputSchema:    wsDef.GetOutputSchema(),
 			}.Build(),
 		}.Build()
 

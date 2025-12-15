@@ -14,7 +14,6 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -32,8 +31,6 @@ type ToolDefinition struct {
 	xxx_hidden_Name            *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_ServiceId       *string                `protobuf:"bytes,13,opt,name=service_id"`
 	xxx_hidden_Description     *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_InputSchema     *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema"`
-	xxx_hidden_OutputSchema    *structpb.Struct       `protobuf:"bytes,4,opt,name=output_schema"`
 	xxx_hidden_IsStream        bool                   `protobuf:"varint,5,opt,name=is_stream"`
 	xxx_hidden_Title           *string                `protobuf:"bytes,6,opt,name=title"`
 	xxx_hidden_ReadOnlyHint    bool                   `protobuf:"varint,7,opt,name=read_only_hint"`
@@ -102,20 +99,6 @@ func (x *ToolDefinition) GetDescription() string {
 		return ""
 	}
 	return ""
-}
-
-func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.xxx_hidden_InputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetOutputSchema() *structpb.Struct {
-	if x != nil {
-		return x.xxx_hidden_OutputSchema
-	}
-	return nil
 }
 
 func (x *ToolDefinition) GetIsStream() bool {
@@ -191,65 +174,57 @@ func (x *ToolDefinition) GetProfiles() []*Profile {
 
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *ToolDefinition) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 14)
-}
-
-func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
-	x.xxx_hidden_InputSchema = v
-}
-
-func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.xxx_hidden_OutputSchema = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
 }
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
 }
 
 func (x *ToolDefinition) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 14)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
 }
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
@@ -277,74 +252,60 @@ func (x *ToolDefinition) HasDescription() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *ToolDefinition) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_InputSchema != nil
-}
-
-func (x *ToolDefinition) HasOutputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OutputSchema != nil
-}
-
 func (x *ToolDefinition) HasIsStream() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *ToolDefinition) HasTitle() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *ToolDefinition) HasReadOnlyHint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *ToolDefinition) HasDestructiveHint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
 func (x *ToolDefinition) HasIdempotentHint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
 func (x *ToolDefinition) HasOpenWorldHint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
 }
 
 func (x *ToolDefinition) HasCallId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
 func (x *ToolDefinition) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 12)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
 func (x *ToolDefinition) ClearName() {
@@ -362,51 +323,43 @@ func (x *ToolDefinition) ClearDescription() {
 	x.xxx_hidden_Description = nil
 }
 
-func (x *ToolDefinition) ClearInputSchema() {
-	x.xxx_hidden_InputSchema = nil
-}
-
-func (x *ToolDefinition) ClearOutputSchema() {
-	x.xxx_hidden_OutputSchema = nil
-}
-
 func (x *ToolDefinition) ClearIsStream() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_IsStream = false
 }
 
 func (x *ToolDefinition) ClearTitle() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
 	x.xxx_hidden_Title = nil
 }
 
 func (x *ToolDefinition) ClearReadOnlyHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
 	x.xxx_hidden_ReadOnlyHint = false
 }
 
 func (x *ToolDefinition) ClearDestructiveHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
 	x.xxx_hidden_DestructiveHint = false
 }
 
 func (x *ToolDefinition) ClearIdempotentHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
 	x.xxx_hidden_IdempotentHint = false
 }
 
 func (x *ToolDefinition) ClearOpenWorldHint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
 	x.xxx_hidden_OpenWorldHint = false
 }
 
 func (x *ToolDefinition) ClearCallId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
 	x.xxx_hidden_CallId = nil
 }
 
 func (x *ToolDefinition) ClearDisable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 12)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
 	x.xxx_hidden_Disable = false
 }
 
@@ -419,10 +372,6 @@ type ToolDefinition_builder struct {
 	ServiceId *string
 	// A human-readable description of what the tool does.
 	Description *string
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct
 	// Indicates if the tool produces a continuous stream of responses.
 	IsStream *bool
 	// A human-readable title for the tool.
@@ -458,49 +407,47 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
 		x.xxx_hidden_Description = b.Description
 	}
-	x.xxx_hidden_InputSchema = b.InputSchema
-	x.xxx_hidden_OutputSchema = b.OutputSchema
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
 		x.xxx_hidden_CallId = b.CallId
 	}
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 14)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	x.xxx_hidden_Profiles = &b.Profiles
@@ -511,15 +458,13 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xa9\x04\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1dproto/config/v1/profile.proto\"\xad\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
 	"\n" +
 	"service_id\x18\r \x01(\tR\n" +
 	"service_id\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12;\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\routput_schema\x12\x1c\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1c\n" +
 	"\tis_stream\x18\x05 \x01(\bR\tis_stream\x12\x14\n" +
 	"\x05title\x18\x06 \x01(\tR\x05title\x12&\n" +
 	"\x0eread_only_hint\x18\a \x01(\bR\x0eread_only_hint\x12*\n" +
@@ -533,19 +478,16 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_tool_proto_goTypes = []any{
-	(*ToolDefinition)(nil),  // 0: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil), // 1: google.protobuf.Struct
-	(*Profile)(nil),         // 2: mcpany.config.v1.Profile
+	(*ToolDefinition)(nil), // 0: mcpany.config.v1.ToolDefinition
+	(*Profile)(nil),        // 1: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	1, // 1: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	2, // 2: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 0: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }

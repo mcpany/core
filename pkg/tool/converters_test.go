@@ -29,7 +29,7 @@ import (
 
 func TestConvertToolDefinitionToProto(t *testing.T) {
 	t.Run("nil tool definition", func(t *testing.T) {
-		pbTool, err := ConvertToolDefinitionToProto(nil)
+		pbTool, err := ConvertToolDefinitionToProto(nil, nil, nil)
 		assert.Error(t, err)
 		assert.Nil(t, pbTool)
 		assert.Contains(t, err.Error(), "cannot convert nil tool definition to proto")
@@ -54,15 +54,13 @@ func TestConvertToolDefinitionToProto(t *testing.T) {
 		})
 
 		toolDef := &configv1.ToolDefinition{
-			Name:         proto.String("test-tool"),
-			Description:  proto.String("A test tool"),
-			Title:        proto.String("Test Tool"),
-			ServiceId:    proto.String("test-service"),
-			InputSchema:  inputSchema,
-			OutputSchema: outputSchema,
+			Name:        proto.String("test-tool"),
+			Description: proto.String("A test tool"),
+			Title:       proto.String("Test Tool"),
+			ServiceId:   proto.String("test-service"),
 		}
 
-		pbTool, err := ConvertToolDefinitionToProto(toolDef)
+		pbTool, err := ConvertToolDefinitionToProto(toolDef, inputSchema, outputSchema)
 		assert.NoError(t, err)
 		assert.NotNil(t, pbTool)
 		assert.Equal(t, "test-tool", pbTool.GetName())
@@ -257,7 +255,7 @@ func TestConvertProtoToMCPTool_EmptyToolName(t *testing.T) {
 	pbTool := &configv1.ToolDefinition{
 		Name: proto.String(""),
 	}
-	pbToolProto, err := ConvertToolDefinitionToProto(pbTool)
+	pbToolProto, err := ConvertToolDefinitionToProto(pbTool, nil, nil)
 	assert.NoError(t, err)
 
 	mcpTool, err := ConvertProtoToMCPTool(pbToolProto)
@@ -274,7 +272,7 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 			Title:       proto.String("Test Tool"),
 			ServiceId:   proto.String("test-service"),
 		}
-		pbToolProto, err := ConvertToolDefinitionToProto(pbTool)
+		pbToolProto, err := ConvertToolDefinitionToProto(pbTool, nil, nil)
 		assert.NoError(t, err)
 
 		mcpTool, err := ConvertProtoToMCPTool(pbToolProto)

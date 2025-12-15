@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.config.v1;
 
 
+import "google/protobuf/struct.proto";
 import "proto/config/v1/profile.proto";
 import "proto/config/v1/resource.proto";
 
@@ -21,7 +22,7 @@ message PromptDefinition {
   // A human-readable description of what the prompt does.
   string description = 3;
   // The arguments for the prompt.
-  repeated PromptArgument arguments = 4;
+  google.protobuf.Struct input_schema = 4 [json_name = "input_schema"];
   // The messages that make up the prompt.
   repeated PromptMessage messages = 5;
   // If true, this prompt is disabled.
@@ -30,15 +31,7 @@ message PromptDefinition {
   repeated Profile profiles = 7;
 }
 
-// PromptArgument defines an argument for a prompt.
-message PromptArgument {
-  // The name of the argument.
-  string name = 1;
-  // A description of the argument.
-  string description = 2;
-  // Whether the argument is required.
-  bool required = 3;
-}
+
 
 // PromptMessage defines a message in a prompt.
 message PromptMessage {

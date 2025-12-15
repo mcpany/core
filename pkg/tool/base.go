@@ -20,6 +20,7 @@ package tool
 import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type baseTool struct {
@@ -28,8 +29,8 @@ type baseTool struct {
 	callable      Callable
 }
 
-func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable) (*baseTool, error) {
-	pbTool, err := ConvertToolDefinitionToProto(toolDef)
+func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*baseTool, error) {
+	pbTool, err := ConvertToolDefinitionToProto(toolDef, inputSchema, outputSchema)
 	if err != nil {
 		return nil, err
 	}

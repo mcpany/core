@@ -15,34 +15,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: openlibrary.org
-  http_service:
-    address: "https://openlibrary.org"
-    tools:
-    - name: "getBookByISBN"
-      call_id: "getBookByISBN"
-      input_schema:
-        type: "object"
-        properties:
-          isbn:
-            type: "string"
-            description: "The ISBN of the book to look up."
-      output_schema:
-        type: "object"
-    - name: "searchAuthors"
-      call_id: "searchAuthors"
-      input_schema:
-        type: "object"
-        properties:
-          author_name:
-            type: "string"
-            description: "The name of the author to search for."
-      output_schema:
-        type: "object"
-    calls:
-      getBookByISBN:
-        endpoint_path: "/api/books?bibkeys=ISBN:{{isbn}}&format=json&jscmd=data"
-        method: "HTTP_METHOD_GET"
-      searchAuthors:
-        endpoint_path: "/search/authors.json?q={{author_name}}"
-        method: "HTTP_METHOD_GET"
+  - name: openlibrary.org
+    http_service:
+      address: "https://openlibrary.org"
+      tools:
+        - name: "getBookByISBN"
+          call_id: "getBookByISBN"
+        - name: "searchAuthors"
+          call_id: "searchAuthors"
+      calls:
+        getBookByISBN:
+          endpoint_path: "/api/books?bibkeys=ISBN:{{isbn}}&format=json&jscmd=data"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              isbn:
+                type: "string"
+                description: "The ISBN of the book to look up."
+          output_schema:
+            type: "object"
+        searchAuthors:
+          endpoint_path: "/search/authors.json?q={{author_name}}"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              author_name:
+                type: "string"
+                description: "The name of the author to search for."
+          output_schema:
+            type: "object"
