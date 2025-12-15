@@ -5,9 +5,9 @@ upstream_services:
       stdio_connection:
         command: "npx"
         args: ["-y", "@modelcontextprotocol/server-puppeteer"]
-    call_policy:
-      default_action: ALLOW
-      rules:
-        # Deny screenshots for privacy/speed in default config? (Optional)
-        # - action: DENY
-        #   tool_name_regex: "screenshot"
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          # Deny screenshots for privacy/speed in default config? (Optional)
+          # - action: DENY
+          #   name_regex: "screenshot"
