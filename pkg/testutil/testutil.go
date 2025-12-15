@@ -25,7 +25,7 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 		},
 		1,
 		10,
-		int(1*time.Minute),
+		1*time.Minute,
 		false,
 	)
 	require.NoError(t, err)
