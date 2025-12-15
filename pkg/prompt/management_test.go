@@ -156,4 +156,20 @@ func TestPromptManager(t *testing.T) {
 		assert.True(t, ok)
 		assert.Equal(t, "service2", p.Service())
 	})
+
+	t.Run("update prompt", func(t *testing.T) {
+		promptManager.prompts.Clear()
+
+		mockPrompt1 := new(MockPrompt)
+		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
+		promptManager.AddPrompt(mockPrompt1)
+
+		mockPrompt2 := new(MockPrompt)
+		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
+		promptManager.UpdatePrompt(mockPrompt2)
+
+		p, ok := promptManager.GetPrompt("prompt1")
+		assert.True(t, ok)
+		assert.Equal(t, mockPrompt2, p)
+	})
 }

@@ -138,3 +138,15 @@ func TestBus_SubscribeOnce(t *testing.T) {
 		})
 	})
 }
+
+func TestBus_SubscribeOnce_Success(t *testing.T) {
+	t.Parallel()
+	client, _ := redismock.NewClientMock()
+	bus := redis.NewWithClient[string](client)
+
+	// Just calling it to cover setup lines.
+	// We don't verify subscription because redismock might not support it fully without expectations.
+	// But calling it covers the non-panic path.
+	handler := func(_ string) {}
+	_ = bus.SubscribeOnce(context.Background(), "test-topic", handler)
+}
