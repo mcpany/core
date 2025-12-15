@@ -162,6 +162,31 @@ func (u *Upstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	address = httpService.GetAddress()
+
+	// Auto-discovery of tools from calls
+	if serviceConfig.GetAutoDiscoverTool() {
+		for callID := range httpService.GetCalls() {
+			// Check if a tool already exists for this call
+			exists := false
+			for _, t := range httpService.GetTools() {
+				if t.GetCallId() == callID {
+					exists = true
+					break
+				}
+			}
+			if !exists {
+				// Create a default tool definition
+				newTool := &configv1.ToolDefinition{
+					Name:        proto.String(callID),
+					CallId:      proto.String(callID),
+					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
+				}
+				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
+				httpService.Tools = append(httpService.Tools, newTool)
+			}
+		}
+	}
+
 	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
@@ -216,6 +241,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			} else {
 				toolNamePart = fmt.Sprintf("op_%s", callID)
 			}
+		}
+
+		// Check Export Policy
+		if !tool.ShouldExport(toolNamePart, serviceConfig.GetToolExportPolicy()) {
+			log.Info("Skipping non-exported tool", "toolName", toolNamePart)
+			continue
 		}
 
 		properties, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
@@ -316,9 +347,20 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	for _, d := range definitions {
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
+	for _, d := range definitions {
+		callIDToName[d.GetCallId()] = d.GetName()
+	}
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
+		// Check Export Policy
+		if !tool.ShouldExport(resourceDef.GetName(), serviceConfig.GetResourceExportPolicy()) {
+			log.Info("Skipping non-exported resource", "resourceName", resourceDef.GetName())
 			continue
 		}
 		if resourceDef.GetDynamic() != nil {
@@ -347,6 +389,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				continue
 			}
 			resourceManager.AddResource(dynamicResource)
+		} else {
+			// Static resource
+			staticRes := resource.NewStaticResource(resourceDef, serviceID)
+			resourceManager.AddResource(staticRes)
 		}
 	}
 
@@ -359,6 +405,11 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 	for _, promptDef := range httpService.GetPrompts() {
 		if promptDef.GetDisable() {
 			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
+		// Check Export Policy
+		if !tool.ShouldExport(promptDef.GetName(), serviceConfig.GetPromptExportPolicy()) {
+			log.Info("Skipping non-exported prompt", "promptName", promptDef.GetName())
 			continue
 		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)

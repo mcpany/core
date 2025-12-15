@@ -116,9 +116,9 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		var postHooks []PostCallHook
 
 		if ok && serviceInfo.Config != nil {
-			// 1. Legacy Call Policy -> converted to PreHook
-			if serviceInfo.Config.GetCallPolicy() != nil { //nolint:staticcheck
-				preHooks = append(preHooks, NewPolicyHook(serviceInfo.Config.GetCallPolicy())) //nolint:staticcheck
+			// 1. New Call Policies -> converted to PreHook
+			for _, policy := range serviceInfo.Config.GetCallPolicies() {
+				preHooks = append(preHooks, NewPolicyHook(policy))
 			}
 			// 2. PreCallHooks
 			for _, hCfg := range serviceInfo.Config.GetPreCallHooks() {

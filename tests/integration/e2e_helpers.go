@@ -911,7 +911,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		return jsonrpcPort != 0 && grpcRegPort != 0
 	}, McpAnyServerStartupTimeout, RetryInterval, "Failed to discover bound ports from logs.\nStdout: %s\nStderr: %s", mcpProcess.StdoutString(), mcpProcess.StderrString())
 
-    // If stdio, we might not have ports.
+	// If stdio, we might not have ports.
 	jsonrpcEndpoint := ""
 	grpcRegEndpoint := ""
 	mcpRequestURL := ""
@@ -969,8 +969,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			return true
 		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint %s not healthy.", mcpRequestURL)
 	} else if healthCheck {
-	    // stdio mode health check
-	    mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
+		// stdio mode health check
+		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
 	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
@@ -995,7 +995,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		T: t,
 	}
 }
-
 
 // RegisterServiceViaAPI registers a service using the gRPC API.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
@@ -1446,4 +1445,36 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 	}
 
 	return rpcResp.Result, nil
+}
+
+// WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
+func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {
+	t.Helper()
+	var port string
+	// Regex to find port=ADDRESS. We expect it might be quoted.
+	re := regexp.MustCompile(`port=([^ ]+)`)
+
+	checkLog := func() bool {
+		output := mp.StdoutString()
+		lines := strings.Split(output, "\n")
+		// Reverse iterate to find latest logs first?
+		// No, standard iteration is fine, usually only one startup log.
+		for _, line := range lines {
+			// Look for server name. It is usually logged as server="Name" or server=Name
+			if strings.Contains(line, fmt.Sprintf(`server="%s"`, serverName)) || strings.Contains(line, fmt.Sprintf(`server=%s`, serverName)) {
+				if strings.Contains(line, "listening") {
+					matches := re.FindStringSubmatch(line)
+					if len(matches) > 1 {
+						port = matches[1]
+						port = strings.Trim(port, `"`)
+						return true
+					}
+				}
+			}
+		}
+		return false
+	}
+
+	require.Eventually(t, checkLog, McpAnyServerStartupTimeout, 100*time.Millisecond, "Failed to find listening port for %s in logs.\nStdout:\n%s", serverName, mp.StdoutString())
+	return port, nil
 }
