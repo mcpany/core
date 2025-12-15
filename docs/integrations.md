@@ -111,6 +111,12 @@ The repository includes a `docker-compose.yml` file that starts `mcpany` and a s
    gemini http add mcpany-docker http://localhost:50050
    ```
 
+   Or, to run it in **stdio mode** via Docker (recommended for security):
+
+   ```bash
+   gemini mcp add --transport stdio mcpany-docker docker -- run -i --rm -v /absolute/path/to/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio
+   ```
+
    For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
 
 ---
