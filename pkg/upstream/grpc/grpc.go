@@ -166,11 +166,23 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
 
-	discoveredToolsFromDescriptors, err := u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, resourceManager, isReload, fds)
-	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceID, err)
+	var discoveredToolsFromDescriptors []*configv1.ToolDefinition
+	if serviceConfig.GetAutoDiscoverTool() {
+		var err error
+		discoveredToolsFromDescriptors, err = u.createAndRegisterGRPCToolsFromDescriptors(ctx, serviceID, toolManager, resourceManager, isReload, fds)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from descriptors for %s: %w", serviceID, err)
+		}
+		discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
+	} else if serviceConfig.GetGrpcService().GetUseReflection() {
+		// Log that we are skipping auto-discovery despite reflection being on, if that's worth noting?
+		// Or maybe we consider "UseReflection" implies auto-discovery?
+		// "auto_discover_tool" is new.
+		// For backward compatibility, if "auto_discover_tool" is false, we might STOP doing what we were doing?
+		// User instructions: "Use auto_discover_tool to UpstreamServiceConfig".
+		// I will assume strict opt-in for the "blind" discovery from now on, or I should check if I need to migrate?
+		// I'll stick to the flag.
 	}
-	discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
 
 	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds)
 	if err != nil {
@@ -227,6 +239,12 @@ func (u *Upstream) createAndRegisterGRPCTools(
 	for _, toolDef := range parsedData.Tools {
 		if disabledTools[toolDef.Name] {
 			log.Info("Skipping disabled tool (annotation)", "toolName", toolDef.Name)
+			continue
+		}
+		// Check Export Policy
+		serviceInfo, _ := tm.GetServiceInfo(serviceID)
+		if serviceInfo != nil && !tool.ShouldExport(toolDef.Name, serviceInfo.Config.GetToolExportPolicy()) {
+			log.Info("Skipping non-exported tool (annotation)", "toolName", toolDef.Name)
 			continue
 		}
 
@@ -400,6 +418,13 @@ func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
 
 				if disabledTools[string(methodDesc.Name())] {
 					log.Info("Skipping disabled tool (descriptor)", "toolName", methodDesc.Name())
+					continue
+				}
+
+				// Check Export Policy
+				serviceInfo, _ := tm.GetServiceInfo(serviceID)
+				if serviceInfo != nil && !tool.ShouldExport(string(methodDesc.Name()), serviceInfo.Config.GetToolExportPolicy()) {
+					log.Info("Skipping non-exported tool (descriptor)", "toolName", methodDesc.Name())
 					continue
 				}
 
@@ -582,6 +607,12 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			log.Info("Skipping disabled tool (config)", "toolName", definition.GetName())
 			continue
 		}
+		// Check Export Policy
+		serviceInfo, _ := tm.GetServiceInfo(serviceID)
+		if serviceInfo != nil && !tool.ShouldExport(definition.GetName(), serviceInfo.Config.GetToolExportPolicy()) {
+			log.Info("Skipping non-exported tool (config)", "toolName", definition.GetName())
+			continue
+		}
 		callID := definition.GetCallId()
 		grpcDef, ok := calls[callID]
 		if !ok {
@@ -653,6 +684,10 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 	for _, promptDef := range grpcService.GetPrompts() {
 		if promptDef.GetDisable() {
 			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
+		// Check Export Policy
+		if !tool.ShouldExport(promptDef.GetName(), serviceInfo.Config.GetPromptExportPolicy()) {
 			continue
 		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
