@@ -507,6 +507,7 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
+//nolint:gocyclo
 func (a *Application) runServerMode(
 	ctx context.Context,
 	mcpSrv *mcpserver.Server,
@@ -548,6 +549,7 @@ func (a *Application) runServerMode(
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
 
+	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
 	// pattern: /mcp/u/{uid}/profile/{profile_id}
 	// We use a prefix match via stripping.
@@ -597,18 +599,9 @@ func (a *Application) runServerMode(
 		// Assumption: If "prod" is defined in multiple places, they should logically share the key or we pick one.
 		// Better approach: We iterate over all services to find the profile definition.
 
-		var profileAPIKey string
+		var profileAuthConfig *config_v1.AuthenticationConfig
 		// We need access to the full config or tool manager to look up profiles.
-		// mcpSrv.ListTools() gives us tools, but we need service configs.
-		// mcpSrv.GetServiceInfo(id) gives us info.
-		// The server doesn't have a global index of profiles.
-		// We can iterate over all services in the ToolManager?
-		// Or we can rely on `mcpSrv.ServiceRegistry()`?
-		// `mcpSrv` is `*mcpserver.Server`. It has `ServiceRegistry()`.
-
-		// Let's iterate all registered services to find the profile key.
-		// Optimisation: build a map of profileID -> apiKey?
-		// For now, linear scan is fine as this is a handler change.
+		// mcpSrv.ServiceRegistry() gives us registered services.
 
 		services, err := mcpSrv.ServiceRegistry().GetAllServices()
 		if err != nil {
@@ -617,30 +610,30 @@ func (a *Application) runServerMode(
 			for _, svc := range services {
 				// svc is *config.UpstreamServiceConfig
 				for _, p := range svc.GetProfiles() {
-					if p.GetId() == profileID && p.GetApiKey() != "" {
-						profileAPIKey = p.GetApiKey()
+					if p.GetId() == profileID {
+						profileAuthConfig = p.GetAuthentication()
+						// We found the profile, break inner loop.
+						// Should we break outer loop? Yes, assuming profile IDs are unique or we take first match.
 						break
 					}
 				}
-				if profileAPIKey != "" {
+				if profileAuthConfig != nil {
 					break
 				}
 			}
 		}
 
-		requestKey := r.Header.Get("X-API-Key")
-		if requestKey == "" {
-			authHeader := r.Header.Get("Authorization")
-			if strings.HasPrefix(authHeader, "Bearer ") {
-				requestKey = strings.TrimPrefix(authHeader, "Bearer ")
-			}
-		}
+
+		// Authentication Logic with Priority:
+		// 1. Profile Authentication
+		// 2. User Authentication
+		// 3. Global Authentication
 
 		isAuthenticated := false
 
 		// 1. Profile Auth
-		if profileAPIKey != "" {
-			if subtle.ConstantTimeCompare([]byte(requestKey), []byte(profileAPIKey)) == 1 {
+		if profileAuthConfig != nil {
+			if err := auth.ValidateAuthentication(r.Context(), profileAuthConfig, r); err == nil {
 				isAuthenticated = true
 			} else {
 				// Profile auth configured but failed
@@ -649,8 +642,8 @@ func (a *Application) runServerMode(
 			}
 		} else {
 			// 2. User Auth
-			if user.HasApiKey() {
-				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(user.GetApiKey())) == 1 {
+			if user.GetAuthentication() != nil {
+				if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
 					isAuthenticated = true
 				} else {
 					// User auth configured but failed
@@ -659,7 +652,19 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// 3. Global Auth
+				// Global Auth is still a simple API Key string in GlobalSettings for now (based on current code).
+				// We can continue to use it as is.
 				if apiKey != "" {
+					// Manual check for global key since it's a string, or wrap it.
+					// We'll just do manual check to match existing behavior logic.
+					requestKey := r.Header.Get("X-API-Key")
+					if requestKey == "" {
+						authHeader := r.Header.Get("Authorization")
+						if strings.HasPrefix(authHeader, "Bearer ") {
+							requestKey = strings.TrimPrefix(authHeader, "Bearer ")
+						}
+					}
+
 					if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 						isAuthenticated = true
 					} else {
@@ -668,7 +673,7 @@ func (a *Application) runServerMode(
 						return
 					}
 				} else {
-					// No auth configured
+					// No auth configured at any level
 					isAuthenticated = true
 				}
 			}

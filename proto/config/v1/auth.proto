@@ -110,8 +110,8 @@ message UpstreamMTLSAuth {
 // AuthenticationConfig specifies the authentication method to use.
 message AuthenticationConfig {
   oneof auth_method {
-    APIKeyAuth api_key = 1;
-    OAuth2Auth oauth2 = 2;
+    APIKeyAuth api_key = 1 [json_name = "api_key"];
+    OAuth2Auth oauth2 = 2 [json_name = "oauth2"];
     // Can be extended with other auth types like JWT, mTLS etc.
   }
 }
@@ -119,15 +119,15 @@ message AuthenticationConfig {
 // APIKeyAuth defines authentication using an API key.
 message APIKeyAuth {
   // The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
-  string param_name = 1;
+  string param_name = 1 [json_name = "param_name"];
   // Where the API key is located.
   enum Location {
     HEADER = 0;
     QUERY = 1;
   }
-  Location in = 2;
+  Location in = 2 [json_name = "in"];
   // The actual API key value. It's recommended to use a secret management system.
-  string key_value = 3;
+  string key_value = 3 [json_name = "key_value"];
 }
 
 // OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.

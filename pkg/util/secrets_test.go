@@ -240,7 +240,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 			assert.Equal(t, "/v1/secret/data/my-app/db", r.URL.Path)
 			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"data": {"data": {"my-key": "my-vault-secret"}}}`)
+			_, _ = fmt.Fprint(w, `{"data": {"data": {"my-key": "my-vault-secret"}}}`)
 		}))
 		defer server.Close()
 
@@ -286,7 +286,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	t.Run("Vault key not found", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"data": {"data": {"another-key": "another-value"}}}`)
+			_, _ = fmt.Fprint(w, `{"data": {"data": {"another-key": "another-value"}}}`)
 		}))
 		defer server.Close()
 
@@ -311,7 +311,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 			assert.Equal(t, "/v1/secret/my-app/db", r.URL.Path)
 			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, `{"data": {"my-key": "my-vault-secret-v1"}}`)
+			_, _ = fmt.Fprint(w, `{"data": {"my-key": "my-vault-secret-v1"}}`)
 		}))
 		defer server.Close()
 

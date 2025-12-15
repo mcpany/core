@@ -198,14 +198,14 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 }
 
 type User struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_ApiKey      *string                `protobuf:"bytes,2,opt,name=api_key"`
-	xxx_hidden_ProfileIds  []string               `protobuf:"bytes,3,rep,name=profile_ids"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Authentication *AuthenticationConfig  `protobuf:"bytes,2,opt,name=authentication"`
+	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
@@ -243,14 +243,11 @@ func (x *User) GetId() string {
 	return ""
 }
 
-func (x *User) GetApiKey() string {
+func (x *User) GetAuthentication() *AuthenticationConfig {
 	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
+		return x.xxx_hidden_Authentication
 	}
-	return ""
+	return nil
 }
 
 func (x *User) GetProfileIds() []string {
@@ -265,9 +262,8 @@ func (x *User) SetId(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
-func (x *User) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+func (x *User) SetAuthentication(v *AuthenticationConfig) {
+	x.xxx_hidden_Authentication = v
 }
 
 func (x *User) SetProfileIds(v []string) {
@@ -281,11 +277,11 @@ func (x *User) HasId() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *User) HasApiKey() bool {
+func (x *User) HasAuthentication() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.xxx_hidden_Authentication != nil
 }
 
 func (x *User) ClearId() {
@@ -293,9 +289,8 @@ func (x *User) ClearId() {
 	x.xxx_hidden_Id = nil
 }
 
-func (x *User) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ApiKey = nil
+func (x *User) ClearAuthentication() {
+	x.xxx_hidden_Authentication = nil
 }
 
 type User_builder struct {
@@ -303,8 +298,8 @@ type User_builder struct {
 
 	// The unique ID of the user (UUID or Username).
 	Id *string
-	// The API key used for authentication.
-	ApiKey *string
+	// The authentication configuration for the user.
+	Authentication *AuthenticationConfig
 	// The list of profile IDs this user has access to.
 	ProfileIds []string
 }
@@ -317,10 +312,7 @@ func (b0 User_builder) Build() *User {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_Id = b.Id
 	}
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
+	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_ProfileIds = b.ProfileIds
 	return m0
 }
@@ -516,15 +508,15 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xd6\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
 	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"R\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x88\x01\n" +
 	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
-	"\aapi_key\x18\x02 \x01(\tR\aapi_key\x12 \n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
+	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xf1\x02\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
@@ -548,20 +540,22 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*GlobalSettings)(nil),            // 3: mcpany.config.v1.GlobalSettings
 	(*UpstreamServiceConfig)(nil),     // 4: mcpany.config.v1.UpstreamServiceConfig
 	(*UpstreamServiceCollection)(nil), // 5: mcpany.config.v1.UpstreamServiceCollection
-	(*bus.MessageBus)(nil),            // 6: bus.MessageBus
+	(*AuthenticationConfig)(nil),      // 6: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 7: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	3, // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
 	4, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	5, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	2, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	0, // 4: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	6, // 5: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	0, // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	7, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -570,6 +564,7 @@ func file_proto_config_v1_config_proto_init() {
 		return
 	}
 	file_proto_config_v1_upstream_service_proto_init()
+	file_proto_config_v1_auth_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

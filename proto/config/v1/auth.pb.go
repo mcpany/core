@@ -1941,7 +1941,7 @@ type isAuthenticationConfig_AuthMethod interface {
 }
 
 type AuthenticationConfig_ApiKey struct {
-	ApiKey *APIKeyAuth `protobuf:"bytes,1,opt,name=api_key,json=apiKey,oneof"`
+	ApiKey *APIKeyAuth `protobuf:"bytes,1,opt,name=api_key,oneof"`
 }
 
 type AuthenticationConfig_Oauth2 struct {
@@ -1956,10 +1956,10 @@ func (*AuthenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
 type APIKeyAuth struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
-	ParamName *string              `protobuf:"bytes,1,opt,name=param_name,json=paramName" json:"param_name,omitempty"`
+	ParamName *string              `protobuf:"bytes,1,opt,name=param_name" json:"param_name,omitempty"`
 	In        *APIKeyAuth_Location `protobuf:"varint,2,opt,name=in,enum=mcpany.config.v1.APIKeyAuth_Location" json:"in,omitempty"`
 	// The actual API key value. It's recommended to use a secret management system.
-	KeyValue      *string `protobuf:"bytes,3,opt,name=key_value,json=keyValue" json:"key_value,omitempty"`
+	KeyValue      *string `protobuf:"bytes,3,opt,name=key_value" json:"key_value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2301,17 +2301,18 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x10client_cert_path\x18\x01 \x01(\tR\x0eclientCertPath\x12&\n" +
 	"\x0fclient_key_path\x18\x02 \x01(\tR\rclientKeyPath\x12 \n" +
 	"\fca_cert_path\x18\x03 \x01(\tR\n" +
-	"caCertPath\"\x96\x01\n" +
-	"\x14AuthenticationConfig\x127\n" +
-	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\x06apiKey\x126\n" +
+	"caCertPath\"\x97\x01\n" +
+	"\x14AuthenticationConfig\x128\n" +
+	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\aapi_key\x126\n" +
 	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xa2\x01\n" +
+	"\vauth_method\"\xa4\x01\n" +
 	"\n" +
-	"APIKeyAuth\x12\x1d\n" +
+	"APIKeyAuth\x12\x1e\n" +
 	"\n" +
-	"param_name\x18\x01 \x01(\tR\tparamName\x125\n" +
-	"\x02in\x18\x02 \x01(\x0e2%.mcpany.config.v1.APIKeyAuth.LocationR\x02in\x12\x1b\n" +
-	"\tkey_value\x18\x03 \x01(\tR\bkeyValue\"!\n" +
+	"param_name\x18\x01 \x01(\tR\n" +
+	"param_name\x125\n" +
+	"\x02in\x18\x02 \x01(\x0e2%.mcpany.config.v1.APIKeyAuth.LocationR\x02in\x12\x1c\n" +
+	"\tkey_value\x18\x03 \x01(\tR\tkey_value\"!\n" +
 	"\bLocation\x12\n" +
 	"\n" +
 	"\x06HEADER\x10\x00\x12\t\n" +

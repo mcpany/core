@@ -30,13 +30,12 @@ import (
 	"strings"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // Engine defines the interface for configuration unmarshaling from different
@@ -105,6 +104,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
 		return err
 	}
+	// Debug logging to inspect unmarshaled user
 
 	// Validate the unmarshaled message against the schema
 	// We marshal back to JSON to ensure canonical format (camelCase) matches the schema generated from Go structs.
