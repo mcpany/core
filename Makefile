@@ -415,7 +415,7 @@ e2e: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e | grep -v "^github.com/mcpany/core$$")
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server
@@ -453,7 +453,7 @@ ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
 	@echo "Running all pre-commit hooks..."
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH; \
 	if [ -n "$(CI)" ]; then \
 		pip3 install --user --break-system-packages pre-commit || pip3 install --user pre-commit; \
 		export PATH=$$HOME/.local/bin:$$PATH; \
