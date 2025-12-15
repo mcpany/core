@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/proto/mcp_router/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -33,8 +33,8 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 		Description: proto.String("A test tool"),
 	}
 	service := &configv1.CommandLineUpstreamService{}
-	service.SetCommand("echo")
-	service.SetLocal(true)
+	service.Command = proto.String("echo")
+	service.Local = proto.Bool(true)
 	callDef := &configv1.CommandLineCallDefinition{}
 
 	localTool := NewLocalCommandTool(tool, service, callDef)

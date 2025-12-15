@@ -8,9 +8,9 @@ upstream_services:
         header_name: "PRIVATE-TOKEN"
         api_key:
           plain_text: "{{GITLAB_TOKEN}}"
-    call_policy:
-      default_action: ALLOW
-      rules:
-        # Deny deleting projects
-        - action: DENY
-          tool_name_regex: "delete.*project"
+    call_policies:
+      - default_action: ALLOW
+        rules:
+          # Deny deleting projects
+          - action: DENY
+            name_regex: "delete.*project"

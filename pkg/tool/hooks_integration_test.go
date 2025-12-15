@@ -124,8 +124,10 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
 			Config: &configv1.UpstreamServiceConfig{
-				CallPolicy: &configv1.CallPolicy{
-					DefaultAction: ptrIntegration(configv1.CallPolicy_DENY),
+				CallPolicies: []*configv1.CallPolicy{
+					{
+						DefaultAction: ptrIntegration(configv1.CallPolicy_DENY),
+					},
 				},
 			},
 		})
