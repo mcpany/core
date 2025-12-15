@@ -46,13 +46,15 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 
 ## ✨ Key Features
 
-- **Dynamic Tool Registration**: Automatically discover and register tools from various backend services, either through a dynamic gRPC API or a static configuration file.
+- **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL—MCP Any handles the rest (no manual tool definition required).
 - **Multiple Service Types**: Supports a wide range of service types, including:
   - **gRPC**: Register services from `.proto` files or by using gRPC reflection.
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
-- **Advanced Service Policies**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
+- **Advanced Service & Safety Policies**:
+  - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
+  - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
@@ -114,10 +116,9 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
 3.  **Ask about the weather:**
 
-    ````bash
+    ```bash
     gemini -m gemini-2.5-flash -p "What is the weather in London?"
-    ```ignored if tools are working.)_
-    ````
+    ```
 
 ### 6. Chat!
 
