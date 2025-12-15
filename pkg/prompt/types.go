@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sort"
 
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
@@ -61,12 +62,46 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 
 // Prompt returns the MCP prompt definition.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
-	args := make([]*mcp.PromptArgument, len(p.definition.GetArguments()))
-	for i, arg := range p.definition.GetArguments() {
-		args[i] = &mcp.PromptArgument{
-			Name:        arg.GetName(),
-			Description: arg.GetDescription(),
-			Required:    arg.GetRequired(),
+	args := make([]*mcp.PromptArgument, 0)
+	if p.definition.GetInputSchema() != nil {
+		fields := p.definition.GetInputSchema().GetFields()
+		if props, ok := fields["properties"]; ok {
+			if propsStruct := props.GetStructValue(); propsStruct != nil {
+				// Collect keys to sort them for deterministic order
+				keys := make([]string, 0, len(propsStruct.GetFields()))
+				for k := range propsStruct.GetFields() {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+
+				for _, name := range keys {
+					val := propsStruct.GetFields()[name]
+					desc := ""
+					if valStruct := val.GetStructValue(); valStruct != nil {
+						if d, ok := valStruct.GetFields()["description"]; ok {
+							desc = d.GetStringValue()
+						}
+					}
+
+					required := false
+					if req, ok := fields["required"]; ok {
+						if reqList := req.GetListValue(); reqList != nil {
+							for _, v := range reqList.GetValues() {
+								if v.GetStringValue() == name {
+									required = true
+									break
+								}
+							}
+						}
+					}
+
+					args = append(args, &mcp.PromptArgument{
+						Name:        name,
+						Description: desc,
+						Required:    required,
+					})
+				}
+			}
 		}
 	}
 	sanitizedName, _ := util.SanitizeToolName(p.definition.GetName())

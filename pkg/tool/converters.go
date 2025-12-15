@@ -149,14 +149,14 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 // *pb.Tool.
-func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition) (*pb.Tool, error) {
+func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
 	}
 
 	annotationsBuilder := pb.ToolAnnotations_builder{
-		InputSchema:  toolDef.GetInputSchema(),
-		OutputSchema: toolDef.GetOutputSchema(),
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchema,
 	}
 
 	pbTool := pb.Tool_builder{

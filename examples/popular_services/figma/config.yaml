@@ -15,35 +15,35 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: figma
-  upstream_authentication:
-    bearer_token:
-      token:
-        plain_text: "${FIGMA_API_TOKEN}"
-  http_service:
-    address: "https://api.figma.com"
-    tools:
-    - name: "get_projects"
-      call_id: "get_projects"
-      input_schema:
-        type: "object"
-        properties:
-          team_id:
-            type: "string"
-            description: "The ID of the team."
-      output_schema:
-        type: "object"
-        properties:
-          projects:
-            type: "array"
-            items:
-              type: "object"
-              properties:
-                id:
-                  type: "string"
-                name:
-                  type: "string"
-    calls:
-      get_projects:
-        endpoint_path: "/v1/teams/{{team_id}}/projects"
-        method: "HTTP_METHOD_GET"
+  - name: figma
+    upstream_authentication:
+      bearer_token:
+        token:
+          plain_text: "${FIGMA_API_TOKEN}"
+    http_service:
+      address: "https://api.figma.com"
+      tools:
+        - name: "get_projects"
+          call_id: "get_projects"
+      calls:
+        get_projects:
+          endpoint_path: "/v1/teams/{{team_id}}/projects"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              team_id:
+                type: "string"
+                description: "The ID of the team."
+          output_schema:
+            type: "object"
+            properties:
+              projects:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "string"
+                    name:
+                      type: "string"

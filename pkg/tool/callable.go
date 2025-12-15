@@ -20,6 +20,7 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // CallableTool implements the Tool interface for a tool that is executed by a
@@ -29,8 +30,8 @@ type CallableTool struct {
 }
 
 // NewCallableTool creates a new CallableTool.
-func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable) (*CallableTool, error) {
-	base, err := newBaseTool(toolDef, serviceConfig, callable)
+func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
+	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
 		return nil, err
 	}

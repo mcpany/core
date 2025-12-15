@@ -197,7 +197,11 @@ type HttpCallDefinition struct {
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer `protobuf:"bytes,7,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,8,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,8,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,9,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,10,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -276,6 +280,20 @@ func (x *HttpCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *HttpCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *HttpCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *HttpCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -302,6 +320,14 @@ func (x *HttpCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *HttpCallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *HttpCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *HttpCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *HttpCallDefinition) HasId() bool {
@@ -346,6 +372,20 @@ func (x *HttpCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *HttpCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *HttpCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *HttpCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -370,6 +410,14 @@ func (x *HttpCallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *HttpCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *HttpCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type HttpCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -387,6 +435,10 @@ type HttpCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
@@ -400,6 +452,8 @@ func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
 	x.InputTransformer = b.InputTransformer
 	x.OutputTransformer = b.OutputTransformer
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -415,7 +469,11 @@ type WebsocketCallDefinition struct {
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -480,6 +538,20 @@ func (x *WebsocketCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *WebsocketCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *WebsocketCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *WebsocketCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -498,6 +570,14 @@ func (x *WebsocketCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *WebsocketCallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *WebsocketCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *WebsocketCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *WebsocketCallDefinition) HasId() bool {
@@ -528,6 +608,20 @@ func (x *WebsocketCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *WebsocketCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *WebsocketCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *WebsocketCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -544,6 +638,14 @@ func (x *WebsocketCallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *WebsocketCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *WebsocketCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type WebsocketCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -557,6 +659,10 @@ type WebsocketCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
@@ -568,6 +674,8 @@ func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
 	x.InputTransformer = b.InputTransformer
 	x.OutputTransformer = b.OutputTransformer
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -583,7 +691,11 @@ type WebrtcCallDefinition struct {
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -648,6 +760,20 @@ func (x *WebrtcCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *WebrtcCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *WebrtcCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *WebrtcCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -666,6 +792,14 @@ func (x *WebrtcCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *WebrtcCallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *WebrtcCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *WebrtcCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *WebrtcCallDefinition) HasId() bool {
@@ -696,6 +830,20 @@ func (x *WebrtcCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *WebrtcCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *WebrtcCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *WebrtcCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -712,6 +860,14 @@ func (x *WebrtcCallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *WebrtcCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *WebrtcCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type WebrtcCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -725,6 +881,10 @@ type WebrtcCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
@@ -736,6 +896,8 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 	x.InputTransformer = b.InputTransformer
 	x.OutputTransformer = b.OutputTransformer
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -749,7 +911,11 @@ type CommandLineCallDefinition struct {
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig `protobuf:"bytes,4,opt,name=cache" json:"cache,omitempty"`
 	// The arguments to pass to the command.
-	Args          []string `protobuf:"bytes,5,rep,name=args" json:"args,omitempty"`
+	Args []string `protobuf:"bytes,5,rep,name=args" json:"args,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -807,6 +973,20 @@ func (x *CommandLineCallDefinition) GetArgs() []string {
 	return nil
 }
 
+func (x *CommandLineCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *CommandLineCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *CommandLineCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -823,6 +1003,14 @@ func (x *CommandLineCallDefinition) SetArgs(v []string) {
 	x.Args = v
 }
 
+func (x *CommandLineCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *CommandLineCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
+}
+
 func (x *CommandLineCallDefinition) HasId() bool {
 	if x == nil {
 		return false
@@ -837,12 +1025,34 @@ func (x *CommandLineCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *CommandLineCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *CommandLineCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *CommandLineCallDefinition) ClearId() {
 	x.Id = nil
 }
 
 func (x *CommandLineCallDefinition) ClearCache() {
 	x.Cache = nil
+}
+
+func (x *CommandLineCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *CommandLineCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
 }
 
 type CommandLineCallDefinition_builder struct {
@@ -856,6 +1066,10 @@ type CommandLineCallDefinition_builder struct {
 	Cache *CacheConfig
 	// The arguments to pass to the command.
 	Args []string
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
@@ -866,6 +1080,8 @@ func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
 	x.Parameters = b.Parameters
 	x.Cache = b.Cache
 	x.Args = b.Args
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1080,7 +1296,11 @@ type GrpcCallDefinition struct {
 	// Note: For gRPC, parameter mapping is typically done by matching field names
 	// between the MCP input schema and the gRPC request message.
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1138,6 +1358,20 @@ func (x *GrpcCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *GrpcCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *GrpcCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *GrpcCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -1152,6 +1386,14 @@ func (x *GrpcCallDefinition) SetMethod(v string) {
 
 func (x *GrpcCallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *GrpcCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *GrpcCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *GrpcCallDefinition) HasId() bool {
@@ -1182,6 +1424,20 @@ func (x *GrpcCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *GrpcCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *GrpcCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *GrpcCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -1198,6 +1454,14 @@ func (x *GrpcCallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *GrpcCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *GrpcCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type GrpcCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1211,6 +1475,10 @@ type GrpcCallDefinition_builder struct {
 	// between the MCP input schema and the gRPC request message.
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
@@ -1221,6 +1489,8 @@ func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
 	x.Service = b.Service
 	x.Method = b.Method
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1235,7 +1505,11 @@ type OpenAPICallDefinition struct {
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1293,6 +1567,20 @@ func (x *OpenAPICallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *OpenAPICallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *OpenAPICallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *OpenAPICallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -1307,6 +1595,14 @@ func (x *OpenAPICallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *OpenAPICallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *OpenAPICallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *OpenAPICallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *OpenAPICallDefinition) HasId() bool {
@@ -1337,6 +1633,20 @@ func (x *OpenAPICallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *OpenAPICallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *OpenAPICallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *OpenAPICallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -1353,6 +1663,14 @@ func (x *OpenAPICallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *OpenAPICallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *OpenAPICallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type OpenAPICallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1364,6 +1682,10 @@ type OpenAPICallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
@@ -1374,6 +1696,8 @@ func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
 	x.InputTransformer = b.InputTransformer
 	x.OutputTransformer = b.OutputTransformer
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1387,7 +1711,11 @@ type MCPCallDefinition struct {
 	// An optional output transformer to parse the response body.
 	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
 	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache         *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1445,6 +1773,20 @@ func (x *MCPCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *MCPCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *MCPCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *MCPCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -1459,6 +1801,14 @@ func (x *MCPCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *MCPCallDefinition) SetCache(v *CacheConfig) {
 	x.Cache = v
+}
+
+func (x *MCPCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *MCPCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *MCPCallDefinition) HasId() bool {
@@ -1489,6 +1839,20 @@ func (x *MCPCallDefinition) HasCache() bool {
 	return x.Cache != nil
 }
 
+func (x *MCPCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *MCPCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *MCPCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -1505,6 +1869,14 @@ func (x *MCPCallDefinition) ClearCache() {
 	x.Cache = nil
 }
 
+func (x *MCPCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *MCPCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type MCPCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1516,6 +1888,10 @@ type MCPCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
@@ -1526,6 +1902,8 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 	x.InputTransformer = b.InputTransformer
 	x.OutputTransformer = b.OutputTransformer
 	x.Cache = b.Cache
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1543,7 +1921,11 @@ type GraphQLCallDefinition struct {
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
 	// The selection set for the GraphQL query.
-	SelectionSet  *string `protobuf:"bytes,6,opt,name=selection_set" json:"selection_set,omitempty"`
+	SelectionSet *string `protobuf:"bytes,6,opt,name=selection_set" json:"selection_set,omitempty"`
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
+	// The schema for the output of the call.
+	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1615,6 +1997,20 @@ func (x *GraphQLCallDefinition) GetSelectionSet() string {
 	return ""
 }
 
+func (x *GraphQLCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
+}
+
+func (x *GraphQLCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.OutputSchema
+	}
+	return nil
+}
+
 func (x *GraphQLCallDefinition) SetId(v string) {
 	x.Id = &v
 }
@@ -1637,6 +2033,14 @@ func (x *GraphQLCallDefinition) SetCache(v *CacheConfig) {
 
 func (x *GraphQLCallDefinition) SetSelectionSet(v string) {
 	x.SelectionSet = &v
+}
+
+func (x *GraphQLCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
+func (x *GraphQLCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.OutputSchema = v
 }
 
 func (x *GraphQLCallDefinition) HasId() bool {
@@ -1681,6 +2085,20 @@ func (x *GraphQLCallDefinition) HasSelectionSet() bool {
 	return x.SelectionSet != nil
 }
 
+func (x *GraphQLCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
+}
+
+func (x *GraphQLCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.OutputSchema != nil
+}
+
 func (x *GraphQLCallDefinition) ClearId() {
 	x.Id = nil
 }
@@ -1705,6 +2123,14 @@ func (x *GraphQLCallDefinition) ClearSelectionSet() {
 	x.SelectionSet = nil
 }
 
+func (x *GraphQLCallDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
+func (x *GraphQLCallDefinition) ClearOutputSchema() {
+	x.OutputSchema = nil
+}
+
 type GraphQLCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1720,6 +2146,10 @@ type GraphQLCallDefinition_builder struct {
 	Cache *CacheConfig
 	// The selection set for the GraphQL query.
 	SelectionSet *string
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
@@ -1732,6 +2162,8 @@ func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
 	x.Variables = b.Variables
 	x.Cache = b.Cache
 	x.SelectionSet = b.SelectionSet
+	x.InputSchema = b.InputSchema
+	x.OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -2429,7 +2861,7 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xd2\x04\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xce\x05\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
 	"\rendpoint_path\x18\x03 \x01(\tR\rendpoint_path\x12G\n" +
@@ -2439,7 +2871,10 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
+	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\n" +
+	" \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\x98\x01\n" +
 	"\n" +
 	"HttpMethod\x12\x1b\n" +
 	"\x17HTTP_METHOD_UNSPECIFIED\x10\x00\x12\x13\n" +
@@ -2447,7 +2882,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xd2\x02\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xce\x03\n" +
 	"\x17WebsocketCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12K\n" +
 	"\n" +
@@ -2455,7 +2890,9 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xcc\x02\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xc8\x03\n" +
 	"\x14WebrtcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\n" +
@@ -2463,14 +2900,18 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xc3\x01\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xbf\x02\n" +
 	"\x19CommandLineCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12M\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2-.mcpany.config.v1.CommandLineParameterMappingR\n" +
 	"parameters\x123\n" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
-	"\x04args\x18\x05 \x03(\tR\x04args\".\n" +
+	"\x04args\x18\x05 \x03(\tR\x04args\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
 	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xdf\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
@@ -2484,29 +2925,37 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
 	"\x04TEXT\x10\x02\x12\r\n" +
-	"\tRAW_BYTES\x10\x03\"\x8b\x01\n" +
+	"\tRAW_BYTES\x10\x03\"\x87\x02\n" +
 	"\x12GrpcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x16\n" +
 	"\x06method\x18\x04 \x01(\tR\x06method\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x83\x02\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xff\x02\n" +
 	"\x15OpenAPICallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
 	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xff\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xfb\x02\n" +
 	"\x11MCPCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
 	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf7\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xf3\x02\n" +
 	"\x15GraphQLCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12&\n" +
 	"\x0eoperation_name\x18\x03 \x01(\tR\x0eoperation_name\x125\n" +
 	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x123\n" +
 	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12$\n" +
-	"\rselection_set\x18\x06 \x01(\tR\rselection_set\"\xdc\x01\n" +
+	"\rselection_set\x18\x06 \x01(\tR\rselection_set\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xdc\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
@@ -2576,43 +3025,59 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	7,  // 2: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 3: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
 	18, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	15, // 5: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
-	7,  // 6: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 7: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 8: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	16, // 9: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
-	7,  // 10: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 11: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 12: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	17, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
-	18, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	18, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 20: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	7,  // 21: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 24: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
-	18, // 25: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	0,  // 26: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	21, // 27: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	13, // 28: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 29: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 30: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 31: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 32: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 33: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 34: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 35: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	23, // 36: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	20, // 5: mcpany.config.v1.HttpCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 6: mcpany.config.v1.HttpCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	15, // 7: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
+	7,  // 8: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 9: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 10: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 11: mcpany.config.v1.WebsocketCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 12: mcpany.config.v1.WebsocketCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	16, // 13: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
+	7,  // 14: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 15: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 16: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 17: mcpany.config.v1.WebrtcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 18: mcpany.config.v1.WebrtcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	17, // 19: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
+	18, // 20: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 21: mcpany.config.v1.CommandLineCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 22: mcpany.config.v1.CommandLineCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	2,  // 23: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
+	19, // 24: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	18, // 25: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 26: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 27: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 28: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 29: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 30: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 31: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 32: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 33: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 34: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 35: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 36: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 37: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	20, // 38: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	18, // 39: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 40: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 41: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	0,  // 42: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	21, // 43: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	13, // 44: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 45: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 46: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 47: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 48: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 49: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 50: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 51: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	23, // 52: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	53, // [53:53] is the sub-list for method output_type
+	53, // [53:53] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }

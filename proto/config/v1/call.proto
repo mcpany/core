@@ -37,6 +37,10 @@ message HttpCallDefinition {
   OutputTransformer output_transformer = 7 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 8;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 9 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 10 [json_name = "output_schema"];
 }
 
 // WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
@@ -51,6 +55,10 @@ message WebsocketCallDefinition {
   OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 6;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
 }
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
@@ -65,6 +73,10 @@ message WebrtcCallDefinition {
   OutputTransformer output_transformer = 5 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 6;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
 }
 
 // CommandLineCallDefinition describes how to map an MCP call to a stdio command.
@@ -77,6 +89,10 @@ message CommandLineCallDefinition {
   CacheConfig cache = 4;
   // The arguments to pass to the command.
   repeated string args = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
 }
 
 // InputTransformer defines how to render a template from input parameters.
@@ -120,6 +136,10 @@ message GrpcCallDefinition {
   // between the MCP input schema and the gRPC request message.
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
 }
 
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
@@ -133,6 +153,10 @@ message OpenAPICallDefinition {
   OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
 }
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
@@ -145,6 +169,10 @@ message MCPCallDefinition {
   OutputTransformer output_transformer = 4 [json_name = "output_transformer"];
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 6 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 7 [json_name = "output_schema"];
 }
 
 // GraphQLCallDefinition describes a call derived from a GraphQL introspection query.
@@ -161,6 +189,10 @@ google.protobuf.Struct variables = 4;
 CacheConfig cache = 5;
 // The selection set for the GraphQL query.
 string selection_set = 6 [json_name = "selection_set"];
+// The schema for the input parameters required by the call.
+google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
+// The schema for the output of the call.
+google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
 }
 
 // ParameterType defines the data type of a parameter.
