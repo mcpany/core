@@ -14,7 +14,6 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -35,10 +34,6 @@ type ToolDefinition struct {
 	ServiceId *string `protobuf:"bytes,13,opt,name=service_id" json:"service_id,omitempty"`
 	// A human-readable description of what the tool does.
 	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct `protobuf:"bytes,3,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct `protobuf:"bytes,4,opt,name=output_schema" json:"output_schema,omitempty"`
 	// Indicates if the tool produces a continuous stream of responses.
 	IsStream *bool `protobuf:"varint,5,opt,name=is_stream" json:"is_stream,omitempty"`
 	// A human-readable title for the tool.
@@ -117,20 +112,6 @@ func (x *ToolDefinition) GetDescription() string {
 	return ""
 }
 
-func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.InputSchema
-	}
-	return nil
-}
-
-func (x *ToolDefinition) GetOutputSchema() *structpb.Struct {
-	if x != nil {
-		return x.OutputSchema
-	}
-	return nil
-}
-
 func (x *ToolDefinition) GetIsStream() bool {
 	if x != nil && x.IsStream != nil {
 		return *x.IsStream
@@ -206,14 +187,6 @@ func (x *ToolDefinition) SetDescription(v string) {
 	x.Description = &v
 }
 
-func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
-}
-
-func (x *ToolDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
-}
-
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.IsStream = &v
 }
@@ -269,20 +242,6 @@ func (x *ToolDefinition) HasDescription() bool {
 		return false
 	}
 	return x.Description != nil
-}
-
-func (x *ToolDefinition) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.InputSchema != nil
-}
-
-func (x *ToolDefinition) HasOutputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.OutputSchema != nil
 }
 
 func (x *ToolDefinition) HasIsStream() bool {
@@ -353,14 +312,6 @@ func (x *ToolDefinition) ClearDescription() {
 	x.Description = nil
 }
 
-func (x *ToolDefinition) ClearInputSchema() {
-	x.InputSchema = nil
-}
-
-func (x *ToolDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
-}
-
 func (x *ToolDefinition) ClearIsStream() {
 	x.IsStream = nil
 }
@@ -402,10 +353,6 @@ type ToolDefinition_builder struct {
 	ServiceId *string
 	// A human-readable description of what the tool does.
 	Description *string
-	// The schema for the input parameters required by the tool.
-	InputSchema *structpb.Struct
-	// The schema for the output of the tool.
-	OutputSchema *structpb.Struct
 	// Indicates if the tool produces a continuous stream of responses.
 	IsStream *bool
 	// A human-readable title for the tool.
@@ -443,8 +390,6 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	x.Name = b.Name
 	x.ServiceId = b.ServiceId
 	x.Description = b.Description
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
 	x.IsStream = b.IsStream
 	x.Title = b.Title
 	x.ReadOnlyHint = b.ReadOnlyHint
@@ -461,15 +406,13 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xa9\x04\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1dproto/config/v1/profile.proto\"\xad\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
 	"\n" +
 	"service_id\x18\r \x01(\tR\n" +
 	"service_id\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12;\n" +
-	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\routput_schema\x12\x1c\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1c\n" +
 	"\tis_stream\x18\x05 \x01(\bR\tis_stream\x12\x14\n" +
 	"\x05title\x18\x06 \x01(\tR\x05title\x12&\n" +
 	"\x0eread_only_hint\x18\a \x01(\bR\x0eread_only_hint\x12*\n" +
@@ -483,19 +426,16 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_tool_proto_goTypes = []any{
-	(*ToolDefinition)(nil),  // 0: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil), // 1: google.protobuf.Struct
-	(*Profile)(nil),         // 2: mcpany.config.v1.Profile
+	(*ToolDefinition)(nil), // 0: mcpany.config.v1.ToolDefinition
+	(*Profile)(nil),        // 1: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	1, // 1: mcpany.config.v1.ToolDefinition.output_schema:type_name -> google.protobuf.Struct
-	2, // 2: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 0: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }

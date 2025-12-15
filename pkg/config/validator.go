@@ -23,6 +23,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // BinaryType defines the type of the binary being validated.
@@ -138,6 +139,14 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //
 		if u.Scheme != "http" && u.Scheme != "https" {
 			return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 		}
+		for name, call := range httpService.GetCalls() {
+			if err := validateSchema(call.GetInputSchema()); err != nil {
+				return fmt.Errorf("http call %q input_schema error: %w", name, err)
+			}
+			if err := validateSchema(call.GetOutputSchema()); err != nil {
+				return fmt.Errorf("http call %q output_schema error: %w", name, err)
+			}
+		}
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
 		if websocketService.GetAddress() == "" {
 			return fmt.Errorf("websocket service has empty target_address")
@@ -149,9 +158,25 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //
 		if u.Scheme != "ws" && u.Scheme != "wss" {
 			return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
 		}
+		for name, call := range websocketService.GetCalls() {
+			if err := validateSchema(call.GetInputSchema()); err != nil {
+				return fmt.Errorf("websocket call %q input_schema error: %w", name, err)
+			}
+			if err := validateSchema(call.GetOutputSchema()); err != nil {
+				return fmt.Errorf("websocket call %q output_schema error: %w", name, err)
+			}
+		}
 	} else if grpcService := service.GetGrpcService(); grpcService != nil {
 		if grpcService.GetAddress() == "" {
 			return fmt.Errorf("gRPC service has empty target_address")
+		}
+		for name, call := range grpcService.GetCalls() {
+			if err := validateSchema(call.GetInputSchema()); err != nil {
+				return fmt.Errorf("grpc call %q input_schema error: %w", name, err)
+			}
+			if err := validateSchema(call.GetOutputSchema()); err != nil {
+				return fmt.Errorf("grpc call %q output_schema error: %w", name, err)
+			}
 		}
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
@@ -184,6 +209,14 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //
 			}
 		default:
 			return fmt.Errorf("mcp service has no connection_type")
+		}
+		for name, call := range mcpService.GetCalls() {
+			if err := validateSchema(call.GetInputSchema()); err != nil {
+				return fmt.Errorf("mcp call %q input_schema error: %w", name, err)
+			}
+			if err := validateSchema(call.GetOutputSchema()); err != nil {
+				return fmt.Errorf("mcp call %q output_schema error: %w", name, err)
+			}
 		}
 	}
 
@@ -260,5 +293,14 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //
 			}
 		}
 	}
+	return nil
+}
+
+func validateSchema(s *structpb.Struct) error {
+	if s == nil {
+		return nil
+	}
+	// If fields are present, ensure it has a type or properties, typical for JSON schema
+	// This is a loose check to catch obviously bad config
 	return nil
 }

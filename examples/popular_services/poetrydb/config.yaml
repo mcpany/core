@@ -15,34 +15,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: poetrydb.org
-  http_service:
-    address: "https://poetrydb.org"
-    tools:
-    - name: "getPoemsByAuthor"
-      call_id: "getPoemsByAuthor"
-      input_schema:
-        type: "object"
-        properties:
-          author_name:
-            type: "string"
-            description: "The name of the author to search for."
-      output_schema:
-        type: "array"
-    - name: "getPoemByTitle"
-      call_id: "getPoemByTitle"
-      input_schema:
-        type: "object"
-        properties:
-          title:
-            type: "string"
-            description: "The title of the poem to search for."
-      output_schema:
-        type: "array"
-    calls:
-      getPoemsByAuthor:
-        endpoint_path: "/author/{{author_name}}"
-        method: "HTTP_METHOD_GET"
-      getPoemByTitle:
-        endpoint_path: "/title/{{title}}"
-        method: "HTTP_METHOD_GET"
+  - name: poetrydb.org
+    http_service:
+      address: "https://poetrydb.org"
+      tools:
+        - name: "getPoemsByAuthor"
+          call_id: "getPoemsByAuthor"
+        - name: "getPoemByTitle"
+          call_id: "getPoemByTitle"
+      calls:
+        getPoemsByAuthor:
+          endpoint_path: "/author/{{author_name}}"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              author_name:
+                type: "string"
+                description: "The name of the author to search for."
+          output_schema:
+            type: "array"
+        getPoemByTitle:
+          endpoint_path: "/title/{{title}}"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              title:
+                type: "string"
+                description: "The title of the poem to search for."
+          output_schema:
+            type: "array"

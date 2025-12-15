@@ -15,40 +15,40 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: airtable
-  upstream_authentication:
-    bearer_token:
-      token:
-        plain_text: "${AIRTABLE_API_TOKEN}" # Removed manual 'Bearer ' prefix as bearer_token type should handle it
-  http_service:
-    address: "https://api.airtable.com"
-    tools:
-    - name: "list_records"
-      call_id: "list_records"
-      input_schema:
-        type: "object"
-        properties:
-          baseId:
-            type: "string"
-            description: "The ID of the base."
-          tableId:
-            type: "string"
-            description: "The ID of the table."
-      output_schema:
-        type: "object"
-        properties:
-            records:
-              type: "array"
-              items:
-                type: "object"
-                properties:
-                  id:
-                    type: "string"
-                  createdTime:
-                    type: "string"
-                  fields:
-                    type: "object"
-    calls:
-      list_records:
-        endpoint_path: "/v0/{{baseId}}/{{tableId}}"
-        method: "HTTP_METHOD_GET"
+  - name: airtable
+    upstream_authentication:
+      bearer_token:
+        token:
+          plain_text: "${AIRTABLE_API_TOKEN}" # Removed manual 'Bearer ' prefix as bearer_token type should handle it
+    http_service:
+      address: "https://api.airtable.com"
+      tools:
+        - name: "list_records"
+          call_id: "list_records"
+      calls:
+        list_records:
+          endpoint_path: "/v0/{{baseId}}/{{tableId}}"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              baseId:
+                type: "string"
+                description: "The ID of the base."
+              tableId:
+                type: "string"
+                description: "The ID of the table."
+          output_schema:
+            type: "object"
+            properties:
+              records:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "string"
+                    createdTime:
+                      type: "string"
+                    fields:
+                      type: "object"

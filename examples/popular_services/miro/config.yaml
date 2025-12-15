@@ -15,36 +15,36 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: miro
-  upstream_authentication:
-    bearer_token:
-      token:
-        plain_text: "${MIRO_API_TOKEN}"
-  http_service:
-    address: "https://api.miro.com"
-    tools:
-    - name: "get_boards"
-      call_id: "get_boards"
-      input_schema:
-        type: "object"
-        properties: {}
-      output_schema:
-        type: "object"
-        properties:
-          data:
-            type: "array"
-            items:
-              type: "object"
-              properties:
-                id:
-                  type: "string"
-                name:
-                  type: "string"
-                description:
-                  type: "string"
-                viewLink:
-                  type: "string"
-    calls:
-      get_boards:
-        endpoint_path: "/v2/boards"
-        method: "HTTP_METHOD_GET"
+  - name: miro
+    upstream_authentication:
+      bearer_token:
+        token:
+          plain_text: "${MIRO_API_TOKEN}"
+    http_service:
+      address: "https://api.miro.com"
+      tools:
+        - name: "get_boards"
+          call_id: "get_boards"
+      calls:
+        get_boards:
+          endpoint_path: "/v2/boards"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties: {}
+          output_schema:
+            type: "object"
+            properties:
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "string"
+                    name:
+                      type: "string"
+                    description:
+                      type: "string"
+                    viewLink:
+                      type: "string"

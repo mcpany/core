@@ -77,6 +77,9 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) {
 	}()
 
 	for _, path := range paths {
+		if isURL(path) {
+			continue
+		}
 		err := w.watcher.Add(path)
 		if err != nil {
 			log.Fatal(err)

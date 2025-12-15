@@ -15,21 +15,21 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: reddit
-  http_service:
-    address: "https://www.reddit.com"
-    tools:
-    - name: "get_hot_posts"
-      call_id: "get_hot_posts"
-      input_schema:
-        type: "object"
-        properties:
-          subreddit:
-            type: "string"
-            description: "The subreddit to get hot posts from."
-      output_schema:
-        type: "object"
-    calls:
-      get_hot_posts:
-        endpoint_path: "/r/{{subreddit}}/hot.json"
-        method: "HTTP_METHOD_GET"
+  - name: reddit
+    http_service:
+      address: "https://www.reddit.com"
+      tools:
+        - name: "get_hot_posts"
+          call_id: "get_hot_posts"
+      calls:
+        get_hot_posts:
+          endpoint_path: "/r/{{subreddit}}/hot.json"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              subreddit:
+                type: "string"
+                description: "The subreddit to get hot posts from."
+          output_schema:
+            type: "object"

@@ -191,6 +191,8 @@ type HttpCallDefinition struct {
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer"`
 	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,8,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct              `protobuf:"bytes,9,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct              `protobuf:"bytes,10,opt,name=output_schema"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -281,19 +283,33 @@ func (x *HttpCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *HttpCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *HttpCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *HttpCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *HttpCallDefinition) SetEndpointPath(v string) {
 	x.xxx_hidden_EndpointPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *HttpCallDefinition) SetMethod(v HttpCallDefinition_HttpMethod) {
 	x.xxx_hidden_Method = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *HttpCallDefinition) SetParameters(v []*HttpParameterMapping) {
@@ -310,6 +326,14 @@ func (x *HttpCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *HttpCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *HttpCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *HttpCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *HttpCallDefinition) HasId() bool {
@@ -354,6 +378,20 @@ func (x *HttpCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *HttpCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *HttpCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *HttpCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -381,6 +419,14 @@ func (x *HttpCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *HttpCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *HttpCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type HttpCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -398,6 +444,10 @@ type HttpCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
@@ -405,21 +455,23 @@ func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.EndpointPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
 		x.xxx_hidden_EndpointPath = b.EndpointPath
 	}
 	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
 		x.xxx_hidden_Method = *b.Method
 	}
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -431,6 +483,8 @@ type WebsocketCallDefinition struct {
 	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,4,opt,name=input_transformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,5,opt,name=output_transformer"`
 	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct              `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct              `protobuf:"bytes,8,opt,name=output_schema"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -502,9 +556,23 @@ func (x *WebsocketCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *WebsocketCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *WebsocketCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *WebsocketCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *WebsocketCallDefinition) SetParameters(v []*WebsocketParameterMapping) {
@@ -521,6 +589,14 @@ func (x *WebsocketCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *WebsocketCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *WebsocketCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *WebsocketCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *WebsocketCallDefinition) HasId() bool {
@@ -551,6 +627,20 @@ func (x *WebsocketCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *WebsocketCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *WebsocketCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *WebsocketCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -568,6 +658,14 @@ func (x *WebsocketCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *WebsocketCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *WebsocketCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type WebsocketCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -581,6 +679,10 @@ type WebsocketCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
@@ -588,13 +690,15 @@ func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -606,6 +710,8 @@ type WebrtcCallDefinition struct {
 	xxx_hidden_InputTransformer  *InputTransformer          `protobuf:"bytes,4,opt,name=input_transformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer         `protobuf:"bytes,5,opt,name=output_transformer"`
 	xxx_hidden_Cache             *CacheConfig               `protobuf:"bytes,6,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct           `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct           `protobuf:"bytes,8,opt,name=output_schema"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -677,9 +783,23 @@ func (x *WebrtcCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *WebrtcCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *WebrtcCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *WebrtcCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *WebrtcCallDefinition) SetParameters(v []*WebrtcParameterMapping) {
@@ -696,6 +816,14 @@ func (x *WebrtcCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *WebrtcCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *WebrtcCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *WebrtcCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *WebrtcCallDefinition) HasId() bool {
@@ -726,6 +854,20 @@ func (x *WebrtcCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *WebrtcCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *WebrtcCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *WebrtcCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -743,6 +885,14 @@ func (x *WebrtcCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *WebrtcCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *WebrtcCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type WebrtcCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -756,6 +906,10 @@ type WebrtcCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
@@ -763,27 +917,31 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // CommandLineCallDefinition describes how to map an MCP call to a stdio command.
 type CommandLineCallDefinition struct {
-	state                  protoimpl.MessageState          `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                         `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Parameters  *[]*CommandLineParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
-	xxx_hidden_Cache       *CacheConfig                    `protobuf:"bytes,4,opt,name=cache"`
-	xxx_hidden_Args        []string                        `protobuf:"bytes,5,rep,name=args"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                   protoimpl.MessageState          `protogen:"opaque.v1"`
+	xxx_hidden_Id           *string                         `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Parameters   *[]*CommandLineParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
+	xxx_hidden_Cache        *CacheConfig                    `protobuf:"bytes,4,opt,name=cache"`
+	xxx_hidden_Args         []string                        `protobuf:"bytes,5,rep,name=args"`
+	xxx_hidden_InputSchema  *structpb.Struct                `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema *structpb.Struct                `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *CommandLineCallDefinition) Reset() {
@@ -844,9 +1002,23 @@ func (x *CommandLineCallDefinition) GetArgs() []string {
 	return nil
 }
 
+func (x *CommandLineCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *CommandLineCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *CommandLineCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *CommandLineCallDefinition) SetParameters(v []*CommandLineParameterMapping) {
@@ -859,6 +1031,14 @@ func (x *CommandLineCallDefinition) SetCache(v *CacheConfig) {
 
 func (x *CommandLineCallDefinition) SetArgs(v []string) {
 	x.xxx_hidden_Args = v
+}
+
+func (x *CommandLineCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *CommandLineCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *CommandLineCallDefinition) HasId() bool {
@@ -875,6 +1055,20 @@ func (x *CommandLineCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *CommandLineCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *CommandLineCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *CommandLineCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -882,6 +1076,14 @@ func (x *CommandLineCallDefinition) ClearId() {
 
 func (x *CommandLineCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
+}
+
+func (x *CommandLineCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *CommandLineCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type CommandLineCallDefinition_builder struct {
@@ -895,6 +1097,10 @@ type CommandLineCallDefinition_builder struct {
 	Cache *CacheConfig
 	// The arguments to pass to the command.
 	Args []string
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
@@ -902,12 +1108,14 @@ func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Parameters = &b.Parameters
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_Args = b.Args
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1128,15 +1336,17 @@ func (b0 OutputTransformer_builder) Build() *OutputTransformer {
 
 // GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
 type GrpcCallDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Service     *string                `protobuf:"bytes,3,opt,name=service"`
-	xxx_hidden_Method      *string                `protobuf:"bytes,4,opt,name=method"`
-	xxx_hidden_Cache       *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id           *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Service      *string                `protobuf:"bytes,3,opt,name=service"`
+	xxx_hidden_Method       *string                `protobuf:"bytes,4,opt,name=method"`
+	xxx_hidden_Cache        *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema  *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *GrpcCallDefinition) Reset() {
@@ -1201,23 +1411,45 @@ func (x *GrpcCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *GrpcCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *GrpcCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *GrpcCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *GrpcCallDefinition) SetService(v string) {
 	x.xxx_hidden_Service = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *GrpcCallDefinition) SetMethod(v string) {
 	x.xxx_hidden_Method = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *GrpcCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *GrpcCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *GrpcCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *GrpcCallDefinition) HasId() bool {
@@ -1248,6 +1480,20 @@ func (x *GrpcCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *GrpcCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *GrpcCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *GrpcCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -1267,6 +1513,14 @@ func (x *GrpcCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *GrpcCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *GrpcCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type GrpcCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1280,6 +1534,10 @@ type GrpcCallDefinition_builder struct {
 	// between the MCP input schema and the gRPC request message.
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
@@ -1287,18 +1545,20 @@ func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Service != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_Service = b.Service
 	}
 	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_Method = b.Method
 	}
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1310,6 +1570,8 @@ type OpenAPICallDefinition struct {
 	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,3,opt,name=input_transformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,4,opt,name=output_transformer"`
 	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -1372,9 +1634,23 @@ func (x *OpenAPICallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *OpenAPICallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *OpenAPICallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *OpenAPICallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *OpenAPICallDefinition) SetInputTransformer(v *InputTransformer) {
@@ -1387,6 +1663,14 @@ func (x *OpenAPICallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *OpenAPICallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *OpenAPICallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *OpenAPICallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *OpenAPICallDefinition) HasId() bool {
@@ -1417,6 +1701,20 @@ func (x *OpenAPICallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *OpenAPICallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *OpenAPICallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *OpenAPICallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -1434,6 +1732,14 @@ func (x *OpenAPICallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *OpenAPICallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *OpenAPICallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type OpenAPICallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1445,6 +1751,10 @@ type OpenAPICallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
@@ -1452,12 +1762,14 @@ func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1468,6 +1780,8 @@ type MCPCallDefinition struct {
 	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,3,opt,name=input_transformer"`
 	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,4,opt,name=output_transformer"`
 	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -1530,9 +1844,23 @@ func (x *MCPCallDefinition) GetCache() *CacheConfig {
 	return nil
 }
 
+func (x *MCPCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *MCPCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *MCPCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *MCPCallDefinition) SetInputTransformer(v *InputTransformer) {
@@ -1545,6 +1873,14 @@ func (x *MCPCallDefinition) SetOutputTransformer(v *OutputTransformer) {
 
 func (x *MCPCallDefinition) SetCache(v *CacheConfig) {
 	x.xxx_hidden_Cache = v
+}
+
+func (x *MCPCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *MCPCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *MCPCallDefinition) HasId() bool {
@@ -1575,6 +1911,20 @@ func (x *MCPCallDefinition) HasCache() bool {
 	return x.xxx_hidden_Cache != nil
 }
 
+func (x *MCPCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *MCPCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *MCPCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -1592,6 +1942,14 @@ func (x *MCPCallDefinition) ClearCache() {
 	x.xxx_hidden_Cache = nil
 }
 
+func (x *MCPCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *MCPCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type MCPCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1603,6 +1961,10 @@ type MCPCallDefinition_builder struct {
 	OutputTransformer *OutputTransformer
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
@@ -1610,12 +1972,14 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_InputTransformer = b.InputTransformer
 	x.xxx_hidden_OutputTransformer = b.OutputTransformer
 	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -1628,6 +1992,8 @@ type GraphQLCallDefinition struct {
 	xxx_hidden_Variables     *structpb.Struct       `protobuf:"bytes,4,opt,name=variables"`
 	xxx_hidden_Cache         *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
 	xxx_hidden_SelectionSet  *string                `protobuf:"bytes,6,opt,name=selection_set"`
+	xxx_hidden_InputSchema   *structpb.Struct       `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema  *structpb.Struct       `protobuf:"bytes,8,opt,name=output_schema"`
 	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
 	XXX_presence             [1]uint32
 	unknownFields            protoimpl.UnknownFields
@@ -1713,19 +2079,33 @@ func (x *GraphQLCallDefinition) GetSelectionSet() string {
 	return ""
 }
 
+func (x *GraphQLCallDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_InputSchema
+	}
+	return nil
+}
+
+func (x *GraphQLCallDefinition) GetOutputSchema() *structpb.Struct {
+	if x != nil {
+		return x.xxx_hidden_OutputSchema
+	}
+	return nil
+}
+
 func (x *GraphQLCallDefinition) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *GraphQLCallDefinition) SetQuery(v string) {
 	x.xxx_hidden_Query = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *GraphQLCallDefinition) SetOperationName(v string) {
 	x.xxx_hidden_OperationName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *GraphQLCallDefinition) SetVariables(v *structpb.Struct) {
@@ -1738,7 +2118,15 @@ func (x *GraphQLCallDefinition) SetCache(v *CacheConfig) {
 
 func (x *GraphQLCallDefinition) SetSelectionSet(v string) {
 	x.xxx_hidden_SelectionSet = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+}
+
+func (x *GraphQLCallDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
+}
+
+func (x *GraphQLCallDefinition) SetOutputSchema(v *structpb.Struct) {
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *GraphQLCallDefinition) HasId() bool {
@@ -1783,6 +2171,20 @@ func (x *GraphQLCallDefinition) HasSelectionSet() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
+func (x *GraphQLCallDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
+func (x *GraphQLCallDefinition) HasOutputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OutputSchema != nil
+}
+
 func (x *GraphQLCallDefinition) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -1811,6 +2213,14 @@ func (x *GraphQLCallDefinition) ClearSelectionSet() {
 	x.xxx_hidden_SelectionSet = nil
 }
 
+func (x *GraphQLCallDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
+func (x *GraphQLCallDefinition) ClearOutputSchema() {
+	x.xxx_hidden_OutputSchema = nil
+}
+
 type GraphQLCallDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1826,6 +2236,10 @@ type GraphQLCallDefinition_builder struct {
 	Cache *CacheConfig
 	// The selection set for the GraphQL query.
 	SelectionSet *string
+	// The schema for the input parameters required by the call.
+	InputSchema *structpb.Struct
+	// The schema for the output of the call.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
@@ -1833,23 +2247,25 @@ func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Query != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
 		x.xxx_hidden_Query = b.Query
 	}
 	if b.OperationName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
 		x.xxx_hidden_OperationName = b.OperationName
 	}
 	x.xxx_hidden_Variables = b.Variables
 	x.xxx_hidden_Cache = b.Cache
 	if b.SelectionSet != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
 		x.xxx_hidden_SelectionSet = b.SelectionSet
 	}
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
@@ -2579,7 +2995,7 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xd2\x04\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xce\x05\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
 	"\rendpoint_path\x18\x03 \x01(\tR\rendpoint_path\x12G\n" +
@@ -2589,7 +3005,10 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x06 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\a \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x98\x01\n" +
+	"\x05cache\x18\b \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\n" +
+	" \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\x98\x01\n" +
 	"\n" +
 	"HttpMethod\x12\x1b\n" +
 	"\x17HTTP_METHOD_UNSPECIFIED\x10\x00\x12\x13\n" +
@@ -2597,7 +3016,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x10HTTP_METHOD_POST\x10\x02\x12\x13\n" +
 	"\x0fHTTP_METHOD_PUT\x10\x03\x12\x16\n" +
 	"\x12HTTP_METHOD_DELETE\x10\x04\x12\x15\n" +
-	"\x11HTTP_METHOD_PATCH\x10\x05\"\xd2\x02\n" +
+	"\x11HTTP_METHOD_PATCH\x10\x05\"\xce\x03\n" +
 	"\x17WebsocketCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12K\n" +
 	"\n" +
@@ -2605,7 +3024,9 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xcc\x02\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xc8\x03\n" +
 	"\x14WebrtcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\n" +
@@ -2613,14 +3034,18 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"parameters\x12P\n" +
 	"\x11input_transformer\x18\x04 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x05 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xc3\x01\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xbf\x02\n" +
 	"\x19CommandLineCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12M\n" +
 	"\n" +
 	"parameters\x18\x03 \x03(\v2-.mcpany.config.v1.CommandLineParameterMappingR\n" +
 	"parameters\x123\n" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
-	"\x04args\x18\x05 \x03(\tR\x04args\".\n" +
+	"\x04args\x18\x05 \x03(\tR\x04args\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\".\n" +
 	"\x10InputTransformer\x12\x1a\n" +
 	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xdf\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
@@ -2634,29 +3059,37 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
 	"\x04TEXT\x10\x02\x12\r\n" +
-	"\tRAW_BYTES\x10\x03\"\x8b\x01\n" +
+	"\tRAW_BYTES\x10\x03\"\x87\x02\n" +
 	"\x12GrpcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x16\n" +
 	"\x06method\x18\x04 \x01(\tR\x06method\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\x83\x02\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xff\x02\n" +
 	"\x15OpenAPICallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
 	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xff\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xfb\x02\n" +
 	"\x11MCPCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12P\n" +
 	"\x11input_transformer\x18\x03 \x01(\v2\".mcpany.config.v1.InputTransformerR\x11input_transformer\x12S\n" +
 	"\x12output_transformer\x18\x04 \x01(\v2#.mcpany.config.v1.OutputTransformerR\x12output_transformer\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\"\xf7\x01\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
+	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xf3\x02\n" +
 	"\x15GraphQLCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12&\n" +
 	"\x0eoperation_name\x18\x03 \x01(\tR\x0eoperation_name\x125\n" +
 	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x123\n" +
 	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12$\n" +
-	"\rselection_set\x18\x06 \x01(\tR\rselection_set\"\xdc\x01\n" +
+	"\rselection_set\x18\x06 \x01(\tR\rselection_set\x12;\n" +
+	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xdc\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
@@ -2726,43 +3159,59 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	7,  // 2: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 3: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
 	18, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	15, // 5: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
-	7,  // 6: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 7: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 8: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	16, // 9: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
-	7,  // 10: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 11: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 12: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	17, // 13: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
-	18, // 14: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	2,  // 15: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	19, // 16: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	18, // 17: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	7,  // 18: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 19: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 20: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	7,  // 21: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 22: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 23: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 24: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
-	18, // 25: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	0,  // 26: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	21, // 27: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	13, // 28: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 29: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 30: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 31: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 32: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 33: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 34: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 35: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	23, // 36: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	20, // 5: mcpany.config.v1.HttpCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 6: mcpany.config.v1.HttpCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	15, // 7: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
+	7,  // 8: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 9: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 10: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 11: mcpany.config.v1.WebsocketCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 12: mcpany.config.v1.WebsocketCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	16, // 13: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
+	7,  // 14: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 15: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 16: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 17: mcpany.config.v1.WebrtcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 18: mcpany.config.v1.WebrtcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	17, // 19: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
+	18, // 20: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 21: mcpany.config.v1.CommandLineCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 22: mcpany.config.v1.CommandLineCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	2,  // 23: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
+	19, // 24: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	18, // 25: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 26: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 27: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 28: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 29: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 30: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 31: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 32: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 33: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 34: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 35: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 36: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 37: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	20, // 38: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	18, // 39: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 40: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 41: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	0,  // 42: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	21, // 43: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	13, // 44: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 45: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 46: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 47: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 48: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 49: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 50: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	22, // 51: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	23, // 52: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	53, // [53:53] is the sub-list for method output_type
+	53, // [53:53] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
