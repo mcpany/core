@@ -23,6 +23,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
@@ -44,7 +45,8 @@ import (
 // creds is the per-RPC credentials to be used for authentication.
 // It returns a new gRPC client pool or an error if the pool cannot be created.
 func NewGrpcPool(
-	minSize, maxSize, idleTimeout int,
+	minSize, maxSize int,
+	idleTimeout time.Duration,
 	dialer func(context.Context, string) (net.Conn, error),
 	creds credentials.PerRPCCredentials,
 	config *configv1.UpstreamServiceConfig,

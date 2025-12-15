@@ -23,6 +23,7 @@ import (
 	"io"
 	"reflect"
 	"sync"
+	"time"
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/samber/lo"
@@ -93,7 +94,8 @@ type poolImpl[T ClosableClient] struct {
 // Returns a new `Pool` instance or an error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
-	minSize, maxSize, _ int, // idleTimeout is not used yet
+	minSize, maxSize int,
+	_ time.Duration, // idleTimeout is not used yet
 	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {
