@@ -268,7 +268,7 @@ prepare:
 	@if command -v npm >/dev/null 2>&1; then \
 		if test -f "tests/integration/upstream/package.json"; then \
 			echo "Found package.json, running npm install..."; \
-			(cd tests/integration/upstream && npm install && npx playwright install); \
+			(cd tests/integration/upstream && npm install && npx playwright install --with-deps); \
 		else \
 			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
 		fi; \
