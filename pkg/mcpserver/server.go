@@ -152,7 +152,9 @@ func NewServer(
 		Name:    appconsts.Name,
 		Version: appconsts.Version,
 	}, &mcp.ServerOptions{
-		HasPrompts: true,
+		HasPrompts:   true,
+		HasTools:     true,
+		HasResources: true,
 	})
 	s.server = mcpServer
 
@@ -404,7 +406,7 @@ func (s *Server) ListTools() []tool.Tool {
 
 // CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName)
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", req.Arguments)
 	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
 	metrics.IncrCounter([]string{"tool", req.ToolName, "call", "total"}, 1)
 	startTime := time.Now()
