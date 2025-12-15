@@ -7,6 +7,7 @@ package mcpany.config.v1;
 
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -30,8 +31,8 @@ message McpAnyServerConfig {
 message User {
   // The unique ID of the user (UUID or Username).
   string id = 1 [json_name = "id"];
-  // The API key used for authentication.
-  string api_key = 2 [json_name = "api_key"];
+  // The authentication configuration for the user.
+  AuthenticationConfig authentication = 2 [json_name = "authentication"];
   // The list of profile IDs this user has access to.
   repeated string profile_ids = 3 [json_name = "profile_ids"];
 }

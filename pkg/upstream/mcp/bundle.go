@@ -86,7 +86,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open manifest.json: %w", err)
 	}
-	defer manifestFile.Close()
+	defer func() { _ = manifestFile.Close() }()
 
 	var manifest Manifest
 	if err := json.NewDecoder(manifestFile).Decode(&manifest); err != nil {
@@ -257,7 +257,7 @@ func unzipBundle(src, dest string) error {
 	if err != nil {
 		return err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	if err := os.MkdirAll(dest, 0755); err != nil {
 		return err
@@ -288,7 +288,7 @@ func unzipBundle(src, dest string) error {
 
 		rc, err := f.Open()
 		if err != nil {
-			outFile.Close()
+			_ = outFile.Close()
 			return err
 		}
 
@@ -297,8 +297,8 @@ func unzipBundle(src, dest string) error {
 		//nolint:gosec
 		_, err = io.Copy(outFile, rc)
 
-		outFile.Close()
-		rc.Close()
+		_ = outFile.Close()
+		_ = rc.Close()
 
 		if err != nil {
 			return err

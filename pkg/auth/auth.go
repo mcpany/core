@@ -72,8 +72,9 @@ type Authenticator interface {
 // API key. It implements the `Authenticator` interface and checks for the
 // presence of a specific header, validating its value against a configured key.
 type APIKeyAuthenticator struct {
-	HeaderName  string
-	HeaderValue string
+	ParamName string
+	In        configv1.APIKeyAuth_Location
+	Value     string
 }
 
 // NewAPIKeyAuthenticator creates a new APIKeyAuthenticator from the provided
@@ -91,13 +92,14 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 		return nil
 	}
 	return &APIKeyAuthenticator{
-		HeaderName:  config.GetParamName(),
-		HeaderValue: config.GetKeyValue(),
+		ParamName: config.GetParamName(),
+		In:        config.GetIn(),
+		Value:     config.GetKeyValue(),
 	}
 }
 
-// Authenticate verifies the API key in the request headers. It checks if the
-// header specified by `HeaderName` matches the expected `HeaderValue`.
+// Authenticate verifies the API key in the request. It checks if the
+// parameter specified by `ParamName` matches the expected `Value`.
 //
 // If the API key is valid, the original context is returned with no error. If
 // the key is invalid or missing, an "unauthorized" error is returned.
@@ -108,7 +110,17 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 //
 // Returns the original context and `nil` on success, or an error on failure.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
-	if r.Header.Get(a.HeaderName) == a.HeaderValue {
+	var receivedKey string
+	switch a.In {
+	case configv1.APIKeyAuth_HEADER:
+		receivedKey = r.Header.Get(a.ParamName)
+	case configv1.APIKeyAuth_QUERY:
+		receivedKey = r.URL.Query().Get(a.ParamName)
+	default:
+		receivedKey = r.Header.Get(a.ParamName)
+	}
+
+	if receivedKey == a.Value {
 		return ctx, nil
 	}
 	return ctx, fmt.Errorf("unauthorized")
@@ -225,4 +237,46 @@ func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string,
 		return fmt.Errorf("failed to create OAuth2 authenticator for service %s: %w", serviceID, err)
 	}
 	return am.AddAuthenticator(serviceID, authenticator)
+}
+// ValidateAuthentication validates the authentication request against the provided configuration.
+// It supports API Key and OAuth2 authentication methods.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - config: The authentication configuration.
+//   - r: The HTTP request to validate.
+//
+// Returns an error if validation fails or the method is unsupported.
+func ValidateAuthentication(ctx context.Context, config *configv1.AuthenticationConfig, r *http.Request) error {
+	if config == nil {
+		return nil // No auth configured implies allowed
+	}
+
+	switch method := config.AuthMethod.(type) {
+	case *configv1.AuthenticationConfig_ApiKey:
+		authenticator := NewAPIKeyAuthenticator(method.ApiKey)
+		if authenticator == nil {
+			return fmt.Errorf("invalid API key configuration")
+		}
+		_, err := authenticator.Authenticate(ctx, r)
+		return err
+	case *configv1.AuthenticationConfig_Oauth2:
+		// OAuth2 validation typically requires a more complex flow or token validation.
+		// For the server receiving a request, it usually expects a Bearer token that matches some introspection or local validation.
+		// However, the OAuth2Auth config struct usually defines client credentials for *outgoing* requests or *setup*.
+		// If used for incoming auth, it might imply validating a JWT or similar.
+		// For now, we'll placeholder this or strictly check if headers are present if that's the intention.
+		// BUT, reading the proto, OAuth2Auth has token_url, client_id etc. This is for CLIENT usage mostly.
+		// Verification of incoming OAuth2 tokens usually involves JWKS or similar which isn't in that config.
+		// So we might need to assume this config is for client?
+		// Wait, the user asked for "AuthenticationConfig" to be used for "authentication in user and profile".
+		// Usually this implies *incoming* auth to the MCP server.
+		// If the MCP server is acting as an OAuth2 Resource Server, it needs validation keys, not client_id/secret.
+		// Let's assume for now we only fully support APIKey for internal User/Profile incoming auth, or strict equality?
+		// Re-reading usage: "we are going to reuse the same function to authentication user."
+		// Let's implement API Key core logic.
+		return fmt.Errorf("oauth2 authentication not yet implemented for incoming requests")
+	default:
+		return nil
+	}
 }

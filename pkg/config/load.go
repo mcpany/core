@@ -51,7 +51,13 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		fileConfig = &configv1.McpAnyServerConfig{}
 	}
 
-	manager := NewUpstreamServiceManager(GlobalSettings().Profiles())
+	// Use profiles from config if available, otherwise fall back to global settings
+	profiles := fileConfig.GetGlobalSettings().GetProfiles()
+	if len(profiles) == 0 {
+		profiles = GlobalSettings().Profiles()
+	}
+
+	manager := NewUpstreamServiceManager(profiles)
 	services, err := manager.LoadAndMergeServices(context.Background(), fileConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load and merge services: %w", err)
@@ -75,13 +81,23 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		}
 
 		apiKey := GlobalSettings().APIKey()
-		fileConfig.Users = []*configv1.User{
-			{
-				Id:         proto.String("default"),
-				ApiKey:     proto.String(apiKey),
-				ProfileIds: profileIDs,
-			},
+		defaultUser := &configv1.User{
+			Id:         proto.String("default"),
+			ProfileIds: profileIDs,
 		}
+		if apiKey != "" {
+			headerLoc := configv1.APIKeyAuth_HEADER
+			defaultUser.Authentication = &configv1.AuthenticationConfig{
+				AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{
+						ParamName: proto.String("X-API-Key"),
+						KeyValue:  proto.String(apiKey),
+						In:        &headerLoc,
+					},
+				},
+			}
+		}
+		fileConfig.Users = []*configv1.User{defaultUser}
 	}
 
 	var bt BinaryType

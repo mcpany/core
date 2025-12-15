@@ -74,7 +74,11 @@ upstream_services:
     profiles:
       - name: "secure"
         id: "secure-profile"
-        api_key: "key-secure-profile"
+        authentication:
+          api_key:
+            param_name: "X-Profile-Key"
+            key_value: "key-secure-profile"
+            in: "HEADER"
     http_service:
       address: "http://localhost:8084"
       tools:
@@ -115,12 +119,12 @@ upstream_services:
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	httpPort := l.Addr().(*net.TCPAddr).Port
-	l.Close()
+	_ = l.Close()
 
 	l2, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	grpcPort := l2.Addr().(*net.TCPAddr).Port
-	l2.Close()
+	_ = l2.Close()
 
 	// Inject users into the run call?
 	// app.Run loads config from file.
@@ -133,13 +137,25 @@ upstream_services:
 	configContentWithUsers := configContent + `
 users:
   - id: "user-dev"
-    api_key: "key-dev"
+    authentication:
+      api_key:
+        param_name: "X-User-Key"
+        key_value: "key-dev"
+        in: "HEADER"
     profile_ids: ["dev-profile"]
   - id: "user-prod"
-    api_key: "key-prod"
+    authentication:
+      api_key:
+        param_name: "X-User-Key"
+        key_value: "key-prod"
+        in: "HEADER"
     profile_ids: ["prod-profile", "dev-profile"]
   - id: "user-secure"
-    api_key: "key-secure-user"
+    authentication:
+      api_key:
+        param_name: "X-User-Key"
+        key_value: "key-secure-user"
+        in: "HEADER"
     profile_ids: ["secure-profile"]
 `
 	err = afero.WriteFile(fs, "/config.yaml", []byte(configContentWithUsers), 0o644)
@@ -150,19 +166,19 @@ users:
 		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, 5*time.Second)
 	}()
 
-	// Wait for server to start
+		// Wait for server to start
 	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
 		if err != nil {
 			return false
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
 	}, 5*time.Second, 100*time.Millisecond)
 
 	// Helper to calls tools/list via SSE
-	listTools := func(uid, profileID, apiKey string) ([]string, error) {
+	listTools := func(uid, profileID, headerName, apiKey string) ([]string, error) {
 		url := fmt.Sprintf("%s/mcp/u/%s/profile/%s", baseURL, uid, profileID)
 
 		reqBody := `{
@@ -177,7 +193,7 @@ users:
 			return nil, err
 		}
 
-		req.Header.Set("X-API-Key", apiKey)
+		req.Header.Set(headerName, apiKey)
 		req.Header.Set("Content-Type", "application/json")
 
 		client := &http.Client{Timeout: 2 * time.Second}
@@ -185,7 +201,7 @@ users:
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		if resp.StatusCode != http.StatusOK {
 			return nil, fmt.Errorf("status code: %d", resp.StatusCode)
@@ -229,7 +245,7 @@ users:
 	// So shared-tool should be visible.
 
 	t.Run("UserDev sees dev tools and shared tools", func(t *testing.T) {
-		tools, err := listTools("user-dev", "dev-profile", "key-dev")
+		tools, err := listTools("user-dev", "dev-profile", "X-User-Key", "key-dev")
 		require.NoError(t, err)
 		assert.Contains(t, tools, "dev-tool")
 		assert.Contains(t, tools, "shared-tool")
@@ -239,7 +255,7 @@ users:
 	// Test Case 2: Prod User (Profile: prod-profile)
 	// Should see: prod-tool, shared-tool. Not dev-tool.
 	t.Run("UserProd (prod-profile) sees prod tools and shared tools", func(t *testing.T) {
-		tools, err := listTools("user-prod", "prod-profile", "key-prod")
+		tools, err := listTools("user-prod", "prod-profile", "X-User-Key", "key-prod")
 		require.NoError(t, err)
 		assert.Contains(t, tools, "prod-tool")
 		assert.Contains(t, tools, "shared-tool")
@@ -249,7 +265,7 @@ users:
 	// Test Case 3: Prod User accessing Dev Profile (allowed)
 	// Should see: dev-tool, shared-tool.
 	t.Run("UserProd accessing dev-profile sees dev tools", func(t *testing.T) {
-		tools, err := listTools("user-prod", "dev-profile", "key-prod")
+		tools, err := listTools("user-prod", "dev-profile", "X-User-Key", "key-prod")
 		require.NoError(t, err)
 		assert.Contains(t, tools, "dev-tool")
 		assert.Contains(t, tools, "shared-tool")
@@ -262,19 +278,19 @@ users:
 		// user-secure has api_key: "key-secure-user"
 
 		// 1. Verify Profile Key works
-		tools, err := listTools("user-secure", "secure-profile", "key-secure-profile")
+		tools, err := listTools("user-secure", "secure-profile", "X-Profile-Key", "key-secure-profile")
 		require.NoError(t, err)
 		assert.Contains(t, tools, "secure-tool")
 
 		// 2. Verify User Key fails (because profile key is set)
-		_, err = listTools("user-secure", "secure-profile", "key-secure-user")
+		_, err = listTools("user-secure", "secure-profile", "X-User-Key", "key-secure-user")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "status code: 401")
 	})
 
 	// Test Case 4: Invalid Auth
 	t.Run("Invalid API Key fails", func(t *testing.T) {
-		_, err := listTools("user-dev", "dev-profile", "wrong-key")
+		_, err := listTools("user-dev", "dev-profile", "X-User-Key", "wrong-key")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "status code: 401")
 	})
@@ -288,7 +304,7 @@ users:
 		// I missed what happens if profileID is not found in loop.
 		// I should verify server.go logic handles this denial.
 		// Assuming it returns 403.
-		_, err := listTools("user-dev", "prod-profile", "key-dev")
+		_, err := listTools("user-dev", "prod-profile", "X-User-Key", "key-dev")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "status code: 403") // Forbidden
 	})

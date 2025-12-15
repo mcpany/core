@@ -142,7 +142,7 @@ Once the server is running, you can interact with it using its JSON-RPC API.
 
 - For detailed configuration options, see **[Configuration Reference](docs/reference/configuration.md)**.
 - For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](docs/integrations.md)**.
-- For hands-on examples, see the **[Examples](docs/examples.md)**.
+- For hands-on examples, see the **[Examples](docs/examples.md)** and the **[Profile Authentication Example](examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
 
 ## 🤝 Contributing

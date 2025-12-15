@@ -24,6 +24,7 @@ import (
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/middleware"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,8 +50,9 @@ func TestAuthMiddleware(t *testing.T) {
 	t.Run("should return error when authentication fails", func(t *testing.T) {
 		authManager := auth.NewManager()
 		authenticator := &auth.APIKeyAuthenticator{
-			HeaderName:  "X-API-Key",
-			HeaderValue: "secret",
+			ParamName: "X-API-Key",
+			Value:     "secret",
+			In:        configv1.APIKeyAuth_HEADER,
 		}
 		err := authManager.AddAuthenticator("test", authenticator)
 		require.NoError(t, err)
@@ -84,8 +86,9 @@ func TestAuthMiddleware(t *testing.T) {
 	t.Run("should call next handler when authentication succeeds", func(t *testing.T) {
 		authManager := auth.NewManager()
 		authenticator := &auth.APIKeyAuthenticator{
-			HeaderName:  "X-API-Key",
-			HeaderValue: "secret",
+			ParamName: "X-API-Key",
+			Value:     "secret",
+			In:        configv1.APIKeyAuth_HEADER,
 		}
 		err := authManager.AddAuthenticator("test", authenticator)
 		require.NoError(t, err)
