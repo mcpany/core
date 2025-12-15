@@ -532,10 +532,10 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Ensure the container is not already running from a previous failed run
 
 	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
-	_ = stopCmd.Run() // Ignore error, it might not be running
+	_ = stopCmd.Run()                                                       // Ignore error, it might not be running
 
 	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
-	_ = rmCmd.Run() // Ignore error, it might not exist
+	_ = rmCmd.Run()                                                     // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
@@ -810,7 +810,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
-		cmd := exec.Command(dockerExe, pingArgs...) //nolint:gosec // Test helper
+		cmd := exec.Command(dockerExe, pingArgs...)                                    //nolint:gosec // Test helper
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -832,16 +832,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	t.Logf("Using MCPANY binary from: %s", mcpanyBinary)
 
-	// Use port 0 to let the OS assign free ports
-	jsonrpcPortArg := "127.0.0.1:0"
-	grpcRegPortArg := "127.0.0.1:0"
-
+	// Use port 0 to let the OS pick a random port
+	// We will parse the logs to find the actual ports
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	args := []string{
 		"run",
-		"--mcp-listen-address", jsonrpcPortArg,
-		"--grpc-port", grpcRegPortArg,
+		"--mcp-listen-address", "127.0.0.1:0",
+		"--grpc-port", "127.0.0.1:0",
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
@@ -866,7 +864,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
 	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
 	grpcPortRegex := regexp.MustCompile(`msg="gRPC server listening".*?port=[^:]+:(\d+)`)
-
 
 	require.Eventually(t, func() bool {
 		stdout := mcpProcess.StdoutString()
