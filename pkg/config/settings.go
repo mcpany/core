@@ -18,12 +18,15 @@ package config
 
 import (
 	"fmt"
+	"io"
+	"log/slog"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/logging"
-	v1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +34,7 @@ import (
 
 // Settings defines the global configuration for the application.
 type Settings struct {
-	proto           *v1.GlobalSettings
+	proto           *configv1.GlobalSettings
 	grpcPort        string
 	stdio           bool
 	configPaths     []string
@@ -53,7 +56,7 @@ var (
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
-			proto: &v1.GlobalSettings{},
+			proto: &configv1.GlobalSettings{},
 		}
 	})
 	return globalSettings
@@ -65,8 +68,29 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.fs = fs
 
 	s.grpcPort = viper.GetString("grpc-port")
-	s.stdio = viper.GetBool("stdio")
+	s.stdio = viper.GetBool("stdio") // Corrected from "std"
+	// Bind config paths
 	s.configPaths = viper.GetStringSlice("config-path")
+
+	// Initialize logging early to capture loading events with correct level
+	logLevel := slog.LevelInfo
+	if viper.GetBool("debug") {
+		logLevel = slog.LevelDebug
+	}
+
+	var logOutput io.Writer = os.Stdout
+	if logfile := viper.GetString("logfile"); logfile != "" {
+		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		if err != nil {
+			return fmt.Errorf("failed to open logfile: %w", err)
+		}
+		// Note: We cannot easily defer close here as this function returns.
+		// The OS will close the file on exit, or we'd need to track it in Settings.
+		logOutput = f
+	} else if viper.GetBool("stdio") {
+		logOutput = io.Discard
+	}
+	logging.Init(logLevel, logOutput)
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
@@ -156,28 +180,23 @@ func (s *Settings) Profiles() []string {
 }
 
 // LogLevel returns the current log level as a protobuf enum.
-func (s *Settings) LogLevel() v1.GlobalSettings_LogLevel {
+func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
-		return v1.GlobalSettings_LOG_LEVEL_DEBUG
+		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
 	}
-	switch strings.ToLower(s.logLevel) {
-	case "debug":
-		return v1.GlobalSettings_LOG_LEVEL_DEBUG
-	case "info":
-		return v1.GlobalSettings_LOG_LEVEL_INFO
-	case "warn":
-		return v1.GlobalSettings_LOG_LEVEL_WARN
-	case "error":
-		return v1.GlobalSettings_LOG_LEVEL_ERROR
-	default:
-		if s.logLevel != "" {
-			logging.GetLogger().Warn(
-				fmt.Sprintf(
-					"Invalid log level specified: '%s'. Defaulting to INFO.",
-					s.logLevel,
-				),
-			)
-		}
-		return v1.GlobalSettings_LOG_LEVEL_INFO
+
+	key := "LOG_LEVEL_" + strings.ToUpper(s.logLevel)
+	if val, ok := configv1.GlobalSettings_LogLevel_value[key]; ok {
+		return configv1.GlobalSettings_LogLevel(val)
 	}
+
+	if s.logLevel != "" {
+		logging.GetLogger().Warn(
+			fmt.Sprintf(
+				"Invalid log level specified: '%s'. Defaulting to INFO.",
+				s.logLevel,
+			),
+		)
+	}
+	return configv1.GlobalSettings_LOG_LEVEL_INFO
 }

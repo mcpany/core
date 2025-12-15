@@ -19,8 +19,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -75,24 +73,6 @@ func newRootCmd() *cobra.Command {
 			if err := cfg.Load(cmd, osFs); err != nil {
 				return err
 			}
-
-			logLevel := slog.LevelInfo
-			if cfg.IsDebug() {
-				logLevel = slog.LevelDebug
-			}
-
-			var logOutput io.Writer = os.Stdout
-			if logfile := cfg.LogFile(); logfile != "" {
-				f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-				if err != nil {
-					return fmt.Errorf("failed to open logfile: %w", err)
-				}
-				defer func() { _ = f.Close() }()
-				logOutput = f
-			} else if cfg.Stdio() {
-				logOutput = io.Discard // Disable logging in stdio mode to keep the channel clean for JSON-RPC
-			}
-			logging.Init(logLevel, logOutput)
 
 			if err := metrics.Initialize(); err != nil {
 				logging.GetLogger().Error("Failed to initialize metrics", "error", err)
