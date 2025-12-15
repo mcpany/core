@@ -125,3 +125,36 @@ func TestTemplatedPrompt_Service(t *testing.T) {
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 	assert.Equal(t, "test-service", templatedPrompt.Service())
 }
+
+func TestNewPromptFromConfig(t *testing.T) {
+	definition := configv1.PromptDefinition_builder{
+		Name:        proto.String("test-prompt"),
+		Title:       proto.String("Test Prompt"),
+		Description: proto.String("A test prompt"),
+	}.Build()
+
+	p, err := prompt.NewPromptFromConfig(definition, "test-service")
+	assert.NoError(t, err)
+	assert.NotNil(t, p)
+	assert.Equal(t, "test-service", p.Service())
+	assert.Equal(t, "test-service.test-prompt", p.Prompt().Name)
+}
+
+func TestTemplatedPrompt_Get_NoText(t *testing.T) {
+	role := configv1.PromptMessage_USER
+	definition := configv1.PromptDefinition_builder{
+		Messages: []*configv1.PromptMessage{
+			configv1.PromptMessage_builder{
+				Role: &role,
+				// No Text set
+			}.Build(),
+		},
+	}.Build()
+	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+
+	args, _ := json.Marshal(map[string]string{})
+	result, err := templatedPrompt.Get(context.Background(), args)
+	assert.NoError(t, err)
+	assert.Len(t, result.Messages, 1)
+	assert.Nil(t, result.Messages[0]) // It should be nil if we didn't populate it
+}
