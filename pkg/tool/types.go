@@ -20,11 +20,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path"
@@ -183,7 +183,7 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
 	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
@@ -282,7 +282,7 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 //nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
@@ -411,11 +411,24 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-			reqDump, err := httputil.DumpRequestOut(httpReq, true)
-			if err != nil {
-				logging.GetLogger().Error("failed to dump http request", "error", err)
-			} else {
-				logging.GetLogger().Debug("sending http request", "request", string(reqDump))
+			// Log headers
+			var headerBuf bytes.Buffer
+			headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
+			headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
+			for k, v := range httpReq.Header {
+				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
+			}
+			fmt.Printf("DEBUG: sending http request headers:\n%s\n", headerBuf.String())
+
+			// Log body
+			if bodyForAttempt != nil {
+				contentType := httpReq.Header.Get("Content-Type")
+				bodyBytes, _ := io.ReadAll(bodyForAttempt)
+				// Restore body
+				if seeker, ok := bodyForAttempt.(io.Seeker); ok {
+					_, _ = seeker.Seek(0, io.SeekStart)
+				}
+				fmt.Printf("DEBUG: sending http request body:\n%s\n", prettyPrint(bodyBytes, contentType))
 			}
 		}
 
@@ -452,13 +465,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
-		respDump, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			logging.GetLogger().Error("failed to dump http response", "error", err)
-		} else {
-			logging.GetLogger().Debug("received http response", "response", string(respDump))
+		// Log headers
+		var headerBuf bytes.Buffer
+		headerBuf.WriteString(fmt.Sprintf("%s %s\n", resp.Proto, resp.Status))
+		for k, v := range resp.Header {
+			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
 		}
+		fmt.Printf("DEBUG: received http response headers:\n%s\n", headerBuf.String())
+
+		// Log body
+		contentType := resp.Header.Get("Content-Type")
+		fmt.Printf("DEBUG: received http response body:\n%s\n", prettyPrint(respBody, contentType))
+
+		// Restore body for subsequent processing
+		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 	}
 
 	if t.outputTransformer != nil {
@@ -536,7 +556,7 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -672,7 +692,7 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // sends the request, and processes the response, applying transformations as
 // needed.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1112,4 +1132,55 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	return result, nil
+}
+
+// prettyPrint formats the input based on content type for better readability.
+func prettyPrint(input []byte, contentType string) string {
+	if len(input) == 0 {
+		return ""
+	}
+
+	contentType = strings.ToLower(contentType)
+	// Handle binary data
+	if strings.HasPrefix(contentType, "image/") ||
+		strings.HasPrefix(contentType, "audio/") ||
+		strings.HasPrefix(contentType, "video/") ||
+		contentType == "application/octet-stream" {
+		return fmt.Sprintf("[Binary Data: %d bytes]", len(input))
+	}
+
+	// Try JSON
+	if strings.Contains(contentType, "json") {
+		var prettyJSON bytes.Buffer
+		if err := json.Indent(&prettyJSON, input, "", "  "); err == nil {
+			return prettyJSON.String()
+		}
+		// If JSON parsing fails, fall through to return string(input)
+	}
+
+	// Try XML
+	if strings.Contains(contentType, "xml") {
+		decoder := xml.NewDecoder(bytes.NewReader(input))
+		var buf bytes.Buffer
+		encoder := xml.NewEncoder(&buf)
+		encoder.Indent("", "  ")
+
+		// Attempt to decode and re-encode to format
+		for {
+			token, err := decoder.Token()
+			if err == io.EOF {
+				encoder.Flush()
+				return buf.String()
+			}
+			if err != nil {
+				// XML parsing failed, return raw string
+				return string(input)
+			}
+			if err := encoder.EncodeToken(token); err != nil {
+				return string(input)
+			}
+		}
+	}
+
+	return string(input)
 }
