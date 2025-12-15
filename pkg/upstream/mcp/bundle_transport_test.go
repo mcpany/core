@@ -123,7 +123,6 @@ func TestSetUnexportedID(_ *testing.T) {
 	_ = fmt.Sprintf("%v", id)
 }
 
-
 func TestBundleDockerConn_ReadWrite(t *testing.T) {
 	// Create a pipe to simulate connection
 	c1, c2 := net.Pipe()

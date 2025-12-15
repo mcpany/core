@@ -832,14 +832,15 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	t.Logf("Using MCPANY binary from: %s", mcpanyBinary)
 
-	// Use port 0 to let the OS pick a random port
-	// We will parse the logs to find the actual ports
+	// Use port 0 to let the OS assign free ports
+	jsonrpcPortArg := "127.0.0.1:0"
+	grpcRegPortArg := "127.0.0.1:0"
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	args := []string{
 		"run",
-		"--mcp-listen-address", "127.0.0.1:0",
-		"--grpc-port", "127.0.0.1:0",
+		"--mcp-listen-address", jsonrpcPortArg,
+		"--grpc-port", grpcRegPortArg,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
@@ -926,7 +927,11 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
 
+<<<<<<< HEAD
 	if healthCheck { // Only check health if we have a port
+=======
+	if healthCheck && jsonrpcPort != 0 { // Only check health if we have a port
+>>>>>>> e135a36 (feat: increase test coverage and fix e2e port conflicts)
 		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 
 		// Wait for gRPC readiness
@@ -966,6 +971,12 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			defer func() { _ = resp.Body.Close() }()
 			return true
 		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint %s not healthy.", mcpRequestURL)
+<<<<<<< HEAD
+=======
+	} else if healthCheck {
+		// stdio mode health check
+		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
+>>>>>>> e135a36 (feat: increase test coverage and fix e2e port conflicts)
 	}
 
 	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
