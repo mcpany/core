@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
 	"sort"
 	"time"
 
@@ -220,8 +221,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	}
 	sort.Strings(sortedCallIDs)
 
+	callPolicy := serviceConfig.GetCallPolicy() //nolint:staticcheck
+
 	for _, callID := range sortedCallIDs {
 		httpDef := calls[callID]
+
 		definition, ok := callIDToDefinition[callID]
 		if !ok {
 			log.Error("Tool definition not found for call", "call_id", callID)
@@ -246,6 +250,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Check Export Policy
 		if !tool.ShouldExport(toolNamePart, serviceConfig.GetToolExportPolicy()) {
 			log.Info("Skipping non-exported tool", "toolName", toolNamePart)
+			continue
+		}
+
+		if shouldBlock(callPolicy, toolNamePart, callID) {
+			log.Info("Skipping blocked tool/call", "toolName", toolNamePart, "callID", callID)
 			continue
 		}
 
@@ -347,12 +356,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	for _, d := range definitions {
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
-	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetName()
-	}
-	for _, d := range definitions {
-		callIDToName[d.GetCallId()] = d.GetName()
-	}
+
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
@@ -416,4 +420,29 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}
+
+}
+
+func shouldBlock(policy *configv1.CallPolicy, toolName, callID string) bool {
+	if policy == nil {
+		return false
+	}
+	for _, rule := range policy.GetRules() {
+		matched := true
+		if rule.GetNameRegex() != "" {
+			if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
+				matched = false
+			}
+		}
+		if matched && rule.GetCallIdRegex() != "" {
+			if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
+				matched = false
+			}
+		}
+
+		if matched {
+			return rule.GetAction() == configv1.CallPolicy_DENY
+		}
+	}
+	return policy.GetDefaultAction() == configv1.CallPolicy_DENY
 }
