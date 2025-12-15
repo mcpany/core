@@ -187,3 +187,76 @@ Add the following to your `claude_desktop_config.json`:
 This setup ensures Claude launches a fresh `mcpany` container whenever it needs to access your tools.
 
 By following these instructions, you can connect `mcpany` to your favorite AI coding assistant, regardless of how you choose to run it.
+
+---
+
+## 5. VS Code (GitHub Copilot)
+
+You can add `mcpany` to GitHub Copilot in VS Code using the command line:
+
+```bash
+code --add-mcp '{"name":"mcpany","command":"docker","args":["run","-i","--rm","-v","/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml","ghcr.io/mcpany/server:latest","run","--config-path","/etc/mcpany/config.yaml"]}'
+```
+
+Alternatively, you can manually edit your VS Code `settings.json` or use the **"Add MCP Server"** command in the command palette.
+
+---
+
+## 6. Cursor
+
+To integrate with [Cursor](https://cursor.sh/):
+
+1.  Go to **Cursor Settings** > **MCP**.
+2.  Click **Add new MCP server**.
+3.  Fill in the details:
+    - **Name**: `mcpany`
+    - **Type**: `command`
+    - **Command**: `docker run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml`
+4.  Click **Add**.
+
+---
+
+## 7. JetBrains AI Assistant
+
+To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
+
+1.  Open **Settings** (or **Preferences** on macOS).
+2.  Navigate to **Tools** > **AI Assistant** > **Model Context Protocol (MCP)**.
+3.  Click the **+** (Add) button.
+4.  Configure the server:
+    - **Name**: `mcpany`
+    - **Command**: `docker`
+    - **Args**: `run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml`
+5.  Click **OK** or **Apply**.
+
+---
+
+## 8. Cline
+
+To use `mcpany` with [Cline](https://github.com/cline/cline):
+
+1.  Open the Cline extension in VS Code.
+2.  Click the **MCP Servers** button (server icon).
+3.  Click **Configure MCP Servers**. This opens the JSON configuration file.
+4.  Add `mcpany` to the `mcpServers` object:
+
+```json
+{
+  "mcpServers": {
+    "mcpany": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml",
+        "ghcr.io/mcpany/server:latest",
+        "run",
+        "--config-path",
+        "/etc/mcpany/config.yaml"
+      ]
+    }
+  }
+}
+```
