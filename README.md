@@ -10,17 +10,25 @@
 
 # MCP Any: Configuration-Driven MCP Server
 
-**Eliminate the need to build and maintain custom MCP servers for every API.**
+**One server, Infinite possibilities.**
 
-MCP Any empowers you to create robust Model Context Protocol (MCP) servers using **simple configurations**. Instead of writing code, compiling binaries, and managing complex deployments, you define your tools, resources, and prompts in portable configuration files.
+MCP Any revolutionizes how you interact with the Model Context Protocol (MCP). It is not just another MCP proxy or aggregator—it is a powerful **Universal Adapter** that turns _any_ API into an MCP-compliant server through simple configuration.
 
-## ❓ Why MCP Any?
+Traditional MCP adoption requires running a separate server binary for every tool or service you want to expose. This leads to "binary fatigue," complex local setups, and maintenance nightmares.
 
-- **No Code Required**: Create fully functional MCP servers for your APIs just by writing a config file.
-- **Unified Runtime**: Stop spawning a new npx or python process for every single tool. Run one efficient `mcpany` server that manages all your connections and tools in a single place.
-- **Shareable Configurations**: Share your MCP server setups publicly. Users don't need to download unsafe binaries or set up complex environments—they just load your config.
-- **Local & Secure**: Host your MCP server locally. Connect to your private or public APIs without sending sensitive data through third-party remote servers. Perfect for both personal and enterprise use.
-- **Universal Adapter**: Dynamically acts as a bridge for gRPC services, RESTful APIs (via OpenAPI), and command-line tools, exposing them as standardized MCP tools.
+**MCP Any solves this with a Single Binary approach:**
+
+1.  **Install once**: Run a single `mcpany` server instance.
+2.  **Configure everything**: Load lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line).
+3.  **Run anywhere**: No need for `npx`, `python`, or language-specific runtimes for each tool.
+
+## ❓ Philosophy: Configuration over Code
+
+We believe you shouldn't have to write and maintain new code just to expose an existing API to your AI assistant.
+
+- **Metamcp / Onemcp vs. MCP Any**: While other tools might proxy existing MCP servers (aggregator pattern), **MCP Any** creates them from scratch using your existing upstream APIs.
+- **No More "Sidecar hell"**: Instead of running 10 different containers for 10 different tools, run 1 `mcpany` container loaded with 10 config files.
+- **Ops Friendly**: Centralize authentication, rate limiting, and observability in one robust layer.
 
 ## ✨ Key Features
 
