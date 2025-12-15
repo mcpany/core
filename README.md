@@ -86,20 +86,18 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
     ```bash
     docker run -d --rm --name mcpany-server \
-      -v $(pwd)/examples:/examples \
       -p 50050:50050 \
       ghcr.io/mcpany/server:dev-latest \
-      run --config-path /examples/popular_services/wttr.in/config.yaml
+      run --config-path https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml
     ```
 
     > **Tip:** Need detailed logs? Add the `--debug` flag:
     >
     > ```bash
     > docker run -d --rm --name mcpany-server \
-    >   -v $(pwd)/examples:/examples \
     >   -p 50050:50050 \
     >   ghcr.io/mcpany/server:dev-latest \
-    >   run --config-path /examples/popular_services/wttr.in/config.yaml --debug
+    >   run --config-path https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml --debug
     > ```
 
 2.  **Connect Gemini CLI:**

@@ -436,7 +436,7 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 		client: graphql.NewClient(server.URL),
 		query:  `query ($id: ID) { user(id: $id) { id name } }`,
 	}
-	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
+	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, nil, nil)
 	require.NoError(t, err)
 
 	req := &tool.ExecutionRequest{
@@ -483,7 +483,7 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 		client: graphql.NewClient(server.URL),
 		query:  `mutation ($name: String!) { createUser(name: $name) { id name } }`,
 	}
-	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
+	graphqlTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, nil, nil)
 	require.NoError(t, err)
 
 	req := &tool.ExecutionRequest{

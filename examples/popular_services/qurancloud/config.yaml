@@ -15,34 +15,34 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: qurancloud.com
-  http_service:
-    address: "https://api.alquran.cloud"
-    tools:
-    - name: "getAyah"
-      call_id: "getAyah"
-      input_schema:
-        type: "object"
-        properties:
-          ayah:
-            type: "string"
-            description: "The ayah to look up."
-      output_schema:
-        type: "object"
-    - name: "getSurah"
-      call_id: "getSurah"
-      input_schema:
-        type: "object"
-        properties:
-          surah:
-            type: "string"
-            description: "The surah to look up."
-      output_schema:
-        type: "object"
-    calls:
-      getAyah:
-        endpoint_path: "/v1/ayah/{{ayah}}/en.sahih"
-        method: "HTTP_METHOD_GET"
-      getSurah:
-        endpoint_path: "/v1/surah/{{surah}}"
-        method: "HTTP_METHOD_GET"
+  - name: qurancloud.com
+    http_service:
+      address: "https://api.alquran.cloud"
+      tools:
+        - name: "getAyah"
+          call_id: "getAyah"
+        - name: "getSurah"
+          call_id: "getSurah"
+      calls:
+        getAyah:
+          endpoint_path: "/v1/ayah/{{ayah}}/en.sahih"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              ayah:
+                type: "string"
+                description: "The ayah to look up."
+          output_schema:
+            type: "object"
+        getSurah:
+          endpoint_path: "/v1/surah/{{surah}}"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              surah:
+                type: "string"
+                description: "The surah to look up."
+          output_schema:
+            type: "object"

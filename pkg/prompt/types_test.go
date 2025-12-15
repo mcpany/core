@@ -26,6 +26,7 @@ import (
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var _ = mcpsdk.TextContent{}
@@ -36,12 +37,21 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 		Name:        proto.String("test-prompt"),
 		Title:       proto.String("Test Prompt"),
 		Description: proto.String("A test prompt"),
-		Arguments: []*configv1.PromptArgument{
-			configv1.PromptArgument_builder{
-				Name:        proto.String("name"),
-				Description: proto.String("The name to use in the prompt"),
-				Required:    proto.Bool(true),
-			}.Build(),
+		InputSchema: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"required": {Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "name"}}}}}},
+				"properties": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"name": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"description": {Kind: &structpb.Value_StringValue{StringValue: "The name to use in the prompt"}},
+								"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
+							},
+						}}},
+					},
+				}}},
+				"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+			},
 		},
 		Messages: []*configv1.PromptMessage{
 			configv1.PromptMessage_builder{
@@ -101,12 +111,21 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 		Name:        proto.String("test-prompt"),
 		Title:       proto.String("Test Prompt"),
 		Description: proto.String("A test prompt"),
-		Arguments: []*configv1.PromptArgument{
-			configv1.PromptArgument_builder{
-				Name:        proto.String("name"),
-				Description: proto.String("The name to use in the prompt"),
-				Required:    proto.Bool(true),
-			}.Build(),
+		InputSchema: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"required": {Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "name"}}}}}},
+				"properties": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"name": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"description": {Kind: &structpb.Value_StringValue{StringValue: "The name to use in the prompt"}},
+								"type":        {Kind: &structpb.Value_StringValue{StringValue: "string"}},
+							},
+						}}},
+					},
+				}}},
+				"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+			},
 		},
 	}.Build()
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")

@@ -310,8 +310,6 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name:         proto.String(toolDef.Name),
 			Description:  proto.String(toolDef.Description),
-			InputSchema:  inputSchema,
-			OutputSchema: outputSchema,
 		}.Build())
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
@@ -469,8 +467,6 @@ func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
 				discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 					Name:         proto.String(string(methodDesc.Name())),
 					Description:  proto.String(string(methodDesc.FullName())),
-					InputSchema:  inputSchema,
-					OutputSchema: outputSchema,
 				}.Build())
 				log.Info("Registered gRPC tool from descriptor", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 			}
@@ -636,8 +632,6 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name:         proto.String(definition.GetName()),
 			Description:  proto.String(definition.GetDescription()),
-			InputSchema:  inputSchema,
-			OutputSchema: outputSchema,
 		}.Build())
 	}
 	return discoveredTools, nil
