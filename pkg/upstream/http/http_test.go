@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
@@ -482,8 +483,9 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		originalNewHTTPPool := NewHTTPPool
 		defer func() { NewHTTPPool = originalNewHTTPPool }()
 
-		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHTTPPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
+		var capturedMinSize, capturedMaxSize int
+		var capturedIdleTimeout time.Duration
+		NewHTTPPool = func(minSize, maxSize int, idleTimeout time.Duration, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
@@ -495,7 +497,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		assert.Equal(t, 10, capturedMinSize)
 		assert.Equal(t, 50, capturedMaxSize)
-		assert.Equal(t, 90, capturedIdleTimeout)
+		assert.Equal(t, 90*time.Second, capturedIdleTimeout)
 	})
 
 	t.Run("registration with default connection pool config", func(t *testing.T) {
@@ -527,8 +529,9 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		originalNewHTTPPool := NewHTTPPool
 		defer func() { NewHTTPPool = originalNewHTTPPool }()
 
-		var capturedMinSize, capturedMaxSize, capturedIdleTimeout int
-		NewHTTPPool = func(minSize, maxSize, idleTimeout int, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
+		var capturedMinSize, capturedMaxSize int
+		var capturedIdleTimeout time.Duration
+		NewHTTPPool = func(minSize, maxSize int, idleTimeout time.Duration, config *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
 			capturedMinSize = minSize
 			capturedMaxSize = maxSize
 			capturedIdleTimeout = idleTimeout
@@ -540,7 +543,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 
 		assert.Equal(t, 10, capturedMinSize)
 		assert.Equal(t, 100, capturedMaxSize)
-		assert.Equal(t, 90, capturedIdleTimeout)
+		assert.Equal(t, 90*time.Second, capturedIdleTimeout)
 	})
 }
 
