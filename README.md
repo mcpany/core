@@ -56,56 +56,54 @@ _(Prefer building from source? See [Getting Started](docs/getting_started.md) fo
 
 We will use the pre-built `wttr.in` configuration available in the examples directory: `examples/popular_services/wttr.in/config.yaml`.
 
-### 3. Run with Docker
+### Quick Start: Weather Service
 
-Start the server using the development image. We mount the `examples` directory so the container can access the configuration files.
-
-```bash
-docker run --rm \
-  -v $(pwd)/examples:/examples \
-  -p 50050:50050 \
-  ghcr.io/mcpany/core:dev \
-  run --config-path /examples/popular_services/wttr.in/config.yaml
-```
-
-The server will start and listen on port `50050`.
-
-### 4. Build from Source (Alternative)
-
-If you prefer to build and run locally:
-
-1.  **Build the server**:
+1.  **Run the Server (Docker):**
 
     ```bash
-    make build
+    docker run -d --rm --name mcpany-server \
+      -v $(pwd)/examples:/examples \
+      -p 50050:50050 \
+      ghcr.io/mcpany/server:dev-latest \
+      run --config-path /examples/popular_services/wttr.in/config.yaml
     ```
 
-2.  **Run the server**:
+    > **Tip:** successful debugging requires detailed logs? Add the `--debug` flag to the end of the command:
+    >
+    > ```bash
+    > docker run -d --rm --name mcpany-server \
+    >   -v $(pwd)/examples:/examples \
+    >   -p 50050:50050 \
+    >   ghcr.io/mcpany/server:dev-latest \
+    >   run --config-path /examples/popular_services/wttr.in/config.yaml --debug
+    > ```
+    >
+    > You can then inspect the logs (including API call details) with:
+    >
+    > ```bash
+    > docker logs mcpany-server
+    > ```
+
+2.  **Connect Gemini CLI:**
+
     ```bash
-    ./build/bin/server run --config-path ./examples/popular_services/wttr.in/config.yaml
+    gemini mcp add --transport http --trust mcpany http://localhost:50050
     ```
 
-### 5. Connect Your AI
+3.  **Ask about the weather:**
 
-Tell your AI assistant how to reach the server.
-
-**For Gemini CLI:**
-
-Connect to the running HTTP server:
-
-```bash
-gemini mcp add --transport http --trust weather-server http://localhost:50050
-```
-
-_(Note: You may see an unrelated "GitHub requires OAuth" error in the CLI; this can be ignored if tools are working.)_
+    ````bash
+    gemini -m gemini-2.5-flash -p "What is the weather in London?"
+    ```ignored if tools are working.)_
+    ````
 
 ### 6. Chat!
 
 Ask your AI about the weather:
 
-```bash
 gemini -m gemini-2.5-flash -p "What is the weather in London?"
-```
+
+````
 
 The AI will:
 
@@ -117,15 +115,13 @@ Ask about the moon phase:
 
 ```bash
 gemini -m gemini-2.5-flash -p "What is the moon phase?"
-```
+````
 
 The AI will:
 
 1.  **Call** the `get_moon_phase` tool.
 2.  `mcpany` will **proxy** the request to `https://wttr.in/moon`.
 3.  The AI receives the ASCII art response and describes it!
-
----
 
 For more complex examples, including gRPC, OpenAPI, and authentication, check out [docs/reference/configuration.md](docs/reference/configuration.md).
 
