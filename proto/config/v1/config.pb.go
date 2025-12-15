@@ -319,9 +319,7 @@ type GlobalSettings struct {
 	// The API key used for authentication.
 	ApiKey *string `protobuf:"bytes,5,opt,name=api_key" json:"api_key,omitempty"`
 	// The profiles to enable.
-	Profiles []string `protobuf:"bytes,6,rep,name=profiles" json:"profiles,omitempty"`
-	// The URL of the NATS server.
-	NatsUrl       *string `protobuf:"bytes,7,opt,name=nats_url" json:"nats_url,omitempty"`
+	Profiles      []string `protobuf:"bytes,6,rep,name=profiles" json:"profiles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -386,13 +384,6 @@ func (x *GlobalSettings) GetProfiles() []string {
 	return nil
 }
 
-func (x *GlobalSettings) GetNatsUrl() string {
-	if x != nil && x.NatsUrl != nil {
-		return *x.NatsUrl
-	}
-	return ""
-}
-
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -411,10 +402,6 @@ func (x *GlobalSettings) SetApiKey(v string) {
 
 func (x *GlobalSettings) SetProfiles(v []string) {
 	x.Profiles = v
-}
-
-func (x *GlobalSettings) SetNatsUrl(v string) {
-	x.NatsUrl = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -445,13 +432,6 @@ func (x *GlobalSettings) HasApiKey() bool {
 	return x.ApiKey != nil
 }
 
-func (x *GlobalSettings) HasNatsUrl() bool {
-	if x == nil {
-		return false
-	}
-	return x.NatsUrl != nil
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -468,10 +448,6 @@ func (x *GlobalSettings) ClearApiKey() {
 	x.ApiKey = nil
 }
 
-func (x *GlobalSettings) ClearNatsUrl() {
-	x.NatsUrl = nil
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -485,8 +461,6 @@ type GlobalSettings_builder struct {
 	ApiKey *string
 	// The profiles to enable.
 	Profiles []string
-	// The URL of the NATS server.
-	NatsUrl *string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -498,7 +472,6 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.MessageBus = b.MessageBus
 	x.ApiKey = b.ApiKey
 	x.Profiles = b.Profiles
-	x.NatsUrl = b.NatsUrl
 	return m0
 }
 
@@ -515,14 +488,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aapi_key\x18\x02 \x01(\tR\aapi_key\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\x8d\x03\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xf1\x02\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x12\x18\n" +
 	"\aapi_key\x18\x05 \x01(\tR\aapi_key\x12\x1a\n" +
-	"\bprofiles\x18\x06 \x03(\tR\bprofiles\x12\x1a\n" +
-	"\bnats_url\x18\a \x01(\tR\bnats_url\"w\n" +
+	"\bprofiles\x18\x06 \x03(\tR\bprofiles\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
