@@ -253,27 +253,32 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		resolvedURL.RawQuery = endpointURL.RawQuery
 		fullURL := resolvedURL.String()
 
-		if properties == nil {
-			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
-		}
-		inputSchema := &structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(properties),
-			},
-		}
+		var inputSchema *structpb.Struct
+		if definition.GetInputSchema() != nil && len(definition.GetInputSchema().GetFields()) > 0 {
+			inputSchema = definition.GetInputSchema()
+		} else {
+			if properties == nil {
+				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+			}
+			inputSchema = &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type":       structpb.NewStringValue("object"),
+					"properties": structpb.NewStructValue(properties),
+				},
+			}
 
-		if len(requiredParams) > 0 {
-			requiredList := make([]any, len(requiredParams))
-			for i, v := range requiredParams {
-				requiredList[i] = v
+			if len(requiredParams) > 0 {
+				requiredList := make([]any, len(requiredParams))
+				for i, v := range requiredParams {
+					requiredList[i] = v
+				}
+				requiredValue, err := structpb.NewList(requiredList)
+				if err != nil {
+					log.Error("Failed to create required params list", "error", err)
+					continue
+				}
+				inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
 			}
-			requiredValue, err := structpb.NewList(requiredList)
-			if err != nil {
-				log.Error("Failed to create required params list", "error", err)
-				continue
-			}
-			inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
 		}
 
 		newToolProto := pb.Tool_builder{
