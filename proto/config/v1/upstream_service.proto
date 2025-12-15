@@ -80,8 +80,8 @@ message UpstreamServiceConfig {
   // The priority of the service. Lower numbers have higher priority.
   int32 priority = 20;
 
-  // Policy to control which tools can be executed.
-  CallPolicy call_policy = 22 [deprecated = true, json_name = "call_policy"];
+  // Policy to control which calls can be made.
+  repeated CallPolicy call_policies = 22 [json_name = "call_policies"];
   // List of hooks to execute before the call.
   repeated CallHook pre_call_hooks = 23 [json_name = "pre_call_hooks"];
   // List of hooks to execute after the call.
@@ -90,6 +90,14 @@ message UpstreamServiceConfig {
   repeated Profile profiles = 25;
   // The prompts provided by this upstream service.
   repeated PromptDefinition prompts = 26;
+
+  // Policies to control what is exported to the client.
+  ExportPolicy tool_export_policy = 27 [json_name = "tool_export_policy"];
+  ExportPolicy prompt_export_policy = 28 [json_name = "prompt_export_policy"];
+  ExportPolicy resource_export_policy = 29 [json_name = "resource_export_policy"];
+
+  // If true, automatically convert all API calls to tools.
+  bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
 }
 
 message CallPolicy {
@@ -100,16 +108,35 @@ message CallPolicy {
   // Default action if no rules match.
   Action default_action = 1;
   // List of rules to apply. First match wins.
-  repeated PolicyRule rules = 2;
+  repeated CallPolicyRule rules = 2;
 }
 
-message PolicyRule {
+message CallPolicyRule {
   CallPolicy.Action action = 1;
-  // Regex to match tool name. Empty means match all.
-  string tool_name_regex = 2;
+  // Regex to match the call name. Empty means match all.
+  string name_regex = 2 [json_name = "name_regex"];
   // Regex to match request arguments (JSON stringified). Empty means match all.
   // This is a simple regex match on the JSON representation of arguments.
   string argument_regex = 3;
+  // Regex to match endpoint path or URL.
+  string url_regex = 4 [json_name = "url_regex"];
+}
+
+message ExportPolicy {
+  enum Action {
+    EXPORT_ACTION_UNSPECIFIED = 0;
+    EXPORT = 1;
+    UNEXPORT = 2;
+  }
+  Action default_action = 1;
+
+  repeated ExportRule rules = 2;
+}
+
+message ExportRule {
+  // Regex to match the name (tool, prompt, or resource).
+  string name_regex = 1 [json_name = "name_regex"];
+  ExportPolicy.Action action = 2;
 }
 
 message CallHook {
@@ -356,7 +383,6 @@ message McpBundleConnection {
   // Optional: Environment variables to pass to the container.
   map<string, string> env = 3;
 }
-
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
 message ConnectionPoolConfig {
