@@ -606,7 +606,7 @@ func (u *Upstream) processMCPItems(
 // service that is connected via HTTP. It establishes the connection, discovers
 // the service's capabilities, and registers them.
 //
-//nolint:gocyclo
+
 func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	ctx context.Context,
 	serviceID string,

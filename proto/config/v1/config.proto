@@ -23,6 +23,17 @@ message McpAnyServerConfig {
   repeated UpstreamServiceConfig upstream_services = 2 [json_name = "upstream_services"];
   // A list of upstream service collections to load from.
   repeated UpstreamServiceCollection upstream_service_collections = 3 [json_name = "upstream_service_collections"];
+  // A list of users authorized to access the server.
+  repeated User users = 4 [json_name = "users"];
+}
+
+message User {
+  // The unique ID of the user (UUID or Username).
+  string id = 1 [json_name = "id"];
+  // The API key used for authentication.
+  string api_key = 2 [json_name = "api_key"];
+  // The list of profile IDs this user has access to.
+  repeated string profile_ids = 3 [json_name = "profile_ids"];
 }
 
 message GlobalSettings {

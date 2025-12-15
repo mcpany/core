@@ -38,6 +38,7 @@ MCP Any empowers you to create robust Model Context Protocol (MCP) servers using
   - **Basic Auth**
   - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
+- **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
 ## ⚡ Quick Start (5 Minutes)

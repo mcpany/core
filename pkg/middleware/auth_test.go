@@ -29,8 +29,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
-
 func TestAuthMiddleware(t *testing.T) {
 	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
 		authManager := auth.NewManager()

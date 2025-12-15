@@ -42,7 +42,7 @@ func TestUpdater(t *testing.T) {
 	checksumsContent := fmt.Sprintf("%s  %s\n", hex.EncodeToString(assetHash[:]), assetName)
 
 	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-	_, _ = w.Write([]byte(assetContent))
+		_, _ = w.Write([]byte(assetContent))
 	}))
 	defer assetServer.Close()
 
@@ -142,7 +142,7 @@ func TestUpdater(t *testing.T) {
 			// create a new checksums server with a bad checksum
 			badChecksumsContent := "badchecksum  " + assetName + "\n"
 			badChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			_, _ = w.Write([]byte(badChecksumsContent))
+				_, _ = w.Write([]byte(badChecksumsContent))
 			}))
 			defer badChecksumsServer.Close()
 			release.Assets[1].BrowserDownloadURL = github.String(badChecksumsServer.URL)
