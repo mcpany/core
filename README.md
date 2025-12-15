@@ -92,7 +92,7 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
       run --config-path /examples/popular_services/wttr.in/config.yaml
     ```
 
-    > **Tip:** successful debugging requires detailed logs? Add the `--debug` flag to the end of the command:
+    > **Tip:** Need detailed logs? Add the `--debug` flag:
     >
     > ```bash
     > docker run -d --rm --name mcpany-server \
@@ -101,12 +101,6 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
     >   ghcr.io/mcpany/server:dev-latest \
     >   run --config-path /examples/popular_services/wttr.in/config.yaml --debug
     > ```
-    >
-    > You can then inspect the logs (including API call details) with:
-    >
-    > ```bash
-    > docker logs mcpany-server
-    > ```
 
 2.  **Connect Gemini CLI:**
 
@@ -114,31 +108,25 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
     gemini mcp add --transport http --trust mcpany http://localhost:50050
     ```
 
-3.  **Ask about the weather:**
+3.  **Chat!**
+
+    Ask your AI about the weather:
 
     ```bash
     gemini -m gemini-2.5-flash -p "What is the weather in London?"
     ```
 
-### 6. Chat!
+    The AI will:
 
-Ask your AI about the weather:
-
-gemini -m gemini-2.5-flash -p "What is the weather in London?"
-
-````
-
-The AI will:
-
-1.  **Call** the tool (e.g., `wttrin_<hash>.get_weather`).
-2.  `mcpany` will **proxy** the request to `https://wttr.in`.
-3.  The AI receives the JSON response and answers your question!
+    1.  **Call** the tool (e.g., `wttrin_<hash>.get_weather`).
+    2.  `mcpany` will **proxy** the request to `https://wttr.in`.
+    3.  The AI receives the JSON response and answers your question!
 
 Ask about the moon phase:
 
 ```bash
 gemini -m gemini-2.5-flash -p "What is the moon phase?"
-````
+```
 
 The AI will:
 
