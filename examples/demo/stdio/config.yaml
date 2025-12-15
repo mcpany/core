@@ -8,11 +8,11 @@ upstream_services:
         - name: "greet"
           description: "A simple tool that greets the user."
           call_id: "greet"
+      calls:
+        greet:
+          args: ["greet"]
           input_schema:
             type: "object"
             properties: {}
           output_schema:
-             type: "string"
-      calls:
-        greet:
-          args: ["greet"]
+            type: "string"

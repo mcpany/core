@@ -255,8 +255,8 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		fullURL := resolvedURL.String()
 
 		var inputSchema *structpb.Struct
-		if definition.GetInputSchema() != nil && len(definition.GetInputSchema().GetFields()) > 0 {
-			inputSchema = definition.GetInputSchema()
+		if httpDef.GetInputSchema() != nil && len(httpDef.GetInputSchema().GetFields()) > 0 {
+			inputSchema = httpDef.GetInputSchema()
 		} else {
 			if properties == nil {
 				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -294,6 +294,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
 				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
 				InputSchema:     inputSchema,
+				OutputSchema:    httpDef.GetOutputSchema(),
 			}.Build(),
 		}.Build()
 

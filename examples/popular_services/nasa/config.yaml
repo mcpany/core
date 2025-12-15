@@ -15,42 +15,42 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-- name: nasa-gibs
-  upstream_authentication:
-    api_key:
-      header_name: "Authorization" # Assuming API Key usage for NASA if needed, otherwise this block might be removable but let's keep it structurally correct
+  - name: nasa-gibs
+    upstream_authentication:
       api_key:
-        plain_text: "${NASA_OPEN_API_KEY}"
-  http_service:
-    address: "https://gibs.earthdata.nasa.gov"
-    tools:
-    - name: "get_tile"
-      call_id: "get_tile"
-      description: "NASA Global Imagery Browse Services"
-      input_schema:
-        type: "object"
-        properties:
-          LayerIdentifier:
+        header_name: "Authorization" # Assuming API Key usage for NASA if needed, otherwise this block might be removable but let's keep it structurally correct
+        api_key:
+          plain_text: "${NASA_OPEN_API_KEY}"
+    http_service:
+      address: "https://gibs.earthdata.nasa.gov"
+      tools:
+        - name: "get_tile"
+          call_id: "get_tile"
+          description: "NASA Global Imagery Browse Services"
+      calls:
+        get_tile:
+          endpoint_path: "/wmts/epsg4326/best/{{LayerIdentifier}}/default/{{Time}}/{{TileMatrixSet}}/{{TileMatrix}}/{{TileRow}}/{{TileCol}}.jpg"
+          method: "HTTP_METHOD_GET"
+          input_schema:
+            type: "object"
+            properties:
+              LayerIdentifier:
+                type: "string"
+                description: "The layer identifier"
+              Time:
+                type: "string"
+                description: "The time of the image"
+              TileMatrixSet:
+                type: "string"
+                description: "The tile matrix set"
+              TileMatrix:
+                type: "string"
+                description: "The tile matrix"
+              TileRow:
+                type: "string"
+                description: "The tile row"
+              TileCol:
+                type: "string"
+                description: "The tile column"
+          output_schema:
             type: "string"
-            description: "The layer identifier"
-          Time:
-            type: "string"
-            description: "The time of the image"
-          TileMatrixSet:
-            type: "string"
-            description: "The tile matrix set"
-          TileMatrix:
-            type: "string"
-            description: "The tile matrix"
-          TileRow:
-            type: "string"
-            description: "The tile row"
-          TileCol:
-            type: "string"
-            description: "The tile column"
-      output_schema:
-        type: "string"
-    calls:
-      get_tile:
-        endpoint_path: "/wmts/epsg4326/best/{{LayerIdentifier}}/default/{{Time}}/{{TileMatrixSet}}/{{TileMatrix}}/{{TileRow}}/{{TileCol}}.jpg"
-        method: "HTTP_METHOD_GET"

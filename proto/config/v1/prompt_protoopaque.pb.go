@@ -14,6 +14,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -73,7 +74,7 @@ type PromptDefinition struct {
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
 	xxx_hidden_Description *string                `protobuf:"bytes,3,opt,name=description"`
-	xxx_hidden_Arguments   *[]*PromptArgument     `protobuf:"bytes,4,rep,name=arguments"`
+	xxx_hidden_InputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=input_schema"`
 	xxx_hidden_Messages    *[]*PromptMessage      `protobuf:"bytes,5,rep,name=messages"`
 	xxx_hidden_Disable     bool                   `protobuf:"varint,6,opt,name=disable"`
 	xxx_hidden_Profiles    *[]*Profile            `protobuf:"bytes,7,rep,name=profiles"`
@@ -138,11 +139,9 @@ func (x *PromptDefinition) GetDescription() string {
 	return ""
 }
 
-func (x *PromptDefinition) GetArguments() []*PromptArgument {
+func (x *PromptDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		if x.xxx_hidden_Arguments != nil {
-			return *x.xxx_hidden_Arguments
-		}
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
@@ -187,8 +186,8 @@ func (x *PromptDefinition) SetDescription(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
-func (x *PromptDefinition) SetArguments(v []*PromptArgument) {
-	x.xxx_hidden_Arguments = &v
+func (x *PromptDefinition) SetInputSchema(v *structpb.Struct) {
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *PromptDefinition) SetMessages(v []*PromptMessage) {
@@ -225,6 +224,13 @@ func (x *PromptDefinition) HasDescription() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
+func (x *PromptDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InputSchema != nil
+}
+
 func (x *PromptDefinition) HasDisable() bool {
 	if x == nil {
 		return false
@@ -247,6 +253,10 @@ func (x *PromptDefinition) ClearDescription() {
 	x.xxx_hidden_Description = nil
 }
 
+func (x *PromptDefinition) ClearInputSchema() {
+	x.xxx_hidden_InputSchema = nil
+}
+
 func (x *PromptDefinition) ClearDisable() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
 	x.xxx_hidden_Disable = false
@@ -262,7 +272,7 @@ type PromptDefinition_builder struct {
 	// A human-readable description of what the prompt does.
 	Description *string
 	// The arguments for the prompt.
-	Arguments []*PromptArgument
+	InputSchema *structpb.Struct
 	// The messages that make up the prompt.
 	Messages []*PromptMessage
 	// If true, this prompt is disabled.
@@ -287,158 +297,13 @@ func (b0 PromptDefinition_builder) Build() *PromptDefinition {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
 		x.xxx_hidden_Description = b.Description
 	}
-	x.xxx_hidden_Arguments = &b.Arguments
+	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_Messages = &b.Messages
 	if b.Disable != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	x.xxx_hidden_Profiles = &b.Profiles
-	return m0
-}
-
-// PromptArgument defines an argument for a prompt.
-type PromptArgument struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Description *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_Required    bool                   `protobuf:"varint,3,opt,name=required"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *PromptArgument) Reset() {
-	*x = PromptArgument{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PromptArgument) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PromptArgument) ProtoMessage() {}
-
-func (x *PromptArgument) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *PromptArgument) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *PromptArgument) GetDescription() string {
-	if x != nil {
-		if x.xxx_hidden_Description != nil {
-			return *x.xxx_hidden_Description
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *PromptArgument) GetRequired() bool {
-	if x != nil {
-		return x.xxx_hidden_Required
-	}
-	return false
-}
-
-func (x *PromptArgument) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
-}
-
-func (x *PromptArgument) SetDescription(v string) {
-	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
-}
-
-func (x *PromptArgument) SetRequired(v bool) {
-	x.xxx_hidden_Required = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *PromptArgument) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *PromptArgument) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *PromptArgument) HasRequired() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *PromptArgument) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *PromptArgument) ClearDescription() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Description = nil
-}
-
-func (x *PromptArgument) ClearRequired() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Required = false
-}
-
-type PromptArgument_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The name of the argument.
-	Name *string
-	// A description of the argument.
-	Description *string
-	// Whether the argument is required.
-	Required *bool
-}
-
-func (b0 PromptArgument_builder) Build() *PromptArgument {
-	m0 := &PromptArgument{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Description = b.Description
-	}
-	if b.Required != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_Required = *b.Required
-	}
 	return m0
 }
 
@@ -455,7 +320,7 @@ type PromptMessage struct {
 
 func (x *PromptMessage) Reset() {
 	*x = PromptMessage{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[2]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -467,7 +332,7 @@ func (x *PromptMessage) String() string {
 func (*PromptMessage) ProtoMessage() {}
 
 func (x *PromptMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[2]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -703,7 +568,7 @@ func (b0 PromptMessage_builder) Build() *PromptMessage {
 type case_PromptMessage_Content protoreflect.FieldNumber
 
 func (x case_PromptMessage_Content) String() string {
-	md := file_proto_config_v1_prompt_proto_msgTypes[2].Descriptor()
+	md := file_proto_config_v1_prompt_proto_msgTypes[1].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -751,7 +616,7 @@ type TextContent struct {
 
 func (x *TextContent) Reset() {
 	*x = TextContent{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[3]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +628,7 @@ func (x *TextContent) String() string {
 func (*TextContent) ProtoMessage() {}
 
 func (x *TextContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[3]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -858,7 +723,7 @@ type ImageContent struct {
 
 func (x *ImageContent) Reset() {
 	*x = ImageContent{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[4]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -870,7 +735,7 @@ func (x *ImageContent) String() string {
 func (*ImageContent) ProtoMessage() {}
 
 func (x *ImageContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[4]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -998,7 +863,7 @@ type AudioContent struct {
 
 func (x *AudioContent) Reset() {
 	*x = AudioContent{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[5]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1010,7 +875,7 @@ func (x *AudioContent) String() string {
 func (*AudioContent) ProtoMessage() {}
 
 func (x *AudioContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[5]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1135,7 +1000,7 @@ type ResourceContent struct {
 
 func (x *ResourceContent) Reset() {
 	*x = ResourceContent{}
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[6]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1147,7 +1012,7 @@ func (x *ResourceContent) String() string {
 func (*ResourceContent) ProtoMessage() {}
 
 func (x *ResourceContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_prompt_proto_msgTypes[6]
+	mi := &file_proto_config_v1_prompt_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1224,19 +1089,15 @@ var File_proto_config_v1_prompt_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a\x1dproto/config/v1/profile.proto\x1a\x1eproto/config/v1/resource.proto\"\xac\x02\n" +
+	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1eproto/config/v1/resource.proto\"\xa9\x02\n" +
 	"\x10PromptDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12>\n" +
-	"\targuments\x18\x04 \x03(\v2 .mcpany.config.v1.PromptArgumentR\targuments\x12;\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12;\n" +
+	"\finput_schema\x18\x04 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12;\n" +
 	"\bmessages\x18\x05 \x03(\v2\x1f.mcpany.config.v1.PromptMessageR\bmessages\x12\x18\n" +
 	"\adisable\x18\x06 \x01(\bR\adisable\x125\n" +
-	"\bprofiles\x18\a \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\"b\n" +
-	"\x0ePromptArgument\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1a\n" +
-	"\brequired\x18\x03 \x01(\bR\brequired\"\xdb\x02\n" +
+	"\bprofiles\x18\a \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\"\xdb\x02\n" +
 	"\rPromptMessage\x128\n" +
 	"\x04role\x18\x01 \x01(\x0e2$.mcpany.config.v1.PromptMessage.RoleR\x04role\x123\n" +
 	"\x04text\x18\x02 \x01(\v2\x1d.mcpany.config.v1.TextContentH\x00R\x04text\x126\n" +
@@ -1263,29 +1124,29 @@ const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\vannotations\x18\x02 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotationsB5B\vPromptProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_prompt_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_prompt_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_config_v1_prompt_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_config_v1_prompt_proto_goTypes = []any{
 	(PromptMessage_Role)(0),    // 0: mcpany.config.v1.PromptMessage.Role
 	(*PromptDefinition)(nil),   // 1: mcpany.config.v1.PromptDefinition
-	(*PromptArgument)(nil),     // 2: mcpany.config.v1.PromptArgument
-	(*PromptMessage)(nil),      // 3: mcpany.config.v1.PromptMessage
-	(*TextContent)(nil),        // 4: mcpany.config.v1.TextContent
-	(*ImageContent)(nil),       // 5: mcpany.config.v1.ImageContent
-	(*AudioContent)(nil),       // 6: mcpany.config.v1.AudioContent
-	(*ResourceContent)(nil),    // 7: mcpany.config.v1.ResourceContent
+	(*PromptMessage)(nil),      // 2: mcpany.config.v1.PromptMessage
+	(*TextContent)(nil),        // 3: mcpany.config.v1.TextContent
+	(*ImageContent)(nil),       // 4: mcpany.config.v1.ImageContent
+	(*AudioContent)(nil),       // 5: mcpany.config.v1.AudioContent
+	(*ResourceContent)(nil),    // 6: mcpany.config.v1.ResourceContent
+	(*structpb.Struct)(nil),    // 7: google.protobuf.Struct
 	(*Profile)(nil),            // 8: mcpany.config.v1.Profile
 	(*ResourceAnnotation)(nil), // 9: mcpany.config.v1.ResourceAnnotation
 	(*ResourceDefinition)(nil), // 10: mcpany.config.v1.ResourceDefinition
 }
 var file_proto_config_v1_prompt_proto_depIdxs = []int32{
-	2,  // 0: mcpany.config.v1.PromptDefinition.arguments:type_name -> mcpany.config.v1.PromptArgument
-	3,  // 1: mcpany.config.v1.PromptDefinition.messages:type_name -> mcpany.config.v1.PromptMessage
+	7,  // 0: mcpany.config.v1.PromptDefinition.input_schema:type_name -> google.protobuf.Struct
+	2,  // 1: mcpany.config.v1.PromptDefinition.messages:type_name -> mcpany.config.v1.PromptMessage
 	8,  // 2: mcpany.config.v1.PromptDefinition.profiles:type_name -> mcpany.config.v1.Profile
 	0,  // 3: mcpany.config.v1.PromptMessage.role:type_name -> mcpany.config.v1.PromptMessage.Role
-	4,  // 4: mcpany.config.v1.PromptMessage.text:type_name -> mcpany.config.v1.TextContent
-	5,  // 5: mcpany.config.v1.PromptMessage.image:type_name -> mcpany.config.v1.ImageContent
-	6,  // 6: mcpany.config.v1.PromptMessage.audio:type_name -> mcpany.config.v1.AudioContent
-	7,  // 7: mcpany.config.v1.PromptMessage.resource:type_name -> mcpany.config.v1.ResourceContent
+	3,  // 4: mcpany.config.v1.PromptMessage.text:type_name -> mcpany.config.v1.TextContent
+	4,  // 5: mcpany.config.v1.PromptMessage.image:type_name -> mcpany.config.v1.ImageContent
+	5,  // 6: mcpany.config.v1.PromptMessage.audio:type_name -> mcpany.config.v1.AudioContent
+	6,  // 7: mcpany.config.v1.PromptMessage.resource:type_name -> mcpany.config.v1.ResourceContent
 	9,  // 8: mcpany.config.v1.TextContent.annotations:type_name -> mcpany.config.v1.ResourceAnnotation
 	9,  // 9: mcpany.config.v1.ImageContent.annotations:type_name -> mcpany.config.v1.ResourceAnnotation
 	9,  // 10: mcpany.config.v1.AudioContent.annotations:type_name -> mcpany.config.v1.ResourceAnnotation
@@ -1305,7 +1166,7 @@ func file_proto_config_v1_prompt_proto_init() {
 	}
 	file_proto_config_v1_profile_proto_init()
 	file_proto_config_v1_resource_proto_init()
-	file_proto_config_v1_prompt_proto_msgTypes[2].OneofWrappers = []any{
+	file_proto_config_v1_prompt_proto_msgTypes[1].OneofWrappers = []any{
 		(*promptMessage_Text)(nil),
 		(*promptMessage_Image)(nil),
 		(*promptMessage_Audio)(nil),
@@ -1317,7 +1178,7 @@ func file_proto_config_v1_prompt_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_prompt_proto_rawDesc), len(file_proto_config_v1_prompt_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

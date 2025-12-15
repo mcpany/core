@@ -268,7 +268,6 @@ func (g *graphqlUpstream) Register(
 					Name:        proto.String(toolName),
 					Description: proto.String(field.Name),
 					CallId:      proto.String(callID),
-					InputSchema: inputSchema,
 					ServiceId:   proto.String(serviceConfig.GetName()),
 				}.Build()
 
@@ -323,7 +322,7 @@ func (g *graphqlUpstream) Register(
 
 				callable := &Callable{client: client, query: sb.String(), authenticator: authenticator, address: graphqlConfig.GetAddress()}
 
-				t, err := tool.NewCallableTool(toolDef, serviceConfig, callable)
+				t, err := tool.NewCallableTool(toolDef, serviceConfig, callable, inputSchema, nil)
 				if err != nil {
 					return "", nil, nil, fmt.Errorf("failed to create tool %s: %w", toolName, err)
 				}

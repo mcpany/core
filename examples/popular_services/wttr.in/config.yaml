@@ -1,7 +1,6 @@
 global_settings:
   mcp_listen_address: "0.0.0.0:50050"
   log_level: "INFO"
-
 upstream_services:
   - name: "wttr.in"
     upstream_authentication:
@@ -16,6 +15,15 @@ upstream_services:
           description: |
             Get the weather forecast for a location in JSON format.
             By default uses 'en' language.
+          call_id: "get_weather_call"
+        - name: "get_moon_phase"
+          description: |
+            Get the Moon phase information (returns text/ASCII art).
+          call_id: "get_moon_phase_call"
+      calls:
+        get_weather_call:
+          endpoint_path: "/{{location}}?format=j1&lang={{lang}}"
+          method: "HTTP_METHOD_GET"
           input_schema:
             type: "object"
             properties:
@@ -34,10 +42,9 @@ upstream_services:
                 default: "en"
             required:
               - "location"
-          call_id: "get_weather_call"
-        - name: "get_moon_phase"
-          description: |
-            Get the Moon phase information (returns text/ASCII art).
+        get_moon_phase_call:
+          endpoint_path: "/moon{{if .args}}{{.args}}{{end}}"
+          method: "HTTP_METHOD_GET"
           input_schema:
             type: "object"
             properties:
@@ -45,13 +52,3 @@ upstream_services:
                 type: "string"
                 description: "Optional arguments to append (e.g. '@2016-10-25' for date, or ',London' for location)."
                 default: ""
-
-          call_id: "get_moon_phase_call"
-
-      calls:
-        get_weather_call:
-          endpoint_path: "/{{location}}?format=j1&lang={{lang}}"
-          method: "HTTP_METHOD_GET"
-        get_moon_phase_call:
-          endpoint_path: "/moon{{if .args}}{{.args}}{{end}}"
-          method: "HTTP_METHOD_GET"
