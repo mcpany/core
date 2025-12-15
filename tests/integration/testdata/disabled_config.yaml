@@ -19,9 +19,12 @@ upstream_services:
   disable: true
   http_service:
     address: "http://localhost:8080"
+    tools:
+    - name: "disabled-tool"
+      description: "A tool that should not be loaded"
+      call_id: "disabled-call"
     calls:
-    - schema:
-        name: "disabled-tool"
-        description: "A tool that should not be loaded"
-      endpoint_path: "/echo"
-      method: "HTTP_METHOD_POST"
+      disabled-call:
+        id: "disabled-call"
+        endpoint_path: "/echo"
+        method: "HTTP_METHOD_POST"
