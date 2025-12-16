@@ -53,4 +53,8 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	resultMap, ok := result.(map[string]interface{})
 	assert.True(t, ok)
 	assert.Equal(t, "hello world\n", resultMap["stdout"])
+
+	assert.NotNil(t, localTool.Tool())
+	assert.Equal(t, tool, localTool.Tool())
+	assert.Nil(t, localTool.GetCacheConfig())
 }

@@ -119,3 +119,104 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	assert.Equal(t, "/app/bundle", bd.Mounts[0].Target)
 	assert.Contains(t, bd.Mounts[0].Source, "mcp-bundles")
 }
+
+func TestUpstream_Register_Bundle_Failures(t *testing.T) {
+	upstream := NewUpstream()
+	tm := tool.NewManager(nil)
+	pm := prompt.NewManager()
+	rm := resource.NewManager()
+	ctx := context.Background()
+
+	t.Run("missing bundle path", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test"),
+			McpService: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{}.Build(),
+			}.Build(),
+		}.Build()
+		_, _, _, err := upstream.Register(ctx, config, tm, pm, rm, false)
+		assert.ErrorContains(t, err, "bundle_path is required")
+	})
+
+	t.Run("bundle not found", func(t *testing.T) {
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test"),
+			McpService: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String("/non/existent/path.mcpb"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		_, _, _, err := upstream.Register(ctx, config, tm, pm, rm, false)
+		assert.ErrorContains(t, err, "failed to unzip bundle")
+	})
+
+	t.Run("invalid zip file", func(t *testing.T) {
+		f := filepath.Join(t.TempDir(), "invalid.mcpb")
+		_ = os.WriteFile(f, []byte("not a zip"), 0600)
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test"),
+			McpService: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String(f),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		_, _, _, err := upstream.Register(ctx, config, tm, pm, rm, false)
+		assert.ErrorContains(t, err, "failed to unzip bundle")
+	})
+}
+
+func TestUpstream_Register_Bundle_Python(t *testing.T) {
+	tempDir := t.TempDir()
+	bundlePath := filepath.Join(tempDir, "python.mcpb")
+	file, err := os.Create(bundlePath) //nolint:gosec
+	require.NoError(t, err)
+	w := zip.NewWriter(file)
+	manifest := `{
+		"manifest_version": "0.1",
+		"name": "python-bundle",
+		"version": "1.0",
+		"server": {
+			"type": "python",
+			"entry_point": "main.py",
+			"mcp_config": {}
+		}
+	}`
+	f, _ := w.Create("manifest.json")
+	_, _ = io.WriteString(f, manifest)
+	_ = w.Close()
+	_ = file.Close()
+
+	upstream := NewUpstream()
+	// Mock Connect
+	originalConnect := connectForTesting
+	var capturedTransport mcp.Transport
+	connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
+		capturedTransport = transport
+		return &mockClientSession{
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				return &mcp.ListToolsResult{}, nil
+			},
+		}, nil
+	}
+	defer func() { connectForTesting = originalConnect }()
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("python-service"),
+		McpService: configv1.McpUpstreamService_builder{
+			BundleConnection: configv1.McpBundleConnection_builder{
+				BundlePath: proto.String(bundlePath),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	_, _, _, err = upstream.Register(context.Background(), config, tool.NewManager(nil), prompt.NewManager(), resource.NewManager(), false)
+	require.NoError(t, err)
+
+	require.IsType(t, &BundleDockerTransport{}, capturedTransport)
+	bd := capturedTransport.(*BundleDockerTransport)
+	assert.Equal(t, "python:3.11-slim", bd.Image)
+	assert.Equal(t, "python", bd.Command)
+	assert.Contains(t, bd.Args, "/app/bundle/main.py")
+}

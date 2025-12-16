@@ -833,3 +833,47 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 		})
 	}
 }
+
+func TestHTTPUpstream_Register_Blocked(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewManager(nil)
+	upstream := NewUpstream(pm)
+
+	configJSON := `{
+		"name": "test-blocked",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [
+				{"name": "allowed", "call_id": "c1"},
+				{"name": "blocked", "call_id": "c2"}
+			],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"},
+				"c2": {"id": "c2", "method": "HTTP_METHOD_GET"}
+			}
+		},
+		"call_policies": [
+			{
+				"rules": [
+					{"name_regex": "^blocked$", "action": "DENY"}
+				],
+				"default_action": "ALLOW"
+			}
+		]
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+	assert.Len(t, discoveredTools, 1)
+	assert.Equal(t, "allowed", discoveredTools[0].GetName())
+}
+
+func TestHTTPUpstream_Shutdown(t *testing.T) {
+	pm := pool.NewManager()
+	upstream := NewUpstream(pm)
+	// Just verify it doesn't panic
+	err := upstream.Shutdown(context.Background())
+	assert.NoError(t, err)
+}
