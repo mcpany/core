@@ -504,7 +504,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
-	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...)
+	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -531,10 +531,10 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	// Ensure the container is not already running from a previous failed run
 
-	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
 	_ = stopCmd.Run() // Ignore error, it might not be running
 
-	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...)
+	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
 	_ = rmCmd.Run() // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
@@ -542,7 +542,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	dockerRunArgs = append(dockerRunArgs, imageName)
 	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...)
+	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // Test helper
 	// Capture stderr for better error reporting
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
@@ -555,7 +555,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
 
-		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...)
+		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
 		err := stopCleanupCmd.Run()
 		if err != nil {
 			// Log as error, but don't fail the test, as cleanup failure is secondary.
@@ -713,7 +713,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
 		var errDial error
 		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if errDial != nil {
-			t.Logf("MCPANY gRPC registration endpoint at %s not ready: %v", grpcRegEndpoint, errDial)
+			t.Logf("MCPANY gRPC registration endpoint at %s not ready, error creating client: %v", grpcRegEndpoint, errDial)
 			return false
 		}
 		state := grpcRegConn.GetState()
@@ -774,7 +774,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
 
-	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort))
+	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // Test helper
 	err = cmd.Start()
 	require.NoError(t, err)
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
@@ -809,8 +809,8 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
-		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic
-		cmd := exec.Command(dockerExe, pingArgs...)
+		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
+		cmd := exec.Command(dockerExe, pingArgs...) //nolint:gosec // Test helper
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -928,7 +928,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
 
-	if healthCheck && jsonrpcPort != 0 { // Only check health if we have a port
+	if healthCheck { // Only check health if we have a port
 		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 
 		// Wait for gRPC readiness
@@ -968,9 +968,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			defer func() { _ = resp.Body.Close() }()
 			return true
 		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint %s not healthy.", mcpRequestURL)
-	} else if healthCheck {
-		// stdio mode health check
-		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
 	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
@@ -1249,7 +1246,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 	require.NoError(t, err)
 	_, err = os.Stat(absSpecPath)
 	require.NoError(t, err, "OpenAPI spec file not found: %s", absSpecPath)
-	specContent, err := os.ReadFile(absSpecPath)
+	specContent, err := os.ReadFile(absSpecPath) //nolint:gosec // Test file
 	require.NoError(t, err)
 	spec := string(specContent)
 

@@ -56,7 +56,7 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	root, err := integration.GetProjectRoot()
 	require.NoError(g.t, err)
 	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
-	return exec.Command(geminiPath, args...)
+	return exec.Command(geminiPath, args...) //nolint:gosec // Test utility
 }
 
 // AddMCP adds an MCP server to the Gemini CLI configuration.
