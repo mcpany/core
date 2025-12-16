@@ -46,7 +46,7 @@ func NewWatcher() (*Watcher, error) {
 }
 
 // Watch starts monitoring the specified configuration paths.
-func (w *Watcher) Watch(paths []string, reloadFunc func()) {
+func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	go func() {
 		for {
 			select {
@@ -82,11 +82,12 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) {
 		}
 		err := w.watcher.Add(path)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
 	<-w.done
+	return nil
 }
 
 // Close stops the file watcher.

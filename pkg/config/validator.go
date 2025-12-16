@@ -19,6 +19,7 @@ package config
 import (
 	"fmt"
 	"net/url"
+	"os"
 
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
@@ -37,6 +38,8 @@ const (
 	// Client represents the client binary.
 	Client
 )
+
+var osStat = os.Stat
 
 // ValidationError encapsulates a validation error for a specific service.
 type ValidationError struct {
@@ -346,15 +349,26 @@ func validateMtlsAuth(mtls *configv1.UpstreamMTLSAuth) error {
 			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
 		}
 	}
-	if err := validation.FileExists(mtls.GetClientCertPath()); err != nil {
-		return fmt.Errorf("mtls 'client_cert_path' not found: %w", err)
+
+	check := func(path, fieldName string) error {
+		if _, err := osStat(path); err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("mtls '%s' not found: %w", fieldName, err)
+			}
+			return fmt.Errorf("mtls '%s' error: %w", fieldName, err)
+		}
+		return nil
 	}
-	if err := validation.FileExists(mtls.GetClientKeyPath()); err != nil {
-		return fmt.Errorf("mtls 'client_key_path' not found: %w", err)
+
+	if err := check(mtls.GetClientCertPath(), "client_cert_path"); err != nil {
+		return err
+	}
+	if err := check(mtls.GetClientKeyPath(), "client_key_path"); err != nil {
+		return err
 	}
 	if mtls.GetCaCertPath() != "" {
-		if err := validation.FileExists(mtls.GetCaCertPath()); err != nil {
-			return fmt.Errorf("mtls 'ca_cert_path' not found: %w", err)
+		if err := check(mtls.GetCaCertPath(), "ca_cert_path"); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -364,7 +378,11 @@ func validateSchema(s *structpb.Struct) error {
 	if s == nil {
 		return nil
 	}
-	// If fields are present, ensure it has a type or properties, typical for JSON schema
-	// This is a loose check to catch obviously bad config
+	fields := s.GetFields()
+	if t, ok := fields["type"]; ok {
+		if _, ok := t.GetKind().(*structpb.Value_StringValue); !ok {
+			return fmt.Errorf("schema 'type' must be a string")
+		}
+	}
 	return nil
 }

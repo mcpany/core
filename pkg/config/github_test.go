@@ -243,3 +243,69 @@ func TestGitHub_List_ssrf(t *testing.T) {
 		t.Errorf("Expected error to contain 'ssrf attempt blocked', but got: %v", err)
 	}
 }
+
+func TestGitHub_List_Auth_Variants(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check API Key
+		if apiKey := r.Header.Get("X-API-Key"); apiKey != "" {
+			if apiKey != "my-api-key" {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`[]`))
+			return
+		}
+
+		// Check Basic Auth
+		if user, pass, ok := r.BasicAuth(); ok {
+			if user != "user" || pass != "pass" {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`[]`))
+			return
+		}
+
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer server.Close()
+
+	g := &GitHub{
+		Owner:      "mcpany",
+		Repo:       "core",
+		Ref:        "main",
+		Path:       "examples",
+		apiURL:     server.URL,
+		httpClient: &http.Client{},
+	}
+
+	ctx := context.Background()
+
+	t.Run("APIKey", func(t *testing.T) {
+		auth := &configv1.UpstreamAuthentication{}
+		apiKey := &configv1.UpstreamAPIKeyAuth{}
+		apiKey.SetApiKey(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-api-key"}})
+		apiKey.SetHeaderName("X-API-Key")
+		auth.SetApiKey(apiKey)
+
+		_, err := g.List(ctx, auth)
+		if err != nil {
+			t.Errorf("List() with API Key error = %v", err)
+		}
+	})
+
+	t.Run("BasicAuth", func(t *testing.T) {
+		auth := &configv1.UpstreamAuthentication{}
+		basic := &configv1.UpstreamBasicAuth{}
+		basic.SetUsername("user")
+		basic.SetPassword(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "pass"}})
+		auth.SetBasicAuth(basic)
+
+		_, err := g.List(ctx, auth)
+		if err != nil {
+			t.Errorf("List() with Basic Auth error = %v", err)
+		}
+	})
+}

@@ -504,3 +504,86 @@ func TestUpstreamServiceManager_ProfilesBehavior(t *testing.T) {
 	require.Equal(t, "common-service", servicesProd[0].GetName())
 	require.Equal(t, "prod-service", servicesProd[1].GetName())
 }
+
+func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	mgr := NewUpstreamServiceManager(nil)
+	mgr.httpClient = server.Client() // Use server client
+
+	t.Run("404 error", func(t *testing.T) {
+		config := &configv1.McpAnyServerConfig{
+			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+				{
+					Name:    proto.String("404-collection"),
+					HttpUrl: proto.String(server.URL + "/404"),
+				},
+			},
+		}
+		// Errors are logged and suppressed for individual collections
+		services, err := mgr.LoadAndMergeServices(context.Background(), config)
+		assert.NoError(t, err)
+		assert.Len(t, services, 0)
+	})
+
+	t.Run("connection error", func(t *testing.T) {
+		// Use a closed port for connection refused
+		config := &configv1.McpAnyServerConfig{
+			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+				{
+					Name:    proto.String("connection-error"),
+					HttpUrl: proto.String("http://127.0.0.1:0/invalid"),
+				},
+			},
+		}
+		// Errors are logged and suppressed
+		services, err := mgr.LoadAndMergeServices(context.Background(), config)
+		assert.NoError(t, err)
+		assert.Len(t, services, 0)
+	})
+
+	t.Run("auth error", func(t *testing.T) {
+		config := &configv1.McpAnyServerConfig{
+			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+				{
+					Name:    proto.String("auth-error"),
+					HttpUrl: proto.String(server.URL + "/auth-error"),
+					Authentication: &configv1.UpstreamAuthentication{
+						AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
+							ApiKey: &configv1.UpstreamAPIKeyAuth{
+								HeaderName: proto.String("X-API-Key"),
+								ApiKey: &configv1.SecretValue{
+									Value: &configv1.SecretValue_PlainText{
+										PlainText: "file:nonexistent-secret",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		// Should fail to apply auth -> Log warning -> 0 services
+		services, err := mgr.LoadAndMergeServices(context.Background(), config)
+		assert.NoError(t, err)
+		assert.Len(t, services, 0)
+	})
+
+	t.Run("invalid url chars", func(t *testing.T) {
+		config := &configv1.McpAnyServerConfig{
+			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+				{
+					Name:    proto.String("invalid-url"),
+					HttpUrl: proto.String("http://invalid\x7furl"),
+				},
+			},
+		}
+		// Should fail to create request -> Log warning -> 0 services
+		services, err := mgr.LoadAndMergeServices(context.Background(), config)
+		assert.NoError(t, err)
+		assert.Len(t, services, 0)
+	})
+}

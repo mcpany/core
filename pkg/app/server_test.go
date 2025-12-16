@@ -118,8 +118,26 @@ upstream_services:
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
 
+
 		_, ok := app.ToolManager.GetTool("test-tool")
 		assert.False(t, ok, "tool from disabled service should not be loaded")
+	})
+
+	t.Run("unknown service type", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+
+		configContent := `
+upstream_services:
+ - name: "unknown-service"
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "service type not specified")
 	})
 }
 
