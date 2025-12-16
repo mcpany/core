@@ -31,26 +31,32 @@ func TestWatcher(t *testing.T) {
 	defer func() { _ = os.Remove(file.Name()) }()
 
 	// Create a new watcher.
-	watcher, err := NewWatcher()
+	w, err := NewWatcher()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer watcher.Close()
+	defer w.Close()
 
 	// Create a channel to signal when the file has been reloaded.
-	reloaded := make(chan bool, 1)
+	var reloaded bool
+	done := make(chan bool, 1)
 
 	// Start watching the file.
-	go watcher.Watch([]string{file.Name()}, func() {
-		reloaded <- true
-	})
+	go func() {
+		if err := w.Watch([]string{file.Name()}, func() {
+			reloaded = true
+			done <- true
+		}); err != nil {
+			// We might get "watch closed" error if test ends early, but ideally not
+			t.Logf("Watch exited: %v", err)
+		}
+	}()
 
 	// Give the watcher a moment to start up.
 	time.Sleep(100 * time.Millisecond)
 
 	// Write to the file to trigger a reload.
-	_, err = file.WriteString("test")
-	if err != nil {
+	if _, err := file.WriteString("test"); err != nil {
 		t.Fatal(err)
 	}
 	if err := file.Close(); err != nil {
@@ -59,9 +65,53 @@ func TestWatcher(t *testing.T) {
 
 	// Wait for the reload to complete.
 	select {
-	case <-reloaded:
+	case <-done:
 		// The file was reloaded successfully.
+		if !reloaded {
+			t.Error("expected reloaded to be true")
+		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("timed out waiting for file to be reloaded")
+	}
+}
+
+func TestWatcher_AddError(t *testing.T) {
+	w, err := NewWatcher()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+
+	// Watching a non-existent file should error
+	err = w.Watch([]string{"/non/existent/file"}, func() {})
+	if err == nil {
+		t.Fatal("Expected error watching non-existent file")
+	}
+}
+
+func TestWatcher_URL(t *testing.T) {
+	w, err := NewWatcher()
+	if err != nil {
+		t.Fatal(err)
+	}
+	// We don't defer Close here because we want to test explicit Close affects Watch return
+
+	done := make(chan bool)
+	go func() {
+		w.Watch([]string{"http://example.com/config"}, func() {})
+		close(done)
+	}()
+
+	// Give it time to process (and potentially fail if it didn't skip URL)
+	time.Sleep(100 * time.Millisecond)
+
+	// Close should unblock Watch
+	w.Close()
+
+	select {
+	case <-done:
+		// Success: Watch returned
+	case <-time.After(1 * time.Second):
+		t.Fatal("Watch blocked after Close")
 	}
 }

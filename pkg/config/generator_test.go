@@ -19,6 +19,7 @@ package config
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -161,4 +162,126 @@ func TestGenerator_Generate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewGenerator(t *testing.T) {
+	g := NewGenerator()
+	if g == nil {
+		t.Fatal("NewGenerator() returned nil")
+	}
+	if g.Reader == nil {
+		t.Error("NewGenerator().Reader is nil")
+	}
+}
+
+type errorReader struct{}
+
+func (r *errorReader) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("read error")
+}
+
+func (r *errorReader) ReadString(delim byte) (string, error) {
+    return "", fmt.Errorf("read error")
+}
+
+func TestGenerator_Generate_Errors(t *testing.T) {
+	t.Run("Prompt Error on Service Type", func(t *testing.T) {
+		g := &Generator{
+			Reader: bufio.NewReader(&errorReader{}),
+		}
+		_, err := g.Generate()
+		if err == nil {
+			t.Error("Expected error when prompt fails immediately")
+		}
+	})
+
+	t.Run("EOF Error", func(t *testing.T) {
+		// Empty input causes EOF immediately
+		g := &Generator{
+			Reader: bufio.NewReader(bytes.NewBufferString("")),
+		}
+		_, err := g.Generate()
+		if err == nil {
+			t.Error("Expected error on empty input")
+		}
+	})
+
+	t.Run("Prompt Error during HTTP Service generation", func(t *testing.T) {
+		// Test EOF at each step of HTTP service generation
+		// Steps: Name, Address, OpID, Desc, Method, EndpointPath
+		inputs := []string{
+			"http\n",
+			"http\nname\n",
+			"http\nname\naddress\n",
+			"http\nname\naddress\nopID\n",
+			"http\nname\naddress\nopID\ndesc\n",
+			"http\nname\naddress\nopID\ndesc\nGET\n",
+		}
+
+		for _, input := range inputs {
+			g := &Generator{
+				Reader: bufio.NewReader(bytes.NewBufferString(input)),
+			}
+			_, err := g.Generate()
+			if err == nil {
+				t.Errorf("Expected error for incomplete input: %q", input)
+			}
+		}
+	})
+
+	t.Run("Prompt Error during gRPC Service generation", func(t *testing.T) {
+		g := &Generator{
+			Reader: bufio.NewReader(bytes.NewBufferString("grpc\n")),
+		}
+		_, err := g.Generate()
+		if err == nil {
+			t.Error("Expected error when grpc service input is incomplete")
+		}
+	})
+
+    t.Run("Prompt Error during gRPC Reflection loop", func(t *testing.T) {
+        // grpc, name, address, then EOF
+        input := "grpc\nname\naddress\n"
+        g := &Generator{
+            Reader: bufio.NewReader(bytes.NewBufferString(input)),
+        }
+        _, err := g.Generate()
+        if err == nil {
+            t.Error("Expected error when grpc reflection input is missing")
+        }
+    })
+
+	t.Run("Prompt Error during OpenAPI Service generation", func(t *testing.T) {
+		inputs := []string{
+			"openapi\n",
+			"openapi\nname\n",
+		}
+		for _, input := range inputs {
+			g := &Generator{
+				Reader: bufio.NewReader(bytes.NewBufferString(input)),
+			}
+			_, err := g.Generate()
+			if err == nil {
+				t.Errorf("Expected error for incomplete openapi input: %q", input)
+			}
+		}
+	})
+
+	t.Run("Prompt Error during GraphQL Service generation", func(t *testing.T) {
+		inputs := []string{
+			"graphql\n",
+			"graphql\nname\n",
+			"graphql\nname\naddress\n",
+			"graphql\nname\naddress\ncallname\n",
+		}
+		for _, input := range inputs {
+			g := &Generator{
+				Reader: bufio.NewReader(bytes.NewBufferString(input)),
+			}
+			_, err := g.Generate()
+			if err == nil {
+				t.Errorf("Expected error for incomplete graphql input: %q", input)
+			}
+		}
+	})
 }

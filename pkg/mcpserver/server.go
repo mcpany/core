@@ -180,83 +180,83 @@ func NewServer(
 		}
 	})
 
-	routerMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
-		return func(
-			ctx context.Context,
-			method string,
-			req mcp.Request,
-		) (mcp.Result, error) {
-			if handler, ok := s.router.GetHandler(method); ok {
-				return handler(ctx, req)
-			}
-			return next(ctx, method, req)
-		}
-	}
-
-	toolListFilteringMiddleware := func(next mcp.MethodHandler) mcp.MethodHandler {
-		return func(
-			ctx context.Context,
-			method string,
-			req mcp.Request,
-		) (mcp.Result, error) {
-			if method == consts.MethodToolsList {
-				// The tool manager is the authoritative source of tools. We iterate over the
-				// tools in the manager to ensure that the list is always up-to-date and
-				// reflects the current state of the system.
-				managedTools := s.toolManager.ListTools()
-				refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
-
-				profileID, hasProfile := auth.ProfileIDFromContext(ctx)
-
-				for _, toolInstance := range managedTools {
-					// Profile-based filtering
-					if hasProfile {
-						serviceID := toolInstance.Tool().GetServiceId()
-						if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
-							// If service has profiles defined, we must match one
-							// If service has NO profiles defined, does it mean "all" or "none"?
-							// Usually "none" or "default".
-							// Let's assume if profiles are listed, we restrict.
-							// If no profiles listed, maybe it's globally available?
-							// Or better: if user has access to profile X, they only see services attached to profile X.
-
-							hasAccess := false
-							if len(info.Config.GetProfiles()) == 0 {
-								// If service belongs to NO profiles, it might be legacy or global.
-								// Let's include it for now to avoid breaking legacy services.
-								hasAccess = true
-							} else {
-								for _, p := range info.Config.GetProfiles() {
-									if p.GetId() == profileID {
-										hasAccess = true
-										break
-									}
-								}
-							}
-							if !hasAccess {
-								continue
-							}
-						}
-					}
-
-					mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
-					if err != nil {
-						logging.GetLogger().
-							Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)
-						return nil, fmt.Errorf("failed to convert tool %q to MCP format: %w", toolInstance.Tool().GetName(), err)
-					}
-					refreshedTools = append(refreshedTools, mcpTool)
-				}
-				return &mcp.ListToolsResult{Tools: refreshedTools}, nil
-			}
-			return next(ctx, method, req)
-		}
-	}
-
-	s.server.AddReceivingMiddleware(routerMiddleware)
-	s.server.AddReceivingMiddleware(toolListFilteringMiddleware)
+	s.server.AddReceivingMiddleware(s.routerMiddleware)
+	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
 
 	return s, nil
+}
+
+func (s *Server) routerMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(
+		ctx context.Context,
+		method string,
+		req mcp.Request,
+	) (mcp.Result, error) {
+		if handler, ok := s.router.GetHandler(method); ok {
+			return handler(ctx, req)
+		}
+		return next(ctx, method, req)
+	}
+}
+
+func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(
+		ctx context.Context,
+		method string,
+		req mcp.Request,
+	) (mcp.Result, error) {
+		if method == consts.MethodToolsList {
+			// The tool manager is the authoritative source of tools. We iterate over the
+			// tools in the manager to ensure that the list is always up-to-date and
+			// reflects the current state of the system.
+			managedTools := s.toolManager.ListTools()
+			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
+
+			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+
+			for _, toolInstance := range managedTools {
+				// Profile-based filtering
+				if hasProfile {
+					serviceID := toolInstance.Tool().GetServiceId()
+					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+						// If service has profiles defined, we must match one
+						// If service has NO profiles defined, does it mean "all" or "none"?
+						// Usually "none" or "default".
+						// Let's assume if profiles are listed, we restrict.
+						// If no profiles listed, maybe it's globally available?
+						// Or better: if user has access to profile X, they only see services attached to profile X.
+
+						hasAccess := false
+						if len(info.Config.GetProfiles()) == 0 {
+							// If service belongs to NO profiles, it might be legacy or global.
+							// Let's include it for now to avoid breaking legacy services.
+							hasAccess = true
+						} else {
+							for _, p := range info.Config.GetProfiles() {
+								if p.GetId() == profileID {
+									hasAccess = true
+									break
+								}
+							}
+						}
+						if !hasAccess {
+							continue
+						}
+					}
+				}
+
+				mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+				if err != nil {
+					logging.GetLogger().
+						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)
+					return nil, fmt.Errorf("failed to convert tool %q to MCP format: %w", toolInstance.Tool().GetName(), err)
+				}
+				refreshedTools = append(refreshedTools, mcpTool)
+			}
+			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
+		}
+		return next(ctx, method, req)
+	}
 }
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of

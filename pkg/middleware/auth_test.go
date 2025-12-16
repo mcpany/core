@@ -117,4 +117,44 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 		assert.True(t, nextCalled, "next handler should have been called")
 	})
+
+	t.Run("should call next handler when method format is invalid", func(t *testing.T) {
+		authManager := auth.NewManager()
+		mw := middleware.AuthMiddleware(authManager)
+
+		var nextCalled bool
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			nextCalled = true
+			return nil, nil
+		}
+
+		handler := mw(nextHandler)
+		// Method without dot
+		_, err := handler(context.Background(), "invalid_method", nil)
+		require.NoError(t, err)
+		assert.True(t, nextCalled)
+	})
+
+	t.Run("should return error when http request is missing from context", func(t *testing.T) {
+		authManager := auth.NewManager()
+		// Add an authenticator so it tries to authenticate
+		authenticator := &auth.APIKeyAuthenticator{
+			ParamName: "X-API-Key",
+			Value:     "secret",
+			In:        configv1.APIKeyAuth_HEADER,
+		}
+		err := authManager.AddAuthenticator("test", authenticator)
+		require.NoError(t, err)
+
+		mw := middleware.AuthMiddleware(authManager)
+
+		handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			return nil, nil
+		})
+
+		// Context without "http.request"
+		_, err = handler(context.Background(), "test.method", nil)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "http.Request not found in context")
+	})
 }

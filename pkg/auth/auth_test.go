@@ -247,3 +247,99 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestAPIKeyAuthenticator_Query(t *testing.T) {
+	config := configv1.APIKeyAuth_builder{
+		ParamName: proto.String("api_key"),
+		KeyValue:  proto.String("secret"),
+		In:        configv1.APIKeyAuth_QUERY.Enum(),
+	}.Build()
+
+	authenticator := NewAPIKeyAuthenticator(config)
+	require.NotNil(t, authenticator)
+
+	t.Run("successful_query_auth", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/?api_key=secret", nil)
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.NoError(t, err)
+	})
+
+	t.Run("failed_query_auth", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/?api_key=wrong", nil)
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.Error(t, err)
+	})
+}
+
+func TestValidateAuthentication(t *testing.T) {
+	t.Run("nil_config", func(t *testing.T) {
+		err := ValidateAuthentication(context.Background(), nil, nil)
+		assert.NoError(t, err)
+	})
+
+	t.Run("api_key_valid", func(t *testing.T) {
+		config := &configv1.AuthenticationConfig{
+			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					ParamName: proto.String("X-API-Key"),
+					KeyValue:  proto.String("secret"),
+					In:        configv1.APIKeyAuth_HEADER.Enum(),
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "secret")
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.NoError(t, err)
+	})
+
+	t.Run("api_key_invalid", func(t *testing.T) {
+		config := &configv1.AuthenticationConfig{
+			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					ParamName: proto.String("X-API-Key"),
+					KeyValue:  proto.String("secret"),
+					In:        configv1.APIKeyAuth_HEADER.Enum(),
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "wrong")
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+	})
+
+	t.Run("api_key_bad_config", func(t *testing.T) {
+		config := &configv1.AuthenticationConfig{
+			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					// Missing params
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid API key configuration")
+	})
+
+	t.Run("oauth2_unsupported", func(t *testing.T) {
+		config := &configv1.AuthenticationConfig{
+			AuthMethod: &configv1.AuthenticationConfig_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					// Params don't matter much as it returns error immediately
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "not yet implemented")
+	})
+
+	t.Run("no_method", func(t *testing.T) {
+		config := &configv1.AuthenticationConfig{}
+		err := ValidateAuthentication(context.Background(), config, nil)
+		assert.NoError(t, err)
+	})
+}

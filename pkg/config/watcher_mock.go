@@ -28,10 +28,11 @@ func NewMockWatcher() *MockWatcher {
 }
 
 // Watch mocks the Watch method.
-func (m *MockWatcher) Watch(paths []string, reloadFunc func()) {
+func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
 	}
+	return nil
 }
 
 // Close mocks the Close method.

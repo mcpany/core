@@ -20,6 +20,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSanitizeID(t *testing.T) {
@@ -318,6 +320,53 @@ func TestParseToolName(t *testing.T) {
 					t.Errorf("Expected bare tool %q, but got %q", tc.expectedBareTool, bareTool)
 				}
 			}
+		})
+	}
+}
+
+func TestReplaceURLPath(t *testing.T) {
+	tests := []struct {
+		name     string
+		urlPath  string
+		params   map[string]interface{}
+		expected string
+	}{
+		{
+			name:     "replace single param",
+			urlPath:  "/api/v1/users/{{userID}}",
+			params:   map[string]interface{}{"userID": "123"},
+			expected: "/api/v1/users/123",
+		},
+		{
+			name:     "replace multiple params",
+			urlPath:  "/api/{{version}}/items/{{itemID}}",
+			params:   map[string]interface{}{"version": "v2", "itemID": "456"},
+			expected: "/api/v2/items/456",
+		},
+		{
+			name:     "replace with integer param",
+			urlPath:  "/items/{{id}}",
+			params:   map[string]interface{}{"id": 789},
+			expected: "/items/789",
+		},
+		{
+			name:     "no placeholders",
+			urlPath:  "/static/path",
+			params:   map[string]interface{}{"id": "123"},
+			expected: "/static/path",
+		},
+		{
+			name:     "missing param value",
+			urlPath:  "/users/{{userID}}",
+			params:   map[string]interface{}{"other": "value"},
+			expected: "/users/{{userID}}",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := ReplaceURLPath(tt.urlPath, tt.params)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }

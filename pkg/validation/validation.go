@@ -47,7 +47,9 @@ func IsValidBindAddress(s string) error {
 //
 // path is the file path to be validated.
 // It returns an error if the path is found to be insecure, and nil otherwise.
-func IsSecurePath(path string) error {
+// IsSecurePath checks if a given file path is secure.
+// It is a variable to allow mocking in tests.
+var IsSecurePath = func(path string) error {
 	if strings.Contains(path, "..") {
 		return fmt.Errorf("path contains '..', which is not allowed")
 	}

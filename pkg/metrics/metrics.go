@@ -64,12 +64,13 @@ func Handler() http.Handler {
 
 // StartServer starts an HTTP server to expose the metrics.
 func StartServer(addr string) error {
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", Handler())
 	server := &http.Server{
 		Addr:              addr,
-		Handler:           Handler(),
+		Handler:           mux,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	http.Handle("/metrics", Handler())
 	return server.ListenAndServe()
 }
 

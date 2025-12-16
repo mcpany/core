@@ -26,6 +26,7 @@ import (
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -770,6 +771,129 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to convert tool", "Error message should indicate a conversion failure")
 }
 
+func TestServer_Reload(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	reloaded := false
+	server.SetReloadFunc(func() error {
+		reloaded = true
+		return nil
+	})
+
+	err = server.Reload()
+	require.NoError(t, err)
+	assert.True(t, reloaded)
+
+	// Test error case
+	server.SetReloadFunc(func() error {
+		return errors.New("reload failed")
+	})
+	err = server.Reload()
+	require.Error(t, err)
+	assert.Equal(t, "reload failed", err.Error())
+
+	// Test nil reload func
+	server.SetReloadFunc(nil)
+	err = server.Reload()
+	require.NoError(t, err)
+}
+
+func TestServer_MiddlewareHook(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	hookCalled := false
+	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		hookCalled = true
+		assert.Equal(t, "CachingMiddleware", name)
+	}
+	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
+
+	_ = server.Server()
+	assert.True(t, hookCalled)
+}
+
+func TestServer_HandlerErrors(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	router := server.GetRouter()
+	require.NotNil(t, router)
+
+	consts_MethodPromptsList := "prompts/list"
+	consts_MethodPromptsGet := "prompts/get"
+	consts_MethodResourcesList := "resources/list"
+	consts_MethodResourcesRead := "resources/read"
+
+	// Test PromptsList handler with wrong request type
+	handler, ok := router.GetHandler(consts_MethodPromptsList)
+	require.True(t, ok)
+	_, err = handler(ctx, &mcp.InitializeRequest{}) // Wrong request type
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid request type")
+
+	// Test PromptsGet handler with wrong request type
+	handler, ok = router.GetHandler(consts_MethodPromptsGet)
+	require.True(t, ok)
+	_, err = handler(ctx, &mcp.InitializeRequest{})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid request type")
+
+	// Test ResourcesList handler with wrong request type
+	handler, ok = router.GetHandler(consts_MethodResourcesList)
+	require.True(t, ok)
+	_, err = handler(ctx, &mcp.InitializeRequest{})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid request type")
+
+	// Test ResourcesRead handler with wrong request type
+	handler, ok = router.GetHandler(consts_MethodResourcesRead)
+	require.True(t, ok)
+	_, err = handler(ctx, &mcp.InitializeRequest{})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid request type")
+}
+
 // chameleonTool is a mock tool that can change its name after it's created.
 // This is useful for testing error conditions in the tool list filtering middleware.
 type chameleonTool struct {
@@ -797,4 +921,248 @@ func (m *chameleonTool) setName(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.tool.Name = proto.String(name)
+}
+
+type smartToolManager struct {
+	tool.Manager
+	services map[string]*tool.ServiceInfo
+	tools    []tool.Tool
+}
+
+func (m *smartToolManager) ListTools() []tool.Tool {
+	return m.tools
+}
+
+func (m *smartToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+	s, ok := m.services[id]
+	return s, ok
+}
+
+// Stubs to satisfy interface
+func (m *smartToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *smartToolManager) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
+func (m *smartToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	return nil, nil // Not used here
+}
+func (m *smartToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
+func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
+func (m *smartToolManager) AddTool(_ tool.Tool) error                { return nil }
+func (m *smartToolManager) ClearToolsForService(_ string)            {}
+
+
+func TestServer_MiddlewareChain(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+    // Setup smart manager with data covering all branches
+
+    // Tools:
+    // 1. global-service.tool (no profiles)
+    // 2. profile-service.tool (profile "p1")
+    // 3. multi-profile.tool (profile "p1", "p2")
+
+    // Services:
+    // "global-service": {} (Empty config or no profiles)
+    // "profile-service": { Profiles: [ {Id: "p1"} ] }
+    // "multi-profile": { Profiles: [ {Id: "p1"}, {Id: "p2"} ] }
+    // "other-service": { Profiles: [ {Id: "p2"} ] }
+
+    srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+    srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
+        Profiles: []*configv1.Profile{{Id: "p1"}},
+    }}
+    srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
+        Profiles: []*configv1.Profile{{Id: "p2"}},
+    }}
+
+    toolGlobal := &mockTool{tool: &v1.Tool{Name: proto.String("global.tool"), ServiceId: proto.String("global-service")}}
+    toolProfile := &mockTool{tool: &v1.Tool{Name: proto.String("profile.tool"), ServiceId: proto.String("profile-service")}}
+    toolOther := &mockTool{tool: &v1.Tool{Name: proto.String("other.tool"), ServiceId: proto.String("other-service")}}
+
+	smartM := &smartToolManager{
+	    services: map[string]*tool.ServiceInfo{
+	        "global-service": srvGlobal,
+	        "profile-service": srvProfile,
+	        "other-service": srvOther,
+	    },
+	    tools: []tool.Tool{toolGlobal, toolProfile, toolOther},
+	}
+
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, smartM, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, smartM, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	// Mock next handler
+	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		return &mcp.CallToolResult{}, nil
+	}
+
+	// 1. RouterMiddleware
+	res, err := server.RouterMiddleware(next)(ctx, consts.MethodPromptsList, &mcp.ListPromptsRequest{})
+	require.NoError(t, err)
+	_, ok := res.(*mcp.ListPromptsResult)
+	require.True(t, ok, "Expected ListPromptsResult")
+
+	// 2. ToolListFilteringMiddleware
+
+	// Case A: No Profile -> Should see ALL tools?
+	// Logic says: "if hasProfile { ... } else { check? }"
+	// Wait, code: "if hasProfile { ... }". Loop iterates all tools.
+	// If !hasProfile, it appends ALL of them.
+	// So "global" (no auth) sees everything?
+	// The implementation assumes if no profile context, we skip filtering.
+	// This might be correct for legacy or admin.
+
+	res, err = server.ToolListFilteringMiddleware(next)(ctx, consts.MethodToolsList, &mcp.ListToolsRequest{})
+	require.NoError(t, err)
+	lRes, ok := res.(*mcp.ListToolsResult)
+	require.True(t, ok)
+	assert.Len(t, lRes.Tools, 3, "No profile should see all 3 tools")
+
+	// Case B: Profile "p1"
+	// Should see:
+	// - global.tool (no profiles defined = default access? Logic: len(profiles)==0 -> hasAccess=true)
+	// - profile.tool (matches "p1")
+	// - other.tool (matches "p2" -> NO access)
+
+	ctxP1 := auth.ContextWithProfileID(ctx, "p1")
+	res, err = server.ToolListFilteringMiddleware(next)(ctxP1, consts.MethodToolsList, &mcp.ListToolsRequest{})
+	require.NoError(t, err)
+	lRes, ok = res.(*mcp.ListToolsResult)
+	require.True(t, ok)
+
+	// Verify contents
+	foundNames := make(map[string]bool)
+	for _, t := range lRes.Tools {
+	    foundNames[t.Name] = true
+	}
+	assert.Contains(t, foundNames, "global-service.global.tool")
+	assert.Contains(t, foundNames, "profile-service.profile.tool")
+	assert.NotContains(t, foundNames, "other-service.other.tool")
+	assert.Len(t, lRes.Tools, 2)
+
+    // Case C: Profile "p2"
+    // Should see global + other
+    ctxP2 := auth.ContextWithProfileID(ctx, "p2")
+    res, err = server.ToolListFilteringMiddleware(next)(ctxP2, consts.MethodToolsList, &mcp.ListToolsRequest{})
+    require.NoError(t, err)
+    lRes, ok = res.(*mcp.ListToolsResult)
+    require.True(t, ok)
+    assert.Len(t, lRes.Tools, 2)
+
+	// Case D: other method -> should call next
+	res, err = server.ToolListFilteringMiddleware(next)(ctx, "other/method", nil)
+	require.NoError(t, err)
+	_, ok = res.(*mcp.CallToolResult)
+	require.True(t, ok)
+}
+
+func TestServer_RouterDispatch(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+	mockToolManager := &mockToolManager{}
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	router := server.GetRouter()
+
+	tests := []struct {
+		name        string
+		method      string
+		req         mcp.Request
+		expectError bool
+	}{
+		{
+			name:   "PromptsList_Success",
+			method: consts.MethodPromptsList,
+			req:    &mcp.ListPromptsRequest{},
+		},
+		{
+			name:        "PromptsList_InvalidType",
+			method:      consts.MethodPromptsList,
+			req:         &mcp.GetPromptRequest{},
+			expectError: true,
+		},
+		{
+			name:   "PromptsGet_Success",
+			method: consts.MethodPromptsGet,
+			req: &mcp.GetPromptRequest{
+				Params: &mcp.GetPromptParams{
+					Name: "test-prompt",
+				},
+			},
+		},
+		{
+			name:        "PromptsGet_InvalidType",
+			method:      consts.MethodPromptsGet,
+			req:         &mcp.ListPromptsRequest{},
+			expectError: true,
+		},
+		{
+			name:   "ResourcesList_Success",
+			method: consts.MethodResourcesList,
+			req:    &mcp.ListResourcesRequest{},
+		},
+		{
+			name:        "ResourcesList_InvalidType",
+			method:      consts.MethodResourcesList,
+			req:         &mcp.ReadResourceRequest{},
+			expectError: true,
+		},
+		{
+			name:   "ResourcesRead_Success",
+			method: consts.MethodResourcesRead,
+			req: &mcp.ReadResourceRequest{
+				Params: &mcp.ReadResourceParams{
+					URI: "test://resource",
+				},
+			},
+		},
+		{
+			name:        "ResourcesRead_InvalidType",
+			method:      consts.MethodResourcesRead,
+			req:         &mcp.ListResourcesRequest{},
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			handler, ok := router.GetHandler(tt.method)
+			require.True(t, ok, "Handler should be registered for %s", tt.method)
+
+			_, err := handler(ctx, tt.req)
+			if tt.expectError {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "invalid request type")
+			} else {
+				// We expect nil because mockToolManager/promptManager might return valid empty results
+				// OR error if the item is not found, but NOT "invalid request type"
+				// For PromptsGet/ResourcesRead, it might fail with "not found", which is essentially success for dispatch.
+				if err != nil {
+					assert.NotContains(t, err.Error(), "invalid request type")
+				}
+			}
+		})
+	}
 }

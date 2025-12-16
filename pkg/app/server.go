@@ -127,6 +127,7 @@ type Application struct {
 	PromptManager    prompt.ManagerInterface
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
+	UpstreamFactory  factory.Factory
 	configFiles      map[string]string
 }
 
@@ -141,7 +142,9 @@ func NewApplication() *Application {
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
+
 		ResourceManager:  resource.NewManager(),
+		UpstreamFactory:  factory.NewUpstreamServiceFactory(pool.NewManager()),
 		configFiles:      make(map[string]string),
 	}
 }
@@ -354,7 +357,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	if cfg.GetUpstreamServices() != nil {
-		upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
@@ -362,7 +364,7 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			}
 
 			// Reload tools, prompts, and resources
-			upstream, err := upstreamFactory.NewUpstream(serviceConfig)
+			upstream, err := a.UpstreamFactory.NewUpstream(serviceConfig)
 			if err != nil {
 				log.Error("Failed to get upstream service", "error", err)
 				continue

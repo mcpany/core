@@ -30,6 +30,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -641,4 +642,67 @@ func TestWebRTCHealthCheck(t *testing.T) {
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
+}
+
+func TestCheckConnection_WithScheme(t *testing.T) {
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer lis.Close()
+
+	// Test with http:// scheme
+	err = checkConnection("http://" + lis.Addr().String())
+	assert.NoError(t, err)
+
+	// Test with https:// scheme (just checks port parsing, not actual TLS handshake for TCP dial)
+	// We need a listener that matches the port extracted.
+	// But JoinHostPort will use the port from the URL if present.
+	// If URL has port, it uses it.
+	err = checkConnection("https://" + lis.Addr().String())
+	assert.NoError(t, err)
+
+	// Test with https default port (use dummy host that we know wont connect or we test that it tries port 443)
+	// We verify that it returns an error (connection refused or timeout)
+	err = checkConnection("http://localhost")
+	assert.Error(t, err) // Should ensure it tries port 80
+}
+
+func TestHTTPCheck_BodyMismatch(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("foo"))
+	}))
+	defer server.Close()
+
+	ctx := context.Background()
+	hc := configv1.HttpHealthCheck_builder{
+		Url:                          lo.ToPtr(server.URL),
+		ExpectedCode:                 lo.ToPtr(int32(http.StatusOK)),
+		ExpectedResponseBodyContains: lo.ToPtr("bar"),
+	}.Build()
+
+	err := httpCheckFunc(ctx, "", hc)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "health check response body does not contain expected string")
+}
+
+func TestGRPC_NoHealthCheck(t *testing.T) {
+	// Should fall back to checkConnection
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer lis.Close()
+
+	ctx := context.Background()
+
+	upstreamConfig := configv1.UpstreamServiceConfig_builder{
+		Name: lo.ToPtr("grpc-fallback"),
+		GrpcService: configv1.GrpcUpstreamService_builder{
+			Address: lo.ToPtr(lis.Addr().String()),
+			// No HealthCheck
+		}.Build(),
+	}.Build()
+
+	checker := NewChecker(upstreamConfig)
+	assert.NotNil(t, checker)
+	// Should be UP because TCP connection succeeds
+	assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 }

@@ -217,3 +217,30 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when there is no cache config")
 }
+
+func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	// Tool belonging to a service that is NOT known to the tool manager
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String("unknown-service"),
+		}.Build(),
+		cacheConfig: nil,
+	}
+	req := &tool.ExecutionRequest{ToolName: "unknown-service.test-tool"}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// Should proceed without caching because service info (and thus cache config) is missing
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res)
+	assert.Equal(t, 1, testTool.executeCount)
+}

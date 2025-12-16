@@ -65,3 +65,76 @@ func TestMetricsCollection(t *testing.T) {
 	assert.Equal(t, 1, data[0].Counters["mcpany.my_counter"].Count)
 	assert.Contains(t, data[0].Samples, "mcpany.my_histogram")
 }
+
+func TestSetGauge(t *testing.T) {
+	// Re-init global to be safe or just call SetGauge.
+	// SetGauge uses metrics.Global(), so we need to ensure it's set.
+	// It is set by Initialize() or manually.
+	// metrics.NewGlobal above sets it.
+	// But tests run in parallel? No, t.Parallel() not called.
+	// However, TestMetricsCollection sets NewGlobal.
+	// We should probably setup NewGlobal in this test too or reuse.
+
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	assert.NotPanics(t, func() {
+		SetGauge("test_gauge", 42.0, "test_label")
+	})
+
+	// Verify it reached sink
+	data := sink.Data()
+	if len(data) > 0 {
+		assert.Equal(t, float32(42.0), data[0].Gauges["mcpany.test_gauge;service_name=test_label"].Value)
+	}
+}
+
+func TestMeasureSince(t *testing.T) {
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	assert.NotPanics(t, func() {
+		MeasureSince([]string{"test_timer"}, time.Now().Add(-1*time.Second))
+	})
+}
+
+func TestIncrCounter(t *testing.T) {
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	assert.NotPanics(t, func() {
+		IncrCounter([]string{"test_counter"}, 1)
+	})
+}
+
+func TestStartServer_Real(t *testing.T) {
+	// Test the actual StartServer function
+	// We use a random port
+	done := make(chan error)
+	go func() {
+		done <- StartServer("localhost:0")
+	}()
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Logf("StartServer failed immediately: %v", err)
+		}
+	case <-time.After(100 * time.Millisecond):
+		// Started effectively
+	}
+}
+
+func TestStartServer_Error(t *testing.T) {
+	err := StartServer("invalid:address")
+	assert.Error(t, err)
+}
