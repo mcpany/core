@@ -44,12 +44,14 @@ type Manifest struct {
 	UserConfig      json.RawMessage `json:"user_config"`
 }
 
+// ManifestServer represents the server configuration in the manifest.
 type ManifestServer struct {
 	Type       string            `json:"type"`
 	EntryPoint string            `json:"entry_point"`
 	McpConfig  ManifestMcpConfig `json:"mcp_config"`
 }
 
+// ManifestMcpConfig represents the MCP configuration in the manifest.
 type ManifestMcpConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
@@ -82,7 +84,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	// 2. Read Manifest
 	manifestPath := filepath.Join(tempDir, "manifest.json")
-	manifestFile, err := os.Open(manifestPath)
+	manifestFile, err := os.Open(manifestPath) //nolint:gosec // Path constructed from secure temp dir
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open manifest.json: %w", err)
 	}
@@ -259,7 +261,7 @@ func unzipBundle(src, dest string) error {
 	}
 	defer func() { _ = r.Close() }()
 
-	if err := os.MkdirAll(dest, 0755); err != nil {
+	if err := os.MkdirAll(dest, 0750); err != nil {
 		return err
 	}
 
@@ -270,17 +272,17 @@ func unzipBundle(src, dest string) error {
 		}
 
 		if f.FileInfo().IsDir() {
-			if err := os.MkdirAll(fpath, os.ModePerm); err != nil {
+			if err := os.MkdirAll(fpath, 0750); err != nil {
 				return err
 			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+		if err := os.MkdirAll(filepath.Dir(fpath), 0750); err != nil {
 			return err
 		}
 
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode()) //nolint:gosec // Path validated in loop
 		if err != nil {
 			return err
 		}

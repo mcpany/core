@@ -321,10 +321,11 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
 
-			return exec.Command("sudo", fullArgs...)
+
+			return exec.Command("sudo", fullArgs...) //nolint:gosec // Command construction is intended
 		}
 
-		return exec.Command(command, args...)
+		return exec.Command(command, args...) //nolint:gosec // Command construction is intended
 	}
 
 	// Combine all commands into a single script.
@@ -340,7 +341,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 
 	// run the script directly on the host.
 
-	cmd := exec.Command("/bin/sh", "-c", script)
+	cmd := exec.Command("/bin/sh", "-c", script) //nolint:gosec // Command construction is intended
 	cmd.Dir = stdio.GetWorkingDirectory()
 	return cmd
 }
@@ -350,7 +351,6 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 // container). It establishes the connection, discovers the service's
 // capabilities, and registers them.
 //
-//nolint:gocyclo,funlen
 func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	ctx context.Context,
 	serviceID string,

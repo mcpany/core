@@ -44,7 +44,7 @@ func TestUpstreamService_NASAGIBS(t *testing.T) {
 		},
 		GenerateUpstreamConfig: func(_ string) string {
 			configPath := filepath.Join(root, "examples", "popular_services", "nasa", "config.yaml")
-			content, err := os.ReadFile(configPath)
+			content, err := os.ReadFile(configPath) //nolint:gosec // Test file
 			require.NoError(t, err)
 			return string(content)
 		},

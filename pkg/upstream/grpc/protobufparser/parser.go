@@ -189,7 +189,7 @@ func processProtoCollection(
 				return fmt.Errorf("failed to create directory for proto file: %w", err)
 			}
 
-			content, err := os.ReadFile(path)
+			content, err := os.ReadFile(path) //nolint:gosec // Path is controlled by configuration/regex
 			if err != nil {
 				return fmt.Errorf("failed to read proto file %s: %w", path, err)
 			}
@@ -239,7 +239,7 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 	case configv1.ProtoFile_FilePath_case:
 		filePathRef := protoFile.GetFilePath()
 
-		content, err = os.ReadFile(filePathRef)
+		content, err = os.ReadFile(filePathRef) //nolint:gosec // Path is from config
 		if err != nil {
 			return "", fmt.Errorf("failed to read proto file from path %s: %w", filePathRef, err)
 		}
