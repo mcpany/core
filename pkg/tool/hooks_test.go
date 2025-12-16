@@ -231,7 +231,7 @@ func TestWebhookHook(t *testing.T) {
 			}
 		}
 
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 
@@ -278,7 +278,7 @@ func TestWebhookHook(t *testing.T) {
 	})
 }
 
-func TestHtmlToMarkdownHook_ExecutePost(t *testing.T) {
+func TestHTMLToMarkdownHook_ExecutePost(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    any
@@ -306,7 +306,7 @@ func TestHtmlToMarkdownHook_ExecutePost(t *testing.T) {
 		},
 	}
 
-	hook := NewHtmlToMarkdownHook(&configv1.HtmlToMarkdownConfig{})
+	hook := NewHTMLToMarkdownHook(&configv1.HtmlToMarkdownConfig{})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

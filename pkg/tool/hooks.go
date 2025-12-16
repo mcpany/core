@@ -152,20 +152,20 @@ func (h *TextTruncationHook) truncateMap(m map[string]any) map[string]any {
 	return newMap
 }
 
-// HtmlToMarkdownHook implements PostCallHook to convert HTML to Markdown.
-type HtmlToMarkdownHook struct {
+// HTMLToMarkdownHook implements PostCallHook to convert HTML to Markdown.
+type HTMLToMarkdownHook struct {
 	converter *md.Converter
 }
 
-// NewHtmlToMarkdownHook creates a new HtmlToMarkdownHook.
-func NewHtmlToMarkdownHook(config *configv1.HtmlToMarkdownConfig) *HtmlToMarkdownHook {
+// NewHTMLToMarkdownHook creates a new HTMLToMarkdownHook.
+func NewHTMLToMarkdownHook(_ *configv1.HtmlToMarkdownConfig) *HTMLToMarkdownHook {
 	converter := md.NewConverter("", true, nil)
 	// We can configure excludes/includes if needed based on config
-	return &HtmlToMarkdownHook{converter: converter}
+	return &HTMLToMarkdownHook{converter: converter}
 }
 
 // ExecutePost converts HTML strings in the result to Markdown.
-func (h *HtmlToMarkdownHook) ExecutePost(
+func (h *HTMLToMarkdownHook) ExecutePost(
 	_ context.Context,
 	_ *ExecutionRequest,
 	result any,
@@ -183,7 +183,7 @@ func (h *HtmlToMarkdownHook) ExecutePost(
 	return result, nil
 }
 
-func (h *HtmlToMarkdownHook) convertString(s string) string {
+func (h *HTMLToMarkdownHook) convertString(s string) string {
 	// Check if it looks like HTML? For now, we assume if this hook is enabled,
 	// the user expects conversion.
 	markdown, err := h.converter.ConvertString(s)
@@ -194,7 +194,7 @@ func (h *HtmlToMarkdownHook) convertString(s string) string {
 	return markdown
 }
 
-func (h *HtmlToMarkdownHook) convertMap(m map[string]any) map[string]any {
+func (h *HTMLToMarkdownHook) convertMap(m map[string]any) map[string]any {
 	newMap := make(map[string]any, len(m))
 	for k, v := range m {
 		switch val := v.(type) {
