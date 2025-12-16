@@ -36,9 +36,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func ptr[T any](v T) *T {
-	return &v
-}
+// ptr is unused in this file, but we might need it later or it's a helper.
+// Actually, looking at the code, it IS unused.
+// Let's remove it if it's truly unused.
+// usage: integration.StartMCPANYServerWithConfig uses it? No.
+// It was defined in e2e_helpers.go too.
+// I'll remove it.
 
 // StartStdioServer starts the MCP server in Stdio mode and returns the client.
 func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
@@ -48,7 +51,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	serverBin := root + "/build/bin/server"
 
 	// Create command
-	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile)
+	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile) //nolint:gosec // Test helper
 	// We need to set pipe before starting
 	stdin, err := cmd.StdinPipe()
 	require.NoError(t, err)
@@ -157,7 +160,7 @@ func (c *MCPClient) Call(ctx context.Context, method string, params interface{})
 	}
 }
 
-func (c *MCPClient) Notify(ctx context.Context, method string, params interface{}) error {
+func (c *MCPClient) Notify(_ context.Context, method string, params interface{}) error {
 	reqBody, _ := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  method,
@@ -212,9 +215,9 @@ func (c *MCPClient) ListResources(ctx context.Context) (*mcp.ListResourcesResult
 }
 
 func TestAutoDiscoverAndExportPolicy(t *testing.T) {
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	}))
 	defer mockServer.Close()
 
@@ -280,13 +283,14 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 
 func TestCallPolicyExecution(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/allowed" {
+		switch r.URL.Path {
+		case "/allowed":
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"result": "allowed"}`))
-		} else if r.URL.Path == "/denied" {
+			_, _ = w.Write([]byte(`{"result": "allowed"}`))
+		case "/denied":
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"result": "denied"}`))
-		} else {
+			_, _ = w.Write([]byte(`{"result": "denied"}`))
+		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))

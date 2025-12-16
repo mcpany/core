@@ -262,7 +262,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Vault secret not found", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 		defer server.Close()
@@ -284,7 +284,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Vault key not found", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = fmt.Fprint(w, `{"data": {"data": {"another-key": "another-value"}}}`)
 		}))

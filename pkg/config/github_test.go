@@ -177,7 +177,7 @@ func TestGitHub_List(t *testing.T) {
 			DownloadURL: "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md",
 		},
 	}
-	if len(contents) != 1 || contents[0] != expected[0] {
+	if len(contents) != 1 || contents[0] != expected[0] { //nolint:gosec // Safe slice access
 		t.Errorf("List() = %v, want %v", contents, expected)
 	}
 }
@@ -209,7 +209,7 @@ func TestGitHub_List_With_Single_File(t *testing.T) {
 			DownloadURL: "https://raw.githubusercontent.com/mcpany/core/main/examples/README.md",
 		},
 	}
-	if len(contents) != 1 || contents[0] != expected[0] {
+	if len(contents) != 1 || contents[0] != expected[0] { //nolint:gosec // Safe slice access
 		t.Errorf("List() = %v, want %v", contents, expected)
 	}
 }
