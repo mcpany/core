@@ -14,7 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package util
+package util_test
 
 import (
 	"fmt"
@@ -23,20 +23,21 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestResolveSecret(t *testing.T) {
 	t.Run("nil secret", func(t *testing.T) {
-		resolved, err := ResolveSecret(nil)
+		resolved, err := util.ResolveSecret(nil)
 		assert.NoError(t, err)
 		assert.Empty(t, resolved)
 	})
 
 	t.Run("unknown secret type", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Empty(t, resolved)
 	})
@@ -44,7 +45,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("PlainText", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetPlainText("my-secret")
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-secret", resolved)
 	})
@@ -53,7 +54,7 @@ func TestResolveSecret(t *testing.T) {
 		t.Setenv("MY_SECRET_ENV", "my-env-secret")
 		secret := &configv1.SecretValue{}
 		secret.SetEnvironmentVariable("MY_SECRET_ENV")
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-env-secret", resolved)
 	})
@@ -61,7 +62,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("EnvironmentVariable not set", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetEnvironmentVariable("MY_SECRET_ENV_NOT_SET")
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -76,7 +77,7 @@ func TestResolveSecret(t *testing.T) {
 
 		secret := &configv1.SecretValue{}
 		secret.SetFilePath(tmpfile.Name())
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-file-secret", resolved)
 	})
@@ -84,7 +85,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("FilePath not found", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetFilePath("non-existent-file")
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -99,7 +100,7 @@ func TestResolveSecret(t *testing.T) {
 		remoteContent.SetHttpUrl(server.URL)
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -128,7 +129,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -156,7 +157,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -188,7 +189,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -199,7 +200,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -214,7 +215,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -229,7 +230,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 }
@@ -256,7 +257,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-vault-secret", resolved)
 	})
@@ -279,7 +280,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -302,7 +303,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		_, err := ResolveSecret(secret)
+		_, err := util.ResolveSecret(secret)
 		assert.Error(t, err)
 	})
 
@@ -327,7 +328,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		resolved, err := ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-vault-secret-v1", resolved)
 	})
@@ -354,7 +355,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		vaultA.SetToken(secretB)
 		vaultB.SetToken(secretA)
 
-		_, err := ResolveSecret(secretA)
+		_, err := util.ResolveSecret(secretA)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
 	})
