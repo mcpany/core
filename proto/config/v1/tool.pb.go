@@ -14,6 +14,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -30,6 +31,8 @@ type ToolDefinition struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// The name of the tool, which will be used to invoke it.
 	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The input schema for the tool.
+	InputSchema *structpb.Struct `protobuf:"bytes,3,opt,name=input_schema" json:"input_schema,omitempty"`
 	// The ID of the service that provides the tool.
 	ServiceId *string `protobuf:"bytes,13,opt,name=service_id" json:"service_id,omitempty"`
 	// A human-readable description of what the tool does.
@@ -96,6 +99,13 @@ func (x *ToolDefinition) GetName() string {
 		return *x.Name
 	}
 	return ""
+}
+
+func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
+	if x != nil {
+		return x.InputSchema
+	}
+	return nil
 }
 
 func (x *ToolDefinition) GetServiceId() string {
@@ -179,6 +189,10 @@ func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
 
+func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
+	x.InputSchema = v
+}
+
 func (x *ToolDefinition) SetServiceId(v string) {
 	x.ServiceId = &v
 }
@@ -228,6 +242,13 @@ func (x *ToolDefinition) HasName() bool {
 		return false
 	}
 	return x.Name != nil
+}
+
+func (x *ToolDefinition) HasInputSchema() bool {
+	if x == nil {
+		return false
+	}
+	return x.InputSchema != nil
 }
 
 func (x *ToolDefinition) HasServiceId() bool {
@@ -304,6 +325,10 @@ func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
 
+func (x *ToolDefinition) ClearInputSchema() {
+	x.InputSchema = nil
+}
+
 func (x *ToolDefinition) ClearServiceId() {
 	x.ServiceId = nil
 }
@@ -349,6 +374,8 @@ type ToolDefinition_builder struct {
 
 	// The name of the tool, which will be used to invoke it.
 	Name *string
+	// The input schema for the tool.
+	InputSchema *structpb.Struct
 	// The ID of the service that provides the tool.
 	ServiceId *string
 	// A human-readable description of what the tool does.
@@ -388,6 +415,7 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.Name = b.Name
+	x.InputSchema = b.InputSchema
 	x.ServiceId = b.ServiceId
 	x.Description = b.Description
 	x.IsStream = b.IsStream
@@ -406,9 +434,10 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1dproto/config/v1/profile.proto\"\xad\x03\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xea\x03\n" +
 	"\x0eToolDefinition\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
+	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
 	"\n" +
 	"service_id\x18\r \x01(\tR\n" +
 	"service_id\x12 \n" +
@@ -426,16 +455,18 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_tool_proto_goTypes = []any{
-	(*ToolDefinition)(nil), // 0: mcpany.config.v1.ToolDefinition
-	(*Profile)(nil),        // 1: mcpany.config.v1.Profile
+	(*ToolDefinition)(nil),  // 0: mcpany.config.v1.ToolDefinition
+	(*structpb.Struct)(nil), // 1: google.protobuf.Struct
+	(*Profile)(nil),         // 2: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	2, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
