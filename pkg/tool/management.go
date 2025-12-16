@@ -135,7 +135,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 					postHooks = append(postHooks, NewTextTruncationHook(tt))
 				}
 				if html := hCfg.GetHtmlToMarkdown(); html != nil {
-					postHooks = append(postHooks, NewHtmlToMarkdownHook(html))
+					postHooks = append(postHooks, NewHTMLToMarkdownHook(html))
 				}
 				if w := hCfg.GetWebhook(); w != nil {
 					postHooks = append(postHooks, NewWebhookHook(w))
