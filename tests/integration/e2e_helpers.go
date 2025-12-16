@@ -840,8 +840,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	args := []string{
 		"run",
-		"--mcp-listen-address", "127.0.0.1:0",
-		"--grpc-port", "127.0.0.1:0",
+		"--mcp-listen-address", jsonrpcPortArg,
+		"--grpc-port", grpcRegPortArg,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
@@ -859,13 +859,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
-	// Wait specifically for the ports to be logged
-	jsonrpcAddr, err := WaitForPortFromLogs(t, mcpProcess, "MCP Any HTTP")
-	require.NoError(t, err, "Failed to find MCP Any HTTP port in logs")
-	grpcRegEndpoint, err := WaitForPortFromLogs(t, mcpProcess, "Registration")
-	require.NoError(t, err, "Failed to find Registration port in logs")
+	// Wait for ports to be assigned and logged
+	var jsonrpcPort, grpcRegPort int
 
-	jsonrpcEndpoint := fmt.Sprintf("http://%s", jsonrpcAddr)
+	// Regex patterns to extract ports from logs.
+	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
+	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
+	grpcPortRegex := regexp.MustCompile(`msg="gRPC server listening".*?port=[^:]+:(\d+)`)
+
 
 	require.Eventually(t, func() bool {
 		stdout := mcpProcess.StdoutString()
