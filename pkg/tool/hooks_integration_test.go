@@ -114,6 +114,38 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		assert.Equal(t, "very ...", res)
 	})
 
+	// 2.5. Test PostCallHook (HtmlToMarkdown)
+	t.Run("PostCallHook_HtmlToMarkdown", func(t *testing.T) {
+		mockTool := &MockTool{
+			ToolFunc: func() *v1.Tool { return protoTool },
+			ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
+				return "<h1>Hello</h1><p>World</p>", nil
+			},
+		}
+
+		err := tm.AddTool(mockTool)
+		require.NoError(t, err)
+		tm.AddServiceInfo(serviceID, &ServiceInfo{
+			Config: &configv1.UpstreamServiceConfig{
+				PostCallHooks: []*configv1.CallHook{
+					{
+						HookConfig: &configv1.CallHook_HtmlToMarkdown{
+							HtmlToMarkdown: &configv1.HtmlToMarkdownConfig{},
+						},
+					},
+				},
+			},
+		})
+
+		req := &ExecutionRequest{ToolName: toolID}
+		res, err := tm.ExecuteTool(context.Background(), req)
+		require.NoError(t, err)
+		// Expected output depends on html-to-markdown library
+		// "<h1>Hello</h1><p>World</p>" -> "# Hello\n\nWorld" or similar
+		assert.Contains(t, res, "# Hello")
+		assert.Contains(t, res, "World")
+	})
+
 	// 3. Test CallPolicy (Legacy)
 	t.Run("LegacyCallPolicy_Deny", func(t *testing.T) {
 		mockTool := &MockTool{
