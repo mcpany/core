@@ -264,7 +264,6 @@ func unzipBundle(src, dest string) error {
 	}
 
 	for _, f := range r.File {
-		//nolint:gosec // Checked below
 		fpath := filepath.Join(dest, f.Name)
 		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
 			return fmt.Errorf("illegal file path: %s", fpath)
@@ -292,17 +291,39 @@ func unzipBundle(src, dest string) error {
 			return err
 		}
 
-		// G110: Potential DoS vulnerability via decompression bomb
-		// We trust the bundle for now, but suppressing linter for this assignment.
-		//nolint:gosec
-		_, err = io.Copy(outFile, rc)
+		// Mitigate G110: Decompression bomb. Limit max file size to 1GB.
+		const maxFileSize = 1 * 1024 * 1024 * 1024 // 1GB
+		
+		// Use io.LimitReader to prevent reading more than maxFileSize.
+		// We read up to maxFileSize bytes.
+		n, err := io.Copy(outFile, io.LimitReader(rc, maxFileSize))
+		if err != nil {
+			_ = outFile.Close()
+			_ = rc.Close()
+			return fmt.Errorf("failed to copy file content: %w", err)
+		}
+		
+		// Check if there is more data remaining (meaning it exceeded the limit)
+		// We try to read 1 byte.
+		buf := make([]byte, 1)
+		read, _ := rc.Read(buf)
+		if read > 0 || n == maxFileSize {
+			// If n hit the limit, we should double check if we can read more.
+			// But if n < maxFileSize, we are sure we consumed it all (given io.Copy finishes on EOF).
+			// If n == maxFileSize, it might be EXACTLY maxFileSize or larger.
+			if n == maxFileSize {
+				// Try reading one more byte to confirm if it's larger
+				if read > 0 {
+					_ = outFile.Close()
+					_ = rc.Close()
+					return fmt.Errorf("file %s exceeds maximum allowed size of %d bytes", f.Name, maxFileSize)
+				}
+				// If read == 0, it means we hit EOF exactly at maxFileSize, which is fine.
+			}
+		}
 
 		_ = outFile.Close()
 		_ = rc.Close()
-
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

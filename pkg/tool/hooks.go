@@ -150,8 +150,6 @@ func (h *TextTruncationHook) truncateMap(m map[string]any) map[string]any {
 // User requirement: "webhook... modify requests/responses".
 // So it can be both.
 type WebhookHook struct {
-	config *configv1.WebhookConfig //nolint:unused
-	// client http.Client
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
