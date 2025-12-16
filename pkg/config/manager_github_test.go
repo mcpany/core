@@ -37,7 +37,7 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub(t *testing.T) {
 			// List directory
 			w.Header().Set("Content-Type", "application/json")
 			// Return a file and a directory
-			fmt.Fprintln(w, `[
+			_, _ = fmt.Fprintln(w, `[
 				{
 					"type": "file",
 					"name": "service.yaml",
@@ -55,7 +55,7 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub(t *testing.T) {
 		}
 		if r.URL.Path == "/raw/service.yaml" {
 			// Return config file content
-			fmt.Fprint(w, `
+			_, _ = fmt.Fprint(w, `
 services:
   - name: github-service-1
     http_service:
@@ -70,7 +70,7 @@ services:
 		// We need to mock the LIST call for that too if we want to test recursion fully.
 		// For now, let's just error on subdir to test error handling or make it empty.
 		if r.URL.Path == "/repos/owner/repo/contents/path/subdir" {
-			fmt.Fprintln(w, `[]`)
+			_, _ = fmt.Fprintln(w, `[]`)
 			return
 		}
 
@@ -83,7 +83,7 @@ services:
 	m.httpClient = ts.Client()
 
 	// Override newGitHub
-	m.newGitHub = func(ctx context.Context, rawURL string) (*GitHub, error) {
+	m.newGitHub = func(_ context.Context, rawURL string) (*GitHub, error) {
 		// Simple manual parsing or use the regex from validator/github.go if accessible.
 		// But since we control the input URLs, we can just split.
 		// Input: https://github.com/owner/repo/tree/main/path
@@ -122,7 +122,7 @@ services:
 
 func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	m.newGitHub = func(ctx context.Context, rawURL string) (*GitHub, error) {
+	m.newGitHub = func(_ context.Context, _ string) (*GitHub, error) {
 		return nil, fmt.Errorf("mock setup error")
 	}
 
@@ -138,13 +138,13 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T
 }
 
 func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "api error", http.StatusInternalServerError)
 	}))
 	defer ts.Close()
 
 	m := NewUpstreamServiceManager(nil)
-	m.newGitHub = func(ctx context.Context, rawURL string) (*GitHub, error) {
+	m.newGitHub = func(_ context.Context, _ string) (*GitHub, error) {
 		return &GitHub{
 			Owner:      "owner",
 			Repo:       "repo",

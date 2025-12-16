@@ -647,7 +647,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 func TestCheckConnection_WithScheme(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer lis.Close()
+	defer func() { _ = lis.Close() }()
 
 	// Test with http:// scheme
 	err = checkConnection("http://" + lis.Addr().String())
@@ -667,7 +667,7 @@ func TestCheckConnection_WithScheme(t *testing.T) {
 }
 
 func TestHTTPCheck_BodyMismatch(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("foo"))
 	}))
@@ -689,7 +689,7 @@ func TestGRPC_NoHealthCheck(t *testing.T) {
 	// Should fall back to checkConnection
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	defer lis.Close()
+	defer func() { _ = lis.Close() }()
 
 	ctx := context.Background()
 

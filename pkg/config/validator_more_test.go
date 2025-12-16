@@ -36,7 +36,7 @@ func TestValidate_MoreServices(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(insecureFile.Name())
+	defer func() { _ = os.Remove(insecureFile.Name()) }()
 	if err := insecureFile.Chmod(0777); err != nil {
 		t.Fatal(err)
 	}
@@ -761,23 +761,26 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	// Create a real file for insecure path
 	f, err := os.CreateTemp("", "insecure.pem")
 	require.NoError(t, err)
-	defer os.Remove(f.Name())
+	defer func() { _ = os.Remove(f.Name()) }()
 	insecurePath := f.Name()
 
 	// Create unreadable directory to force os.Stat error
 	dirPerm, err := os.MkdirTemp("", "unreadable_dir")
 	require.NoError(t, err)
-	defer os.RemoveAll(dirPerm)
-	err = os.Chmod(dirPerm, 0000)
-	require.NoError(t, err)
-	// Reset permission on cleanup to allow removal
-	defer os.Chmod(dirPerm, 0755)
+	defer func() { _ = os.RemoveAll(dirPerm) }()
+
+	// Make it unreadable
+	if err := os.Chmod(dirPerm, 0000); err != nil {
+		t.Fatalf("Failed to chmod: %v", err)
+	}
+	//nolint:gosec // Directory permissions need to be 0755
+	defer func() { _ = os.Chmod(dirPerm, 0755) }()
 
 	// Create a real file for secure path (needs to exist for FileExists check)
 	fSecure, err := os.CreateTemp("", "secure.pem")
 	require.NoError(t, err)
-	defer os.Remove(fSecure.Name())
-	fSecure.Close()
+	defer func() { _ = os.Remove(fSecure.Name()) }()
+	_ = fSecure.Close()
 	securePath := fSecure.Name()
 
 	// Mock IsSecurePath

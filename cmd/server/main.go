@@ -110,11 +110,15 @@ func newRootCmd() *cobra.Command {
 				}
 				defer watcher.Close()
 
-				go watcher.Watch(configPaths, func() {
-					if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
-						log.Error("Failed to reload config", "error", err)
+				go func() {
+					if err := watcher.Watch(configPaths, func() {
+						if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
+							log.Error("Failed to reload config", "error", err)
+						}
+					}); err != nil {
+						log.Error("Watcher failed", "error", err)
 					}
-				})
+				}()
 			}
 
 			shutdownTimeout := cfg.ShutdownTimeout()
