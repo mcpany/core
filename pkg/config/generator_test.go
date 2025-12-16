@@ -176,11 +176,11 @@ func TestNewGenerator(t *testing.T) {
 
 type errorReader struct{}
 
-func (r *errorReader) Read(p []byte) (n int, err error) {
+func (r *errorReader) Read(_ []byte) (n int, err error) {
 	return 0, fmt.Errorf("read error")
 }
 
-func (r *errorReader) ReadString(delim byte) (string, error) {
+func (r *errorReader) ReadString(_ byte) (string, error) {
     return "", fmt.Errorf("read error")
 }
 

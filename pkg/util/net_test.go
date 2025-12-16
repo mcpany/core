@@ -75,7 +75,7 @@ func TestSafeDialContext(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				if conn != nil {
-					conn.Close()
+					_ = conn.Close()
 				}
 			}
 		})

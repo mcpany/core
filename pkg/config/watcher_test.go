@@ -98,7 +98,7 @@ func TestWatcher_URL(t *testing.T) {
 
 	done := make(chan bool)
 	go func() {
-		w.Watch([]string{"http://example.com/config"}, func() {})
+		_ = w.Watch([]string{"http://example.com/config"}, func() {})
 		close(done)
 	}()
 

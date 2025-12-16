@@ -26,7 +26,7 @@ func TestReloadConfig_FactoryError(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
 	app.UpstreamFactory = &mockFactory{
-		NewUpstreamFunc: func(config *config_v1.UpstreamServiceConfig) (upstream.Upstream, error) {
+		NewUpstreamFunc: func(_ *config_v1.UpstreamServiceConfig) (upstream.Upstream, error) {
 			return nil, fmt.Errorf("factory error")
 		},
 	}
