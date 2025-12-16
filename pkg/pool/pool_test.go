@@ -831,8 +831,8 @@ func TestManager_ConcurrentAccess(t *testing.T) {
 	wg.Wait()
 	m.CloseAll()
 }
-func secureRandomInt(max int) int {
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+func secureRandomInt(maxVal int) int {
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(maxVal)))
 	if err != nil {
 		// Fallback or panic in test
 		return 0
