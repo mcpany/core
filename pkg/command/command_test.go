@@ -294,14 +294,23 @@ func TestCombinedOutput(t *testing.T) {
 	var mu sync.Mutex
 	r, w := io.Pipe()
 
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	go func() {
-		defer func() { _ = w.Close() }()
+		defer wg.Done()
 		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
 		_, _ = io.Copy(writer, stdout)
 	}()
 	go func() {
+		defer wg.Done()
 		writer := io.MultiWriter(&muWriter{&combined, &mu}, w)
 		_, _ = io.Copy(writer, stderr)
+	}()
+
+	go func() {
+		wg.Wait()
+		_ = w.Close()
 	}()
 
 	_, err = io.ReadAll(r)
