@@ -125,12 +125,20 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 				if p := hCfg.GetCallPolicy(); p != nil {
 					preHooks = append(preHooks, NewPolicyHook(p))
 				}
-				// TODO: Webhook support
+				if w := hCfg.GetWebhook(); w != nil {
+					preHooks = append(preHooks, NewWebhookHook(w))
+				}
 			}
 			// 3. PostCallHooks
 			for _, hCfg := range serviceInfo.Config.GetPostCallHooks() {
 				if tt := hCfg.GetTextTruncation(); tt != nil {
 					postHooks = append(postHooks, NewTextTruncationHook(tt))
+				}
+				if html := hCfg.GetHtmlToMarkdown(); html != nil {
+					postHooks = append(postHooks, NewHtmlToMarkdownHook(html))
+				}
+				if w := hCfg.GetWebhook(); w != nil {
+					postHooks = append(postHooks, NewWebhookHook(w))
 				}
 			}
 		}
