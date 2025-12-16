@@ -176,12 +176,11 @@ func (u *Upstream) Register(
 		discoveredTools = append(discoveredTools, discoveredToolsFromDescriptors...)
 	} else if serviceConfig.GetGrpcService().GetUseReflection() {
 		// Log that we are skipping auto-discovery despite reflection being on, if that's worth noting?
-		// Or maybe we consider "UseReflection" implies auto-discovery?
 		// "auto_discover_tool" is new.
 		// For backward compatibility, if "auto_discover_tool" is false, we might STOP doing what we were doing?
 		// User instructions: "Use auto_discover_tool to UpstreamServiceConfig".
-		// I will assume strict opt-in for the "blind" discovery from now on, or I should check if I need to migrate?
 		// I'll stick to the flag.
+		logging.GetLogger().Debug("Auto-discovery disabled for gRPC service with reflection enabled", "serviceID", serviceID)
 	}
 
 	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds)

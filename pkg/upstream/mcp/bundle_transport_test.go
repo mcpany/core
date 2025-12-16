@@ -86,7 +86,7 @@ func TestBundleDockerTransport_Connect(t *testing.T) {
 	conn, err := transport.Connect(context.Background())
 	require.NoError(t, err)
 	assert.NotNil(t, conn)
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 }
 
 func TestFixID(t *testing.T) {
@@ -127,8 +127,8 @@ func TestSetUnexportedID(_ *testing.T) {
 func TestBundleDockerConn_ReadWrite(t *testing.T) {
 	// Create a pipe to simulate connection
 	c1, c2 := net.Pipe()
-	defer c1.Close()
-	defer c2.Close()
+	defer func() { _ = c1.Close() }()
+	defer func() { _ = c2.Close() }()
 
 	logger := logging.GetLogger()
 	conn := &bundleDockerConn{

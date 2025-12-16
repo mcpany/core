@@ -154,7 +154,7 @@ func TestWriteProtoFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
 
-		content, err := os.ReadFile(filePath)
+		content, err := os.ReadFile(filePath) //nolint:gosec // Test file
 		require.NoError(t, err)
 		assert.Equal(t, protoFile.GetFileContent(), string(content))
 	})
@@ -173,7 +173,7 @@ func TestWriteProtoFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, filepath.Join(tempDir, "test.proto"), filePath)
 
-		content, err := os.ReadFile(filePath)
+		content, err := os.ReadFile(filePath) //nolint:gosec // Test file
 		require.NoError(t, err)
 		assert.Equal(t, protoContent, string(content))
 	})

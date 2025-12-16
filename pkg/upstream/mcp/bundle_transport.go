@@ -275,7 +275,7 @@ func setUnexportedID(idPtr interface{}, val interface{}) {
 	if !f.IsValid() {
 		return // Should not happen if type is correct
 	}
-	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
+	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
 	f.Set(reflect.ValueOf(val))
 }
 

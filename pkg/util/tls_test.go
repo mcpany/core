@@ -56,12 +56,12 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	require.NoError(t, err)
 
-	certFile, err := os.Create(filepath.Join(tempDir, "cert.pem"))
+	certFile, err := os.Create(filepath.Join(tempDir, "cert.pem")) //nolint:gosec // Test file
 	require.NoError(t, err)
 	_ = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
 	_ = certFile.Close()
 
-	keyFile, err := os.Create(filepath.Join(tempDir, "key.pem"))
+	keyFile, err := os.Create(filepath.Join(tempDir, "key.pem")) //nolint:gosec // Test file
 	require.NoError(t, err)
 	privBytes, err := x509.MarshalPKCS8PrivateKey(priv)
 	require.NoError(t, err)

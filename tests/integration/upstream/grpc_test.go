@@ -113,7 +113,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 
 			// 2. Build and run the Upstream gRPC Server
 			serverPath := filepath.Join(t.TempDir(), "grpc_greeter_server")
-			buildCmd2 := exec.Command("go", "build", "-o", serverPath)
+			buildCmd2 := exec.Command("go", "build", "-o", serverPath) //nolint:gosec // Test utility
 			buildCmd2.Dir = filepath.Join(
 				root,
 				"examples",

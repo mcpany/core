@@ -15,7 +15,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package util provides utility functions for Docker and other shared functionality.
-package util
+package util //nolint:revive,nolintlint // Package name 'util' is intentional
 
 import (
 	"context"

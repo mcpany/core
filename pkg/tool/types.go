@@ -1169,7 +1169,7 @@ func prettyPrint(input []byte, contentType string) string {
 		for {
 			token, err := decoder.Token()
 			if err == io.EOF {
-				encoder.Flush()
+				_ = encoder.Flush()
 				return buf.String()
 			}
 			if err != nil {

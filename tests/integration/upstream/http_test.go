@@ -86,7 +86,7 @@ func TestUpstreamService_HTTPExample(t *testing.T) {
 		},
 		GenerateUpstreamConfig: func(_ string) string {
 			configPath := filepath.Join(root, "examples", "upstream", "http", "config", "mcpany_config.yaml")
-			content, err := os.ReadFile(configPath)
+			content, err := os.ReadFile(configPath) //nolint:gosec // Test file
 			require.NoError(t, err)
 			return string(content)
 		},
