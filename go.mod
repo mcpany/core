@@ -8,6 +8,7 @@ replace github.com/mcpany/core => ./
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
+	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/alexliesenfeld/health v0.8.1
 	github.com/alitto/pond/v2 v2.5.0
@@ -67,7 +68,6 @@ require (
 )
 
 require (
-	github.com/JohannesKaufmann/html-to-markdown v1.6.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
