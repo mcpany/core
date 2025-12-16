@@ -358,7 +358,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if stdio == nil {
@@ -594,7 +594,7 @@ func (u *Upstream) registerDynamicResources(
 	mcpService *configv1.McpUpstreamService,
 	toolManager tool.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	discoveredTools []*configv1.ToolDefinition,
+	_ []*configv1.ToolDefinition,
 ) {
 	log := logging.GetLogger()
 	// Create a map of call ID to tool name only for the tools we just discovered/configured.

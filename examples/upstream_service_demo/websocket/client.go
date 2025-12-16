@@ -42,7 +42,7 @@ func main() {
 
 	result, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
 	if err != nil {
-		log.Fatalf("Failed to list tools: %v", err)
+		log.Fatalf("Failed to list tools: %v", err) //nolint:gocritic // Example code, exit is intended
 	}
 
 	for _, tool := range result.Tools {

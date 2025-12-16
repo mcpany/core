@@ -148,13 +148,13 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 
 func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 	if httpService := service.GetHttpService(); httpService != nil {
-		return validateHttpService(httpService)
+		return validateHTTPService(httpService)
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
-		return validateWebsocketService(websocketService)
+		return validateWebSocketService(websocketService)
 	} else if grpcService := service.GetGrpcService(); grpcService != nil {
 		return validateGrpcService(grpcService)
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
-		return validateOpenApiService(openapiService)
+		return validateOpenAPIService(openapiService)
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
 		return validateCommandLineService(commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
@@ -163,7 +163,7 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 	return nil
 }
 
-func validateHttpService(httpService *configv1.HttpUpstreamService) error {
+func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
 		return fmt.Errorf("http service has empty target_address")
 	}
@@ -186,7 +186,7 @@ func validateHttpService(httpService *configv1.HttpUpstreamService) error {
 	return nil
 }
 
-func validateWebsocketService(websocketService *configv1.WebsocketUpstreamService) error {
+func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
 	if websocketService.GetAddress() == "" {
 		return fmt.Errorf("websocket service has empty target_address")
 	}
@@ -225,7 +225,7 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 	return nil
 }
 
-func validateOpenApiService(openapiService *configv1.OpenapiUpstreamService) error {
+func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) error {
 	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
 		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
 	}
@@ -278,7 +278,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 func validateUpstreamAuthentication(authConfig *configv1.UpstreamAuthentication) error {
 	switch authConfig.WhichAuthMethod() {
 	case configv1.UpstreamAuthentication_ApiKey_case:
-		return validateApiKeyAuth(authConfig.GetApiKey())
+		return validateAPIKeyAuth(authConfig.GetApiKey())
 	case configv1.UpstreamAuthentication_BearerToken_case:
 		return validateBearerTokenAuth(authConfig.GetBearerToken())
 	case configv1.UpstreamAuthentication_BasicAuth_case:
@@ -289,7 +289,7 @@ func validateUpstreamAuthentication(authConfig *configv1.UpstreamAuthentication)
 	return nil
 }
 
-func validateApiKeyAuth(apiKey *configv1.UpstreamAPIKeyAuth) error {
+func validateAPIKeyAuth(apiKey *configv1.UpstreamAPIKeyAuth) error {
 	if apiKey.GetHeaderName() == "" {
 		return fmt.Errorf("api key 'header_name' is empty")
 	}
