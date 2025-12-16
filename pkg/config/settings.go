@@ -168,6 +168,11 @@ func (s *Settings) APIKey() string {
 	return viper.GetString("api-key")
 }
 
+// SetAPIKey sets the Global API key.
+func (s *Settings) SetAPIKey(key string) {
+	s.proto.SetApiKey(key)
+}
+
 // Profiles returns the active profiles.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {

@@ -26,11 +26,14 @@ import (
 
 	"github.com/gorilla/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -54,6 +57,43 @@ func TestHTTPClientWrapper(t *testing.T) {
 	t.Run("Close", func(t *testing.T) {
 		err := client.Close()
 		assert.NoError(t, err)
+	})
+	t.Run("IsHealthy_WithCheck", func(t *testing.T) {
+		// Valid health check
+		configJSON := `{"http_service": {"address": "` + server.URL[7:] + `", "health_check": {"url": "` + server.URL + `"}}, "name": "foo"}`
+		config := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+		// IMPORTANT: NewChecker defaults expected code to 0 if not set? No, proto default.
+		// Use builder to be sure or set ExpectedCode in JSON if needed?
+		// But in JSON "expected_code" defaults to 0?
+		// HttpHealthCheck expected_code field is int32.
+		// If 0, my previous check failed because of 0 != 200.
+		// In JSON I can set it.
+		configJSON = `{"http_service": {"address": "` + server.URL[7:] + `", "health_check": {"url": "` + server.URL + `", "expected_code": 200}}, "name": "foo"}`
+		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+		client := NewHTTPClientWrapper(&http.Client{}, config)
+		assert.True(t, client.IsHealthy(context.Background()))
+	})
+
+	t.Run("IsHealthy_Failure", func(t *testing.T) {
+		// Create a config with a health check that fails (unreachable URL)
+		badConfigJSON := `{"http_service": {"address": "` + server.URL[7:] + `", "health_check": {"url": "http://localhost:12345/health"}}, "name": "bar"}`
+		badConfig := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(badConfigJSON), badConfig))
+
+		badClient := NewHTTPClientWrapper(&http.Client{}, badConfig)
+		assert.False(t, badClient.IsHealthy(context.Background()))
+	})
+	t.Run("IsHealthy_NilConfig", func(t *testing.T) {
+		client := NewHTTPClientWrapper(&http.Client{}, nil)
+		assert.True(t, client.IsHealthy(context.Background()))
+	})
+
+	t.Run("IsHealthy_NoServiceConfig", func(t *testing.T) {
+		client := NewHTTPClientWrapper(&http.Client{}, &configv1.UpstreamServiceConfig{})
+		assert.True(t, client.IsHealthy(context.Background()))
 	})
 }
 
@@ -86,6 +126,25 @@ func TestGrpcClientWrapper(t *testing.T) {
 			return state == connectivity.Ready || state == connectivity.Idle
 		}, time.Second*5, 10*time.Millisecond, "gRPC client should connect")
 		assert.True(t, wrapper.IsHealthy(context.Background()))
+	})
+
+	t.Run("IsHealthy_Failure", func(t *testing.T) {
+		// Create a config with a gRPC health check that fails (service name mismatch or unreachable)
+		// We use NewGrpcClientWrapper with a new config but SAME connection (which is working).
+		// But we configure a health check that checks a non-existent service.
+		badConfigJSON := `{"grpc_service": {"address": "` + lis.Addr().String() + `", "health_check": {"service": "non-existent"}}}`
+		badConfig := &configv1.UpstreamServiceConfig{}
+		require.NoError(t, protojson.Unmarshal([]byte(badConfigJSON), badConfig))
+
+		badWrapper := NewGrpcClientWrapper(conn, badConfig) // Reuse connection
+		// gRPC health check should fail because "non-existent" service is not registered in health server?
+		// Wait, our dummy server does NOT register health server at all!
+		// So ANY health check check call will fail with Unimplemented?
+		// NewChecker uses grpc_health_v1.NewHealthClient.
+		// If server doesn't implement it, it fails.
+		// So IsHealthy should return false.
+
+		assert.False(t, badWrapper.IsHealthy(context.Background()))
 	})
 
 	t.Run("Close and IsHealthy", func(t *testing.T) {
@@ -165,4 +224,46 @@ func TestWebsocketClientWrapper(t *testing.T) {
 		// After closing, IsHealthy should fail
 		assert.False(t, wrapper.IsHealthy(context.Background()))
 	})
+}
+
+func TestGrpcClientWrapper_WithHealthCheck(t *testing.T) {
+	lis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+
+	healthServer := health.NewServer()
+	server := grpc.NewServer()
+	grpc_health_v1.RegisterHealthServer(server, healthServer)
+
+	go func() { _ = server.Serve(lis) }()
+	defer server.Stop()
+
+	// construct config
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: lo.ToPtr("grpc-service"),
+		GrpcService: configv1.GrpcUpstreamService_builder{
+			Address: lo.ToPtr(lis.Addr().String()),
+			HealthCheck: configv1.GrpcHealthCheck_builder{
+				Service: lo.ToPtr(""), // Empty service name for default health check
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	conn, err := grpc.NewClient(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	require.NoError(t, err)
+
+	wrapper := NewGrpcClientWrapper(conn, config)
+
+	// Set status to SERVING
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+
+	require.Eventually(t, func() bool {
+		return wrapper.IsHealthy(context.Background())
+	}, 5*time.Second, 100*time.Millisecond)
+
+	// Set status to NOT_SERVING
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_NOT_SERVING)
+
+	require.Eventually(t, func() bool {
+		return !wrapper.IsHealthy(context.Background())
+	}, 5*time.Second, 100*time.Millisecond)
 }

@@ -60,6 +60,7 @@ type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
 	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
+	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -74,6 +75,13 @@ func (m *mockServiceRegistry) RegisterResource(ctx context.Context, resourceConf
 		return m.registerResFunc(ctx, resourceConfig)
 	}
 	return nil
+}
+
+func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+	if m.getAllServicesFunc != nil {
+		return m.getAllServicesFunc()
+	}
+	return nil, nil
 }
 
 type mockToolManager struct {
@@ -582,4 +590,54 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	t.Run("list services", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+		requestBus := bus.GetBus[*bus.ServiceListRequest](bp, bus.ServiceListRequestTopic)
+		resultBus := bus.GetBus[*bus.ServiceListResult](bp, bus.ServiceListResultTopic)
+
+		expectedServices := []*configv1.UpstreamServiceConfig{
+			{Name: ptr("service1")},
+		}
+
+		registry := &mockServiceRegistry{
+			getAllServicesFunc: func() ([]*configv1.UpstreamServiceConfig, error) {
+				return expectedServices, nil
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceListResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "list-test", func(result *bus.ServiceListResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceListRequest{}
+		req.SetCorrelationID("list-test")
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
+
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+			assert.Equal(t, expectedServices, result.Services)
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for list result")
+		}
+	})
 }
