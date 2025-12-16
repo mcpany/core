@@ -34,7 +34,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
-	l.Close()
+	_ = l.Close()
 
 	bindAddress := fmt.Sprintf("localhost:%d", port)
 	grpcPort := "" // Disable gRPC for this test
@@ -109,7 +109,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", bindAddress, 100*time.Millisecond)
 		if err == nil {
-			conn.Close()
+			_ = conn.Close()
 			return true
 		}
 		return false
@@ -121,6 +121,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	t.Run("Invalid Path", func(t *testing.T) {
 		resp, err := http.Get(baseURL + "/mcp/u/foo")
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
@@ -128,6 +129,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	t.Run("User Not Found", func(t *testing.T) {
 		resp, err := http.Get(baseURL + "/mcp/u/unknown_user/profile/any")
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
@@ -136,6 +138,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_with_auth/profile/profileA", nil)
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
@@ -145,6 +148,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req.Header.Set("X-API-Key", "wrong-key")
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
@@ -154,6 +158,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req.Header.Set("X-API-Key", "user-secret")
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		// Assuming 405 or 200 or 404 depending entirely on what handler is there
 		// But definitively NOT 401/403
 		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
@@ -165,6 +170,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
@@ -174,6 +180,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req.Header.Set("X-API-Key", globalKey)
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
@@ -183,6 +190,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req.Header.Set("X-API-Key", "user-secret")
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
 
@@ -192,6 +200,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 		req.Header.Set("Authorization", "Bearer "+globalKey)
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
 		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 

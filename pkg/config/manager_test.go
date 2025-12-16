@@ -506,7 +506,7 @@ func TestUpstreamServiceManager_ProfilesBehavior(t *testing.T) {
 }
 
 func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer server.Close()

@@ -30,8 +30,8 @@ func TestSettings_Load(t *testing.T) {
 	// Use temp file for log
 	tmpLog, err := os.CreateTemp("", "app.log")
 	require.NoError(t, err)
-	defer os.Remove(tmpLog.Name())
-	tmpLog.Close()
+	defer func() { _ = os.Remove(tmpLog.Name()) }()
+	_ = tmpLog.Close()
 
 	viper.Set("logfile", tmpLog.Name())
 	viper.Set("shutdown-timeout", 5*time.Second)
@@ -101,8 +101,8 @@ func TestSettings_LoggingInit(t *testing.T) {
 	// Since we are running in a container, we can use a temp file.
 	tmpFile, err := os.CreateTemp("", "test-log")
 	require.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
-	tmpFile.Close() // Close it so Load can open it
+	defer func() { _ = os.Remove(tmpFile.Name()) }()
+	_ = tmpFile.Close() // Close it so Load can open it
 
 	viper.Set("logfile", tmpFile.Name())
 
