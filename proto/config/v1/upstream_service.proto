@@ -147,6 +147,7 @@ message CallHook {
     WebhookConfig webhook = 2;
     TextTruncationConfig text_truncation = 3;
     CallPolicy call_policy = 4;
+    HtmlToMarkdownConfig html_to_markdown = 5;
   }
 }
 
@@ -157,6 +158,11 @@ message WebhookConfig {
 
 message TextTruncationConfig {
   int32 max_chars = 1;
+}
+
+message HtmlToMarkdownConfig {
+  // Optional: list of tags to exclude or specific options
+  repeated string exclude_tags = 1;
 }
 
 // --- Upstream Service Types ---
