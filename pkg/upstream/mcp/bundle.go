@@ -266,7 +266,7 @@ func unzipBundle(src, dest string) error {
 	}
 
 	for _, f := range r.File {
-		fpath := filepath.Join(dest, f.Name)
+		fpath := filepath.Join(dest, f.Name) //nolint:gosec // Path is validated immediately after
 		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
 			return fmt.Errorf("illegal file path: %s", fpath)
 		}
@@ -295,7 +295,7 @@ func unzipBundle(src, dest string) error {
 
 		// Mitigate G110: Decompression bomb. Limit max file size to 1GB.
 		const maxFileSize = 1 * 1024 * 1024 * 1024 // 1GB
-		
+
 		// Use io.LimitReader to prevent reading more than maxFileSize.
 		// We read up to maxFileSize bytes.
 		n, err := io.Copy(outFile, io.LimitReader(rc, maxFileSize))
@@ -304,7 +304,7 @@ func unzipBundle(src, dest string) error {
 			_ = rc.Close()
 			return fmt.Errorf("failed to copy file content: %w", err)
 		}
-		
+
 		// Check if there is more data remaining (meaning it exceeded the limit)
 		// We try to read 1 byte.
 		buf := make([]byte, 1)
