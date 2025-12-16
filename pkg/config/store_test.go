@@ -53,8 +53,10 @@ func TestFileStore_CollectFilePaths(t *testing.T) {
 	`), 0644))
 
 	// Test Expansion
-	os.Setenv("TEST_PORT", "9090")
-	defer os.Unsetenv("TEST_PORT")
+	// Handle errors for lint
+	err := os.Setenv("TEST_PORT", "9090")
+	assert.NoError(t, err)
+	defer func() { _ = os.Unsetenv("TEST_PORT") }()
 	require.NoError(t, afero.WriteFile(fs, "/config/expand.yaml", []byte(`
 upstream_services:
   - name: expanded-service
@@ -119,7 +121,7 @@ upstream_services:
 	}
 }
 
-func TestFileStore_CollectFilePaths_WalkError(t *testing.T) {
+func TestFileStore_CollectFilePaths_WalkError(_ *testing.T) {
 	// Mock FS to force walk error?
 	// afero.MemMapFs doesn't easily mock errors.
 	// But we can simulate a file that acts like a directory?
@@ -136,8 +138,9 @@ func TestFileStore_Load_Error(t *testing.T) {
 
 func TestFileStore_Load_Engines(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	os.Setenv("MY_VAR", "expanded")
-	defer os.Unsetenv("MY_VAR")
+	err := os.Setenv("MY_VAR", "expanded")
+	assert.NoError(t, err)
+	defer func() { _ = os.Unsetenv("MY_VAR") }()
 
 	// JSON
 	require.NoError(t, afero.WriteFile(fs, "/config/1.json", []byte(`{"global_settings": {"api_key": "json-key"}}`), 0644))
@@ -157,8 +160,9 @@ func TestFileStore_Load_Engines(t *testing.T) {
 }
 
 func TestExpand(t *testing.T) {
-	os.Setenv("FOO", "bar")
-	defer os.Unsetenv("FOO")
+	err := os.Setenv("FOO", "bar")
+	assert.NoError(t, err)
+	defer func() { _ = os.Unsetenv("FOO") }()
 
 	in := []byte("val: ${FOO}")
 	out := expand(in)
@@ -187,7 +191,7 @@ global_settings:
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }
 
-func TestYamlEngine_ValidationFail(t *testing.T) {
+func TestYamlEngine_ValidationFail(_ *testing.T) {
 	_ = afero.NewMemMapFs()
 	// Invalid config: missing required fields or constraint violation?
 	// Currently validation is weak (stubbed).

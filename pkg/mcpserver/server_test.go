@@ -860,34 +860,34 @@ func TestServer_HandlerErrors(t *testing.T) {
 	router := server.GetRouter()
 	require.NotNil(t, router)
 
-	consts_MethodPromptsList := "prompts/list"
-	consts_MethodPromptsGet := "prompts/get"
-	consts_MethodResourcesList := "resources/list"
-	consts_MethodResourcesRead := "resources/read"
+	constsMethodPromptsList := "prompts/list"
+	constsMethodPromptsGet := "prompts/get"
+	constsMethodResourcesList := "resources/list"
+	constsMethodResourcesRead := "resources/read"
 
 	// Test PromptsList handler with wrong request type
-	handler, ok := router.GetHandler(consts_MethodPromptsList)
+	handler, ok := router.GetHandler(constsMethodPromptsList)
 	require.True(t, ok)
 	_, err = handler(ctx, &mcp.InitializeRequest{}) // Wrong request type
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid request type")
 
 	// Test PromptsGet handler with wrong request type
-	handler, ok = router.GetHandler(consts_MethodPromptsGet)
+	handler, ok = router.GetHandler(constsMethodPromptsGet)
 	require.True(t, ok)
 	_, err = handler(ctx, &mcp.InitializeRequest{})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid request type")
 
 	// Test ResourcesList handler with wrong request type
-	handler, ok = router.GetHandler(consts_MethodResourcesList)
+	handler, ok = router.GetHandler(constsMethodResourcesList)
 	require.True(t, ok)
 	_, err = handler(ctx, &mcp.InitializeRequest{})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid request type")
 
 	// Test ResourcesRead handler with wrong request type
-	handler, ok = router.GetHandler(consts_MethodResourcesRead)
+	handler, ok = router.GetHandler(constsMethodResourcesRead)
 	require.True(t, ok)
 	_, err = handler(ctx, &mcp.InitializeRequest{})
 	require.Error(t, err)
@@ -1002,7 +1002,7 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	require.NoError(t, err)
 
 	// Mock next handler
-	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+	next := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 		return &mcp.CallToolResult{}, nil
 	}
 
@@ -1155,13 +1155,11 @@ func TestServer_RouterDispatch(t *testing.T) {
 			if tt.expectError {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), "invalid request type")
-			} else {
+			} else if err != nil {
 				// We expect nil because mockToolManager/promptManager might return valid empty results
 				// OR error if the item is not found, but NOT "invalid request type"
 				// For PromptsGet/ResourcesRead, it might fail with "not found", which is essentially success for dispatch.
-				if err != nil {
-					assert.NotContains(t, err.Error(), "invalid request type")
-				}
+				assert.NotContains(t, err.Error(), "invalid request type")
 			}
 		})
 	}
