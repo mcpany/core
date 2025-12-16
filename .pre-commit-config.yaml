@@ -18,7 +18,7 @@ repos:
     hooks:
     -   id: golangci-lint
         name: golangci-lint
-        entry: ./build/env/bin/golangci-lint run --fix ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/...
+        entry: ./build/env/bin/golangci-lint run --fix ./...
         language: system
         types: [go]
         pass_filenames: false
