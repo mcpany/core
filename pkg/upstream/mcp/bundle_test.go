@@ -37,7 +37,7 @@ import (
 
 func createTestBundle(t *testing.T, dir string) string {
 	bundlePath := filepath.Join(dir, "test.mcpb")
-	file, err := os.Create(bundlePath)
+	file, err := os.Create(bundlePath) //nolint:gosec // Test file
 	require.NoError(t, err)
 	defer func() { _ = file.Close() }()
 

@@ -80,7 +80,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 	var logOutput io.Writer = os.Stdout
 	if logfile := viper.GetString("logfile"); logfile != "" {
-		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) //nolint:gosec // Log file configuration
 		if err != nil {
 			return fmt.Errorf("failed to open logfile: %w", err)
 		}
