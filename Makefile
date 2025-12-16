@@ -461,7 +461,7 @@ ifdef SHOULD_PROXY_TO_DOCKER
 else
 	@echo "Running lint (using golangci-lint)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH; \
-	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GOLANGCI_LINT_BIN) run ./... --skip-dirs proto --skip-files '.*\.pb\.go$$'
+	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GOLANGCI_LINT_BIN) run ./... --skip-dirs proto,build --skip-files '.*\.pb\.go$$'
 endif
 
 clean-pre-commit:
