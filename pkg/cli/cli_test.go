@@ -19,6 +19,7 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"testing"
 )
 
@@ -57,4 +58,29 @@ func TestJSONExecutor(t *testing.T) {
 	if resultData["foo"] != "bar" {
 		t.Errorf("unexpected result data: got %v, want %v", resultData, responseData)
 	}
+}
+
+type failWriter struct{}
+
+func (w *failWriter) Write(_ []byte) (n int, err error) {
+	return 0, errors.New("fail write")
+}
+
+func TestJSONExecutor_Errors(t *testing.T) {
+	t.Run("Encode Error", func(t *testing.T) {
+		exec := NewJSONExecutor(&failWriter{}, &bytes.Buffer{})
+		err := exec.Execute("test", nil)
+		if err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
+
+	t.Run("Decode Error", func(t *testing.T) {
+		exec := NewJSONExecutor(&bytes.Buffer{}, bytes.NewBufferString("invalid json"))
+		var result map[string]string
+		err := exec.Execute("test", &result)
+		if err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
 }

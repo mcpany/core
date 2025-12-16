@@ -20,6 +20,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"net"
 	"os"
 	"strings"
@@ -52,6 +53,16 @@ func NewGrpcPool(
 	config *configv1.UpstreamServiceConfig,
 	disableHealthCheck bool,
 ) (pool.Pool[*client.GrpcClientWrapper], error) {
+	if config == nil {
+		return nil, fmt.Errorf("service config is nil")
+	}
+	if config.GetGrpcService() == nil {
+		return nil, fmt.Errorf("grpc service config is nil")
+	}
+	if config.GetGrpcService().GetAddress() == "" {
+		return nil, fmt.Errorf("grpc service address is empty")
+	}
+
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
 		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
