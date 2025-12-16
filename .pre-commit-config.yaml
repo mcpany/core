@@ -14,14 +14,14 @@ repos:
         exclude: ^tests/tls/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/golangci/golangci-lint
-    rev: v1.64.6
-    hooks:
-    -   id: golangci-lint
-        args: [--enable=gosec, --new-from-rev=HEAD, --fix]
-        pass_filenames: false
 -   repo: local
     hooks:
+    -   id: golangci-lint
+        name: golangci-lint
+        entry: golangci-lint run --fix ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/...
+        language: system
+        types: [go]
+        pass_filenames: false
     -   id: shellcheck
         name: shellcheck
         entry: shellcheck

@@ -82,7 +82,13 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
 ### Quick Start: Weather Service
 
-1.  **Run the Server (Docker):**
+1.  **Run the Server:**
+
+    Choose one of the following methods to run the server.
+
+    **Option 1: Remote Configuration (Recommended)**
+
+    Fastest way to get started. No need to clone the repository.
 
     ```bash
     docker run -d --rm --name mcpany-server \
@@ -91,14 +97,24 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
       run --config-path https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml
     ```
 
-    > **Tip:** Need detailed logs? Add the `--debug` flag:
-    >
-    > ```bash
-    > docker run -d --rm --name mcpany-server \
-    >   -p 50050:50050 \
-    >   ghcr.io/mcpany/server:dev-latest \
-    >   run --config-path https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml --debug
-    > ```
+    **Option 2: Local Configuration**
+
+    Best if you want to modify the configuration or use your own. Requires cloning the repository.
+
+    ```bash
+    # Clone the repository
+    git clone https://github.com/mcpany/core.git
+    cd core
+
+    # Run with local config mounted
+    docker run -d --rm --name mcpany-server \
+      -p 50050:50050 \
+      -v $(pwd)/examples/popular_services/wttr.in/config.yaml:/config.yaml \
+      ghcr.io/mcpany/server:dev-latest \
+      run --config-path /config.yaml
+    ```
+
+    > **Tip:** Need detailed logs? Add the `--debug` flag to the end of the `run` command.
 
 2.  **Connect Gemini CLI:**
 
