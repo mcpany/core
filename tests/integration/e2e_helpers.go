@@ -872,13 +872,17 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		if jsonrpcPort == 0 {
 			matches := httpPortRegex.FindStringSubmatch(stdout)
 			if len(matches) >= 2 {
-				fmt.Sscanf(matches[1], "%d", &jsonrpcPort) //nolint:errcheck
+				if _, err := fmt.Sscanf(matches[1], "%d", &jsonrpcPort); err != nil {
+					t.Logf("failed to parse jsonrpc port: %v", err)
+				}
 			}
 		}
 		if grpcRegPort == 0 {
 			matches := grpcPortRegex.FindStringSubmatch(stdout)
 			if len(matches) >= 2 {
-				fmt.Sscanf(matches[1], "%d", &grpcRegPort) //nolint:errcheck
+				if _, err := fmt.Sscanf(matches[1], "%d", &grpcRegPort); err != nil {
+					t.Logf("failed to parse grpc port: %v", err)
+				}
 			}
 		}
 		// If we are stdio mode, we might not get HTTP port if listen address is not set?

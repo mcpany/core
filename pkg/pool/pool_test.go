@@ -17,8 +17,9 @@ package pool
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
-	"math/rand"
+	"math/big"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -319,12 +320,12 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 					cancel()
 					// It's acceptable to get an error under high contention when the pool is full
 					// and the context times out.
-					time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond) //nolint:gosec
+					time.Sleep(time.Duration(secureRandomInt(20)) * time.Millisecond)
 					continue
 				}
 				require.NotNil(t, client, "Goroutine %d received a nil client", goroutineID)
 				// Simulate some work with random duration
-				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond) //nolint:gosec //nolint:gosec
+				time.Sleep(time.Duration(secureRandomInt(10)) * time.Millisecond)
 				p.Put(client)
 				cancel()
 			}
@@ -560,7 +561,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 				// if the test machine is slow. This is acceptable.
 				return
 			}
-			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond) //nolint:gosec
+			time.Sleep(time.Duration(secureRandomInt(20)) * time.Millisecond)
 			p.Put(client)
 		}()
 	}
@@ -829,4 +830,12 @@ func TestManager_ConcurrentAccess(t *testing.T) {
 	}
 	wg.Wait()
 	m.CloseAll()
+}
+func secureRandomInt(max int) int {
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		// Fallback or panic in test
+		return 0
+	}
+	return int(n.Int64())
 }
