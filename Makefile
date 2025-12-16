@@ -237,13 +237,12 @@ prepare:
 			VENV_DIR=$(CURDIR)/build/venv; \
 			if ! test -d "$$VENV_DIR"; then \
 				echo "Creating virtual environment..."; \
-				$$PYTHON_CMD -m venv $$VENV_DIR; \
+				$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
+				curl -sSL https://bootstrap.pypa.io/get-pip.py -o $$VENV_DIR/get-pip.py; \
+				$$VENV_DIR/bin/python $$VENV_DIR/get-pip.py; \
 			fi; \
 			if ! test -f "$$VENV_DIR/bin/python"; then \
 				echo "\n\033[1;31mERROR: Failed to create Python virtual environment.\033[0m"; \
-				echo "\033[1;31mThis is likely because the 'venv' module is not installed for $$PYTHON_CMD.\033[0m"; \
-				echo "\033[1;31mPlease install it using your system's package manager.\033[0m"; \
-				echo "\033[1;31mFor Debian/Ubuntu, run: sudo apt-get update && sudo apt-get install python3-venv\033[0m"; \
 				exit 1; \
 			fi; \
 			if ! test -f "$$VENV_DIR/.installed"; then \
@@ -459,9 +458,9 @@ lint: $(if $(SHOULD_PROXY_TO_DOCKER),,gen)
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
-	@echo "Running lint (using golangci-lint)..."
+	@echo "Running lint (using pre-commit)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH; \
-	GOPATH=$(TOOL_INSTALL_DIR)/go GOWORK=off $(GOLANGCI_LINT_BIN) run ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/... --skip-dirs proto --skip-files '.*\.pb\.go$$'
+	pre-commit run --all-files
 endif
 
 clean-pre-commit:
