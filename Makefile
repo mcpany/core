@@ -250,7 +250,8 @@ prepare:
 				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
 				touch "$$VENV_DIR/.installed"; \
 			fi; \
-			if ! GIT_CONFIG_GLOBAL=/dev/null $(PYTHON_EXEC) -m pre_commit install; then \
+			mkdir -p $(CURDIR)/build/.cache/pre-commit; \
+			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
@@ -459,7 +460,10 @@ ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
 	@echo "Running lint (using pre-commit)..."
-	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH; \
+	@mkdir -p $(CURDIR)/build/.cache/pre-commit $(CURDIR)/build/.cache/golangci-lint
+	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH && \
+	export PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit && \
+	export GOLANGCI_LINT_CACHE=$(CURDIR)/build/.cache/golangci-lint && \
 	pre-commit run --all-files
 endif
 
@@ -467,7 +471,8 @@ clean-pre-commit:
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) clean-pre-commit
 else
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH && \
+	export PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit && \
 	pre-commit clean
 endif
 
