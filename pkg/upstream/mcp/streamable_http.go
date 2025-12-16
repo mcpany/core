@@ -358,29 +358,18 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	_ bool,
+	isReload bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	if stdio == nil {
 		return nil, nil, fmt.Errorf("stdio connection config is nil")
 	}
 
-	var transport mcp.Transport
-	image := stdio.GetContainerImage()
-	if image != "" {
-		if util.IsDockerSocketAccessible() {
-			transport = &DockerTransport{
-				StdioConfig: stdio,
-			}
-		} else {
-			return nil, nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
-		}
-	} else {
-		cmd := buildCommandFromStdioConfig(stdio)
-		transport = &mcp.CommandTransport{
-			Command: cmd,
-		}
+	transport, err := createStdioTransport(stdio)
+	if err != nil {
+		return nil, nil, err
 	}
+
 	var mcpSdkClient *mcp.Client
 	if newClientForTesting != nil {
 		mcpSdkClient = newClientForTesting(&mcp.Implementation{
@@ -395,7 +384,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	}
 
 	var cs ClientSession
-	var err error
 	if connectForTesting != nil {
 		cs, err = connectForTesting(mcpSdkClient, ctx, transport, nil)
 	} else {
@@ -417,7 +405,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 
 	if newClientImplForTesting != nil {
 		toolClient = newClientImplForTesting(mcpSdkClient, stdio, "", nil)
-		// For prompts/resources, we use mcpConnection directly as per original logic pattern
 		promptConnection = &mcpConnection{
 			client:      mcpSdkClient,
 			stdioConfig: stdio,
@@ -434,6 +421,23 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
+func createStdioTransport(stdio *configv1.McpStdioConnection) (mcp.Transport, error) {
+	image := stdio.GetContainerImage()
+	if image != "" {
+		if util.IsDockerSocketAccessible() {
+			return &DockerTransport{
+				StdioConfig: stdio,
+			}, nil
+		}
+		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
+	}
+	cmd := buildCommandFromStdioConfig(stdio)
+	return &mcp.CommandTransport{
+		Command: cmd,
+	}, nil
+}
+
+// processMCPItems handles the common logic of registering tools, prompts, and resources.
 // processMCPItems handles the common logic of registering tools, prompts, and resources.
 func (u *Upstream) processMCPItems(
 	ctx context.Context,
@@ -448,6 +452,22 @@ func (u *Upstream) processMCPItems(
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	mcpService := serviceConfig.GetMcpService()
+
+	discoveredTools := u.registerTools(serviceID, mcpService, listToolsResult, toolClient, toolManager)
+	u.registerPrompts(ctx, serviceID, mcpService, cs, promptManager, promptConnection)
+	discoveredResources := u.registerResources(ctx, serviceID, mcpService, cs, resourceManager, promptConnection)
+	u.registerDynamicResources(serviceID, mcpService, toolManager, resourceManager, discoveredTools)
+
+	return discoveredTools, discoveredResources, nil
+}
+
+func (u *Upstream) registerTools(
+	serviceID string,
+	mcpService *configv1.McpUpstreamService,
+	listToolsResult *mcp.ListToolsResult,
+	toolClient client.MCPClient,
+	toolManager tool.ManagerInterface,
+) []*configv1.ToolDefinition {
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
 	configToolMap := make(map[string]*configv1.ToolDefinition)
@@ -457,7 +477,7 @@ func (u *Upstream) processMCPItems(
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
-		var callDef *configv1.MCPCallDefinition
+		callDef := &configv1.MCPCallDefinition{}
 		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
 			if configTool.GetDisable() {
 				logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
@@ -467,10 +487,7 @@ func (u *Upstream) processMCPItems(
 				callDef = call
 			} else {
 				logging.GetLogger().Warn("Call definition not found for tool", "call_id", configTool.GetCallId(), "tool_name", mcpSDKTool.Name)
-				callDef = &configv1.MCPCallDefinition{}
 			}
-		} else {
-			callDef = &configv1.MCPCallDefinition{}
 		}
 
 		pbTool, err := tool.ConvertMCPToolToProto(mcpSDKTool)
@@ -480,11 +497,7 @@ func (u *Upstream) processMCPItems(
 		}
 		pbTool.SetServiceId(serviceID)
 
-		newTool := tool.NewMCPTool(
-			pbTool,
-			toolClient,
-			callDef,
-		)
+		newTool := tool.NewMCPTool(pbTool, toolClient, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			logging.GetLogger().Error("Failed to add tool", "error", err)
 			continue
@@ -494,19 +507,26 @@ func (u *Upstream) processMCPItems(
 			Description: proto.String(mcpSDKTool.Description),
 		}.Build())
 	}
+	return discoveredTools
+}
 
-	// Register prompts
+func (u *Upstream) registerPrompts(
+	ctx context.Context,
+	serviceID string,
+	mcpService *configv1.McpUpstreamService,
+	cs ClientSession,
+	promptManager prompt.ManagerInterface,
+	promptConnection *mcpConnection,
+) {
 	listPromptsResult, err := cs.ListPrompts(ctx, &mcp.ListPromptsParams{})
-
-	configPromptMap := make(map[string]*configv1.PromptDefinition)
-	for _, p := range mcpService.GetPrompts() {
-		configPromptMap[p.GetName()] = p
-	}
-
 	if err != nil {
-		// Do not fail if prompts are not supported
 		logging.GetLogger().Warn("Failed to list prompts from MCP service", "error", err)
 	} else {
+		configPromptMap := make(map[string]*configv1.PromptDefinition)
+		for _, p := range mcpService.GetPrompts() {
+			configPromptMap[p.GetName()] = p
+		}
+
 		for _, mcpSDKPrompt := range listPromptsResult.Prompts {
 			if configPrompt, ok := configPromptMap[mcpSDKPrompt.Name]; ok {
 				if configPrompt.GetDisable() {
@@ -530,13 +550,20 @@ func (u *Upstream) processMCPItems(
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
 		promptManager.AddPrompt(newPrompt)
 	}
+}
 
-	// Register resources
+func (u *Upstream) registerResources(
+	ctx context.Context,
+	serviceID string,
+	mcpService *configv1.McpUpstreamService,
+	cs ClientSession,
+	resourceManager resource.ManagerInterface,
+	promptConnection *mcpConnection,
+) []*configv1.ResourceDefinition {
 	listResourcesResult, err := cs.ListResources(ctx, &mcp.ListResourcesParams{})
 	if err != nil {
-		// Do not fail if resources are not supported
 		logging.GetLogger().Warn("Failed to list resources from MCP service", "error", err)
-		return discoveredTools, nil, nil
+		return nil
 	}
 
 	configResourceMap := make(map[string]*configv1.ResourceDefinition)
@@ -559,12 +586,42 @@ func (u *Upstream) processMCPItems(
 		})
 		discoveredResources = append(discoveredResources, convertMCPResourceToProto(mcpSDKResource))
 	}
+	return discoveredResources
+}
 
+func (u *Upstream) registerDynamicResources(
+	serviceID string,
+	mcpService *configv1.McpUpstreamService,
+	toolManager tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	discoveredTools []*configv1.ToolDefinition,
+) {
 	log := logging.GetLogger()
+	// Create a map of call ID to tool name only for the tools we just discovered/configured.
+	// Actually we should look up in the toolManager for tools registered for this service to be safe,
+	// or use the tool definitions we have.
+	// The original code used configToolDefs to build the map, but we also discover tools.
+	// Wait, the dynamic resource links a resource to a *Call ID*.
+	// We need to find the tool that corresponds to that Call ID.
+	// If the tool was auto-discovered, we assigned it a Call ID (empty or from config).
+	// If it was from config, it has a Call ID.
+
+	// Rebuilding callIDToName map might be tricky if we don't have all tools handy.
+	// However, the dynamic resource config relies on the Call Defined in the Config usually.
+	// Let's look at how original code did it:
+	// It iterated `configToolDefs` (from mcpService.GetTools()) to build `callIDToName`.
+	// So it only supports linking to tools *explicitly defined in config*?
+	// The original code:
+	// for _, d := range configToolDefs { callIDToName[d.GetCallId()] = d.GetName() }
+	// Yes, `configToolDefs` comes from `mcpService.GetTools()`.
+	// So we should do the same.
+
+	configToolDefs := mcpService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range configToolDefs {
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
+
 	for _, resourceDef := range mcpService.GetResources() {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource (config)", "resourceName", resourceDef.GetName())
@@ -585,12 +642,12 @@ func (u *Upstream) processMCPItems(
 				log.Error("Failed to sanitize tool name", "error", err)
 				continue
 			}
-			tool, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
+			toolObj, ok := toolManager.GetTool(serviceID + "." + sanitizedToolName)
 			if !ok {
 				log.Error("Tool not found for dynamic resource", "toolName", toolName)
 				continue
 			}
-			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, toolObj)
 			if err != nil {
 				log.Error("Failed to create dynamic resource", "error", err)
 				continue
@@ -598,8 +655,6 @@ func (u *Upstream) processMCPItems(
 			resourceManager.AddResource(dynamicResource)
 		}
 	}
-
-	return discoveredTools, discoveredResources, nil
 }
 
 // createAndRegisterMCPItemsFromStreamableHTTP handles the registration of an MCP

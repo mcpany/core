@@ -122,69 +122,13 @@ func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(service)
 }
 
-func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //nolint:gocyclo
+func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
 		return fmt.Errorf("service type not specified")
 	}
 
-	if httpService := service.GetHttpService(); httpService != nil {
-		if httpService.GetAddress() == "" {
-			return fmt.Errorf("http service has empty target_address")
-		}
-		if !validation.IsValidURL(httpService.GetAddress()) {
-			return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
-		}
-		u, _ := url.Parse(httpService.GetAddress())
-		if u.Scheme != "http" && u.Scheme != "https" {
-			return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
-		}
-	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
-		if websocketService.GetAddress() == "" {
-			return fmt.Errorf("websocket service has empty target_address")
-		}
-		if !validation.IsValidURL(websocketService.GetAddress()) {
-			return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
-		}
-		u, _ := url.Parse(websocketService.GetAddress())
-		if u.Scheme != "ws" && u.Scheme != "wss" {
-			return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
-		}
-	} else if grpcService := service.GetGrpcService(); grpcService != nil {
-		if grpcService.GetAddress() == "" {
-			return fmt.Errorf("gRPC service has empty target_address")
-		}
-	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
-		if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
-			return fmt.Errorf("openapi service must have either an address, spec content or spec url")
-		}
-		if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-			return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
-		}
-		if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
-			return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
-		}
-	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		if commandLineService.GetCommand() == "" {
-			return fmt.Errorf("command_line_service has empty command")
-		}
-	} else if mcpService := service.GetMcpService(); mcpService != nil {
-		switch mcpService.WhichConnectionType() {
-		case configv1.McpUpstreamService_HttpConnection_case:
-			httpConn := mcpService.GetHttpConnection()
-			if httpConn.GetHttpAddress() == "" {
-				return fmt.Errorf("mcp service with http_connection has empty http_address")
-			}
-			if !validation.IsValidURL(httpConn.GetHttpAddress()) {
-				return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
-			}
-		case configv1.McpUpstreamService_StdioConnection_case:
-			stdioConn := mcpService.GetStdioConnection()
-			if len(stdioConn.GetCommand()) == 0 {
-				return fmt.Errorf("mcp service with stdio_connection has empty command")
-			}
-		default:
-			return fmt.Errorf("mcp service has no connection_type")
-		}
+	if err := validateServiceConfig(service); err != nil {
+		return err
 	}
 
 	if service.GetCache() != nil {
@@ -194,70 +138,186 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error { //
 	}
 
 	if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
-		switch authConfig.WhichAuthMethod() {
-		case configv1.UpstreamAuthentication_ApiKey_case:
-			apiKey := authConfig.GetApiKey()
-			if apiKey.GetHeaderName() == "" {
-				return fmt.Errorf("api key 'header_name' is empty")
-			}
-			apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
-			if err != nil {
-				return fmt.Errorf("failed to resolve api key secret: %w", err)
-			}
-			if apiKeyValue == "" {
-				return fmt.Errorf("api key 'api_key' is empty")
-			}
-		case configv1.UpstreamAuthentication_BearerToken_case:
-			bearerToken := authConfig.GetBearerToken()
-			tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
-			if err != nil {
-				return fmt.Errorf("failed to resolve bearer token secret: %w", err)
-			}
-			if tokenValue == "" {
-				return fmt.Errorf("bearer token 'token' is empty")
-			}
-		case configv1.UpstreamAuthentication_BasicAuth_case:
-			basicAuth := authConfig.GetBasicAuth()
-			if basicAuth.GetUsername() == "" {
-				return fmt.Errorf("basic auth 'username' is empty")
-			}
-			passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
-			if err != nil {
-				return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
-			}
-			if passwordValue == "" {
-				return fmt.Errorf("basic auth 'password' is empty")
-			}
-		case configv1.UpstreamAuthentication_Mtls_case:
-			mtls := authConfig.GetMtls()
-			if mtls.GetClientCertPath() == "" {
-				return fmt.Errorf("mtls 'client_cert_path' is empty")
-			}
-			if mtls.GetClientKeyPath() == "" {
-				return fmt.Errorf("mtls 'client_key_path' is empty")
-			}
-			if err := validation.IsSecurePath(mtls.GetClientCertPath()); err != nil {
-				return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
-			}
-			if err := validation.IsSecurePath(mtls.GetClientKeyPath()); err != nil {
-				return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
-			}
-			if mtls.GetCaCertPath() != "" {
-				if err := validation.IsSecurePath(mtls.GetCaCertPath()); err != nil {
-					return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
-				}
-			}
-			if err := validation.FileExists(mtls.GetClientCertPath()); err != nil {
-				return fmt.Errorf("mtls 'client_cert_path' not found: %w", err)
-			}
-			if err := validation.FileExists(mtls.GetClientKeyPath()); err != nil {
-				return fmt.Errorf("mtls 'client_key_path' not found: %w", err)
-			}
-			if mtls.GetCaCertPath() != "" {
-				if err := validation.FileExists(mtls.GetCaCertPath()); err != nil {
-					return fmt.Errorf("mtls 'ca_cert_path' not found: %w", err)
-				}
-			}
+		if err := validateUpstreamAuthentication(authConfig); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
+	if httpService := service.GetHttpService(); httpService != nil {
+		return validateHttpService(httpService)
+	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
+		return validateWebsocketService(websocketService)
+	} else if grpcService := service.GetGrpcService(); grpcService != nil {
+		return validateGrpcService(grpcService)
+	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
+		return validateOpenApiService(openapiService)
+	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
+		return validateCommandLineService(commandLineService)
+	} else if mcpService := service.GetMcpService(); mcpService != nil {
+		return validateMcpService(mcpService)
+	}
+	return nil
+}
+
+func validateHttpService(httpService *configv1.HttpUpstreamService) error {
+	if httpService.GetAddress() == "" {
+		return fmt.Errorf("http service has empty target_address")
+	}
+	if !validation.IsValidURL(httpService.GetAddress()) {
+		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+	}
+	u, _ := url.Parse(httpService.GetAddress())
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
+	}
+	return nil
+}
+
+func validateWebsocketService(websocketService *configv1.WebsocketUpstreamService) error {
+	if websocketService.GetAddress() == "" {
+		return fmt.Errorf("websocket service has empty target_address")
+	}
+	if !validation.IsValidURL(websocketService.GetAddress()) {
+		return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
+	}
+	u, _ := url.Parse(websocketService.GetAddress())
+	if u.Scheme != "ws" && u.Scheme != "wss" {
+		return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
+	}
+	return nil
+}
+
+func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
+	if grpcService.GetAddress() == "" {
+		return fmt.Errorf("gRPC service has empty target_address")
+	}
+	return nil
+}
+
+func validateOpenApiService(openapiService *configv1.OpenapiUpstreamService) error {
+	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
+		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
+	}
+	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
+		return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
+	}
+	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
+		return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
+	}
+	return nil
+}
+
+func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+	if commandLineService.GetCommand() == "" {
+		return fmt.Errorf("command_line_service has empty command")
+	}
+	return nil
+}
+
+func validateMcpService(mcpService *configv1.McpUpstreamService) error {
+	switch mcpService.WhichConnectionType() {
+	case configv1.McpUpstreamService_HttpConnection_case:
+		httpConn := mcpService.GetHttpConnection()
+		if httpConn.GetHttpAddress() == "" {
+			return fmt.Errorf("mcp service with http_connection has empty http_address")
+		}
+		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
+			return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
+		}
+	case configv1.McpUpstreamService_StdioConnection_case:
+		stdioConn := mcpService.GetStdioConnection()
+		if len(stdioConn.GetCommand()) == 0 {
+			return fmt.Errorf("mcp service with stdio_connection has empty command")
+		}
+	default:
+		return fmt.Errorf("mcp service has no connection_type")
+	}
+	return nil
+}
+
+func validateUpstreamAuthentication(authConfig *configv1.UpstreamAuthentication) error {
+	switch authConfig.WhichAuthMethod() {
+	case configv1.UpstreamAuthentication_ApiKey_case:
+		return validateApiKeyAuth(authConfig.GetApiKey())
+	case configv1.UpstreamAuthentication_BearerToken_case:
+		return validateBearerTokenAuth(authConfig.GetBearerToken())
+	case configv1.UpstreamAuthentication_BasicAuth_case:
+		return validateBasicAuth(authConfig.GetBasicAuth())
+	case configv1.UpstreamAuthentication_Mtls_case:
+		return validateMtlsAuth(authConfig.GetMtls())
+	}
+	return nil
+}
+
+func validateApiKeyAuth(apiKey *configv1.UpstreamAPIKeyAuth) error {
+	if apiKey.GetHeaderName() == "" {
+		return fmt.Errorf("api key 'header_name' is empty")
+	}
+	apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+	if err != nil {
+		return fmt.Errorf("failed to resolve api key secret: %w", err)
+	}
+	if apiKeyValue == "" {
+		return fmt.Errorf("api key 'api_key' is empty")
+	}
+	return nil
+}
+
+func validateBearerTokenAuth(bearerToken *configv1.UpstreamBearerTokenAuth) error {
+	tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+	if err != nil {
+		return fmt.Errorf("failed to resolve bearer token secret: %w", err)
+	}
+	if tokenValue == "" {
+		return fmt.Errorf("bearer token 'token' is empty")
+	}
+	return nil
+}
+
+func validateBasicAuth(basicAuth *configv1.UpstreamBasicAuth) error {
+	if basicAuth.GetUsername() == "" {
+		return fmt.Errorf("basic auth 'username' is empty")
+	}
+	passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+	if err != nil {
+		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
+	}
+	if passwordValue == "" {
+		return fmt.Errorf("basic auth 'password' is empty")
+	}
+	return nil
+}
+
+func validateMtlsAuth(mtls *configv1.UpstreamMTLSAuth) error {
+	if mtls.GetClientCertPath() == "" {
+		return fmt.Errorf("mtls 'client_cert_path' is empty")
+	}
+	if mtls.GetClientKeyPath() == "" {
+		return fmt.Errorf("mtls 'client_key_path' is empty")
+	}
+	if err := validation.IsSecurePath(mtls.GetClientCertPath()); err != nil {
+		return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
+	}
+	if err := validation.IsSecurePath(mtls.GetClientKeyPath()); err != nil {
+		return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
+	}
+	if mtls.GetCaCertPath() != "" {
+		if err := validation.IsSecurePath(mtls.GetCaCertPath()); err != nil {
+			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
+		}
+	}
+	if err := validation.FileExists(mtls.GetClientCertPath()); err != nil {
+		return fmt.Errorf("mtls 'client_cert_path' not found: %w", err)
+	}
+	if err := validation.FileExists(mtls.GetClientKeyPath()); err != nil {
+		return fmt.Errorf("mtls 'client_key_path' not found: %w", err)
+	}
+	if mtls.GetCaCertPath() != "" {
+		if err := validation.FileExists(mtls.GetCaCertPath()); err != nil {
+			return fmt.Errorf("mtls 'ca_cert_path' not found: %w", err)
 		}
 	}
 	return nil
