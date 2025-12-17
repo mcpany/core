@@ -8,8 +8,13 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.dev
       args:
-        UID: "${UID:-1000}"
-        GID: "${GID:-1000}"
+        UID: "${UID}"
+        GID: "${GID}"
+        DOCKER_GID: "${DOCKER_GID}"
+    ipc: host
+    shm_size: '2gb'
+    group_add:
+      - "${DOCKER_GID}"
     volumes:
       - ..:/workspace
       - /var/run/docker.sock:/var/run/docker.sock
@@ -24,6 +29,6 @@ services:
       - XDG_CACHE_HOME=/home/user/.cache
       - npm_config_cache=/home/user/.cache/npm
       - CI=true
-      - UID=${UID:-1000}
-      - GID=${GID:-1000}
-    user: "${UID:-1000}:${GID:-1000}"
+      - UID=${UID}
+      - GID=${GID}
+    user: "${UID}:${GID}"

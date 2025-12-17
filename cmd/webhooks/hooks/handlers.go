@@ -1,0 +1,258 @@
+// Package hooks defines the system webhook handlers.
+package hooks
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
+	md "github.com/JohannesKaufmann/html-to-markdown"
+	cloudevents "github.com/cloudevents/sdk-go/v2"
+	"github.com/google/uuid"
+)
+
+// KindPostCall is the kind for post-call webhooks.
+const KindPostCall = "PostCall"
+
+// MarkdownHandler converts HTML to Markdown.
+type MarkdownHandler struct{}
+
+// Handle handles markdown conversion.
+func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	event, err := cloudevents.NewEventFromHTTPRequest(r)
+	if err != nil {
+		http.Error(w, "Failed to parse CloudEvent: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// We expect data to be map[string]any
+	var data map[string]any
+	if err := event.DataAs(&data); err != nil {
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
+	}
+
+	respEvent := cloudevents.NewEvent()
+	respEvent.SetID(uuid.New().String())
+	respEvent.SetSource("https://github.com/mcpany/webhooks/markdown")
+	respEvent.SetType("com.mcpany.webhook.response")
+	respEvent.SetTime(time.Now())
+
+	respData := map[string]any{
+		"allowed": true,
+	}
+
+	// Check inputs or result
+	if val, ok := data["inputs"]; ok {
+		// Pre-Call
+		converter := md.NewConverter("", true, nil)
+		newInputs := convertToMarkdown(converter, val)
+		respData["replacement_object"] = newInputs
+	} else if val, ok := data["result"]; ok {
+		// Post-Call
+		converter := md.NewConverter("", true, nil)
+		newResult := convertToMarkdown(converter, val)
+		respData["replacement_object"] = newResult
+	}
+
+	if err := respEvent.SetData(cloudevents.ApplicationJSON, respData); err != nil {
+		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
+		return
+	}
+
+	// Write response event
+	w.Header().Set("Content-Type", "application/cloudevents+json")
+	_ = json.NewEncoder(w).Encode(respEvent)
+}
+
+// TruncateHandler truncates long strings.
+type TruncateHandler struct{}
+
+// Handle handles text truncation.
+func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	maxChars := 100
+	if m := r.URL.Query().Get("max_chars"); m != "" {
+		if val, err := strconv.Atoi(m); err == nil {
+			maxChars = val
+		}
+	}
+
+	event, err := cloudevents.NewEventFromHTTPRequest(r)
+	if err != nil {
+		http.Error(w, "Failed to parse CloudEvent: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var data map[string]any
+	if err := event.DataAs(&data); err != nil {
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
+	}
+
+	respEvent := cloudevents.NewEvent()
+	respEvent.SetID(uuid.New().String())
+	respEvent.SetSource("https://github.com/mcpany/webhooks/truncate")
+	respEvent.SetType("com.mcpany.webhook.response")
+	respEvent.SetTime(time.Now())
+
+	respData := map[string]any{
+		"allowed": true,
+	}
+
+	if val, ok := data["inputs"]; ok {
+		newInputs := truncateRecursive(val, maxChars)
+		respData["replacement_object"] = newInputs
+	} else if val, ok := data["result"]; ok {
+		newResult := truncateRecursive(val, maxChars)
+		respData["replacement_object"] = newResult
+	}
+
+	if err := respEvent.SetData(cloudevents.ApplicationJSON, respData); err != nil {
+		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/cloudevents+json")
+	_ = json.NewEncoder(w).Encode(respEvent)
+}
+
+// PaginateHandler paginates strings.
+type PaginateHandler struct{}
+
+// Handle handles pagination.
+func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	pageSize := 1000
+	if p := r.URL.Query().Get("page_size"); p != "" {
+		if val, err := strconv.Atoi(p); err == nil {
+			pageSize = val
+		}
+	}
+
+	event, err := cloudevents.NewEventFromHTTPRequest(r)
+	if err != nil {
+		http.Error(w, "Failed to parse CloudEvent: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var data map[string]any
+	if err := event.DataAs(&data); err != nil {
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
+	}
+
+	respEvent := cloudevents.NewEvent()
+	respEvent.SetID(uuid.New().String())
+	respEvent.SetSource("https://github.com/mcpany/webhooks/paginate")
+	respEvent.SetType("com.mcpany.webhook.response")
+	respEvent.SetTime(time.Now())
+
+	respData := map[string]any{
+		"allowed": true,
+	}
+
+	if val, ok := data["inputs"]; ok {
+		newInputs := paginateRecursive(val, 1, pageSize)
+		respData["replacement_object"] = newInputs
+	} else if val, ok := data["result"]; ok {
+		newResult := paginateRecursive(val, 1, pageSize)
+		respData["replacement_object"] = newResult
+	}
+
+	if err := respEvent.SetData(cloudevents.ApplicationJSON, respData); err != nil {
+		http.Error(w, "Failed to set response data", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/cloudevents+json")
+	_ = json.NewEncoder(w).Encode(respEvent)
+}
+
+// Helpers
+
+func convertToMarkdown(converter *md.Converter, data any) any {
+	switch v := data.(type) {
+	case string:
+		res, err := converter.ConvertString(v)
+		if err != nil {
+			return v
+		}
+		return res
+	case map[string]any:
+		newMap := make(map[string]any, len(v))
+		for k, val := range v {
+			newMap[k] = convertToMarkdown(converter, val)
+		}
+		return newMap
+	case []any:
+		newSlice := make([]any, len(v))
+		for i, val := range v {
+			newSlice[i] = convertToMarkdown(converter, val)
+		}
+		return newSlice
+	}
+	return data
+}
+
+func truncateRecursive(data any, maxChars int) any {
+	switch v := data.(type) {
+	case string:
+		if len(v) > maxChars {
+			return v[:maxChars] + "..."
+		}
+		return v
+	case map[string]any:
+		newMap := make(map[string]any, len(v))
+		for k, val := range v {
+			newMap[k] = truncateRecursive(val, maxChars)
+		}
+		return newMap
+	case []any:
+		newSlice := make([]any, len(v))
+		for i, val := range v {
+			newSlice[i] = truncateRecursive(val, maxChars)
+		}
+		return newSlice
+	}
+	return data
+}
+
+func paginateRecursive(data any, page, pageSize int) any {
+	switch v := data.(type) {
+	case string:
+		runes := []rune(v)
+		start := (page - 1) * pageSize
+		if start >= len(runes) {
+			return fmt.Sprintf("Page %d (empty). Total length: %d", page, len(runes))
+		}
+		end := start + pageSize
+		if end > len(runes) {
+			end = len(runes)
+		}
+		chunk := string(runes[start:end])
+		return fmt.Sprintf("Page %d/%d:\n%s\n(Total: %d chars)", page, (len(runes)+pageSize-1)/pageSize, chunk, len(runes))
+	case map[string]any:
+		newMap := make(map[string]any, len(v))
+		for k, val := range v {
+			newMap[k] = paginateRecursive(val, page, pageSize)
+		}
+		return newMap
+	}
+	return data
+}

@@ -23,13 +23,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ptr is unused in this file, but we might need it later or it's a helper.
-// Actually, looking at the code, it IS unused.
-// Let's remove it if it's truly unused.
-// usage: integration.StartMCPANYServerWithConfig uses it? No.
-// It was defined in e2e_helpers.go too.
-// I'll remove it.
-
 // StartStdioServer starts the MCP server in Stdio mode and returns the client.
 func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	t.Helper()
