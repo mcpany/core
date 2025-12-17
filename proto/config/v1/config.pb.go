@@ -319,7 +319,9 @@ type GlobalSettings struct {
 	// The API key used for authentication.
 	ApiKey *string `protobuf:"bytes,5,opt,name=api_key" json:"api_key,omitempty"`
 	// The profiles to enable.
-	Profiles      []string `protobuf:"bytes,6,rep,name=profiles" json:"profiles,omitempty"`
+	Profiles []string `protobuf:"bytes,6,rep,name=profiles" json:"profiles,omitempty"`
+	// The allowed IPs to access the server.
+	AllowedIps    []string `protobuf:"bytes,7,rep,name=allowed_ips" json:"allowed_ips,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -384,6 +386,13 @@ func (x *GlobalSettings) GetProfiles() []string {
 	return nil
 }
 
+func (x *GlobalSettings) GetAllowedIps() []string {
+	if x != nil {
+		return x.AllowedIps
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -402,6 +411,10 @@ func (x *GlobalSettings) SetApiKey(v string) {
 
 func (x *GlobalSettings) SetProfiles(v []string) {
 	x.Profiles = v
+}
+
+func (x *GlobalSettings) SetAllowedIps(v []string) {
+	x.AllowedIps = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -461,6 +474,8 @@ type GlobalSettings_builder struct {
 	ApiKey *string
 	// The profiles to enable.
 	Profiles []string
+	// The allowed IPs to access the server.
+	AllowedIps []string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -472,6 +487,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.MessageBus = b.MessageBus
 	x.ApiKey = b.ApiKey
 	x.Profiles = b.Profiles
+	x.AllowedIps = b.AllowedIps
 	return m0
 }
 
@@ -488,13 +504,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xf1\x02\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\x93\x03\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x12\x18\n" +
 	"\aapi_key\x18\x05 \x01(\tR\aapi_key\x12\x1a\n" +
-	"\bprofiles\x18\x06 \x03(\tR\bprofiles\"w\n" +
+	"\bprofiles\x18\x06 \x03(\tR\bprofiles\x12 \n" +
+	"\vallowed_ips\x18\a \x03(\tR\vallowed_ips\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

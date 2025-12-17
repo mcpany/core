@@ -56,4 +56,6 @@ message GlobalSettings {
   string api_key = 5 [json_name = "api_key"];
   // The profiles to enable.
   repeated string profiles = 6 [json_name = "profiles"];
+  // The allowed IPs to access the server.
+  repeated string allowed_ips = 7 [json_name = "allowed_ips"];
 }
