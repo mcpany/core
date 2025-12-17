@@ -77,7 +77,16 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
-		cmdTool := newCommandTool("/usr/bin/env", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("MY_VAR"),
+					},
+				},
+			},
+		}
+		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{
 			"args":   []string{"bash", "-c", "echo $MY_VAR"},
 			"MY_VAR": "hello from env",
