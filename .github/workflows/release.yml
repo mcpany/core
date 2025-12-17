@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'The release version (e.g., v1.2.3)'
+        description: "The release version (e.g., v1.2.3)"
         required: true
   push:
     branches:
@@ -20,6 +20,7 @@ env:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}
       is_release: ${{ steps.vars.outputs.is_release }}
@@ -60,9 +61,18 @@ jobs:
     if: needs.setup.outputs.is_release == 'true'
     name: Build Binaries (${{ matrix.platform }})
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       matrix:
-        platform: [linux/amd64, linux/arm64, linux/386, darwin/amd64, darwin/arm64, windows/amd64]
+        platform:
+          [
+            linux/amd64,
+            linux/arm64,
+            linux/386,
+            darwin/amd64,
+            darwin/arm64,
+            windows/amd64,
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -70,7 +80,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version: "1.24"
           cache: true
 
       - name: Prepare environment
@@ -113,6 +123,7 @@ jobs:
     needs: [setup, build-binaries]
     if: needs.setup.outputs.is_release == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Download all binaries
         uses: actions/download-artifact@v4
@@ -152,6 +163,7 @@ jobs:
     name: Docker Build ${{ matrix.platform }}
     # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
@@ -187,6 +199,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -236,6 +252,7 @@ jobs:
   # ==============================================================================
   docker-merge:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     needs: [setup, docker-build]
     permissions:
       contents: read
@@ -250,6 +267,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
