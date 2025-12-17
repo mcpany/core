@@ -913,17 +913,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	executor := command.NewLocalExecutor()
 
 	env := os.Environ()
-	for key, value := range inputs {
-		env = append(env, fmt.Sprintf("%s=%v", key, value))
-	}
-
 	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(secret)
 			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
-			env = append(env, fmt.Sprintf("%s=%s", param.GetSchema().GetName(), secretValue))
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+		} else if val, ok := inputs[name]; ok {
+			env = append(env, fmt.Sprintf("%s=%v", name, val))
 		}
 	}
 
@@ -1054,17 +1053,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
 	env := os.Environ()
-	for key, value := range inputs {
-		env = append(env, fmt.Sprintf("%s=%v", key, value))
-	}
-
 	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(secret)
 			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
-			env = append(env, fmt.Sprintf("%s=%s", param.GetSchema().GetName(), secretValue))
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+		} else if val, ok := inputs[name]; ok {
+			env = append(env, fmt.Sprintf("%s=%v", name, val))
 		}
 	}
 
