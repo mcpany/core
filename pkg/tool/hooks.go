@@ -21,14 +21,53 @@ import (
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
+// compiledRule holds the pre-compiled regexes for a policy rule.
+type compiledRule struct {
+	nameRegex     *regexp.Regexp
+	argumentRegex *regexp.Regexp
+	rule          *configv1.CallPolicyRule
+}
+
 // PolicyHook implements PreCallHook using CallPolicy.
 type PolicyHook struct {
-	policy *configv1.CallPolicy
+	policy        *configv1.CallPolicy
+	compiledRules []compiledRule
 }
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
-	return &PolicyHook{policy: policy}
+	compiledRules := make([]compiledRule, len(policy.GetRules()))
+	for i, rule := range policy.GetRules() {
+		var nameRe, argRe *regexp.Regexp
+		var err error
+
+		if rule.GetNameRegex() != "" {
+			nameRe, err = regexp.Compile(rule.GetNameRegex())
+			if err != nil {
+				logging.GetLogger().
+					Error("Invalid tool name regex in policy", "regex", rule.GetNameRegex(), "error", err)
+			}
+		}
+
+		if rule.GetArgumentRegex() != "" {
+			argRe, err = regexp.Compile(rule.GetArgumentRegex())
+			if err != nil {
+				logging.GetLogger().
+					Error("Invalid argument regex in policy", "regex", rule.GetArgumentRegex(), "error", err)
+			}
+		}
+
+		compiledRules[i] = compiledRule{
+			nameRegex:     nameRe,
+			argumentRegex: argRe,
+			rule:          rule,
+		}
+	}
+
+	return &PolicyHook{
+		policy:        policy,
+		compiledRules: compiledRules,
+	}
 }
 
 // ExecutePre executes the policy check before a tool is called.
@@ -39,30 +78,26 @@ func (h *PolicyHook) ExecutePre(
 	// Determine default action
 	allowed := h.policy.GetDefaultAction() == configv1.CallPolicy_ALLOW
 
-	for _, rule := range h.policy.GetRules() {
+	for _, cRule := range h.compiledRules {
+		rule := cRule.rule
+
 		// 1. Match Tool Name
 		if rule.GetNameRegex() != "" {
-			matched, err := regexp.MatchString(rule.GetNameRegex(), req.ToolName)
-			if err != nil {
-				logging.GetLogger().
-					Error("Invalid tool name regex in policy", "regex", rule.GetNameRegex(), "error", err)
+			if cRule.nameRegex == nil {
 				continue // Skip invalid rule
 			}
-			if !matched {
+			if !cRule.nameRegex.MatchString(req.ToolName) {
 				continue // Rule doesn't apply
 			}
 		}
 
 		// 2. Match Arguments
 		if rule.GetArgumentRegex() != "" {
-			// req.ToolInputs is json.RawMessage ([]byte)
-			matched, err := regexp.MatchString(rule.GetArgumentRegex(), string(req.ToolInputs))
-			if err != nil {
-				logging.GetLogger().
-					Error("Invalid argument regex in policy", "regex", rule.GetArgumentRegex(), "error", err)
+			if cRule.argumentRegex == nil {
 				continue
 			}
-			if !matched {
+			// req.ToolInputs is json.RawMessage ([]byte)
+			if !cRule.argumentRegex.MatchString(string(req.ToolInputs)) {
 				continue
 			}
 		}
