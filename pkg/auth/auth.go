@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	xsync "github.com/puzpuzpuz/xsync/v4"
@@ -225,6 +226,12 @@ func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string,
 	}
 	return am.AddAuthenticator(serviceID, authenticator)
 }
+
+var (
+	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + Audience
+	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
+)
+
 // ValidateAuthentication validates the authentication request against the provided configuration.
 // It supports API Key and OAuth2 authentication methods.
 //
@@ -248,21 +255,37 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
 	case *configv1.AuthenticationConfig_Oauth2:
-		// OAuth2 validation typically requires a more complex flow or token validation.
-		// For the server receiving a request, it usually expects a Bearer token that matches some introspection or local validation.
-		// However, the OAuth2Auth config struct usually defines client credentials for *outgoing* requests or *setup*.
-		// If used for incoming auth, it might imply validating a JWT or similar.
-		// For now, we'll placeholder this or strictly check if headers are present if that's the intention.
-		// BUT, reading the proto, OAuth2Auth has token_url, client_id etc. This is for CLIENT usage mostly.
-		// Verification of incoming OAuth2 tokens usually involves JWKS or similar which isn't in that config.
-		// So we might need to assume this config is for client?
-		// Wait, the user asked for "AuthenticationConfig" to be used for "authentication in user and profile".
-		// Usually this implies *incoming* auth to the MCP server.
-		// If the MCP server is acting as an OAuth2 Resource Server, it needs validation keys, not client_id/secret.
-		// Let's assume for now we only fully support APIKey for internal User/Profile incoming auth, or strict equality?
-		// Re-reading usage: "we are going to reuse the same function to authentication user."
-		// Let's implement API Key core logic.
-		return fmt.Errorf("oauth2 authentication not yet implemented for incoming requests")
+		cfg := method.Oauth2
+		if cfg.GetIssuerUrl() == "" {
+			return fmt.Errorf("invalid OAuth2 configuration: missing issuer_url")
+		}
+		cacheKey := cfg.GetIssuerUrl() + "|" + cfg.GetAudience()
+
+		authenticator, ok := oauthAuthenticatorCache.Load(cacheKey)
+		if !ok {
+			oConfig := &OAuth2Config{
+				IssuerURL: cfg.GetIssuerUrl(),
+				Audience:  cfg.GetAudience(),
+			}
+			// Use context.Background() with a timeout for authenticator initialization to avoid
+			// binding the OIDC provider to a short-lived request context and prevent hanging.
+			initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			newAuth, err := NewOAuth2Authenticator(initCtx, oConfig)
+			if err != nil {
+				return fmt.Errorf("failed to create oauth2 authenticator: %w", err)
+			}
+			// Race condition handling: check if someone else inserted it
+			actual, loaded := oauthAuthenticatorCache.LoadOrStore(cacheKey, newAuth)
+			if loaded {
+				authenticator = actual
+			} else {
+				authenticator = newAuth
+			}
+		}
+
+		_, err := authenticator.Authenticate(ctx, r)
+		return err
 	default:
 		return nil
 	}

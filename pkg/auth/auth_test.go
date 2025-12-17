@@ -310,18 +310,33 @@ func TestValidateAuthentication(t *testing.T) {
 		assert.Contains(t, err.Error(), "invalid API key configuration")
 	})
 
-	t.Run("oauth2_unsupported", func(t *testing.T) {
+	t.Run("oauth2_valid_config_missing_token", func(t *testing.T) {
+		// Mock OIDC provider
+		var server *httptest.Server
+		const wellKnownPath = "/.well-known/openid-configuration"
+		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == wellKnownPath {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = fmt.Fprintln(w, `{"issuer": "`+server.URL+`", "jwks_uri": "`+server.URL+`/jwks"}`)
+			} else if r.URL.Path == "/jwks" {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = fmt.Fprintln(w, `{"keys": []}`)
+			}
+		}))
+		defer server.Close()
+
 		config := &configv1.AuthenticationConfig{
 			AuthMethod: &configv1.AuthenticationConfig_Oauth2{
 				Oauth2: &configv1.OAuth2Auth{
-					// Params don't matter much as it returns error immediately
+					IssuerUrl: proto.String(server.URL),
+					Audience:  proto.String("test-audience"),
 				},
 			},
 		}
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "not yet implemented")
+		assert.Contains(t, err.Error(), "missing Authorization header")
 	})
 
 	t.Run("no_method", func(t *testing.T) {
