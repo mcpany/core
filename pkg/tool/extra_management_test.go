@@ -1,0 +1,263 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package tool
+
+import (
+	"context"
+	"encoding/json"
+	reflect "reflect"
+	"testing"
+	"time"
+
+	"unsafe"
+
+	"github.com/mcpany/core/pkg/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+// mockToolSimple is a simple mock for Tool interface
+type mockToolSimple struct {
+	executeFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
+	toolDef     *routerv1.Tool
+	serviceID   string
+}
+
+func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if m.executeFunc != nil {
+		return m.executeFunc(ctx, req)
+	}
+	return "success", nil
+}
+
+func (m *mockToolSimple) Tool() *routerv1.Tool {
+	if m.toolDef == nil {
+		return &routerv1.Tool{
+			Name:      proto.String("mock-tool"),
+			ServiceId: proto.String(m.serviceID),
+		}
+	}
+	return m.toolDef
+}
+
+func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
+
+type mockMiddleware struct {
+	id     string
+	called bool
+}
+
+func (m *mockMiddleware) Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error) {
+	m.called = true
+	return next(ctx, req)
+}
+
+func TestManager_ExecuteTool_Coverage(t *testing.T) {
+	b, _ := bus.NewProvider(nil)
+	m := NewManager(b)
+
+	// Case 1: Tool Not Found
+	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
+	assert.Error(t, err)
+	assert.Equal(t, ErrToolNotFound, err)
+
+	// Add a tool
+	mt := &mockToolSimple{serviceID: "s1"}
+	_ = m.AddTool(mt)
+
+	// Case 2: Success
+	res, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	assert.NoError(t, err)
+	assert.Equal(t, "success", res)
+
+	// Case 3: Middleware execution
+	mw := &mockMiddleware{id: "m1"}
+	m.AddMiddleware(mw)
+	_, err = m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	assert.NoError(t, err)
+	assert.True(t, mw.called)
+}
+
+func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
+	b, _ := bus.NewProvider(nil)
+	m := NewManager(b)
+	mt := &mockToolSimple{
+		serviceID: "s1",
+		toolDef: &routerv1.Tool{
+			Name:      proto.String("mock-tool"),
+			ServiceId: proto.String("s1"),
+		},
+	}
+	_ = m.AddTool(mt)
+
+	// Setup ServiceInfo with Config
+	svcConfig := &configv1.UpstreamServiceConfig{
+		Name: proto.String("s1"),
+	}
+	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
+
+	// Case: PreHook Error (via Policy)
+	// We can use PolicyHook with ActionDeny
+	callPolicy := configv1.CallPolicy_builder{
+		DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		Rules: []*configv1.CallPolicyRule{
+			configv1.CallPolicyRule_builder{
+				NameRegex: proto.String(".*mock-tool$"),
+				Action:    configv1.CallPolicy_DENY.Enum(),
+			}.Build(),
+		},
+	}.Build()
+	svcConfig.CallPolicies = []*configv1.CallPolicy{callPolicy}
+
+	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	if assert.Error(t, err) {
+		assert.Contains(t, err.Error(), "denied by policy rule")
+	}
+}
+
+func TestManager_ClearToolsForService_Coverage(t *testing.T) {
+	b, _ := bus.NewProvider(nil)
+	m := NewManager(b)
+
+	t1 := &mockToolSimple{serviceID: "s1", toolDef: &routerv1.Tool{Name: proto.String("t1"), ServiceId: proto.String("s1")}}
+	t2 := &mockToolSimple{serviceID: "s2", toolDef: &routerv1.Tool{Name: proto.String("t2"), ServiceId: proto.String("s2")}}
+	t3 := &mockToolSimple{serviceID: "s1", toolDef: &routerv1.Tool{Name: proto.String("t3"), ServiceId: proto.String("s1")}}
+
+	_ = m.AddTool(t1)
+	_ = m.AddTool(t2)
+	_ = m.AddTool(t3)
+
+	assert.Len(t, m.ListTools(), 3)
+
+	m.ClearToolsForService("s1")
+
+	tools := m.ListTools()
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "t2", tools[0].Tool().GetName())
+}
+
+// Mock MCP Server
+type mockMCPServerProvider struct {
+	server *mcp.Server
+}
+
+func (m *mockMCPServerProvider) Server() *mcp.Server {
+	return m.server
+}
+
+func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
+	b, _ := bus.NewProvider(nil)
+	m := NewManager(b)
+
+	// Setup Mock MCP Server
+	impl := &mcp.Implementation{
+		Name:    "test-server",
+		Version: "1.0.0",
+	}
+	mcpServer := mcp.NewServer(impl, &mcp.ServerOptions{})
+
+	mp := &mockMCPServerProvider{server: mcpServer}
+	m.SetMCPServer(mp)
+
+	mt := &mockToolSimple{
+		serviceID: "s1",
+		toolDef: &routerv1.Tool{
+			Name:      proto.String("mock-tool"),
+			ServiceId: proto.String("s1"),
+			InputSchema: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+					"properties": {Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"arg": {Kind: &structpb.Value_StringValue{StringValue: "val"}},
+						},
+					}}},
+				},
+			},
+		},
+	}
+
+	err := m.AddTool(mt)
+	assert.NoError(t, err)
+
+	// Coverage: InputSchema marshaling. InputSchema is set above.
+	// Coverage: OutputSchema?
+	mt.toolDef.OutputSchema = &structpb.Struct{Fields: map[string]*structpb.Value{
+		"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+	}}
+	// Re-add? Manager allows overwriting?
+	// AddTool calls Store.
+	err = m.AddTool(mt)
+	assert.NoError(t, err)
+
+	// Use reflection to get the handler and call it!
+
+	// Server -> tools (*featureSet[*serverTool]) -> features (map[string]*serverTool) -> "s1.mock-tool" -> handler (ToolHandler)
+	srvVal := reflect.ValueOf(mcpServer).Elem()
+	toolsFieldSet := srvVal.FieldByName("tools") // *featureSet
+	if !toolsFieldSet.IsValid() {
+		t.Fatalf("Could not find tools field in mcp.Server")
+	}
+	toolsMap := toolsFieldSet.Elem().FieldByName("features") // map[string]*serverTool
+	if !toolsMap.IsValid() {
+		t.Fatalf("Could not find features field in featureSet")
+	}
+
+	toolHandlerVal := toolsMap.MapIndex(reflect.ValueOf("s1.mock-tool"))
+	if !toolHandlerVal.IsValid() {
+		t.Fatalf("Could not find tool handler for s1.mock-tool")
+	}
+	// toolHandlerVal is *serverTool. get handler field.
+	handlerField := toolHandlerVal.Elem().FieldByName("handler")
+	if !handlerField.IsValid() {
+		t.Fatalf("Could not find handler field in serverTool")
+	}
+
+	// Bypass unexported check. FieldByName returns a Value that is addressable if struct is addressable.
+	// toolHandlerVal is *serverTool, so Elem() is addressable.
+	handlerAccessible := reflect.NewAt(handlerField.Type(), unsafe.Pointer(handlerField.UnsafeAddr())).Elem() //nolint:gosec
+
+	// Prepare request
+	callToolReq := &mcp.CallToolRequest{
+		Params: &mcp.CallToolParamsRaw{
+			Name:      "s1.mock-tool",
+			Arguments: json.RawMessage(`{"arg":"val"}`),
+		},
+	}
+
+	// Subscribe to bus to verify publication
+	reqBus := bus.GetBus[*bus.ToolExecutionRequest](b, "tool_execution_requests")
+	reqChan := make(chan *bus.ToolExecutionRequest, 1)
+	reqBus.SubscribeOnce(context.Background(), "request", func(req *bus.ToolExecutionRequest) {
+		reqChan <- req
+	})
+
+	// Invoke handler
+	go func() {
+		args := []reflect.Value{
+			reflect.ValueOf(context.Background()),
+			reflect.ValueOf(callToolReq),
+		}
+		_ = handlerAccessible.Call(args)
+	}()
+
+	select {
+	case req := <-reqChan:
+		assert.Equal(t, "s1.mock-tool", req.ToolName)
+		// We should also publish a result to unblock the handler if we wanted to check return value.
+		// Sending success result
+		resJSON, _ := json.Marshal(map[string]any{"result": "ok"})
+
+		resBus := bus.GetBus[*bus.ToolExecutionResult](b, "tool_execution_results")
+		_ = resBus.Publish(context.Background(), req.CorrelationID(), &bus.ToolExecutionResult{
+			Result: json.RawMessage(resJSON),
+		})
+	case <-time.After(1 * time.Second):
+		t.Fatal("timed out waiting for execution request on bus")
+	}
+}

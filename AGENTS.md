@@ -1,18 +1,26 @@
 # MCP Any - Agent Instructions
 
 ## Project Goal
-
 The primary goal of this project is to **eliminate the requirement to implement new MCP servers for doing API calls**.
 
 Instead of writing code to create a new MCP server, users should be able to:
-
-1.  Create MCP server tools, resources, and prompts using **only configurations**.
-2.  **Share these configurations publicly**. This allows others to use the same capabilities without needing to pass around binary files or run complex setups.
-3.  Run the MCP server **locally**. This ensures that sensitive data remains within the user's environment and is not exposed to remote third-party servers.
+1.  **Configure everything**: Load lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line).
+2.  **Run anywhere**: Run a single `mcpany` server instance that acts as a **Universal Adapter**.
+3.  **Share configurations**: Share these configurations publicly, allowing others to use the same capabilities without managing binaries or dependencies.
 
 ## Key Principles for Documentation and Development
 
-- **Configuration over Code**: Emphasize that adding new capabilities is done through config files (YAML/JSON), not by writing Go/Python code for a new server.
-- **Portability**: Configurations are meant to be shared. Design features and documentation to support easy sharing and importing of these configs.
-- **Security & Privacy**: Highlight that the server runs locally, which is a key benefit for users concerned about leaking sensitive info to remote servers.
-- **Universal Adapter**: The system acts as a universal adapter/proxy that turns existing APIs (HTTP, gRPC, OpenAPI, CLI) into MCP-compliant tools.
+-   **Configuration over Code**: Emphasize that adding new capabilities is done through config files, not by writing Go/Python code.
+-   **Single Binary**: Users install one `mcpany` binary (or Docker image) and load N config files. Avoid "binary fatigue".
+-   **Universal Adapter**: We support gRPC, OpenAPI, HTTP, GraphQL, and even ensuring CLI commands can be turned into MCP tools.
+-   **Security**: The server runs locally. We prioritize security features like:
+    -   **Strict Egress Policy**: Control where the server can connect.
+    -   **Context Propagation**: Securely pass authentication headers.
+    -   **Input Validation**: Prevent command injection and ensuring safe execution.
+
+## Key Features to Highlight
+
+-   **Dynamic Tool Registration & Auto-Discovery**: We can discover tools from Proto files, OpenAPI specs, or Reflection.
+-   **Safety Policies**: We allow users to block dangerous operations (e.g. `DELETE`) or restrict access to specific URLs.
+-   **Upstream Authentication**: We handle API keys, Bearer tokens, and mTLS so the AI doesn't have to see them.
+-   **Multi-User & Multi-Profile**: We support complex multi-tenancy use cases.
