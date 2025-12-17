@@ -52,7 +52,8 @@ For a complete list of all available configuration options, please see the [Conf
 - [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
 - [ ] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
 - [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
-- [ ] **IP Allowlisting & Security Policies**: Implement fine-grained security policies, including IP allowlisting and request validation.
+- [x] **IP Allowlisting**: Restrict access to specific IP addresses/CIDRs.
+- [ ] **Security Policies**: Implement fine-grained request validation policies.
 - [ ] **WASM Plugin Support**: Allow extending functionality using WebAssembly plugins for custom logic.
 - [ ] **Transport Protocols (NATS/Kafka)**: Add support for asynchronous communication via NATS and Kafka.
 - [ ] **Client SDKs**: Develop official Client SDKs (Go, Python, TS) to interact with MCP Any programmatically.
