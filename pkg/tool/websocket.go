@@ -30,7 +30,6 @@ type WebsocketTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
-	parser            *transformer.TextParser
 }
 
 // NewWebsocketTool creates a new WebsocketTool.
@@ -57,7 +56,6 @@ func NewWebsocketTool(
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-		parser:            transformer.NewTextParser(),
 	}
 }
 
@@ -131,8 +129,9 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 	}
 
 	if t.outputTransformer != nil {
+		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		return t.parser.Parse(outputFormat, response, t.outputTransformer.GetExtractionRules())
+		return parser.Parse(outputFormat, response, t.outputTransformer.GetExtractionRules())
 	}
 
 	var result map[string]any

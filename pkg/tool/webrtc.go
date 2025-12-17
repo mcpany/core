@@ -51,7 +51,6 @@ type WebrtcTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
-	parser            *transformer.TextParser
 }
 
 // NewWebrtcTool creates a new WebrtcTool.
@@ -77,7 +76,6 @@ func NewWebrtcTool(
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-		parser:            transformer.NewTextParser(),
 	}
 
 	if poolManager != nil {
@@ -254,8 +252,9 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 	select {
 	case response := <-responseChan:
 		if t.outputTransformer != nil {
+			parser := transformer.NewTextParser()
 			outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-			return t.parser.Parse(outputFormat, []byte(response), t.outputTransformer.GetExtractionRules())
+			return parser.Parse(outputFormat, []byte(response), t.outputTransformer.GetExtractionRules())
 		}
 		var result map[string]any
 		if err := json.Unmarshal([]byte(response), &result); err != nil {
