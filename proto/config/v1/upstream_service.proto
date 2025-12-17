@@ -13,10 +13,10 @@ import "proto/config/v1/profile.proto";
 import "proto/config/v1/prompt.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/tool.proto";
+import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "UpstreamServiceProto";
-
 // UpstreamServiceCollection defines a collection of upstream services that can be loaded from a remote source.
 message UpstreamServiceCollection {
   // The name of the collection.
@@ -147,11 +147,6 @@ message CallHook {
     WebhookConfig webhook = 2;
     CallPolicy call_policy = 4;
   }
-}
-
-message WebhookConfig {
-  string url = 1;
-  google.protobuf.Duration timeout = 2;
 }
 
 // --- Upstream Service Types ---
@@ -362,6 +357,8 @@ message McpStdioConnection {
   string container_image = 4 [json_name = "container_image"];
   // Optional: A list of commands to run as setup before the main command.
   repeated string setup_commands = 5 [json_name = "setup_commands"];
+  // Optional: Environment variables to set in the container.
+  map<string, string> env = 6;
 }
 
 message McpStreamableHttpConnection {

@@ -17,7 +17,8 @@ DOCKER_COMPOSE_REGULAR_FILE ?= docker/docker-compose.dev.yml
 ifeq ($(BUILD_MODE),docker)
 ifneq ($(INSIDE_DOCKER_CONTAINER),1)
 	SHOULD_PROXY_TO_DOCKER := true
-	DOCKER_PROXY_CMD := env UID=$(shell id -u) GID=$(shell id -g) docker compose -f $(DOCKER_COMPOSE_REGULAR_FILE) run --rm dev make INSIDE_DOCKER_CONTAINER=1
+	DOCKER_GID := $(shell getent group docker | cut -d: -f3)
+	DOCKER_PROXY_CMD := env UID=$(shell id -u) GID=$(shell id -g) DOCKER_GID=$(DOCKER_GID) docker compose -f $(DOCKER_COMPOSE_REGULAR_FILE) run --rm dev make INSIDE_DOCKER_CONTAINER=1
 endif
 endif
 
@@ -334,12 +335,11 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "2.7.2"); \
-	if test -f "$(GOLANGCI_LINT_BIN)" && [ -n "$$LINT_VER_CHECK" ]; then \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v2.7.2"); \
+	if [ -n "$$LINT_VER_CHECK" ]; then \
 		echo "golangci-lint v2.7.2 is already installed."; \
 	else \
 		echo "Installing golangci-lint v2.7.2 to $(TOOL_INSTALL_DIR)..."; \
-		rm -f "$(GOLANGCI_LINT_BIN)"; \
 		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v2.7.2; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \

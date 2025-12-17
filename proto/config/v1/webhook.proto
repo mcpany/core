@@ -3,6 +3,7 @@ syntax = "proto3";
 package mcpany.config.v1;
 
 import "google/protobuf/struct.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -16,11 +17,30 @@ message WebhookRequest {
   // Unique identifier for the request.
   string uid = 1;
   // The operation type (e.g., "PreCall", "PostCall").
-  string kind = 2;
+  WebhookKind kind = 2;
   // The tool name being executed.
   string tool_name = 3;
   // The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
   google.protobuf.Struct object = 4;
+}
+
+enum WebhookKind {
+  WEBHOOK_KIND_UNSPECIFIED = 0;
+  WEBHOOK_KIND_PRE_CALL = 1;
+  WEBHOOK_KIND_POST_CALL = 2;
+}
+
+message WebhookConfig {
+  string url = 1;
+  google.protobuf.Duration timeout = 2;
+  string webhook_secret = 3;
+}
+
+message SystemWebhookConfig {
+  string name = 1;
+  string description = 2;
+  string url_path = 3;
+  bool disabled = 4;
 }
 
 message WebhookResponse {

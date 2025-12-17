@@ -231,10 +231,6 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	if os.Getenv("BUILD_MODE") != "docker" && !util.IsDockerSocketAccessible() {
-		t.Skip("Skipping E2E bundle test because Docker is not available")
-	}
-
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 

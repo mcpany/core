@@ -2,6 +2,7 @@ package upstream_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,9 +12,12 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/mcp"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 	TIMESTAMPCB "google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -21,14 +25,17 @@ func TestWebhooksE2E(t *testing.T) {
 	// Build the webhook server
 	rootDir := findRootDir(t)
 	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
-	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks")
+	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
 
 	// Start webhook server
-	serverCmd := exec.Command(webhookBin)
+	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec // base64("test-secret-123")
+	secretPtr := secret                   // Create addressable variable
+	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret)
 	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
 	defer func() {
 		_ = serverCmd.Process.Kill()
@@ -37,14 +44,18 @@ func TestWebhooksE2E(t *testing.T) {
 	// Wait for server to start
 	require.Eventually(t, func() bool {
 		resp, err := http.Get("http://localhost:8080/markdown") // Endpoint exists (POST only but connectable)
-		return err == nil && (resp.StatusCode == 405 || resp.StatusCode == 200)
+		if resp != nil {
+			defer func() { _ = resp.Body.Close() }()
+		}
+		return err == nil && (resp.StatusCode == 405 || resp.StatusCode == 200 || resp.StatusCode == 401)
 	}, 5*time.Second, 100*time.Millisecond, "Webhook server failed to start")
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
 		url := "http://localhost:8080/markdown"
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
-			Url:     &url,
-			Timeout: TIMESTAMPCB.New(5 * time.Second),
+			Url:           url,
+			Timeout:       TIMESTAMPCB.New(5 * time.Second),
+			WebhookSecret: secretPtr,
 		})
 
 		ctx := context.Background()
@@ -83,8 +94,9 @@ func TestWebhooksE2E(t *testing.T) {
 	t.Run("TextTruncation", func(t *testing.T) {
 		url := "http://localhost:8080/truncate?max_chars=5"
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
-			Url:     &url,
-			Timeout: TIMESTAMPCB.New(5 * time.Second),
+			Url:           url,
+			Timeout:       TIMESTAMPCB.New(5 * time.Second),
+			WebhookSecret: secretPtr,
 		})
 
 		ctx := context.Background()
@@ -108,6 +120,121 @@ func TestWebhooksE2E(t *testing.T) {
 
 		assert.Equal(t, "This ...", truncated)
 	})
+}
+
+func TestFullSystemWebhooks(t *testing.T) {
+	// 1. Build Webhook Server
+	rootDir := findRootDir(t)
+	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
+	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
+	cmd.Dir = rootDir
+	require.NoError(t, cmd.Run(), "Failed to build webhook server")
+
+	// 2. Build Mock MCP Server
+	mockMcpBin := filepath.Join(rootDir, "build", "bin", "mock_mcp")
+	cmd = exec.Command("go", "build", "-o", mockMcpBin, "./tests/integration/upstream/testdata/mock_mcp") //nolint:gosec
+	cmd.Dir = rootDir
+	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
+
+	// 3. Start Webhook Server
+	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec
+	serverCmd := exec.Command(webhookBin) //nolint:gosec
+	serverCmd.Stdout = os.Stdout
+	serverCmd.Stderr = os.Stderr
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret)
+	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
+	defer func() { _ = serverCmd.Process.Kill() }()
+
+	// Wait for webhook server
+	require.Eventually(t, func() bool {
+		resp, err := http.Get("http://localhost:8080/markdown")
+		if resp != nil && resp.Body != nil {
+			defer func() { _ = resp.Body.Close() }()
+		}
+		return err == nil
+	}, 5*time.Second, 100*time.Millisecond)
+
+	// 4. Configure Upstream Service (Mcpany Core Logic)
+	webhookURL := "http://localhost:8080/markdown"
+
+	upsConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("mock-service"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command: proto.String(mockMcpBin),
+			}.Build(),
+		}.Build(),
+		PostCallHooks: []*configv1.CallHook{
+			{
+				Name: proto.String("markdown-converter"),
+				HookConfig: &configv1.CallHook_Webhook{
+					Webhook: configv1.WebhookConfig_builder{
+						Url:           webhookURL,
+						WebhookSecret: secret,
+						Timeout:       TIMESTAMPCB.New(5 * time.Second),
+					}.Build(),
+				},
+			},
+		},
+	}.Build()
+
+	toolManager := tool.NewManager(nil)
+	ctx := context.Background()
+	upstreamService := mcp.NewUpstream()
+
+	// Register service
+	serviceID, _, _, err := upstreamService.Register(
+		ctx,
+		upsConfig,
+		toolManager,
+		nil, // prompt manager
+		nil, // resource manager
+		false,
+	)
+	require.NoError(t, err, "Failed to register upstream service")
+
+	// 5. Execute Tool
+	toolID := serviceID + ".get_html"
+
+	// Use Manager.ExecuteTool to trigger hooks
+	mcpReq := &tool.ExecutionRequest{
+		ToolName:   toolID,
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	resultCallTool, err := toolManager.ExecuteTool(ctx, mcpReq)
+	require.NoError(t, err, "Failed to execute tool")
+
+	// Unwrap the result from CallToolResult
+	var result any
+	if callToolRes, ok := resultCallTool.(*mcpsdk.CallToolResult); ok {
+		if len(callToolRes.Content) > 0 {
+			if text, ok := callToolRes.Content[0].(*mcpsdk.TextContent); ok {
+				result = text.Text
+			}
+		}
+	} else {
+		result = resultCallTool
+	}
+
+	// 6. Verify Result
+	t.Logf("Result: %v", result)
+
+	var resultStr string
+	if s, ok := result.(string); ok {
+		resultStr = s
+	} else if m, ok := result.(map[string]any); ok {
+		if v, ok := m["value"]; ok {
+			resultStr = fmt.Sprintf("%v", v)
+		} else {
+			// Fallback json dump
+			b, _ := json.Marshal(result)
+			resultStr = string(b)
+		}
+	}
+
+	assert.Contains(t, resultStr, "# Mock Title")
+	assert.Contains(t, resultStr, "Mock content")
 }
 
 func findRootDir(t *testing.T) string {

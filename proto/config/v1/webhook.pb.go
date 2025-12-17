@@ -11,6 +11,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -22,6 +23,50 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type WebhookKind int32
+
+const (
+	WebhookKind_WEBHOOK_KIND_UNSPECIFIED WebhookKind = 0
+	WebhookKind_WEBHOOK_KIND_PRE_CALL    WebhookKind = 1
+	WebhookKind_WEBHOOK_KIND_POST_CALL   WebhookKind = 2
+)
+
+// Enum value maps for WebhookKind.
+var (
+	WebhookKind_name = map[int32]string{
+		0: "WEBHOOK_KIND_UNSPECIFIED",
+		1: "WEBHOOK_KIND_PRE_CALL",
+		2: "WEBHOOK_KIND_POST_CALL",
+	}
+	WebhookKind_value = map[string]int32{
+		"WEBHOOK_KIND_UNSPECIFIED": 0,
+		"WEBHOOK_KIND_PRE_CALL":    1,
+		"WEBHOOK_KIND_POST_CALL":   2,
+	}
+)
+
+func (x WebhookKind) Enum() *WebhookKind {
+	p := new(WebhookKind)
+	*p = x
+	return p
+}
+
+func (x WebhookKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (WebhookKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_webhook_proto_enumTypes[0].Descriptor()
+}
+
+func (WebhookKind) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_webhook_proto_enumTypes[0]
+}
+
+func (x WebhookKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
 
 // WebhookReview explains the request and response of a webhook call.
 type WebhookReview struct {
@@ -122,7 +167,7 @@ type WebhookRequest struct {
 	// Unique identifier for the request.
 	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
 	// The operation type (e.g., "PreCall", "PostCall").
-	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	Kind WebhookKind `protobuf:"varint,2,opt,name=kind,proto3,enum=mcpany.config.v1.WebhookKind" json:"kind,omitempty"`
 	// The tool name being executed.
 	ToolName string `protobuf:"bytes,3,opt,name=tool_name,json=toolName,proto3" json:"tool_name,omitempty"`
 	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
@@ -163,11 +208,11 @@ func (x *WebhookRequest) GetUid() string {
 	return ""
 }
 
-func (x *WebhookRequest) GetKind() string {
+func (x *WebhookRequest) GetKind() WebhookKind {
 	if x != nil {
 		return x.Kind
 	}
-	return ""
+	return WebhookKind_WEBHOOK_KIND_UNSPECIFIED
 }
 
 func (x *WebhookRequest) GetToolName() string {
@@ -188,7 +233,7 @@ func (x *WebhookRequest) SetUid(v string) {
 	x.Uid = v
 }
 
-func (x *WebhookRequest) SetKind(v string) {
+func (x *WebhookRequest) SetKind(v WebhookKind) {
 	x.Kind = v
 }
 
@@ -217,7 +262,7 @@ type WebhookRequest_builder struct {
 	// Unique identifier for the request.
 	Uid string
 	// The operation type (e.g., "PreCall", "PostCall").
-	Kind string
+	Kind WebhookKind
 	// The tool name being executed.
 	ToolName string
 	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
@@ -232,6 +277,201 @@ func (b0 WebhookRequest_builder) Build() *WebhookRequest {
 	x.Kind = b.Kind
 	x.ToolName = b.ToolName
 	x.Object = b.Object
+	return m0
+}
+
+type WebhookConfig struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret,proto3" json:"webhook_secret,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WebhookConfig) Reset() {
+	*x = WebhookConfig{}
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WebhookConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WebhookConfig) ProtoMessage() {}
+
+func (x *WebhookConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *WebhookConfig) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *WebhookConfig) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.Timeout
+	}
+	return nil
+}
+
+func (x *WebhookConfig) GetWebhookSecret() string {
+	if x != nil {
+		return x.WebhookSecret
+	}
+	return ""
+}
+
+func (x *WebhookConfig) SetUrl(v string) {
+	x.Url = v
+}
+
+func (x *WebhookConfig) SetTimeout(v *durationpb.Duration) {
+	x.Timeout = v
+}
+
+func (x *WebhookConfig) SetWebhookSecret(v string) {
+	x.WebhookSecret = v
+}
+
+func (x *WebhookConfig) HasTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.Timeout != nil
+}
+
+func (x *WebhookConfig) ClearTimeout() {
+	x.Timeout = nil
+}
+
+type WebhookConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Url           string
+	Timeout       *durationpb.Duration
+	WebhookSecret string
+}
+
+func (b0 WebhookConfig_builder) Build() *WebhookConfig {
+	m0 := &WebhookConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Url = b.Url
+	x.Timeout = b.Timeout
+	x.WebhookSecret = b.WebhookSecret
+	return m0
+}
+
+type SystemWebhookConfig struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3" json:"url_path,omitempty"`
+	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SystemWebhookConfig) Reset() {
+	*x = SystemWebhookConfig{}
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SystemWebhookConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SystemWebhookConfig) ProtoMessage() {}
+
+func (x *SystemWebhookConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *SystemWebhookConfig) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SystemWebhookConfig) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *SystemWebhookConfig) GetUrlPath() string {
+	if x != nil {
+		return x.UrlPath
+	}
+	return ""
+}
+
+func (x *SystemWebhookConfig) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *SystemWebhookConfig) SetName(v string) {
+	x.Name = v
+}
+
+func (x *SystemWebhookConfig) SetDescription(v string) {
+	x.Description = v
+}
+
+func (x *SystemWebhookConfig) SetUrlPath(v string) {
+	x.UrlPath = v
+}
+
+func (x *SystemWebhookConfig) SetDisabled(v bool) {
+	x.Disabled = v
+}
+
+type SystemWebhookConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name        string
+	Description string
+	UrlPath     string
+	Disabled    bool
+}
+
+func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
+	m0 := &SystemWebhookConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Name = b.Name
+	x.Description = b.Description
+	x.UrlPath = b.UrlPath
+	x.Disabled = b.Disabled
 	return m0
 }
 
@@ -251,7 +491,7 @@ type WebhookResponse struct {
 
 func (x *WebhookResponse) Reset() {
 	*x = WebhookResponse{}
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[2]
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -263,7 +503,7 @@ func (x *WebhookResponse) String() string {
 func (*WebhookResponse) ProtoMessage() {}
 
 func (x *WebhookResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[2]
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +614,7 @@ type WebhookStatus struct {
 
 func (x *WebhookStatus) Reset() {
 	*x = WebhookStatus{}
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[3]
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -386,7 +626,7 @@ func (x *WebhookStatus) String() string {
 func (*WebhookStatus) ProtoMessage() {}
 
 func (x *WebhookStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[3]
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,15 +679,24 @@ var File_proto_config_v1_webhook_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/webhook.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\"\x8a\x01\n" +
+	"\x1dproto/config/v1/webhook.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\"\x8a\x01\n" +
 	"\rWebhookReview\x12:\n" +
 	"\arequest\x18\x01 \x01(\v2 .mcpany.config.v1.WebhookRequestR\arequest\x12=\n" +
-	"\bresponse\x18\x02 \x01(\v2!.mcpany.config.v1.WebhookResponseR\bresponse\"\x84\x01\n" +
+	"\bresponse\x18\x02 \x01(\v2!.mcpany.config.v1.WebhookResponseR\bresponse\"\xa3\x01\n" +
 	"\x0eWebhookRequest\x12\x10\n" +
-	"\x03uid\x18\x01 \x01(\tR\x03uid\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1b\n" +
+	"\x03uid\x18\x01 \x01(\tR\x03uid\x121\n" +
+	"\x04kind\x18\x02 \x01(\x0e2\x1d.mcpany.config.v1.WebhookKindR\x04kind\x12\x1b\n" +
 	"\ttool_name\x18\x03 \x01(\tR\btoolName\x12/\n" +
-	"\x06object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x06object\"\xbe\x01\n" +
+	"\x06object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x06object\"}\n" +
+	"\rWebhookConfig\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x123\n" +
+	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12%\n" +
+	"\x0ewebhook_secret\x18\x03 \x01(\tR\rwebhookSecret\"\x82\x01\n" +
+	"\x13SystemWebhookConfig\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
+	"\burl_path\x18\x03 \x01(\tR\aurlPath\x12\x1a\n" +
+	"\bdisabled\x18\x04 \x01(\bR\bdisabled\"\xbe\x01\n" +
 	"\x0fWebhookResponse\x12\x10\n" +
 	"\x03uid\x18\x01 \x01(\tR\x03uid\x12\x18\n" +
 	"\aallowed\x18\x02 \x01(\bR\aallowed\x127\n" +
@@ -455,27 +704,38 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x12replacement_object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11replacementObject\"=\n" +
 	"\rWebhookStatus\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessageB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\amessage\x18\x02 \x01(\tR\amessage*b\n" +
+	"\vWebhookKind\x12\x1c\n" +
+	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
+	"\x16WEBHOOK_KIND_POST_CALL\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
 
-var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_config_v1_webhook_proto_goTypes = []any{
-	(*WebhookReview)(nil),   // 0: mcpany.config.v1.WebhookReview
-	(*WebhookRequest)(nil),  // 1: mcpany.config.v1.WebhookRequest
-	(*WebhookResponse)(nil), // 2: mcpany.config.v1.WebhookResponse
-	(*WebhookStatus)(nil),   // 3: mcpany.config.v1.WebhookStatus
-	(*structpb.Struct)(nil), // 4: google.protobuf.Struct
+	(WebhookKind)(0),            // 0: mcpany.config.v1.WebhookKind
+	(*WebhookReview)(nil),       // 1: mcpany.config.v1.WebhookReview
+	(*WebhookRequest)(nil),      // 2: mcpany.config.v1.WebhookRequest
+	(*WebhookConfig)(nil),       // 3: mcpany.config.v1.WebhookConfig
+	(*SystemWebhookConfig)(nil), // 4: mcpany.config.v1.SystemWebhookConfig
+	(*WebhookResponse)(nil),     // 5: mcpany.config.v1.WebhookResponse
+	(*WebhookStatus)(nil),       // 6: mcpany.config.v1.WebhookStatus
+	(*structpb.Struct)(nil),     // 7: google.protobuf.Struct
+	(*durationpb.Duration)(nil), // 8: google.protobuf.Duration
 }
 var file_proto_config_v1_webhook_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.WebhookReview.request:type_name -> mcpany.config.v1.WebhookRequest
-	2, // 1: mcpany.config.v1.WebhookReview.response:type_name -> mcpany.config.v1.WebhookResponse
-	4, // 2: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
-	3, // 3: mcpany.config.v1.WebhookResponse.status:type_name -> mcpany.config.v1.WebhookStatus
-	4, // 4: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 0: mcpany.config.v1.WebhookReview.request:type_name -> mcpany.config.v1.WebhookRequest
+	5, // 1: mcpany.config.v1.WebhookReview.response:type_name -> mcpany.config.v1.WebhookResponse
+	0, // 2: mcpany.config.v1.WebhookRequest.kind:type_name -> mcpany.config.v1.WebhookKind
+	7, // 3: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
+	8, // 4: mcpany.config.v1.WebhookConfig.timeout:type_name -> google.protobuf.Duration
+	6, // 5: mcpany.config.v1.WebhookResponse.status:type_name -> mcpany.config.v1.WebhookStatus
+	7, // 6: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_webhook_proto_init() }
@@ -488,13 +748,14 @@ func file_proto_config_v1_webhook_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_webhook_proto_rawDesc), len(file_proto_config_v1_webhook_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   4,
+			NumEnums:      1,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_config_v1_webhook_proto_goTypes,
 		DependencyIndexes: file_proto_config_v1_webhook_proto_depIdxs,
+		EnumInfos:         file_proto_config_v1_webhook_proto_enumTypes,
 		MessageInfos:      file_proto_config_v1_webhook_proto_msgTypes,
 	}.Build()
 	File_proto_config_v1_webhook_proto = out.File

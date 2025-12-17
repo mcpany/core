@@ -132,7 +132,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		return resp, nil
 	case <-ctx.Done():
 		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service registration")
-	case <-time.After(30 * time.Second): // Add a safety timeout
+	case <-time.After(300 * time.Second): // Add a safety timeout
 		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service registration result")
 	}
 }
