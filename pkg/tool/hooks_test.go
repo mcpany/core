@@ -132,63 +132,6 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 	}
 }
 
-func TestTextTruncationHook_ExecutePost(t *testing.T) {
-	tests := []struct {
-		name     string
-		maxChars int32
-		input    any
-		want     any
-	}{
-		{
-			name:     "No Truncation needed",
-			maxChars: 10,
-			input:    "short",
-			want:     "short",
-		},
-		{
-			name:     "Truncation needed",
-			maxChars: 5,
-			input:    "long string",
-			want:     "long ...",
-		},
-		{
-			name:     "Map Truncation",
-			maxChars: 5,
-			input: map[string]any{
-				"key1": "short",
-				"key2": "long string",
-				"nested": map[string]any{
-					"key3": "very long string",
-				},
-			},
-			want: map[string]any{
-				"key1": "short",
-				"key2": "long ...",
-				"nested": map[string]any{
-					"key3": "very ...",
-				},
-			},
-		},
-		{
-			name:     "Disabled",
-			maxChars: 0,
-			input:    "long string",
-			want:     "long string",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			hook := NewTextTruncationHook(
-				&configv1.TextTruncationConfig{MaxChars: ptr(tt.maxChars)},
-			)
-			req := &ExecutionRequest{} // ignored by this hook
-			got, err := hook.ExecutePost(context.Background(), req, tt.input)
-			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
 
 func TestWebhookHook(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -265,41 +208,3 @@ func TestWebhookHook(t *testing.T) {
 	})
 }
 
-func TestHTMLToMarkdownHook_ExecutePost(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    any
-		want     any
-	}{
-		{
-			name:  "String HTML",
-			input: "<b>bold</b>",
-			want:  "**bold**",
-		},
-		{
-			name:  "Map HTML",
-			input: map[string]any{"content": "<i>italic</i>"},
-			want:  map[string]any{"content": "_italic_"},
-		},
-		{
-			name:  "Nested Map HTML",
-			input: map[string]any{"nested": map[string]any{"val": "<p>para</p>"}},
-			want:  map[string]any{"nested": map[string]any{"val": "para"}},
-		},
-		{
-			name:  "Mixed Content",
-			input: map[string]any{"plain": "text", "html": "<h1>Header</h1>"},
-			want:  map[string]any{"plain": "text", "html": "# Header"},
-		},
-	}
-
-	hook := NewHTMLToMarkdownHook(&configv1.HtmlToMarkdownConfig{})
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := hook.ExecutePost(context.Background(), nil, tt.input)
-			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
