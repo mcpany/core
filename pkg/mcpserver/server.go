@@ -169,6 +169,8 @@ func NewServer(
 
 	s.server.AddReceivingMiddleware(s.routerMiddleware)
 	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
+	s.server.AddReceivingMiddleware(s.resourceListFilteringMiddleware)
+	s.server.AddReceivingMiddleware(s.promptListFilteringMiddleware)
 
 	return s, nil
 }
@@ -439,4 +441,86 @@ func (s *Server) Reload() error {
 		return s.reloadFunc()
 	}
 	return nil
+}
+
+func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(
+		ctx context.Context,
+		method string,
+		req mcp.Request,
+	) (mcp.Result, error) {
+		if method == consts.MethodResourcesList {
+			managedResources := s.resourceManager.ListResources()
+			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
+
+			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+
+			for _, resourceInstance := range managedResources {
+				// Profile-based filtering
+				if hasProfile {
+					serviceID := resourceInstance.Service()
+					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+						hasAccess := false
+						if len(info.Config.GetProfiles()) == 0 {
+							hasAccess = true
+						} else {
+							for _, p := range info.Config.GetProfiles() {
+								if p.GetId() == profileID {
+									hasAccess = true
+									break
+								}
+							}
+						}
+						if !hasAccess {
+							continue
+						}
+					}
+				}
+				refreshedResources = append(refreshedResources, resourceInstance.Resource())
+			}
+			return &mcp.ListResourcesResult{Resources: refreshedResources}, nil
+		}
+		return next(ctx, method, req)
+	}
+}
+
+func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(
+		ctx context.Context,
+		method string,
+		req mcp.Request,
+	) (mcp.Result, error) {
+		if method == consts.MethodPromptsList {
+			managedPrompts := s.promptManager.ListPrompts()
+			refreshedPrompts := make([]*mcp.Prompt, 0, len(managedPrompts))
+
+			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+
+			for _, promptInstance := range managedPrompts {
+				// Profile-based filtering
+				if hasProfile {
+					serviceID := promptInstance.Service()
+					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+						hasAccess := false
+						if len(info.Config.GetProfiles()) == 0 {
+							hasAccess = true
+						} else {
+							for _, p := range info.Config.GetProfiles() {
+								if p.GetId() == profileID {
+									hasAccess = true
+									break
+								}
+							}
+						}
+						if !hasAccess {
+							continue
+						}
+					}
+				}
+				refreshedPrompts = append(refreshedPrompts, promptInstance.Prompt())
+			}
+			return &mcp.ListPromptsResult{Prompts: refreshedPrompts}, nil
+		}
+		return next(ctx, method, req)
+	}
 }
