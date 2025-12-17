@@ -601,8 +601,10 @@ release: prepare
 	@for platform in $(PLATFORMS); do \
 		GOOS=$${platform%/*}; \
 		GOARCH=$${platform#*/}; \
+		EXT=""; \
+		if [ "$${GOOS}" = "windows" ]; then EXT=".exe"; fi; \
 		echo "Building for $${GOOS}/$${GOARCH}..."; \
-		CGO_ENABLED=0 GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_CMD) build $(LDFLAGS) -a -installsuffix cgo -buildvcs=false -o $(RELEASE_DIR)/server-$${GOOS}-$${GOARCH} ./cmd/server; \
+		CGO_ENABLED=0 GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_CMD) build $(LDFLAGS) -a -installsuffix cgo -buildvcs=false -o $(RELEASE_DIR)/server-$${GOOS}-$${GOARCH}$${EXT} ./cmd/server; \
 	done
 	@echo "Release binaries are in $(RELEASE_DIR)"
 
