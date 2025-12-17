@@ -8,18 +8,45 @@ The primary goal of **MCP Any** is to eliminate the requirement to implement, co
 
 Traditionally, if you wanted to expose an API as an MCP tool, you would need to write a specific server wrapper for it. With MCP Any, you can achieve this using **pure configuration**.
 
-## Core Philosophy
+## ❓ Philosophy: Configuration over Code
 
-1.  **Configuration-First**: Users can create MCP server tools, resources, and prompts with just configuration files (YAML/JSON).
-2.  **Unified Runtime**: Instead of managing a dozen separate processes (one for each tool), run a single `mcpany` instance. It handles all your connections—gRPC, HTTP, stdio—in one efficient process.
-3.  **Shareability**: Configurations can be easily shared publicly. This means the community can exchange "connectors" for various services without passing around opaque binaries or requiring complex build environments.
-4.  **Local & Secure**: By running MCP Any locally, you keep your sensitive API keys and data within your own environment. You don't risk leaking information to a remote proxy service just to convert an API call to MCP.
+We believe you shouldn't have to write and maintain new code just to expose an existing API to your AI assistant.
 
-## How It Works
+- **Metamcp / Onemcp vs. MCP Any**: While other tools might proxy existing MCP servers (aggregator pattern), **MCP Any** creates them from scratch using your existing upstream APIs.
+- **No More "Sidecar hell"**: Instead of running 10 different containers for 10 different tools, run 1 `mcpany` container loaded with 10 config files.
+- **Ops Friendly**: Centralize authentication, rate limiting, and observability in one robust layer.
 
-MCP Any acts as a versatile server that interprets your configurations and dynamically "becomes" the MCP server you need. It supports a wide range of upstream services, including gRPC, RESTful APIs (via OpenAPI), generic HTTP services, and command-line tools.
+### Comparison with Traditional MCP Servers
 
-The service exposes two main APIs:
+Unlike traditional "Wrapper" MCP servers (like `mcp-server-postgres`, `mcp-server-github`, etc.) which are compiled binaries dedicated to a single service, **MCP Any** is a generic runtime.
 
-- **MCP Router API**: This API allows clients to list and execute the tools that have been registered with the MCP Any server.
-- **Registration API**: This API allows backend services to register themselves with the MCP Any server, making their capabilities available as tools.
+| Feature           | Traditional MCP Server (e.g., `mcp-server-postgres`)                    | MCP Any                                                                         |
+| :---------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
+| **Architecture**  | **Code-Driven Wrapper**: Wraps internal API calls with MCP annotations. | **Config-Driven Adapter**: Maps existing API endpoints to MCP tools via config. |
+| **Deployment**    | **1 Binary per Service**: Need 10 different binaries for 10 services.   | **1 Binary for All**: One `mcpany` binary handles N services.                   |
+| **Updates**       | **Recompile & Redistribute**: Internal API change = New Binary release. | **Update Config**: API change = Edit YAML/JSON file & reload.                   |
+| **Maintenance**   | **High**: Manage dependencies/versions for N projects.                  | **Low**: Upgrade one core server; just swap config files.                       |
+| **Extensibility** | Write code (TypeScript/Python/Go).                                      | Write JSON/YAML.                                                                |
+
+Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature—zero downtime, zero recompilation.
+
+## ✨ Key Features
+
+- **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL—MCP Any handles the rest (no manual tool definition required).
+- **Multiple Service Types**: Supports a wide range of service types, including:
+  - **gRPC**: Register services from `.proto` files or by using gRPC reflection.
+  - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
+  - **HTTP**: Expose any HTTP endpoint as a tool.
+  - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
+- **Advanced Service & Safety Policies**:
+  - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
+  - **Performance**: Configure [Caching](features/caching/README.md) and Rate Limiting to optimize performance and protect upstream services.
+- **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
+- **Upstream Authentication**: Securely connect to your backend services using:
+  - **API Keys**
+  - **Bearer Tokens**
+  - **Basic Auth**
+  - **mTLS**
+- **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
+- **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
+- **Extensible**: Designed to be easily extended with new service types and capabilities.

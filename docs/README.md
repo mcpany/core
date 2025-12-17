@@ -9,13 +9,24 @@ Whether you are a developer looking to integrate your services, an operator depl
 If you are new to `mcpany`, we recommend starting here.
 
 - **[Introduction](introduction.md)**: What is `mcpany` and why should you use it?
-- **[Getting Started Guide](getting_started.md)**: A step-by-step tutorial to get `mcpany` up and running.
 
 ## 🧠 Core Concepts
 
 Understand the foundational principles and design of `mcpany`.
 
 - **[Architecture](architecture.md)**: A deep dive into the internal architecture of the `mcpany` server.
+
+## ✨ Features
+
+- **[Authentication](features/authentication/README.md)**: Secure your server and upstream connections.
+- **[Caching](features/caching/README.md)**: Improve performance with response caching.
+- **[Webhooks](features/webhooks/README.md)**: Intercept and modify tool executions.
+- **[Connection Pooling](features/connection-pooling/README.md)**: Manage upstream connections efficiently.
+- **[Rate Limiting](features/rate-limiting/README.md)**: Protect upstream services.
+- **[Resilience](features/resilience/README.md)**: Circuit breakers and retries.
+- **[Monitoring](features/monitoring/README.md)**: Metrics and observability.
+- **[Profiles](features/profiles/README.md)**: Environment-specific configurations.
+- **[Prompts](features/prompts/README.md)**: Reusable prompts for AI interactions.
 
 ## 🔌 Integrations
 
