@@ -25,7 +25,7 @@ Understand the foundational principles and design of `mcpany`.
 - **[Rate Limiting](features/rate-limiting/README.md)**: Protect upstream services.
 - **[Resilience](features/resilience/README.md)**: Circuit breakers and retries.
 - **[Monitoring](features/monitoring/README.md)**: Metrics and observability.
-- **[Profiles](features/profiles/README.md)**: Environment-specific configurations.
+- **[Profiles](features/profiles_and_policies/README.md)**: Environment-specific configurations.
 - **[Prompts](features/prompts/README.md)**: Reusable prompts for AI interactions.
 
 ## 🔌 Integrations
