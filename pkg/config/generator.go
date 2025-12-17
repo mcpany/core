@@ -29,12 +29,12 @@ func NewGenerator() *Generator {
 // configuration as a byte slice. It supports multiple service types including
 // HTTP, gRPC, OpenAPI, and GraphQL.
 func (g *Generator) Generate() ([]byte, error) {
-	serviceType, err := g.prompt("Enter service type (http, grpc, openapi, graphql): ")
+	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
 		return nil, err
 	}
 
-	switch serviceType {
+	switch strings.ToLower(serviceType) {
 	case "http":
 		return g.generateHTTPService()
 	case "grpc":
@@ -55,6 +55,39 @@ func (g *Generator) prompt(prompt string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
+}
+
+// promptBool prompts the user for a boolean value.
+// It accepts "true", "t", "yes", "y" as true, and "false", "f", "no", "n" as false.
+// It is case-insensitive.
+func (g *Generator) promptBool(prompt string, defaultValue bool) (bool, error) {
+	defStr := "y"
+	if !defaultValue {
+		defStr = "n"
+	}
+	// append default to prompt
+	fullPrompt := fmt.Sprintf("%s [%s]: ", prompt, defStr)
+
+	for {
+		input, err := g.prompt(fullPrompt)
+		if err != nil {
+			return false, err
+		}
+
+		if input == "" {
+			return defaultValue, nil
+		}
+
+		lower := strings.ToLower(input)
+		switch lower {
+		case "true", "t", "yes", "y":
+			return true, nil
+		case "false", "f", "no", "n":
+			return false, nil
+		default:
+			fmt.Println("❌ Invalid input. Please enter 'y' or 'n'.")
+		}
+	}
 }
 
 const httpServiceTemplate = `upstreamServices:
@@ -82,32 +115,32 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 	data := HTTPServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("🏷️  Enter service name: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("🔗 Enter service address: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.OperationID, err = g.prompt("Enter operation ID: ")
+	data.OperationID, err = g.prompt("🆔 Enter operation ID: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.Description, err = g.prompt("Enter description: ")
+	data.Description, err = g.prompt("📝 Enter description: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.Method, err = g.prompt("Enter HTTP method (e.g., HTTP_METHOD_GET): ")
+	data.Method, err = g.prompt("📡 Enter HTTP method (e.g., HTTP_METHOD_GET): ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.EndpointPath, err = g.prompt("Enter endpoint path: ")
+	data.EndpointPath, err = g.prompt("🛣️  Enter endpoint path: ")
 	if err != nil {
 		return nil, err
 	}
@@ -144,30 +177,19 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 	data := GRPCServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("🏷️  Enter service name: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("🔗 Enter service address: ")
 	if err != nil {
 		return nil, err
 	}
 
-	for {
-		reflectionEnabled, err := g.prompt("Enable reflection (true/false): ")
-		if err != nil {
-			return nil, err
-		}
-		if reflectionEnabled == "true" {
-			data.ReflectionEnabled = true
-			break
-		}
-		if reflectionEnabled == "false" {
-			data.ReflectionEnabled = false
-			break
-		}
-		fmt.Println("Invalid input. Please enter 'true' or 'false'.")
+	data.ReflectionEnabled, err = g.promptBool("🪞 Enable reflection", true)
+	if err != nil {
+		return nil, err
 	}
 
 	tmpl, err := template.New("grpcService").Parse(grpcServiceTemplate)
@@ -200,12 +222,12 @@ func (g *Generator) generateOpenAPIService() ([]byte, error) {
 	data := OpenAPIServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("🏷️  Enter service name: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.SpecPath, err = g.prompt("Enter OpenAPI spec path: ")
+	data.SpecPath, err = g.prompt("📂 Enter OpenAPI spec path: ")
 	if err != nil {
 		return nil, err
 	}
@@ -244,22 +266,22 @@ func (g *Generator) generateGraphQLService() ([]byte, error) {
 	data := GraphQLServiceData{}
 	var err error
 
-	data.Name, err = g.prompt("Enter service name: ")
+	data.Name, err = g.prompt("🏷️  Enter service name: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.Address, err = g.prompt("Enter service address: ")
+	data.Address, err = g.prompt("🔗 Enter service address: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.CallName, err = g.prompt("Enter call name: ")
+	data.CallName, err = g.prompt("📞 Enter call name: ")
 	if err != nil {
 		return nil, err
 	}
 
-	data.SelectionSet, err = g.prompt("Enter selection set: ")
+	data.SelectionSet, err = g.prompt("📋 Enter selection set: ")
 	if err != nil {
 		return nil, err
 	}
