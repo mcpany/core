@@ -31,7 +31,7 @@ repos:
         exclude: ^vendor/
     -   id: helm-lint
         name: helm-lint
-        entry: helm lint helm/mcpany
+        entry: ./build/env/bin/helm lint helm/mcpany
         language: system
         files: ^helm/
         pass_filenames: false
