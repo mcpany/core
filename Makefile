@@ -1,16 +1,3 @@
-# Copyright 2025 Author(s) of MCP Any
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 # Makefile
 
@@ -182,7 +169,7 @@ prepare:
 	fi
 	@if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
 		INSTALLED_VER=$$($(PROTOC_GEN_GO_GRPC) --version | awk '{print $$2}'); \
-		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
+		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ] && [ "v$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
 			echo "protoc-gen-go-grpc version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_GRPC_VERSION). Re-installing..."; \
 			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
 		fi; \
@@ -347,7 +334,7 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v2.7.2"); \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "2.7.2"); \
 	if test -f "$(GOLANGCI_LINT_BIN)" && [ -n "$$LINT_VER_CHECK" ]; then \
 		echo "golangci-lint v2.7.2 is already installed."; \
 	else \
@@ -361,11 +348,7 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
-	@echo "Current GOPATH: $$(go env GOPATH)"
-	@echo "Setting GOPATH to $(TOOL_INSTALL_DIR)/go"
-	@export GOPATH=$(TOOL_INSTALL_DIR)/go && \
-	export GOPATH=$(TOOL_INSTALL_DIR)/go && \
-	echo "Downloading go modules..." && \
+	@echo "Downloading go modules..." && \
 	go mod download
 	@echo "Preparation complete."
 
@@ -464,6 +447,7 @@ else
 	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH && \
 	export PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit && \
 	export GOLANGCI_LINT_CACHE=$(CURDIR)/build/.cache/golangci-lint && \
+	export GOWORK=off && \
 	pre-commit run --all-files
 endif
 
@@ -478,11 +462,12 @@ endif
 
 .PHONY: fix-license-header
 fix-license-header:
-	@echo "Removing license headers..."
-	@$(GO_CMD) run tools/license-header-remover/main.go
-	@echo "Running make lint to restore headers..."
-	@$(MAKE) lint
-
+	@echo "Fixing license headers..."
+	@echo "Step 1: Removing existing headers..."
+	@$(GO_CMD) run tools/license/remove.go
+	@echo "Step 2: Adding correct headers via pre-commit..."
+	@export GOWORK=off && pre-commit run addlicense --all-files || true
+.PHONY: clean-protos
 clean-protos:
 	@echo "Cleaning generated protobuf files..."
 	@-find . \( -name ".cache" -o -name "build" \) -prune -o -name "*.pb.go" -type f -exec rm -f {} +

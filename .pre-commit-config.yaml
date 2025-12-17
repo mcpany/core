@@ -14,14 +14,15 @@ repos:
         exclude: ^tests/tls/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: local
+-   repo: https://github.com/golangci/golangci-lint
+    rev: v2.7.2
     hooks:
     -   id: golangci-lint
-        name: golangci-lint
-        entry: ./build/env/bin/golangci-lint run --fix ./...
-        language: system
-        types: [go]
+        args: [--fix, --allow-parallel-runners]
         pass_filenames: false
+        exclude: ^build/
+-   repo: local
+    hooks:
     -   id: shellcheck
         name: shellcheck
         entry: shellcheck
@@ -34,6 +35,22 @@ repos:
         language: system
         files: ^helm/
         pass_filenames: false
+-   repo: https://github.com/google/addlicense
+    rev: v1.2.0
+    hooks:
+    -   id: addlicense
+        args:
+            - -c
+            - "Author(s) of MCP Any"
+            - -l
+            - apache
+            - -ignore
+            - "build/**"
+            - -ignore
+            - "vendor/**"
+            - -ignore
+            - "**/*.pb.go"
+            - -s=only
 -   repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.31.1
     hooks:
