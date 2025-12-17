@@ -111,10 +111,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
       run: |
@@ -205,10 +205,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -307,10 +307,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -409,10 +409,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: build/env/bin
-        key: ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+        key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
         restore-keys: |
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-          ${{ runner.os }}-tools-${{ steps.get-date.outputs.week }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+          ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
