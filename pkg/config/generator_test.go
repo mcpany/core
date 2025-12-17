@@ -56,6 +56,60 @@ func TestGenerator_Generate(t *testing.T) {
 `,
 		},
 		{
+			name: "gRPC Service with 'y' input",
+			inputs: []string{
+				"grpc",
+				"test-grpc-y",
+				"localhost:50051",
+				"y",
+			},
+			expected: `upstreamServices:
+  - name: "test-grpc-y"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: true
+`,
+		},
+		{
+			name: "gRPC Service with 'N' input",
+			inputs: []string{
+				"grpc",
+				"test-grpc-n",
+				"localhost:50051",
+				"N",
+			},
+			expected: `upstreamServices:
+  - name: "test-grpc-n"
+    grpcService:
+      address: "localhost:50051"
+      reflection:
+        enabled: false
+`,
+		},
+		{
+			name: "HTTP Service Uppercase Type",
+			inputs: []string{
+				"HTTP",
+				"test-http-upper",
+				"http://localhost:8080",
+				"get_user",
+				"Get user by ID",
+				"HTTP_METHOD_GET",
+				"/users/{userId}",
+			},
+			expected: `upstreamServices:
+  - name: "test-http-upper"
+    httpService:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+`,
+		},
+		{
 			name: "gRPC Service with reflection disabled",
 			inputs: []string{
 				"grpc",
