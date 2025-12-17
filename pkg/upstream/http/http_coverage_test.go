@@ -5,7 +5,11 @@ package http
 
 import (
 	"context"
+	"errors"
 	"testing"
+	"time"
+
+	"github.com/mcpany/core/pkg/client"
 
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -336,4 +340,187 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
+}
+
+func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewManager(nil)
+	upstream := NewUpstream(pm)
+
+	configJSON := `{
+		"name": "pool-fail-service",
+		"http_service": {
+			"address": "http://localhost"
+		}
+	}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	// Mock NewHTTPPool to fail
+	originalNewHTTPPool := NewHTTPPool
+	defer func() { NewHTTPPool = originalNewHTTPPool }()
+
+	NewHTTPPool = func(_, _ int, _ time.Duration, _ *configv1.UpstreamServiceConfig) (pool.Pool[*client.HTTPClientWrapper], error) {
+		return nil, errors.New("mock pool creation failed")
+	}
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "mock pool creation failed")
+}
+
+func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
+	pm := pool.NewManager()
+	upstream := NewUpstream(pm)
+
+	// We need a service with tools to test linking
+	configJSON := `{
+		"name": "resource-error-service",
+		"http_service": {
+			"address": "http://localhost",
+			"tools": [
+				{"name": "tool1", "call_id": "call1"}
+			],
+			"calls": {
+				"call1": {"id": "call1", "method": "HTTP_METHOD_GET"}
+			},
+			"resources": [
+				{
+					"name": "res-missing-call",
+					"uri": "http://res1",
+					"dynamic": {}
+				},
+				{
+					"name": "res-unknown-call",
+					"uri": "http://res2",
+					"dynamic": {"http_call": {"id": "unknown-call"}}
+				},
+				{
+					"name": "res-tool-not-found",
+					"uri": "http://res3",
+					"dynamic": {"http_call": {"id": "call1"}}
+				}
+			]
+		}
+	}`
+	// Note: for res-tool-not-found, we need "call1" to be in config, so it maps to "tool1",
+	// but we will trick the toolManager to NOT have "tool1" registered, or failing `GetTool`.
+	// Actually `Register` calls `createAndRegisterHTTPTools` first, which registers tools.
+	// So `tool1` WILL be registered.
+	// To trigger "Tool not found for dynamic resource", we might need to simulate `toolManager.GetTool` failure.
+	// Or we can use `call-dynamic` which doesn't have a tool definition but is in calls?
+	// If it's not in `tools` list, it won't be registered unless auto-discover is on.
+	// If it's not in `tools` list, `callIDToName` won't have it. -> "tool not found for dynamic resource" log and continue. (Line 364 in http.go)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	// Mock tool manager to control GetTool?
+	// The standard `tool.NewManager` works fine.
+	// For `res-tool-not-found`:
+	// If we provide a call that IS in `tools` (so callIDToName has it),
+	// but for some reason `toolManager.GetTool` returns false.
+	// `createAndRegisterHTTPTools` adds tools to manager.
+	// If we want it to fail look up, maybe we can delete it from manager concurrently? No, standard logic is synchronous.
+	// Actually, `callIDToName` is built from `httpService.GetTools()`.
+	// `discoveredTools` are added to `toolManager`.
+	// If we have a tool in `httpService.GetTools()` but `AddTool` fails?
+	// We can use a mock tool manager again if we want precise control.
+
+	// Let's use `NewMockToolManager` from `http_test.go` if we can import/access it?
+	// It's in `http_test.go`, same package, but not exported. `http_coverage_test.go` is same package `http`.
+	// So we can use `newMockToolManager`.
+
+	mockTm := newMockToolManager()
+
+	// For `res-missing-call`: dynamic with nil http_call. Handled?
+	// Proto `GetHttpCall()` returns nil if missing. Code: `if call == nil { continue }`
+
+	// For `res-unknown-call`: `unknown-call` not in `callIDToName`. -> "tool not found for dynamic resource" (id error).
+
+	// For `res-tool-not-found`:
+	// We want `call1` -> `tool1` in `callIDToName`.
+	// But `toolManager.GetTool(serviceID + ".tool1")` to return false.
+	// `createAndRegisterHTTPTools` adds it to `mockTm`.
+	// We can make `mockTm` fail `GetTool` for specific name?
+	// Or we can make `AddTool` fail so it never gets added?
+	// If `AddTool` fails, `discoveredTools` won't have it. `callIDToName` WILL have it (it comes from config).
+	// So `callIDToName["call1"]` = "tool1".
+	// `toolManager.GetTool` will fail.
+
+	mockTm.addError = errors.New("failed to add tool")
+	// This will cause all tools to fail addition.
+
+	rm := resource.NewManager()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
+	require.NoError(t, err)
+
+	// Verify resources were skipped
+	// "res-missing-call" -> skipped (continue)
+	// "res-unknown-call" -> skipped (log error)
+	// "res-tool-not-found" -> skipped (log error because tool1 not added)
+
+	assert.Empty(t, rm.ListResources())
+}
+
+func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewManager(nil)
+	upstream := NewUpstream(pm)
+	promptManager := prompt.NewManager()
+
+	configJSON := `{
+		"name": "prompt-export-test",
+		"http_service": {
+			"address": "http://localhost",
+			"prompts": [
+				{"name": "p-default-allow", "disable": false},
+				{"name": "p-default-deny", "disable": false},
+				{"name": "p-explicit-allow", "disable": false},
+				{"name": "p-explicit-deny", "disable": false}
+			]
+		},
+		"prompt_export_policy": {
+			"rules": [
+				{"name_regex": "p-explicit-allow", "action": "EXPORT"},
+				{"name_regex": "p-explicit-deny", "action": "UNEXPORT"}
+			],
+			"default_action": "UNEXPORT"
+		}
+	}`
+	// Wait, if default is UNEXPORT, p-default-allow (intended) will be unexported.
+	// My naming is confusing.
+
+	// Let's test standard case:
+	// - p-export: matches EXPORT rule
+	// - p-unexport: matches UNEXPORT rule
+	// - p-residue: falls invalid default (UNEXPORT)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, nil, false)
+	require.NoError(t, err)
+
+	// p-explicit-allow -> Should be present
+	// p-explicit-deny -> Should be absent
+	// p-default-allow/deny -> Should be absent because default is UNEXPORT
+
+	prompts := promptManager.ListPrompts()
+	// Depending on earlier tests, promptManager might be empty.
+	// Name includes service ID.
+
+	foundAllow := false
+	foundDeny := false
+	for _, p := range prompts {
+		if p.Prompt().Name == "prompt-export-test.p-explicit-allow" {
+			foundAllow = true
+		}
+		if p.Prompt().Name == "prompt-export-test.p-explicit-deny" {
+			foundDeny = true
+		}
+	}
+	assert.True(t, foundAllow, "Explicit allow should be exported")
+	assert.False(t, foundDeny, "Explicit deny should be unexported")
 }
