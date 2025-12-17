@@ -91,6 +91,7 @@ Contains server-wide operational parameters.
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
 | `api_key`            | `string`     | The API key for securing the MCP server.                                      |
+| `allowed_ips`        | `repeated string` | The list of allowed IP addresses or CIDR ranges.                         |
 
 ### Use Case and Example
 

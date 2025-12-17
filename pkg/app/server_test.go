@@ -852,7 +852,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -917,6 +917,90 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	if lis != nil {
 		_ = lis.Close()
 	}
+}
+
+func TestRun_IPAllowlist(t *testing.T) {
+	// 1. Test Blocking
+	t.Run("Block Localhost", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Configure allowlist to something that is NOT localhost
+		configContent := `
+global_settings:
+  allowed_ips:
+    - "10.0.0.1"
+upstream_services: []
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		app := NewApplication()
+		l, err := net.Listen("tcp", "127.0.0.1:0") // Force IPv4 to ensure RemoteAddr matches
+		require.NoError(t, err)
+		addr := l.Addr().String()
+		_ = l.Close()
+
+		errChan := make(chan error, 1)
+		go func() {
+			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
+		}()
+
+		waitForServerReady(t, addr)
+
+		// Make a request
+		resp, err := http.Get("http://" + addr + "/healthz")
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+
+		// Should be Forbidden
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+
+		cancel()
+		<-errChan
+	})
+
+	// 2. Test Allowing
+	t.Run("Allow Localhost", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Configure allowlist to include localhost
+		configContent := `
+global_settings:
+  allowed_ips:
+    - "127.0.0.1"
+upstream_services: []
+`
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		require.NoError(t, err)
+
+		app := NewApplication()
+		l, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		addr := l.Addr().String()
+		_ = l.Close()
+
+		errChan := make(chan error, 1)
+		go func() {
+			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
+		}()
+
+		waitForServerReady(t, addr)
+
+		// Make a request
+		resp, err := http.Get("http://" + addr + "/healthz")
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+
+		// Should be OK
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		cancel()
+		<-errChan
+	})
 }
 
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
@@ -1333,7 +1417,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	require.NoError(t, err)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1982,7 +2066,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil)
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil)
 	}()
 
 	select {

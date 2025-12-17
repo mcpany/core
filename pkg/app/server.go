@@ -320,7 +320,7 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers())
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetAllowedIps())
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -504,6 +504,7 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
+	allowedIPs []string,
 ) error {
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -800,7 +801,16 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, mux, shutdownTimeout)
+	// Initialize IP Allowlist Middleware
+	ipAllowlistMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
+	if err != nil {
+		return fmt.Errorf("failed to initialize IP allowlist middleware: %w", err)
+	}
+
+	// Wrap the mux with the IP allowlist middleware
+	handlerToServe := ipAllowlistMiddleware.Handler(mux)
+
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, handlerToServe, shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
