@@ -78,6 +78,7 @@ type SecretValue struct {
 	//	*SecretValue_FilePath
 	//	*SecretValue_RemoteContent
 	//	*SecretValue_Vault
+	//	*SecretValue_AwsSecretManager
 	Value         isSecretValue_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -160,6 +161,15 @@ func (x *SecretValue) GetVault() *VaultSecret {
 	return nil
 }
 
+func (x *SecretValue) GetAwsSecretManager() *AwsSecretManagerSecret {
+	if x != nil {
+		if x, ok := x.Value.(*SecretValue_AwsSecretManager); ok {
+			return x.AwsSecretManager
+		}
+	}
+	return nil
+}
+
 func (x *SecretValue) SetPlainText(v string) {
 	x.Value = &SecretValue_PlainText{v}
 }
@@ -186,6 +196,14 @@ func (x *SecretValue) SetVault(v *VaultSecret) {
 		return
 	}
 	x.Value = &SecretValue_Vault{v}
+}
+
+func (x *SecretValue) SetAwsSecretManager(v *AwsSecretManagerSecret) {
+	if v == nil {
+		x.Value = nil
+		return
+	}
+	x.Value = &SecretValue_AwsSecretManager{v}
 }
 
 func (x *SecretValue) HasValue() bool {
@@ -235,6 +253,14 @@ func (x *SecretValue) HasVault() bool {
 	return ok
 }
 
+func (x *SecretValue) HasAwsSecretManager() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.Value.(*SecretValue_AwsSecretManager)
+	return ok
+}
+
 func (x *SecretValue) ClearValue() {
 	x.Value = nil
 }
@@ -269,12 +295,19 @@ func (x *SecretValue) ClearVault() {
 	}
 }
 
+func (x *SecretValue) ClearAwsSecretManager() {
+	if _, ok := x.Value.(*SecretValue_AwsSecretManager); ok {
+		x.Value = nil
+	}
+}
+
 const SecretValue_Value_not_set_case case_SecretValue_Value = 0
 const SecretValue_PlainText_case case_SecretValue_Value = 1
 const SecretValue_EnvironmentVariable_case case_SecretValue_Value = 2
 const SecretValue_FilePath_case case_SecretValue_Value = 3
 const SecretValue_RemoteContent_case case_SecretValue_Value = 4
 const SecretValue_Vault_case case_SecretValue_Value = 5
+const SecretValue_AwsSecretManager_case case_SecretValue_Value = 6
 
 func (x *SecretValue) WhichValue() case_SecretValue_Value {
 	if x == nil {
@@ -291,6 +324,8 @@ func (x *SecretValue) WhichValue() case_SecretValue_Value {
 		return SecretValue_RemoteContent_case
 	case *SecretValue_Vault:
 		return SecretValue_Vault_case
+	case *SecretValue_AwsSecretManager:
+		return SecretValue_AwsSecretManager_case
 	default:
 		return SecretValue_Value_not_set_case
 	}
@@ -305,6 +340,7 @@ type SecretValue_builder struct {
 	FilePath            *string
 	RemoteContent       *RemoteContent
 	Vault               *VaultSecret
+	AwsSecretManager    *AwsSecretManagerSecret
 	// -- end of Value
 }
 
@@ -326,6 +362,9 @@ func (b0 SecretValue_builder) Build() *SecretValue {
 	}
 	if b.Vault != nil {
 		x.Value = &SecretValue_Vault{b.Vault}
+	}
+	if b.AwsSecretManager != nil {
+		x.Value = &SecretValue_AwsSecretManager{b.AwsSecretManager}
 	}
 	return m0
 }
@@ -364,6 +403,10 @@ type SecretValue_Vault struct {
 	Vault *VaultSecret `protobuf:"bytes,5,opt,name=vault,oneof"`
 }
 
+type SecretValue_AwsSecretManager struct {
+	AwsSecretManager *AwsSecretManagerSecret `protobuf:"bytes,6,opt,name=aws_secret_manager,json=awsSecretManager,oneof"`
+}
+
 func (*SecretValue_PlainText) isSecretValue_Value() {}
 
 func (*SecretValue_EnvironmentVariable) isSecretValue_Value() {}
@@ -373,6 +416,214 @@ func (*SecretValue_FilePath) isSecretValue_Value() {}
 func (*SecretValue_RemoteContent) isSecretValue_Value() {}
 
 func (*SecretValue_Vault) isSecretValue_Value() {}
+
+func (*SecretValue_AwsSecretManager) isSecretValue_Value() {}
+
+// AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager.
+type AwsSecretManagerSecret struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name or ARN of the secret.
+	SecretId *string `protobuf:"bytes,1,opt,name=secret_id" json:"secret_id,omitempty"`
+	// Optional: The key to extract from the secret JSON.
+	JsonKey *string `protobuf:"bytes,2,opt,name=json_key" json:"json_key,omitempty"`
+	// Optional: The version stage (defaults to AWSCURRENT).
+	VersionStage *string `protobuf:"bytes,3,opt,name=version_stage" json:"version_stage,omitempty"`
+	// Optional: The version ID.
+	VersionId *string `protobuf:"bytes,4,opt,name=version_id" json:"version_id,omitempty"`
+	// Optional: The region. If not set, uses environment or profile.
+	Region *string `protobuf:"bytes,5,opt,name=region" json:"region,omitempty"`
+	// Optional: Profile to use.
+	Profile       *string `protobuf:"bytes,6,opt,name=profile" json:"profile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AwsSecretManagerSecret) Reset() {
+	*x = AwsSecretManagerSecret{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AwsSecretManagerSecret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AwsSecretManagerSecret) ProtoMessage() {}
+
+func (x *AwsSecretManagerSecret) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AwsSecretManagerSecret) GetSecretId() string {
+	if x != nil && x.SecretId != nil {
+		return *x.SecretId
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) GetJsonKey() string {
+	if x != nil && x.JsonKey != nil {
+		return *x.JsonKey
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) GetVersionStage() string {
+	if x != nil && x.VersionStage != nil {
+		return *x.VersionStage
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) GetVersionId() string {
+	if x != nil && x.VersionId != nil {
+		return *x.VersionId
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) GetRegion() string {
+	if x != nil && x.Region != nil {
+		return *x.Region
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) GetProfile() string {
+	if x != nil && x.Profile != nil {
+		return *x.Profile
+	}
+	return ""
+}
+
+func (x *AwsSecretManagerSecret) SetSecretId(v string) {
+	x.SecretId = &v
+}
+
+func (x *AwsSecretManagerSecret) SetJsonKey(v string) {
+	x.JsonKey = &v
+}
+
+func (x *AwsSecretManagerSecret) SetVersionStage(v string) {
+	x.VersionStage = &v
+}
+
+func (x *AwsSecretManagerSecret) SetVersionId(v string) {
+	x.VersionId = &v
+}
+
+func (x *AwsSecretManagerSecret) SetRegion(v string) {
+	x.Region = &v
+}
+
+func (x *AwsSecretManagerSecret) SetProfile(v string) {
+	x.Profile = &v
+}
+
+func (x *AwsSecretManagerSecret) HasSecretId() bool {
+	if x == nil {
+		return false
+	}
+	return x.SecretId != nil
+}
+
+func (x *AwsSecretManagerSecret) HasJsonKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.JsonKey != nil
+}
+
+func (x *AwsSecretManagerSecret) HasVersionStage() bool {
+	if x == nil {
+		return false
+	}
+	return x.VersionStage != nil
+}
+
+func (x *AwsSecretManagerSecret) HasVersionId() bool {
+	if x == nil {
+		return false
+	}
+	return x.VersionId != nil
+}
+
+func (x *AwsSecretManagerSecret) HasRegion() bool {
+	if x == nil {
+		return false
+	}
+	return x.Region != nil
+}
+
+func (x *AwsSecretManagerSecret) HasProfile() bool {
+	if x == nil {
+		return false
+	}
+	return x.Profile != nil
+}
+
+func (x *AwsSecretManagerSecret) ClearSecretId() {
+	x.SecretId = nil
+}
+
+func (x *AwsSecretManagerSecret) ClearJsonKey() {
+	x.JsonKey = nil
+}
+
+func (x *AwsSecretManagerSecret) ClearVersionStage() {
+	x.VersionStage = nil
+}
+
+func (x *AwsSecretManagerSecret) ClearVersionId() {
+	x.VersionId = nil
+}
+
+func (x *AwsSecretManagerSecret) ClearRegion() {
+	x.Region = nil
+}
+
+func (x *AwsSecretManagerSecret) ClearProfile() {
+	x.Profile = nil
+}
+
+type AwsSecretManagerSecret_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The name or ARN of the secret.
+	SecretId *string
+	// Optional: The key to extract from the secret JSON.
+	JsonKey *string
+	// Optional: The version stage (defaults to AWSCURRENT).
+	VersionStage *string
+	// Optional: The version ID.
+	VersionId *string
+	// Optional: The region. If not set, uses environment or profile.
+	Region *string
+	// Optional: Profile to use.
+	Profile *string
+}
+
+func (b0 AwsSecretManagerSecret_builder) Build() *AwsSecretManagerSecret {
+	m0 := &AwsSecretManagerSecret{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.SecretId = b.SecretId
+	x.JsonKey = b.JsonKey
+	x.VersionStage = b.VersionStage
+	x.VersionId = b.VersionId
+	x.Region = b.Region
+	x.Profile = b.Profile
+	return m0
+}
 
 // VaultSecret defines the parameters for fetching a secret from HashiCorp Vault.
 type VaultSecret struct {
@@ -391,7 +642,7 @@ type VaultSecret struct {
 
 func (x *VaultSecret) Reset() {
 	*x = VaultSecret{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -403,7 +654,7 @@ func (x *VaultSecret) String() string {
 func (*VaultSecret) ProtoMessage() {}
 
 func (x *VaultSecret) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[1]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -537,7 +788,7 @@ type RemoteContent struct {
 
 func (x *RemoteContent) Reset() {
 	*x = RemoteContent{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -549,7 +800,7 @@ func (x *RemoteContent) String() string {
 func (*RemoteContent) ProtoMessage() {}
 
 func (x *RemoteContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[2]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -636,7 +887,7 @@ type Authentication struct {
 
 func (x *Authentication) Reset() {
 	*x = Authentication{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -648,7 +899,7 @@ func (x *Authentication) String() string {
 func (*Authentication) ProtoMessage() {}
 
 func (x *Authentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[3]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -858,7 +1109,7 @@ func (b0 Authentication_builder) Build() *Authentication {
 type case_Authentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_Authentication_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[3].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[4].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -912,7 +1163,7 @@ type UpstreamAuthentication struct {
 
 func (x *UpstreamAuthentication) Reset() {
 	*x = UpstreamAuthentication{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -924,7 +1175,7 @@ func (x *UpstreamAuthentication) String() string {
 func (*UpstreamAuthentication) ProtoMessage() {}
 
 func (x *UpstreamAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[4]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1196,7 +1447,7 @@ func (b0 UpstreamAuthentication_builder) Build() *UpstreamAuthentication {
 type case_UpstreamAuthentication_AuthMethod protoreflect.FieldNumber
 
 func (x case_UpstreamAuthentication_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[4].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[5].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -1250,7 +1501,7 @@ type UpstreamAPIKeyAuth struct {
 
 func (x *UpstreamAPIKeyAuth) Reset() {
 	*x = UpstreamAPIKeyAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1262,7 +1513,7 @@ func (x *UpstreamAPIKeyAuth) String() string {
 func (*UpstreamAPIKeyAuth) ProtoMessage() {}
 
 func (x *UpstreamAPIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[5]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1597,7 @@ type UpstreamBearerTokenAuth struct {
 
 func (x *UpstreamBearerTokenAuth) Reset() {
 	*x = UpstreamBearerTokenAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1358,7 +1609,7 @@ func (x *UpstreamBearerTokenAuth) String() string {
 func (*UpstreamBearerTokenAuth) ProtoMessage() {}
 
 func (x *UpstreamBearerTokenAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[6]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1417,7 +1668,7 @@ type UpstreamBasicAuth struct {
 
 func (x *UpstreamBasicAuth) Reset() {
 	*x = UpstreamBasicAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1429,7 +1680,7 @@ func (x *UpstreamBasicAuth) String() string {
 func (*UpstreamBasicAuth) ProtoMessage() {}
 
 func (x *UpstreamBasicAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[7]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1513,7 +1764,7 @@ type UpstreamOAuth2Auth struct {
 
 func (x *UpstreamOAuth2Auth) Reset() {
 	*x = UpstreamOAuth2Auth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1525,7 +1776,7 @@ func (x *UpstreamOAuth2Auth) String() string {
 func (*UpstreamOAuth2Auth) ProtoMessage() {}
 
 func (x *UpstreamOAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[8]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1659,7 +1910,7 @@ type UpstreamMTLSAuth struct {
 
 func (x *UpstreamMTLSAuth) Reset() {
 	*x = UpstreamMTLSAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1671,7 +1922,7 @@ func (x *UpstreamMTLSAuth) String() string {
 func (*UpstreamMTLSAuth) ProtoMessage() {}
 
 func (x *UpstreamMTLSAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[9]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1783,7 +2034,7 @@ type AuthenticationConfig struct {
 
 func (x *AuthenticationConfig) Reset() {
 	*x = AuthenticationConfig{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1795,7 +2046,7 @@ func (x *AuthenticationConfig) String() string {
 func (*AuthenticationConfig) ProtoMessage() {}
 
 func (x *AuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[10]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1929,7 +2180,7 @@ func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
 type case_AuthenticationConfig_AuthMethod protoreflect.FieldNumber
 
 func (x case_AuthenticationConfig_AuthMethod) String() string {
-	md := file_proto_config_v1_auth_proto_msgTypes[10].Descriptor()
+	md := file_proto_config_v1_auth_proto_msgTypes[11].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -1966,7 +2217,7 @@ type APIKeyAuth struct {
 
 func (x *APIKeyAuth) Reset() {
 	*x = APIKeyAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1978,7 +2229,7 @@ func (x *APIKeyAuth) String() string {
 func (*APIKeyAuth) ProtoMessage() {}
 
 func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[11]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2090,7 +2341,7 @@ type OAuth2Auth struct {
 
 func (x *OAuth2Auth) Reset() {
 	*x = OAuth2Auth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2102,7 +2353,7 @@ func (x *OAuth2Auth) String() string {
 func (*OAuth2Auth) ProtoMessage() {}
 
 func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2250,15 +2501,25 @@ var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\x8c\x02\n" +
+	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\xe6\x02\n" +
 	"\vSecretValue\x12\x1f\n" +
 	"\n" +
 	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
 	"\x14environment_variable\x18\x02 \x01(\tH\x00R\x13environmentVariable\x12\x1d\n" +
 	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePath\x12H\n" +
 	"\x0eremote_content\x18\x04 \x01(\v2\x1f.mcpany.config.v1.RemoteContentH\x00R\rremoteContent\x125\n" +
-	"\x05vault\x18\x05 \x01(\v2\x1d.mcpany.config.v1.VaultSecretH\x00R\x05vaultB\a\n" +
-	"\x05value\"\x82\x01\n" +
+	"\x05vault\x18\x05 \x01(\v2\x1d.mcpany.config.v1.VaultSecretH\x00R\x05vault\x12X\n" +
+	"\x12aws_secret_manager\x18\x06 \x01(\v2(.mcpany.config.v1.AwsSecretManagerSecretH\x00R\x10awsSecretManagerB\a\n" +
+	"\x05value\"\xca\x01\n" +
+	"\x16AwsSecretManagerSecret\x12\x1c\n" +
+	"\tsecret_id\x18\x01 \x01(\tR\tsecret_id\x12\x1a\n" +
+	"\bjson_key\x18\x02 \x01(\tR\bjson_key\x12$\n" +
+	"\rversion_stage\x18\x03 \x01(\tR\rversion_stage\x12\x1e\n" +
+	"\n" +
+	"version_id\x18\x04 \x01(\tR\n" +
+	"version_id\x12\x16\n" +
+	"\x06region\x18\x05 \x01(\tR\x06region\x12\x18\n" +
+	"\aprofile\x18\x06 \x01(\tR\aprofile\"\x82\x01\n" +
 	"\vVaultSecret\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x123\n" +
 	"\x05token\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05token\x12\x12\n" +
@@ -2327,50 +2588,52 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\baudience\x18\a \x01(\tR\baudienceB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),        // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),             // 1: mcpany.config.v1.SecretValue
-	(*VaultSecret)(nil),             // 2: mcpany.config.v1.VaultSecret
-	(*RemoteContent)(nil),           // 3: mcpany.config.v1.RemoteContent
-	(*Authentication)(nil),          // 4: mcpany.config.v1.Authentication
-	(*UpstreamAuthentication)(nil),  // 5: mcpany.config.v1.UpstreamAuthentication
-	(*UpstreamAPIKeyAuth)(nil),      // 6: mcpany.config.v1.UpstreamAPIKeyAuth
-	(*UpstreamBearerTokenAuth)(nil), // 7: mcpany.config.v1.UpstreamBearerTokenAuth
-	(*UpstreamBasicAuth)(nil),       // 8: mcpany.config.v1.UpstreamBasicAuth
-	(*UpstreamOAuth2Auth)(nil),      // 9: mcpany.config.v1.UpstreamOAuth2Auth
-	(*UpstreamMTLSAuth)(nil),        // 10: mcpany.config.v1.UpstreamMTLSAuth
-	(*AuthenticationConfig)(nil),    // 11: mcpany.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),              // 12: mcpany.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),              // 13: mcpany.config.v1.OAuth2Auth
+	(*AwsSecretManagerSecret)(nil),  // 2: mcpany.config.v1.AwsSecretManagerSecret
+	(*VaultSecret)(nil),             // 3: mcpany.config.v1.VaultSecret
+	(*RemoteContent)(nil),           // 4: mcpany.config.v1.RemoteContent
+	(*Authentication)(nil),          // 5: mcpany.config.v1.Authentication
+	(*UpstreamAuthentication)(nil),  // 6: mcpany.config.v1.UpstreamAuthentication
+	(*UpstreamAPIKeyAuth)(nil),      // 7: mcpany.config.v1.UpstreamAPIKeyAuth
+	(*UpstreamBearerTokenAuth)(nil), // 8: mcpany.config.v1.UpstreamBearerTokenAuth
+	(*UpstreamBasicAuth)(nil),       // 9: mcpany.config.v1.UpstreamBasicAuth
+	(*UpstreamOAuth2Auth)(nil),      // 10: mcpany.config.v1.UpstreamOAuth2Auth
+	(*UpstreamMTLSAuth)(nil),        // 11: mcpany.config.v1.UpstreamMTLSAuth
+	(*AuthenticationConfig)(nil),    // 12: mcpany.config.v1.AuthenticationConfig
+	(*APIKeyAuth)(nil),              // 13: mcpany.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),              // 14: mcpany.config.v1.OAuth2Auth
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
-	3,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
-	2,  // 1: mcpany.config.v1.SecretValue.vault:type_name -> mcpany.config.v1.VaultSecret
-	1,  // 2: mcpany.config.v1.VaultSecret.token:type_name -> mcpany.config.v1.SecretValue
-	4,  // 3: mcpany.config.v1.RemoteContent.auth:type_name -> mcpany.config.v1.Authentication
-	6,  // 4: mcpany.config.v1.Authentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	7,  // 5: mcpany.config.v1.Authentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	8,  // 6: mcpany.config.v1.Authentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	9,  // 7: mcpany.config.v1.Authentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	6,  // 8: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
-	7,  // 9: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
-	8,  // 10: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
-	9,  // 11: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
-	10, // 12: mcpany.config.v1.UpstreamAuthentication.mtls:type_name -> mcpany.config.v1.UpstreamMTLSAuth
-	1,  // 13: mcpany.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpany.config.v1.SecretValue
-	1,  // 14: mcpany.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpany.config.v1.SecretValue
-	1,  // 15: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
-	1,  // 16: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
-	1,  // 17: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
-	12, // 18: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
-	13, // 19: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
-	0,  // 20: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	4,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
+	3,  // 1: mcpany.config.v1.SecretValue.vault:type_name -> mcpany.config.v1.VaultSecret
+	2,  // 2: mcpany.config.v1.SecretValue.aws_secret_manager:type_name -> mcpany.config.v1.AwsSecretManagerSecret
+	1,  // 3: mcpany.config.v1.VaultSecret.token:type_name -> mcpany.config.v1.SecretValue
+	5,  // 4: mcpany.config.v1.RemoteContent.auth:type_name -> mcpany.config.v1.Authentication
+	7,  // 5: mcpany.config.v1.Authentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
+	8,  // 6: mcpany.config.v1.Authentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
+	9,  // 7: mcpany.config.v1.Authentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
+	10, // 8: mcpany.config.v1.Authentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
+	7,  // 9: mcpany.config.v1.UpstreamAuthentication.api_key:type_name -> mcpany.config.v1.UpstreamAPIKeyAuth
+	8,  // 10: mcpany.config.v1.UpstreamAuthentication.bearer_token:type_name -> mcpany.config.v1.UpstreamBearerTokenAuth
+	9,  // 11: mcpany.config.v1.UpstreamAuthentication.basic_auth:type_name -> mcpany.config.v1.UpstreamBasicAuth
+	10, // 12: mcpany.config.v1.UpstreamAuthentication.oauth2:type_name -> mcpany.config.v1.UpstreamOAuth2Auth
+	11, // 13: mcpany.config.v1.UpstreamAuthentication.mtls:type_name -> mcpany.config.v1.UpstreamMTLSAuth
+	1,  // 14: mcpany.config.v1.UpstreamAPIKeyAuth.api_key:type_name -> mcpany.config.v1.SecretValue
+	1,  // 15: mcpany.config.v1.UpstreamBearerTokenAuth.token:type_name -> mcpany.config.v1.SecretValue
+	1,  // 16: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
+	1,  // 17: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
+	1,  // 18: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 19: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
+	14, // 20: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
+	0,  // 21: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_auth_proto_init() }
@@ -2384,21 +2647,22 @@ func file_proto_config_v1_auth_proto_init() {
 		(*SecretValue_FilePath)(nil),
 		(*SecretValue_RemoteContent)(nil),
 		(*SecretValue_Vault)(nil),
+		(*SecretValue_AwsSecretManager)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[3].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[4].OneofWrappers = []any{
 		(*Authentication_ApiKey)(nil),
 		(*Authentication_BearerToken)(nil),
 		(*Authentication_BasicAuth)(nil),
 		(*Authentication_Oauth2)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[4].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[5].OneofWrappers = []any{
 		(*UpstreamAuthentication_ApiKey)(nil),
 		(*UpstreamAuthentication_BearerToken)(nil),
 		(*UpstreamAuthentication_BasicAuth)(nil),
 		(*UpstreamAuthentication_Oauth2)(nil),
 		(*UpstreamAuthentication_Mtls)(nil),
 	}
-	file_proto_config_v1_auth_proto_msgTypes[10].OneofWrappers = []any{
+	file_proto_config_v1_auth_proto_msgTypes[11].OneofWrappers = []any{
 		(*AuthenticationConfig_ApiKey)(nil),
 		(*AuthenticationConfig_Oauth2)(nil),
 	}
@@ -2408,7 +2672,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

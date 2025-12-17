@@ -4,11 +4,16 @@
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -128,6 +133,72 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 			return "", fmt.Errorf("key %q not found in secret data at path %s", vaultSecret.GetKey(), vaultSecret.GetPath())
 		}
 		return value, nil
+	case configv1.SecretValue_AwsSecretManager_case:
+		smSecret := secret.GetAwsSecretManager()
+
+		// Load default config
+		loadOptions := []func(*config.LoadOptions) error{}
+		if smSecret.GetRegion() != "" {
+			loadOptions = append(loadOptions, config.WithRegion(smSecret.GetRegion()))
+		}
+		if smSecret.GetProfile() != "" {
+			loadOptions = append(loadOptions, config.WithSharedConfigProfile(smSecret.GetProfile()))
+		}
+
+		cfg, err := config.LoadDefaultConfig(context.TODO(), loadOptions...)
+		if err != nil {
+			return "", fmt.Errorf("failed to load aws config: %w", err)
+		}
+
+		client := secretsmanager.NewFromConfig(cfg)
+
+		input := &secretsmanager.GetSecretValueInput{
+			SecretId: aws.String(smSecret.GetSecretId()),
+		}
+		if smSecret.GetVersionId() != "" {
+			input.VersionId = aws.String(smSecret.GetVersionId())
+		}
+		if smSecret.GetVersionStage() != "" {
+			input.VersionStage = aws.String(smSecret.GetVersionStage())
+		}
+
+		// Use a custom endpoint resolver if provided (mostly for testing)
+		// Since we can't easily inject it into LoadDefaultConfig without environment vars
+		// or changing the function signature, we rely on environment variables for testing.
+		// AWS_ENDPOINT_URL is supported in newer SDK versions.
+
+		result, err := client.GetSecretValue(context.TODO(), input)
+		if err != nil {
+			return "", fmt.Errorf("failed to get secret value from aws secrets manager: %w", err)
+		}
+
+		if result.SecretString == nil {
+			// Handle binary secret? For now, we only support string.
+			return "", fmt.Errorf("secret value is not a string (binary secrets not supported)")
+		}
+
+		secretVal := *result.SecretString
+
+		if smSecret.GetJsonKey() != "" {
+			var secretMap map[string]interface{}
+			if err := json.Unmarshal([]byte(secretVal), &secretMap); err != nil {
+				return "", fmt.Errorf("failed to unmarshal secret json: %w", err)
+			}
+
+			val, ok := secretMap[smSecret.GetJsonKey()]
+			if !ok {
+				return "", fmt.Errorf("key %q not found in secret json", smSecret.GetJsonKey())
+			}
+
+			// Convert val to string
+			if strVal, ok := val.(string); ok {
+				return strVal, nil
+			}
+			// Try to convert other types to string
+			return fmt.Sprintf("%v", val), nil
+		}
+
+		return secretVal, nil
 	default:
 		return "", nil
 	}
