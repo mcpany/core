@@ -1,7 +1,12 @@
 #!/bin/bash
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+
 # This script builds and starts the MCP server with the stdio example configuration.
 
 # The path to the MCP server binary.
+
 MCP_SERVER_BIN="./build/bin/server"
 
 # Check if the MCP server binary exists.
