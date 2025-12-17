@@ -1,0 +1,23 @@
+upstream_services:
+  - name: "busybox"
+    command_line_service:
+      command: "docker"
+      tools:
+        - name: "execute_command"
+          description: "Executes a command in a busybox container"
+          call_id: "execute_command"
+      calls:
+        execute_command:
+          parameters:
+            - schema:
+                name: "command"
+                type: STRING
+                description: "The command to execute"
+                is_required: true
+          # We pass the input 'command' as the last argument
+          args: ["run", "--rm", "busybox", "sh", "-c", "{{command}}"]
+    pre_call_hooks:
+      - name: "block_rm"
+        webhook:
+          url: "http://localhost:8081/validate"
+          timeout: "1s"

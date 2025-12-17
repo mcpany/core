@@ -244,6 +244,18 @@ service_config:
       interval: "10s"
 ```
 
+##### `HttpCallDefinition`
+
+Defines how an MCP tool entry maps to a specific HTTP call.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `endpoint_path` | `string` | The API path relative to the service address (e.g., `/users`). |
+| `method` | `string` | The HTTP method (GET, POST, etc.). |
+| `timeout` | `duration` | Timeout for this specific call. |
+| `cache` | `CacheConfig` | Call-level cache configuration (overrides service default). |
+| `retry_policy` | `RetryConfig` | Call-level retry policy. |
+
 #### `OpenapiUpstreamService`
 
 | Field          | Type                                 | Description                                          |
@@ -307,6 +319,16 @@ service_config:
       is_enabled: true
       ttl: "1h"
 ```
+
+##### `CommandLineCallDefinition`
+
+Defines argument mapping for a command-line tool.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `args` | `repeated string` | Arguments to pass to the command. Supports templates (e.g. `{{arg}}`). |
+| `timeout` | `duration` | Timeout for this specific execution. |
+| `cache` | `CacheConfig` | Call-level cache configuration (overrides service default). |
 
 #### `McpUpstreamService`
 
@@ -455,6 +477,8 @@ rate_limit:
 | `is_enabled` | `bool`     | Whether caching is enabled.                                   |
 | `ttl`        | `duration` | The duration for which a cached response is considered valid. |
 
+**Priority Note:** When defined at the call level (e.g., inside `HttpCallDefinition.cache`), this configuration **overrides** the service-level cache settings.
+
 ##### Use Case and Example
 
 Cache responses from a slow, data-intensive service.
@@ -496,6 +520,67 @@ resilience:
   - `base_backoff`: The base duration for the backoff between retries.
   - `max_backoff`: The maximum duration for the backoff.
   - `max_elapsed_time`: The maximum total time to spend retrying.
+
+#### `Call Policy`
+
+Call Policies allow you to fine-tune which calls are allowed or denied based on the request's properties. These policies are evaluated before any request is forwarded to the upstream service.
+
+| Field             | Type                    | Description                                |
+| ----------------- | ----------------------- | ------------------------------------------ |
+| `default_action`  | `enum`                  | The default action if no rules match (`ALLOW` or `DENY`). |
+| `rules`           | `repeated CallPolicyRule` | A list of rules to apply. The first matching rule determines the action. |
+
+##### `CallPolicyRule`
+
+| Field            | Type     | Description                                                         |
+| ---------------- | -------- | ------------------------------------------------------------------- |
+| `action`         | `enum`   | The action to take if the rule matches (`ALLOW` or `DENY`).         |
+| `name_regex`     | `string` | Regex to match the tool or call name. Empty means match all.        |
+| `argument_regex` | `string` | Regex to match request arguments (JSON stringified). Empty means match all. |
+| `url_regex`      | `string` | Regex to match endpoint path or URL.                                |
+| `call_id_regex`  | `string` | Regex to match the call ID. Empty means match all.                  |
+
+##### Use Case and Example
+
+Deny all calls to the "delete_user" tool, and allow everything else.
+
+```yaml
+call_policies:
+  - default_action: ALLOW
+    rules:
+      - action: DENY
+        name_regex: "^delete_user$"
+```
+
+#### `Hooks` (Pre-Call and Post-Call)
+
+Hooks allow you to execute custom logic before (`pre_call_hooks`) or after (`post_call_hooks`) a tool is executed. This is useful for validation, auditing, transformation, or enforcing complex policies.
+
+| Field   | Type     | Description             |
+| ------- | -------- | ----------------------- |
+| `name`  | `string` | A name for the hook.    |
+| `webhook`| `WebhookConfig` | Configuration for an external webhook. |
+| `call_policy` | `CallPolicy` | A call policy to enforce (only for `pre_call_hooks`). |
+
+##### `WebhookConfig`
+
+| Field            | Type       | Description                                      |
+| ---------------- | ---------- | ------------------------------------------------ |
+| `url`            | `string`   | The URL of the webhook service.                  |
+| `timeout`        | `duration` | The timeout for the webhook request.             |
+| `webhook_secret` | `string`   | A secret shared with the webhook for HMAC validation (optional). |
+
+##### Use Case and Example
+
+Validate tool arguments using an external webhook before execution.
+
+```yaml
+pre_call_hooks:
+  - name: "argument-validator"
+    webhook:
+      url: "http://policy-engine.internal/validate"
+      timeout: "500ms"
+```
 
 #### `ContainerEnvironment`
 
