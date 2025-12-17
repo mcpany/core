@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
@@ -70,8 +73,8 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 			// Check if command starts with "rm " or is exactly "rm"
 			// Also checking for " rm " in case of chained commands
 			cleaned := strings.TrimSpace(strVal)
-			if strings.HasPrefix(cleaned, "rm ") || 
-			   cleaned == "rm" || 
+			if strings.HasPrefix(cleaned, "rm ") ||
+			   cleaned == "rm" ||
 			   strings.Contains(cleaned, " rm ") {
 				allowed = false
 				message = fmt.Sprintf("Command contains restricted keyword 'rm' in input '%s'", k)
@@ -87,7 +90,7 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 			Message: message,
 		},
 	}
-	
+
 	respBytes, _ := json.Marshal(respData)
 
 	// Set CloudEvents Response Headers
@@ -96,7 +99,7 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Ce-Source", "/webhook/validate")
 	w.Header().Set("Ce-Specversion", "1.0")
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(respBytes)
 }

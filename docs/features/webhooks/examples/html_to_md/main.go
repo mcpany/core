@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
@@ -53,8 +56,8 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received post-call request for tool: %s", req.ToolName)
 
 	converter := md.NewConverter("", true, nil)
-	
-	// We expect result to be a map or string potentially? 
+
+	// We expect result to be a map or string potentially?
 	// The prompt says "gemini cli to grab a webpage, (upstream returns html), then webhook converts to markdown".
 	// Usually the result from an HTTP tool is the body (string) or JSON.
 	// If it's raw HTML string:
@@ -84,7 +87,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("{}"))
 		return
 	}
-	
+
 	if markdown == "" {
 		// Nothing converted or empty
 		w.WriteHeader(StatusOK)
@@ -98,16 +101,16 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 			"format": "markdown",
 		},
 	}
-	
+
 	respBytes, _ := json.Marshal(respData)
-	
+
 	// CloudEvents Headers
 	w.Header().Set("Ce-Id", uuid.New().String())
 	w.Header().Set("Ce-Type", "com.mcpany.webhook.response")
 	w.Header().Set("Ce-Source", "/webhook/convert")
 	w.Header().Set("Ce-Specversion", "1.0")
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(respBytes)
 }
