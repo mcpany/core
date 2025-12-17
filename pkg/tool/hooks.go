@@ -8,14 +8,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"regexp"
 	"time"
 
+	cloudevents "github.com/cloudevents/sdk-go/v2"
+	cehttp "github.com/cloudevents/sdk-go/v2/protocol/http"
 	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/types/known/structpb"
+	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
 // PolicyHook implements PreCallHook using CallPolicy.
@@ -79,11 +82,12 @@ func (h *PolicyHook) ExecutePre(
 
 // (Deprecated hooks removed)
 
-// WebhookHook supports modification of requests and responses via external webhook.
+// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
 type WebhookHook struct {
 	url     string
 	timeout time.Duration
 	client  *http.Client
+	webhook *webhook.Webhook // Keep for signature if needed, or replace with CloudEvents signature
 }
 
 // NewWebhookHook creates a new WebhookHook.
@@ -92,11 +96,70 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	if t := config.GetTimeout(); t != nil {
 		timeout = t.AsDuration()
 	}
+	var wh *webhook.Webhook
+	if secret := config.GetWebhookSecret(); secret != "" {
+		var err error
+		wh, err = webhook.NewWebhook(secret)
+		if err != nil {
+			logging.GetLogger().Error("Failed to create webhook signer", "error", err)
+		}
+	}
+
+	// Create client with signing transport if webhook signer is present
+	client := &http.Client{Timeout: timeout}
+	if wh != nil {
+		client.Transport = &SigningRoundTripper{
+			signer: wh,
+			base:   http.DefaultTransport,
+		}
+	}
+
 	return &WebhookHook{
 		url:     config.GetUrl(),
 		timeout: timeout,
-		client:  &http.Client{Timeout: timeout},
+		client:  client,
+		webhook: wh,
 	}
+}
+
+// SigningRoundTripper signs the request body.
+type SigningRoundTripper struct {
+	signer *webhook.Webhook
+	base   http.RoundTripper
+}
+
+// RoundTrip implements http.RoundTripper.
+func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.Body != nil {
+		bodyBytes, err := io.ReadAll(req.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read request body for signing: %w", err)
+		}
+		_ = req.Body.Close()
+		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+
+		msgID := uuid.New().String()
+		now := time.Now()
+		signature, err := s.signer.Sign(msgID, now, bodyBytes)
+		if err != nil {
+			return nil, fmt.Errorf("failed to sign request: %w", err)
+		}
+		req.Header.Set("webhook-signature", signature)
+		req.Header.Set("webhook-id", msgID)
+		req.Header.Set("webhook-timestamp", fmt.Sprintf("%d", now.Unix()))
+	}
+
+	base := s.base
+	if base == nil {
+		base = http.DefaultTransport
+	}
+	return base.RoundTrip(req)
+}
+
+// WebhookStatus represents the status of a webhook response.
+type WebhookStatus struct {
+	Code    int32  `json:"code"`
+	Message string `json:"message"`
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
@@ -104,41 +167,59 @@ func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
 ) (Action, *ExecutionRequest, error) {
-	// Convert inputs to Struct
+	// Convert inputs to Map for clearer JSON
 	inputsMap := make(map[string]any)
 	if len(req.ToolInputs) > 0 {
 		if err := json.Unmarshal(req.ToolInputs, &inputsMap); err != nil {
 			return ActionDeny, nil, fmt.Errorf("failed to unmarshal inputs: %w", err)
 		}
 	}
-	inputsStruct, err := structpb.NewStruct(inputsMap)
-	if err != nil {
-		return ActionDeny, nil, fmt.Errorf("failed to convert inputs to struct: %w", err)
+
+	event := cloudevents.NewEvent()
+	event.SetID(uuid.New().String())
+	event.SetSource("https://github.com/mcpany/core")
+	event.SetType("com.mcpany.tool.pre_call")
+	event.SetTime(time.Now())
+
+	data := map[string]any{
+		"kind":      configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL,
+		"tool_name": req.ToolName,
+		"inputs":    inputsMap,
+	}
+	if err := event.SetData(cloudevents.ApplicationJSON, data); err != nil {
+		return ActionDeny, nil, fmt.Errorf("failed to set cloud event data: %w", err)
 	}
 
-	reviewReq := &configv1.WebhookRequest{
-		Uid:      uuid.New().String(),
-		Kind:     "PreCall",
-		ToolName: req.ToolName,
-		Object:   inputsStruct,
-	}
-
-	reviewResp, err := h.callWebhook(ctx, reviewReq)
+	respEvent, err := h.callWebhook(ctx, event)
 	if err != nil {
 		return ActionDeny, nil, fmt.Errorf("webhook error: %w", err)
 	}
 
-	if !reviewResp.GetAllowed() {
-		msg := "denied by webhook"
-		if reviewResp.GetStatus() != nil {
-			msg = fmt.Sprintf("%s: %s", msg, reviewResp.GetStatus().GetMessage())
-		}
-		return ActionDeny, nil, fmt.Errorf(msg)
+	// Helper struct for response data
+	type ResponseData struct {
+		Allowed           bool            `json:"allowed"`
+		Status            *WebhookStatus  `json:"status,omitempty"`
+		ReplacementObject json.RawMessage `json:"replacement_object,omitempty"`
 	}
 
-	if reviewResp.GetReplacementObject() != nil {
-		// Modify inputs
-		newInputsMap := reviewResp.GetReplacementObject().AsMap()
+	var respData ResponseData
+	if err := respEvent.DataAs(&respData); err != nil {
+		return ActionDeny, nil, fmt.Errorf("failed to decode response event data: %w", err)
+	}
+
+	if !respData.Allowed {
+		msg := "denied by webhook"
+		if respData.Status != nil {
+			msg = fmt.Sprintf("%s: %s", msg, respData.Status.Message)
+		}
+		return ActionDeny, nil, fmt.Errorf("%s", msg)
+	}
+
+	if respData.ReplacementObject != nil {
+		newInputsMap := make(map[string]any)
+		if err := json.Unmarshal(respData.ReplacementObject, &newInputsMap); err != nil {
+			return ActionDeny, nil, fmt.Errorf("failed to unmarshal replacement inputs: %w", err)
+		}
 		newInputsAPI, err := json.Marshal(newInputsMap)
 		if err != nil {
 			return ActionDeny, nil, fmt.Errorf("failed to marshal new inputs: %w", err)
@@ -157,99 +238,126 @@ func (h *WebhookHook) ExecutePost(
 	req *ExecutionRequest,
 	result any,
 ) (any, error) {
-	// Convert result to Struct
-	// Result can be string, map, slice, etc. structpb only supports map[string]any as root.
-	// If result is not a map, we might need to wrap it?
-	// Or maybe the webhook protocol expects an object?
-	// For "simple" results (string), let's wrap in {"value": ...}?
-	// Or if the standardized webhook expects Struct, we MUST provide Struct.
-	
-	resultMap := make(map[string]any)
-	if m, ok := result.(map[string]any); ok {
-		resultMap = m
-	} else {
-		// Wrap non-map result
-		resultMap["value"] = result
+	logging.GetLogger().Info("ExecutePost called", "tool", req.ToolName)
+	event := cloudevents.NewEvent()
+	event.SetID(uuid.New().String())
+	event.SetSource("https://github.com/mcpany/core")
+	event.SetType("com.mcpany.tool.post_call")
+	event.SetTime(time.Now())
+
+	data := map[string]any{
+		"kind":      configv1.WebhookKind_WEBHOOK_KIND_POST_CALL,
+		"tool_name": req.ToolName,
+		"result":    result,
+	}
+	if err := event.SetData(cloudevents.ApplicationJSON, data); err != nil {
+		return nil, fmt.Errorf("failed to set cloud event data: %w", err)
 	}
 
-	resultStruct, err := structpb.NewStruct(resultMap)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert result to struct: %w", err)
-	}
-
-	reviewReq := &configv1.WebhookRequest{
-		Uid:      uuid.New().String(),
-		Kind:     "PostCall",
-		ToolName: req.ToolName,
-		Object:   resultStruct,
-	}
-
-	reviewResp, err := h.callWebhook(ctx, reviewReq)
+	respEvent, err := h.callWebhook(ctx, event)
 	if err != nil {
 		return nil, fmt.Errorf("webhook error: %w", err)
 	}
 
-	if reviewResp.GetReplacementObject() != nil {
-		newResultMap := reviewResp.GetReplacementObject().AsMap()
-		// Unwrap if we wrapped it?
-		// If original was NOT a map, and we receive a map with "value", should we unwrap?
-		// The webhook might return a full map structure.
-		// If the webhook is smart, it returns what we expect.
-		// If we wrapped it, we should check if we should unwrap.
-		// For now, return the map unless it has only "value" and original was not map?
-		// Let's rely on the structure modification. 
-		// If the tool return type expects a string, and we return a map, it might break.
-		// But in `tool.go`, result is `any`.
-		// If we wrapped it in "value", check if "value" exists in replacement.
-		if _, wasMap := result.(map[string]any); !wasMap {
-			if v, ok := newResultMap["value"]; ok && len(newResultMap) == 1 {
+	type ResponseData struct {
+		Allowed           bool            `json:"allowed"`
+		Status            *WebhookStatus  `json:"status,omitempty"`
+		ReplacementObject json.RawMessage `json:"replacement_object,omitempty"`
+	}
+
+	var respData ResponseData
+	if err := respEvent.DataAs(&respData); err != nil {
+		return nil, fmt.Errorf("failed to decode response event data: %w", err)
+	}
+
+	if respData.ReplacementObject != nil {
+		// If replacement object is present, return it.
+		// We need to determine if we should return map or value.
+		// Similar strategy: if original was string, try to extract "value" from replacement if it is map?
+		// But CloudEvents data is cleaner.
+		// If replacement object is just "some string" (quoted in JSON), Unmarshal handles it.
+		// Since ReplacementObject is RawMessage, we can unmarshal it to any.
+		var newResult any
+		if err := json.Unmarshal(respData.ReplacementObject, &newResult); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal replacement result: %w", err)
+		}
+
+		// Unwrap "value" if it is the only key, to support returning primitives via Struct
+		if m, ok := newResult.(map[string]any); ok {
+			if v, ok := m["value"]; ok && len(m) == 1 {
 				return v, nil
 			}
 		}
-		return newResultMap, nil
+
+		return newResult, nil
 	}
 
 	return result, nil
 }
 
-func (h *WebhookHook) callWebhook(ctx context.Context, req *configv1.WebhookRequest) (*configv1.WebhookResponse, error) {
-	review := &configv1.WebhookReview{
-		Request: req,
-	}
-	
-	body, err := json.Marshal(review)
+func (h *WebhookHook) callWebhook(ctx context.Context, event cloudevents.Event) (*cloudevents.Event, error) {
+	p, err := cehttp.New(
+		cehttp.WithTarget(h.url),
+		cehttp.WithClient(*h.client),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal review: %w", err)
+		return nil, fmt.Errorf("failed to create protocol: %w", err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, h.url, bytes.NewReader(body))
+	c, err := cloudevents.NewClient(p, cloudevents.WithTimeNow(), cloudevents.WithUUIDs())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	httpReq.Header.Set("Content-Type", "application/json")
-
-	httpResp, err := h.client.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("connection failed: %w", err)
-	}
-	defer func() {
-		if err := httpResp.Body.Close(); err != nil {
-			logging.GetLogger().Warn("Failed to close webhook response body", "error", err)
-		}
-	}()
-
-	if httpResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", httpResp.StatusCode)
+		return nil, fmt.Errorf("failed to create client: %w", err)
 	}
 
-	var respReview configv1.WebhookReview
-	if err := json.NewDecoder(httpResp.Body).Decode(&respReview); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	// We can manually add signature headers here if we modify the context or protocol wrapper?
+	// The standard-webhooks library expects raw body. CloudEvents handles encoding.
+	// To combine them, we might need to intercept the request.
+	// Or we can assume CloudEvents has its own security or use standard headers.
+	// The user asked to use standard-webhooks signature previously.
+	// But standard-webhooks signs the *raw body*.
+	// cloudevents-go handles body serialization internally.
+	// We can use a middleware or just let cloudevents do its thing?
+	// For now, let's stick to CloudEvents structure.
+	// If we MUST use standard-webhooks signature, we need to capture the body.
+	// Let's implement without explicit signature first, or rely on HTTPS/Auth header.
+	// The user prompt mentioned "use standard-webhooks ... then format should follow cloudevents".
+	// It's a bit mixed.
+	// Standard webhooks usually implies a specific payload format too.
+	// If we use CloudEvents, we are compliant with CloudEvents.
+	// We can add a custom header extension `webhook-signature`?
+	// Let's proceed with pure CloudEvents first as it is the "latest" instruction override.
+
+	// Issue: We need to receive a response event!
+	// cloudevents Request(ctx, event) returns (*Event, Result)
+
+	respEvent, result := c.Request(ctx, event)
+	if cloudevents.IsUndelivered(result) {
+		return nil, fmt.Errorf("failed to send webhook event: %w", result)
 	}
-	
-	if respReview.Response == nil {
-		return nil, fmt.Errorf("empty response from webhook")
+
+	if respEvent == nil {
+		// Log the result which might contain HTTP status error
+		logging.GetLogger().Error("No response event received", "result", result)
+		return nil, fmt.Errorf("webhook error: no response event received (result: %v)", result)
 	}
-	
-	return respReview.Response, nil
+	// If status is not 2xx, result is error.
+
+	if respEvent != nil {
+		return respEvent, nil
+	}
+
+	// If no event returned (e.g. 202 Accepted or empty body 200), that's an issue for us if we expect review.
+	// But maybe we allow it (no change).
+	if result != nil && !cloudevents.IsACK(result) {
+             // It might be an error result
+             return nil, fmt.Errorf("request failed: %w", result)
+	}
+
+	// If empty response, assume allowed, no change?
+	// Or should we synthesize a response?
+	// Let's assume we REQUIRE a response event for now since it's a "Review" system.
+	// But typical webhooks are fire-and-forget unless "pre-call".
+	// Pre-call MUST reply.
+
+	return nil, fmt.Errorf("no response event received")
 }

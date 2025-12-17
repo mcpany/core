@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func ptr[T any](v T) *T {
@@ -135,37 +136,61 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 
 func TestWebhookHook(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var req webhookRequest
+		var req configv1.WebhookRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		resp := webhookResponse{Action: "allow"}
+		resp := &configv1.WebhookResponse{Allowed: true}
 
-		switch req.HookType {
-		case "pre":
+		switch req.Kind {
+		case configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL:
 			switch req.ToolName {
 			case "deny-me":
-				resp.Action = "deny"
-				resp.Error = "denied by policy"
+				resp.Allowed = false
+				resp.Status = &configv1.WebhookStatus{Message: "denied by policy"}
 			case "modify-me":
 				// Modify inputs
-				newInputs := map[string]string{"modified": "yes"}
-				b, _ := json.Marshal(newInputs)
-				resp.Inputs = b
+				newInputs := map[string]any{"modified": "yes"}
+				s, _ := structpb.NewStruct(newInputs)
+				resp.ReplacementObject = s
 			}
-		case "post":
+		case configv1.WebhookKind_WEBHOOK_KIND_POST_CALL:
 			if req.ToolName == "modify-result" {
-				resp.Result = "modified result"
+				// hooks.go unwraps "value" if original result was likely a primitive
+				newResult := map[string]any{"value": "modified result"}
+				s, _ := structpb.NewStruct(newResult)
+				resp.ReplacementObject = s
 			}
 		}
 
-		_ = json.NewEncoder(w).Encode(resp)
+		// Send CloudEvent response (Binary Mode)
+		w.Header().Set("ce-id", "test-resp-id")
+		w.Header().Set("ce-source", "test-source")
+		w.Header().Set("ce-specversion", "1.0")
+		w.Header().Set("ce-type", "com.mcpany.webhook.response")
+		w.Header().Set("Content-Type", "application/json")
+
+		respMap := map[string]any{
+			"allowed": resp.Allowed,
+		}
+		if resp.Status != nil {
+			respMap["status"] = map[string]any{
+				"code":    resp.Status.Code,
+				"message": resp.Status.Message,
+			}
+		}
+		if resp.ReplacementObject != nil {
+			// structpb.Struct to map
+			respMap["replacement_object"] = resp.ReplacementObject
+		}
+
+		_ = json.NewEncoder(w).Encode(respMap)
 	}))
 	defer server.Close()
 
-	config := &configv1.WebhookConfig{Url: ptr(server.URL)}
+	config := &configv1.WebhookConfig{Url: server.URL}
 	hook := NewWebhookHook(config)
 
 	t.Run("Pre Allow", func(t *testing.T) {
@@ -207,4 +232,3 @@ func TestWebhookHook(t *testing.T) {
 		assert.Equal(t, "modified result", res)
 	})
 }
-

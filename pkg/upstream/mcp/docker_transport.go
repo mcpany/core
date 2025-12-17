@@ -75,10 +75,17 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
 	script := strings.Join(scriptCommands, " && ")
 
+	// Prepare environment variables
+	envVars := make([]string, 0, len(t.StdioConfig.GetEnv()))
+	for k, v := range t.StdioConfig.GetEnv() {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
+	}
+
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image:        img,
 		Cmd:          []string{"/bin/sh", "-c", script},
 		WorkingDir:   t.StdioConfig.GetWorkingDirectory(),
+		Env:          envVars,
 		Tty:          false,
 		OpenStdin:    true,
 		AttachStdin:  true,
@@ -88,6 +95,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create container: %w", err)
 	}
+	log.Info("Container created", "id", resp.ID, "env", envVars)
 
 	hijackedResp, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
 		Stream: true,
@@ -99,11 +107,13 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
 		return nil, fmt.Errorf("failed to attach to container: %w", err)
 	}
+	log.Info("Attached to container", "id", resp.ID)
 
 	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
 		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
 		return nil, fmt.Errorf("failed to start container: %w", err)
 	}
+	log.Info("Container started", "id", resp.ID)
 
 	stdoutReader, stdoutWriter := io.Pipe()
 

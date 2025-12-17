@@ -69,7 +69,14 @@ RUN mkdir -p /tools && make prepare && chmod -R 777 /tools
 # However, for "HOME=/home/user" to be valid and writable, we should ensure permissions.
 
 # Since we map ~/.cache to /home/user/.cache, we just need to make sure /home/user exists.
-RUN mkdir -p /home/user && chmod 777 /home/user
+ARG UID=1000
+ARG GID=1000
+ARG DOCKER_GID=999
+
+RUN groupadd -g ${GID} user || true && \
+    groupadd -g ${DOCKER_GID} docker_host_group || true && \
+    useradd -u ${UID} -g ${GID} -G ${DOCKER_GID} -m -s /bin/bash user && \
+    echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Add installed tools to PATH
 ENV PATH="/tools:${PATH}"

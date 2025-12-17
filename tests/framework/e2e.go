@@ -273,6 +273,7 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 		"/work/tests/integration/cmd/mocks/python_cowsay_server", // working directory
 		"python:3.11-slim", // No explicit container image
 		setupCommands,
+		nil,
 		args...,
 	)
 }

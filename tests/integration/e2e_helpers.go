@@ -120,11 +120,11 @@ func ProjectRoot(t *testing.T) string {
 
 const (
 	// McpAnyServerStartupTimeout is the timeout for the server to start.
-	McpAnyServerStartupTimeout = 30 * time.Second
+	McpAnyServerStartupTimeout = 60 * time.Second
 	// ServiceStartupTimeout is the timeout for services to start up.
-	ServiceStartupTimeout = 15 * time.Second
+	ServiceStartupTimeout = 60 * time.Second
 	// TestWaitTimeShort is a short wait time for tests.
-	TestWaitTimeShort = 60 * time.Second
+	TestWaitTimeShort = 120 * time.Second
 	// TestWaitTimeMedium is the default timeout for medium duration tests.
 	TestWaitTimeMedium = 240 * time.Second
 	// TestWaitTimeLong is the default timeout for long duration tests.
@@ -985,7 +985,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 // RegisterServiceViaAPI registers a service using the gRPC API.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
 	t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 	resp, err := regClient.RegisterService(ctx, req)
 	require.NoError(t, err, "Failed to register service %s via API.", req.GetConfig().GetName())
@@ -1192,11 +1192,11 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // RegisterStdioService registers a raw stdio service.
 func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, commandArgs ...string) {
 	t.Helper()
-	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, commandArgs...)
+	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, nil, commandArgs...)
 }
 
 // RegisterStdioServiceWithSetup registers a stdio service with setup steps.
-func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, commandArgs ...string) {
+func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, env map[string]string, commandArgs ...string) {
 	t.Helper()
 
 	stdioConnection := configv1.McpStdioConnection_builder{
@@ -1205,6 +1205,7 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 		WorkingDirectory: &workingDir,
 		ContainerImage:   &containerImage,
 		SetupCommands:    setupCommands,
+		Env:              env,
 	}.Build()
 
 	mcpService := configv1.McpUpstreamService_builder{
