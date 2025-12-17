@@ -118,12 +118,6 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 			}
 			// 3. PostCallHooks
 			for _, hCfg := range serviceInfo.Config.GetPostCallHooks() {
-				if tt := hCfg.GetTextTruncation(); tt != nil {
-					postHooks = append(postHooks, NewTextTruncationHook(tt))
-				}
-				if html := hCfg.GetHtmlToMarkdown(); html != nil {
-					postHooks = append(postHooks, NewHTMLToMarkdownHook(html))
-				}
 				if w := hCfg.GetWebhook(); w != nil {
 					postHooks = append(postHooks, NewWebhookHook(w))
 				}
