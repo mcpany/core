@@ -316,6 +316,9 @@ func TestCallPolicyExecution(t *testing.T) {
 				},
 			},
 		},
+		ToolExportPolicy: &configv1.ExportPolicy{
+			DefaultAction: configv1.ExportPolicy_EXPORT.Enum(),
+		},
 	}
 
 	configFile := CreateTempConfigFile(t, config)
