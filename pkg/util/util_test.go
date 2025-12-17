@@ -348,6 +348,18 @@ func TestReplaceURLPath(t *testing.T) {
 			params:   map[string]interface{}{"other": "value"},
 			expected: "/users/{{userID}}",
 		},
+		{
+			name:     "path traversal attempt",
+			urlPath:  "/api/{{resource}}",
+			params:   map[string]interface{}{"resource": "../admin"},
+			expected: "/api/..%2Fadmin", // Expecting escaped output
+		},
+		{
+			name:     "special characters",
+			urlPath:  "/search/{{query}}",
+			params:   map[string]interface{}{"query": "foo/bar?baz=qux"},
+			expected: "/search/foo%2Fbar%3Fbaz=qux", // Expecting escaped output
+		},
 	}
 
 	for _, tt := range tests {
