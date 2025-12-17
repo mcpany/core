@@ -238,6 +238,33 @@ func newRootCmd() *cobra.Command {
 	}
 	configCmd.AddCommand(generateCmd)
 
+	docCmd := &cobra.Command{
+		Use:   "doc",
+		Short: "Generate Markdown documentation for the configuration",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfgSettings := config.GlobalSettings()
+			if err := cfgSettings.Load(cmd, osFs); err != nil {
+				return err
+			}
+
+			store := config.NewFileStore(osFs, cfgSettings.ConfigPaths())
+			cfg, err := config.LoadServices(store, "server")
+			if err != nil {
+				return fmt.Errorf("failed to load configuration: %w", err)
+			}
+
+			doc, err := config.GenerateDocumentation(context.Background(), cfg)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(doc)
+			return nil
+		},
+	}
+	configCmd.AddCommand(docCmd)
+
 	validateCmd := &cobra.Command{
 		Use:   "validate",
 		Short: "Validate the configuration file",
