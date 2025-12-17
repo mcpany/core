@@ -37,3 +37,5 @@ You want to provide a standard "Summarize this" prompt to your users. Instead of
 ## Public API Example
 
 Clients call `prompts/get` with the prompt name and arguments.
+
+> **Note:** Prompt names are namespaced by the service ID (e.g., `serviceName.promptName`). Check `prompts/list` to see the full names.
