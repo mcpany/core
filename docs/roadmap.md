@@ -50,7 +50,7 @@ For a complete list of all available configuration options, please see the [Conf
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
 - [ ] **Secrets Management**: Secure handling of sensitive data (API keys, passwords).
 - [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
-- [ ] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
+- [x] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
 - [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
 - [ ] **IP Allowlisting & Security Policies**: Implement fine-grained security policies, including IP allowlisting and request validation.
 - [ ] **WASM Plugin Support**: Allow extending functionality using WebAssembly plugins for custom logic.

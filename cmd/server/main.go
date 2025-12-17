@@ -213,6 +213,8 @@ func newRootCmd() *cobra.Command {
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	rootCmd.AddCommand(newDocsCmd(afero.NewOsFs()))
+
 	configCmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage configuration",
