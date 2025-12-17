@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
@@ -32,7 +35,7 @@ func TestConvertHandler(t *testing.T) {
 	if !ok {
 		t.Fatalf("Expected ReplacementObject to be a map, got %T", respData.ReplacementObject)
 	}
-	
+
 	content, ok := respMap["content"].(string)
 	if !ok {
 		t.Errorf("Expected content field in replacement object")
