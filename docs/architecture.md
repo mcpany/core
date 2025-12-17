@@ -61,9 +61,9 @@ An "upstream service" is a backend service that MCP Any can connect to and expos
 The `McpAnyServerConfig` message is the root configuration for the entire MCP Any server. It contains:
 
 - **`global_settings`**: Server-wide operational parameters, such as the bind address and log level.
-- **`upstream_services`**: A list of all configured upstream services that MCP Any can proxy to. Each service has its own specific configuration (e.g., `GrpcUpstreamService`, `OpenapiUpstreamService`).
-- **`frontend_services`**: A list of all defined public-facing frontend services.
-- **`service_bindings`**: A list of bindings that link a frontend service to a specific upstream service.
+- **`upstream_services`**: A list of all configured upstream services that MCP Any can proxy to.
+- **`upstream_service_collections`**: A list of remote collections of upstream services.
+- **`users`**: A list of users authorized to access the server.
 
 ### 3. Tool Definition (`proto/config/v1/config.proto`)
 
@@ -89,8 +89,8 @@ The `cmd/server` package contains the main application logic for the MCP Any ser
 
 MCP Any uses a set of parsers to discover tools from different types of upstream services:
 
-- **`pkg/grpc/protobufparser`**: Parses `.proto` files and uses gRPC reflection to discover gRPC services and methods.
-- **`pkg/openapi/parser`**: Parses OpenAPI specifications to discover RESTful API endpoints.
+- **`pkg/upstream/grpc/protobufparser`**: Parses `.proto` files and uses gRPC reflection to discover gRPC services and methods.
+- **`pkg/upstream/openapi`**: Parses OpenAPI specifications to discover RESTful API endpoints.
 
 ### 3. API Services
 
