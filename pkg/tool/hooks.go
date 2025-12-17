@@ -12,10 +12,10 @@ import (
 	"regexp"
 	"time"
 
-	md "github.com/JohannesKaufmann/html-to-markdown"
-
+	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // PolicyHook implements PreCallHook using CallPolicy.
@@ -77,128 +77,8 @@ func (h *PolicyHook) ExecutePre(
 	return ActionDeny, nil, fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
 }
 
-// TextTruncationHook implements PostCallHook.
-type TextTruncationHook struct {
-	maxChars int
-}
+// (Deprecated hooks removed)
 
-// NewTextTruncationHook creates a new TextTruncationHook with the given configuration.
-func NewTextTruncationHook(config *configv1.TextTruncationConfig) *TextTruncationHook {
-	return &TextTruncationHook{maxChars: int(config.GetMaxChars())}
-}
-
-// ExecutePost executes the text truncation logic after a tool is called.
-func (h *TextTruncationHook) ExecutePost(
-	_ context.Context,
-	_ *ExecutionRequest,
-	result any,
-) (any, error) {
-	if h.maxChars <= 0 {
-		return result, nil
-	}
-
-	// Handle string result
-	if str, ok := result.(string); ok {
-		if len(str) > h.maxChars {
-			return str[:h.maxChars] + "...", nil
-		}
-		return str, nil
-	}
-
-	// Handle map result (common for JSON)
-	if m, ok := result.(map[string]any); ok {
-		// Traverse and truncate suitable string fields?
-		// For now, let's just serialize to check size?
-		// Or maybe user implies text response truncation.
-		// If the result is a Map, we probably shouldn't blindly truncate.
-		// But if there is a "content" or "text" field?
-		// User requirement just said "text modify hook".
-		// I will implement a recursive truncation for string values in maps.
-		return h.truncateMap(m), nil
-	}
-
-	return result, nil
-}
-
-func (h *TextTruncationHook) truncateMap(m map[string]any) map[string]any {
-	newMap := make(map[string]any, len(m))
-	for k, v := range m {
-		switch val := v.(type) {
-		case string:
-			if len(val) > h.maxChars {
-				newMap[k] = val[:h.maxChars] + "..."
-			} else {
-				newMap[k] = val
-			}
-		case map[string]any:
-			newMap[k] = h.truncateMap(val)
-		default:
-			newMap[k] = val
-		}
-	}
-	return newMap
-}
-
-// HTMLToMarkdownHook implements PostCallHook to convert HTML to Markdown.
-type HTMLToMarkdownHook struct {
-	converter *md.Converter
-}
-
-// NewHTMLToMarkdownHook creates a new HTMLToMarkdownHook.
-func NewHTMLToMarkdownHook(_ *configv1.HtmlToMarkdownConfig) *HTMLToMarkdownHook {
-	converter := md.NewConverter("", true, nil)
-	// We can configure excludes/includes if needed based on config
-	return &HTMLToMarkdownHook{converter: converter}
-}
-
-// ExecutePost converts HTML strings in the result to Markdown.
-func (h *HTMLToMarkdownHook) ExecutePost(
-	_ context.Context,
-	_ *ExecutionRequest,
-	result any,
-) (any, error) {
-	// Handle string result
-	if str, ok := result.(string); ok {
-		return h.convertString(str), nil
-	}
-
-	// Handle map result
-	if m, ok := result.(map[string]any); ok {
-		return h.convertMap(m), nil
-	}
-
-	return result, nil
-}
-
-func (h *HTMLToMarkdownHook) convertString(s string) string {
-	// Check if it looks like HTML? For now, we assume if this hook is enabled,
-	// the user expects conversion.
-	markdown, err := h.converter.ConvertString(s)
-	if err != nil {
-		logging.GetLogger().Warn("Failed to convert HTML to Markdown", "error", err)
-		return s // return original if failed
-	}
-	return markdown
-}
-
-func (h *HTMLToMarkdownHook) convertMap(m map[string]any) map[string]any {
-	newMap := make(map[string]any, len(m))
-	for k, v := range m {
-		switch val := v.(type) {
-		case string:
-			newMap[k] = h.convertString(val)
-		case map[string]any:
-			newMap[k] = h.convertMap(val)
-		default:
-			newMap[k] = val
-		}
-	}
-	return newMap
-}
-
-// WebhookHook implements PreCallHook and PostCallHook?
-// User requirement: "webhook... modify requests/responses".
-// So it can be both.
 // WebhookHook supports modification of requests and responses via external webhook.
 type WebhookHook struct {
 	url     string
@@ -219,44 +99,52 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	}
 }
 
-type webhookRequest struct {
-	HookType string          `json:"hook_type"`
-	ToolName string          `json:"tool_name"`
-	Inputs   json.RawMessage `json:"inputs,omitempty"`
-	Result   any             `json:"result,omitempty"`
-}
-
-type webhookResponse struct {
-	Action string          `json:"action"` // "allow", "deny"
-	Error  string          `json:"error,omitempty"`
-	Inputs json.RawMessage `json:"inputs,omitempty"`
-	Result any             `json:"result,omitempty"`
-}
-
 // ExecutePre executes the webhook notification before a tool is called.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
 ) (Action, *ExecutionRequest, error) {
-	payload := webhookRequest{
-		HookType: "pre",
-		ToolName: req.ToolName,
-		Inputs:   req.ToolInputs,
+	// Convert inputs to Struct
+	inputsMap := make(map[string]any)
+	if len(req.ToolInputs) > 0 {
+		if err := json.Unmarshal(req.ToolInputs, &inputsMap); err != nil {
+			return ActionDeny, nil, fmt.Errorf("failed to unmarshal inputs: %w", err)
+		}
+	}
+	inputsStruct, err := structpb.NewStruct(inputsMap)
+	if err != nil {
+		return ActionDeny, nil, fmt.Errorf("failed to convert inputs to struct: %w", err)
 	}
 
-	resp, err := h.callWebhook(ctx, payload)
+	reviewReq := &configv1.WebhookRequest{
+		Uid:      uuid.New().String(),
+		Kind:     "PreCall",
+		ToolName: req.ToolName,
+		Object:   inputsStruct,
+	}
+
+	reviewResp, err := h.callWebhook(ctx, reviewReq)
 	if err != nil {
 		return ActionDeny, nil, fmt.Errorf("webhook error: %w", err)
 	}
 
-	if resp.Action == "deny" {
-		return ActionDeny, nil, fmt.Errorf("denied by webhook: %s", resp.Error)
+	if !reviewResp.GetAllowed() {
+		msg := "denied by webhook"
+		if reviewResp.GetStatus() != nil {
+			msg = fmt.Sprintf("%s: %s", msg, reviewResp.GetStatus().GetMessage())
+		}
+		return ActionDeny, nil, fmt.Errorf(msg)
 	}
 
-	if resp.Inputs != nil {
+	if reviewResp.GetReplacementObject() != nil {
 		// Modify inputs
+		newInputsMap := reviewResp.GetReplacementObject().AsMap()
+		newInputsAPI, err := json.Marshal(newInputsMap)
+		if err != nil {
+			return ActionDeny, nil, fmt.Errorf("failed to marshal new inputs: %w", err)
+		}
 		newReq := *req
-		newReq.ToolInputs = resp.Inputs
+		newReq.ToolInputs = newInputsAPI
 		return ActionAllow, &newReq, nil
 	}
 
@@ -269,28 +157,69 @@ func (h *WebhookHook) ExecutePost(
 	req *ExecutionRequest,
 	result any,
 ) (any, error) {
-	payload := webhookRequest{
-		HookType: "post",
-		ToolName: req.ToolName,
-		Result:   result,
+	// Convert result to Struct
+	// Result can be string, map, slice, etc. structpb only supports map[string]any as root.
+	// If result is not a map, we might need to wrap it?
+	// Or maybe the webhook protocol expects an object?
+	// For "simple" results (string), let's wrap in {"value": ...}?
+	// Or if the standardized webhook expects Struct, we MUST provide Struct.
+	
+	resultMap := make(map[string]any)
+	if m, ok := result.(map[string]any); ok {
+		resultMap = m
+	} else {
+		// Wrap non-map result
+		resultMap["value"] = result
 	}
 
-	resp, err := h.callWebhook(ctx, payload)
+	resultStruct, err := structpb.NewStruct(resultMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert result to struct: %w", err)
+	}
+
+	reviewReq := &configv1.WebhookRequest{
+		Uid:      uuid.New().String(),
+		Kind:     "PostCall",
+		ToolName: req.ToolName,
+		Object:   resultStruct,
+	}
+
+	reviewResp, err := h.callWebhook(ctx, reviewReq)
 	if err != nil {
 		return nil, fmt.Errorf("webhook error: %w", err)
 	}
 
-	if resp.Result != nil {
-		return resp.Result, nil
+	if reviewResp.GetReplacementObject() != nil {
+		newResultMap := reviewResp.GetReplacementObject().AsMap()
+		// Unwrap if we wrapped it?
+		// If original was NOT a map, and we receive a map with "value", should we unwrap?
+		// The webhook might return a full map structure.
+		// If the webhook is smart, it returns what we expect.
+		// If we wrapped it, we should check if we should unwrap.
+		// For now, return the map unless it has only "value" and original was not map?
+		// Let's rely on the structure modification. 
+		// If the tool return type expects a string, and we return a map, it might break.
+		// But in `tool.go`, result is `any`.
+		// If we wrapped it in "value", check if "value" exists in replacement.
+		if _, wasMap := result.(map[string]any); !wasMap {
+			if v, ok := newResultMap["value"]; ok && len(newResultMap) == 1 {
+				return v, nil
+			}
+		}
+		return newResultMap, nil
 	}
 
 	return result, nil
 }
 
-func (h *WebhookHook) callWebhook(ctx context.Context, payload webhookRequest) (*webhookResponse, error) {
-	body, err := json.Marshal(payload)
+func (h *WebhookHook) callWebhook(ctx context.Context, req *configv1.WebhookRequest) (*configv1.WebhookResponse, error) {
+	review := &configv1.WebhookReview{
+		Request: req,
+	}
+	
+	body, err := json.Marshal(review)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("failed to marshal review: %w", err)
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, h.url, bytes.NewReader(body))
@@ -313,9 +242,14 @@ func (h *WebhookHook) callWebhook(ctx context.Context, payload webhookRequest) (
 		return nil, fmt.Errorf("unexpected status code: %d", httpResp.StatusCode)
 	}
 
-	var resp webhookResponse
-	if err := json.NewDecoder(httpResp.Body).Decode(&resp); err != nil {
+	var respReview configv1.WebhookReview
+	if err := json.NewDecoder(httpResp.Body).Decode(&respReview); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
-	return &resp, nil
+	
+	if respReview.Response == nil {
+		return nil, fmt.Errorf("empty response from webhook")
+	}
+	
+	return respReview.Response, nil
 }
