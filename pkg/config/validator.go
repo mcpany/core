@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
@@ -231,6 +232,32 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return fmt.Errorf("command_line_service has empty command")
+	}
+
+	if commandLineService.GetWorkingDirectory() != "" {
+		if err := validation.IsSecurePath(commandLineService.GetWorkingDirectory()); err != nil {
+			return fmt.Errorf("command_line_service 'working_directory' is not a secure path: %w", err)
+		}
+	}
+
+	if env := commandLineService.GetContainerEnvironment(); env != nil {
+		if err := validateContainerEnvironment(env); err != nil {
+			return fmt.Errorf("command_line_service 'container_environment' error: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
+	for dest, src := range env.GetVolumes() {
+		if err := validation.IsSecurePath(src); err != nil {
+			return fmt.Errorf("volume mount source %q is not a secure path: %w", src, err)
+		}
+		// Ensure destination is absolute path, required by Docker
+		if !strings.HasPrefix(dest, "/") {
+			return fmt.Errorf("volume mount destination %q must be an absolute path", dest)
+		}
 	}
 	return nil
 }
