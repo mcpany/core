@@ -720,6 +720,21 @@ upstream_authentication:
         key: "api_key"
 ```
 
+##### Use Case and Example with AWS Secrets Manager
+
+Authenticate using an API key stored in AWS Secrets Manager.
+
+```yaml
+upstream_authentication:
+  api_key:
+    header_name: "X-API-Key"
+    api_key:
+      aws_secret_manager:
+        secret_id: "my-app/api-keys"
+        json_key: "my-api-key"
+        region: "us-west-2"
+```
+
 ##### `UpstreamAPIKeyAuth`
 
 | Field         | Type          | Description                                  |
@@ -760,6 +775,7 @@ The `SecretValue` message provides a secure way to manage sensitive information 
 | `file_path`            | `string`        | The path to a file containing the secret.                      |
 | `remote_content`       | `RemoteContent` | Fetches the secret from a remote URL.                          |
 | `vault`                | `VaultSecret`   | Fetches the secret from a HashiCorp Vault instance.            |
+| `aws_secret_manager`   | `AwsSecretManagerSecret` | Fetches the secret from AWS Secrets Manager.                   |
 
 ##### `VaultSecret`
 
@@ -769,6 +785,17 @@ The `SecretValue` message provides a secure way to manage sensitive information 
 | `token`   | `string` | The token to authenticate with Vault.                                |
 | `path`    | `string` | The path to the secret in Vault (e.g., "secret/data/my-app/db").     |
 | `key`     | `string` | The key of the secret to retrieve from the path.                     |
+
+##### `AwsSecretManagerSecret`
+
+| Field           | Type     | Description                                                                 |
+| --------------- | -------- | --------------------------------------------------------------------------- |
+| `secret_id`     | `string` | The name or ARN of the secret.                                              |
+| `json_key`      | `string` | Optional: The key to extract from the secret JSON.                          |
+| `version_stage` | `string` | Optional: The version stage (defaults to AWSCURRENT).                       |
+| `version_id`    | `string` | Optional: The version ID.                                                   |
+| `region`        | `string` | Optional: The AWS region. If not set, uses environment or profile defaults. |
+| `profile`       | `string` | Optional: The AWS profile to use.                                           |
 
 ### TLS Configuration (`TLSConfig`)
 

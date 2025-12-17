@@ -21,7 +21,24 @@ message SecretValue {
     string file_path = 3;
     RemoteContent remote_content = 4;
     VaultSecret vault = 5;
+    AwsSecretManagerSecret aws_secret_manager = 6;
   }
+}
+
+// AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager.
+message AwsSecretManagerSecret {
+  // The name or ARN of the secret.
+  string secret_id = 1 [json_name = "secret_id"];
+  // Optional: The key to extract from the secret JSON.
+  string json_key = 2 [json_name = "json_key"];
+  // Optional: The version stage (defaults to AWSCURRENT).
+  string version_stage = 3 [json_name = "version_stage"];
+  // Optional: The version ID.
+  string version_id = 4 [json_name = "version_id"];
+  // Optional: The region. If not set, uses environment or profile.
+  string region = 5 [json_name = "region"];
+  // Optional: Profile to use.
+  string profile = 6 [json_name = "profile"];
 }
 
 // VaultSecret defines the parameters for fetching a secret from HashiCorp Vault.
