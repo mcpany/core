@@ -216,6 +216,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
 			continue
 		}
+
 		if resourceDef.GetDynamic() != nil {
 			call := resourceDef.GetDynamic().GetCommandLineCall()
 			if call == nil {
@@ -242,6 +243,9 @@ func (u *Upstream) createAndRegisterCommandTools(
 				continue
 			}
 			resourceManager.AddResource(dynamicResource)
+		} else if resourceDef.GetStatic() != nil {
+			staticResource := resource.NewStaticResource(resourceDef, serviceID)
+			resourceManager.AddResource(staticResource)
 		}
 	}
 

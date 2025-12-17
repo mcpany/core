@@ -731,11 +731,18 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
+
 	if t.method == http.MethodGet {
 		q := httpReq.URL.Query()
 		for paramName, paramValue := range inputs {
 			if t.parameterDefs[paramName] == "query" {
-				q.Add(paramName, fmt.Sprintf("%v", paramValue))
+				if slice, ok := paramValue.([]interface{}); ok {
+					for _, v := range slice {
+						q.Add(paramName, fmt.Sprintf("%v", v))
+					}
+				} else {
+					q.Add(paramName, fmt.Sprintf("%v", paramValue))
+				}
 			}
 		}
 		httpReq.URL.RawQuery = q.Encode()

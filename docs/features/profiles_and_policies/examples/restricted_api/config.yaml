@@ -1,0 +1,19 @@
+upstream_services:
+  - id: "petstore-service"
+    name: "petstore-service"
+    openapi_service:
+      address: "https://petstore.swagger.io/v2"
+      spec_url: "https://raw.githubusercontent.com/swagger-api/swagger-petstore/master/src/main/resources/openapi.yaml"
+    call_policies:
+      # Default: Deny all tools
+      - default_action: DENY
+        rules:
+          # Allow only listPets (which might be named 'listPets' or similar in auto-generated tools)
+          # In this specific OpenAPI spec, the operationId is typically 'findPetsByStatus' or similar.
+          # Let's inspect the tools after discovery or allow a broader regex for demo.
+          # The spec has 'listPets' in some versions, but standard petstore (v3) uses 'findPetsByStatus', 'findPetsByTags', 'getPetById'.
+          # We'll allow 'findPetsByStatus' and 'getPetById'.
+          - action: ALLOW
+            name_regex: "^petstore-service\\.findPetsByStatus$"
+          - action: ALLOW
+            name_regex: "^petstore-service\\.getPetById$"
