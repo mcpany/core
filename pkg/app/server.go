@@ -38,8 +38,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 )
 
 var healthCheckClient = &http.Client{
@@ -320,7 +323,12 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers())
+	var allowedIPs []string
+	if cfg.GetGlobalSettings() != nil {
+		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -504,7 +512,13 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
+	allowedIPs []string,
 ) error {
+	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
+	if err != nil {
+		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
+	}
+
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
 	localCtx, cancel := context.WithCancel(ctx)
@@ -800,7 +814,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, mux, shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, ipMiddleware.Handler(mux), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
@@ -811,6 +825,27 @@ func (a *Application) runServerMode(
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
+			grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
+				if p, ok := peer.FromContext(ctx); ok {
+					if !ipMiddleware.Allow(p.Addr.String()) {
+						return nil, status.Error(codes.PermissionDenied, "IP not allowed")
+					}
+				}
+				return handler(ctx, req)
+			}
+			grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
+				if p, ok := peer.FromContext(ss.Context()); ok {
+					if !ipMiddleware.Allow(p.Addr.String()) {
+						return status.Error(codes.PermissionDenied, "IP not allowed")
+					}
+				}
+				return handler(srv, ss)
+			}
+			grpcOpts := []gogrpc.ServerOption{
+				gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
+				gogrpc.StreamInterceptor(grpcStreamInterceptor),
+			}
+
 			startGrpcServer(
 				localCtx,
 				&wg,
@@ -818,6 +853,7 @@ func (a *Application) runServerMode(
 				"Registration",
 				lis,
 				shutdownTimeout,
+				grpcOpts,
 				func(s *gogrpc.Server) {
 					registrationServer, err := mcpserver.NewRegistrationServer(bus)
 					if err != nil {
@@ -945,6 +981,7 @@ func startGrpcServer(
 	name string,
 	lis net.Listener,
 	shutdownTimeout time.Duration,
+	opts []gogrpc.ServerOption,
 	register func(*gogrpc.Server),
 ) {
 	wg.Add(1)
@@ -958,7 +995,8 @@ func startGrpcServer(
 					errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
 				}
 			}()
-			grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+			opts = append(opts, gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+			grpcServer := gogrpc.NewServer(opts...)
 			register(grpcServer)
 			reflection.Register(grpcServer)
 			return grpcServer
