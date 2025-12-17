@@ -278,7 +278,13 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 
 		resolvedURL := baseURL.JoinPath(endpointURL.Path)
-		resolvedURL.RawQuery = endpointURL.RawQuery
+		// Merge query parameters, allowing endpoint parameters to override base parameters
+		query := resolvedURL.Query()
+		endpointQuery := endpointURL.Query()
+		for k, v := range endpointQuery {
+			query[k] = v
+		}
+		resolvedURL.RawQuery = query.Encode()
 		fullURL := resolvedURL.String()
 
 		var inputSchema *structpb.Struct
