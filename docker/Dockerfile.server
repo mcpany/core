@@ -30,7 +30,7 @@ COPY . .
 # CGO_ENABLED=1 is required for go-sqlite3
 ARG TARGETOS
 ARG TARGETARCH
-RUN CGO_ENABLED=1 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -v -o /server cmd/server/main.go
+RUN CGO_ENABLED=1 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -v -o /server ./cmd/server
 
 # Stage 2: Create the small runtime image
 # Using distroless base image as CGO-enabled binaries are not fully static

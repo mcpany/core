@@ -134,5 +134,5 @@ Demonstrates denying all tools by default and allowing only a specific one.
 
 ### Agent Profiles
 
-Demonstrates switching between "planning" and "executor" profiles to change available tools.
+Demonstrates switching between "dev" and "prod" profiles to change available tools.
 [View Example](./examples/agent_profiles)
