@@ -5,6 +5,9 @@ version: "2"
 
 run:
   timeout: 5m
+  skip-dirs:
+    - build
+    - vendor
 
 linters:
   enable:
