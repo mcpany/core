@@ -4,7 +4,7 @@ MCP Any provides a caching middleware that can be used to cache the results of t
 
 ## Configuration
 
-Caching is configured at the **service level** in your configuration file.
+Caching can be configured at the **service level** (applying to all tools in the service) or at the **call level** (applying to specific tools). Call-level configuration overrides service-level settings.
 
 ### Fields
 
@@ -22,9 +22,14 @@ upstream_services:
       address: "https://api.weather.com"
       tools:
         - name: "get_forecast"
+      calls:
+        get_forecast:
+          cache:
+            is_enabled: true
+            ttl: "5m" # Overrides service default
     cache:
       is_enabled: true
-      ttl: "5m"
+      ttl: "1h"
 ```
 
 ## Use Case

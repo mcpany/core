@@ -1,0 +1,23 @@
+upstream_services:
+  - name: "chrome-devtools"
+    http_service:
+      address: "http://localhost:9222" # Assuming Chrome remote debugging port
+      tools:
+        - name: "get_page_content"
+          description: "Gets the content of a page"
+          call_id: "get_page_content"
+      calls:
+        get_page_content:
+          endpoint_path: "/json/version"
+          method: HTTP_METHOD_GET
+          input_schema:
+            type: "object"
+            properties:
+              url:
+                type: "string"
+            required: ["url"]
+    post_call_hooks:
+      - name: "convert_to_md"
+        webhook:
+          url: "http://localhost:8082/convert"
+          timeout: "5s"
