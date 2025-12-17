@@ -320,7 +320,16 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers())
+	return a.runServerMode(
+		ctx,
+		mcpSrv,
+		busProvider,
+		bindAddress,
+		grpcPort,
+		shutdownTimeout,
+		cfg.GetUsers(),
+		cfg.GetGlobalSettings().GetAllowedIps(),
+	)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -504,6 +513,7 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
+	allowedIPs []string,
 ) error {
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -534,6 +544,9 @@ func (a *Application) runServerMode(
 	for _, u := range users {
 		userMap[u.GetId()] = u
 	}
+
+	ipMiddleware := middleware.IPAllowlistMiddleware(allowedIPs)
+	ipInterceptor := middleware.NewIPAllowlistInterceptor(allowedIPs)
 
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
@@ -800,7 +813,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, mux, shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, ipMiddleware(mux), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
@@ -818,6 +831,10 @@ func (a *Application) runServerMode(
 				"Registration",
 				lis,
 				shutdownTimeout,
+				[]gogrpc.ServerOption{
+					gogrpc.ChainUnaryInterceptor(ipInterceptor.UnaryServerInterceptor()),
+					gogrpc.ChainStreamInterceptor(ipInterceptor.StreamServerInterceptor()),
+				},
 				func(s *gogrpc.Server) {
 					registrationServer, err := mcpserver.NewRegistrationServer(bus)
 					if err != nil {
@@ -945,6 +962,7 @@ func startGrpcServer(
 	name string,
 	lis net.Listener,
 	shutdownTimeout time.Duration,
+	opts []gogrpc.ServerOption,
 	register func(*gogrpc.Server),
 ) {
 	wg.Add(1)
@@ -958,7 +976,8 @@ func startGrpcServer(
 					errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
 				}
 			}()
-			grpcServer := gogrpc.NewServer(gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
+			baseOpts := []gogrpc.ServerOption{gogrpc.StatsHandler(&metrics.GrpcStatsHandler{})}
+			grpcServer := gogrpc.NewServer(append(baseOpts, opts...)...)
 			register(grpcServer)
 			reflection.Register(grpcServer)
 			return grpcServer

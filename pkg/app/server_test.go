@@ -852,7 +852,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -890,7 +890,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, nil, func(_ *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -961,7 +961,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 
 			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, func(_ *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, nil, func(_ *gogrpc.Server) {})
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -1086,7 +1086,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	// Start the gRPC server with a service that will hang.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, nil, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1165,7 +1165,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	// Start the gRPC server with a mock service that hangs.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, nil, func(s *gogrpc.Server) {
 		// This service will hang for 10 seconds, which is much longer than our
 		// shutdown timeout.
 		hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -1236,7 +1236,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, nil, func(s *gogrpc.Server) {
 		hangservice := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1333,7 +1333,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	require.NoError(t, err)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1488,7 +1488,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, func(_ *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, nil, func(_ *gogrpc.Server) {
 		_, err := mcpserver.NewRegistrationServer(nil)
 		if err != nil {
 			errChan <- fmt.Errorf("failed to create API server: %w", err)
@@ -1537,7 +1537,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, func(_ *gogrpc.Server) {})
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, nil, func(_ *gogrpc.Server) {})
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -1566,7 +1566,7 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, func(_ *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, nil, func(_ *gogrpc.Server) {
 		// No-op registration.
 	})
 
@@ -1602,7 +1602,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			// Start the gRPC server.
 			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, func(_ *gogrpc.Server) {})
+			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, nil, func(_ *gogrpc.Server) {})
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -1808,7 +1808,7 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a service that will hang, preventing a graceful shutdown.
-	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, nil, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1867,7 +1867,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, nil, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 5 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -1952,7 +1952,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, func(_ *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Panic", lis, 5*time.Second, nil, func(_ *gogrpc.Server) {
 		panic("test panic in registration")
 	})
 
@@ -1982,7 +1982,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil)
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil)
 	}()
 
 	select {
@@ -2014,7 +2014,7 @@ func TestStartGrpcServer_PanicHandling(t *testing.T) {
 		panic("registration failed")
 	}
 
-	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, nil, registerFunc)
 
 	// 3. Verification
 	select {
@@ -2056,7 +2056,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 		panic("panic during registration")
 	}
 
-	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, registerFunc)
+	startGrpcServer(ctx, &wg, errChan, "TestServer", lis, 1*time.Second, nil, registerFunc)
 
 	select {
 	case err := <-errChan:
@@ -2093,7 +2093,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, func(s *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, nil, func(s *gogrpc.Server) {
 		hangService := &mockHangService{hangTime: 10 * time.Second}
 		desc := &gogrpc.ServiceDesc{
 			ServiceName: "testhang.HangService",
@@ -2220,7 +2220,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, func(_ *gogrpc.Server) {
+	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, nil, func(_ *gogrpc.Server) {
 		// No services need to be registered for this test.
 	})
 
@@ -2247,4 +2247,77 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	if lis != nil {
 		_ = lis.Close()
 	}
+}
+
+func TestRun_IPAllowlist(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Config with blocked IP
+	configContent := `
+global_settings:
+  allowed_ips:
+    - "10.0.0.1" # Block localhost (127.0.0.1)
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	// Make request
+	req, err := http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	require.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err)
+
+	// Test Allowed
+	ctx2, cancel2 := context.WithCancel(context.Background())
+	defer cancel2()
+
+	configContentAllowed := `
+global_settings:
+  allowed_ips:
+    - "127.0.0.1"
+`
+	err = afero.WriteFile(fs, "/config_allowed.yaml", []byte(configContentAllowed), 0o644)
+	require.NoError(t, err)
+
+	errChan2 := make(chan error, 1)
+	go func() {
+		errChan2 <- app.Run(ctx2, fs, false, addr, "", []string{"/config_allowed.yaml"}, 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	require.NoError(t, err)
+	resp, err = http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	cancel2()
+	err = <-errChan2
+	assert.NoError(t, err)
 }

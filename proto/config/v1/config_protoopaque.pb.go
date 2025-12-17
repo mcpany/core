@@ -324,6 +324,7 @@ type GlobalSettings struct {
 	xxx_hidden_MessageBus       *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus"`
 	xxx_hidden_ApiKey           *string                 `protobuf:"bytes,5,opt,name=api_key"`
 	xxx_hidden_Profiles         []string                `protobuf:"bytes,6,rep,name=profiles"`
+	xxx_hidden_AllowedIps       []string                `protobuf:"bytes,7,rep,name=allowed_ips"`
 	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
 	XXX_presence                [1]uint32
 	unknownFields               protoimpl.UnknownFields
@@ -398,14 +399,21 @@ func (x *GlobalSettings) GetProfiles() []string {
 	return nil
 }
 
+func (x *GlobalSettings) GetAllowedIps() []string {
+	if x != nil {
+		return x.xxx_hidden_AllowedIps
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -414,11 +422,15 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
 	x.xxx_hidden_Profiles = v
+}
+
+func (x *GlobalSettings) SetAllowedIps(v []string) {
+	x.xxx_hidden_AllowedIps = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -481,6 +493,8 @@ type GlobalSettings_builder struct {
 	ApiKey *string
 	// The profiles to enable.
 	Profiles []string
+	// The list of allowed IP addresses or CIDR blocks.
+	AllowedIps []string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -488,19 +502,20 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
+	x.xxx_hidden_AllowedIps = b.AllowedIps
 	return m0
 }
 
@@ -517,13 +532,14 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xf1\x02\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\x93\x03\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x12\x18\n" +
 	"\aapi_key\x18\x05 \x01(\tR\aapi_key\x12\x1a\n" +
-	"\bprofiles\x18\x06 \x03(\tR\bprofiles\"w\n" +
+	"\bprofiles\x18\x06 \x03(\tR\bprofiles\x12 \n" +
+	"\vallowed_ips\x18\a \x03(\tR\vallowed_ips\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
