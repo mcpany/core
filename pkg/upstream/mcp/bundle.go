@@ -145,39 +145,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		command = runCmd[0]
 		args = runCmd[1:]
 	}
-	// Default command/args based on types if not in mcp_config
-	if command == "" {
-		switch manifest.Server.Type {
-		case typeNode:
-			command = typeNode
-			// entry_point likely relative to bundle root
-			ep := manifest.Server.EntryPoint
-			if ep == "" {
-				ep = "index.js" // fallback
-			}
-			// Use absolute path in container
-			args = []string{filepath.Join(containerMountPath, ep)}
-		case typePython:
-			command = typePython
-			ep := manifest.Server.EntryPoint
-			if ep == "" {
-				ep = "main.py"
-			}
-			args = []string{filepath.Join(containerMountPath, ep)}
-		case "uv":
-			runCmd := []string{"uv", "run"}
-			ep := manifest.Server.EntryPoint
-			if ep != "" {
-				runCmd = append(runCmd, filepath.Join(containerMountPath, ep))
-			}
-			command = runCmd[0]
-			args = runCmd[1:]
-		}
-	} else {
-		// Variable substitution for ${__dirname}
-		for i, arg := range args {
-			args[i] = strings.ReplaceAll(arg, "${__dirname}", containerMountPath)
-		}
+	// Variable substitution for ${__dirname}
+	for i, arg := range args {
+		args[i] = strings.ReplaceAll(arg, "${__dirname}", containerMountPath)
 	}
 
 	envList := make([]string, 0, len(env))

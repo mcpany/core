@@ -793,9 +793,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // local command-line process. It maps tool inputs to command-line arguments and
 // environment variables.
 type CommandTool struct {
-	tool           *v1.Tool
-	service        *configv1.CommandLineUpstreamService
-	callDefinition *configv1.CommandLineCallDefinition
+	tool            *v1.Tool
+	service         *configv1.CommandLineUpstreamService
+	callDefinition  *configv1.CommandLineCallDefinition
+	executorFactory func(*configv1.ContainerEnvironment) command.Executor
 }
 
 // NewCommandTool creates a new CommandTool.
@@ -1043,7 +1044,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		defer cancel()
 	}
 
-	executor := command.NewExecutor(t.service.GetContainerEnvironment())
+	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
 	env := os.Environ()
 	for key, value := range inputs {
@@ -1182,4 +1183,11 @@ func prettyPrint(input []byte, contentType string) string {
 	}
 
 	return string(input)
+}
+
+func (t *CommandTool) getExecutor(env *configv1.ContainerEnvironment) command.Executor {
+	if t.executorFactory != nil {
+		return t.executorFactory(env)
+	}
+	return command.NewExecutor(env)
 }

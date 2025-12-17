@@ -51,6 +51,9 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 
 // Close closes the NATS bus.
 func (b *Bus[T]) Close() {
+	if b.nc != nil {
+		b.nc.Close()
+	}
 	if b.s != nil {
 		b.s.Shutdown()
 	}
