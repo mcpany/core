@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package upstream contains integration tests for upstream services.
-
 package upstream
 
 import (
