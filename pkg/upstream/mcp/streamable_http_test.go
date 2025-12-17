@@ -635,6 +635,15 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		assert.Contains(t, cmd.Path, "sudo")
 		assert.Equal(t, []string{"sudo", "docker", "run", "hello-world"}, cmd.Args)
 	})
+
+	t.Run("arguments with shell metacharacters should be quoted", func(t *testing.T) {
+		stdio := &configv1.McpStdioConnection{}
+		stdio.SetCommand("echo")
+		stdio.SetArgs([]string{"hello; date"})
+		cmd := buildCommandFromStdioConfig(stdio)
+		assert.Equal(t, "/bin/sh", cmd.Path)
+		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'hello; date'"}, cmd.Args)
+	})
 }
 
 func TestWithMCPClientSession_NoTransport(t *testing.T) {

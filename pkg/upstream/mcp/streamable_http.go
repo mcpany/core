@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"al.essio.dev/pkg/shellescape"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/logging"
@@ -319,8 +320,10 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) *exec.Cmd {
 	scriptCommands = append(scriptCommands, stdio.GetSetupCommands()...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
-	mainCommandParts := []string{"exec", command}
-	mainCommandParts = append(mainCommandParts, args...)
+	mainCommandParts := []string{"exec", shellescape.Quote(command)}
+	for _, arg := range args {
+		mainCommandParts = append(mainCommandParts, shellescape.Quote(arg))
+	}
 	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
 
 	script := strings.Join(scriptCommands, " && ")
