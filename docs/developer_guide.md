@@ -119,6 +119,16 @@ upstreamServices:
                   description: "A paged array of pets"
 ```
 
+## Generating Documentation
+
+You can automatically generate Markdown documentation for your `mcpany` configuration using the `mcpany` CLI.
+
+```bash
+mcpany config doc --config-path ./config.yaml
+```
+
+This command will output a Markdown formatted list of all available tools, their descriptions, and input schemas, which is useful for sharing with consumers of your MCP server.
+
 ## Makefile Commands
 
 This project uses a Makefile to simplify common development tasks. Run `make` or `make help` to see a list of all available commands.
