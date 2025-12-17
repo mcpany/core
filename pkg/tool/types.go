@@ -58,6 +58,11 @@ type ServiceInfo struct {
 	Name   string
 	Config *configv1.UpstreamServiceConfig
 	Fds    *descriptorpb.FileDescriptorSet
+
+	// PreHooks are the cached pre-call hooks for the service.
+	PreHooks []PreCallHook
+	// PostHooks are the cached post-call hooks for the service.
+	PostHooks []PostCallHook
 }
 
 // ExecutionRequest represents a request to execute a specific tool, including

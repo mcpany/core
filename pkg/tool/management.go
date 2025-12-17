@@ -102,26 +102,9 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		var preHooks []PreCallHook
 		var postHooks []PostCallHook
 
-		if ok && serviceInfo.Config != nil {
-			// 1. New Call Policies -> converted to PreHook
-			for _, policy := range serviceInfo.Config.GetCallPolicies() {
-				preHooks = append(preHooks, NewPolicyHook(policy))
-			}
-			// 2. PreCallHooks
-			for _, hCfg := range serviceInfo.Config.GetPreCallHooks() {
-				if p := hCfg.GetCallPolicy(); p != nil {
-					preHooks = append(preHooks, NewPolicyHook(p))
-				}
-				if w := hCfg.GetWebhook(); w != nil {
-					preHooks = append(preHooks, NewWebhookHook(w))
-				}
-			}
-			// 3. PostCallHooks
-			for _, hCfg := range serviceInfo.Config.GetPostCallHooks() {
-				if w := hCfg.GetWebhook(); w != nil {
-					postHooks = append(postHooks, NewWebhookHook(w))
-				}
-			}
+		if ok {
+			preHooks = serviceInfo.PreHooks
+			postHooks = serviceInfo.PostHooks
 		}
 
 		// Execute Pre Hooks
@@ -186,6 +169,32 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 // serviceID is the unique identifier for the service.
 // info is the ServiceInfo struct containing the service's metadata.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
+	if info.Config != nil {
+		var preHooks []PreCallHook
+		var postHooks []PostCallHook
+
+		// 1. New Call Policies -> converted to PreHook
+		for _, policy := range info.Config.GetCallPolicies() {
+			preHooks = append(preHooks, NewPolicyHook(policy))
+		}
+		// 2. PreCallHooks
+		for _, hCfg := range info.Config.GetPreCallHooks() {
+			if p := hCfg.GetCallPolicy(); p != nil {
+				preHooks = append(preHooks, NewPolicyHook(p))
+			}
+			if w := hCfg.GetWebhook(); w != nil {
+				preHooks = append(preHooks, NewWebhookHook(w))
+			}
+		}
+		// 3. PostCallHooks
+		for _, hCfg := range info.Config.GetPostCallHooks() {
+			if w := hCfg.GetWebhook(); w != nil {
+				postHooks = append(postHooks, NewWebhookHook(w))
+			}
+		}
+		info.PreHooks = preHooks
+		info.PostHooks = postHooks
+	}
 	tm.serviceInfo.Store(serviceID, info)
 }
 
