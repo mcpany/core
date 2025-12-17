@@ -234,7 +234,6 @@ type HTTPTool struct {
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
-	parser            *transformer.TextParser
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -256,7 +255,6 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
-		parser:            transformer.NewTextParser(),
 	}
 }
 
@@ -480,8 +478,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			return map[string]any{"raw": respBody}, nil
 		}
 
+		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := t.parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
@@ -517,7 +516,6 @@ type MCPTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
-	parser            *transformer.TextParser
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -532,7 +530,6 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-		parser:            transformer.NewTextParser(),
 	}
 }
 
@@ -604,8 +601,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
 			return map[string]any{"raw": responseBytes}, nil
 		}
+		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := t.parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
@@ -646,7 +644,6 @@ type OpenAPITool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
-	parser            *transformer.TextParser
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -669,7 +666,6 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		cache:             callDefinition.GetCache(),
-		parser:            transformer.NewTextParser(),
 	}
 }
 
@@ -776,8 +772,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		if t.outputTransformer.GetFormat() == configv1.OutputTransformer_RAW_BYTES {
 			return map[string]any{"raw": respBody}, nil
 		}
+		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := t.parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
