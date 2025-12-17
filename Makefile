@@ -335,7 +335,7 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v2.7.2"); \
+	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "version 2.7.2"); \
 	if [ -n "$$LINT_VER_CHECK" ]; then \
 		echo "golangci-lint v2.7.2 is already installed."; \
 	else \
