@@ -1,0 +1,66 @@
+global_settings:
+  profiles:
+    - "planning"
+    - "executor"
+
+upstream_services:
+  - id: "planning-tools"
+    name: "planning-tools"
+    command_line_service:
+      command: "echo"
+      local: true
+      calls:
+        "default":
+          args: ["{{args}}"]
+      tools:
+        - name: "search_web"
+          description: "Search the web"
+          call_id: "default"
+          input_schema: { type: object }
+      resources:
+        - uri: "planning://guidelines"
+          name: "planning-guidelines"
+          static:
+            text_content: "Always plan before acting."
+    profiles:
+      - id: "planning"
+        name: "planning"
+
+  - id: "executor-tools"
+    name: "executor-tools"
+    command_line_service:
+      command: "echo"
+      local: true
+      calls:
+        "default":
+          args: ["{{args}}"]
+      tools:
+        - name: "run_code"
+          description: "Run code"
+          call_id: "default"
+          input_schema: { type: object }
+      prompts:
+        - name: "fix_bug"
+          description: "Fix a bug"
+    profiles:
+      - id: "executor"
+        name: "executor"
+
+  - id: "shared-tools"
+    name: "shared-tools"
+    command_line_service:
+      command: "echo"
+      local: true
+      calls:
+        "default":
+          args: ["{{args}}"]
+      tools:
+        - name: "ping"
+          description: "Ping service"
+          call_id: "default"
+          input_schema: { type: object }
+    profiles:
+      - id: "planning"
+        name: "planning"
+      - id: "executor"
+        name: "executor"
