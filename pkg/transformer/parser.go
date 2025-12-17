@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/antchfx/xmlquery"
 	"github.com/antchfx/xpath"
@@ -21,7 +22,10 @@ import (
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
 type TextParser struct {
-	transformer *Transformer
+	transformer   *Transformer
+	regexCache    sync.Map
+	xpathCache    sync.Map
+	jsonPathCache sync.Map
 }
 
 // NewTextParser creates and returns a new instance of TextParser.
@@ -73,10 +77,17 @@ func (p *TextParser) parseJSON(input []byte, config map[string]string) (map[stri
 
 	result := make(map[string]any)
 	for key, path := range config {
-		j := jsonpath.New(key)
-		if err := j.Parse(path); err != nil {
-			return nil, fmt.Errorf("failed to parse JSONPath for key '%s': %w", key, err)
+		var j *jsonpath.JSONPath
+		if val, ok := p.jsonPathCache.Load(path); ok {
+			j = val.(*jsonpath.JSONPath)
+		} else {
+			j = jsonpath.New(key)
+			if err := j.Parse(path); err != nil {
+				return nil, fmt.Errorf("failed to parse JSONPath for key '%s': %w", key, err)
+			}
+			p.jsonPathCache.Store(path, j)
 		}
+
 		values, err := j.FindResults(data)
 		if err != nil && !strings.Contains(err.Error(), "is not found") {
 			return nil, fmt.Errorf("failed to find results for JSONPath '%s': %w", path, err)
@@ -99,10 +110,18 @@ func (p *TextParser) parseXML(input []byte, config map[string]string) (map[strin
 
 	result := make(map[string]any)
 	for key, path := range config {
-		expr, err := xpath.Compile(path)
-		if err != nil {
-			return nil, fmt.Errorf("failed to compile xpath for key '%s': %w", key, err)
+		var expr *xpath.Expr
+		if val, ok := p.xpathCache.Load(path); ok {
+			expr = val.(*xpath.Expr)
+		} else {
+			var err error
+			expr, err = xpath.Compile(path)
+			if err != nil {
+				return nil, fmt.Errorf("failed to compile xpath for key '%s': %w", key, err)
+			}
+			p.xpathCache.Store(path, expr)
 		}
+
 		node := xmlquery.QuerySelector(doc, expr)
 		if node != nil {
 			result[key] = node.InnerText()
@@ -118,9 +137,16 @@ func (p *TextParser) parseText(input []byte, config map[string]string) (map[stri
 	inputText := string(input)
 
 	for key, pattern := range config {
-		re, err := regexp.Compile(pattern)
-		if err != nil {
-			return nil, fmt.Errorf("invalid regex for key '%s': %w", key, err)
+		var re *regexp.Regexp
+		if val, ok := p.regexCache.Load(pattern); ok {
+			re = val.(*regexp.Regexp)
+		} else {
+			var err error
+			re, err = regexp.Compile(pattern)
+			if err != nil {
+				return nil, fmt.Errorf("invalid regex for key '%s': %w", key, err)
+			}
+			p.regexCache.Store(pattern, re)
 		}
 
 		matches := re.FindStringSubmatch(inputText)
