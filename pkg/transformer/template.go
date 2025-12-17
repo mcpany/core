@@ -5,7 +5,7 @@ package transformer
 
 import (
 	"fmt"
-	"strings"
+	"io"
 
 	"github.com/valyala/fasttemplate"
 )
@@ -43,36 +43,11 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // template.
 // It returns the rendered string or an error if the template execution fails.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
-	tags := extractTags(t.raw, t.startTag, t.endTag)
-	for _, tag := range tags {
-		if _, ok := params[tag]; !ok {
-			return "", fmt.Errorf("missing key: %s", tag)
+	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
+		val, ok := params[tag]
+		if !ok {
+			return 0, fmt.Errorf("missing key: %s", tag)
 		}
-	}
-
-	newParams := make(map[string]any, len(params))
-	for k, v := range params {
-		newParams[k] = fmt.Sprintf("%v", v)
-	}
-	s := t.template.ExecuteString(newParams)
-	return s, nil
-}
-
-func extractTags(template, startTag, endTag string) []string {
-	var tags []string
-	start := 0
-	for {
-		start = strings.Index(template, startTag)
-		if start == -1 {
-			break
-		}
-		template = template[start+len(startTag):]
-		end := strings.Index(template, endTag)
-		if end == -1 {
-			break
-		}
-		tags = append(tags, template[:end])
-		template = template[end+len(endTag):]
-	}
-	return tags
+		return fmt.Fprintf(w, "%v", val)
+	})
 }
