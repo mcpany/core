@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package mcpany.config.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+
+// WebhookReview explains the request and response of a webhook call.
+message WebhookReview {
+  WebhookRequest request = 1;
+  WebhookResponse response = 2;
+}
+
+message WebhookRequest {
+  // Unique identifier for the request.
+  string uid = 1;
+  // The operation type (e.g., "PreCall", "PostCall").
+  string kind = 2;
+  // The tool name being executed.
+  string tool_name = 3;
+  // The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
+  google.protobuf.Struct object = 4;
+}
+
+message WebhookResponse {
+  // Unique identifier for the request.
+  string uid = 1;
+  // allowed indicates if the request is permitted (for PreCall).
+  bool allowed = 2;
+  // status contains extra details for the decision.
+  WebhookStatus status = 3;
+  // replacement_object is a complete replacement for the object (simple mutation).
+  google.protobuf.Struct replacement_object = 4;
+}
+
+message WebhookStatus {
+  int32 code = 1;
+  string message = 2;
+}
