@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -37,8 +38,12 @@ func IsValidBindAddress(s string) error {
 // IsSecurePath checks if a given file path is secure.
 // It is a variable to allow mocking in tests.
 var IsSecurePath = func(path string) error {
-	if strings.Contains(path, "..") {
-		return fmt.Errorf("path contains '..', which is not allowed")
+	clean := filepath.Clean(path)
+	parts := strings.Split(clean, string(os.PathSeparator))
+	for _, part := range parts {
+		if part == ".." {
+			return fmt.Errorf("path contains '..', which is not allowed")
+		}
 	}
 	return nil
 }
