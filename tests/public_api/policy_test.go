@@ -43,7 +43,9 @@ upstream_services:
     call_policies:
       - default_action: DENY
         rules: []
+    auto_discover_tool: true
 `, mockServerPath)
+
 	t.Run("DenyAll", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyDenyAll", configDenyAll)
 		defer serverInfo.CleanupFunc()
@@ -98,6 +100,7 @@ upstream_services:
         rules:
           - action: DENY
             name_regex: "read_file"
+    auto_discover_tool: true
 `, mockServerPath)
 	t.Run("Filesystem_Policy", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestFs", configFs)
