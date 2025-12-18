@@ -216,7 +216,8 @@ func TestUpstream_Register(t *testing.T) {
 		defer func() { connectForTesting = originalConnect }()
 
 		config := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service"),
+			Name:             proto.String("test-service"),
+			AutoDiscoverTool: proto.Bool(true),
 			McpService: configv1.McpUpstreamService_builder{
 				StdioConnection: configv1.McpStdioConnection_builder{
 					Command: proto.String("echo"),
@@ -434,6 +435,7 @@ func TestUpstream_Register(t *testing.T) {
 
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("test-service-http")
+		config.SetAutoDiscoverTool(true)
 		mcpService := &configv1.McpUpstreamService{}
 		httpConnection := &configv1.McpStreamableHttpConnection{}
 		httpConnection.SetHttpAddress(server.URL)

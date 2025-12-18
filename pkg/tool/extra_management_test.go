@@ -97,12 +97,6 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 	}
 	_ = m.AddTool(mt)
 
-	// Setup ServiceInfo with Config
-	svcConfig := &configv1.UpstreamServiceConfig{
-		Name: proto.String("s1"),
-	}
-
-
 	// Case: PreHook Error (via Policy)
 	// We can use PolicyHook with ActionDeny
 	callPolicy := configv1.CallPolicy_builder{
@@ -114,9 +108,14 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	svcConfig.CallPolicies = []*configv1.CallPolicy{callPolicy}
-	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
+	// Setup ServiceInfo with Config
+	svcConfig := &configv1.UpstreamServiceConfig{
+		Name:         proto.String("s1"),
+		CallPolicies: []*configv1.CallPolicy{callPolicy},
+	}
+
+	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
 	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	if assert.Error(t, err) {

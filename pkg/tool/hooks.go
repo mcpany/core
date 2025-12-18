@@ -103,8 +103,13 @@ func (h *PolicyHook) ExecutePre(
 		}
 
 		// Rule matched!
-		if rule.GetAction() == configv1.CallPolicy_ALLOW {
+		switch rule.GetAction() {
+		case configv1.CallPolicy_ALLOW:
 			return ActionAllow, nil, nil
+		case configv1.CallPolicy_SAVE_CACHE:
+			return ActionSaveCache, nil, nil
+		case configv1.CallPolicy_DELETE_CACHE:
+			return ActionDeleteCache, nil, nil
 		}
 		return ActionDeny, nil, fmt.Errorf("tool execution denied by policy rule: %s", req.ToolName)
 	}
@@ -117,16 +122,16 @@ func (h *PolicyHook) ExecutePre(
 
 // (Deprecated hooks removed)
 
-// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
-type WebhookHook struct {
+// WebhookClient handles the communication with an external webhook.
+type WebhookClient struct {
 	url     string
 	timeout time.Duration
 	client  *http.Client
-	webhook *webhook.Webhook // Keep for signature if needed, or replace with CloudEvents signature
+	webhook *webhook.Webhook
 }
 
-// NewWebhookHook creates a new WebhookHook.
-func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
+// NewWebhookClient creates a new WebhookClient.
+func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
 		timeout = t.AsDuration()
@@ -149,7 +154,7 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 		}
 	}
 
-	return &WebhookHook{
+	return &WebhookClient{
 		url:     config.GetUrl(),
 		timeout: timeout,
 		client:  client,
@@ -157,44 +162,54 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	}
 }
 
-// SigningRoundTripper signs the request body.
-type SigningRoundTripper struct {
-	signer *webhook.Webhook
-	base   http.RoundTripper
-}
+// Call sends a cloud event to the webhook and returns the response event.
+func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
+	event := cloudevents.NewEvent()
+	event.SetID(uuid.New().String())
+	event.SetSource("https://github.com/mcpany/core")
+	event.SetType(eventType)
+	event.SetTime(time.Now())
 
-// RoundTrip implements http.RoundTripper.
-func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	if req.Body != nil {
-		bodyBytes, err := io.ReadAll(req.Body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read request body for signing: %w", err)
-		}
-		_ = req.Body.Close()
-		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
-
-		msgID := uuid.New().String()
-		now := time.Now()
-		signature, err := s.signer.Sign(msgID, now, bodyBytes)
-		if err != nil {
-			return nil, fmt.Errorf("failed to sign request: %w", err)
-		}
-		req.Header.Set("webhook-signature", signature)
-		req.Header.Set("webhook-id", msgID)
-		req.Header.Set("webhook-timestamp", fmt.Sprintf("%d", now.Unix()))
+	if err := event.SetData(cloudevents.ApplicationJSON, data); err != nil {
+		return nil, fmt.Errorf("failed to set cloud event data: %w", err)
 	}
 
-	base := s.base
-	if base == nil {
-		base = http.DefaultTransport
+	p, err := cehttp.New(
+		cehttp.WithTarget(c.url),
+		cehttp.WithClient(*c.client),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create protocol: %w", err)
 	}
-	return base.RoundTrip(req)
+
+	cl, err := cloudevents.NewClient(p, cloudevents.WithTimeNow(), cloudevents.WithUUIDs())
+	if err != nil {
+		return nil, fmt.Errorf("failed to create client: %w", err)
+	}
+
+	respEvent, result := cl.Request(ctx, event)
+	if cloudevents.IsUndelivered(result) {
+		return nil, fmt.Errorf("failed to send webhook event: %w", result)
+	}
+
+	if respEvent == nil {
+		logging.GetLogger().Error("No response event received", "result", result)
+		return nil, fmt.Errorf("webhook error: no response event received (result: %v)", result)
+	}
+
+	return respEvent, nil
 }
 
-// WebhookStatus represents the status of a webhook response.
-type WebhookStatus struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
+// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+type WebhookHook struct {
+	client *WebhookClient
+}
+
+// NewWebhookHook creates a new WebhookHook.
+func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
+	return &WebhookHook{
+		client: NewWebhookClient(config),
+	}
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
@@ -210,22 +225,13 @@ func (h *WebhookHook) ExecutePre(
 		}
 	}
 
-	event := cloudevents.NewEvent()
-	event.SetID(uuid.New().String())
-	event.SetSource("https://github.com/mcpany/core")
-	event.SetType("com.mcpany.tool.pre_call")
-	event.SetTime(time.Now())
-
 	data := map[string]any{
 		"kind":      configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL,
 		"tool_name": req.ToolName,
 		"inputs":    inputsMap,
 	}
-	if err := event.SetData(cloudevents.ApplicationJSON, data); err != nil {
-		return ActionDeny, nil, fmt.Errorf("failed to set cloud event data: %w", err)
-	}
 
-	respEvent, err := h.callWebhook(ctx, event)
+	respEvent, err := h.client.Call(ctx, "com.mcpany.tool.pre_call", data)
 	if err != nil {
 		return ActionDeny, nil, fmt.Errorf("webhook error: %w", err)
 	}
@@ -274,22 +280,14 @@ func (h *WebhookHook) ExecutePost(
 	result any,
 ) (any, error) {
 	logging.GetLogger().Info("ExecutePost called", "tool", req.ToolName)
-	event := cloudevents.NewEvent()
-	event.SetID(uuid.New().String())
-	event.SetSource("https://github.com/mcpany/core")
-	event.SetType("com.mcpany.tool.post_call")
-	event.SetTime(time.Now())
 
 	data := map[string]any{
 		"kind":      configv1.WebhookKind_WEBHOOK_KIND_POST_CALL,
 		"tool_name": req.ToolName,
 		"result":    result,
 	}
-	if err := event.SetData(cloudevents.ApplicationJSON, data); err != nil {
-		return nil, fmt.Errorf("failed to set cloud event data: %w", err)
-	}
 
-	respEvent, err := h.callWebhook(ctx, event)
+	respEvent, err := h.client.Call(ctx, "com.mcpany.tool.post_call", data)
 	if err != nil {
 		return nil, fmt.Errorf("webhook error: %w", err)
 	}
@@ -306,12 +304,6 @@ func (h *WebhookHook) ExecutePost(
 	}
 
 	if respData.ReplacementObject != nil {
-		// If replacement object is present, return it.
-		// We need to determine if we should return map or value.
-		// Similar strategy: if original was string, try to extract "value" from replacement if it is map?
-		// But CloudEvents data is cleaner.
-		// If replacement object is just "some string" (quoted in JSON), Unmarshal handles it.
-		// Since ReplacementObject is RawMessage, we can unmarshal it to any.
 		var newResult any
 		if err := json.Unmarshal(respData.ReplacementObject, &newResult); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal replacement result: %w", err)
@@ -330,69 +322,47 @@ func (h *WebhookHook) ExecutePost(
 	return result, nil
 }
 
-func (h *WebhookHook) callWebhook(ctx context.Context, event cloudevents.Event) (*cloudevents.Event, error) {
-	p, err := cehttp.New(
-		cehttp.WithTarget(h.url),
-		cehttp.WithClient(*h.client),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create protocol: %w", err)
+// WebhookStatus represents the status returned by the webhook.
+type WebhookStatus struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+// SigningRoundTripper signs the request using the webhook signer.
+type SigningRoundTripper struct {
+	signer *webhook.Webhook
+	base   http.RoundTripper
+}
+
+// RoundTrip executes the HTTP request with a signature.
+func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	if s.signer != nil {
+		payload := []byte{} // Signing requires payload, but request body might be stream.
+
+		if req.Body != nil {
+			var err error
+			payload, err = io.ReadAll(req.Body)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read request body for signing: %w", err)
+			}
+			req.Body = io.NopCloser(bytes.NewReader(payload))
+		}
+
+		msgID := uuid.New().String()
+		now := time.Now()
+		signature, err := s.signer.Sign(msgID, now, payload)
+		if err != nil {
+			return nil, fmt.Errorf("failed to sign request: %w", err)
+		}
+
+		req.Header.Set("Webhook-Id", msgID)
+		req.Header.Set("Webhook-Timestamp", fmt.Sprintf("%d", now.Unix()))
+		req.Header.Set("Webhook-Signature", signature)
 	}
 
-	c, err := cloudevents.NewClient(p, cloudevents.WithTimeNow(), cloudevents.WithUUIDs())
-	if err != nil {
-		return nil, fmt.Errorf("failed to create client: %w", err)
+	base := s.base
+	if base == nil {
+		base = http.DefaultTransport
 	}
-
-	// We can manually add signature headers here if we modify the context or protocol wrapper?
-	// The standard-webhooks library expects raw body. CloudEvents handles encoding.
-	// To combine them, we might need to intercept the request.
-	// Or we can assume CloudEvents has its own security or use standard headers.
-	// The user asked to use standard-webhooks signature previously.
-	// But standard-webhooks signs the *raw body*.
-	// cloudevents-go handles body serialization internally.
-	// We can use a middleware or just let cloudevents do its thing?
-	// For now, let's stick to CloudEvents structure.
-	// If we MUST use standard-webhooks signature, we need to capture the body.
-	// Let's implement without explicit signature first, or rely on HTTPS/Auth header.
-	// The user prompt mentioned "use standard-webhooks ... then format should follow cloudevents".
-	// It's a bit mixed.
-	// Standard webhooks usually implies a specific payload format too.
-	// If we use CloudEvents, we are compliant with CloudEvents.
-	// We can add a custom header extension `webhook-signature`?
-	// Let's proceed with pure CloudEvents first as it is the "latest" instruction override.
-
-	// Issue: We need to receive a response event!
-	// cloudevents Request(ctx, event) returns (*Event, Result)
-
-	respEvent, result := c.Request(ctx, event)
-	if cloudevents.IsUndelivered(result) {
-		return nil, fmt.Errorf("failed to send webhook event: %w", result)
-	}
-
-	if respEvent == nil {
-		// Log the result which might contain HTTP status error
-		logging.GetLogger().Error("No response event received", "result", result)
-		return nil, fmt.Errorf("webhook error: no response event received (result: %v)", result)
-	}
-	// If status is not 2xx, result is error.
-
-	if respEvent != nil {
-		return respEvent, nil
-	}
-
-	// If no event returned (e.g. 202 Accepted or empty body 200), that's an issue for us if we expect review.
-	// But maybe we allow it (no change).
-	if result != nil && !cloudevents.IsACK(result) {
-             // It might be an error result
-             return nil, fmt.Errorf("request failed: %w", result)
-	}
-
-	// If empty response, assume allowed, no change?
-	// Or should we synthesize a response?
-	// Let's assume we REQUIRE a response event for now since it's a "Review" system.
-	// But typical webhooks are fire-and-forget unless "pre-call".
-	// Pre-call MUST reply.
-
-	return nil, fmt.Errorf("no response event received")
+	return base.RoundTrip(req)
 }

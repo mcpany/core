@@ -222,7 +222,8 @@ func TestUpstream_Register_Stdio_Success(t *testing.T) {
 	rm := &mockResourceManagerCoverage{}
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("test-stdio-success"),
+		Name:             proto.String("test-stdio-success"),
+		AutoDiscoverTool: proto.Bool(true),
 		McpService: configv1.McpUpstreamService_builder{
 			StdioConnection: configv1.McpStdioConnection_builder{
 				Command: proto.String("echo"),
