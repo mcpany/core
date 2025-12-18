@@ -64,23 +64,22 @@ func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionR
 	}
 	argsStr := string(argsBytes)
 
-	if m.shouldBlock(policies, req.ToolName, argsStr) {
+	if err := m.checkPolicy(policies, req.ToolName, argsStr); err != nil {
 		metrics.IncrCounterWithLabels([]string{"call_policy", "blocked_total"}, 1, []metrics.Label{
 			{Name: "service_id", Value: serviceID},
 			{Name: "tool_name", Value: req.ToolName},
 		})
-		return nil, fmt.Errorf("execution blocked by policy")
+		return nil, err
 	}
 
 	return next(ctx, req)
 }
 
-func (m *CallPolicyMiddleware) shouldBlock(policies []*configv1.CallPolicy, toolName, argsStr string) bool {
+func (m *CallPolicyMiddleware) checkPolicy(policies []*configv1.CallPolicy, toolName, argsStr string) error {
 	for _, policy := range policies {
 		if policy == nil {
 			continue
 		}
-		policyBlocked := false
 		matchedRule := false
 		for _, rule := range policy.GetRules() {
 			matched := true
@@ -104,20 +103,16 @@ func (m *CallPolicyMiddleware) shouldBlock(policies []*configv1.CallPolicy, tool
 			if matched {
 				matchedRule = true
 				if rule.GetAction() == configv1.CallPolicy_DENY {
-					policyBlocked = true
+					return fmt.Errorf("execution denied by policy")
 				}
 				break // First match wins
 			}
 		}
 		if !matchedRule {
 			if policy.GetDefaultAction() == configv1.CallPolicy_DENY {
-				policyBlocked = true
+				return fmt.Errorf("execution denied by default policy")
 			}
 		}
-
-		if policyBlocked {
-			return true
-		}
 	}
-	return false
+	return nil
 }
