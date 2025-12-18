@@ -9,6 +9,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -100,7 +101,12 @@ message InputTransformer {
   // A text template to be rendered.
   // This is used for generating the request body for POST/PUT requests.
   // The template engine is compatible with Jinja2.
-  string template = 1;
+  // A text template to be rendered.
+  // This is used for generating the request body for POST/PUT requests.
+  // The template engine is compatible with Jinja2.
+  string template = 1 [deprecated = true];
+  // A webhook to call to transform the input.
+  WebhookConfig webhook = 2;
 }
 
 // OutputTransformer defines how to parse an output text into structured data.

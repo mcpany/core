@@ -110,6 +110,34 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			},
 			wantAction: ActionAllow,
 		},
+		{
+			name: "Save Cache Rule",
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
+				Rules: []*configv1.CallPolicyRule{
+					{
+						Action:    ptr(configv1.CallPolicy_SAVE_CACHE),
+						NameRegex: ptr("^save-tool.*"),
+					},
+				},
+			},
+			toolName:   "save-tool",
+			wantAction: ActionSaveCache,
+		},
+		{
+			name: "Delete Cache Rule",
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
+				Rules: []*configv1.CallPolicyRule{
+					{
+						Action:    ptr(configv1.CallPolicy_DELETE_CACHE),
+						NameRegex: ptr("^delete-tool.*"),
+					},
+				},
+			},
+			toolName:   "delete-tool",
+			wantAction: ActionDeleteCache,
+		},
 	}
 
 	for _, tt := range tests {
