@@ -24,15 +24,19 @@ type Upstream interface {
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
 	//
-	// ctx is the context for the registration process.
-	// serviceConfig contains the configuration for the upstream service.
-	// toolManager is the manager where discovered tools will be registered.
-	// promptManager is the manager where discovered prompts will be registered.
-	// resourceManager is the manager where discovered resources will be registered.
-	// isReload indicates whether this is an initial registration or a reload of an
-	// existing service.
-	// It returns a unique service key, a list of discovered tool definitions, and
-	// an error if registration fails.
+	// Parameters:
+	//   - ctx: The context for the registration process.
+	//   - serviceConfig: The configuration for the upstream service.
+	//   - toolManager: The manager where discovered tools will be registered.
+	//   - promptManager: The manager where discovered prompts will be registered.
+	//   - resourceManager: The manager where discovered resources will be registered.
+	//   - isReload: Indicates whether this is an initial registration or a reload.
+	//
+	// Returns:
+	//   - A unique service key.
+	//   - A list of discovered tool definitions.
+	//   - A list of discovered resource definitions.
+	//   - An error if registration fails.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,

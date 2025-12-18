@@ -49,7 +49,9 @@ type GitHub struct {
 //   - ctx: The context for the client creation.
 //   - rawURL: The GitHub URL to parse.
 //
-// Returns a new GitHub client or an error if the URL is invalid.
+// Returns:
+//   - A pointer to a new GitHub client.
+//   - An error if the URL is invalid.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -96,14 +98,20 @@ func isGitHubURL(rawURL string) bool {
 }
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
+//
+// Returns:
+//   - The raw content URL string.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
 
 // Content represents a file or directory in a GitHub repository.
 type Content struct {
+	// Type is the type of content (e.g., "file", "dir").
 	Type        string `json:"type"`
+	// HTMLURL is the URL to view the content on GitHub.
 	HTMLURL     string `json:"html_url"`
+	// DownloadURL is the URL to download the content (only for files).
 	DownloadURL string `json:"download_url"`
 }
 
@@ -114,7 +122,9 @@ type Content struct {
 //   - ctx: The context for the request.
 //   - auth: Optional authentication configuration for accessing private repos.
 //
-// Returns a slice of Content or an error if the fetch fails.
+// Returns:
+//   - A slice of Content objects.
+//   - An error if the fetch fails.
 func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

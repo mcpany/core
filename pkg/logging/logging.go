@@ -48,7 +48,8 @@ func Init(level slog.Level, output io.Writer) {
 // been initialized through a call to `Init`, this function will initialize it
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
-// Returns the global `*slog.Logger` instance.
+// Returns:
+//   - The global `*slog.Logger` instance.
 func GetLogger() *slog.Logger {
 	once.Do(func() {
 		defaultLogger = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
@@ -60,6 +61,12 @@ func GetLogger() *slog.Logger {
 }
 
 // ToSlogLevel converts a string log level to a slog.Level.
+//
+// Parameters:
+//   - level: The log level from the configuration.
+//
+// Returns:
+//   - The corresponding slog.Level.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:
