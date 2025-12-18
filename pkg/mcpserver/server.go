@@ -135,6 +135,65 @@ func NewServer(
 		},
 	)
 
+	s.router.Register(
+		consts.MethodToolsCall,
+		func(ctx context.Context, req mcp.Request) (mcp.Result, error) {
+			if r, ok := req.(*mcp.CallToolRequest); ok {
+				execReq := &tool.ExecutionRequest{
+					ToolName:   r.Params.Name,
+					ToolInputs: r.Params.Arguments,
+				}
+				res, err := s.CallTool(ctx, execReq)
+				if err != nil {
+					return nil, err
+				}
+				if result, ok := res.(mcp.Result); ok {
+					return result, nil
+				}
+
+				// Handle map[string]any result (e.g. from HTTP tools)
+				if resultMap, ok := res.(map[string]any); ok {
+					// Convert map to CallToolResult via JSON
+					jsonData, err := json.Marshal(resultMap)
+					if err != nil {
+						return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
+					}
+
+					// Heuristic: If map doesn't look like CallToolResult (no "content" or "isError"),
+					// treat it as raw data and wrap in TextContent.
+					_, hasContent := resultMap["content"]
+					_, hasIsError := resultMap["isError"]
+
+					if !hasContent && !hasIsError {
+						return &mcp.CallToolResult{
+							Content: []mcp.Content{
+								&mcp.TextContent{
+									Text: string(jsonData),
+								},
+							},
+						}, nil
+					}
+
+					var callToolRes mcp.CallToolResult
+					if err := json.Unmarshal(jsonData, &callToolRes); err != nil {
+						return nil, fmt.Errorf("failed to unmarshal tool result to CallToolResult: %w", err)
+					}
+					return &callToolRes, nil
+				}
+
+				// Fallback for other types (string, []byte, etc.)
+				return &mcp.CallToolResult{
+					Content: []mcp.Content{
+						&mcp.TextContent{
+							Text: fmt.Sprintf("%v", res),
+						},
+					},
+				}, nil
+			}
+			return nil, fmt.Errorf("invalid request type for %s", consts.MethodToolsCall)
+		},
+	)
+
 	mcpServer := mcp.NewServer(&mcp.Implementation{
 		Name:    appconsts.Name,
 		Version: appconsts.Version,
@@ -396,8 +455,20 @@ func (s *Server) ListTools() []tool.Tool {
 // CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", req.Arguments)
+	// Try to get service ID from tool
+	var serviceID string
+	if t, ok := s.GetTool(req.ToolName); ok {
+		if t.Tool() != nil {
+			serviceID = t.Tool().GetServiceId()
+		}
+	}
+
 	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
-	metrics.IncrCounter([]string{"tool", req.ToolName, "call", "total"}, 1)
+	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
+	metrics.IncrCounterWithLabels([]string{"tool", "call", "total"}, 1, []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
 	startTime := time.Now()
 	defer metrics.MeasureSince([]string{"tool", req.ToolName, "call", "latency"}, startTime)
 	defer metrics.MeasureSince([]string{"tools", "call", "latency"}, startTime)
@@ -405,8 +476,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
 		metrics.IncrCounter([]string{"tools", "call", "errors"}, 1)
-		metrics.IncrCounter([]string{"tool", req.ToolName, "call", "errors"}, 1)
+		metrics.IncrCounterWithLabels([]string{"tool", "call", "errors"}, 1, []metrics.Label{
+			{Name: "tool", Value: req.ToolName},
+			{Name: "service_id", Value: serviceID},
+		})
 	}
+	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
 	return result, err
 }
 

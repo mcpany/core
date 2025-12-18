@@ -1,9 +1,11 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# This Docker Compose file provides an example setup for running the MCP Any server
-# along with a sample upstream service (http-echo-server) to demonstrate how they
-# can be connected within a Docker environment.
+# This is the PRODUCTION-ready Docker Compose file for MCP Any.
+# It includes the core server, configuration for Redis (for message bus),
+# and Prometheus (for metrics).
+#
+# For an example with an echo server, see examples/docker-compose-demo/
 
 services:
   # The MCP Any server itself.
@@ -15,38 +17,26 @@ services:
       # Exposes the gRPC registration port to the host.
       - "50051:50051"
     volumes:
-      # Mounts the Docker-specific config file into the container.
-      # This allows mcpany-server to discover and connect to the http-echo-server.
-      - ./docker/config.docker.yaml:/etc/mcpany/config.yaml
+      # Mounts the production config file.
+      - ./docker/config.production.yaml:/etc/mcpany/config.yaml
+    environment:
+      # Allows overriding Redis address if needed (defaults to redis:6379 in config.production.yaml)
+      - REDIS_ADDRESS=redis:6379
     entrypoint:
       # Tells the server to load the configuration from the mounted path.
       - "/app/server"
-      - "--config-paths"
+      - "run"
+      - "--config-path"
       - "/etc/mcpany/config.yaml"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
+      test:
+        ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
       interval: 5s
       timeout: 2s
       retries: 5
     depends_on:
-      # Ensures that the http-echo-server is started before mcpany-server.
-      http-echo-server:
-        condition: service_healthy
-    networks:
-      - mcpany-net
-
-  # A sample upstream HTTP service that mcpany-server will connect to.
-  http-echo-server:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.http-echo-server
-    ports:
-      - "8080:8080"
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
-      interval: 5s
-      timeout: 2s
-      retries: 5
+      redis:
+        condition: service_started
     networks:
       - mcpany-net
 
@@ -54,15 +44,20 @@ services:
     image: mirror.gcr.io/library/redis:latest
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - mcpany-net
 
-  file-upload-server:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.file-upload-server
+  prometheus:
+    image: mirror.gcr.io/prom/prometheus:latest
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "8081:8081"
+      - "9099:9090"
     networks:
       - mcpany-net
 

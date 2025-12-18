@@ -72,7 +72,11 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
-	// Helper to fix log level
+	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
+	// This allows overriding any configuration value using environment variables.
+	applyEnvVars(yamlMap)
+
+	// Helper to fix log level if it was set via env vars or file without prefix
 	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
 		if ll, ok := gs["log_level"].(string); ok {
 			if !strings.HasPrefix(ll, "LOG_LEVEL_") {
@@ -364,4 +368,47 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 
 func isURL(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://")
+}
+
+// applyEnvVars iterates over environment variables and applies those starting with "MCPANY__"
+// to the configuration map. It supports nested structure via "__" separator.
+// Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address
+func applyEnvVars(m map[string]interface{}) {
+	for _, env := range os.Environ() {
+		if !strings.HasPrefix(env, "MCPANY__") {
+			continue
+		}
+		// Split into key and value
+		parts := strings.SplitN(env, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := parts[0]
+		value := parts[1]
+
+		// Remove prefix and split by double underscore
+		trimmedKey := strings.TrimPrefix(key, "MCPANY__")
+		path := strings.Split(trimmedKey, "__")
+
+		// Walk the map and create nested maps as needed
+		current := m
+		for i, originalSection := range path {
+			section := strings.ToLower(originalSection) // Normalize to snake_case/lowercase
+			if i == len(path)-1 {
+				// We are at the leaf, set the value.
+				// We overwrite whatever is there.
+				current[section] = value
+			} else {
+				// We need to go deeper
+				if next, ok := current[section].(map[string]interface{}); ok {
+					current = next
+				} else {
+					// Create new map if it doesn't exist or isn't a map
+					next := make(map[string]interface{})
+					current[section] = next
+					current = next
+				}
+			}
+		}
+	}
 }
