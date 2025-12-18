@@ -17,11 +17,18 @@ import (
 // specified by the template, such as JSON, XML, or plain text.
 type Transformer struct {
 	cache sync.Map
+	pool  sync.Pool
 }
 
 // NewTransformer creates and returns a new instance of Transformer.
 func NewTransformer() *Transformer {
-	return &Transformer{}
+	return &Transformer{
+		pool: sync.Pool{
+			New: func() any {
+				return new(bytes.Buffer)
+			},
+		},
+	}
 }
 
 // Transform takes a map of data and a Go template string and returns a byte
@@ -61,10 +68,27 @@ func (t *Transformer) Transform(templateStr string, data map[string]any) ([]byte
 		t.cache.Store(templateStr, tmpl)
 	}
 
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
+	// Use pool to reduce allocations
+	bufPtr := t.pool.Get()
+	var buf *bytes.Buffer
+	if bufPtr == nil {
+		buf = new(bytes.Buffer)
+	} else {
+		buf = bufPtr.(*bytes.Buffer)
+	}
+	defer func() {
+		buf.Reset()
+		t.pool.Put(buf)
+	}()
+
+	if err := tmpl.Execute(buf, data); err != nil {
 		return nil, fmt.Errorf("failed to execute template: %w", err)
 	}
 
-	return buf.Bytes(), nil
+	// We must copy the bytes because the buffer is returned to the pool
+	// and subsequent uses would overwrite the data.
+	out := make([]byte, buf.Len())
+	copy(out, buf.Bytes())
+
+	return out, nil
 }
