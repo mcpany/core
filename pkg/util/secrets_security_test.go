@@ -72,3 +72,42 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 	// We can assert that the error contains the specific message.
 	assert.Contains(t, err.Error(), "blocked link-local IP")
 }
+
+func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
+	// Attempt to access a private IP (e.g. 192.168.1.1)
+	// This should be blocked by our SSRF protection (if enhanced).
+
+	// Force block by setting env var to false (or ensuring default is block)
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS", "false")
+
+	remoteContent := &configv1.RemoteContent{}
+	remoteContent.SetHttpUrl("http://192.168.1.1/secret")
+	secret := &configv1.SecretValue{}
+	secret.SetRemoteContent(remoteContent)
+
+	_, err := util.ResolveSecret(secret)
+	assert.Error(t, err)
+
+	// Before fix, this might fail with "connection refused" or "i/o timeout" or similar.
+	// After fix, it MUST contain "blocked private IP".
+	assert.Contains(t, err.Error(), "blocked private IP")
+}
+
+func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
+	// Attempt to access a private IP (e.g. 192.168.1.1)
+	// This should be ALLOWED if env var is true.
+	// Since we can't actually connect, it will timeout or fail with network error.
+
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS", "true")
+
+	remoteContent := &configv1.RemoteContent{}
+	remoteContent.SetHttpUrl("http://192.168.1.1/secret")
+	secret := &configv1.SecretValue{}
+	secret.SetRemoteContent(remoteContent)
+
+	_, err := util.ResolveSecret(secret)
+	assert.Error(t, err)
+
+	// It should NOT be "blocked private IP"
+	assert.NotContains(t, err.Error(), "blocked private IP")
+}
