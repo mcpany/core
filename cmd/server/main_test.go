@@ -53,7 +53,8 @@ func (m *mockRunner) RunHealthServer(_ string) error {
 func TestHealthCmd(t *testing.T) {
 	viper.Reset()
 	// Start a mock HTTP server on a custom port
-	port := "50051"
+	portVal := findFreePort(t)
+	port := fmt.Sprintf("%d", portVal)
 	server := &http.Server{
 		Addr:              ":" + port,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -79,7 +80,8 @@ func TestHealthCmd(t *testing.T) {
 func TestHealthCmdWithCustomPort(t *testing.T) {
 	viper.Reset()
 	// Start a mock HTTP server on a custom port
-	port := "8088"
+	portVal := findFreePort(t)
+	port := fmt.Sprintf("%d", portVal)
 	server := &http.Server{
 		Addr:              ":" + port,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -180,7 +182,8 @@ func TestMainExecution(t *testing.T) {
 func TestHealthCmdFlagPrecedence(t *testing.T) {
 	viper.Reset()
 	// Start a mock HTTP server on a custom port
-	port := "8089"
+	portVal := findFreePort(t)
+	port := fmt.Sprintf("%d", portVal)
 	server := &http.Server{
 		Addr:              ":" + port,
 		ReadHeaderTimeout: 5 * time.Second,

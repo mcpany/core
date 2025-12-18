@@ -13,6 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// Label is an alias for metrics.Label
+type Label = metrics.Label
+
 // NewPrometheusSink creates a new Prometheus sink.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
@@ -71,6 +74,11 @@ func SetGauge(name string, val float32, labels ...string) {
 // IncrCounter increments a counter.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
+}
+
+// IncrCounterWithLabels increments a counter with labels.
+func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
+	metrics.IncrCounterWithLabels(name, val, labels)
 }
 
 // MeasureSince measures the time since a given start time and records it.
