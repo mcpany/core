@@ -169,7 +169,8 @@ func TestFullSystemWebhooks(t *testing.T) {
 	webhookURL := fmt.Sprintf("http://localhost:%d/markdown", port)
 
 	upsConfig := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("mock-service"),
+		Name:             proto.String("mock-service"),
+		AutoDiscoverTool: proto.Bool(true),
 		McpService: configv1.McpUpstreamService_builder{
 			StdioConnection: configv1.McpStdioConnection_builder{
 				Command: proto.String(mockMcpBin),

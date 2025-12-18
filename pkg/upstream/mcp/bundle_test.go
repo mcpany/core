@@ -79,7 +79,8 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	defer func() { connectForTesting = originalConnect }()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("test-service-bundle"),
+		Name:             proto.String("test-service-bundle"),
+		AutoDiscoverTool: proto.Bool(true),
 		McpService: configv1.McpUpstreamService_builder{
 			BundleConnection: configv1.McpBundleConnection_builder{
 				BundlePath: proto.String(bundlePath),
