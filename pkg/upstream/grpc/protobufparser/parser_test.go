@@ -182,15 +182,22 @@ func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 func TestExtractMcpDefinitions(t *testing.T) {
 	fds := loadTestFileDescriptorSet(t)
 
-	t.Run("successful extraction", func(t *testing.T) {
+	t.Run("successful extraction_annotated_only", func(t *testing.T) {
 		parsedData, err := ExtractMcpDefinitions(fds)
 		require.NoError(t, err)
 		assert.NotNil(t, parsedData)
 
-		// Basic checks
-		assert.NotEmpty(t, parsedData.Tools)
+		// Check that annotated tools ARE found (assuming all.protoset contains EchoTool from examples)
+		var echoTool *McpTool
+		for i, tool := range parsedData.Tools {
+			if tool.Name == "EchoTool" {
+				echoTool = &parsedData.Tools[i]
+				break
+			}
+		}
+		require.NotNil(t, echoTool, "Annotated tool 'EchoTool' should be found")
 
-		// Find a specific tool to inspect
+		// Check that unannotated tools ARE NOT found
 		var getWeatherTool *McpTool
 		for i, tool := range parsedData.Tools {
 			if tool.Name == "GetWeather" {
@@ -198,23 +205,7 @@ func TestExtractMcpDefinitions(t *testing.T) {
 				break
 			}
 		}
-
-		require.NotNil(t, getWeatherTool, "Tool 'GetWeather' should be found")
-		assert.Equal(t, "", getWeatherTool.Description)
-		assert.Equal(t, "WeatherService", getWeatherTool.ServiceName)
-		assert.Equal(t, "GetWeather", getWeatherTool.MethodName)
-		assert.Equal(t, "/examples.weather.v1.WeatherService/GetWeather", getWeatherTool.FullMethodName)
-		assert.Equal(t, "examples.weather.v1.GetWeatherRequest", getWeatherTool.RequestType)
-		assert.Equal(t, "examples.weather.v1.GetWeatherResponse", getWeatherTool.ResponseType)
-		assert.False(t, getWeatherTool.IdempotentHint)
-		assert.False(t, getWeatherTool.DestructiveHint)
-
-		// Check request fields
-		require.Len(t, getWeatherTool.RequestFields, 1)
-		assert.Equal(t, "location", getWeatherTool.RequestFields[0].Name)
-		assert.Equal(t, "", getWeatherTool.RequestFields[0].Description)
-		assert.Equal(t, "string", getWeatherTool.RequestFields[0].Type)
-		assert.False(t, getWeatherTool.RequestFields[0].IsRepeated)
+		require.Nil(t, getWeatherTool, "Unannotated tool 'GetWeather' should NOT be found")
 	})
 
 	t.Run("nil fds", func(t *testing.T) {
