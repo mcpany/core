@@ -103,6 +103,30 @@ func TestIncrCounter(t *testing.T) {
 	})
 }
 
+func TestIncrCounterWithLabels(t *testing.T) {
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	assert.NotPanics(t, func() {
+		IncrCounterWithLabels([]string{"test_counter_labeled"}, 1, []Label{{Name: "key", Value: "value"}})
+	})
+
+	// Check sink
+	data := sink.Data()
+	if len(data) > 0 {
+		found := false
+		for k := range data[0].Counters {
+			if k == "mcpany.test_counter_labeled;key=value" {
+				found = true
+			}
+		}
+		assert.True(t, found, "Counter with labels should be in sink")
+	}
+}
+
 func TestStartServer_Real(t *testing.T) {
 	// Test the actual StartServer function
 	// We use a random port
