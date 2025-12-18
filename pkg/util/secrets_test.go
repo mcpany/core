@@ -320,6 +320,34 @@ func TestResolveSecret_Vault(t *testing.T) {
 		assert.Equal(t, "my-vault-secret-v1", resolved)
 	})
 
+	t.Run("Vault KV v1 with data key", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/v1/secret/my-app/db", r.URL.Path)
+			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
+			w.WriteHeader(http.StatusOK)
+			// Simulating a KV v1 secret that has a key named "data" which is a map (object),
+			// alongside the actual key we want ("my-key").
+			_, _ = fmt.Fprint(w, `{"data": {"my-key": "my-vault-secret-v1", "data": {"some": "nested-value"}}}`)
+		}))
+		defer server.Close()
+
+		tokenSecret := &configv1.SecretValue{}
+		tokenSecret.SetPlainText("my-vault-token")
+
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress(server.URL)
+		vaultSecret.SetToken(tokenSecret)
+		vaultSecret.SetPath("secret/my-app/db")
+		vaultSecret.SetKey("my-key")
+
+		secret := &configv1.SecretValue{}
+		secret.SetVault(vaultSecret)
+
+		resolved, err := util.ResolveSecret(secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "my-vault-secret-v1", resolved)
+	})
+
 	t.Run("Secret resolution recursion limit", func(t *testing.T) {
 		// Create a circular dependency:
 		// secretA's token is secretB
