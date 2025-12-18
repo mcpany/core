@@ -66,7 +66,8 @@ upstream_services:
     command_line_service:
       command: "python3"
       health_check:
-        method: "print('alive')"
+        method: "-c"
+        prompt: "print('alive')"
         expected_response_contains: "alive"
         interval: "60s"
 ```
