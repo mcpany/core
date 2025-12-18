@@ -60,6 +60,8 @@ message GlobalSettings {
   repeated string allowed_ips = 7 [json_name = "allowed_ips"];
   // Audit logging configuration.
   AuditConfig audit = 8 [json_name = "audit"];
+  // The definitions of profiles.
+  repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
 }
 
 message AuditConfig {
@@ -71,4 +73,14 @@ message AuditConfig {
   bool log_arguments = 3 [json_name = "log_arguments"];
   // Whether to log output results (caution: might contain sensitive data).
   bool log_results = 4 [json_name = "log_results"];
+}
+
+message ProfileDefinition {
+  string name = 1;
+  ProfileSelector selector = 2;
+}
+
+message ProfileSelector {
+  repeated string tags = 1;
+  map<string, string> tool_properties = 2 [json_name = "tool_properties"];
 }

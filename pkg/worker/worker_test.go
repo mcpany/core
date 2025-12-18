@@ -98,6 +98,9 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 func (m *mockToolManager) ClearToolsForService(_ string) {
 }
 
+func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
+}
+
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 }
 

@@ -14,6 +14,8 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
@@ -36,6 +38,7 @@ type ManagerInterface interface {
 	AddMiddleware(middleware ExecutionMiddleware)
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -53,6 +56,9 @@ type Manager struct {
 	middlewares []ExecutionMiddleware
 	cachedTools []Tool
 	toolsMutex  sync.RWMutex
+
+	enabledProfiles []string
+	profileDefs     map[string]*configv1.ProfileDefinition
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -61,7 +67,122 @@ func NewManager(bus *bus.Provider) *Manager {
 		bus:         bus,
 		tools:       xsync.NewMap[string, Tool](),
 		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
+		profileDefs: make(map[string]*configv1.ProfileDefinition),
 	}
+}
+
+// SetProfiles sets the enabled profiles and their definitions for filtering.
+func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+	tm.enabledProfiles = enabled
+	tm.profileDefs = make(map[string]*configv1.ProfileDefinition)
+	for _, d := range defs {
+		tm.profileDefs[d.GetName()] = d
+	}
+}
+
+// isToolAllowed checks if the tool is allowed based on the enabled profiles.
+// isToolAllowed checks if the tool is allowed based on the enabled profiles.
+func (tm *Manager) isToolAllowed(t *v1.Tool) bool {
+	// If no profiles are enabled, allow everything (default behavior).
+	if len(tm.enabledProfiles) == 0 {
+		return true
+	}
+
+	for _, ep := range tm.enabledProfiles {
+		if tm.toolMatchesProfile(t, ep) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
+	// 1. Check explicit profile assignment
+	for _, toolProfile := range t.GetProfiles() {
+		if toolProfile == profileName {
+			return true
+		}
+	}
+
+	// 2. Check tag-based and property-based selection via ProfileDefinition
+	def, ok := tm.profileDefs[profileName]
+	if !ok {
+		return false
+	}
+	return tm.matchesSelector(t, def.GetSelector())
+}
+
+func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {
+	if selector == nil {
+		return false
+	}
+
+	hasTags := len(selector.GetTags()) > 0
+	if hasTags && !tm.matchesTags(t.GetTags(), selector.GetTags()) {
+		return false
+	}
+
+	hasProps := len(selector.GetToolProperties()) > 0
+	if hasProps && !tm.matchesProperties(t.GetAnnotations(), selector.GetToolProperties()) {
+		return false
+	}
+
+	return hasTags || hasProps
+}
+
+func (tm *Manager) matchesTags(toolTags []string, selectorTags []string) bool {
+	for _, sTag := range selectorTags {
+		for _, tTag := range toolTags {
+			if sTag == tTag {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[string]string) bool {
+	const falseVal = "false"
+	for k, v := range props {
+		var actual string
+		switch k {
+		case "read_only":
+			// Handle nil annotations gracefully if needed, though proto accessors usually return defaults
+			if annotations == nil {
+				actual = falseVal
+			} else {
+				actual = fmt.Sprintf("%v", annotations.GetReadOnlyHint())
+			}
+		case "destructive":
+			if annotations == nil {
+				actual = falseVal
+			} else {
+				actual = fmt.Sprintf("%v", annotations.GetDestructiveHint())
+			}
+		case "idempotent":
+			if annotations == nil {
+				actual = falseVal
+			} else {
+				actual = fmt.Sprintf("%v", annotations.GetIdempotentHint())
+			}
+		case "open_world":
+			if annotations == nil {
+				actual = falseVal
+			} else {
+				actual = fmt.Sprintf("%v", annotations.GetOpenWorldHint())
+			}
+		default:
+			return false
+		}
+
+		if actual != v {
+			return false
+		}
+	}
+	return true
 }
 
 // AddMiddleware adds a middleware to the tool manager.
@@ -227,6 +348,12 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
+
+	// Filter tool based on profiles
+	if !tm.isToolAllowed(tool.Tool()) {
+		logging.GetLogger().Debug("Tool skipped by profile filter", "toolName", tool.Tool().GetName(), "serviceID", tool.Tool().GetServiceId())
+		return nil
+	}
 
 	if tool.Tool().GetServiceId() == "" {
 		return fmt.Errorf("tool service ID cannot be empty")

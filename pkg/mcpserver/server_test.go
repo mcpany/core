@@ -545,6 +545,8 @@ func (m *mockToolManager) ClearToolsForService(_ string) {
 	m.clearToolsForServiceCalled = true
 }
 
+func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+
 func TestServer_ToolManagerDelegation(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
