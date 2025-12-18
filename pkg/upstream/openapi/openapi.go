@@ -232,13 +232,24 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 	definitions := openapiService.GetTools()
 	calls := openapiService.GetCalls()
 
-	// If no tools are explicitly defined, auto-discover all tools from the spec
-	if len(definitions) == 0 {
+	// Initialize map of existing tools to allow overrides
+	existingToolNames := make(map[string]bool)
+	for _, d := range definitions {
+		existingToolNames[d.GetName()] = true
+	}
+
+	// Auto-discover if explicitly enabled OR if no tools are defined (legacy behavior)
+	if serviceConfig.GetAutoDiscoverTool() || len(definitions) == 0 {
 		if calls == nil {
 			calls = make(map[string]*configv1.OpenAPICallDefinition)
 		}
 		for _, tool := range pbTools {
 			toolName := tool.GetName()
+			// If tool is already defined manually, skip auto-discovery (override)
+			if existingToolNames[toolName] {
+				continue
+			}
+
 			// Create a default tool definition
 			definitions = append(definitions, configv1.ToolDefinition_builder{
 				Name:   proto.String(toolName),

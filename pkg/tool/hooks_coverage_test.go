@@ -25,8 +25,8 @@ func TestNewWebhookHook(t *testing.T) {
 	}
 	hook := NewWebhookHook(config)
 	assert.NotNil(t, hook)
-	assert.Equal(t, "http://example.com", hook.url)
-	assert.NotNil(t, hook.webhook)
+	assert.Equal(t, "http://example.com", hook.client.url)
+	assert.NotNil(t, hook.client.webhook)
 }
 
 func TestSigningRoundTripper_RoundTrip(t *testing.T) {
@@ -40,7 +40,7 @@ func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 	hook := NewWebhookHook(config)
 
 	// Create a round tripper independently to test it
-	rt := hook.client.Transport.(*SigningRoundTripper)
+	rt := hook.client.client.Transport.(*SigningRoundTripper)
 	require.NotNil(t, rt)
 
 	// Create a request
@@ -122,7 +122,7 @@ func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal inputs")
 
 	// 2. Webhook Call Fail (Network)
-	hook.url = "http://invalid-url-that-fails-dns-lookup"
+	hook.client.url = "http://invalid-url-that-fails-dns-lookup"
 	req.ToolInputs = []byte(`{}`)
 	action, _, err = hook.ExecutePre(context.Background(), req)
 	assert.Error(t, err)
@@ -134,7 +134,7 @@ func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
 		w.WriteHeader(500)
 	}))
 	defer server.Close()
-	hook.url = server.URL
+	hook.client.url = server.URL
 	action, _, err = hook.ExecutePre(context.Background(), req)
 	assert.Error(t, err)
 	assert.Equal(t, ActionDeny, action)

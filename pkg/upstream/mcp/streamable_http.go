@@ -473,7 +473,7 @@ func (u *Upstream) processMCPItems(
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	mcpService := serviceConfig.GetMcpService()
 
-	discoveredTools := u.registerTools(serviceID, mcpService, listToolsResult, toolClient, toolManager)
+	discoveredTools := u.registerTools(serviceID, mcpService, listToolsResult, toolClient, toolManager, serviceConfig)
 	u.registerPrompts(ctx, serviceID, mcpService, cs, promptManager, promptConnection)
 	discoveredResources := u.registerResources(ctx, serviceID, mcpService, cs, resourceManager, promptConnection)
 	u.registerDynamicResources(serviceID, mcpService, toolManager, resourceManager, discoveredTools)
@@ -487,6 +487,7 @@ func (u *Upstream) registerTools(
 	listToolsResult *mcp.ListToolsResult,
 	toolClient client.MCPClient,
 	toolManager tool.ManagerInterface,
+	serviceConfig *configv1.UpstreamServiceConfig,
 ) []*configv1.ToolDefinition {
 	configToolDefs := mcpService.GetTools()
 	calls := mcpService.GetCalls()
@@ -497,12 +498,22 @@ func (u *Upstream) registerTools(
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(listToolsResult.Tools))
 	for _, mcpSDKTool := range listToolsResult.Tools {
+		configTool, hasConfig := configToolMap[mcpSDKTool.Name]
+
+		// If validation fails or we shouldn't register this tool, continue
+		if hasConfig && configTool.GetDisable() {
+			logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
+			continue
+		}
+
+		// Check auto-discovery
+		if !hasConfig && !serviceConfig.GetAutoDiscoverTool() {
+			// Skip tool if not explicitly configured and auto-discovery is disabled
+			continue
+		}
+
 		callDef := &configv1.MCPCallDefinition{}
-		if configTool, ok := configToolMap[mcpSDKTool.Name]; ok {
-			if configTool.GetDisable() {
-				logging.GetLogger().Info("Skipping disabled tool", "toolName", mcpSDKTool.Name)
-				continue
-			}
+		if hasConfig {
 			if call, callOk := calls[configTool.GetCallId()]; callOk {
 				callDef = call
 			} else {
@@ -517,6 +528,14 @@ func (u *Upstream) registerTools(
 		}
 		pbTool.SetServiceId(serviceID)
 
+		// Apply overrides from config
+		if hasConfig {
+			if configTool.GetDescription() != "" {
+				pbTool.SetDescription(configTool.GetDescription())
+			}
+			// We can add more overrides here if needed (e.g. InputSchema)
+		}
+
 		newTool := tool.NewMCPTool(pbTool, toolClient, callDef)
 		if err := toolManager.AddTool(newTool); err != nil {
 			logging.GetLogger().Error("Failed to add tool", "error", err)
@@ -524,7 +543,7 @@ func (u *Upstream) registerTools(
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
 			Name:        proto.String(mcpSDKTool.Name),
-			Description: proto.String(mcpSDKTool.Description),
+			Description: proto.String(pbTool.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools
