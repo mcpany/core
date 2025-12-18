@@ -41,8 +41,9 @@ var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
 // Parameters:
 //   - bus: The event bus used for communication.
 //
-// Returns a new instance of the RegistrationServer or an error if the bus is
-// nil.
+// Returns:
+//   - A new instance of the RegistrationServer.
+//   - An error if the bus is nil.
 func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
@@ -68,8 +69,9 @@ func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 //   - req: The request containing the configuration of the service to be
 //     registered.
 //
-// Returns a response with the registration status and discovered tools, or an
-// error if the registration fails or times out.
+// Returns:
+//   - A response with the registration status and discovered tools.
+//   - An error if the registration fails or times out.
 func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.RegisterServiceRequest) (*v1.RegisterServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -139,33 +141,71 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 
 // UnregisterService is not yet implemented. It is intended to handle the
 // unregistration of a service.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the service ID to unregister.
+//
+// Returns:
+//   - A response indicating success or failure.
+//   - An error (currently always Unimplemented).
 func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
 // InitiateOAuth2Flow is not yet implemented. It is intended to handle the
 // initiation of an OAuth2 flow for a service.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing OAuth2 flow details.
+//
+// Returns:
+//   - A response with the initiation result.
+//   - An error (currently always Unimplemented).
 func (s *RegistrationServer) InitiateOAuth2Flow(_ context.Context, _ *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
 }
 
 // RegisterTools is not yet implemented. It is intended to handle the
 // registration of tools for a service.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the tools to register.
+//
+// Returns:
+//   - A response indicating success or failure.
+//   - An error (currently always Unimplemented).
 func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 
 // GetServiceStatus is not yet implemented. It is intended to handle requests
 // for the status of a service.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the service name or ID.
+//
+// Returns:
+//   - A response with the service status.
+//   - An error (currently always Unimplemented).
 func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }
 
 func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 
-// PingResponse is a placeholder for a ping method.
-
-// ListServices lists all registered services.
+// ListServices lists all registered services by querying the service registry via the event bus.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request object (empty for now).
+//
+// Returns:
+//   - A response containing a list of registered services.
+//   - An error if the operation fails or times out.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)
