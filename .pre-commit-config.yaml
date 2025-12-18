@@ -51,8 +51,11 @@ repos:
             - -ignore
             - "**/*.pb.go"
             - -s=only
--   repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.31.1
+-   repo: local
     hooks:
-    -   id: markdownlint
+    -   id: markdownlint-docker
+        name: markdownlint
+        language: docker_image
+        entry: ghcr.io/igorshubovych/markdownlint-cli:v0.31.1
         args: [--fix, --disable, MD013]
+        types: [markdown]
