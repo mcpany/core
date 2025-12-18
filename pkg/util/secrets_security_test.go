@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package util_test
 
 import (
@@ -35,7 +38,7 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
     // This test ensures we didn't break valid filenames like "my..secret.txt"
     tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
     require.NoError(t, err)
-    defer os.RemoveAll(tempDir)
+    defer func() { _ = os.RemoveAll(tempDir) }()
 
     secretFile := filepath.Join(tempDir, "my..secret.txt")
     err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
