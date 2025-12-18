@@ -117,18 +117,14 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 		}
 
 		// Handle KV v2 secrets, where data is nested under a "data" key.
-		secretData, ok := data.Data["data"].(map[string]interface{})
-		if !ok {
-			// If not nested, try to access as a KV v1 secret.
-			value, ok := data.Data[vaultSecret.GetKey()].(string)
-			if !ok {
-				return "", fmt.Errorf("key %q not found in secret at path %s, and secret format is not standard KV v1 or v2", vaultSecret.GetKey(), vaultSecret.GetPath())
+		if secretData, ok := data.Data["data"].(map[string]interface{}); ok {
+			if value, ok := secretData[vaultSecret.GetKey()].(string); ok {
+				return value, nil
 			}
-			return value, nil
 		}
 
-		// It's a KV v2 secret
-		value, ok := secretData[vaultSecret.GetKey()].(string)
+		// If not found in nested data, try to access as a KV v1 secret.
+		value, ok := data.Data[vaultSecret.GetKey()].(string)
 		if !ok {
 			return "", fmt.Errorf("key %q not found in secret data at path %s", vaultSecret.GetKey(), vaultSecret.GetPath())
 		}
