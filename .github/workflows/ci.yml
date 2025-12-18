@@ -470,3 +470,6 @@ jobs:
         run: |
            chmod +x tests/smoke_test.sh
            ./tests/smoke_test.sh mcpany/server:test
+      - name: E2E Docker Compose Test
+        run: |
+           E2E_DOCKER=true go test -v tests/e2e/docker_compose_test.go
