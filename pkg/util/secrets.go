@@ -203,3 +203,20 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 		return "", nil
 	}
 }
+
+// ResolveSecretMap resolves a map of secrets and merges them with a plain map.
+// Secrets in the secretMap take precedence over values in the plainMap.
+func ResolveSecretMap(secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
+	result := make(map[string]string)
+	for k, v := range plainMap {
+		result[k] = v
+	}
+	for k, v := range secretMap {
+		resolved, err := ResolveSecret(v)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve secret env var %q: %w", k, err)
+		}
+		result[k] = resolved
+	}
+	return result, nil
+}

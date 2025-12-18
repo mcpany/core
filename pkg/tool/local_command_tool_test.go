@@ -45,3 +45,38 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	assert.Equal(t, tool, localTool.Tool())
 	assert.Nil(t, localTool.GetCacheConfig())
 }
+
+func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
+	tool := &v1.Tool{
+		Name:        proto.String("test-tool-env"),
+	}
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("sh"),
+		Local:   proto.Bool(true),
+		Env: map[string]*configv1.SecretValue{
+			"MY_ENV": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "secret_value",
+				},
+			},
+		},
+	}
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "echo -n $MY_ENV"},
+	}
+
+	localTool := NewLocalCommandTool(tool, service, callDef)
+
+	req := &ExecutionRequest{
+		ToolName: "test-tool-env",
+		Arguments: map[string]interface{}{},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := localTool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resultMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, "secret_value", resultMap["stdout"])
+}

@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -101,7 +102,12 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// Merge config env (overrides manifest env)
-	for k, v := range bundleConfig.GetEnv() {
+	resolvedBundleEnv, err := util.ResolveSecretMap(bundleConfig.GetSecretEnv(), bundleConfig.GetEnv())
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to resolve bundle secret env: %w", err)
+	}
+
+	for k, v := range resolvedBundleEnv {
 		env[k] = v
 	}
 

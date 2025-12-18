@@ -312,6 +312,8 @@ message CommandLineUpstreamService {
 
   // If true, the command will be executed on the local filesystem.
   bool local = 13;
+  // Environment variables to set for the command (supports secrets).
+  map<string, SecretValue> env = 14;
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.
@@ -359,6 +361,8 @@ message McpStdioConnection {
   repeated string setup_commands = 5 [json_name = "setup_commands"];
   // Optional: Environment variables to set in the container.
   map<string, string> env = 6;
+  // Optional: Secret environment variables to set in the container.
+  map<string, SecretValue> secret_env = 7 [json_name = "secret_env"];
 }
 
 message McpStreamableHttpConnection {
@@ -376,6 +380,8 @@ message McpBundleConnection {
   string container_image = 2 [json_name = "container_image"];
   // Optional: Environment variables to pass to the container.
   map<string, string> env = 3;
+  // Optional: Secret environment variables to pass to the container.
+  map<string, SecretValue> secret_env = 4 [json_name = "secret_env"];
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
@@ -395,6 +401,8 @@ message ContainerEnvironment {
   string image = 2;
   // The volumes to mount into the container, with destination as key and source as value.
   map<string, string> volumes = 3;
+  // Environment variables to set in the container (supports secrets).
+  map<string, SecretValue> env = 4;
 }
 
 // Defines strategies for load balancing across multiple service endpoints.
