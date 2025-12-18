@@ -135,7 +135,7 @@ func TestCallPolicyMiddleware(t *testing.T) {
 
 		_, err := cpMiddleware.Execute(ctx, req, next)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "execution blocked by policy")
+		assert.Contains(t, err.Error(), "execution denied by policy")
 	})
 
 	t.Run("argument regex deny -> blocked", func(t *testing.T) {
@@ -163,7 +163,7 @@ func TestCallPolicyMiddleware(t *testing.T) {
 
 		_, err := cpMiddleware.Execute(ctx, req, next)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "execution blocked by policy")
+		assert.Contains(t, err.Error(), "execution denied by policy")
 	})
 
 	t.Run("argument regex mismatch -> allowed", func(t *testing.T) {
@@ -216,7 +216,7 @@ func TestCallPolicyMiddleware(t *testing.T) {
 
 		_, err := cpMiddleware.Execute(ctx, req, next)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "execution blocked by policy")
+		assert.Contains(t, err.Error(), "execution denied by default policy")
 	})
 
 	t.Run("default deny but allowed by rule -> allowed", func(t *testing.T) {
