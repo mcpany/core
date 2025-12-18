@@ -58,4 +58,14 @@ message GlobalSettings {
   repeated string profiles = 6 [json_name = "profiles"];
   // The allowed IPs to access the server.
   repeated string allowed_ips = 7 [json_name = "allowed_ips"];
+  // The tracing configuration.
+  TracingConfig tracing = 8 [json_name = "tracing"];
+}
+
+message TracingConfig {
+  bool enabled = 1 [json_name = "enabled"];
+  // The OTLP gRPC endpoint (e.g., "localhost:4317").
+  string endpoint = 2 [json_name = "endpoint"];
+  // If true, disable TLS for the connection.
+  bool insecure = 3 [json_name = "insecure"];
 }

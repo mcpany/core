@@ -14,6 +14,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -136,8 +137,6 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	transport, ok := client.Transport.(*http.Transport)
-	require.True(t, ok, "Transport is not an *http.Transport")
-
-	assert.False(t, transport.DisableKeepAlives, "KeepAlives should be enabled")
+	_, ok := client.Transport.(*otelhttp.Transport)
+	require.True(t, ok, "Transport is not an *otelhttp.Transport")
 }

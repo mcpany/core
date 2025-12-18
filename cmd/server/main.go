@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/update"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -66,6 +67,18 @@ func newRootCmd() *cobra.Command {
 				os.Exit(1)
 			}
 			log := logging.GetLogger().With("service", "mcpany")
+
+			// Initialize Tracing
+			traceShutdown, err := telemetry.InitTracer(context.Background(), cfg.Tracing())
+			if err != nil {
+				log.Error("Failed to initialize tracing", "error", err)
+			} else {
+				defer func() {
+					if err := traceShutdown(context.Background()); err != nil {
+						log.Error("Failed to shutdown tracer", "error", err)
+					}
+				}()
+			}
 
 			bindAddress := cfg.MCPListenAddress()
 			grpcPort := cfg.GRPCPort()

@@ -15,6 +15,7 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
@@ -56,12 +57,12 @@ var NewHTTPPool = func(
 
 		return client.NewHTTPClientWrapper(
 			&http.Client{
-				Transport: &http.Transport{
+				Transport: otelhttp.NewTransport(&http.Transport{
 					TLSClientConfig: tlsConfig,
 					DialContext: (&net.Dialer{
 						Timeout: 30 * time.Second,
 					}).DialContext,
-				},
+				}),
 			},
 			config,
 		), nil

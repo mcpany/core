@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -75,7 +76,10 @@ func NewGrpcPool(
 			transportCreds = insecure.NewCredentials()
 		}
 
-		opts := []grpc.DialOption{grpc.WithTransportCredentials(transportCreds)}
+		opts := []grpc.DialOption{
+			grpc.WithTransportCredentials(transportCreds),
+			grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+		}
 		if dialer != nil {
 			opts = append(opts, grpc.WithContextDialer(dialer))
 		}

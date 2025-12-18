@@ -49,7 +49,7 @@ For a complete list of all available configuration options, please see the [Conf
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
 - [ ] **Secrets Management**: Secure handling of sensitive data (API keys, passwords).
-- [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
+- [x] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
 - [ ] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
 - [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
 - [x] **IP Allowlisting**: Restrict access to specific IP addresses/CIDRs.

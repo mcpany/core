@@ -95,6 +95,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
+		if cfg.GetGlobalSettings().GetTracing() != nil {
+			s.proto.Tracing = cfg.GetGlobalSettings().GetTracing()
+		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
@@ -158,6 +161,11 @@ func (s *Settings) APIKey() string {
 // SetAPIKey sets the Global API key.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
+}
+
+// Tracing returns the tracing configuration.
+func (s *Settings) Tracing() *configv1.TracingConfig {
+	return s.proto.GetTracing()
 }
 
 // Profiles returns the active profiles.

@@ -37,6 +37,8 @@ import (
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -814,7 +816,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, ipMiddleware.Handler(mux), shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(mux), "mcpany-http"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
@@ -844,6 +846,9 @@ func (a *Application) runServerMode(
 			grpcOpts := []gogrpc.ServerOption{
 				gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
 				gogrpc.StreamInterceptor(grpcStreamInterceptor),
+			}
+			if config.GlobalSettings().Tracing().GetEnabled() {
+				grpcOpts = append(grpcOpts, gogrpc.StatsHandler(otelgrpc.NewServerHandler()))
 			}
 
 			startGrpcServer(
