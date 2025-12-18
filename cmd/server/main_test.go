@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"syscall"
@@ -292,6 +293,18 @@ invalid-yaml
 	assert.NoError(t, err)
 	_ = invalidConfigFile.Close()
 
+	// Create a temporary invalid config file (logic error)
+	invalidLogicConfigFile, err := os.CreateTemp("", "invalid-logic-config-*.yaml")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(invalidLogicConfigFile.Name()) }()
+	_, err = invalidLogicConfigFile.WriteString(`
+upstream_services:
+  - name: "my-service"
+    mcp_service: {} # Missing connection type
+`)
+	assert.NoError(t, err)
+	_ = invalidLogicConfigFile.Close()
+
 	tests := []struct {
 		name           string
 		args           []string
@@ -307,6 +320,11 @@ invalid-yaml
 		{
 			name:        "invalid config",
 			args:        []string{"config", "validate", "--config-path", invalidConfigFile.Name()},
+			expectError: true,
+		},
+		{
+			name:        "invalid logic config",
+			args:        []string{"config", "validate", "--config-path", invalidLogicConfigFile.Name()},
 			expectError: true,
 		},
 		{
@@ -386,4 +404,77 @@ func TestConfigGenerateCmd(t *testing.T) {
 	assert.Contains(t, output, "Generated configuration:")
 	assert.Contains(t, output, "upstreamServices:")
 	assert.Contains(t, output, "name: \"my-service\"")
+}
+
+func TestDocCmd(t *testing.T) {
+	viper.Reset()
+	// Create a temporary valid config file
+	configFile, err := os.CreateTemp("", "doc-config-*.yaml")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(configFile.Name()) }()
+	_, err = configFile.WriteString(`
+upstream_services:
+  - name: "my-service"
+    http_service:
+      address: "http://localhost:8080"
+      tools:
+        - name: "my-tool"
+          call_id: "my-call"
+      calls:
+        my-call:
+          id: "my-call"
+          method: HTTP_METHOD_GET
+          endpoint_path: "/test"
+`)
+	assert.NoError(t, err)
+	_ = configFile.Close()
+
+	originalStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"config", "doc", "--config-path", configFile.Name()})
+	err = rootCmd.Execute()
+
+	_ = w.Close()
+	out, _ := io.ReadAll(r)
+	os.Stdout = originalStdout
+
+	assert.NoError(t, err)
+	output := string(out)
+	assert.Contains(t, output, "# Available Tools")
+	assert.Contains(t, output, "my-service.my-tool")
+}
+
+func TestUpdateCmd(t *testing.T) {
+	viper.Reset()
+	// Mock GitHub API
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/repos/mcpany/core/releases/latest" {
+			w.Header().Set("Content-Type", "application/json")
+			// Return a release with same version as current
+			fmt.Fprintf(w, `{"tag_name": "%s"}`, Version)
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer ts.Close()
+
+	t.Setenv("GITHUB_API_URL", ts.URL)
+
+	originalStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"update"})
+	err := rootCmd.Execute()
+
+	_ = w.Close()
+	out, _ := io.ReadAll(r)
+	os.Stdout = originalStdout
+
+	assert.NoError(t, err)
+	assert.Contains(t, string(out), "You are already running the latest version.")
 }
