@@ -11,19 +11,40 @@ import (
 	"net"
 	"os/exec"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // Executor is an interface for executing commands.
 type Executor interface {
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
+}
+
+// DockerClient is an interface for Docker client methods used by dockerExecutor.
+// This allows mocking the Docker client in tests.
+type DockerClient interface {
+	ImagePull(ctx context.Context, refStr string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerStart(ctx context.Context, containerID string, options container.StartOptions) error
+	ContainerLogs(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error)
+	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
+	ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error)
+	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	Close() error
+}
+
+// newDockerClientFunc allows mocking the docker client in tests.
+var newDockerClientFunc = func() (DockerClient, error) {
+	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 }
 
 // NewExecutor creates a new command executor.
@@ -85,28 +106,35 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 	cmd.Dir = workingDir
 	cmd.Env = env
 
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stdin pipe: %w", err)
-	}
+	// Use io.Pipe for proper synchronization and avoidance of race conditions
+	stdinR, stdinW := io.Pipe()
+	stdoutR, stdoutW := io.Pipe()
+	stderrR, stderrW := io.Pipe()
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stdout pipe: %w", err)
-	}
-
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stderr pipe: %w", err)
-	}
+	cmd.Stdin = stdinR
+	cmd.Stdout = stdoutW
+	cmd.Stderr = stderrW
 
 	if err := cmd.Start(); err != nil {
+		_ = stdinR.Close()
+		_ = stdinW.Close()
+		_ = stdoutR.Close()
+		_ = stdoutW.Close()
+		_ = stderrR.Close()
+		_ = stderrW.Close()
 		return nil, nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
 	}
 
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
+		// Close the write ends of the output pipes so the reader gets EOF
+		defer func() { _ = stdoutW.Close() }()
+		defer func() { _ = stderrW.Close() }()
+
+		// Also ensure stdin read end is closed if not already
+		defer func() { _ = stdinR.Close() }()
+
 		err := cmd.Wait()
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
@@ -120,7 +148,7 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 		}
 	}()
 
-	return stdin, stdout, stderr, exitCodeChan, nil
+	return stdinW, stdoutR, stderrR, exitCodeChan, nil
 }
 
 type dockerExecutor struct {
@@ -133,7 +161,7 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := newDockerClientFunc()
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
@@ -190,6 +218,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
 				log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
 			}
+			_ = cli.Close()
 		}()
 		statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 		select {
@@ -221,7 +250,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := newDockerClientFunc()
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
@@ -287,6 +316,7 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
 				log.Error("Failed to remove container", "containerID", resp.ID, "error", rmErr)
 			}
+			_ = cli.Close()
 		}()
 		statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 		select {
