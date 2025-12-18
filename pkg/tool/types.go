@@ -330,22 +330,38 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
-	pathStr := u.Path
+	pathStr := u.EscapedPath()
+	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
+	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
+
 	queryStr := u.RawQuery
+	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
+	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
 
 	// Replace placeholders in the URL path
 	pathStr = util.ReplaceURLPath(pathStr, req.Arguments)
 
 	// Replace placeholders in the query string
-	// We first unescape ONLY the placeholder syntax {{ and }}
-	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
-	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
 	queryStr = util.ReplaceURLPath(queryStr, req.Arguments)
 
-	u.Path = pathStr
-	u.RawQuery = queryStr
-
-	urlString := u.String()
+	// Reconstruct URL string manually to avoid re-encoding
+	var buf strings.Builder
+	buf.WriteString(u.Scheme)
+	buf.WriteString("://")
+	if u.User != nil {
+		buf.WriteString(u.User.String())
+		buf.WriteString("@")
+	}
+	buf.WriteString(u.Host)
+	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
+		buf.WriteString("/")
+	}
+	buf.WriteString(pathStr)
+	if queryStr != "" {
+		buf.WriteString("?")
+		buf.WriteString(queryStr)
+	}
+	urlString := buf.String()
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
