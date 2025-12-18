@@ -248,17 +248,28 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	toolsResult, err := client.ListTools(ctx)
-	require.NoError(t, err)
+	assert.Eventually(t, func() bool {
+		toolsResult, err := client.ListTools(ctx)
+		if err != nil {
+			return false
+		}
 
-	toolNames := make(map[string]bool)
-	for _, tool := range toolsResult.Tools {
-		toolNames[tool.Name] = true
-	}
+		toolNames := make(map[string]bool)
+		for _, tool := range toolsResult.Tools {
+			toolNames[tool.Name] = true
+		}
 
-	assert.Contains(t, toolNames, "auto-discover-test.call1")
-	assert.Contains(t, toolNames, "auto-discover-test.call2")
-	assert.NotContains(t, toolNames, "auto-discover-test.hidden_call")
+		if !toolNames["auto-discover-test.call1"] {
+			return false
+		}
+		if !toolNames["auto-discover-test.call2"] {
+			return false
+		}
+		if toolNames["auto-discover-test.hidden_call"] {
+			return false
+		}
+		return true
+	}, 5*time.Second, 100*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
 }
 
 func TestCallPolicyExecution(t *testing.T) {

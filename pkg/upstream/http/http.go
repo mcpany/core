@@ -65,8 +65,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
-// poolManager is the connection pool manager to be used for managing HTTP
-// connections.
+// Parameters:
+//   - poolManager: The connection pool manager to be used for managing HTTP connections.
+//
+// Returns:
+//   - An implementation of the upstream.Upstream interface.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
