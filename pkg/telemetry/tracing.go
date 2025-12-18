@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package telemetry provides functions for initializing and managing telemetry.
 package telemetry
 
 import (
@@ -10,12 +11,15 @@ import (
 	"os"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
+
+const exporterOTLP = "otlp"
 
 // InitTracer initializes the OpenTelemetry tracer provider.
 // It writes traces to the provided writer (e.g., os.Stderr).
@@ -26,20 +30,34 @@ func InitTracer(ctx context.Context, serviceName string, version string, writer 
 		writer = io.Discard
 	}
 
-	// We use stdout trace exporter for demonstration/MVP.
-	// In a real environment, you would check for OTEL_EXPORTER_OTLP_ENDPOINT and use otlptrace.
-	// We check if OTEL_TRACES_EXPORTER is explicitly set to "stdout" to enable it.
-	// Default is disabled to avoid log pollution.
-	if os.Getenv("OTEL_TRACES_EXPORTER") != "stdout" {
-		return func(context.Context) error { return nil }, nil
+	exporterType := os.Getenv("OTEL_TRACES_EXPORTER")
+	// If OTEL_EXPORTER_OTLP_ENDPOINT is set, default to otlp if type not specified or is otlp
+	if os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT") != "" && (exporterType == "" || exporterType == exporterOTLP) {
+		exporterType = exporterOTLP
 	}
 
-	exporter, err := stdouttrace.New(
-		stdouttrace.WithWriter(writer),
-		stdouttrace.WithPrettyPrint(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create stdout trace exporter: %w", err)
+	var exporter trace.SpanExporter
+	var err error
+
+	switch exporterType {
+	case exporterOTLP:
+		// Use OTLP HTTP Exporter
+		// Options are automatically read from env vars:
+		// OTEL_EXPORTER_OTLP_ENDPOINT, OTEL_EXPORTER_OTLP_HEADERS, etc.
+		exporter, err = otlptracehttp.New(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create otlp trace exporter: %w", err)
+		}
+	case "stdout":
+		exporter, err = stdouttrace.New(
+			stdouttrace.WithWriter(writer),
+			stdouttrace.WithPrettyPrint(),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create stdout trace exporter: %w", err)
+		}
+	default:
+		return func(context.Context) error { return nil }, nil
 	}
 
 	res, err := resource.New(ctx,
