@@ -105,7 +105,7 @@ time=2025-12-18T06:52:45.764Z level=ERROR source=/usr/local/google/home/kxw/core
 --- PASS: TestManager_ExecuteTool_Coverage (0.00s)
 === RUN   TestManager_ExecuteTool_Hooks_Coverage
 time=2025-12-18T06:52:45.764Z level=WARN source=/usr/local/google/home/kxw/core/pkg/tool/management.go:115 msg="Tool execution denied by pre-hook error" toolName=s1.mock-tool error="tool execution denied by policy rule: s1.mock-tool"
-    extra_management_test.go:120: 
+    extra_management_test.go:120:
         	Error Trace:	/usr/local/google/home/kxw/core/pkg/tool/extra_management_test.go:120
         	Error:      	"tool execution denied by policy rule: s1.mock-tool" does not contain "denied by hook"
         	Test:       	TestManager_ExecuteTool_Hooks_Coverage
@@ -473,7 +473,7 @@ time=2025-12-18T06:52:45.795Z level=ERROR source=/usr/local/google/home/kxw/core
 === RUN   TestHTTPTool_Execute_WithRetry/retry_succeeds
 === RUN   TestHTTPTool_Execute_WithRetry/retry_fails
 === RUN   TestHTTPTool_Execute_WithRetry/non_retriable_error
-DEBUG: Upstream HTTP 404 Body: 
+DEBUG: Upstream HTTP 404 Body:
 Headers: map[Content-Length:[0] Date:[Thu, 18 Dec 2025 06:52:46 GMT]]
 URL: http://127.0.0.1:45181/.
 === RUN   TestHTTPTool_Execute_WithRetry/retry_post_succeeds
