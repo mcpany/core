@@ -19,6 +19,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -76,8 +77,13 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	script := strings.Join(scriptCommands, " && ")
 
 	// Prepare environment variables
-	envVars := make([]string, 0, len(t.StdioConfig.GetEnv()))
-	for k, v := range t.StdioConfig.GetEnv() {
+	resolvedEnv, err := util.ResolveSecretMap(t.StdioConfig.GetSecretEnv(), t.StdioConfig.GetEnv())
+	if err != nil {
+		return nil, err
+	}
+
+	envVars := make([]string, 0, len(resolvedEnv))
+	for k, v := range resolvedEnv {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
 	}
 

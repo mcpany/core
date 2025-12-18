@@ -918,6 +918,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	executor := command.NewLocalExecutor()
 
 	env := os.Environ()
+	resolvedServiceEnv, err := util.ResolveSecretMap(t.service.GetEnv(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve service env: %w", err)
+	}
+	for k, v := range resolvedServiceEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
@@ -1058,6 +1066,24 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
 	env := os.Environ()
+	resolvedServiceEnv, err := util.ResolveSecretMap(t.service.GetEnv(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve service env: %w", err)
+	}
+	for k, v := range resolvedServiceEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	if ce := t.service.GetContainerEnvironment(); ce != nil {
+		resolvedContainerEnv, err := util.ResolveSecretMap(ce.GetEnv(), nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve container env: %w", err)
+		}
+		for k, v := range resolvedContainerEnv {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+	}
+
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
