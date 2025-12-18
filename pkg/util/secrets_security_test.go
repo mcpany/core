@@ -51,3 +51,24 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
     assert.NoError(t, err)
     assert.Equal(t, "VALID_SECRET", resolved)
 }
+
+func TestResolveSecret_SSRF_Blocked(t *testing.T) {
+	// Attempt to access AWS Metadata service IP
+	// This should be blocked by our SSRF protection
+	// The test expects the function to return an error explicitly stating it is blocked.
+	// If it returns a network error (timeout/unreachable), it means protection is NOT active.
+
+	remoteContent := &configv1.RemoteContent{}
+	remoteContent.SetHttpUrl("http://169.254.169.254/latest/meta-data/")
+	secret := &configv1.SecretValue{}
+	secret.SetRemoteContent(remoteContent)
+
+	_, err := util.ResolveSecret(secret)
+	assert.Error(t, err)
+	// Currently (before fix), this will error with network timeout or similar,
+	// NOT "blocked link-local IP".
+	// After fix, it MUST contain "blocked link-local IP".
+
+	// We can assert that the error contains the specific message.
+	assert.Contains(t, err.Error(), "blocked link-local IP")
+}
