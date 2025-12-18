@@ -34,6 +34,11 @@ The following features are fully implemented and tested:
 - [x] **Service Profiles**: Categorize and selectively enable services using profiles (`--profiles` flag).
 - **Configuration**:
   - Hot Configuration Reloading
+- [x] [**Secrets Management**](./features/security.md): Secure handling of sensitive data (API keys, passwords) using Vault, AWS Secrets Manager, or Env Vars.
+- [x] [**Distributed Tracing**](./features/tracing/README.md): Integrate OpenTelemetry for tracing requests across services.
+- [x] [**Transport Protocols (NATS)**](./features/nats.md): Support for NATS as a message bus.
+- [x] [**Automated Documentation Generation**](./features/documentation_generation.md): Generate markdown documentation for registered tools directly from the configuration.
+- [x] [**IP Allowlisting**](./features/security.md): Restrict access to specific IP addresses/CIDRs.
 
 ### Configured but Not Yet Implemented
 
@@ -48,14 +53,10 @@ For a complete list of all available configuration options, please see the [Conf
 
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
-- [ ] **Secrets Management**: Secure handling of sensitive data (API keys, passwords).
-- [ ] **Distributed Tracing**: Integrate OpenTelemetry for tracing requests across services. Visibility into request flows across microservices.
-- [x] **Automated Documentation Generation**: Generate markdown documentation for registered tools directly from the configuration.
 - [ ] **Enhanced Metrics**: Provide more granular metrics for tool usage, performance, and error rates.
-- [x] **IP Allowlisting**: Restrict access to specific IP addresses/CIDRs.
-- [ ] **Security Policies**: Implement fine-grained request validation policies.
+- [ ] **Security Policies**: Implement fine-grained request validation policies (runtime argument validation).
 - [ ] **WASM Plugin Support**: Allow extending functionality using WebAssembly plugins for custom logic.
-- [ ] **Transport Protocols (NATS/Kafka)**: Add support for asynchronous communication via NATS and Kafka.
+- [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 - [ ] **Client SDKs**: Develop official Client SDKs (Go, Python, TS) to interact with MCP Any programmatically.
 
 ## Ongoing Goals
