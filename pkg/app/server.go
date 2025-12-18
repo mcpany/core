@@ -10,6 +10,7 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net"
 	"net/http"
@@ -62,6 +63,9 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Limit the request body size to 10MB to prevent DoS attacks
+	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "failed to get file from form", http.StatusBadRequest)
@@ -84,7 +88,9 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with the file name and size
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
+	// Sanitize the filename to prevent reflected XSS
+	w.Header().Set("Content-Type", "text/plain")
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), header.Size)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
