@@ -347,3 +347,38 @@ func TestResolveSecret_Vault(t *testing.T) {
 		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
 	})
 }
+
+func TestResolveSecretMap(t *testing.T) {
+	t.Run("Merge", func(t *testing.T) {
+		secretMap := map[string]*configv1.SecretValue{
+			"SECRET_VAR": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "secret_value",
+				},
+			},
+		}
+		plainMap := map[string]string{
+			"PLAIN_VAR":  "plain_value",
+			"SECRET_VAR": "will_be_overridden",
+		}
+
+		resolved, err := util.ResolveSecretMap(secretMap, plainMap)
+		assert.NoError(t, err)
+		assert.Equal(t, "plain_value", resolved["PLAIN_VAR"])
+		assert.Equal(t, "secret_value", resolved["SECRET_VAR"])
+	})
+
+	t.Run("ResolveError", func(t *testing.T) {
+		secretMap := map[string]*configv1.SecretValue{
+			"SECRET_VAR": {
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "NON_EXISTENT_VAR",
+				},
+			},
+		}
+		plainMap := map[string]string{}
+
+		_, err := util.ResolveSecretMap(secretMap, plainMap)
+		assert.Error(t, err)
+	})
+}
