@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"regexp"
 	"sort"
 	"time"
 
@@ -240,7 +239,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		if shouldBlock(callPolicies, toolNamePart, callID) {
+		allowed, err := tool.EvaluateCallPolicy(callPolicies, toolNamePart, callID, nil)
+		if err != nil {
+			log.Error("Failed to evaluate call policy", "error", err)
+			continue
+		}
+		if !allowed {
 			log.Info("Skipping blocked tool/call", "toolName", toolNamePart, "callID", callID)
 			continue
 		}
@@ -333,7 +337,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
 
-		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience())
+		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience(), callPolicies, callID)
 		if err := toolManager.AddTool(httpTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue
@@ -414,49 +418,4 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}
 
-}
-
-func shouldBlock(policies []*configv1.CallPolicy, toolName, callID string) bool {
-	for _, policy := range policies {
-		if policy == nil {
-			continue
-		}
-		policyBlocked := false
-		matchedRule := false
-		for _, rule := range policy.GetRules() {
-			matched := true
-			if rule.GetNameRegex() != "" {
-				if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
-					matched = false
-				}
-			}
-			if matched && rule.GetCallIdRegex() != "" {
-				if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
-					matched = false
-				}
-			}
-			if matched && rule.GetArgumentRegex() != "" {
-				// Cannot match argument regex at registration time
-				matched = false
-			}
-
-			if matched {
-				matchedRule = true
-				if rule.GetAction() == configv1.CallPolicy_DENY {
-					policyBlocked = true
-				}
-				break // First match wins
-			}
-		}
-		if !matchedRule {
-			if policy.GetDefaultAction() == configv1.CallPolicy_DENY {
-				policyBlocked = true
-			}
-		}
-
-		if policyBlocked {
-			return true
-		}
-	}
-	return false
 }
