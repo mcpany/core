@@ -41,6 +41,8 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
+func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+
 func newMockToolManager() *mockToolManager {
 	return &mockToolManager{
 		tools:       make(map[string]tool.Tool),

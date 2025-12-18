@@ -26,22 +26,68 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ToolDefinition_MergeStrategy int32
+
+const (
+	ToolDefinition_MERGE_STRATEGY_UNSPECIFIED ToolDefinition_MergeStrategy = 0
+	ToolDefinition_MERGE_STRATEGY_MERGE       ToolDefinition_MergeStrategy = 1
+	ToolDefinition_MERGE_STRATEGY_OVERRIDE    ToolDefinition_MergeStrategy = 2
+)
+
+// Enum value maps for ToolDefinition_MergeStrategy.
+var (
+	ToolDefinition_MergeStrategy_name = map[int32]string{
+		0: "MERGE_STRATEGY_UNSPECIFIED",
+		1: "MERGE_STRATEGY_MERGE",
+		2: "MERGE_STRATEGY_OVERRIDE",
+	}
+	ToolDefinition_MergeStrategy_value = map[string]int32{
+		"MERGE_STRATEGY_UNSPECIFIED": 0,
+		"MERGE_STRATEGY_MERGE":       1,
+		"MERGE_STRATEGY_OVERRIDE":    2,
+	}
+)
+
+func (x ToolDefinition_MergeStrategy) Enum() *ToolDefinition_MergeStrategy {
+	p := new(ToolDefinition_MergeStrategy)
+	*p = x
+	return p
+}
+
+func (x ToolDefinition_MergeStrategy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ToolDefinition_MergeStrategy) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_tool_proto_enumTypes[0].Descriptor()
+}
+
+func (ToolDefinition_MergeStrategy) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_tool_proto_enumTypes[0]
+}
+
+func (x ToolDefinition_MergeStrategy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // ToolDefinition describes a single capability or "tool" offered by a service.
 type ToolDefinition struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name            *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_InputSchema     *structpb.Struct       `protobuf:"bytes,3,opt,name=input_schema"`
-	xxx_hidden_ServiceId       *string                `protobuf:"bytes,13,opt,name=service_id"`
-	xxx_hidden_Description     *string                `protobuf:"bytes,2,opt,name=description"`
-	xxx_hidden_IsStream        bool                   `protobuf:"varint,5,opt,name=is_stream"`
-	xxx_hidden_Title           *string                `protobuf:"bytes,6,opt,name=title"`
-	xxx_hidden_ReadOnlyHint    bool                   `protobuf:"varint,7,opt,name=read_only_hint"`
-	xxx_hidden_DestructiveHint bool                   `protobuf:"varint,8,opt,name=destructive_hint"`
-	xxx_hidden_IdempotentHint  bool                   `protobuf:"varint,9,opt,name=idempotent_hint"`
-	xxx_hidden_OpenWorldHint   bool                   `protobuf:"varint,10,opt,name=open_world_hint"`
-	xxx_hidden_CallId          *string                `protobuf:"bytes,11,opt,name=call_id"`
-	xxx_hidden_Disable         bool                   `protobuf:"varint,12,opt,name=disable"`
-	xxx_hidden_Profiles        *[]*Profile            `protobuf:"bytes,14,rep,name=profiles"`
+	state                      protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Name            *string                      `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_InputSchema     *structpb.Struct             `protobuf:"bytes,3,opt,name=input_schema"`
+	xxx_hidden_ServiceId       *string                      `protobuf:"bytes,13,opt,name=service_id"`
+	xxx_hidden_Description     *string                      `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsStream        bool                         `protobuf:"varint,5,opt,name=is_stream"`
+	xxx_hidden_Title           *string                      `protobuf:"bytes,6,opt,name=title"`
+	xxx_hidden_ReadOnlyHint    bool                         `protobuf:"varint,7,opt,name=read_only_hint"`
+	xxx_hidden_DestructiveHint bool                         `protobuf:"varint,8,opt,name=destructive_hint"`
+	xxx_hidden_IdempotentHint  bool                         `protobuf:"varint,9,opt,name=idempotent_hint"`
+	xxx_hidden_OpenWorldHint   bool                         `protobuf:"varint,10,opt,name=open_world_hint"`
+	xxx_hidden_CallId          *string                      `protobuf:"bytes,11,opt,name=call_id"`
+	xxx_hidden_Disable         bool                         `protobuf:"varint,12,opt,name=disable"`
+	xxx_hidden_Profiles        *[]*Profile                  `protobuf:"bytes,14,rep,name=profiles"`
+	xxx_hidden_MergeStrategy   ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy"`
+	xxx_hidden_Tags            []string                     `protobuf:"bytes,16,rep,name=tags"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -181,9 +227,25 @@ func (x *ToolDefinition) GetProfiles() []*Profile {
 	return nil
 }
 
+func (x *ToolDefinition) GetMergeStrategy() ToolDefinition_MergeStrategy {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 13) {
+			return x.xxx_hidden_MergeStrategy
+		}
+	}
+	return ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
+}
+
+func (x *ToolDefinition) GetTags() []string {
+	if x != nil {
+		return x.xxx_hidden_Tags
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 15)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -192,56 +254,65 @@ func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 15)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 15)
 }
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 15)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 15)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 15)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 15)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 15)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 15)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 15)
 }
 
 func (x *ToolDefinition) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 15)
 }
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
 	x.xxx_hidden_Profiles = &v
+}
+
+func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
+	x.xxx_hidden_MergeStrategy = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 15)
+}
+
+func (x *ToolDefinition) SetTags(v []string) {
+	x.xxx_hidden_Tags = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -328,6 +399,13 @@ func (x *ToolDefinition) HasDisable() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
 }
 
+func (x *ToolDefinition) HasMergeStrategy() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
+}
+
 func (x *ToolDefinition) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -387,6 +465,11 @@ func (x *ToolDefinition) ClearDisable() {
 	x.xxx_hidden_Disable = false
 }
 
+func (x *ToolDefinition) ClearMergeStrategy() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_MergeStrategy = ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -425,7 +508,9 @@ type ToolDefinition_builder struct {
 	// If true, this tool is disabled.
 	Disable *bool
 	// A list of profiles this tool belongs to.
-	Profiles []*Profile
+	Profiles      []*Profile
+	MergeStrategy *ToolDefinition_MergeStrategy
+	Tags          []string
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -433,51 +518,56 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 15)
 		x.xxx_hidden_Name = b.Name
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 15)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 15)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 15)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 15)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 15)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 15)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 15)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 15)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 15)
 		x.xxx_hidden_CallId = b.CallId
 	}
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 15)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	x.xxx_hidden_Profiles = &b.Profiles
+	if b.MergeStrategy != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 15)
+		x.xxx_hidden_MergeStrategy = *b.MergeStrategy
+	}
+	x.xxx_hidden_Tags = b.Tags
 	return m0
 }
 
@@ -485,7 +575,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xea\x03\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xbe\x05\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -502,22 +592,31 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	" \x01(\bR\x0fopen_world_hint\x12\x18\n" +
 	"\acall_id\x18\v \x01(\tR\acall_id\x12\x18\n" +
 	"\adisable\x18\f \x01(\bR\adisable\x125\n" +
-	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofilesB3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
+	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
+	"\x04tags\x18\x10 \x03(\tR\x04tags\"f\n" +
+	"\rMergeStrategy\x12\x1e\n" +
+	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
+	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02B3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
+var file_proto_config_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_tool_proto_goTypes = []any{
-	(*ToolDefinition)(nil),  // 0: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil), // 1: google.protobuf.Struct
-	(*Profile)(nil),         // 2: mcpany.config.v1.Profile
+	(ToolDefinition_MergeStrategy)(0), // 0: mcpany.config.v1.ToolDefinition.MergeStrategy
+	(*ToolDefinition)(nil),            // 1: mcpany.config.v1.ToolDefinition
+	(*structpb.Struct)(nil),           // 2: google.protobuf.Struct
+	(*Profile)(nil),                   // 3: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	2, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	3, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
@@ -531,13 +630,14 @@ func file_proto_config_v1_tool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_tool_proto_rawDesc), len(file_proto_config_v1_tool_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_config_v1_tool_proto_goTypes,
 		DependencyIndexes: file_proto_config_v1_tool_proto_depIdxs,
+		EnumInfos:         file_proto_config_v1_tool_proto_enumTypes,
 		MessageInfos:      file_proto_config_v1_tool_proto_msgTypes,
 	}.Build()
 	File_proto_config_v1_tool_proto = out.File
