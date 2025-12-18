@@ -6,6 +6,7 @@ package auth
 
 import (
 	"context"
+	"crypto/subtle"
 	"fmt"
 	"net/http"
 	"time"
@@ -108,7 +109,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 		receivedKey = r.Header.Get(a.ParamName)
 	}
 
-	if receivedKey == a.Value {
+	if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(a.Value)) == 1 {
 		return ctx, nil
 	}
 	return ctx, fmt.Errorf("unauthorized")
@@ -174,7 +175,7 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		if r.Header.Get("X-API-Key") == "" {
 			return ctx, fmt.Errorf("unauthorized: missing API key")
 		}
-		if r.Header.Get("X-API-Key") != am.apiKey {
+		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
 			return ctx, fmt.Errorf("unauthorized: invalid API key")
 		}
 	}
