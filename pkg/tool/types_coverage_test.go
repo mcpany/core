@@ -50,6 +50,8 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 		nil,
 		&configv1.HttpCallDefinition{},
 		nil, // Resilience
+		nil, // Policies
+		"",  // CallID
 	)
 
 	res, err := ht.Execute(context.Background(), &ExecutionRequest{
@@ -95,6 +97,8 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 		nil,
 		&configv1.HttpCallDefinition{},
 		nil,
+		nil,
+		"",
 	)
 
 	req := &ExecutionRequest{
@@ -139,6 +143,8 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 		mockAuth,
 		&configv1.HttpCallDefinition{},
 		nil,
+		nil,
+		"",
 	)
 
 	res, err := ht.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
