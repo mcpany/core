@@ -24,19 +24,19 @@ import (
 )
 
 type MockDockerClient struct {
-	ImagePullFunc       func(ctx context.Context, refStr string, options image.PullOptions) (io.ReadCloser, error)
+	ImagePullFunc       func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
 	ContainerCreateFunc func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
 	ContainerStartFunc  func(ctx context.Context, containerID string, options container.StartOptions) error
-	ContainerLogsFunc   func(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error)
 	ContainerRemoveFunc func(ctx context.Context, containerID string, options container.RemoveOptions) error
+	ContainerLogsFunc   func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error)
 	ContainerWaitFunc   func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error)
 	ContainerAttachFunc func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
 	CloseFunc           func() error
 }
 
-func (m *MockDockerClient) ImagePull(ctx context.Context, refStr string, options image.PullOptions) (io.ReadCloser, error) {
+func (m *MockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 	if m.ImagePullFunc != nil {
-		return m.ImagePullFunc(ctx, refStr, options)
+		return m.ImagePullFunc(ctx, ref, options)
 	}
 	return io.NopCloser(strings.NewReader("")), nil
 }
@@ -55,14 +55,6 @@ func (m *MockDockerClient) ContainerStart(ctx context.Context, containerID strin
 	return nil
 }
 
-func (m *MockDockerClient) ContainerLogs(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error) {
-	if m.ContainerLogsFunc != nil {
-		return m.ContainerLogsFunc(ctx, containerID, options)
-	}
-	// Return valid stdcopy format for empty logs
-	return io.NopCloser(strings.NewReader("")), nil
-}
-
 func (m *MockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
 	if m.ContainerRemoveFunc != nil {
 		return m.ContainerRemoveFunc(ctx, containerID, options)
@@ -70,14 +62,21 @@ func (m *MockDockerClient) ContainerRemove(ctx context.Context, containerID stri
 	return nil
 }
 
+func (m *MockDockerClient) ContainerLogs(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+	if m.ContainerLogsFunc != nil {
+		return m.ContainerLogsFunc(ctx, container, options)
+	}
+	return io.NopCloser(strings.NewReader("")), nil
+}
+
 func (m *MockDockerClient) ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 	if m.ContainerWaitFunc != nil {
 		return m.ContainerWaitFunc(ctx, containerID, condition)
 	}
 	statusCh := make(chan container.WaitResponse, 1)
+	errCh := make(chan error, 1)
 	statusCh <- container.WaitResponse{StatusCode: 0}
 	close(statusCh)
-	errCh := make(chan error, 1)
 	close(errCh)
 	return statusCh, errCh
 }
@@ -108,17 +107,10 @@ func (m *mockConn) Close() error                      { return nil }
 func (m *mockConn) CloseWrite() error                 { return nil }
 
 func TestDockerExecutor_Mock(t *testing.T) {
-	// Restore original factory after test
-	originalFactory := newDockerClientFunc
-	defer func() {
-		newDockerClientFunc = originalFactory
-	}()
-
 	t.Run("Execute_Success", func(t *testing.T) {
 		mockClient := &MockDockerClient{
-			ContainerLogsFunc: func(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error) {
+			ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
 				// Construct a stdcopy frame for stdout
-				// Header: [1, 0, 0, 0, size_byte1, size_byte2, size_byte3, size_byte4]
 				content := "mock output"
 				header := make([]byte, 8)
 				header[0] = 1 // stdout
@@ -126,13 +118,15 @@ func TestDockerExecutor_Mock(t *testing.T) {
 				return io.NopCloser(io.MultiReader(bytes.NewReader(header), strings.NewReader(content))), nil
 			},
 		}
-		newDockerClientFunc = func() (DockerClient, error) {
-			return mockClient, nil
-		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := &dockerExecutor{
+			containerEnv: containerEnv,
+			clientFactory: func() (DockerClient, error) {
+				return mockClient, nil
+			},
+		}
 
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
@@ -155,13 +149,15 @@ func TestDockerExecutor_Mock(t *testing.T) {
 				return container.CreateResponse{}, fmt.Errorf("create failed")
 			},
 		}
-		newDockerClientFunc = func() (DockerClient, error) {
-			return mockClient, nil
-		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := &dockerExecutor{
+			containerEnv: containerEnv,
+			clientFactory: func() (DockerClient, error) {
+				return mockClient, nil
+			},
+		}
 
 		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
 		assert.ErrorContains(t, err, "create failed")
@@ -173,13 +169,15 @@ func TestDockerExecutor_Mock(t *testing.T) {
 				return fmt.Errorf("start failed")
 			},
 		}
-		newDockerClientFunc = func() (DockerClient, error) {
-			return mockClient, nil
-		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := &dockerExecutor{
+			containerEnv: containerEnv,
+			clientFactory: func() (DockerClient, error) {
+				return mockClient, nil
+			},
+		}
 
 		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
 		assert.ErrorContains(t, err, "start failed")
@@ -187,17 +185,19 @@ func TestDockerExecutor_Mock(t *testing.T) {
 
 	t.Run("Execute_LogsFail", func(t *testing.T) {
 		mockClient := &MockDockerClient{
-			ContainerLogsFunc: func(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error) {
+			ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
 				return nil, fmt.Errorf("logs failed")
 			},
-		}
-		newDockerClientFunc = func() (DockerClient, error) {
-			return mockClient, nil
 		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := &dockerExecutor{
+			containerEnv: containerEnv,
+			clientFactory: func() (DockerClient, error) {
+				return mockClient, nil
+			},
+		}
 
 		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
 		assert.ErrorContains(t, err, "logs failed")
@@ -214,13 +214,15 @@ func TestDockerExecutor_Mock(t *testing.T) {
 				return statusCh, errCh
 			},
 		}
-		newDockerClientFunc = func() (DockerClient, error) {
-			return mockClient, nil
-		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := &dockerExecutor{
+			containerEnv: containerEnv,
+			clientFactory: func() (DockerClient, error) {
+				return mockClient, nil
+			},
+		}
 
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", nil, "", nil)
 		require.NoError(t, err)

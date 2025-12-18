@@ -11,40 +11,19 @@ import (
 	"net"
 	"os/exec"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/mount"
-	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // Executor is an interface for executing commands.
 type Executor interface {
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
-}
-
-// DockerClient is an interface for Docker client methods used by dockerExecutor.
-// This allows mocking the Docker client in tests.
-type DockerClient interface {
-	ImagePull(ctx context.Context, refStr string, options image.PullOptions) (io.ReadCloser, error)
-	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
-	ContainerStart(ctx context.Context, containerID string, options container.StartOptions) error
-	ContainerLogs(ctx context.Context, containerID string, options container.LogsOptions) (io.ReadCloser, error)
-	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
-	ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error)
-	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
-	Close() error
-}
-
-// newDockerClientFunc allows mocking the docker client in tests.
-var newDockerClientFunc = func() (DockerClient, error) {
-	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 }
 
 // NewExecutor creates a new command executor.
@@ -152,19 +131,26 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 }
 
 type dockerExecutor struct {
-	containerEnv *configv1.ContainerEnvironment
+	containerEnv  *configv1.ContainerEnvironment
+	clientFactory func() (DockerClient, error)
 }
 
 func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
-	return &dockerExecutor{containerEnv: containerEnv}
+	return &dockerExecutor{
+		containerEnv: containerEnv,
+		clientFactory: func() (DockerClient, error) {
+			return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		},
+	}
 }
 
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := newDockerClientFunc()
+	cli, err := e.clientFactory()
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
+	defer func() { _ = cli.Close() }()
 
 	img := e.containerEnv.GetImage()
 	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
@@ -236,24 +222,29 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	stderrReader, stderrWriter := io.Pipe()
 
 	go func() {
-		defer func() { _ = out.Close() }()
-		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, out)
+		defer func() { _ = stdoutWriter.Close() }()
+		defer func() { _ = stderrWriter.Close() }()
+		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, attachRespReaderHack(out))
 		if err != nil {
 			log.Error("Failed to demultiplex docker stream", "error", err)
 		}
-		_ = stdoutWriter.Close()
-		_ = stderrWriter.Close()
 	}()
 
 	return stdoutReader, stderrReader, exitCodeChan, nil
 }
 
+// Helper to cast ReadCloser to Reader for StdCopy
+func attachRespReaderHack(r io.ReadCloser) io.Reader {
+    return r
+}
+
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := newDockerClientFunc()
+	cli, err := e.clientFactory()
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
+	defer func() { _ = cli.Close() }()
 
 	img := e.containerEnv.GetImage()
 	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
