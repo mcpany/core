@@ -30,6 +30,8 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
@@ -37,6 +39,7 @@ import (
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -171,6 +174,17 @@ func (a *Application) Run(
 	fs, err := setup(fs)
 	if err != nil {
 		return fmt.Errorf("failed to setup filesystem: %w", err)
+	}
+
+	shutdownTracer, err := telemetry.InitTracer(ctx, appconsts.Name, appconsts.Version, os.Stderr)
+	if err != nil {
+		log.Error("Failed to initialize tracer", "error", err)
+	} else {
+		defer func() {
+			if err := shutdownTracer(context.Background()); err != nil {
+				log.Error("Failed to shutdown tracer", "error", err)
+			}
+		}()
 	}
 
 	log.Info("Starting MCP Any Service...")
@@ -814,7 +828,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, ipMiddleware.Handler(mux), shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(mux), "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
