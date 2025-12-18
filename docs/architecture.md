@@ -11,7 +11,7 @@ It dynamically registers and exposes capabilities from various backend services 
 ```mermaid
 graph TD
     subgraph Client Interaction
-        Client -->|List/Execute Tools| McpRouterApi[MCP Router API]
+        Client -->|List/Execute Tools (JSON-RPC)| McpServer[MCP Server]
     end
 
     subgraph Service Registration
@@ -20,7 +20,7 @@ graph TD
     end
 
     subgraph "MCP Any Server"
-        McpAnyServer --> McpRouterApi
+        McpAnyServer --> McpServer
         McpAnyServer --> RegistrationApi
         McpAnyServer --> ToolIndex[Tool Index]
         McpAnyServer --> UpstreamClients[Upstream Clients]
@@ -42,7 +42,7 @@ graph TD
 The diagram above illustrates the two main workflows in MCP Any:
 
 1. **Service Registration**: Services can be registered with the MCP Any server either dynamically via the gRPC-based `Registration API` or statically by defining them in a configuration file that is loaded at startup.
-2. **Tool Execution**: Clients interact with the `MCP Router API` to list and execute the tools that have been made available by the registered services. The MCP Any server then dispatches these calls to the appropriate upstream service.
+2. **Tool Execution**: Clients interact with the **MCP Server** using the standard Model Context Protocol (JSON-RPC) to list and execute the tools that have been made available by the registered services. The MCP Any server then dispatches these calls to the appropriate upstream service.
 
 ## Core Concepts
 
@@ -83,7 +83,7 @@ The `cmd/server` package contains the main application logic for the MCP Any ser
 - **Loading Configuration**: Reading the `McpAnyServerConfig` from a file or other source.
 - **Service Registration**: Registering all the upstream services defined in the configuration.
 - **Tool Indexing**: Creating and maintaining an index of all available tools.
-- **API Server**: Exposing the MCP Router API and the Registration API.
+- **API Server**: Exposing the MCP JSON-RPC Server and the Registration API.
 
 ### 2. Parsers
 
@@ -96,7 +96,7 @@ MCP Any uses a set of parsers to discover tools from different types of upstream
 
 MCP Any exposes two main API services:
 
-- **`McpRouter` (`proto/mcp_router/v1/mcp_router.proto`)**: Allows clients to list and execute tools.
+- **MCP Server**: Implements the Model Context Protocol (MCP) to allow clients to list and execute tools via JSON-RPC (over Stdio or HTTP/SSE).
 - **`RegistrationService` (`proto/api/v1/registration.proto`)**: Allows backend services to be registered dynamically.
 
 ## Tool Execution Flow
