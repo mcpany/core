@@ -30,6 +30,30 @@ func BenchmarkTextTemplate_Render(b *testing.B) {
 	}
 }
 
+func BenchmarkTransformer_Join(b *testing.B) {
+	b.ReportAllocs()
+	t := NewTransformer()
+	// Create a large list
+	listSize := 1000
+	items := make([]any, listSize)
+	for i := 0; i < listSize; i++ {
+		items[i] = i
+	}
+
+	templateStr := `{{join "," .items}}`
+	data := map[string]any{
+		"items": items,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := t.Transform(templateStr, data)
+		if err != nil {
+			b.Fatalf("failed to transform: %v", err)
+		}
+	}
+}
+
 func BenchmarkTransformer_Transform(b *testing.B) {
 	t := NewTransformer()
 	templateStr := "Hello, {{.name}}! You are {{.age}} years old. This is a {{.test}} of {{.performance}}."
