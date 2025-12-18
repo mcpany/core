@@ -124,19 +124,26 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 }
 
 type dockerExecutor struct {
-	containerEnv *configv1.ContainerEnvironment
+	containerEnv  *configv1.ContainerEnvironment
+	clientFactory func() (DockerClient, error)
 }
 
 func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
-	return &dockerExecutor{containerEnv: containerEnv}
+	return &dockerExecutor{
+		containerEnv: containerEnv,
+		clientFactory: func() (DockerClient, error) {
+			return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		},
+	}
 }
 
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := e.clientFactory()
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
+	defer func() { _ = cli.Close() }()
 
 	img := e.containerEnv.GetImage()
 	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
@@ -221,10 +228,11 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := e.clientFactory()
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
+	defer func() { _ = cli.Close() }()
 
 	img := e.containerEnv.GetImage()
 	reader, err := cli.ImagePull(ctx, img, image.PullOptions{})
