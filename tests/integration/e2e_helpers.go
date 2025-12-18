@@ -753,6 +753,11 @@ func StartNatsServer(t *testing.T) (string, func()) {
 			root, err := GetProjectRoot()
 			require.NoError(t, err)
 			natsServerBin = filepath.Join(root, "build/env/bin/nats-server")
+			if info, err := os.Stat(natsServerBin); err == nil {
+				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
+			} else {
+				t.Logf("DEBUG: nats-server binary not found at: %s", natsServerBin)
+			}
 			_, err = os.Stat(natsServerBin)
 			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
 		}
@@ -817,7 +822,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	require.NoError(t, err, "Failed to get project root")
 	mcpanyBinary := filepath.Join(root, "build/bin/server")
 
-	t.Logf("Using MCPANY binary from: %s", mcpanyBinary)
+	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
 	// Use port 0 to let the OS assign free ports
 	jsonrpcPortArg := "127.0.0.1:0"
@@ -833,6 +838,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
+	}
+	if metricsAddr, ok := os.LookupEnv("MCPANY_METRICS_LISTEN_ADDRESS"); ok {
+		t.Logf("Found MCPANY_METRICS_LISTEN_ADDRESS=%s in env, creating server with it", metricsAddr)
+		env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS="+metricsAddr)
+	} else {
+		// Fallback for tests if env var propagation fails
+		t.Logf("MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091")
+		env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS=localhost:19091")
 	}
 
 	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)

@@ -11,6 +11,7 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
@@ -37,18 +38,39 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
+		// Tool not in context, try to look it up
+		var found bool
+		t, found = m.toolManager.GetTool(req.ToolName)
+		if !found {
+			fmt.Printf("DEBUG: Tool %s not found in manager\n", req.ToolName)
+			return next(ctx, req)
+		}
+	}
+
+	fmt.Printf("DEBUG: CachingMiddleware Execute for tool %s\n", t.Tool().GetName())
+	cacheConfig := m.getCacheConfig(t)
+	if cacheConfig == nil || !cacheConfig.GetIsEnabled() {
+		fmt.Printf("DEBUG: Caching disabled or config nil for tool %s\n", t.Tool().GetName())
 		return next(ctx, req)
 	}
 
-	cacheConfig := m.getCacheConfig(t)
-	if cacheConfig == nil || !cacheConfig.GetIsEnabled() {
-		return next(ctx, req)
+	// Extract service ID and Tool Name for metrics
+	serviceID := t.Tool().GetServiceId()
+	toolName := t.Tool().GetName()
+	labels := []metrics.Label{
+		{Name: "service", Value: serviceID},
+		{Name: "tool", Value: toolName},
 	}
 
 	cacheKey := m.getCacheKey(req)
 	if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
+		// Found in cache
+		metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+
 		return cached, nil
 	}
+	// Not found in cache
+	metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
 
 	result, err := next(ctx, req)
 	if err != nil {
@@ -56,6 +78,7 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	}
 
 	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
+		_ = err // explicit ignore
 		// Log the error but don't fail the request, as caching is an optimization
 		// We need a logger here, but middleware doesn't strictly have one injected in the struct.
 		// Assuming we can use the global logger as per project pattern.
@@ -88,4 +111,9 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+}
+
+// Clear clears the cache.
+func (m *CachingMiddleware) Clear(ctx context.Context) error {
+	return m.cache.Clear(ctx)
 }
