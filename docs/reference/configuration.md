@@ -353,6 +353,57 @@ service_config:
     tool_auto_discovery: true
 ```
 
+#### Proxying CLI-based MCP Servers (Python/Node)
+
+You can also proxy MCP servers that run as a local command (stdio) or in a container. This is useful for using the growing ecosystem of MCP servers.
+
+##### Example: Python MCP Server
+
+```yaml
+service_config:
+  mcp_service:
+    stdio_connection:
+      command: "python"
+      args:
+        - "main.py"
+      working_directory: "/path/to/server"
+      env:
+        MY_ENV:
+          plain_text: "value"
+    tool_auto_discovery: true
+```
+
+##### Example: NPX MCP Server (Puppeteer)
+
+This example runs the [`@modelcontextprotocol/server-puppeteer`](https://github.com/modelcontextprotocol/servers) using `npx`.
+
+```yaml
+service_config:
+  mcp_service:
+    stdio_connection:
+      command: "npx"
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-puppeteer"
+    tool_auto_discovery: true
+```
+
+##### Verification with Gemini CLI
+
+To verify these configurations, you can use the `@google/gemini-cli`.
+
+1.  **Start your MCP Any server** with the config.
+2.  **Add the server** to Gemini CLI:
+    ```bash
+    npx -y @google/gemini-cli mcp add --transport http mcpany-server http://localhost:8080/mcp/v1
+    ```
+    *(Adjust the URL if your server listens on a different port/path)*
+
+3.  **Interact**:
+    ```bash
+    npx -y @google/gemini-cli -p "Use the puppeteer tool to take a screenshot of google.com"
+    ```
+
 #### `GraphqlUpstreamService`
 
 | Field          | Type                                 | Description                                |
