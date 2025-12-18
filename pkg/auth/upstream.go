@@ -38,8 +38,9 @@ type UpstreamAuthenticator interface {
 //   - authConfig: The configuration that specifies the authentication method
 //     and its parameters.
 //
-// Returns an `UpstreamAuthenticator` or an error if the configuration is
-// invalid.
+// Returns:
+//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
+//   - An error if the configuration is invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -113,7 +114,8 @@ type APIKeyAuth struct {
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
-// Returns `nil` on success.
+// Returns:
+//   - nil on success, or an error if the secret cannot be resolved.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.HeaderValue == nil {
 		return errors.New("api key secret is not configured")
@@ -137,7 +139,8 @@ type BearerTokenAuth struct {
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
-// Returns `nil` on success.
+// Returns:
+//   - nil on success, or an error if the secret cannot be resolved.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -162,7 +165,8 @@ type BasicAuth struct {
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
-// Returns `nil` on success.
+// Returns:
+//   - nil on success, or an error if the secret cannot be resolved.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -188,7 +192,8 @@ type OAuth2Auth struct {
 // Parameters:
 //   - req: The HTTP request to be modified.
 //
-// Returns `nil` on success.
+// Returns:
+//   - nil on success, or an error if the token cannot be obtained.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	if o.ClientID == nil {
 		return errors.New("oauth2 client id secret is not configured")
