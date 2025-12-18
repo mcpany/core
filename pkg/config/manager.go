@@ -276,7 +276,7 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 			sp.Id = sp.GetName()
 		}
 		for _, ep := range m.enabledProfiles {
-			if sp.GetName() == ep {
+			if sp.GetName() == ep || sp.GetId() == ep {
 				allowed = true
 				break
 			}
