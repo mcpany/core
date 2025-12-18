@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 
@@ -83,7 +84,7 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 			}
 		}
 
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := safeSecretClient.Do(req)
 		if err != nil {
 			return "", fmt.Errorf("failed to fetch remote secret: %w", err)
 		}
@@ -219,4 +220,35 @@ func ResolveSecretMap(secretMap map[string]*configv1.SecretValue, plainMap map[s
 		result[k] = resolved
 	}
 	return result, nil
+}
+
+// safeSecretClient is an http.Client that prevents SSRF by blocking access to link-local IPs (like AWS metadata service).
+// It also resolves the IP before dialing to prevent DNS rebinding attacks.
+var safeSecretClient = &http.Client{
+	Transport: &http.Transport{
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, port, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, err
+			}
+			ips, err := net.LookupIP(host)
+			if err != nil {
+				return nil, err
+			}
+			for _, ip := range ips {
+				if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+					return nil, fmt.Errorf("blocked link-local IP: %s", ip)
+				}
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() {
+					return nil, fmt.Errorf("blocked loopback IP: %s", ip)
+				}
+			}
+			if len(ips) == 0 {
+				return nil, fmt.Errorf("no IPs resolved for %s", host)
+			}
+			// Use the first resolved IP to avoid DNS rebinding race conditions
+			var d net.Dialer
+			return d.DialContext(ctx, network, net.JoinHostPort(ips[0].String(), port))
+		},
+	},
 }

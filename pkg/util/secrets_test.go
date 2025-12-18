@@ -16,6 +16,8 @@ import (
 )
 
 func TestResolveSecret(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
+
 	t.Run("nil secret", func(t *testing.T) {
 		resolved, err := util.ResolveSecret(nil)
 		assert.NoError(t, err)
@@ -223,6 +225,8 @@ func TestResolveSecret(t *testing.T) {
 }
 
 func TestResolveSecret_Vault(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
+
 	t.Run("Vault", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/v1/secret/data/my-app/db", r.URL.Path)
