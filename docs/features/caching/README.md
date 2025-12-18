@@ -22,14 +22,26 @@ upstream_services:
       address: "https://api.weather.com"
       tools:
         - name: "get_forecast"
+          description: "Get weather for a location"
+          call_id: "get_weather"
+          input_schema:
+            type: "object"
+            properties:
+              location:
+                type: "string"
+            required: ["location"]
       calls:
-        get_forecast:
-          cache:
-            is_enabled: true
-            ttl: "5m" # Overrides service default
+        get_weather:
+          method: HTTP_METHOD_GET
+          endpoint_path: "/weather"
+          parameters:
+            - schema:
+                name: "location"
+                type: STRING
+                is_required: true
     cache:
       is_enabled: true
-      ttl: "1h"
+      ttl: "5m"
 ```
 
 ## Use Case
@@ -47,3 +59,55 @@ Client -> MCP Any -> Upstream API -> MCP Any (Cache Store) -> Client
 
 **Request 2 (Hit):**
 Client -> MCP Any (Cache Hit) -> Client
+
+## Verification
+
+You can verify that caching is working by using the `gemini` CLI or checking the server logs.
+
+### Using Gemini CLI
+
+1.  **Start the MCP Any server** with your configuration.
+2.  **Add the server to Gemini CLI**:
+    ```bash
+    gemini mcp add my-server http://localhost:50050/mcp
+    ```
+3.  **Run a prompt** that triggers the tool:
+    ```bash
+    gemini -p "What is the weather in London?"
+    ```
+    *First run:* You should see the request being processed by the upstream service (e.g., in server logs).
+4.  **Run the prompt again**:
+    ```bash
+    gemini -p "What is the weather in London?"
+    ```
+    *Second run:* The response should be faster, and you should NOT see a new request to the upstream service in the logs.
+
+### Checking Server Logs
+
+Enable debug logging in your configuration (`log_level: "debug"`) or set the environment variable `MCPANY_LOG_LEVEL=debug`.
+
+**Cache Miss (First Request):**
+```text
+level=DEBUG msg="Cache miss" key=...
+level=INFO msg="Call upstream" ...
+```
+
+**Cache Hit (Second Request):**
+```text
+level=DEBUG msg="Cache hit" key=...
+```
+
+### Automated Verification
+
+Run the E2E verification test:
+```bash
+go test -v -count=1 -tags=e2e ./docs/features/caching
+```
+
+### Metrics
+
+The caching middleware exposes the following Prometheus metrics on the configured metrics port (default: 9091):
+
+- `mcpany_cache_hits`: Counter of cache hits, labeled by `service` and `tool`.
+- `mcpany_cache_misses`: Counter of cache misses, labeled by `service` and `tool`.
+- `mcpany_cache_errors`: Counter of cache errors, labeled by `service` and `tool`.

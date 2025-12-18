@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/mcpany/core/pkg/admin"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
@@ -35,6 +36,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
+	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -342,7 +344,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -527,6 +529,7 @@ func (a *Application) runServerMode(
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
 	allowedIPs []string,
+	cachingMiddleware *middleware.CachingMiddleware,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -875,6 +878,14 @@ func (a *Application) runServerMode(
 						return
 					}
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
+
+					// Register Admin Service
+					if cachingMiddleware != nil {
+						adminServer := admin.NewServer(cachingMiddleware)
+						pb_admin.RegisterAdminServiceServer(s, adminServer)
+					}
+
+					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},
 			)
 		}

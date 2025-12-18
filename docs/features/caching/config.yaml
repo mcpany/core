@@ -2,11 +2,28 @@
 # SPDX-License-Identifier: Apache-2.0
 
 upstream_services:
-  - name: "cached-service-example"
+  - name: "cached-weather-service"
     http_service:
-      address: "https://example.com"
+      address: "https://api.weather.com"
       tools:
-        - name: "example-tool"
+        - name: "get_forecast"
+          description: "Get weather for a location"
+          call_id: "get_weather"
+          input_schema:
+            type: "object"
+            properties:
+              location:
+                type: "string"
+            required: ["location"]
+      calls:
+        get_weather:
+          method: HTTP_METHOD_GET
+          endpoint_path: "/weather"
+          parameters:
+            - schema:
+                name: "location"
+                type: STRING
+                is_required: true
     cache:
       is_enabled: true
       ttl: "10s"
