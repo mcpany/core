@@ -296,6 +296,14 @@ func (a *Application) Run(
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
 	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
 	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
+
+	auditConfig := cfg.GetGlobalSettings().GetAudit()
+	auditMiddleware, err := middleware.NewAuditMiddleware(auditConfig)
+	if err != nil {
+		return fmt.Errorf("failed to create audit middleware: %w", err)
+	}
+	defer func() { _ = auditMiddleware.Close() }()
+
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
@@ -303,19 +311,25 @@ func (a *Application) Run(
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
-				result, err := callPolicyMiddleware.Execute(
+				result, err := auditMiddleware.Execute(
 					ctx,
 					executionReq,
 					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-						return cachingMiddleware.Execute(
+						return callPolicyMiddleware.Execute(
 							ctx,
 							executionReq,
 							func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-								return rateLimitMiddleware.Execute(
+								return cachingMiddleware.Execute(
 									ctx,
 									executionReq,
 									func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-										return next(ctx, method, r)
+										return rateLimitMiddleware.Execute(
+											ctx,
+											executionReq,
+											func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+												return next(ctx, method, r)
+											},
+										)
 									},
 								)
 							},

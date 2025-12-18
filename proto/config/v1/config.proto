@@ -58,4 +58,17 @@ message GlobalSettings {
   repeated string profiles = 6 [json_name = "profiles"];
   // The allowed IPs to access the server.
   repeated string allowed_ips = 7 [json_name = "allowed_ips"];
+  // Audit logging configuration.
+  AuditConfig audit = 8 [json_name = "audit"];
+}
+
+message AuditConfig {
+  // Whether audit logging is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The file path to write audit logs to.
+  string output_path = 2 [json_name = "output_path"];
+  // Whether to log input arguments (caution: might contain secrets).
+  bool log_arguments = 3 [json_name = "log_arguments"];
+  // Whether to log output results (caution: might contain sensitive data).
+  bool log_results = 4 [json_name = "log_results"];
 }
