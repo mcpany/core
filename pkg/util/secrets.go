@@ -15,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
+	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -45,6 +46,9 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 		}
 		return value, nil
 	case configv1.SecretValue_FilePath_case:
+		if err := validation.IsSecurePath(secret.GetFilePath()); err != nil {
+			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+		}
 		content, err := os.ReadFile(secret.GetFilePath())
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
