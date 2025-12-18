@@ -73,7 +73,9 @@ func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
 		ContainerImage: proto.String("test-image"),
 		Command:        proto.String("echo"),
 		Args:           []string{"hello"},
-		Env:            map[string]string{"foo": "bar"},
+		Env: map[string]*configv1.SecretValue{
+			"foo": {Value: &configv1.SecretValue_PlainText{PlainText: "bar"}},
+		},
 	}.Build()
 
 	transport := &DockerTransport{StdioConfig: stdioConfig}

@@ -179,7 +179,9 @@ func TestCreateAndRegisterMCPItemsFromBundle_Coverage(t *testing.T) {
 		createZip(t, tmpZip, map[string]string{"manifest.json": manifest})
 		cfg := &configv1.McpBundleConnection{
 			BundlePath: proto.String(tmpZip),
-			Env:        map[string]string{"FOO": "OVERRIDE"},
+			Env: map[string]*configv1.SecretValue{
+				"FOO": {Value: &configv1.SecretValue_PlainText{PlainText: "OVERRIDE"}},
+			},
 		}
 
 		u := &Upstream{}
