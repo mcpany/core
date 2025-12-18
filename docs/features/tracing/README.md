@@ -6,18 +6,26 @@ MCP Any supports [OpenTelemetry](https://opentelemetry.io/) for distributed trac
 
 Tracing is configured using standard OpenTelemetry environment variables.
 
-To enable tracing, set the `OTEL_TRACES_EXPORTER` environment variable.
-
 ### Supported Exporters
 
+- `otlp`: Exports traces via OTLP/HTTP.
 - `stdout`: Prints traces to stderr. Useful for debugging and development.
 - `none`: Disables tracing (default behavior if no specific configuration is provided).
 
-**Note:** Currently, `stdout` is the primary supported exporter for demonstration purposes. OTLP support is planned.
+### Enabling OTLP Tracing
 
-### Example
+To enable OTLP tracing, set the `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable. The server uses the OTLP/HTTP exporter.
 
-Start the server with stdout tracing enabled:
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+./mcp-any-server run --config config.yaml
+```
+
+You can also specify headers using `OTEL_EXPORTER_OTLP_HEADERS`.
+
+### Enabling Stdout Tracing
+
+To enable stdout tracing, set `OTEL_TRACES_EXPORTER=stdout`.
 
 ```bash
 OTEL_TRACES_EXPORTER=stdout ./mcp-any-server run --config config.yaml
