@@ -55,11 +55,14 @@ func (t *Transformer) Transform(templateStr string, data map[string]any) ([]byte
 				return string(b), nil
 			},
 			"join": func(sep string, a []any) string {
-				b := make([]string, len(a))
+				var sb strings.Builder
 				for i, v := range a {
-					b[i] = fmt.Sprint(v)
+					if i > 0 {
+						sb.WriteString(sep)
+					}
+					fmt.Fprint(&sb, v)
 				}
-				return strings.Join(b, sep)
+				return sb.String()
 			},
 		}).Parse(templateStr)
 		if err != nil {
