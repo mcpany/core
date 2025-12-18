@@ -295,6 +295,7 @@ func (a *Application) Run(
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
 	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
+	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
@@ -302,15 +303,21 @@ func (a *Application) Run(
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
-				result, err := cachingMiddleware.Execute(
+				result, err := callPolicyMiddleware.Execute(
 					ctx,
 					executionReq,
 					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-						return rateLimitMiddleware.Execute(
+						return cachingMiddleware.Execute(
 							ctx,
 							executionReq,
 							func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-								return next(ctx, method, r)
+								return rateLimitMiddleware.Execute(
+									ctx,
+									executionReq,
+									func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+										return next(ctx, method, r)
+									},
+								)
 							},
 						)
 					},
