@@ -29,3 +29,73 @@ func BenchmarkTextTemplate_Render(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkTransformer_Transform(b *testing.B) {
+	t := NewTransformer()
+	templateStr := "Hello, {{.name}}! You are {{.age}} years old. This is a {{.test}} of {{.performance}}."
+	data := map[string]any{
+		"name":        "World",
+		"age":         99,
+		"test":        "benchmark",
+		"performance": "optimization",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := t.Transform(templateStr, data)
+		if err != nil {
+			b.Fatalf("failed to transform: %v", err)
+		}
+	}
+}
+
+func BenchmarkTextParser_ParseJSON(b *testing.B) {
+	parser := NewTextParser()
+	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
+	config := map[string]string{
+		"name": `{.person.name}`,
+		"age":  `{.person.age}`,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := parser.Parse("json", jsonInput, config)
+		if err != nil {
+			b.Fatalf("failed to parse: %v", err)
+		}
+	}
+}
+
+func BenchmarkTextParser_ParseXML(b *testing.B) {
+	parser := NewTextParser()
+	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
+	config := map[string]string{
+		"name":  `//name`,
+		"value": `//value`,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := parser.Parse("xml", xmlInput, config)
+		if err != nil {
+			b.Fatalf("failed to parse: %v", err)
+		}
+	}
+}
+
+func BenchmarkTextParser_ParseText(b *testing.B) {
+	parser := NewTextParser()
+	textInput := []byte(`User ID: 12345, Name: John Doe`)
+	config := map[string]string{
+		"userId": `User ID: (\d+)`,
+		"name":   `Name: ([\w\s]+)`,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := parser.Parse("text", textInput, config)
+		if err != nil {
+			b.Fatalf("failed to parse: %v", err)
+		}
+	}
+}
