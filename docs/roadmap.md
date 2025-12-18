@@ -41,6 +41,8 @@ The following features are fully implemented and tested:
 - [x] [**Automated Documentation Generation**](./features/documentation_generation.md): Generate markdown documentation for registered tools directly from the configuration.
 - [x] [**IP Allowlisting**](./features/security.md): Restrict access to specific IP addresses/CIDRs.
 - [x] [**Webhooks**](./features/webhooks/README.md): Pre-call and Post-call hooks for validation and transformation.
+- [x] **Audit Logging**: Record who accessed what tool and when (configured via `global_settings.audit`).
+- [x] **Security Policies**: Fine-grained request validation policies (runtime argument validation) are implemented via Policy Hooks.
 
 ### Configured but Not Yet Implemented
 
@@ -54,10 +56,8 @@ For a complete list of all available configuration options, please see the [Conf
 ## High Priority (Next 1-3 Months)
 
 - [ ] **Distributed Rate Limiting (Redis)**: Current rate limiting is in-memory. Redis support is needed for distributed deployments.
-- [ ] **Security Policies**: Implement fine-grained request validation policies (runtime argument validation).
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
-- [ ] **Audit Logging**: Record who accessed what tool and when.
 - [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 ## Ongoing Goals
