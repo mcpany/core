@@ -126,6 +126,13 @@ paths:
 			t.Setenv("SPOTIFY_TOKEN", "dummy")
 			t.Setenv("GITLAB_TOKEN", "dummy")
 
+			// Inject auto_discover_tool: true for MCP services (using mock_server)
+			if strings.Contains(configContent, "mcp_service:") {
+				if !strings.Contains(configContent, "auto_discover_tool:") {
+					configContent = strings.Replace(configContent, "mcp_service:", "auto_discover_tool: true\n    mcp_service:", 1)
+				}
+			}
+
 			// Start server with the modified config
 			serverInfo := integration.StartMCPANYServerWithConfig(t, "PopularService_"+tc.serviceName, configContent)
 			defer serverInfo.CleanupFunc()
