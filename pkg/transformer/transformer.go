@@ -8,13 +8,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 	"text/template"
 )
 
 // Transformer provides functionality to transform a map of data into a
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
-type Transformer struct{}
+type Transformer struct {
+	cache sync.Map
+}
 
 // NewTransformer creates and returns a new instance of Transformer.
 func NewTransformer() *Transformer {
@@ -29,24 +32,33 @@ func NewTransformer() *Transformer {
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
 func (t *Transformer) Transform(templateStr string, data map[string]any) ([]byte, error) {
-	tmpl, err := template.New("transformer").Funcs(template.FuncMap{
-		"json": func(v any) (string, error) {
-			b, err := json.Marshal(v)
-			if err != nil {
-				return "", err
-			}
-			return string(b), nil
-		},
-		"join": func(sep string, a []any) string {
-			b := make([]string, len(a))
-			for i, v := range a {
-				b[i] = fmt.Sprint(v)
-			}
-			return strings.Join(b, sep)
-		},
-	}).Parse(templateStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse template: %w", err)
+	var tmpl *template.Template
+	var err error
+
+	// Check cache to avoid expensive template parsing
+	if v, ok := t.cache.Load(templateStr); ok {
+		tmpl = v.(*template.Template)
+	} else {
+		tmpl, err = template.New("transformer").Funcs(template.FuncMap{
+			"json": func(v any) (string, error) {
+				b, err := json.Marshal(v)
+				if err != nil {
+					return "", err
+				}
+				return string(b), nil
+			},
+			"join": func(sep string, a []any) string {
+				b := make([]string, len(a))
+				for i, v := range a {
+					b[i] = fmt.Sprint(v)
+				}
+				return strings.Join(b, sep)
+			},
+		}).Parse(templateStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse template: %w", err)
+		}
+		t.cache.Store(templateStr, tmpl)
 	}
 
 	var buf bytes.Buffer
