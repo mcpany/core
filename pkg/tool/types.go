@@ -335,13 +335,27 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	method, rawURL := methodAndURL[0], methodAndURL[1]
 
-	urlString, err := url.PathUnescape(rawURL)
+	u, err := url.Parse(rawURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unescape url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
+	pathStr := u.Path
+	queryStr := u.RawQuery
+
 	// Replace placeholders in the URL path
-	urlString = util.ReplaceURLPath(urlString, req.Arguments)
+	pathStr = util.ReplaceURLPath(pathStr, req.Arguments)
+
+	// Replace placeholders in the query string
+	// We first unescape ONLY the placeholder syntax {{ and }}
+	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
+	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	queryStr = util.ReplaceURLPath(queryStr, req.Arguments)
+
+	u.Path = pathStr
+	u.RawQuery = queryStr
+
+	urlString := u.String()
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
