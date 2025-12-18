@@ -62,20 +62,68 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		{Name: "tool", Value: toolName},
 	}
 
-	cacheKey := m.getCacheKey(req)
-	if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
-		// Found in cache
-		metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
-
-		return cached, nil
+	// Inject CacheControl if not present
+	var cacheControl *tool.CacheControl
+	if cc, ok := tool.GetCacheControl(ctx); ok {
+		cacheControl = cc
+	} else {
+		cacheControl = &tool.CacheControl{Action: tool.ActionAllow}
+		ctx = tool.NewContextWithCacheControl(ctx, cacheControl)
 	}
-	// Not found in cache
-	metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+
+	cacheKey := m.getCacheKey(req)
+
+	// Check cache ONLY if action is not DeleteCache (we might want to delete it)
+	// But actually, if we want to delete, we probably didn't want to use the cached value?
+	// Or maybe we process the call and THEN delete?
+	// The requirement is "when these actions are returned... action will be taken".
+	// If it returns DELETE_CACHE, we probably imply "don't use cache, execute, then delete".
+
+	// Check cache ONLY if action is not DeleteCache
+	if cacheControl.Action != tool.ActionDeleteCache {
+		// If normal allow (0), check cache.
+		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
+			// Found in cache
+			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+			return cached, nil
+		}
+		// Not found in cache
+		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+	} else {
+		// If DeleteCache, we skip cache lookup (force miss)
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels) // Optional: track skips
+	}
 
 	result, err := next(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+
+	// Check CacheControl
+	if cacheControl.Action == tool.ActionDeleteCache {
+		if err := m.cache.Delete(ctx, cacheKey); err != nil {
+			_ = err
+		}
+		return result, nil
+	}
+
+	// If standard flow, we save.
+	// If SaveCache action, we definitely save (maybe ignoring TTL? or just ensuring it IS saved).
+	// For now treating SaveCache same as normal logic (save if successful).
+	// But wait, "when these actions are returned... corresponding call cache action will be taken".
+	// If I rely on policy to *enable* caching, that is different.
+	// The current logic *already* saves if config enabled.
+	// So ActionSaveCache might mean "Save even if it wouldn't otherwise?"
+	// Or just "Ensure it is saved".
+	// Since I checked `cacheConfig != nil` at top, we are in "Caching Enabled" mode.
+	// So we default to save.
+
+	// If the user wants to selectively save, they might use this?
+	// But if caching is enabled, we usually save every success.
+	// Maybe they want to save even if error? Unlikely.
+	// I'll assume standard behavior:
+	// SAVE_CACHE -> Ensure Set is called.
+	// DELETE_CACHE -> Delete from cache.
 
 	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
 		_ = err // explicit ignore

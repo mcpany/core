@@ -31,6 +31,7 @@ enum WebhookKind {
   WEBHOOK_KIND_UNSPECIFIED = 0;
   WEBHOOK_KIND_PRE_CALL = 1;
   WEBHOOK_KIND_POST_CALL = 2;
+  WEBHOOK_KIND_TRANSFORM_INPUT = 3;
 }
 
 message WebhookConfig {

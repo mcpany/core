@@ -1091,7 +1091,14 @@ type InputTransformer struct {
 	// A text template to be rendered.
 	// This is used for generating the request body for POST/PUT requests.
 	// The template engine is compatible with Jinja2.
-	Template      *string `protobuf:"bytes,1,opt,name=template" json:"template,omitempty"`
+	// A text template to be rendered.
+	// This is used for generating the request body for POST/PUT requests.
+	// The template engine is compatible with Jinja2.
+	//
+	// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
+	Template *string `protobuf:"bytes,1,opt,name=template" json:"template,omitempty"`
+	// A webhook to call to transform the input.
+	Webhook       *WebhookConfig `protobuf:"bytes,2,opt,name=webhook" json:"webhook,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1121,6 +1128,7 @@ func (x *InputTransformer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) GetTemplate() string {
 	if x != nil && x.Template != nil {
 		return *x.Template
@@ -1128,10 +1136,23 @@ func (x *InputTransformer) GetTemplate() string {
 	return ""
 }
 
+func (x *InputTransformer) GetWebhook() *WebhookConfig {
+	if x != nil {
+		return x.Webhook
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) SetTemplate(v string) {
 	x.Template = &v
 }
 
+func (x *InputTransformer) SetWebhook(v *WebhookConfig) {
+	x.Webhook = v
+}
+
+// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) HasTemplate() bool {
 	if x == nil {
 		return false
@@ -1139,8 +1160,20 @@ func (x *InputTransformer) HasTemplate() bool {
 	return x.Template != nil
 }
 
+func (x *InputTransformer) HasWebhook() bool {
+	if x == nil {
+		return false
+	}
+	return x.Webhook != nil
+}
+
+// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) ClearTemplate() {
 	x.Template = nil
+}
+
+func (x *InputTransformer) ClearWebhook() {
+	x.Webhook = nil
 }
 
 type InputTransformer_builder struct {
@@ -1149,7 +1182,14 @@ type InputTransformer_builder struct {
 	// A text template to be rendered.
 	// This is used for generating the request body for POST/PUT requests.
 	// The template engine is compatible with Jinja2.
+	// A text template to be rendered.
+	// This is used for generating the request body for POST/PUT requests.
+	// The template engine is compatible with Jinja2.
+	//
+	// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 	Template *string
+	// A webhook to call to transform the input.
+	Webhook *WebhookConfig
 }
 
 func (b0 InputTransformer_builder) Build() *InputTransformer {
@@ -1157,6 +1197,7 @@ func (b0 InputTransformer_builder) Build() *InputTransformer {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.Template = b.Template
+	x.Webhook = b.Webhook
 	return m0
 }
 
@@ -2861,7 +2902,7 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\"\xce\x05\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/webhook.proto\"\xce\x05\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
 	"\rendpoint_path\x18\x03 \x01(\tR\rendpoint_path\x12G\n" +
@@ -2911,9 +2952,10 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\x12\n" +
 	"\x04args\x18\x05 \x03(\tR\x04args\x12;\n" +
 	"\finput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\".\n" +
-	"\x10InputTransformer\x12\x1a\n" +
-	"\btemplate\x18\x01 \x01(\tR\btemplate\"\xdf\x02\n" +
+	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"m\n" +
+	"\x10InputTransformer\x12\x1e\n" +
+	"\btemplate\x18\x01 \x01(\tB\x02\x18\x01R\btemplate\x129\n" +
+	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigR\awebhook\"\xdf\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
 	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12d\n" +
 	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x10extraction_rules\x12\x1a\n" +
@@ -3015,9 +3057,10 @@ var file_proto_config_v1_call_proto_goTypes = []any{
 	(*CacheConfig)(nil),                 // 18: mcpany.config.v1.CacheConfig
 	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
 	(*structpb.Struct)(nil),             // 20: google.protobuf.Struct
-	(*structpb.Value)(nil),              // 21: google.protobuf.Value
-	(*SecretValue)(nil),                 // 22: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),         // 23: google.protobuf.Duration
+	(*WebhookConfig)(nil),               // 21: mcpany.config.v1.WebhookConfig
+	(*structpb.Value)(nil),              // 22: google.protobuf.Value
+	(*SecretValue)(nil),                 // 23: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 24: google.protobuf.Duration
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
@@ -3043,41 +3086,42 @@ var file_proto_config_v1_call_proto_depIdxs = []int32{
 	18, // 20: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
 	20, // 21: mcpany.config.v1.CommandLineCallDefinition.input_schema:type_name -> google.protobuf.Struct
 	20, // 22: mcpany.config.v1.CommandLineCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	2,  // 23: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	19, // 24: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	18, // 25: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 26: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	20, // 27: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	7,  // 28: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 29: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 30: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 31: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
-	20, // 32: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
-	7,  // 33: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
-	8,  // 34: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	18, // 35: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 36: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	20, // 37: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	20, // 38: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
-	18, // 39: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	20, // 40: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	20, // 41: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	0,  // 42: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	21, // 43: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	13, // 44: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 45: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 46: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 47: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 48: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 49: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 50: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	22, // 51: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	23, // 52: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	53, // [53:53] is the sub-list for method output_type
-	53, // [53:53] is the sub-list for method input_type
-	53, // [53:53] is the sub-list for extension type_name
-	53, // [53:53] is the sub-list for extension extendee
-	0,  // [0:53] is the sub-list for field type_name
+	21, // 23: mcpany.config.v1.InputTransformer.webhook:type_name -> mcpany.config.v1.WebhookConfig
+	2,  // 24: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
+	19, // 25: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	18, // 26: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 27: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 28: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 29: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 30: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 31: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 32: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 33: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
+	7,  // 34: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
+	8,  // 35: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
+	18, // 36: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 37: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 38: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	20, // 39: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	18, // 40: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 41: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 42: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	0,  // 43: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	22, // 44: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	13, // 45: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 46: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 47: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 48: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 49: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 50: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 51: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 52: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	24, // 53: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	54, // [54:54] is the sub-list for method output_type
+	54, // [54:54] is the sub-list for method input_type
+	54, // [54:54] is the sub-list for extension type_name
+	54, // [54:54] is the sub-list for extension extendee
+	0,  // [0:54] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -3086,6 +3130,7 @@ func file_proto_config_v1_call_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_webhook_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
