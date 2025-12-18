@@ -4,8 +4,12 @@
 package command
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
+	"errors"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,7 +17,13 @@ import (
 	"testing"
 	"time"
 
+	"bufio"
+
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	dockererrdefs "github.com/docker/docker/errdefs"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
@@ -420,6 +430,107 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
 		require.NoError(t, stderrErr)
+		assert.Empty(t, string(stderrBytes))
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+}
+
+func TestDockerExecutor_Mocked(t *testing.T) {
+	t.Run("Execute_Success", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+			var buf bytes.Buffer
+			// Stdout header: 1 (stdout), 0, 0, 0, size (big endian uint32)
+			buf.Write([]byte{1, 0, 0, 0})
+			if err := binary.Write(&buf, binary.BigEndian, uint32(5)); err != nil {
+				return nil, err
+			}
+			buf.WriteString("hello")
+			return io.NopCloser(&buf), nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
+		require.NoError(t, err)
+
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
+		assert.Equal(t, "hello", string(stdoutBytes))
+
+		stderrBytes, err := io.ReadAll(stderr)
+		require.NoError(t, err)
+		assert.Empty(t, string(stderrBytes))
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+
+	t.Run("Execute_ContainerCreateError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			return container.CreateResponse{}, errors.New("create error")
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "create error")
+	})
+
+	t.Run("ExecuteWithStdIO_Success", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerAttachFunc = func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+			server, client := net.Pipe()
+
+			go func() {
+				defer server.Close()
+				var buf bytes.Buffer
+				buf.Write([]byte{1, 0, 0, 0})
+				binary.Write(&buf, binary.BigEndian, uint32(5))
+				buf.WriteString("hello")
+				server.Write(buf.Bytes())
+			}()
+
+			return types.HijackedResponse{
+				Conn:   client,
+				Reader: bufio.NewReader(client),
+			}, nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		require.NoError(t, err)
+		defer stdin.Close()
+
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
+		assert.Equal(t, "hello", string(stdoutBytes))
+
+		stderrBytes, err := io.ReadAll(stderr)
+		require.NoError(t, err)
 		assert.Empty(t, string(stderrBytes))
 
 		exitCode := <-exitCodeChan
