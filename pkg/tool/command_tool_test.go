@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
@@ -24,8 +25,22 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String(command),
 	}).Build()
+
+	properties := make(map[string]*structpb.Value)
+	for _, param := range callDef.Parameters {
+		properties[param.GetSchema().GetName()] = structpb.NewStructValue(&structpb.Struct{})
+	}
+
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: properties,
+			}),
+		},
+	}
+
 	return tool.NewCommandTool(
-		&v1.Tool{},
+		&v1.Tool{InputSchema: inputSchema},
 		service,
 		callDef,
 	)
@@ -50,7 +65,12 @@ func TestCommandTool_Execute(t *testing.T) {
 	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("/usr/bin/env", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -88,6 +108,11 @@ func TestCommandTool_Execute(t *testing.T) {
 						Name: proto.String("MY_VAR"),
 					},
 				},
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("args"),
+					},
+				},
 			},
 		}
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
@@ -116,7 +141,12 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("non-zero exit code", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("/usr/bin/env", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -139,7 +169,12 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("echo", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("echo", callDef)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 

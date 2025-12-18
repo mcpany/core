@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // --- LocalCommandTool Tests ---
@@ -25,10 +26,23 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+		},
+	}
+
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
 	}
 
 	tool := NewLocalCommandTool(
-		&pb.Tool{Name: proto.String("echo-tool")},
+		&pb.Tool{Name: proto.String("echo-tool"), InputSchema: inputSchema},
 		svc,
 		callDef,
 	)
@@ -166,10 +180,23 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+		},
+	}
+
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
 	}
 
 	tool := NewCommandTool(
-		&pb.Tool{Name: proto.String("echo-tool")},
+		&pb.Tool{Name: proto.String("echo-tool"), InputSchema: inputSchema},
 		svc,
 		callDef,
 	)

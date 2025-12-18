@@ -12,17 +12,32 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestLocalCommandTool_Execute(t *testing.T) {
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
+		},
+	}
 	tool := &v1.Tool{
 		Name:        proto.String("test-tool"),
 		Description: proto.String("A test tool"),
+		InputSchema: inputSchema,
 	}
 	service := &configv1.CommandLineUpstreamService{}
 	service.Command = proto.String("echo")
 	service.Local = proto.Bool(true)
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := &configv1.CommandLineCallDefinition{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+		},
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef)
 
