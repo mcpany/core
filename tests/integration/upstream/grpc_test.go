@@ -128,7 +128,7 @@ func TestUpstreamService_GRPCExample(t *testing.T) {
 			return upstreamServerProcess
 		},
 		GenerateUpstreamConfig: func(upstreamEndpoint string) string {
-			return `{"upstream_services": [{"name": "greeter-service", "grpc_service": {"address": "` + strings.TrimPrefix(upstreamEndpoint, "http://") + `", "use_reflection": true}}]}`
+			return `{"upstream_services": [{"name": "greeter-service", "auto_discover_tool": true, "grpc_service": {"address": "` + strings.TrimPrefix(upstreamEndpoint, "http://") + `", "use_reflection": true}}]}`
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)

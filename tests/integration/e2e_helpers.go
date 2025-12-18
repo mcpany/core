@@ -1183,7 +1183,8 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 	t.Helper()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
-		Name: &serviceID,
+		Name:             &serviceID,
+		AutoDiscoverTool: proto.Bool(true),
 		GrpcService: configv1.GrpcUpstreamService_builder{
 			Address:       &grpcTargetAddress,
 			UseReflection: proto.Bool(true),
