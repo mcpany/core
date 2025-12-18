@@ -259,6 +259,8 @@ type HTTPTool struct {
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
+	policies          []*configv1.CallPolicy
+	callID            string
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -269,7 +271,7 @@ type HTTPTool struct {
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
-func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig) *HTTPTool {
+func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
@@ -285,6 +287,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
+		policies:          policies,
+		callID:            callID,
 	}
 }
 
@@ -306,6 +310,12 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
 
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
