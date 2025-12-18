@@ -1041,6 +1041,20 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
+			// Check if args is allowed in the schema
+			argsAllowed := false
+			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+					if _, ok := props.Fields["args"]; ok {
+						argsAllowed = true
+					}
+				}
+			}
+
+			if !argsAllowed {
+				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
+			}
+
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
@@ -1191,6 +1205,20 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
+			// Check if args is allowed in the schema
+			argsAllowed := false
+			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+					if _, ok := props.Fields["args"]; ok {
+						argsAllowed = true
+					}
+				}
+			}
+
+			if !argsAllowed {
+				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
+			}
+
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {

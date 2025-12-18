@@ -141,18 +141,6 @@ func (u *Upstream) createAndRegisterCommandTools(
 			inputProperties.Fields = make(map[string]*structpb.Value)
 		}
 
-		inputProperties.Fields["args"] = structpb.NewStructValue(&structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue("array"),
-				"description": structpb.NewStringValue("Additional arguments for the command"),
-				"items": structpb.NewStructValue(&structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": structpb.NewStringValue("string"),
-					},
-				}),
-			},
-		})
-
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
 				"type":       structpb.NewStringValue("object"),
