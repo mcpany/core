@@ -56,6 +56,7 @@ func newMockClientFactory(healthy bool) func(ctx context.Context) (*mockClient, 
 func TestPool_New(t *testing.T) {
 	t.Parallel()
 	t.Run("valid config", func(t *testing.T) {
+		t.Parallel()
 		p, err := New(newMockClientFactory(true), 1, 5, 100, false)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
@@ -107,6 +108,7 @@ func TestPool_New(t *testing.T) {
 }
 
 func TestPool_GetPut(t *testing.T) {
+	t.Parallel()
 	p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
@@ -125,6 +127,7 @@ func TestPool_GetPut(t *testing.T) {
 }
 
 func TestPool_Get_Unhealthy(t *testing.T) {
+	t.Parallel()
 	// Factory creates one unhealthy client, then healthy ones.
 	var createdCount int32
 	factory := func(_ context.Context) (*mockClient, error) {
@@ -143,6 +146,7 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 }
 
 func TestPool_Put_Unhealthy(t *testing.T) {
+	t.Parallel()
 	p, err := New(newMockClientFactory(true), 0, 2, 100, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
@@ -159,6 +163,7 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 }
 
 func TestPool_Full(t *testing.T) {
+	t.Parallel()
 	p, err := New(newMockClientFactory(true), 0, 1, 100, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
@@ -174,6 +179,7 @@ func TestPool_Full(t *testing.T) {
 }
 
 func TestPool_Close(t *testing.T) {
+	t.Parallel()
 	client := &mockClient{isHealthy: true}
 	factory := func(_ context.Context) (*mockClient, error) {
 		return client, nil
@@ -185,6 +191,7 @@ func TestPool_Close(t *testing.T) {
 }
 
 func TestManager(t *testing.T) {
+	t.Parallel()
 	m := NewManager()
 	p, err := New(newMockClientFactory(true), 1, 5, 100, false)
 	require.NoError(t, err)

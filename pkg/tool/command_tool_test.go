@@ -47,7 +47,9 @@ func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinit
 }
 
 func TestCommandTool_Execute(t *testing.T) {
+	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
+		t.Parallel()
 		cmdTool := newCommandTool("/usr/bin/env", nil)
 		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
 		inputs, err := json.Marshal(inputData)
@@ -70,6 +72,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("command not found", func(t *testing.T) {
+		t.Parallel()
 		cmdTool := newCommandTool("this-command-does-not-exist", nil)
 		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
 		_, err := cmdTool.Execute(context.Background(), req)
@@ -77,6 +80,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("execution with environment variables", func(t *testing.T) {
+		t.Parallel()
 		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
 				{
@@ -111,6 +115,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("non-zero exit code", func(t *testing.T) {
+		t.Parallel()
 		cmdTool := newCommandTool("/usr/bin/env", nil)
 		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
 		inputs, err := json.Marshal(inputData)
@@ -133,6 +138,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
+		t.Parallel()
 		cmdTool := newCommandTool("echo", nil)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -142,6 +148,7 @@ func TestCommandTool_Execute(t *testing.T) {
 	})
 
 	t.Run("json communication protocol", func(t *testing.T) {
+		t.Parallel()
 		cmdTool := newJSONCommandTool("./testdata/jsonecho/jsonecho", nil)
 		inputData := map[string]interface{}{"foo": "bar"}
 		inputs, err := json.Marshal(inputData)
