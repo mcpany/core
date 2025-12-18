@@ -72,9 +72,14 @@ func main() {
 
 	http.HandleFunc("/", withVerify(handler))
 
-	log.Println("Starting Webhook Server on :8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Starting Webhook Server on :%s", port)
 	server := &http.Server{
-		Addr:              ":8080",
+		Addr:              ":" + port,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 	if err := server.ListenAndServe(); err != nil {

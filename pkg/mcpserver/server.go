@@ -482,7 +482,29 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		})
 	}
 	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
-	return result, err
+
+	if err != nil {
+		return nil, err
+	}
+
+	if ctr, ok := result.(*mcp.CallToolResult); ok {
+		return ctr, nil
+	}
+
+	// Default to JSON encoding for the result
+	jsonBytes, marshalErr := json.Marshal(result)
+	text := string(jsonBytes)
+	if marshalErr != nil {
+		text = fmt.Sprintf("%v", result)
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{
+				Text: text,
+			},
+		},
+	}, nil
 }
 
 // SetMCPServer sets the MCP server provider for the tool manager.

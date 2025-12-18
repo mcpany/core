@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"os/exec"
 
 	"github.com/docker/docker/api/types/container"
@@ -311,5 +312,19 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		}
 	}()
 
-	return attachResp.Conn, stdoutReader, stderrReader, exitCodeChan, nil
+	return &closeWriter{conn: attachResp.Conn}, stdoutReader, stderrReader, exitCodeChan, nil
+}
+type closeWriter struct {
+	conn net.Conn
+}
+
+func (c *closeWriter) Write(p []byte) (n int, err error) {
+	return c.conn.Write(p)
+}
+
+func (c *closeWriter) Close() error {
+	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
+		return cw.CloseWrite()
+	}
+	return c.conn.Close()
 }
