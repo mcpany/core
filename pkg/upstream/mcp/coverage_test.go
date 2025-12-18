@@ -225,8 +225,9 @@ func TestRegister_DisabledItems(t *testing.T) {
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:       proto.String("test-service-disabled"),
-		McpService: mcpService,
+		Name:             proto.String("test-service-disabled"),
+		AutoDiscoverTool: proto.Bool(true),
+		McpService:       mcpService,
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
