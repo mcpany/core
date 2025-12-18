@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -33,12 +34,16 @@ func TestWebhooksE2E(t *testing.T) {
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
 
 	// Start webhook server
+	// Start webhook server
+	port := getFreePort(t)
+	portStr := fmt.Sprintf("%d", port)
+
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec // base64("test-secret-123")
 	secretPtr := secret                   // Create addressable variable
 	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret)
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
 	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
 	defer func() {
 		_ = serverCmd.Process.Kill()
@@ -46,7 +51,7 @@ func TestWebhooksE2E(t *testing.T) {
 
 	// Wait for server to start
 	require.Eventually(t, func() bool {
-		resp, err := http.Get("http://localhost:8080/markdown") // Endpoint exists (POST only but connectable)
+		resp, err := http.Get(fmt.Sprintf("http://localhost:%d/markdown", port)) // Endpoint exists (POST only but connectable)
 		if resp != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -54,7 +59,7 @@ func TestWebhooksE2E(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond, "Webhook server failed to start")
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
-		url := "http://localhost:8080/markdown"
+		url := fmt.Sprintf("http://localhost:%d/markdown", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -95,7 +100,7 @@ func TestWebhooksE2E(t *testing.T) {
 	})
 
 	t.Run("TextTruncation", func(t *testing.T) {
-		url := "http://localhost:8080/truncate?max_chars=5"
+		url := fmt.Sprintf("http://localhost:%d/truncate?max_chars=5", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -140,17 +145,20 @@ func TestFullSystemWebhooks(t *testing.T) {
 	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
 
 	// 3. Start Webhook Server
+	port := getFreePort(t)
+	portStr := fmt.Sprintf("%d", port)
+
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec
 	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret)
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
 	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
 	defer func() { _ = serverCmd.Process.Kill() }()
 
 	// Wait for webhook server
 	require.Eventually(t, func() bool {
-		resp, err := http.Get("http://localhost:8080/markdown")
+		resp, err := http.Get(fmt.Sprintf("http://localhost:%d/markdown", port))
 		if resp != nil && resp.Body != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -158,7 +166,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond)
 
 	// 4. Configure Upstream Service (Mcpany Core Logic)
-	webhookURL := "http://localhost:8080/markdown"
+	webhookURL := fmt.Sprintf("http://localhost:%d/markdown", port)
 
 	upsConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("mock-service"),
@@ -236,8 +244,19 @@ func TestFullSystemWebhooks(t *testing.T) {
 		}
 	}
 
+
+
 	assert.Contains(t, resultStr, "# Mock Title")
 	assert.Contains(t, resultStr, "Mock content")
+}
+
+func getFreePort(t *testing.T) int {
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	require.NoError(t, err)
+	l, err := net.ListenTCP("tcp", addr)
+	require.NoError(t, err)
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
 }
 
 func findRootDir(t *testing.T) string {
