@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"sync"
 
+	armonmetrics "github.com/armon/go-metrics"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"golang.org/x/time/rate"
@@ -29,7 +31,7 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddlew
 
 // Execute executes the rate limiting middleware.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
-	t, ok := tool.GetFromContext(ctx)
+	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
 		return next(ctx, req)
 	}
@@ -49,8 +51,17 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 
 	limiter := m.getLimiter(serviceID, rateLimitConfig)
 	if !limiter.Allow() {
+		metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
+			{Name: "service_id", Value: serviceID},
+			{Name: "status", Value: "blocked"},
+		})
 		return nil, fmt.Errorf("rate limit exceeded for service %s", serviceInfo.Name)
 	}
+
+	metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
+		{Name: "service_id", Value: serviceID},
+		{Name: "status", Value: "allowed"},
+	})
 
 	return next(ctx, req)
 }
