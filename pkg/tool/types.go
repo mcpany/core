@@ -430,8 +430,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
+			bodyBytes, _ := io.ReadAll(attemptResp.Body)
 			_ = attemptResp.Body.Close()
-			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
+			fmt.Printf("DEBUG: Upstream HTTP 404 Body: %s\nHeaders: %v\nURL: %s\n", string(bodyBytes), attemptResp.Header, httpReq.URL.String())
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d (DEBUG)", attemptResp.StatusCode)}
 		}
 
 		if attemptResp.StatusCode >= 500 {
