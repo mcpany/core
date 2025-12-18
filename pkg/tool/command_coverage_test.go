@@ -25,6 +25,14 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("args"),
+					Type: configv1.ParameterType_ARRAY.Enum(),
+				},
+			},
+		},
 	}
 
 	tool := NewLocalCommandTool(
@@ -145,7 +153,17 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{})
+	callDef := &configv1.CommandLineCallDefinition{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("args"),
+					Type: configv1.ParameterType_ARRAY.Enum(),
+				},
+			},
+		},
+	}
+	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, callDef)
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
@@ -166,6 +184,14 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("args"),
+					Type: configv1.ParameterType_ARRAY.Enum(),
+				},
+			},
+		},
 	}
 
 	tool := NewCommandTool(
@@ -237,7 +263,17 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 
 func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{})
+	callDef := &configv1.CommandLineCallDefinition{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("args"),
+					Type: configv1.ParameterType_ARRAY.Enum(),
+				},
+			},
+		},
+	}
+	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, callDef)
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})

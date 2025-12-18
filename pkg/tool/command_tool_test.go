@@ -50,7 +50,12 @@ func TestCommandTool_Execute(t *testing.T) {
 	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("/usr/bin/env", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -88,6 +93,11 @@ func TestCommandTool_Execute(t *testing.T) {
 						Name: proto.String("MY_VAR"),
 					},
 				},
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("args"),
+					},
+				},
 			},
 		}
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
@@ -116,7 +126,12 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("non-zero exit code", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("/usr/bin/env", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
@@ -139,7 +154,12 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newCommandTool("echo", nil)
+		callDef := &configv1.CommandLineCallDefinition{
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+			},
+		}
+		cmdTool := newCommandTool("echo", callDef)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 

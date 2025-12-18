@@ -1041,18 +1041,31 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			if argsList, ok := argsVal.([]any); ok {
-				for _, arg := range argsList {
-					if argStr, ok := arg.(string); ok {
-						args = append(args, argStr)
-					} else {
-						return nil, fmt.Errorf("non-string value in 'args' array")
-					}
+			argsAllowed := false
+			for _, param := range t.callDefinition.GetParameters() {
+				if param.GetSchema().GetName() == "args" {
+					argsAllowed = true
+					break
 				}
-			} else {
-				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
-			delete(inputs, "args")
+
+			if argsAllowed {
+				if argsList, ok := argsVal.([]any); ok {
+					for _, arg := range argsList {
+						if argStr, ok := arg.(string); ok {
+							args = append(args, argStr)
+						} else {
+							return nil, fmt.Errorf("non-string value in 'args' array")
+						}
+					}
+				} else {
+					return nil, fmt.Errorf("'args' parameter must be an array of strings")
+				}
+				delete(inputs, "args")
+			} else {
+				logging.GetLogger().Warn("Ignored unauthorized 'args' input", "tool", req.ToolName)
+				delete(inputs, "args")
+			}
 		}
 	}
 
@@ -1191,18 +1204,31 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			if argsList, ok := argsVal.([]any); ok {
-				for _, arg := range argsList {
-					if argStr, ok := arg.(string); ok {
-						args = append(args, argStr)
-					} else {
-						return nil, fmt.Errorf("non-string value in 'args' array")
-					}
+			argsAllowed := false
+			for _, param := range t.callDefinition.GetParameters() {
+				if param.GetSchema().GetName() == "args" {
+					argsAllowed = true
+					break
 				}
-			} else {
-				return nil, fmt.Errorf("'args' parameter must be an array of strings")
 			}
-			delete(inputs, "args")
+
+			if argsAllowed {
+				if argsList, ok := argsVal.([]any); ok {
+					for _, arg := range argsList {
+						if argStr, ok := arg.(string); ok {
+							args = append(args, argStr)
+						} else {
+							return nil, fmt.Errorf("non-string value in 'args' array")
+						}
+					}
+				} else {
+					return nil, fmt.Errorf("'args' parameter must be an array of strings")
+				}
+				delete(inputs, "args")
+			} else {
+				logging.GetLogger().Warn("Ignored unauthorized 'args' input", "tool", req.ToolName)
+				delete(inputs, "args")
+			}
 		}
 	}
 

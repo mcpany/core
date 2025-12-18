@@ -22,7 +22,16 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	service := &configv1.CommandLineUpstreamService{}
 	service.Command = proto.String("echo")
 	service.Local = proto.Bool(true)
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := &configv1.CommandLineCallDefinition{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("args"),
+					Type: configv1.ParameterType_ARRAY.Enum(),
+				},
+			},
+		},
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef)
 
