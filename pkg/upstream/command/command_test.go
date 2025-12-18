@@ -69,6 +69,8 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
+func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+
 func TestNewStdioUpstream(t *testing.T) {
 	u := NewUpstream()
 	assert.NotNil(t, u)

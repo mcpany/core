@@ -67,6 +67,7 @@ func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
+func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func TestNew(t *testing.T) {
 	pm := pool.NewManager()

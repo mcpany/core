@@ -22,6 +22,8 @@ message Tool {
      google.protobuf.Struct output_schema = 9;
      ToolAnnotations annotations = 11;
      bool is_stream = 12;
+     repeated string tags = 13;
+     repeated string profiles = 14;
 }
 
 message ToolAnnotations {

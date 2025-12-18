@@ -81,6 +81,8 @@ type Tool struct {
 	xxx_hidden_OutputSchema        *structpb.Struct       `protobuf:"bytes,9,opt,name=output_schema,json=outputSchema"`
 	xxx_hidden_Annotations         *ToolAnnotations       `protobuf:"bytes,11,opt,name=annotations"`
 	xxx_hidden_IsStream            bool                   `protobuf:"varint,12,opt,name=is_stream,json=isStream"`
+	xxx_hidden_Tags                []string               `protobuf:"bytes,13,rep,name=tags"`
+	xxx_hidden_Profiles            []string               `protobuf:"bytes,14,rep,name=profiles"`
 	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
 	XXX_presence                   [1]uint32
 	unknownFields                  protoimpl.UnknownFields
@@ -210,39 +212,53 @@ func (x *Tool) GetIsStream() bool {
 	return false
 }
 
+func (x *Tool) GetTags() []string {
+	if x != nil {
+		return x.xxx_hidden_Tags
+	}
+	return nil
+}
+
+func (x *Tool) GetProfiles() []string {
+	if x != nil {
+		return x.xxx_hidden_Profiles
+	}
+	return nil
+}
+
 func (x *Tool) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
 }
 
 func (x *Tool) SetDisplayName(v string) {
 	x.xxx_hidden_DisplayName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
 }
 
 func (x *Tool) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 13)
 }
 
 func (x *Tool) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 13)
 }
 
 func (x *Tool) SetUnderlyingMethodFqn(v string) {
 	x.xxx_hidden_UnderlyingMethodFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 13)
 }
 
 func (x *Tool) SetRequestTypeFqn(v string) {
 	x.xxx_hidden_RequestTypeFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 13)
 }
 
 func (x *Tool) SetResponseTypeFqn(v string) {
 	x.xxx_hidden_ResponseTypeFqn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 13)
 }
 
 func (x *Tool) SetInputSchema(v *structpb.Struct) {
@@ -259,7 +275,15 @@ func (x *Tool) SetAnnotations(v *ToolAnnotations) {
 
 func (x *Tool) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
+}
+
+func (x *Tool) SetTags(v []string) {
+	x.xxx_hidden_Tags = v
+}
+
+func (x *Tool) SetProfiles(v []string) {
+	x.xxx_hidden_Profiles = v
 }
 
 func (x *Tool) HasName() bool {
@@ -405,6 +429,8 @@ type Tool_builder struct {
 	OutputSchema        *structpb.Struct
 	Annotations         *ToolAnnotations
 	IsStream            *bool
+	Tags                []string
+	Profiles            []string
 }
 
 func (b0 Tool_builder) Build() *Tool {
@@ -412,40 +438,42 @@ func (b0 Tool_builder) Build() *Tool {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.DisplayName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
 		x.xxx_hidden_DisplayName = b.DisplayName
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 13)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 13)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.UnderlyingMethodFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 13)
 		x.xxx_hidden_UnderlyingMethodFqn = b.UnderlyingMethodFqn
 	}
 	if b.RequestTypeFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 13)
 		x.xxx_hidden_RequestTypeFqn = b.RequestTypeFqn
 	}
 	if b.ResponseTypeFqn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 13)
 		x.xxx_hidden_ResponseTypeFqn = b.ResponseTypeFqn
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	x.xxx_hidden_OutputSchema = b.OutputSchema
 	x.xxx_hidden_Annotations = b.Annotations
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
+	x.xxx_hidden_Tags = b.Tags
+	x.xxx_hidden_Profiles = b.Profiles
 	return m0
 }
 
@@ -2799,7 +2827,7 @@ var File_proto_mcp_router_v1_mcp_router_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\n" +
-	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xe8\x03\n" +
+	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\x98\x04\n" +
 	"\x04Tool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
@@ -2812,7 +2840,9 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\finput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12G\n" +
 	"\vannotations\x18\v \x01(\v2%.mcpany.mcp_router.v1.ToolAnnotationsR\vannotations\x12\x1b\n" +
-	"\tis_stream\x18\f \x01(\bR\bisStream\"\xc3\x02\n" +
+	"\tis_stream\x18\f \x01(\bR\bisStream\x12\x12\n" +
+	"\x04tags\x18\r \x03(\tR\x04tags\x12\x1a\n" +
+	"\bprofiles\x18\x0e \x03(\tR\bprofiles\"\xc3\x02\n" +
 	"\x0fToolAnnotations\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
 	"\x0eread_only_hint\x18\x02 \x01(\bR\freadOnlyHint\x12)\n" +

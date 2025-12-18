@@ -26,6 +26,50 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ToolDefinition_MergeStrategy int32
+
+const (
+	ToolDefinition_MERGE_STRATEGY_UNSPECIFIED ToolDefinition_MergeStrategy = 0
+	ToolDefinition_MERGE_STRATEGY_MERGE       ToolDefinition_MergeStrategy = 1
+	ToolDefinition_MERGE_STRATEGY_OVERRIDE    ToolDefinition_MergeStrategy = 2
+)
+
+// Enum value maps for ToolDefinition_MergeStrategy.
+var (
+	ToolDefinition_MergeStrategy_name = map[int32]string{
+		0: "MERGE_STRATEGY_UNSPECIFIED",
+		1: "MERGE_STRATEGY_MERGE",
+		2: "MERGE_STRATEGY_OVERRIDE",
+	}
+	ToolDefinition_MergeStrategy_value = map[string]int32{
+		"MERGE_STRATEGY_UNSPECIFIED": 0,
+		"MERGE_STRATEGY_MERGE":       1,
+		"MERGE_STRATEGY_OVERRIDE":    2,
+	}
+)
+
+func (x ToolDefinition_MergeStrategy) Enum() *ToolDefinition_MergeStrategy {
+	p := new(ToolDefinition_MergeStrategy)
+	*p = x
+	return p
+}
+
+func (x ToolDefinition_MergeStrategy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ToolDefinition_MergeStrategy) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_tool_proto_enumTypes[0].Descriptor()
+}
+
+func (ToolDefinition_MergeStrategy) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_tool_proto_enumTypes[0]
+}
+
+func (x ToolDefinition_MergeStrategy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // ToolDefinition describes a single capability or "tool" offered by a service.
 type ToolDefinition struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -64,7 +108,9 @@ type ToolDefinition struct {
 	// If true, this tool is disabled.
 	Disable *bool `protobuf:"varint,12,opt,name=disable" json:"disable,omitempty"`
 	// A list of profiles this tool belongs to.
-	Profiles      []*Profile `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
+	Profiles      []*Profile                    `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
+	MergeStrategy *ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy" json:"merge_strategy,omitempty"`
+	Tags          []string                      `protobuf:"bytes,16,rep,name=tags" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -185,6 +231,20 @@ func (x *ToolDefinition) GetProfiles() []*Profile {
 	return nil
 }
 
+func (x *ToolDefinition) GetMergeStrategy() ToolDefinition_MergeStrategy {
+	if x != nil && x.MergeStrategy != nil {
+		return *x.MergeStrategy
+	}
+	return ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
+}
+
+func (x *ToolDefinition) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
@@ -235,6 +295,14 @@ func (x *ToolDefinition) SetDisable(v bool) {
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
 	x.Profiles = v
+}
+
+func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
+	x.MergeStrategy = &v
+}
+
+func (x *ToolDefinition) SetTags(v []string) {
+	x.Tags = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -321,6 +389,13 @@ func (x *ToolDefinition) HasDisable() bool {
 	return x.Disable != nil
 }
 
+func (x *ToolDefinition) HasMergeStrategy() bool {
+	if x == nil {
+		return false
+	}
+	return x.MergeStrategy != nil
+}
+
 func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
@@ -369,6 +444,10 @@ func (x *ToolDefinition) ClearDisable() {
 	x.Disable = nil
 }
 
+func (x *ToolDefinition) ClearMergeStrategy() {
+	x.MergeStrategy = nil
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -407,7 +486,9 @@ type ToolDefinition_builder struct {
 	// If true, this tool is disabled.
 	Disable *bool
 	// A list of profiles this tool belongs to.
-	Profiles []*Profile
+	Profiles      []*Profile
+	MergeStrategy *ToolDefinition_MergeStrategy
+	Tags          []string
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -427,6 +508,8 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	x.CallId = b.CallId
 	x.Disable = b.Disable
 	x.Profiles = b.Profiles
+	x.MergeStrategy = b.MergeStrategy
+	x.Tags = b.Tags
 	return m0
 }
 
@@ -434,7 +517,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xea\x03\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xbe\x05\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -451,22 +534,31 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	" \x01(\bR\x0fopen_world_hint\x12\x18\n" +
 	"\acall_id\x18\v \x01(\tR\acall_id\x12\x18\n" +
 	"\adisable\x18\f \x01(\bR\adisable\x125\n" +
-	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofilesB3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
+	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
+	"\x04tags\x18\x10 \x03(\tR\x04tags\"f\n" +
+	"\rMergeStrategy\x12\x1e\n" +
+	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
+	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02B3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
+var file_proto_config_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_tool_proto_goTypes = []any{
-	(*ToolDefinition)(nil),  // 0: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil), // 1: google.protobuf.Struct
-	(*Profile)(nil),         // 2: mcpany.config.v1.Profile
+	(ToolDefinition_MergeStrategy)(0), // 0: mcpany.config.v1.ToolDefinition.MergeStrategy
+	(*ToolDefinition)(nil),            // 1: mcpany.config.v1.ToolDefinition
+	(*structpb.Struct)(nil),           // 2: google.protobuf.Struct
+	(*Profile)(nil),                   // 3: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	2, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	3, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
@@ -480,13 +572,14 @@ func file_proto_config_v1_tool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_tool_proto_rawDesc), len(file_proto_config_v1_tool_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_config_v1_tool_proto_goTypes,
 		DependencyIndexes: file_proto_config_v1_tool_proto_depIdxs,
+		EnumInfos:         file_proto_config_v1_tool_proto_enumTypes,
 		MessageInfos:      file_proto_config_v1_tool_proto_msgTypes,
 	}.Build()
 	File_proto_config_v1_tool_proto = out.File
