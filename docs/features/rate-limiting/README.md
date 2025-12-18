@@ -33,4 +33,4 @@ If an upstream API charges you based on request volume or has strict quotas, you
 
 ## Public API Example
 
-If a client sends requests faster than the limit, MCP Any will return a `429 Too Many Requests` error (or equivalent gRPC status) for the excess requests.
+If a client sends requests faster than the limit, MCP Any will return an error indicating that the rate limit has been exceeded for the excess requests.

@@ -36,8 +36,10 @@ The MCP Any codebase is organized into several key packages:
 
 - **`cmd/server`**: Contains the `main` application entry point and command-line interface setup using Cobra.
 - **`pkg/app`**: Implements the core application logic, orchestrating the different components.
-- **`pkg/service`**: Defines the interfaces and registration logic for different service types (gRPC, HTTP, OpenAPI, etc.).
-- **`pkg/connector`**: Contains the concrete implementations for connecting to and interacting with various upstream services.
+- **`pkg/service`**: Provides resilience patterns and utilities.
+- **`pkg/serviceregistry`**: Handles the registration of upstream services.
+- **`pkg/upstream`**: Contains the implementations for connecting to and interacting with various upstream services (gRPC, HTTP, etc.).
+- **`pkg/tool`**: Manages the lifecycle, indexing, and execution of tools.
 - **`pkg/transformer`**: Handles the conversion of data between the internal MCP Any format and the format of the upstream services.
 - **`proto`**: Contains all the protobuf definitions for the project, including API contracts and configuration structures.
 - **`tests`**: Contains integration and end-to-end tests.
