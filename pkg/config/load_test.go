@@ -358,3 +358,41 @@ upstream_services: {
 		})
 	}
 }
+
+func TestDefaultUserHasProfileAccessWhenIdIsMissing(t *testing.T) {
+	content := `
+global_settings: {
+    profiles: "dev"
+}
+upstream_services: {
+	name: "service-with-named-profile"
+	http_service: {
+		address: "http://api.example.com"
+	}
+	profiles: {
+		name: "dev"
+		# id is missing
+	}
+}
+`
+	tmpDir := t.TempDir()
+	filePath := filepath.Join(tmpDir, "config.textproto")
+	fs := afero.NewOsFs()
+	f, err := fs.Create(filePath)
+	require.NoError(t, err)
+	_, err = f.WriteString(content)
+	require.NoError(t, err)
+	require.NoError(t, f.Close())
+
+	fileStore := NewFileStore(fs, []string{filePath})
+	cfg, err := LoadServices(fileStore, "server")
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	require.NotEmpty(t, cfg.GetUsers())
+	defaultUser := cfg.GetUsers()[0]
+	assert.Equal(t, "default", defaultUser.GetId())
+
+	// This should pass now with my fix
+	assert.Contains(t, defaultUser.GetProfileIds(), "dev", "Default user should have access to 'dev' profile even if ID is not explicitly set")
+}

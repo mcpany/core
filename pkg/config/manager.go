@@ -271,6 +271,10 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 
 	allowed := false
 	for _, sp := range serviceProfiles {
+		// Normalize profile: default ID to Name if missing
+		if sp.GetId() == "" && sp.GetName() != "" {
+			sp.Id = sp.GetName()
+		}
 		for _, ep := range m.enabledProfiles {
 			if sp.GetName() == ep {
 				allowed = true
