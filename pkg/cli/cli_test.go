@@ -11,6 +11,7 @@ import (
 )
 
 func TestJSONExecutor(t *testing.T) {
+	t.Parallel()
 	in := &bytes.Buffer{}
 	out := &bytes.Buffer{}
 
@@ -54,7 +55,9 @@ func (w *failWriter) Write(_ []byte) (n int, err error) {
 }
 
 func TestJSONExecutor_Errors(t *testing.T) {
+	t.Parallel()
 	t.Run("Encode Error", func(t *testing.T) {
+		t.Parallel()
 		exec := NewJSONExecutor(&failWriter{}, &bytes.Buffer{})
 		err := exec.Execute("test", nil)
 		if err == nil {
@@ -63,6 +66,7 @@ func TestJSONExecutor_Errors(t *testing.T) {
 	})
 
 	t.Run("Decode Error", func(t *testing.T) {
+		t.Parallel()
 		exec := NewJSONExecutor(&bytes.Buffer{}, bytes.NewBufferString("invalid json"))
 		var result map[string]string
 		err := exec.Execute("test", &result)

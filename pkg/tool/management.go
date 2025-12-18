@@ -88,42 +88,49 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 
-	execute := func(ctx context.Context, req *ExecutionRequest) (any, error) {
-		t, ok := tm.GetTool(req.ToolName)
-		if !ok {
-			log.Error("Tool not found")
-			return nil, ErrToolNotFound
+	// 1. Resolve Tool and Service Info
+	t, ok := tm.GetTool(req.ToolName)
+	if !ok {
+		log.Error("Tool not found")
+		return nil, ErrToolNotFound
+	}
+	serviceID := t.Tool().GetServiceId()
+	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+
+	var preHooks []PreCallHook
+	var postHooks []PostCallHook
+	if ok {
+		preHooks = serviceInfo.PreHooks
+		postHooks = serviceInfo.PostHooks
+	}
+
+	// 2. Initialize Context with Tool and CacheControl
+	ctx = NewContextWithTool(ctx, t)
+	ctx = NewContextWithCacheControl(ctx, &CacheControl{Action: ActionAllow})
+
+	// 3. Run Pre-execution Hooks (modifies ctx/req)
+	for _, h := range preHooks {
+		action, modifiedReq, err := h.ExecutePre(ctx, req)
+		if err != nil {
+			log.Warn("Tool execution denied by pre-hook error", "error", err)
+			return nil, err
 		}
-
-		// Resolve Service Config for Hooks
-		serviceID := t.Tool().GetServiceId()
-		serviceInfo, ok := tm.GetServiceInfo(serviceID)
-
-		var preHooks []PreCallHook
-		var postHooks []PostCallHook
-
-		if ok {
-			preHooks = serviceInfo.PreHooks
-			postHooks = serviceInfo.PostHooks
+		if action == ActionDeny {
+			log.Warn("Tool execution denied by pre-hook")
+			return nil, fmt.Errorf("tool execution denied by hook")
 		}
-
-		// Execute Pre Hooks
-		for _, h := range preHooks {
-			action, modifiedReq, err := h.ExecutePre(ctx, req)
-			if err != nil {
-				log.Warn("Tool execution denied by pre-hook error", "error", err)
-				return nil, err
-			}
-			if action == ActionDeny {
-				log.Warn("Tool execution denied by pre-hook")
-				return nil, fmt.Errorf("tool execution denied by hook")
-			}
-			if modifiedReq != nil {
-				req = modifiedReq
+		if action == ActionSaveCache || action == ActionDeleteCache {
+			if cc, ok := GetCacheControl(ctx); ok {
+				cc.Action = action
 			}
 		}
+		if modifiedReq != nil {
+			req = modifiedReq
+		}
+	}
 
-		ctx = NewContextWithTool(ctx, t)
+	// 4. Define Core Execution (Execute + PostHooks)
+	executeCore := func(ctx context.Context, req *ExecutionRequest) (any, error) {
 		result, err := t.Execute(ctx, req)
 
 		// Execute Post Hooks
@@ -144,7 +151,8 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		return result, err
 	}
 
-	chain := execute
+	// 5. Build and Run Middleware Chain
+	chain := executeCore
 	for i := len(tm.middlewares) - 1; i >= 0; i-- {
 		m := tm.middlewares[i]
 		chain = func(next ExecutionFunc) ExecutionFunc {

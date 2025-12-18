@@ -39,6 +39,8 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
+const contentTypeJSON = "application/json"
+
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
@@ -116,7 +118,29 @@ const (
 	ActionAllow Action = 0
 	// ActionDeny indicates that the action is denied.
 	ActionDeny Action = 1
+	// ActionSaveCache indicates that the result should be cached.
+	ActionSaveCache Action = 2
+	// ActionDeleteCache indicates that the cache should be invalidated.
+	ActionDeleteCache Action = 3
 )
+
+// CacheControl is a mutable struct to pass cache control instructions via context.
+type CacheControl struct {
+	Action Action
+}
+
+const cacheControlContextKey = contextKey("cache_control")
+
+// NewContextWithCacheControl creates a new context with the given CacheControl.
+func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
+	return context.WithValue(ctx, cacheControlContextKey, cc)
+}
+
+// GetCacheControl retrieves the CacheControl from the context.
+func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
+	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
+	return cc, ok
+}
 
 // PreCallHook defines the interface for hooks executed before a tool call.
 type PreCallHook interface {
@@ -175,7 +199,7 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
@@ -232,6 +256,7 @@ type HTTPTool struct {
 	parameters        []*configv1.HttpParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
@@ -245,6 +270,10 @@ type HTTPTool struct {
 // callDefinition contains the configuration for the HTTP call, such as
 // parameter mappings and transformers.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig) *HTTPTool {
+	var webhookClient *WebhookClient
+	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
+		webhookClient = NewWebhookClient(it.GetWebhook())
+	}
 	return &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
@@ -253,6 +282,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
 	}
@@ -274,7 +304,7 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //
 //nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
@@ -339,7 +369,28 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	var contentType string
 	if inputs != nil {
 		if method == http.MethodPost || method == http.MethodPut {
-			if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
+			switch {
+			case t.webhookClient != nil:
+				// Use webhook for transformation
+				data := map[string]any{
+					"kind":      configv1.WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT,
+					"tool_name": req.ToolName,
+					"inputs":    inputs,
+				}
+				respEvent, err := t.webhookClient.Call(ctx, "com.mcpany.tool.transform_input", data)
+				if err != nil {
+					return nil, fmt.Errorf("transformation webhook failed: %w", err)
+				}
+				// We expect the data to be the transformed body
+				respData := respEvent.Data()
+				if len(respData) > 0 {
+					body = bytes.NewReader(respData)
+					// Verify if it looks like JSON?
+					if json.Valid(respData) {
+						contentType = contentTypeJSON
+					}
+				}
+			case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 				tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 				if err != nil {
 					return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -349,13 +400,13 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 					return nil, fmt.Errorf("failed to render input template: %w", err)
 				}
 				body = strings.NewReader(renderedBody)
-			} else {
+			default:
 				jsonBytes, err := json.Marshal(inputs)
 				if err != nil {
 					return "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 				}
 				body = bytes.NewReader(jsonBytes)
-				contentType = "application/json"
+				contentType = contentTypeJSON
 			}
 		}
 	}
@@ -430,8 +481,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
+			bodyBytes, _ := io.ReadAll(attemptResp.Body)
 			_ = attemptResp.Body.Close()
-			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
+			fmt.Printf("DEBUG: Upstream HTTP 404 Body: %s\nHeaders: %v\nURL: %s\n", string(bodyBytes), attemptResp.Header, httpReq.URL.String())
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d (DEBUG)", attemptResp.StatusCode)}
 		}
 
 		if attemptResp.StatusCode >= 500 {
@@ -515,6 +568,7 @@ type MCPTool struct {
 	client            client.MCPClient
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 }
 
@@ -524,11 +578,16 @@ type MCPTool struct {
 // client is the MCP client used to communicate with the downstream service.
 // callDefinition contains configuration for input/output transformations.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
+	var webhookClient *WebhookClient
+	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
+		webhookClient = NewWebhookClient(it.GetWebhook())
+	}
 	return &MCPTool{
 		tool:              tool,
 		client:            client,
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 	}
 }
@@ -548,7 +607,7 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -558,7 +617,22 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	var arguments json.RawMessage
-	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
+	switch {
+	case t.webhookClient != nil:
+		data := map[string]any{
+			"kind":      configv1.WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT,
+			"tool_name": req.ToolName,
+			"inputs":    inputs,
+		}
+		respEvent, err := t.webhookClient.Call(ctx, "com.mcpany.tool.transform_input", data)
+		if err != nil {
+			return nil, fmt.Errorf("transformation webhook failed: %w", err)
+		}
+		respData := respEvent.Data()
+		if len(respData) > 0 {
+			arguments = json.RawMessage(respData)
+		}
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -568,7 +642,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 			return nil, fmt.Errorf("failed to render input template: %w", err)
 		}
 		arguments = []byte(rendered)
-	} else {
+	default:
 		arguments = req.ToolInputs
 	}
 
@@ -643,6 +717,7 @@ type OpenAPITool struct {
 	authenticator     auth.UpstreamAuthenticator
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
+	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 }
 
@@ -656,6 +731,10 @@ type OpenAPITool struct {
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains configuration for input/output transformations.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
+	var webhookClient *WebhookClient
+	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
+		webhookClient = NewWebhookClient(it.GetWebhook())
+	}
 	return &OpenAPITool{
 		tool:              tool,
 		client:            client,
@@ -665,6 +744,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 		authenticator:     authenticator,
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
+		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 	}
 }
@@ -684,7 +764,7 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // sends the request, and processes the response, applying transformations as
 // needed.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
-	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, "application/json"))
+	logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -701,7 +781,25 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	var body io.Reader
 	var contentType string
 	if t.method == http.MethodPost || t.method == http.MethodPut {
-		if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
+		switch {
+		case t.webhookClient != nil:
+			data := map[string]any{
+				"kind":      configv1.WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT,
+				"tool_name": req.ToolName,
+				"inputs":    inputs,
+			}
+			respEvent, err := t.webhookClient.Call(ctx, "com.mcpany.tool.transform_input", data)
+			if err != nil {
+				return nil, fmt.Errorf("transformation webhook failed: %w", err)
+			}
+			respData := respEvent.Data()
+			if len(respData) > 0 {
+				body = bytes.NewReader(respData)
+				if json.Valid(respData) {
+					contentType = contentTypeJSON
+				}
+			}
+		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -711,13 +809,13 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to render input template: %w", err)
 			}
 			body = strings.NewReader(renderedBody)
-		} else {
+		default:
 			jsonBytes, err := json.Marshal(inputs)
 			if err != nil {
 				return "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 			}
 			body = bytes.NewReader(jsonBytes)
-			contentType = "application/json"
+			contentType = contentTypeJSON
 		}
 	}
 

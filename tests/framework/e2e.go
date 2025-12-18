@@ -43,6 +43,7 @@ type E2ETestCase struct {
 	ValidateTool                func(t *testing.T, mcpanyEndpoint string)
 	ValidateMiddlewares         func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
 	InvokeAIClient              func(t *testing.T, mcpanyEndpoint string)
+	InvokeAIClientWithServerInfo func(t *testing.T, serverInfo *integration.MCPANYTestServerInfo)
 	RegistrationMethods         []RegistrationMethod
 	GenerateUpstreamConfig      func(_ string) string
 	StartMCPANYServer           func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
@@ -162,7 +163,11 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			// --- 5. Invoke AI Client ---
-			testCase.InvokeAIClient(t, mcpanyTestServerInfo.HTTPEndpoint)
+			if testCase.InvokeAIClientWithServerInfo != nil {
+				testCase.InvokeAIClientWithServerInfo(t, mcpanyTestServerInfo)
+			} else if testCase.InvokeAIClient != nil {
+				testCase.InvokeAIClient(t, mcpanyTestServerInfo.HTTPEndpoint)
+			}
 
 			t.Logf("INFO: E2E Test Scenario for %s Completed Successfully!", testCase.Name)
 		})

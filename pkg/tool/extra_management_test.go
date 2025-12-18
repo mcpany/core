@@ -58,6 +58,7 @@ func (m *mockMiddleware) Execute(ctx context.Context, req *ExecutionRequest, nex
 }
 
 func TestManager_ExecuteTool_Coverage(t *testing.T) {
+	t.Parallel()
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 
@@ -84,6 +85,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 }
 
 func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
+	t.Parallel()
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 	mt := &mockToolSimple{
@@ -94,12 +96,6 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 		},
 	}
 	_ = m.AddTool(mt)
-
-	// Setup ServiceInfo with Config
-	svcConfig := &configv1.UpstreamServiceConfig{
-		Name: proto.String("s1"),
-	}
-
 
 	// Case: PreHook Error (via Policy)
 	// We can use PolicyHook with ActionDeny
@@ -112,9 +108,14 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	svcConfig.CallPolicies = []*configv1.CallPolicy{callPolicy}
-	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
+	// Setup ServiceInfo with Config
+	svcConfig := &configv1.UpstreamServiceConfig{
+		Name:         proto.String("s1"),
+		CallPolicies: []*configv1.CallPolicy{callPolicy},
+	}
+
+	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
 	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	if assert.Error(t, err) {
@@ -123,6 +124,7 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 }
 
 func TestManager_ClearToolsForService_Coverage(t *testing.T) {
+	t.Parallel()
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 
@@ -153,6 +155,7 @@ func (m *mockMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
+	t.Parallel()
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 

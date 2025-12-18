@@ -11,6 +11,7 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
@@ -37,17 +38,60 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
+		// Tool not in context, try to look it up
+		var found bool
+		t, found = m.toolManager.GetTool(req.ToolName)
+		if !found {
+			fmt.Printf("DEBUG: Tool %s not found in manager\n", req.ToolName)
+			return next(ctx, req)
+		}
+	}
+
+	fmt.Printf("DEBUG: CachingMiddleware Execute for tool %s\n", t.Tool().GetName())
+	cacheConfig := m.getCacheConfig(t)
+	if cacheConfig == nil || !cacheConfig.GetIsEnabled() {
+		fmt.Printf("DEBUG: Caching disabled or config nil for tool %s\n", t.Tool().GetName())
 		return next(ctx, req)
 	}
 
-	cacheConfig := m.getCacheConfig(t)
-	if cacheConfig == nil || !cacheConfig.GetIsEnabled() {
-		return next(ctx, req)
+	// Extract service ID and Tool Name for metrics
+	serviceID := t.Tool().GetServiceId()
+	toolName := t.Tool().GetName()
+	labels := []metrics.Label{
+		{Name: "service", Value: serviceID},
+		{Name: "tool", Value: toolName},
+	}
+
+	// Inject CacheControl if not present
+	var cacheControl *tool.CacheControl
+	if cc, ok := tool.GetCacheControl(ctx); ok {
+		cacheControl = cc
+	} else {
+		cacheControl = &tool.CacheControl{Action: tool.ActionAllow}
+		ctx = tool.NewContextWithCacheControl(ctx, cacheControl)
 	}
 
 	cacheKey := m.getCacheKey(req)
-	if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
-		return cached, nil
+
+	// Check cache ONLY if action is not DeleteCache (we might want to delete it)
+	// But actually, if we want to delete, we probably didn't want to use the cached value?
+	// Or maybe we process the call and THEN delete?
+	// The requirement is "when these actions are returned... action will be taken".
+	// If it returns DELETE_CACHE, we probably imply "don't use cache, execute, then delete".
+
+	// Check cache ONLY if action is not DeleteCache
+	if cacheControl.Action != tool.ActionDeleteCache {
+		// If normal allow (0), check cache.
+		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
+			// Found in cache
+			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+			return cached, nil
+		}
+		// Not found in cache
+		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+	} else {
+		// If DeleteCache, we skip cache lookup (force miss)
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels) // Optional: track skips
 	}
 
 	result, err := next(ctx, req)
@@ -55,7 +99,34 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return nil, err
 	}
 
+	// Check CacheControl
+	if cacheControl.Action == tool.ActionDeleteCache {
+		if err := m.cache.Delete(ctx, cacheKey); err != nil {
+			_ = err
+		}
+		return result, nil
+	}
+
+	// If standard flow, we save.
+	// If SaveCache action, we definitely save (maybe ignoring TTL? or just ensuring it IS saved).
+	// For now treating SaveCache same as normal logic (save if successful).
+	// But wait, "when these actions are returned... corresponding call cache action will be taken".
+	// If I rely on policy to *enable* caching, that is different.
+	// The current logic *already* saves if config enabled.
+	// So ActionSaveCache might mean "Save even if it wouldn't otherwise?"
+	// Or just "Ensure it is saved".
+	// Since I checked `cacheConfig != nil` at top, we are in "Caching Enabled" mode.
+	// So we default to save.
+
+	// If the user wants to selectively save, they might use this?
+	// But if caching is enabled, we usually save every success.
+	// Maybe they want to save even if error? Unlikely.
+	// I'll assume standard behavior:
+	// SAVE_CACHE -> Ensure Set is called.
+	// DELETE_CACHE -> Delete from cache.
+
 	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
+		_ = err // explicit ignore
 		// Log the error but don't fail the request, as caching is an optimization
 		// We need a logger here, but middleware doesn't strictly have one injected in the struct.
 		// Assuming we can use the global logger as per project pattern.
@@ -88,4 +159,9 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+}
+
+// Clear clears the cache.
+func (m *CachingMiddleware) Clear(ctx context.Context) error {
+	return m.cache.Clear(ctx)
 }

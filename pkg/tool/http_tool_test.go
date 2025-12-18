@@ -65,6 +65,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 }
 
 func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
+	t.Parallel()
 	expectedBody := `name=test&age=30`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
@@ -89,6 +90,7 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
+	t.Parallel()
 	xmlResponse := `<user><id>123</id><name>Test</name></user>`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/xml")
@@ -121,6 +123,7 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
+	t.Parallel()
 	textResponse := "User: test-user, Role: admin"
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
@@ -153,6 +156,7 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
+	t.Parallel()
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
 		w.WriteHeader(http.StatusOK)
@@ -179,6 +183,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Errors(t *testing.T) {
+	t.Parallel()
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
@@ -191,6 +196,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	}.Build()
 
 	t.Run("pool_not_found", func(t *testing.T) {
+		t.Parallel()
 		poolManager := pool.NewManager() // Empty pool manager
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil)
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
@@ -199,6 +205,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("pool_get_error", func(t *testing.T) {
+		t.Parallel()
 		poolManager := pool.NewManager()
 		errorFactory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return nil, errors.New("pool factory error")
@@ -215,6 +222,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("invalid_method_fqn", func(t *testing.T) {
+		t.Parallel()
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
@@ -228,6 +236,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("bad_tool_input_json", func(t *testing.T) {
+		t.Parallel()
 		httpTool, _ := setupHTTPToolTest(t, handler, &configv1.HttpCallDefinition{})
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{"param":`)}
 		_, err := httpTool.Execute(context.Background(), req)
@@ -236,6 +245,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("upstream_error", func(t *testing.T) {
+		t.Parallel()
 		errHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, _ = w.Write([]byte("internal error"))
@@ -249,6 +259,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("auth_failure", func(t *testing.T) {
+		t.Parallel()
 		authenticator := &mockAuthenticator{err: errors.New("auth error")}
 		_, server := setupHTTPToolTest(t, handler, &configv1.HttpCallDefinition{})
 		defer server.Close()
@@ -270,6 +281,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("path_parameter_mapping", func(t *testing.T) {
+		t.Parallel()
 		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.True(t, strings.HasSuffix(r.URL.Path, "/users/123"), "URL path should contain the user ID")
 			w.WriteHeader(http.StatusOK)
@@ -307,6 +319,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("output_transformation_template_error", func(t *testing.T) {
+		t.Parallel()
 		outputTransformer := configv1.OutputTransformer_builder{
 			Template: lo.ToPtr("{{invalid"),
 		}.Build()
@@ -324,6 +337,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("input_transformation_render_error", func(t *testing.T) {
+		t.Parallel()
 		it := configv1.InputTransformer_builder{
 			Template: lo.ToPtr(`{"key": "{{some_key.nested}}"}`), // This will fail as some_key is not a map
 		}.Build()
@@ -341,6 +355,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("output_transformation_parse_error", func(t *testing.T) {
+		t.Parallel()
 		outputTransformer := configv1.OutputTransformer_builder{
 			Format:          configv1.OutputTransformer_JSON.Enum(),
 			ExtractionRules: map[string]string{"key": ".key"},
@@ -366,6 +381,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("non_json_response", func(t *testing.T) {
+		t.Parallel()
 		// Handler returns non-JSON response
 		stringHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -382,6 +398,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("delete_method_with_params", func(t *testing.T) {
+		t.Parallel()
 		deleteHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, http.MethodDelete, r.Method)
 			assert.Equal(t, "123", r.URL.Query().Get("id"))
@@ -411,6 +428,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 
 	t.Run("optional_path_parameter", func(t *testing.T) {
+		t.Parallel()
 		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/json", r.URL.Path)
 			w.WriteHeader(http.StatusOK)
@@ -449,6 +467,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
+	t.Parallel()
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/octet-stream")
@@ -476,6 +495,7 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
+	t.Parallel()
 	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/users/test%2Fuser"
 		assert.Equal(t, expectedPath, r.URL.RequestURI(), "URL path should be properly escaped")
@@ -515,7 +535,9 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_WithRetry(t *testing.T) {
+	t.Parallel()
 	t.Run("retry_succeeds", func(t *testing.T) {
+		t.Parallel()
 		attempt := 0
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			if attempt == 0 {
@@ -551,6 +573,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	})
 
 	t.Run("retry_fails", func(t *testing.T) {
+		t.Parallel()
 		attempt := 0
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			attempt++
@@ -582,6 +605,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	})
 
 	t.Run("non_retriable_error", func(t *testing.T) {
+		t.Parallel()
 		attempt := 0
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			attempt++
@@ -613,6 +637,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	})
 
 	t.Run("retry_post_succeeds", func(t *testing.T) {
+		t.Parallel()
 		attempt := 0
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			body, err := io.ReadAll(r.Body)

@@ -104,6 +104,8 @@ message CallPolicy {
   enum Action {
     ALLOW = 0;
     DENY = 1;
+    SAVE_CACHE = 2;
+    DELETE_CACHE = 3;
   }
   // Default action if no rules match.
   Action default_action = 1;

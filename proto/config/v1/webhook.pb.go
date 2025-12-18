@@ -30,9 +30,10 @@ const (
 type WebhookKind int32
 
 const (
-	WebhookKind_WEBHOOK_KIND_UNSPECIFIED WebhookKind = 0
-	WebhookKind_WEBHOOK_KIND_PRE_CALL    WebhookKind = 1
-	WebhookKind_WEBHOOK_KIND_POST_CALL   WebhookKind = 2
+	WebhookKind_WEBHOOK_KIND_UNSPECIFIED     WebhookKind = 0
+	WebhookKind_WEBHOOK_KIND_PRE_CALL        WebhookKind = 1
+	WebhookKind_WEBHOOK_KIND_POST_CALL       WebhookKind = 2
+	WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT WebhookKind = 3
 )
 
 // Enum value maps for WebhookKind.
@@ -41,11 +42,13 @@ var (
 		0: "WEBHOOK_KIND_UNSPECIFIED",
 		1: "WEBHOOK_KIND_PRE_CALL",
 		2: "WEBHOOK_KIND_POST_CALL",
+		3: "WEBHOOK_KIND_TRANSFORM_INPUT",
 	}
 	WebhookKind_value = map[string]int32{
-		"WEBHOOK_KIND_UNSPECIFIED": 0,
-		"WEBHOOK_KIND_PRE_CALL":    1,
-		"WEBHOOK_KIND_POST_CALL":   2,
+		"WEBHOOK_KIND_UNSPECIFIED":     0,
+		"WEBHOOK_KIND_PRE_CALL":        1,
+		"WEBHOOK_KIND_POST_CALL":       2,
+		"WEBHOOK_KIND_TRANSFORM_INPUT": 3,
 	}
 )
 
@@ -707,11 +710,12 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x12replacement_object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11replacementObject\"=\n" +
 	"\rWebhookStatus\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*b\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*\x84\x01\n" +
 	"\vWebhookKind\x12\x1c\n" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
-	"\x16WEBHOOK_KIND_POST_CALL\x10\x02B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x16WEBHOOK_KIND_POST_CALL\x10\x02\x12 \n" +
+	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
