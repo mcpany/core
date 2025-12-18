@@ -83,7 +83,8 @@ message TestResponse3 {
 }
 `
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("test-service"),
+		Name:             proto.String("test-service"),
+		AutoDiscoverTool: proto.Bool(true),
 		GrpcService: configv1.GrpcUpstreamService_builder{
 			Address:       proto.String("localhost:50051"),
 			UseReflection: proto.Bool(false),

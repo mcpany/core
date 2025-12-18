@@ -501,17 +501,36 @@ func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnot
 				var toolName, toolDesc string
 				var readOnlyHint, destructiveHint, idempotentHint, openWorldHint bool
 
+				hasAnnotation := false
 				if methodOpts != nil {
 					if proto.HasExtension(methodOpts, mcpopt.E_ToolName) {
 						toolName = proto.GetExtension(methodOpts, mcpopt.E_ToolName).(string)
+						hasAnnotation = true
 					}
 					if proto.HasExtension(methodOpts, mcpopt.E_ToolDescription) {
 						toolDesc = proto.GetExtension(methodOpts, mcpopt.E_ToolDescription).(string)
+						hasAnnotation = true
 					}
-					readOnlyHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolReadonlyHint).(bool)
-					destructiveHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolDestructiveHint).(bool)
-					idempotentHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolIdempotentHint).(bool)
-					openWorldHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolOpenworldHint).(bool)
+					if proto.HasExtension(methodOpts, mcpopt.E_McpToolReadonlyHint) {
+						readOnlyHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolReadonlyHint).(bool)
+						hasAnnotation = true
+					}
+					if proto.HasExtension(methodOpts, mcpopt.E_McpToolDestructiveHint) {
+						destructiveHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolDestructiveHint).(bool)
+						hasAnnotation = true
+					}
+					if proto.HasExtension(methodOpts, mcpopt.E_McpToolIdempotentHint) {
+						idempotentHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolIdempotentHint).(bool)
+						hasAnnotation = true
+					}
+					if proto.HasExtension(methodOpts, mcpopt.E_McpToolOpenworldHint) {
+						openWorldHint = proto.GetExtension(methodOpts, mcpopt.E_McpToolOpenworldHint).(bool)
+						hasAnnotation = true
+					}
+				}
+
+				if !hasAnnotation {
+					continue
 				}
 
 				if toolName == "" {

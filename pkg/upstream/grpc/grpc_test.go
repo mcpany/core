@@ -6,6 +6,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -55,6 +56,9 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	}
 	sanitizedToolName, _ := util.SanitizeToolName(t.Tool().GetName())
 	toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
+	if _, ok := m.tools[toolID]; ok {
+		return fmt.Errorf("tool %s already exists", toolID)
+	}
 	m.tools[toolID] = t
 	return nil
 }
@@ -310,19 +314,20 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
+		serviceConfig.AutoDiscoverTool = proto.Bool(true)
 
 		// First call - should populate the cache
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
 		assert.NotEmpty(t, discoveredTools)
-		assert.Len(t, tm.ListTools(), 2) // 1 for GetWeather, 1 for reflection
+		assert.Len(t, tm.ListTools(), 1) // 1 for GetWeather (reflection is internal)
 
 		// Second call - should hit the cache
 		tm2 := NewMockToolManager()
 		serviceID2, discoveredTools2, _, err2 := upstream.Register(context.Background(), serviceConfig, tm2, promptManager, resourceManager, false)
 		require.NoError(t, err2)
 		assert.NotEmpty(t, discoveredTools2)
-		assert.Len(t, tm2.ListTools(), 2)
+		assert.Len(t, tm2.ListTools(), 1)
 		assert.Equal(t, serviceID, serviceID2)
 		// We can't directly verify the cache was hit without exporting the cache,
 		// but a successful second call is a good indicator.
@@ -340,6 +345,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
+		serviceConfig.AutoDiscoverTool = proto.Bool(true)
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -456,6 +462,7 @@ func TestGRPCUpstream_Register_UseReflection_WithPolicy(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-policy")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.AutoDiscoverTool = proto.Bool(true)
 	// Export policy: only export GetWeather
 	serviceConfig.ToolExportPolicy = &configv1.ExportPolicy{
 		DefaultAction: actionPtr(configv1.ExportPolicy_UNEXPORT),
@@ -523,6 +530,7 @@ func TestGRPCUpstream_Register_DynamicResources(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-dynamic")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.AutoDiscoverTool = proto.Bool(true)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -560,6 +568,7 @@ func TestGRPCUpstream_Register_DuplicateTool(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName(serviceID)
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.AutoDiscoverTool = proto.Bool(true)
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	assert.NoError(t, err)
@@ -569,7 +578,8 @@ func TestGRPCUpstream_Register_DuplicateTool(t *testing.T) {
 		toolNames = append(toolNames, dt.GetName())
 	}
 	assert.NotContains(t, toolNames, "GetWeather")
-	assert.Contains(t, toolNames, "ServerReflectionInfo")
+	// ServerReflectionInfo is now skipped as internal tool
+	assert.NotContains(t, toolNames, "ServerReflectionInfo")
 }
 
 func TestGRPCUpstream_Register_DuplicateTool_Config(t *testing.T) {
@@ -1036,6 +1046,7 @@ func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-disabled")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.AutoDiscoverTool = proto.Bool(true)
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
