@@ -254,6 +254,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
+			logging.GetLogger().Info("Listing tools...")
+			metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
+
 			// The tool manager is the authoritative source of tools. We iterate over the
 			// tools in the manager to ensure that the list is always up-to-date and
 			// reflects the current state of the system.

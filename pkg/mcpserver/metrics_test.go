@@ -29,9 +29,73 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Metrics_Repro(t *testing.T) {
+func TestServer_Metrics_ListTools(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	sink := metrics.NewInmemSink(10*time.Millisecond, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	ctx := context.Background()
+
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker.Start(ctx)
+
+	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	// Create client-server connection
+	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	// Connect server and client
+	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
+	require.NoError(t, err)
+	defer func() { _ = serverSession.Close() }()
+	clientSession, err := client.Connect(ctx, clientTransport, nil)
+	require.NoError(t, err)
+	defer func() { _ = clientSession.Close() }()
+
+	// Call tools/list
+	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err)
+
+	// Allow metrics to flush
+	time.Sleep(20 * time.Millisecond)
+
+	// Check metrics
+	data := sink.Data()
+
+	var totalCount int
+	counterName := "mcpany.tools.list.total"
+	fallbackCounterName := "tools.list.total"
+
+	for _, interval := range data {
+		if c, ok := interval.Counters[counterName]; ok {
+			totalCount += c.Count
+		} else if c, ok := interval.Counters[fallbackCounterName]; ok {
+			totalCount += c.Count
+		}
+	}
+
+	assert.Equal(t, 1, totalCount, "tools.list.total should be incremented exactly once")
+}
+
+func TestServer_Metrics_CallTool(t *testing.T) {
+	// Initialize metrics with an in-memory sink
+	sink := metrics.NewInmemSink(10*time.Millisecond, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -96,16 +160,23 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	})
 	require.NoError(t, err)
 
+	// Allow metrics to flush
+	time.Sleep(20 * time.Millisecond)
+
 	// Check metrics
 	data := sink.Data()
-	require.Len(t, data, 1)
 
+	var totalCount int
 	counterName := "mcpany.tools.call.total"
-	if _, ok := data[0].Counters[counterName]; !ok {
-		counterName = "tools.call.total"
+	fallbackCounterName := "tools.call.total"
+
+	for _, interval := range data {
+		if c, ok := interval.Counters[counterName]; ok {
+			totalCount += c.Count
+		} else if c, ok := interval.Counters[fallbackCounterName]; ok {
+			totalCount += c.Count
+		}
 	}
 
-	assert.Contains(t, data[0].Counters, counterName)
-	// This assertion is expected to FAIL if the bug is present (it will be 2)
-	assert.Equal(t, 1, data[0].Counters[counterName].Count, "tools.call.total should be incremented exactly once")
+	assert.Equal(t, 1, totalCount, "tools.call.total should be incremented exactly once")
 }
