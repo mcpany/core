@@ -339,7 +339,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 		}
 		fullURL := serverURL + path
 
-		newTool := tool.NewOpenAPITool(newToolProto, httpC, parameterDefs, method, fullURL, authenticator, callDef)
+		newTool := tool.NewOpenAPITool(newToolProto, httpC, parameterDefs, method, fullURL, authenticator, callDef, serviceConfig.GetCallPolicies(), callID)
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue

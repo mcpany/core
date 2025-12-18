@@ -52,7 +52,7 @@ func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName(originalName)   // "my.tool"
 	toolProto.SetServiceId(serviceID) // "myservice"
-	mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+	mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 
 	inputs := json.RawMessage(`{}`)
 	// The request comes in with the registered name

@@ -52,7 +52,7 @@ func TestGRPCTool_Execute_PoolError(t *testing.T) {
 	mockMethodDesc := new(MockMethodDescriptor)
 	mockMsgDesc := new(MockMessageDescriptor)
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
-	grpcTool := NewGRPCTool(toolProto, poolManager, "non-existent-service", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "non-existent-service", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil, "")
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no grpc pool found for service")
@@ -147,7 +147,7 @@ func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetInputTransformer(inputTransformer)
-	mcpTool := NewMCPTool(toolProto, nil, callDef)
+	mcpTool := NewMCPTool(toolProto, nil, callDef, nil, "")
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -165,7 +165,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	outputTransformer := &configv1.OutputTransformer{}
 	outputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetOutputTransformer(outputTransformer)
-	mcpTool := NewMCPTool(toolProto, mockClient, callDef)
+	mcpTool := NewMCPTool(toolProto, mockClient, callDef, nil, "")
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolName: "test.test-tool", ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -181,7 +181,7 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetInputTransformer(inputTransformer)
-	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "POST", server.URL, nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "POST", server.URL, nil, callDef, nil, "")
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -198,7 +198,7 @@ func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
 	outputTransformer := &configv1.OutputTransformer{}
 	outputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetOutputTransformer(outputTransformer)
-	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 }
@@ -279,7 +279,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 	mockMethodDesc.On("Output").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-service", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-service", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil, "")
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.NoError(t, err)
 	mockConn.AssertCalled(t, "Invoke", mock.Anything, "/test.service/Method", mock.AnythingOfType("*dynamicpb.Message"), mock.AnythingOfType("*dynamicpb.Message"), mock.Anything)
@@ -330,7 +330,7 @@ func TestMCPTool_Getters(t *testing.T) {
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.MCPCallDefinition{}
 	callDef.SetCache(cacheConfig)
-	mcpTool := NewMCPTool(toolProto, nil, callDef)
+	mcpTool := NewMCPTool(toolProto, nil, callDef, nil, "")
 
 	assert.Equal(t, toolProto, mcpTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, mcpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -343,7 +343,7 @@ func TestOpenAPITool_Getters(t *testing.T) {
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.OpenAPICallDefinition{}
 	callDef.SetCache(cacheConfig)
-	openapiTool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef, nil, "")
 
 	assert.Equal(t, toolProto, openapiTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, openapiTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -358,7 +358,7 @@ func TestGRPCTool_Getters(t *testing.T) {
 	callDef.SetCache(cacheConfig)
 	mockMethodDesc := new(MockMethodDescriptor)
 	mockMethodDesc.On("Input").Return(new(MockMessageDescriptor))
-	grpcTool := NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef)
+	grpcTool := NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef, nil, "")
 
 	assert.Equal(t, toolProto, grpcTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, grpcTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -407,7 +407,7 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 	mockMsgDesc := new(MockMessageDescriptor)
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil, "")
 
 	// Malformed JSON
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{invalid`)})
@@ -434,7 +434,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 	mockMethodDesc.On("Output").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil, "")
 
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.Error(t, err)
@@ -462,7 +462,7 @@ func TestOpenAPITool_Execute_Errors(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 
-	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	// It might NOT error if it returns raw bytes?
@@ -490,7 +490,7 @@ func TestOpenAPITool_Execute_StatusError(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 
-	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.Error(t, err)

@@ -236,6 +236,7 @@ func TestMCPTool_Execute(t *testing.T) {
 		&pb.Tool{Name: proto.String("remote-tool")},
 		mockClient,
 		&configv1.MCPCallDefinition{},
+		nil, "",
 	)
 
 	req := &ExecutionRequest{
@@ -255,7 +256,7 @@ func TestMCPTool_Execute_Errors(t *testing.T) {
 			return nil, fmt.Errorf("remote error")
 		},
 	}
-	mt := NewMCPTool(&pb.Tool{Name: proto.String("err")}, mockClient, &configv1.MCPCallDefinition{})
+	mt := NewMCPTool(&pb.Tool{Name: proto.String("err")}, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 	req := &ExecutionRequest{ToolName: "err", ToolInputs: json.RawMessage(`{}`)}
 	_, err := mt.Execute(context.Background(), req)
 	assert.Error(t, err)
@@ -287,6 +288,7 @@ func TestOpenAPITool_Execute_Success(t *testing.T) {
 		s.URL+"/items/{{id}}",
 		nil,
 		callDef,
+		nil, "",
 	)
 
 	req := &ExecutionRequest{
@@ -319,6 +321,7 @@ func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
 		s.URL+"/search",
 		nil,
 		&configv1.OpenAPICallDefinition{},
+		nil, "",
 	)
 
 	req := &ExecutionRequest{

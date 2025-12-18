@@ -28,6 +28,7 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 		&v1.Tool{},
 		service,
 		callDef,
+		nil, "",
 	)
 }
 
@@ -43,6 +44,7 @@ func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinit
 		&v1.Tool{},
 		service,
 		callDef,
+		nil, "",
 	)
 }
 
@@ -178,6 +180,6 @@ func TestCommandTool_Tool(t *testing.T) {
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}).Build()
-	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{})
+	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{}, nil, "")
 	assert.Equal(t, toolProto, cmdTool.Tool())
 }

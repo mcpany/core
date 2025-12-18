@@ -166,6 +166,8 @@ type GRPCTool struct {
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
+	policies       []*configv1.CallPolicy
+	callID         string
 }
 
 // NewGRPCTool creates a new GRPCTool.
@@ -174,7 +176,7 @@ type GRPCTool struct {
 // poolManager is used to get a gRPC client from the connection pool.
 // serviceID identifies the specific gRPC service connection pool.
 // method is the protobuf descriptor for the gRPC method to be called.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, policies []*configv1.CallPolicy, callID string) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
 		poolManager:    poolManager,
@@ -182,6 +184,8 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 		method:         method,
 		requestMessage: dynamicpb.NewMessage(method.Input()),
 		cache:          callDefinition.GetCache(),
+		policies:       policies,
+		callID:         callID,
 	}
 }
 
@@ -203,6 +207,13 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
@@ -614,6 +625,8 @@ type MCPTool struct {
 	outputTransformer *configv1.OutputTransformer
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
+	policies          []*configv1.CallPolicy
+	callID            string
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -621,7 +634,7 @@ type MCPTool struct {
 // tool is the protobuf definition of the tool.
 // client is the MCP client used to communicate with the downstream service.
 // callDefinition contains configuration for input/output transformations.
-func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
+func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition, policies []*configv1.CallPolicy, callID string) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
@@ -633,6 +646,8 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
+		policies:          policies,
+		callID:            callID,
 	}
 }
 
@@ -653,6 +668,12 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
@@ -765,6 +786,8 @@ type OpenAPITool struct {
 	outputTransformer *configv1.OutputTransformer
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
+	policies          []*configv1.CallPolicy
+	callID            string
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -776,7 +799,7 @@ type OpenAPITool struct {
 // url is the URL template for the endpoint.
 // authenticator handles adding authentication credentials to the request.
 // callDefinition contains configuration for input/output transformations.
-func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
+func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition, policies []*configv1.CallPolicy, callID string) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
@@ -792,6 +815,8 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
+		policies:          policies,
+		callID:            callID,
 	}
 }
 
@@ -812,6 +837,12 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
@@ -881,7 +912,6 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			return nil, fmt.Errorf("failed to authenticate OpenAPI request: %w", err)
 		}
 	}
-
 
 	if t.method == http.MethodGet {
 		q := httpReq.URL.Query()
@@ -955,6 +985,8 @@ type CommandTool struct {
 	service         *configv1.CommandLineUpstreamService
 	callDefinition  *configv1.CommandLineCallDefinition
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
+	policies        []*configv1.CallPolicy
+	callID          string
 }
 
 // NewCommandTool creates a new CommandTool.
@@ -965,11 +997,15 @@ func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
 	return &CommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       policies,
+		callID:         callID,
 	}
 }
 
@@ -980,6 +1016,8 @@ type LocalCommandTool struct {
 	tool           *v1.Tool
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
+	policies       []*configv1.CallPolicy
+	callID         string
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool.
@@ -990,11 +1028,15 @@ func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
 	return &LocalCommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       policies,
+		callID:         callID,
 	}
 }
 
@@ -1017,6 +1059,12 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
@@ -1179,6 +1227,12 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {

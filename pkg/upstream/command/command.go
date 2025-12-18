@@ -83,6 +83,7 @@ func (u *Upstream) Register(
 		toolManager,
 		resourceManager,
 		isReload,
+		serviceConfig,
 	)
 	if err != nil {
 		return "", nil, nil, err
@@ -110,6 +111,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 	toolManager tool.ManagerInterface,
 	resourceManager resource.ManagerInterface,
 	_ bool,
+	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(commandLineService.GetTools()))
@@ -194,9 +196,9 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		var newTool tool.Tool
 		if commandLineService.GetLocal() {
-			newTool = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef)
+			newTool = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef, serviceConfig.GetCallPolicies(), callID)
 		} else {
-			newTool = tool.NewCommandTool(newToolProto, commandLineService, callDef)
+			newTool = tool.NewCommandTool(newToolProto, commandLineService, callDef, serviceConfig.GetCallPolicies(), callID)
 		}
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)

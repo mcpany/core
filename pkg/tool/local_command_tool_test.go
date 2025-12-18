@@ -24,7 +24,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	service.Local = proto.Bool(true)
 	callDef := &configv1.CommandLineCallDefinition{}
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool",
@@ -65,7 +65,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 		Args: []string{"-c", "echo -n $MY_ENV"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool-env",
