@@ -243,7 +243,8 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Usage of real implementation is default, so no need to touch connectForTesting
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("fs-bundle-service"),
+		Name:             proto.String("fs-bundle-service"),
+		AutoDiscoverTool: proto.Bool(true),
 		McpService: configv1.McpUpstreamService_builder{
 			BundleConnection: configv1.McpBundleConnection_builder{
 				BundlePath: proto.String(bundlePath),
