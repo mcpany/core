@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package metrics provides utilities for collecting and exposing application metrics.
 package metrics
 
 import (
@@ -13,10 +14,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Label is an alias for metrics.Label
+// Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
 type Label = metrics.Label
 
-// NewPrometheusSink creates a new Prometheus sink.
+// NewPrometheusSink creates a new Prometheus sink for metrics collection.
+//
+// Returns:
+//   - A pointer to a prometheus.PrometheusSink.
+//   - An error if the sink creation fails.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -26,6 +31,9 @@ var initOnce sync.Once
 // Initialize prepares the metrics system with a Prometheus sink.
 // It sets up a global metrics collector that can be used throughout the application.
 // The metrics are exposed on the /metrics endpoint.
+//
+// Returns:
+//   - An error if the initialization fails.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -48,11 +56,20 @@ func Initialize() error {
 }
 
 // Handler returns an http.Handler for the /metrics endpoint.
+//
+// Returns:
+//   - An http.Handler that serves the Prometheus metrics.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
 
 // StartServer starts an HTTP server to expose the metrics.
+//
+// Parameters:
+//   - addr: The address to listen on (e.g., ":8080").
+//
+// Returns:
+//   - An error if the server fails to start.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -65,6 +82,11 @@ func StartServer(addr string) error {
 }
 
 // SetGauge sets the value of a gauge.
+//
+// Parameters:
+//   - name: The name of the gauge.
+//   - val: The value to set.
+//   - labels: A list of labels to apply to the gauge.
 func SetGauge(name string, val float32, labels ...string) {
 	metrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
 		{Name: "service_name", Value: labels[0]},
@@ -72,16 +94,29 @@ func SetGauge(name string, val float32, labels ...string) {
 }
 
 // IncrCounter increments a counter.
+//
+// Parameters:
+//   - name: The name of the counter (as a path).
+//   - val: The amount to increment.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
 
 // IncrCounterWithLabels increments a counter with labels.
+//
+// Parameters:
+//   - name: The name of the counter (as a path).
+//   - val: The amount to increment.
+//   - labels: The labels to apply.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
 
 // MeasureSince measures the time since a given start time and records it.
+//
+// Parameters:
+//   - name: The name of the metric (as a path).
+//   - start: The start time.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }

@@ -159,6 +159,60 @@ Once the server is running, you can interact with it using its JSON-RPC API.
 - For hands-on examples, see the **[Examples](docs/examples.md)** and the **[Profile Authentication Example](examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
 
+## 🛠️ Development Guide
+
+### Prerequisites
+
+- **Go**: Version 1.23+
+- **Docker**: For running tests and building images.
+- **Protoc**: For generating protobuf files (handled by `make prepare`).
+
+### Setup
+
+Run the following command to set up the development environment, including installing tools and dependencies:
+
+```bash
+make prepare
+```
+
+### Building
+
+To build the server binary locally:
+
+```bash
+make build
+```
+
+The binary will be located at `build/bin/server`.
+
+### Testing
+
+To run the test suite:
+
+```bash
+make test
+```
+
+This includes unit tests, integration tests, and end-to-end (E2E) tests.
+
+### Linting
+
+To run linters:
+
+```bash
+make lint
+```
+
+We use `golangci-lint` and `pre-commit` hooks.
+
+### Running Locally
+
+After building, you can run the server locally:
+
+```bash
+./build/bin/server run --config-path examples/popular_services/wttr.in/config.yaml
+```
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
