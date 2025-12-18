@@ -1199,13 +1199,23 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, env map[string]string, commandArgs ...string) {
 	t.Helper()
 
+	var secretEnv map[string]*configv1.SecretValue
+	if env != nil {
+		secretEnv = make(map[string]*configv1.SecretValue)
+		for k, v := range env {
+			secretEnv[k] = configv1.SecretValue_builder{
+				PlainText: &v,
+			}.Build()
+		}
+	}
+
 	stdioConnection := configv1.McpStdioConnection_builder{
 		Command:          &commandName,
 		Args:             commandArgs,
 		WorkingDirectory: &workingDir,
 		ContainerImage:   &containerImage,
 		SetupCommands:    setupCommands,
-		Env:              env,
+		Env:              secretEnv,
 	}.Build()
 
 	mcpService := configv1.McpUpstreamService_builder{
