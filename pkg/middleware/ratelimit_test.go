@@ -48,6 +48,14 @@ func (m *rateLimitMockToolManager) GetServiceInfo(serviceID string) (*tool.Servi
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
+func (m *rateLimitMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
+	args := m.Called(toolName)
+	if args.Get(0) == nil {
+		return nil, args.Bool(1)
+	}
+	return args.Get(0).(tool.Tool), args.Bool(1)
+}
+
 func TestRateLimitMiddleware(t *testing.T) {
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
@@ -71,6 +79,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 				RateLimit: rlConfig,
 			}.Build(),
 		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -112,6 +121,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 				RateLimit: rlConfig,
 			}.Build(),
 		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -173,6 +183,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}
 
 		// Mock sequence:
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo1, true).Once()
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo2, true).Twice()
 
@@ -224,6 +235,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 				RateLimit: rlConfig,
 			}.Build(),
 		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
 		req := &tool.ExecutionRequest{
@@ -253,6 +265,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		}.Build()
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(nil, false)
 
 		req := &tool.ExecutionRequest{
