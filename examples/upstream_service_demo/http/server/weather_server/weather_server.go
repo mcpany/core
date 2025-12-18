@@ -42,10 +42,15 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 		location = r.URL.Query().Get("location")
 	case "POST":
 		var reqBody map[string]string
+		// log.Printf("DEBUG: Headers: %v", r.Header)
+		// ^ Add this if debugging headers
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			log.Printf("DEBUG: JSON Decode error: %v", err)
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
+		log.Printf("DEBUG: Decoded body: %v", reqBody)
+	// log.Printf("DEBUG: Decoded body: %v", reqBody) --> Moved to above
 		location = reqBody["location"]
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -57,7 +62,9 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("DEBUG: Looking up location: '%s'", location)
 	weather, ok := weatherData[location]
+	log.Printf("DEBUG: Lookup result for '%s': %v", location, ok)
 	if !ok {
 		http.Error(w, "Location not found", http.StatusNotFound)
 		return
@@ -69,8 +76,12 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("DEBUG: Failed to encode response: %v", err)
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	} else {
+		log.Printf("DEBUG: Successfully responded 200 for '%s'", location)
 	}
 }
 
