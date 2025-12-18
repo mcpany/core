@@ -306,7 +306,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) (*exec.Cmd,
 	command := stdio.GetCommand()
 	args := stdio.GetArgs()
 
-	resolvedEnv, err := util.ResolveSecretMap(stdio.GetSecretEnv(), stdio.GetEnv())
+	resolvedEnv, err := util.ResolveSecretMap(stdio.GetEnv(), nil)
 	if err != nil {
 		return nil, err
 	}
