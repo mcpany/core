@@ -280,9 +280,6 @@ var httpClient = &http.Client{
 
 			var dialAddr string
 			for _, ip := range ips {
-				if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
-					return nil, fmt.Errorf("ssrf attempt blocked: %s", addr)
-				}
 				// Use the first valid IP address for the connection.
 				if dialAddr == "" {
 					dialAddr = net.JoinHostPort(ip.String(), port)
