@@ -43,22 +43,19 @@ import (
 //
 //	A single string representing the sanitized and joined identifier.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
-	var sanitizedIDs []string
+	sanitizedIDs := make([]string, 0, len(ids))
 	for _, id := range ids {
 		if id == "" {
 			return "", fmt.Errorf("id cannot be empty")
 		}
 
-		// Create the hash
-		h := sha256.New()
-		h.Write([]byte(id))
-		hash := hex.EncodeToString(h.Sum(nil))
-		if hashLength > 0 && hashLength < len(hash) {
-			hash = hash[:hashLength]
-		}
-
 		// Sanitize and create the prefix
-		sanitizedPrefix := nonWordChars.ReplaceAllString(id, "")
+		var sanitizedPrefix string
+		if nonWordChars.MatchString(id) {
+			sanitizedPrefix = nonWordChars.ReplaceAllString(id, "")
+		} else {
+			sanitizedPrefix = id
+		}
 
 		// Check if we need to append the hash
 		appendHash := alwaysAppendHash ||
@@ -70,6 +67,14 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 
 		if appendHash {
+			// Create the hash only when needed
+			h := sha256.New()
+			h.Write([]byte(id))
+			hash := hex.EncodeToString(h.Sum(nil))
+			if hashLength > 0 && hashLength < len(hash) {
+				hash = hash[:hashLength]
+			}
+
 			if sanitizedPrefix == "" {
 				sanitizedPrefix = "id"
 			}
