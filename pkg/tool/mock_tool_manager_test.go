@@ -42,6 +42,10 @@ func TestMockManagerInterface(t *testing.T) {
 	mock.EXPECT().ExecuteTool(gomock.Any(), gomock.Any()).Return("result", nil).Times(1)
 	_, _ = mock.ExecuteTool(context.Background(), nil)
 
+	// ExecuteToolLocally
+	mock.EXPECT().ExecuteToolLocally(gomock.Any(), gomock.Any()).Return("result", nil).Times(1)
+	_, _ = mock.ExecuteToolLocally(context.Background(), nil)
+
 	// GetServiceInfo
 	mock.EXPECT().GetServiceInfo("id").Return(nil, false).Times(1)
 	mock.GetServiceInfo("id")

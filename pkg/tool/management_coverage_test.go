@@ -88,7 +88,7 @@ func TestManager_AddTool_WithServer(t *testing.T) {
 // Additional tests for context/execution flow?
 func TestManager_ExecuteTool_NotFound(t *testing.T) {
 	tm := NewManager(nil)
-	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
+	_, err := tm.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "missing"})
 	assert.Error(t, err)
 }
 
@@ -114,7 +114,7 @@ func TestManager_ExecuteTool_Chain(t *testing.T) {
 	}
 	tm.AddMiddleware(mw)
 
-	res, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s.t"})
+	res, err := tm.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s.t"})
 	assert.NoError(t, err)
 	assert.Equal(t, "final-result", res)
 }

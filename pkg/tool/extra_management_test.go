@@ -63,7 +63,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	m := NewManager(b)
 
 	// Case 1: Tool Not Found
-	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
+	_, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "missing"})
 	assert.Error(t, err)
 	assert.Equal(t, ErrToolNotFound, err)
 
@@ -72,14 +72,14 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	_ = m.AddTool(mt)
 
 	// Case 2: Success
-	res, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	res, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	assert.NoError(t, err)
 	assert.Equal(t, "success", res)
 
 	// Case 3: Middleware execution
 	mw := &mockMiddleware{id: "m1"}
 	m.AddMiddleware(mw)
-	_, err = m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	_, err = m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	assert.NoError(t, err)
 	assert.True(t, mw.called)
 }
@@ -117,7 +117,7 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 
 	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
-	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	_, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "denied by policy rule")
 	}

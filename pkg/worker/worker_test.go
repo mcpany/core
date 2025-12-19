@@ -83,6 +83,13 @@ func (m *mockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return "mock-result", nil
 }
 
+func (m *mockToolManager) ExecuteToolLocally(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	if m.executeFunc != nil {
+		return m.executeFunc(ctx, req)
+	}
+	return "mock-result", nil
+}
+
 func (m *mockToolManager) AddTool(_ tool.Tool) error {
 	return nil
 }

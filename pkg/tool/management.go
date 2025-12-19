@@ -34,6 +34,7 @@ type ManagerInterface interface {
 	ListTools() []Tool
 	ClearToolsForService(serviceID string)
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error)
 	SetMCPServer(mcpServer MCPServerProvider)
 	AddMiddleware(middleware ExecutionMiddleware)
 	AddServiceInfo(serviceID string, info *ServiceInfo)
@@ -198,16 +199,16 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mcpServer = mcpServer
 }
 
-// ExecuteTool finds a tool by its name and executes it with the provided
+// ExecuteToolLocally finds a tool by its name and executes it with the provided
 // request context and inputs.
 //
 // ctx is the context for the tool execution.
 // req contains the name of the tool and its inputs.
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
-func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+func (tm *Manager) ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
-	log.Debug("Executing tool")
+	log.Debug("Executing tool locally")
 
 	// 1. Resolve Tool and Service Info
 	t, ok := tm.GetTool(req.ToolName)
@@ -291,6 +292,62 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		log.Debug("Tool execution chain successful")
 	}
 	return result, err
+}
+
+// ExecuteTool executes the tool asynchronously via the event bus.
+func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	logging.GetLogger().Info("Queueing tool execution", "toolName", req.ToolName)
+
+	correlationID := uuid.New().String()
+	resultChan := make(chan *bus.ToolExecutionResult, 1)
+
+	resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+	unsubscribe := resultBus.SubscribeOnce(
+		ctx,
+		correlationID,
+		func(result *bus.ToolExecutionResult) {
+			resultChan <- result
+		},
+	)
+	defer unsubscribe()
+
+	requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+	execReq := &bus.ToolExecutionRequest{
+		Context:    ctx,
+		ToolName:   req.ToolName,
+		ToolInputs: req.ToolInputs,
+	}
+	execReq.SetCorrelationID(correlationID)
+	if err := requestBus.Publish(ctx, "request", execReq); err != nil {
+		return nil, fmt.Errorf("failed to publish request: %w", err)
+	}
+
+	select {
+	case result := <-resultChan:
+		if result.Error != nil {
+			return nil, fmt.Errorf(
+				"error executing tool %s: %w",
+				req.ToolName,
+				result.Error,
+			)
+		}
+
+		var res any
+		if len(result.Result) > 0 {
+			if err := json.Unmarshal(result.Result, &res); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal tool result: %w", err)
+			}
+		}
+		return res, nil
+
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
+	case <-time.After(60 * time.Second): // Safety timeout
+		return nil, fmt.Errorf(
+			"timed out waiting for tool execution result for tool %s",
+			req.ToolName,
+		)
+	}
 }
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.

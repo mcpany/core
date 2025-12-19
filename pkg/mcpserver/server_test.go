@@ -524,6 +524,11 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, nil
 }
 
+func (m *mockToolManager) ExecuteToolLocally(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	m.executeToolCalled = true
+	return nil, nil
+}
+
 func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 

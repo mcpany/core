@@ -134,7 +134,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 
 	_ = tm.AddTool(mockTool)
 
-	result, err := tm.ExecuteTool(context.Background(), execReq)
+	result, err := tm.ExecuteToolLocally(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResult, result)
 }
@@ -142,7 +142,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 	tm := NewManager(nil)
 	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
-	_, err := tm.ExecuteTool(context.Background(), execReq)
+	_, err := tm.ExecuteToolLocally(context.Background(), execReq)
 	assert.Error(t, err, "Should return an error for a non-existent tool")
 	assert.Equal(t, ErrToolNotFound, err, "Error should be ErrToolNotFound")
 }
@@ -303,7 +303,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	}
 	tm.AddMiddleware(middleware1)
 
-	result, err := tm.ExecuteTool(context.Background(), execReq)
+	result, err := tm.ExecuteToolLocally(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, "middleware success", result)
 
@@ -318,7 +318,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	}
 	tm.AddMiddleware(middleware2)
 
-	result, err = tm.ExecuteTool(context.Background(), execReq)
+	result, err = tm.ExecuteToolLocally(context.Background(), execReq)
 	assert.NoError(t, err)
 	assert.Equal(t, "tool success", result)
 }
@@ -482,7 +482,7 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 
 	_ = tm.AddTool(mockTool)
 
-	_, err := tm.ExecuteTool(context.Background(), execReq)
+	_, err := tm.ExecuteToolLocally(context.Background(), execReq)
 	assert.Error(t, err)
 	assert.Equal(t, expectedError, err)
 }
