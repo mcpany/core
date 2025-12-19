@@ -18,6 +18,7 @@ WORKDIR /app
 
 # Copy go.mod and go.sum files to download dependencies first
 COPY go.mod go.sum ./
+COPY api api/
 RUN go mod download && go mod verify
 
 # Install GCC for CGO and curl for healthchecks
