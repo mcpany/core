@@ -35,12 +35,27 @@ func ForTestsOnlyResetLogger() {
 //   - level: The minimum log level to be recorded (e.g., `slog.LevelInfo`).
 //   - output: The `io.Writer` to which log entries will be written (e.g.,
 //     `os.Stdout`).
-func Init(level slog.Level, output io.Writer) {
+//   - format: Optional format string ("json" or "text"). Defaults to "text".
+func Init(level slog.Level, output io.Writer, format ...string) {
 	once.Do(func() {
-		defaultLogger = slog.New(slog.NewTextHandler(output, &slog.HandlerOptions{
+		fmtStr := "text"
+		if len(format) > 0 {
+			fmtStr = format[0]
+		}
+
+		opts := &slog.HandlerOptions{
 			Level:     level,
 			AddSource: true,
-		}))
+		}
+
+		var handler slog.Handler
+		if fmtStr == "json" {
+			handler = slog.NewJSONHandler(output, opts)
+		} else {
+			handler = slog.NewTextHandler(output, opts)
+		}
+
+		defaultLogger = slog.New(handler)
 	})
 }
 
