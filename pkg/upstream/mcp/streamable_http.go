@@ -39,12 +39,19 @@ var (
 // mcp.ClientSession. This is used primarily for testing, allowing mock sessions
 // to be injected.
 type ClientSession interface {
+	// ListTools lists the tools available in the session.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
+	// ListPrompts lists the prompts available in the session.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
+	// ListResources lists the resources available in the session.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
+	// GetPrompt retrieves a prompt from the session.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
+	// ReadResource reads a resource from the session.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
+	// CallTool calls a tool in the session.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
+	// Close closes the session.
 	Close() error
 }
 

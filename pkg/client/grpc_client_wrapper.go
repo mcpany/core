@@ -17,7 +17,9 @@ import (
 // It is used to allow for mocking of the gRPC client in tests.
 type Conn interface {
 	grpc.ClientConnInterface
+	// Close closes the connection to the server.
 	Close() error
+	// GetState returns the connectivity.State of the ClientConn.
 	GetState() connectivity.State
 }
 

@@ -83,7 +83,9 @@ type ExecutionRequest struct {
 // and service information. It is used for dependency injection to decouple
 // components from the main service registry.
 type ServiceRegistry interface {
+	// GetTool retrieves a tool by name.
 	GetTool(toolName string) (Tool, bool)
+	// GetServiceInfo retrieves metadata for a service.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -107,6 +109,7 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 
 // Callable is an interface that represents a callable tool.
 type Callable interface {
+	// Call executes the callable with the given request.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
