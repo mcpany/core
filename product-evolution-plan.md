@@ -15,14 +15,13 @@ The following features are fully implemented and tested:
 - **Deployment**: Helm Chart, Docker.
 - **Observability**: Distributed Tracing (OpenTelemetry), Metrics, Structured Logging, Audit Logging.
 - **Security**: Secrets Management, IP Allowlisting, Webhooks, Fine-grained Policies.
-- **Message Bus**: NATS support.
+- **Message Bus**: NATS and Kafka support.
 - **Advanced Authentication**: Priority-based (Profile > User > Global).
 
 #### High Priority (Next 1-3 Months)
 
 - **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - **RBAC**: Role-Based Access Control for managing user permissions.
-- **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 #### Long-Term Goals
 
@@ -42,12 +41,11 @@ We have identified the following features as critical for the next phase of prod
 | 2 | **SQL Database Provider** | **Utility**: Allow users to directly expose SQL queries (Postgres, MySQL) as MCP tools without writing intermediate API code. | High |
 | 3 | **Admin Management API** | **Automation**: Expand the Admin API to support full CRUD operations on services/config at runtime, enabling the Dynamic UI. | Medium |
 | 4 | **Dynamic Web UI** | **UX**: A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML. | High |
-| 5 | **Kafka Transport** | **Scalability**: Support event-driven architectures where tools can be triggered by Kafka messages. | Medium |
-| 6 | **WASM Plugins** | **Extensibility**: Allow users to deploy safe, sandboxed custom logic for transformations or validations. | High |
-| 7 | **File System Provider** | **Utility**: safe, controlled access to the local file system (read/write/list) as an MCP tool source. | Medium |
-| 8 | **Cost & Quota Management** | **Governance**: Track token usage or call counts per user/profile and enforce strict quotas (beyond rate limiting). | Medium |
-| 9 | **Client SDKs (Python/TS)** | **DX**: Provide idiomatic wrappers for connecting to MCP Any, handling authentication, and parsing responses. | Medium |
-| 10 | **Structured Output Transformation** | **DX**: Native support for JQ or JSONPath to transform complex upstream API responses before sending them to the LLM. | Low |
+| 5 | **WASM Plugins** | **Extensibility**: Allow users to deploy safe, sandboxed custom logic for transformations or validations. | High |
+| 6 | **File System Provider** | **Utility**: safe, controlled access to the local file system (read/write/list) as an MCP tool source. | Medium |
+| 7 | **Cost & Quota Management** | **Governance**: Track token usage or call counts per user/profile and enforce strict quotas (beyond rate limiting). | Medium |
+| 8 | **Client SDKs (Python/TS)** | **DX**: Provide idiomatic wrappers for connecting to MCP Any, handling authentication, and parsing responses. | Medium |
+| 9 | **Structured Output Transformation** | **DX**: Native support for JQ or JSONPath to transform complex upstream API responses before sending them to the LLM. | Low |
 
 ---
 
