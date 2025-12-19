@@ -932,7 +932,7 @@ func (a *Application) runServerMode(
 
 					// Register Admin Service
 					if cachingMiddleware != nil {
-						adminServer := admin.NewServer(cachingMiddleware)
+						adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
 						pb_admin.RegisterAdminServiceServer(s, adminServer)
 					}
 
