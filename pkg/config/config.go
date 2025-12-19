@@ -35,6 +35,7 @@ func BindRootFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String("metrics-listen-address", "", "Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	cmd.PersistentFlags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
+	cmd.PersistentFlags().String("log-format", "text", "Set the log format (text, json). Env: MCPANY_LOG_FORMAT")
 	cmd.PersistentFlags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 
 	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
@@ -55,6 +56,10 @@ func BindRootFlags(cmd *cobra.Command) {
 	}
 	if err := viper.BindPFlag("log-level", cmd.PersistentFlags().Lookup("log-level")); err != nil {
 		fmt.Printf("Error binding log-level flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("log-format", cmd.PersistentFlags().Lookup("log-format")); err != nil {
+		fmt.Printf("Error binding log-format flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("logfile", cmd.PersistentFlags().Lookup("logfile")); err != nil {
