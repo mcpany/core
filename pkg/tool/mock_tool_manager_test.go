@@ -30,10 +30,6 @@ func TestMockManagerInterface(t *testing.T) {
 	mock.EXPECT().AddTool(gomock.Any()).Return(nil).Times(1)
 	_ = mock.AddTool(nil)
 
-	// Clear
-	mock.EXPECT().Clear().Times(1)
-	mock.Clear()
-
 	// ClearToolsForService
 	mock.EXPECT().ClearToolsForService("id").Times(1)
 	mock.ClearToolsForService("id")
@@ -49,6 +45,10 @@ func TestMockManagerInterface(t *testing.T) {
 	// GetTool
 	mock.EXPECT().GetTool("name").Return(nil, false).Times(1)
 	mock.GetTool("name")
+
+	// ListServices
+	mock.EXPECT().ListServices().Return(nil).Times(1)
+	mock.ListServices()
 
 	// ListTools
 	mock.EXPECT().ListTools().Return(nil).Times(1)

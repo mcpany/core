@@ -696,6 +696,10 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return m.addedTools
 }
 
+func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *mockToolManager) ClearToolsForService(serviceID string) {
 	if m.failOnClear {
 		// To test error handling if clearing was to fail, although the

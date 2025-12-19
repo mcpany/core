@@ -59,6 +59,10 @@ func (m *callPolicyMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
+func (m *callPolicyMockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func TestCallPolicyMiddleware(t *testing.T) {
 	const successResult = "success"
 
