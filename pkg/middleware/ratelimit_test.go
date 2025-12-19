@@ -8,10 +8,15 @@ import (
 	"encoding/json"
 	"testing"
 
+	"time"
+
+	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
+	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
@@ -284,5 +289,78 @@ func TestRateLimitMiddleware(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
+	})
+
+	t.Run("redis rate limit allowed", func(t *testing.T) {
+		db, mockRedis := redismock.NewClientMock()
+		middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+			return db
+		})
+		defer middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+			return redis.NewClient(opts)
+		})
+
+		fixedTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+		middleware.SetTimeNowForTests(func() time.Time {
+			return fixedTime
+		})
+		defer middleware.SetTimeNowForTests(time.Now)
+
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           &storageRedis,
+			Redis: busproto.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfo := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
+		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		// Mock Redis calls
+		// The script returns 1 (allowed)
+		mockRedis.ExpectEval(
+			middleware.RedisRateLimitScript,
+			[]string{"ratelimit:service"},
+			10.0,
+			10,
+			fixedTime.UnixMicro(),
+			1,
+		).SetVal(int64(1))
+
+		nextCalled := false
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return successResult, nil
+		}
+
+		result, err := rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, successResult, result)
+		assert.True(t, nextCalled)
+		assert.NoError(t, mockRedis.ExpectationsWereMet())
 	})
 }
