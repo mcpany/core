@@ -364,6 +364,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
+	// Check for path traversal in unescaped parameters used in the path
+	for k, v := range req.Arguments {
+		if noEscapeParams[k] && strings.Contains(pathStr, "{{"+k+"}}") {
+			val := fmt.Sprintf("%v", v)
+			if val == ".." || strings.HasPrefix(val, "../") || strings.HasSuffix(val, "/..") || strings.Contains(val, "/../") {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q", k)
+			}
+		}
+	}
+
 	// Replace placeholders in the URL path
 	pathStr = util.ReplaceURLPath(pathStr, req.Arguments, noEscapeParams)
 
@@ -406,7 +416,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := "{{" + schema.GetName() + "}}"
 			if val, ok := inputs[schema.GetName()]; ok {
-				urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(fmt.Sprintf("%v", val)))
+				valStr := fmt.Sprintf("%v", val)
+				if param.GetDisableEscape() {
+					// Check if we are in the path (before query string)
+					idx := strings.Index(urlString, "?")
+					placeholderIdx := strings.Index(urlString, placeholder)
+					if placeholderIdx != -1 && (idx == -1 || placeholderIdx < idx) {
+						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
+							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
+						}
+					}
+					urlString = strings.ReplaceAll(urlString, placeholder, valStr)
+				} else {
+					urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(valStr))
+				}
 				delete(inputs, schema.GetName())
 			} else {
 				urlString = strings.ReplaceAll(urlString, "/"+placeholder, "")
