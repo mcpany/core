@@ -151,36 +151,6 @@ func NewServer(
 					return result, nil
 				}
 
-				// Handle map[string]any result (e.g. from HTTP tools)
-				if resultMap, ok := res.(map[string]any); ok {
-					// Convert map to CallToolResult via JSON
-					jsonData, err := json.Marshal(resultMap)
-					if err != nil {
-						return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
-					}
-
-					// Heuristic: If map doesn't look like CallToolResult (no "content" or "isError"),
-					// treat it as raw data and wrap in TextContent.
-					_, hasContent := resultMap["content"]
-					_, hasIsError := resultMap["isError"]
-
-					if !hasContent && !hasIsError {
-						return &mcp.CallToolResult{
-							Content: []mcp.Content{
-								&mcp.TextContent{
-									Text: string(jsonData),
-								},
-							},
-						}, nil
-					}
-
-					var callToolRes mcp.CallToolResult
-					if err := json.Unmarshal(jsonData, &callToolRes); err != nil {
-						return nil, fmt.Errorf("failed to unmarshal tool result to CallToolResult: %w", err)
-					}
-					return &callToolRes, nil
-				}
-
 				// Fallback for other types (string, []byte, etc.)
 				return &mcp.CallToolResult{
 					Content: []mcp.Content{
@@ -488,6 +458,30 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	if ctr, ok := result.(*mcp.CallToolResult); ok {
 		return ctr, nil
+	}
+
+	// Handle map[string]any result (e.g. from HTTP tools)
+	if resultMap, ok := result.(map[string]any); ok {
+		// Convert map to CallToolResult via JSON
+		jsonData, err := json.Marshal(resultMap)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
+		}
+
+		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
+		// try to parse it as such.
+		_, hasContent := resultMap["content"]
+		_, hasIsError := resultMap["isError"]
+
+		if hasContent || hasIsError {
+			var callToolRes mcp.CallToolResult
+			if err := json.Unmarshal(jsonData, &callToolRes); err == nil {
+				return &callToolRes, nil
+			}
+			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
+			// and treat it as raw data.
+			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
+		}
 	}
 
 	// Default to JSON encoding for the result
