@@ -231,6 +231,8 @@ message HttpParameterMapping {
   ParameterSchema schema = 1;
   // A secret value to use for the parameter.
   SecretValue secret = 2;
+  // Whether to disable automatic URL escaping for this parameter.
+  bool disable_escape = 3 [json_name = "disable_escape"];
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.

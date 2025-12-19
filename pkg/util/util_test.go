@@ -131,7 +131,7 @@ func TestReplaceURLPath_Security(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := ReplaceURLPath(tt.urlPath, tt.params)
+			result := ReplaceURLPath(tt.urlPath, tt.params, nil)
 			assert.Equal(t, tt.expected, result)
 		})
 	}
@@ -348,10 +348,11 @@ func TestParseToolName(t *testing.T) {
 
 func TestReplaceURLPath(t *testing.T) {
 	tests := []struct {
-		name     string
-		urlPath  string
-		params   map[string]interface{}
-		expected string
+		name           string
+		urlPath        string
+		params         map[string]interface{}
+		noEscapeParams map[string]bool
+		expected       string
 	}{
 		{
 			name:     "replace single param",
@@ -387,7 +388,7 @@ func TestReplaceURLPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := ReplaceURLPath(tt.urlPath, tt.params)
+			result := ReplaceURLPath(tt.urlPath, tt.params, nil)
 			assert.Equal(t, tt.expected, result)
 		})
 	}
