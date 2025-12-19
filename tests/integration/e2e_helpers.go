@@ -148,7 +148,7 @@ var (
 func getDockerCommand() (string, []string) {
 	dockerOnce.Do(func() {
 		// Environment variable overrides detection.
-		if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
+		if val := os.Getenv("USE_SUDO_FOR_DOCKER"); val == "true" || val == "1" {
 			dockerCommand = sudoCmd
 			dockerArgs = []string{dockerCmd}
 			return
