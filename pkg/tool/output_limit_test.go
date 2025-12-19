@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool
 
 import (
@@ -40,7 +43,7 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
-		ToolName: "test-tool-large",
+		ToolName:  "test-tool-large",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
@@ -87,7 +90,7 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
-		ToolName: "test-tool-large-truncated",
+		ToolName:  "test-tool-large-truncated",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
