@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -97,12 +98,17 @@ func NewWebrtcTool(
 }
 
 func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrapper, error) {
-	config := webrtc.Configuration{
-		ICEServers: []webrtc.ICEServer{
-			{
-				URLs: []string{"stun:stun.l.google.com:19302"},
-			},
+	iceServers := []webrtc.ICEServer{
+		{
+			URLs: []string{"stun:stun.l.google.com:19302"},
 		},
+	}
+	if os.Getenv("MCPANY_WEBRTC_DISABLE_STUN") == "true" {
+		iceServers = []webrtc.ICEServer{}
+	}
+
+	config := webrtc.Configuration{
+		ICEServers: iceServers,
 	}
 	pc, err := webrtc.NewPeerConnection(config)
 	if err != nil {
