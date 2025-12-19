@@ -18,13 +18,14 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestBugRepro_QueryParamWithEncodedDelimiter(t *testing.T) {
+func TestBugRepro_QueryParamInjection(t *testing.T) {
 	// Create a test server that checks the query parameter
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We expect q to be "hello&world" (decoded)
 		// which means the raw query should have been "q=hello%26world"
 
 		// If the bug exists, r.URL.Query() will have "q"=["hello"] and "world"=[""]
+		// because "hello&world" was injected as "hello&world" instead of "hello%26world"
 
 		q := r.URL.Query()
 		if val := q.Get("q"); val != "hello&world" {
@@ -43,8 +44,7 @@ func TestBugRepro_QueryParamWithEncodedDelimiter(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := httppkg.NewUpstream(pm)
 
-	// Configure a tool with a query parameter containing encoded & (%26)
-	// We use "hello%26world" in the endpoint path.
+	// Configure a tool with a query parameter placeholder
 	configJSON := `{
 		"name": "repro-service",
 		"http_service": {
@@ -54,7 +54,16 @@ func TestBugRepro_QueryParamWithEncodedDelimiter(t *testing.T) {
 				"test-op-call": {
 					"id": "test-op-call",
 					"method": "HTTP_METHOD_GET",
-					"endpoint_path": "/test?q=hello%26world"
+					"endpoint_path": "/test?q={{val}}",
+					"parameters": [
+						{
+							"schema": {
+								"name": "val",
+								"type": "STRING",
+								"is_required": true
+							}
+						}
+					]
 				}
 			}
 		}
@@ -70,10 +79,10 @@ func TestBugRepro_QueryParamWithEncodedDelimiter(t *testing.T) {
 	registeredTool, ok := tm.GetTool(toolID)
 	require.True(t, ok)
 
-	// Execute the tool
+	// Execute the tool with input containing '&'
 	_, err = registeredTool.Execute(context.Background(), &tool.ExecutionRequest{
 		ToolName:   toolID,
-		ToolInputs: []byte("{}"),
+		ToolInputs: []byte(`{"val": "hello&world"}`),
 	})
 	require.NoError(t, err)
 }
