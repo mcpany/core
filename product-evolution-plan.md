@@ -15,14 +15,13 @@ The following features are fully implemented and tested:
 - **Deployment**: Helm Chart, Docker.
 - **Observability**: Distributed Tracing (OpenTelemetry), Metrics, Structured Logging, Audit Logging.
 - **Security**: Secrets Management, IP Allowlisting, Webhooks, Fine-grained Policies.
-- **Message Bus**: NATS support.
+- **Message Bus**: NATS, Kafka support.
 - **Advanced Authentication**: Priority-based (Profile > User > Global).
 
 #### High Priority (Next 1-3 Months)
 
 - **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - **RBAC**: Role-Based Access Control for managing user permissions.
-- **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 #### Long-Term Goals
 
