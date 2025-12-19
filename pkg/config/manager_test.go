@@ -574,33 +574,3 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 		assert.Len(t, services, 0)
 	})
 }
-
-func TestUpstreamServiceManager_ProfileMatching_ByID(t *testing.T) {
-	config := &configv1.McpAnyServerConfig{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("id-only-service"),
-				Profiles: []*configv1.Profile{
-					{
-						Id:   "prod-id",
-						Name: "Production",
-					},
-				},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://prod")},
-				},
-			},
-		},
-	}
-
-	// Case: Run with 'prod-id' profile.
-	// Expected: The service should be loaded because its profile ID matches "prod-id".
-	mgr := NewUpstreamServiceManager([]string{"prod-id"})
-	services, err := mgr.LoadAndMergeServices(context.Background(), config)
-	require.NoError(t, err)
-
-	assert.Len(t, services, 1, "Service should be loaded when matched by profile ID")
-	if len(services) > 0 {
-		assert.Equal(t, "id-only-service", services[0].GetName())
-	}
-}

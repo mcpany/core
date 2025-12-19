@@ -10,7 +10,6 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 type mockToolManager struct {
@@ -35,8 +34,6 @@ func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 }
 
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 type mockPromptManager struct {
 	prompt.ManagerInterface

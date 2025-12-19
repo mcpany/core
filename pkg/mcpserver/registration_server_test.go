@@ -139,8 +139,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		}.Build()
 
 		config := configv1.UpstreamServiceConfig_builder{
-			Name:        &serviceName,
-			GrpcService: grpcService,
+			Name:             &serviceName,
+			AutoDiscoverTool: proto.Bool(true),
+			GrpcService:      grpcService,
 		}.Build()
 
 		req := &v1.RegisterServiceRequest{}

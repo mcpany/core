@@ -23,10 +23,8 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var (
@@ -532,60 +530,14 @@ func (u *Upstream) registerTools(
 
 		// Apply overrides from config
 		if hasConfig {
-			strategy := configTool.GetMergeStrategy()
-			if strategy == configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE {
-				// Override means we prefer the config definition, but we still keep the discovered
-				// name and service ID to maintain connectivity.
-				// We still fall back to discovered schema/description if not provided in config
-				// to avoid breaking the tool unless the user explicitly wants to partial-override.
-				// (Actually, a true override might want to replace schema too, which we do if provided).
-				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
-				}
-				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
-				}
-				// If InputSchema is provided in config, use it.
-				if configTool.GetInputSchema() != nil {
-					// Override input schema
-					pbTool.InputSchema = configTool.GetInputSchema()
-				}
-			} else {
-				// Merge Strategy (Default)
-				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
-				}
-				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
-				}
-				if configTool.GetInputSchema() != nil {
-					if pbTool.InputSchema == nil {
-						pbTool.InputSchema = configTool.GetInputSchema()
-					} else {
-						mergeStructs(pbTool.InputSchema, configTool.GetInputSchema())
-					}
-				}
+			if configTool.GetDescription() != "" {
+				pbTool.SetDescription(configTool.GetDescription())
 			}
-
-			// Always apply tags from config
-			if len(configTool.GetTags()) > 0 {
-				pbTool.Tags = configTool.GetTags()
-			}
-
-			// Apply other annotations/hints
-			if pbTool.Annotations == nil {
-				pbTool.Annotations = &v1.ToolAnnotations{}
-			}
-			if configTool.GetReadOnlyHint() { // Only override if true? Or if set? Proto bool is false by default.
-				pbTool.Annotations.ReadOnlyHint = proto.Bool(configTool.GetReadOnlyHint())
-			}
-			// Note: We might want headers/properties check for destructive/idempotent/open_world too
-
 			// We can add more overrides here if needed (e.g. InputSchema)
 		}
 
-		mcpTool := tool.NewMCPTool(pbTool, toolClient, callDef)
-		if err := toolManager.AddTool(mcpTool); err != nil {
+		newTool := tool.NewMCPTool(pbTool, toolClient, callDef)
+		if err := toolManager.AddTool(newTool); err != nil {
 			logging.GetLogger().Error("Failed to add tool", "error", err)
 			continue
 		}
@@ -877,23 +829,4 @@ func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 		t.Client = http.DefaultClient
 	}
 	return t.Client.Do(req)
-}
-
-// mergeStructs recursively merges src into dst.
-// Keys in src override keys in dst.
-// If both values are Structs, they are merged recursively.
-func mergeStructs(dst, src *structpb.Struct) {
-	for k, v := range src.GetFields() {
-		if dstVal, ok := dst.Fields[k]; ok {
-			// If both are Structs, recurse
-			if dstStruct := dstVal.GetStructValue(); dstStruct != nil {
-				if srcStruct := v.GetStructValue(); srcStruct != nil {
-					mergeStructs(dstStruct, srcStruct)
-					continue
-				}
-			}
-		}
-		// Otherwise replace
-		dst.Fields[k] = v
-	}
 }

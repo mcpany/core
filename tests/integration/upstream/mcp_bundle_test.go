@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -231,6 +232,10 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
+	// Check if docker is accessible directly (without sudo), as the application code calls docker directly.
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		t.Skip("Docker socket not accessible directly (without sudo), skipping bundle filesystem test")
+	}
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 

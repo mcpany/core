@@ -22,11 +22,9 @@ import (
 //
 // Parameters:
 //   - store: The configuration store from which to load the configuration.
-//   - binaryType: The type of binary running the code (e.g., "server", "worker").
 //
-// Returns:
-//   - A validated `McpAnyServerConfig` object.
-//   - An error if loading or validation fails.
+// Returns a validated `McpAnyServerConfig` or an error if loading or validation
+// fails.
 func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

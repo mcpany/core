@@ -37,8 +37,10 @@ Based on the strategic feature extraction analysis, the following features are r
 | Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Distributed Rate Limiting (Redis)** | **Scalability**: Current rate limiting is in-memory (per instance). Distributed limiting is essential for running multiple replicas in production. | Medium |
-| 2 | **Kafka Transport Support** | **Scalability**: Completes the message bus vision. Kafka is industry-standard for high-throughput event streaming. | Medium |
-| 3 | **Admin/Management API** | **UX/Automation**: Allow programmatic configuration updates (add/remove services) without restarting or editing files directly. Precursor to the Dynamic UI. | High |
+| 2 | **Runtime Argument Validation** | **Security**: Completes the "Security Policies" feature by enforcing regex checks on tool arguments at runtime, preventing injection attacks or misuse. | Medium |
+| 3 | **Kafka Transport Support** | **Scalability**: Completes the message bus vision. Kafka is industry-standard for high-throughput event streaming. | Medium |
+| 4 | **Audit Logging** | **Security/Compliance**: Record *who* accessed *what* tool and *when*. Critical for enterprise adoption. | Medium |
+| 5 | **Admin/Management API** | **UX/Automation**: Allow programmatic configuration updates (add/remove services) without restarting or editing files directly. Precursor to the Dynamic UI. | High |
 | 6 | **Structured Logging (JSON)** | **Observability**: Switch from text logs to JSON for better ingestion by log aggregators (Splunk, ELK). | Low |
 | 7 | **RBAC (Role-Based Access Control)** | **Security**: Restrict which users can access which profiles or tools. Essential for multi-tenant environments. | High |
 | 8 | **Dynamic UI** | **UX**: A web interface to visualize and manage the server. | High |
@@ -51,6 +53,7 @@ This section highlights areas of the codebase that require attention to ensure l
 
 ### Critical Areas
 
+*   **Security Policy Implementation**: The `shouldBlock` function in `pkg/upstream/http/http.go` explicitly comments that argument regex matching is not performed. This leaves a functional gap in the security policy feature where users might expect protection that doesn't exist.
 *   **Tool Discovery Complexity**: The `createAndRegisterHTTPTools` function in `pkg/upstream/http/http.go` has high cyclomatic complexity (`//nolint:gocyclo`). This makes it difficult to test and maintain. It should be refactored into smaller, testable components.
 *   **Testing Gaps**: While there are test files, "fine-grained request validation" and other edge cases in policy enforcement need rigorous integration tests to ensure security guarantees are met.
 *   **Admin API**: The current `pkg/admin` implementation is very minimal (only cache clearing). It needs significant expansion to support full management capabilities.

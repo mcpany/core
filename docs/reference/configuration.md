@@ -91,31 +91,6 @@ Contains server-wide operational parameters.
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
 | `api_key`            | `string`     | The API key for securing the MCP server.                                      |
-| `audit`              | `AuditConfig`| Audit logging configuration.                                                  |
-
-### `AuditConfig`
-
-Configuration for audit logging of tool executions.
-
-| Field           | Type     | Description                                                          |
-| --------------- | -------- | -------------------------------------------------------------------- |
-| `enabled`       | `bool`   | Whether audit logging is enabled.                                    |
-| `output_path`   | `string` | The file path to write audit logs to.                                |
-| `log_arguments` | `bool`   | Whether to log input arguments (caution: might contain secrets).     |
-| `log_results`   | `bool`   | Whether to log output results (caution: might contain sensitive data).|
-
-#### Use Case and Example
-
-Enable audit logging to a file.
-
-```yaml
-global_settings:
-  audit:
-    enabled: true
-    output_path: "/var/log/mcpany/audit.log"
-    log_arguments: false
-    log_results: false
-```
 
 ### Use Case and Example
 

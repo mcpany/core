@@ -38,14 +38,6 @@ type HTTPServiceWithHealthCheck interface {
 }
 
 // NewChecker creates a new health checker for the given upstream service.
-// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
-// health check strategy.
-//
-// Parameters:
-//   - uc: The configuration of the upstream service to check.
-//
-// Returns:
-//   - A health.Checker instance that can be used to monitor the service's health.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

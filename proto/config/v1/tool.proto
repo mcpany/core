@@ -49,12 +49,4 @@ message ToolDefinition {
   bool disable = 12;
   // A list of profiles this tool belongs to.
   repeated Profile profiles = 14;
-
-  enum MergeStrategy {
-    MERGE_STRATEGY_UNSPECIFIED = 0;
-    MERGE_STRATEGY_MERGE = 1;
-    MERGE_STRATEGY_OVERRIDE = 2;
-  }
-  MergeStrategy merge_strategy = 15 [json_name = "merge_strategy"];
-  repeated string tags = 16;
 }

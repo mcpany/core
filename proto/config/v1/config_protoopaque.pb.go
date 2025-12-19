@@ -318,19 +318,17 @@ func (b0 User_builder) Build() *User {
 }
 
 type GlobalSettings struct {
-	state                         protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_McpListenAddress   *string                 `protobuf:"bytes,1,opt,name=mcp_listen_address"`
-	xxx_hidden_LogLevel           GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_MessageBus         *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus"`
-	xxx_hidden_ApiKey             *string                 `protobuf:"bytes,5,opt,name=api_key"`
-	xxx_hidden_Profiles           []string                `protobuf:"bytes,6,rep,name=profiles"`
-	xxx_hidden_AllowedIps         []string                `protobuf:"bytes,7,rep,name=allowed_ips"`
-	xxx_hidden_Audit              *AuditConfig            `protobuf:"bytes,8,opt,name=audit"`
-	xxx_hidden_ProfileDefinitions *[]*ProfileDefinition   `protobuf:"bytes,9,rep,name=profile_definitions"`
-	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
-	XXX_presence                  [1]uint32
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_McpListenAddress *string                 `protobuf:"bytes,1,opt,name=mcp_listen_address"`
+	xxx_hidden_LogLevel         GlobalSettings_LogLevel `protobuf:"varint,3,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_MessageBus       *bus.MessageBus         `protobuf:"bytes,4,opt,name=message_bus"`
+	xxx_hidden_ApiKey           *string                 `protobuf:"bytes,5,opt,name=api_key"`
+	xxx_hidden_Profiles         []string                `protobuf:"bytes,6,rep,name=profiles"`
+	xxx_hidden_AllowedIps       []string                `protobuf:"bytes,7,rep,name=allowed_ips"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -408,30 +406,14 @@ func (x *GlobalSettings) GetAllowedIps() []string {
 	return nil
 }
 
-func (x *GlobalSettings) GetAudit() *AuditConfig {
-	if x != nil {
-		return x.xxx_hidden_Audit
-	}
-	return nil
-}
-
-func (x *GlobalSettings) GetProfileDefinitions() []*ProfileDefinition {
-	if x != nil {
-		if x.xxx_hidden_ProfileDefinitions != nil {
-			return *x.xxx_hidden_ProfileDefinitions
-		}
-	}
-	return nil
-}
-
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -440,7 +422,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -449,14 +431,6 @@ func (x *GlobalSettings) SetProfiles(v []string) {
 
 func (x *GlobalSettings) SetAllowedIps(v []string) {
 	x.xxx_hidden_AllowedIps = v
-}
-
-func (x *GlobalSettings) SetAudit(v *AuditConfig) {
-	x.xxx_hidden_Audit = v
-}
-
-func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
-	x.xxx_hidden_ProfileDefinitions = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -487,13 +461,6 @@ func (x *GlobalSettings) HasApiKey() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
-func (x *GlobalSettings) HasAudit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Audit != nil
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -513,10 +480,6 @@ func (x *GlobalSettings) ClearApiKey() {
 	x.xxx_hidden_ApiKey = nil
 }
 
-func (x *GlobalSettings) ClearAudit() {
-	x.xxx_hidden_Audit = nil
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -532,10 +495,6 @@ type GlobalSettings_builder struct {
 	Profiles []string
 	// The allowed IPs to access the server.
 	AllowedIps []string
-	// Audit logging configuration.
-	Audit *AuditConfig
-	// The definitions of profiles.
-	ProfileDefinitions []*ProfileDefinition
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -543,368 +502,20 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
 	x.xxx_hidden_AllowedIps = b.AllowedIps
-	x.xxx_hidden_Audit = b.Audit
-	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
-	return m0
-}
-
-type AuditConfig struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled      bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_OutputPath   *string                `protobuf:"bytes,2,opt,name=output_path"`
-	xxx_hidden_LogArguments bool                   `protobuf:"varint,3,opt,name=log_arguments"`
-	xxx_hidden_LogResults   bool                   `protobuf:"varint,4,opt,name=log_results"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
-}
-
-func (x *AuditConfig) Reset() {
-	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AuditConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AuditConfig) ProtoMessage() {}
-
-func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *AuditConfig) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
-	}
-	return false
-}
-
-func (x *AuditConfig) GetOutputPath() string {
-	if x != nil {
-		if x.xxx_hidden_OutputPath != nil {
-			return *x.xxx_hidden_OutputPath
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *AuditConfig) GetLogArguments() bool {
-	if x != nil {
-		return x.xxx_hidden_LogArguments
-	}
-	return false
-}
-
-func (x *AuditConfig) GetLogResults() bool {
-	if x != nil {
-		return x.xxx_hidden_LogResults
-	}
-	return false
-}
-
-func (x *AuditConfig) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
-}
-
-func (x *AuditConfig) SetOutputPath(v string) {
-	x.xxx_hidden_OutputPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
-}
-
-func (x *AuditConfig) SetLogArguments(v bool) {
-	x.xxx_hidden_LogArguments = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
-}
-
-func (x *AuditConfig) SetLogResults(v bool) {
-	x.xxx_hidden_LogResults = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
-}
-
-func (x *AuditConfig) HasEnabled() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *AuditConfig) HasOutputPath() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *AuditConfig) HasLogArguments() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *AuditConfig) HasLogResults() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *AuditConfig) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
-}
-
-func (x *AuditConfig) ClearOutputPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_OutputPath = nil
-}
-
-func (x *AuditConfig) ClearLogArguments() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_LogArguments = false
-}
-
-func (x *AuditConfig) ClearLogResults() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_LogResults = false
-}
-
-type AuditConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Whether audit logging is enabled.
-	Enabled *bool
-	// The file path to write audit logs to.
-	OutputPath *string
-	// Whether to log input arguments (caution: might contain secrets).
-	LogArguments *bool
-	// Whether to log output results (caution: might contain sensitive data).
-	LogResults *bool
-}
-
-func (b0 AuditConfig_builder) Build() *AuditConfig {
-	m0 := &AuditConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	if b.OutputPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_OutputPath = b.OutputPath
-	}
-	if b.LogArguments != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_LogArguments = *b.LogArguments
-	}
-	if b.LogResults != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_LogResults = *b.LogResults
-	}
-	return m0
-}
-
-type ProfileDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Selector    *ProfileSelector       `protobuf:"bytes,2,opt,name=selector"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *ProfileDefinition) Reset() {
-	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProfileDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProfileDefinition) ProtoMessage() {}
-
-func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProfileDefinition) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *ProfileDefinition) GetSelector() *ProfileSelector {
-	if x != nil {
-		return x.xxx_hidden_Selector
-	}
-	return nil
-}
-
-func (x *ProfileDefinition) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
-	x.xxx_hidden_Selector = v
-}
-
-func (x *ProfileDefinition) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *ProfileDefinition) HasSelector() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Selector != nil
-}
-
-func (x *ProfileDefinition) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *ProfileDefinition) ClearSelector() {
-	x.xxx_hidden_Selector = nil
-}
-
-type ProfileDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Name     *string
-	Selector *ProfileSelector
-}
-
-func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
-	m0 := &ProfileDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Name = b.Name
-	}
-	x.xxx_hidden_Selector = b.Selector
-	return m0
-}
-
-type ProfileSelector struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Tags           []string               `protobuf:"bytes,1,rep,name=tags"`
-	xxx_hidden_ToolProperties map[string]string      `protobuf:"bytes,2,rep,name=tool_properties" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
-}
-
-func (x *ProfileSelector) Reset() {
-	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ProfileSelector) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ProfileSelector) ProtoMessage() {}
-
-func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *ProfileSelector) GetTags() []string {
-	if x != nil {
-		return x.xxx_hidden_Tags
-	}
-	return nil
-}
-
-func (x *ProfileSelector) GetToolProperties() map[string]string {
-	if x != nil {
-		return x.xxx_hidden_ToolProperties
-	}
-	return nil
-}
-
-func (x *ProfileSelector) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
-}
-
-func (x *ProfileSelector) SetToolProperties(v map[string]string) {
-	x.xxx_hidden_ToolProperties = v
-}
-
-type ProfileSelector_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Tags           []string
-	ToolProperties map[string]string
-}
-
-func (b0 ProfileSelector_builder) Build() *ProfileSelector {
-	m0 := &ProfileSelector{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Tags = b.Tags
-	x.xxx_hidden_ToolProperties = b.ToolProperties
 	return m0
 }
 
@@ -921,70 +532,46 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\x9f\x04\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\x93\x03\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
 	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x12\x18\n" +
 	"\aapi_key\x18\x05 \x01(\tR\aapi_key\x12\x1a\n" +
 	"\bprofiles\x18\x06 \x03(\tR\bprofiles\x12 \n" +
-	"\vallowed_ips\x18\a \x03(\tR\vallowed_ips\x123\n" +
-	"\x05audit\x18\b \x01(\v2\x1d.mcpany.config.v1.AuditConfigR\x05audit\x12U\n" +
-	"\x13profile_definitions\x18\t \x03(\v2#.mcpany.config.v1.ProfileDefinitionR\x13profile_definitions\"w\n" +
+	"\vallowed_ips\x18\a \x03(\tR\vallowed_ips\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
 	"\x0eLOG_LEVEL_WARN\x10\x02\x12\x13\n" +
 	"\x0fLOG_LEVEL_ERROR\x10\x03\x12\x13\n" +
-	"\x0fLOG_LEVEL_DEBUG\x10\x04J\x04\b\x02\x10\x03\"\x91\x01\n" +
-	"\vAuditConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
-	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
-	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"f\n" +
-	"\x11ProfileDefinition\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
-	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\"\xc9\x01\n" +
-	"\x0fProfileSelector\x12\x12\n" +
-	"\x04tags\x18\x01 \x03(\tR\x04tags\x12_\n" +
-	"\x0ftool_properties\x18\x02 \x03(\v25.mcpany.config.v1.ProfileSelector.ToolPropertiesEntryR\x0ftool_properties\x1aA\n" +
-	"\x13ToolPropertiesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x0fLOG_LEVEL_DEBUG\x10\x04J\x04\b\x02\x10\x03B5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(*McpAnyServerConfig)(nil),        // 1: mcpany.config.v1.McpAnyServerConfig
 	(*User)(nil),                      // 2: mcpany.config.v1.User
 	(*GlobalSettings)(nil),            // 3: mcpany.config.v1.GlobalSettings
-	(*AuditConfig)(nil),               // 4: mcpany.config.v1.AuditConfig
-	(*ProfileDefinition)(nil),         // 5: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 6: mcpany.config.v1.ProfileSelector
-	nil,                               // 7: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 8: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 9: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 10: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 11: bus.MessageBus
+	(*UpstreamServiceConfig)(nil),     // 4: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 5: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 6: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 7: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	3,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	8,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	9,  // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
-	2,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	10, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	11, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	4,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	5,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	6,  // 9: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	7,  // 10: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	3, // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	4, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	5, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	2, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	6, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	0, // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	7, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1000,7 +587,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

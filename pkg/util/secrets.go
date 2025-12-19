@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -226,7 +225,6 @@ func ResolveSecretMap(secretMap map[string]*configv1.SecretValue, plainMap map[s
 // safeSecretClient is an http.Client that prevents SSRF by blocking access to link-local IPs (like AWS metadata service).
 // It also resolves the IP before dialing to prevent DNS rebinding attacks.
 var safeSecretClient = &http.Client{
-	Timeout: 10 * time.Second,
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			host, port, err := net.SplitHostPort(addr)
@@ -243,9 +241,6 @@ var safeSecretClient = &http.Client{
 				}
 				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() {
 					return nil, fmt.Errorf("blocked loopback IP: %s", ip)
-				}
-				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") != "true" && ip.IsPrivate() {
-					return nil, fmt.Errorf("blocked private IP: %s", ip)
 				}
 			}
 			if len(ips) == 0 {

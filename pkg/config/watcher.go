@@ -20,10 +20,6 @@ type Watcher struct {
 }
 
 // NewWatcher creates a new file watcher.
-//
-// Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -37,13 +33,6 @@ func NewWatcher() (*Watcher, error) {
 }
 
 // Watch starts monitoring the specified configuration paths.
-//
-// Parameters:
-//   - paths: A slice of file or directory paths to watch.
-//   - reloadFunc: The function to call when a change is detected.
-//
-// Returns:
-//   - An error if watching fails.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	go func() {
 		for {

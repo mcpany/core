@@ -63,7 +63,6 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
-- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
 ## ⚡ Quick Start (5 Minutes)
@@ -159,60 +158,6 @@ Once the server is running, you can interact with it using its JSON-RPC API.
 - For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](docs/integrations.md)**.
 - For hands-on examples, see the **[Examples](docs/examples.md)** and the **[Profile Authentication Example](examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
-
-## 🛠️ Development Guide
-
-### Prerequisites
-
-- **Go**: Version 1.23+
-- **Docker**: For running tests and building images.
-- **Protoc**: For generating protobuf files (handled by `make prepare`).
-
-### Setup
-
-Run the following command to set up the development environment, including installing tools and dependencies:
-
-```bash
-make prepare
-```
-
-### Building
-
-To build the server binary locally:
-
-```bash
-make build
-```
-
-The binary will be located at `build/bin/server`.
-
-### Testing
-
-To run the test suite:
-
-```bash
-make test
-```
-
-This includes unit tests, integration tests, and end-to-end (E2E) tests.
-
-### Linting
-
-To run linters:
-
-```bash
-make lint
-```
-
-We use `golangci-lint` and `pre-commit` hooks.
-
-### Running Locally
-
-After building, you can run the server locally:
-
-```bash
-./build/bin/server run --config-path examples/popular_services/wttr.in/config.yaml
-```
 
 ## 🤝 Contributing
 

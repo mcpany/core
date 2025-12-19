@@ -81,8 +81,6 @@ type Tool struct {
 	OutputSchema        *structpb.Struct       `protobuf:"bytes,9,opt,name=output_schema,json=outputSchema" json:"output_schema,omitempty"`
 	Annotations         *ToolAnnotations       `protobuf:"bytes,11,opt,name=annotations" json:"annotations,omitempty"`
 	IsStream            *bool                  `protobuf:"varint,12,opt,name=is_stream,json=isStream" json:"is_stream,omitempty"`
-	Tags                []string               `protobuf:"bytes,13,rep,name=tags" json:"tags,omitempty"`
-	Profiles            []string               `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -189,20 +187,6 @@ func (x *Tool) GetIsStream() bool {
 	return false
 }
 
-func (x *Tool) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-func (x *Tool) GetProfiles() []string {
-	if x != nil {
-		return x.Profiles
-	}
-	return nil
-}
-
 func (x *Tool) SetName(v string) {
 	x.Name = &v
 }
@@ -245,14 +229,6 @@ func (x *Tool) SetAnnotations(v *ToolAnnotations) {
 
 func (x *Tool) SetIsStream(v bool) {
 	x.IsStream = &v
-}
-
-func (x *Tool) SetTags(v []string) {
-	x.Tags = v
-}
-
-func (x *Tool) SetProfiles(v []string) {
-	x.Profiles = v
 }
 
 func (x *Tool) HasName() bool {
@@ -390,8 +366,6 @@ type Tool_builder struct {
 	OutputSchema        *structpb.Struct
 	Annotations         *ToolAnnotations
 	IsStream            *bool
-	Tags                []string
-	Profiles            []string
 }
 
 func (b0 Tool_builder) Build() *Tool {
@@ -409,8 +383,6 @@ func (b0 Tool_builder) Build() *Tool {
 	x.OutputSchema = b.OutputSchema
 	x.Annotations = b.Annotations
 	x.IsStream = b.IsStream
-	x.Tags = b.Tags
-	x.Profiles = b.Profiles
 	return m0
 }
 
@@ -2551,7 +2523,7 @@ var File_proto_mcp_router_v1_mcp_router_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\n" +
-	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\x98\x04\n" +
+	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xe8\x03\n" +
 	"\x04Tool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
@@ -2564,9 +2536,7 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\finput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +
 	"\routput_schema\x18\t \x01(\v2\x17.google.protobuf.StructR\foutputSchema\x12G\n" +
 	"\vannotations\x18\v \x01(\v2%.mcpany.mcp_router.v1.ToolAnnotationsR\vannotations\x12\x1b\n" +
-	"\tis_stream\x18\f \x01(\bR\bisStream\x12\x12\n" +
-	"\x04tags\x18\r \x03(\tR\x04tags\x12\x1a\n" +
-	"\bprofiles\x18\x0e \x03(\tR\bprofiles\"\xc3\x02\n" +
+	"\tis_stream\x18\f \x01(\bR\bisStream\"\xc3\x02\n" +
 	"\x0fToolAnnotations\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12$\n" +
 	"\x0eread_only_hint\x18\x02 \x01(\bR\freadOnlyHint\x12)\n" +

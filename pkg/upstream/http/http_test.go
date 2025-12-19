@@ -720,8 +720,6 @@ func (m *mockToolManager) CallTool(_ context.Context, _ *tool.ExecutionRequest) 
 	return nil, errors.New("not implemented")
 }
 
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-
 func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	testCases := []struct {
 		name          string
