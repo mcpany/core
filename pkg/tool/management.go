@@ -40,6 +40,7 @@ type ManagerInterface interface {
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
 	SetMCPServer(mcpServer MCPServerProvider)
 	// AddMiddleware adds a middleware to the tool execution chain.
@@ -210,14 +211,14 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mcpServer = mcpServer
 }
 
-// ExecuteTool finds a tool by its name and executes it with the provided
+// ExecuteToolLocally finds a tool by its name and executes it locally with the provided
 // request context and inputs.
 //
 // ctx is the context for the tool execution.
 // req contains the name of the tool and its inputs.
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
-func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+func (tm *Manager) ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 
@@ -302,7 +303,71 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	} else {
 		log.Debug("Tool execution chain successful")
 	}
+
 	return result, err
+}
+
+// ExecuteTool triggers the execution of a tool via the event bus.
+// It publishes a ToolExecutionRequest and waits for a ToolExecutionResult.
+func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	correlationID := uuid.New().String()
+	resultChan := make(chan *bus.ToolExecutionResult, 1)
+
+	resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+	unsubscribe := resultBus.SubscribeOnce(
+		ctx,
+		correlationID,
+		func(result *bus.ToolExecutionResult) {
+			resultChan <- result
+		},
+	)
+	defer unsubscribe()
+
+	requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+	execReq := &bus.ToolExecutionRequest{
+		Context:    ctx,
+		ToolName:   req.ToolName,
+		ToolInputs: req.ToolInputs,
+	}
+	execReq.SetCorrelationID(correlationID)
+	if err := requestBus.Publish(ctx, "request", execReq); err != nil {
+		return nil, fmt.Errorf("failed to publish request: %w", err)
+	}
+
+	select {
+	case result := <-resultChan:
+		if result.Error != nil {
+			return nil, fmt.Errorf(
+				"error executing tool %s: %w",
+				req.ToolName,
+				result.Error,
+			)
+		}
+
+		// Result.Result is json.RawMessage ([]byte).
+		// We should unmarshal it if it's JSON, or return as is?
+		// ExecuteTool expects `any`.
+		// If it's a JSON object, unmarshal to map.
+		var mapResult map[string]any
+		if err := json.Unmarshal(result.Result, &mapResult); err == nil {
+			return mapResult, nil
+		}
+		// Try string
+		var strResult string
+		if err := json.Unmarshal(result.Result, &strResult); err == nil {
+			return strResult, nil
+		}
+
+		return result.Result, nil
+
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
+	case <-time.After(60 * time.Second): // Safety timeout
+		return nil, fmt.Errorf(
+			"timed out waiting for tool execution result for tool %s",
+			req.ToolName,
+		)
+	}
 }
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.
@@ -423,60 +488,27 @@ func (tm *Manager) AddTool(tool Tool) error {
 		handler := func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			logging.GetLogger().Info("Queueing tool execution", "toolName", req.Params.Name)
 
-			correlationID := uuid.New().String()
-			resultChan := make(chan *bus.ToolExecutionResult, 1)
-
-			resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
-			unsubscribe := resultBus.SubscribeOnce(
-				ctx,
-				correlationID,
-				func(result *bus.ToolExecutionResult) {
-					resultChan <- result
-				},
-			)
-			defer unsubscribe()
-
-			requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
-			execReq := &bus.ToolExecutionRequest{
-				Context:    ctx,
+			result, err := tm.ExecuteTool(ctx, &ExecutionRequest{
 				ToolName:   req.Params.Name,
 				ToolInputs: req.Params.Arguments,
+			})
+			if err != nil {
+				return nil, err
 			}
-			execReq.SetCorrelationID(correlationID)
-			if err := requestBus.Publish(ctx, "request", execReq); err != nil {
-				return nil, fmt.Errorf("failed to publish request: %w", err)
+
+			// Marshal result back to JSON for MCP response
+			jsonResult, err := json.Marshal(result)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal tool result: %w", err)
 			}
 
-			select {
-			case result := <-resultChan:
-				if result.Error != nil {
-					return nil, fmt.Errorf(
-						"error executing tool %s: %w",
-						req.Params.Name,
-						result.Error,
-					)
-				}
-
-				jsonResult, err := json.Marshal(result.Result)
-				if err != nil {
-					return nil, fmt.Errorf("failed to marshal tool result: %w", err)
-				}
-
-				return &mcp.CallToolResult{
-					Content: []mcp.Content{
-						&mcp.TextContent{
-							Text: string(jsonResult),
-						},
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{
+						Text: string(jsonResult),
 					},
-				}, nil
-			case <-ctx.Done():
-				return nil, fmt.Errorf("context deadline exceeded while waiting for tool execution")
-			case <-time.After(60 * time.Second): // Safety timeout
-				return nil, fmt.Errorf(
-					"timed out waiting for tool execution result for tool %s",
-					req.Params.Name,
-				)
-			}
+				},
+			}, nil
 		}
 		tm.mcpServer.Server().AddTool(mcpTool, handler)
 	}

@@ -51,7 +51,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 		metrics.IncrCounter([]string{"worker", "upstream", "request", "total"}, 1)
 		defer metrics.MeasureSince([]string{"worker", "upstream", "request", "latency"}, start)
 		log.Info("Received tool execution request", "tool", req.ToolName, "correlationID", req.CorrelationID())
-		result, err := w.toolManager.ExecuteTool(req.Context, &tool.ExecutionRequest{
+		result, err := w.toolManager.ExecuteToolLocally(req.Context, &tool.ExecutionRequest{
 			ToolName:   req.ToolName,
 			ToolInputs: req.ToolInputs,
 		})

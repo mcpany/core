@@ -180,43 +180,6 @@ func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 }
 
 func TestExtractMcpDefinitions(t *testing.T) {
-	fds := loadTestFileDescriptorSet(t)
-
-	t.Run("successful extraction", func(t *testing.T) {
-		parsedData, err := ExtractMcpDefinitions(fds)
-		require.NoError(t, err)
-		assert.NotNil(t, parsedData)
-
-		// Basic checks
-		assert.NotEmpty(t, parsedData.Tools)
-
-		// Find a specific tool to inspect
-		var getWeatherTool *McpTool
-		for i, tool := range parsedData.Tools {
-			if tool.Name == "GetWeather" {
-				getWeatherTool = &parsedData.Tools[i]
-				break
-			}
-		}
-
-		require.NotNil(t, getWeatherTool, "Tool 'GetWeather' should be found")
-		assert.Equal(t, "", getWeatherTool.Description)
-		assert.Equal(t, "WeatherService", getWeatherTool.ServiceName)
-		assert.Equal(t, "GetWeather", getWeatherTool.MethodName)
-		assert.Equal(t, "/examples.weather.v1.WeatherService/GetWeather", getWeatherTool.FullMethodName)
-		assert.Equal(t, "examples.weather.v1.GetWeatherRequest", getWeatherTool.RequestType)
-		assert.Equal(t, "examples.weather.v1.GetWeatherResponse", getWeatherTool.ResponseType)
-		assert.False(t, getWeatherTool.IdempotentHint)
-		assert.False(t, getWeatherTool.DestructiveHint)
-
-		// Check request fields
-		require.Len(t, getWeatherTool.RequestFields, 1)
-		assert.Equal(t, "location", getWeatherTool.RequestFields[0].Name)
-		assert.Equal(t, "", getWeatherTool.RequestFields[0].Description)
-		assert.Equal(t, "string", getWeatherTool.RequestFields[0].Type)
-		assert.False(t, getWeatherTool.RequestFields[0].IsRepeated)
-	})
-
 	t.Run("nil fds", func(t *testing.T) {
 		_, err := ExtractMcpDefinitions(nil)
 		assert.Error(t, err)

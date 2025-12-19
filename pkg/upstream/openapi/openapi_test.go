@@ -72,6 +72,14 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 	return args.Get(0), args.Error(1)
 }
 
+func (m *MockToolManager) ExecuteToolLocally(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0), args.Error(1)
+}
+
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 

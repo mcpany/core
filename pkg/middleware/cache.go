@@ -11,6 +11,7 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -42,15 +43,15 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		var found bool
 		t, found = m.toolManager.GetTool(req.ToolName)
 		if !found {
-			fmt.Printf("DEBUG: Tool %s not found in manager\n", req.ToolName)
+			logging.GetLogger().Debug("Tool not found in manager", "tool", req.ToolName)
 			return next(ctx, req)
 		}
 	}
 
-	fmt.Printf("DEBUG: CachingMiddleware Execute for tool %s\n", t.Tool().GetName())
+	logging.GetLogger().Debug("CachingMiddleware Execute", "tool", t.Tool().GetName())
 	cacheConfig := m.getCacheConfig(t)
 	if cacheConfig == nil || !cacheConfig.GetIsEnabled() {
-		fmt.Printf("DEBUG: Caching disabled or config nil for tool %s\n", t.Tool().GetName())
+		logging.GetLogger().Debug("Caching disabled or config nil", "tool", t.Tool().GetName())
 		return next(ctx, req)
 	}
 

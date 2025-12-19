@@ -95,6 +95,10 @@ func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
+func (m *MockToolManager) ExecuteToolLocally(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	return nil, errors.New("not implemented")
+}
+
 func TestUpstream_Register_DisabledTool(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()

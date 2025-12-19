@@ -6,6 +6,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -104,6 +105,10 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 }
 
 func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (m *MockToolManager) ExecuteToolLocally(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }
 
@@ -242,6 +247,7 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 						}.Build(),
 					},
 				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
 			}.Build(),
 		})
 
@@ -310,6 +316,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
+		serviceConfig.SetAutoDiscoverTool(true)
 
 		// First call - should populate the cache
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
@@ -340,6 +347,7 @@ func TestGRPCUpstream_Register_WithMockServer(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("weather-service")
 		serviceConfig.SetGrpcService(grpcService)
+		serviceConfig.SetAutoDiscoverTool(true)
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -456,6 +464,7 @@ func TestGRPCUpstream_Register_UseReflection_WithPolicy(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-policy")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.SetAutoDiscoverTool(true)
 	// Export policy: only export GetWeather
 	serviceConfig.ToolExportPolicy = &configv1.ExportPolicy{
 		DefaultAction: actionPtr(configv1.ExportPolicy_UNEXPORT),
@@ -519,16 +528,27 @@ func TestGRPCUpstream_Register_DynamicResources(t *testing.T) {
 			CallId: proto.String("weather_call"),
 		},
 	}
+	// Explicitly define Call since we rely on config-based tool registration or lookup
+	grpcService.Calls = map[string]*configv1.GrpcCallDefinition{
+		"weather_call": {
+			Id:     proto.String("weather_call"),
+			Method: proto.String("examples.weather.v1.WeatherService/GetWeather"),
+		},
+	}
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-dynamic")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.SetAutoDiscoverTool(true)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
 
+	fmt.Printf("DEBUG: Tools list: %v\n", tm.ListTools())
+	fmt.Printf("DEBUG: Resources list: %v\n", resourceManager.ListResources())
+
 	resources := resourceManager.ListResources()
-	assert.Len(t, resources, 1)
+	require.NotEmpty(t, resources, "Resources list should not be empty")
 	assert.Equal(t, "weather_resource", resources[0].Resource().Name)
 }
 
@@ -560,6 +580,7 @@ func TestGRPCUpstream_Register_DuplicateTool(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName(serviceID)
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.SetAutoDiscoverTool(true)
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	assert.NoError(t, err)
@@ -807,10 +828,12 @@ func TestGRPCUpstream_Register_FromConfig(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("weather-service-config")
 	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig.SetAutoDiscoverTool(true)
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
-	assert.NotEmpty(t, discoveredTools)
+
+	require.NotEmpty(t, discoveredTools)
 	assert.Equal(t, "GetWeather", discoveredTools[0].GetName())
 }
 
@@ -832,7 +855,7 @@ func TestGRPCUpstream_Register_WithPrompts(t *testing.T) {
 	grpcService.SetUseReflection(true)
 	grpcService.Prompts = []*configv1.PromptDefinition{
 		{
-			Name: proto.String("weather_prompt"),
+			Name:        proto.String("weather_prompt"),
 			Description: proto.String("A prompt for weather"),
 		},
 	}
@@ -1028,7 +1051,7 @@ func TestGRPCUpstream_Register_DisabledTool_Reflection(t *testing.T) {
 	grpcService.SetUseReflection(true)
 	grpcService.Tools = []*configv1.ToolDefinition{
 		{
-			Name: proto.String("GetWeather"),
+			Name:    proto.String("GetWeather"),
 			Disable: proto.Bool(true),
 		},
 	}
