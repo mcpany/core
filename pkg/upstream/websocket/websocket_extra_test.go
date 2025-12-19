@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
@@ -118,6 +119,148 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *
 			WebsocketCall: configv1.WebsocketCallDefinition_builder{
 				Id: proto.String("missing-tool"),
 			}.Build(),
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://localhost:8080/test"),
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_Shutdown(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	// Register a service to set the serviceID
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		WebsocketService: configv1.WebsocketUpstreamService_builder{
+			Address: proto.String("ws://localhost"),
+		}.Build(),
+	}.Build()
+
+	toolManager := tool.NewManager(nil)
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	// Verify pool is registered
+	_, ok := pool.Get[*client.WebsocketClientWrapper](poolManager, serviceID)
+	require.True(t, ok)
+
+	err = upstream.Shutdown(context.Background())
+	require.NoError(t, err)
+
+	// Verify pool is deregistered
+	_, ok = pool.Get[*client.WebsocketClientWrapper](poolManager, serviceID)
+	require.False(t, ok)
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_HappyPath(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("resource-tool"),
+		CallId: proto.String("resource-call"),
+	}.Build()
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name: proto.String("test-resource"),
+		Dynamic: configv1.DynamicResource_builder{
+			WebsocketCall: configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://localhost:8080/test"),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+		Calls: map[string]*configv1.WebsocketCallDefinition{
+			"resource-call": configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.NotEmpty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_Disabled(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("resource-tool"),
+		CallId: proto.String("resource-call"),
+	}.Build()
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name:    proto.String("test-resource"),
+		Disable: proto.Bool(true),
+		Dynamic: configv1.DynamicResource_builder{
+			WebsocketCall: configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://localhost:8080/test"),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+		Calls: map[string]*configv1.WebsocketCallDefinition{
+			"resource-call": configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_NoCall(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name: proto.String("test-resource"),
+		Dynamic: configv1.DynamicResource_builder{
+			// No WebsocketCall
 		}.Build(),
 	}.Build()
 
