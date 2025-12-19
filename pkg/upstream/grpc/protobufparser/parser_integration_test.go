@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	v1 "github.com/mcpany/core/proto/examples/weather/v1"
+	v1 "github.com/mcpany/api/proto/examples/weather/v1"
 )
 
 type mockWeatherServer struct {

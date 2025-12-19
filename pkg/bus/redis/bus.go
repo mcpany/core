@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/redis/go-redis/v9"
 )
 

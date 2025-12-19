@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/prompt"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

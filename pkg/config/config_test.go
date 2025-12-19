@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/logging"
-	v1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

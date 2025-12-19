@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"testing"
 
-	apiv1 "github.com/mcpany/core/proto/api/v1"
+	apiv1 "github.com/mcpany/api/proto/api/v1"
 	"github.com/mcpany/core/tests/integration"
 )
 

@@ -17,7 +17,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream/openapi"
 	"github.com/mcpany/core/pkg/upstream/webrtc"
 	"github.com/mcpany/core/pkg/upstream/websocket"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // Factory defines the interface for a factory that creates upstream service

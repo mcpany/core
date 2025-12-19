@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

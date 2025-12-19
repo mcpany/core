@@ -14,8 +14,8 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	bus_pb "github.com/mcpany/api/proto/bus"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

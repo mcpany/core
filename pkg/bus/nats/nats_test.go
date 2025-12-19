@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/stretchr/testify/assert"
 )

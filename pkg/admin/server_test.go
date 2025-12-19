@@ -9,7 +9,7 @@ import (
 
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
-	pb "github.com/mcpany/core/proto/admin/v1"
+	pb "github.com/mcpany/api/proto/admin/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )

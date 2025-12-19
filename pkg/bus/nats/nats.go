@@ -10,7 +10,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/nats-io/nats-server/v2/server"
 	natsgo "github.com/nats-io/nats.go"
 )

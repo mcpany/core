@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	kafkago "github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

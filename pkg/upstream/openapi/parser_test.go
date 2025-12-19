@@ -9,7 +9,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/mcpany/core/pkg/util"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 )
 

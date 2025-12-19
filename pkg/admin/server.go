@@ -7,7 +7,7 @@ import (
 	"context"
 
 	"github.com/mcpany/core/pkg/middleware"
-	pb "github.com/mcpany/core/proto/admin/v1"
+	pb "github.com/mcpany/api/proto/admin/v1"
 )
 
 // Server implements the AdminServiceServer interface.

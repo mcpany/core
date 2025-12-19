@@ -16,7 +16,7 @@ import (
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )

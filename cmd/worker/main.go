@@ -14,8 +14,8 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/worker"
-	buspb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	buspb "github.com/mcpany/api/proto/bus"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 func setup() (*worker.Worker, error) {

@@ -13,7 +13,7 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
-	v1 "github.com/mcpany/core/proto/api/v1"
+	v1 "github.com/mcpany/api/proto/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

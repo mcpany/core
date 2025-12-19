@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )

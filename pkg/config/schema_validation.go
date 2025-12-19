@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sync"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
 

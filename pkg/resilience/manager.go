@@ -4,7 +4,7 @@
 package resilience
 
 import (
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // Manager orchestrates resilience features like circuit breakers and retries.

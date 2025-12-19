@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

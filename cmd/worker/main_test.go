@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	buspb "github.com/mcpany/core/proto/bus"
+	buspb "github.com/mcpany/api/proto/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

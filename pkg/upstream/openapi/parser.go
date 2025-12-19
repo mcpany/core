@@ -10,7 +10,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/mcpany/core/pkg/util"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	pb "github.com/mcpany/api/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )

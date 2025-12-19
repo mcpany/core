@@ -18,7 +18,7 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/upstream/factory"
-	config_v1 "github.com/mcpany/core/proto/config/v1"
+	config_v1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"os"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // NewHTTPClientWithTLS creates a new *http.Client configured with the specified

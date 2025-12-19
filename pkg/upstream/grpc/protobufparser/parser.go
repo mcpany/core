@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	mcpopt "github.com/mcpany/api/proto/mcp_options/v1"
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP

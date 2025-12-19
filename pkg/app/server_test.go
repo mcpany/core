@@ -30,7 +30,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
-	bus_pb "github.com/mcpany/core/proto/bus"
+	bus_pb "github.com/mcpany/api/proto/bus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

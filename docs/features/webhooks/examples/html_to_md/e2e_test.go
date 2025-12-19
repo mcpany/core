@@ -20,7 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	http_upstream "github.com/mcpany/core/pkg/upstream/http"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"

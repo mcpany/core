@@ -12,8 +12,8 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/util"
-	apiv1 "github.com/mcpany/core/proto/api/v1"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	apiv1 "github.com/mcpany/api/proto/api/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/mcpany/core/tests/framework"
 	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"

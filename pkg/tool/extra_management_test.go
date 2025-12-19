@@ -13,8 +13,8 @@ import (
 	"unsafe"
 
 	"github.com/mcpany/core/pkg/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	routerv1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

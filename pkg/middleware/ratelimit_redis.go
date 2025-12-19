@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 )
 

@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // Message defines the interface that all messages exchanged on the event bus must

@@ -16,7 +16,7 @@ import (
 
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/logging"
-	bus_pb "github.com/mcpany/core/proto/bus"
+	bus_pb "github.com/mcpany/api/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

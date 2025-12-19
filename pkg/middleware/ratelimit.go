@@ -11,7 +11,7 @@ import (
 	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"golang.org/x/time/rate"
 )
 

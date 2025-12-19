@@ -7,7 +7,7 @@ import (
 	"errors"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

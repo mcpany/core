@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redismock/v9"
-	buspb "github.com/mcpany/core/proto/bus" // Aliased to avoid conflicts
+	buspb "github.com/mcpany/api/proto/bus" // Aliased to avoid conflicts
 	"github.com/stretchr/testify/assert"
 )
 

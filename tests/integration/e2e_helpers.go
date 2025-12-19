@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	apiv1 "github.com/mcpany/core/proto/api/v1"
-	bus "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	apiv1 "github.com/mcpany/api/proto/api/v1"
+	bus "github.com/mcpany/api/proto/bus"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"

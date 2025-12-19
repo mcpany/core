@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // State represents the current state of the circuit breaker.

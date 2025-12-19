@@ -18,7 +18,7 @@ repos:
     rev: v2.7.2
     hooks:
     -   id: golangci-lint
-        args: [--fix, --allow-parallel-runners, ./cmd/..., ./pkg/..., ./tests/..., ./examples/..., ./proto/...]
+        args: [--fix, --allow-parallel-runners, ./cmd/..., ./pkg/..., ./tests/..., ./examples/...]
         pass_filenames: false
         exclude: ^build/
 -   repo: local

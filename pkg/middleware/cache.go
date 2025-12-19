@@ -13,7 +13,7 @@ import (
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
 

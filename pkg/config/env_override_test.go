@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/config"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

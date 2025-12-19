@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/bus"
-	buspb "github.com/mcpany/core/proto/bus"
+	buspb "github.com/mcpany/api/proto/bus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 )

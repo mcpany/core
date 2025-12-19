@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )

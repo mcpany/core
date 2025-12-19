@@ -20,7 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

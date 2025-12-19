@@ -12,7 +12,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	"golang.org/x/oauth2/clientcredentials"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // UpstreamAuthenticator defines the interface for authentication methods used

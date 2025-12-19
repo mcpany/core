@@ -14,7 +14,7 @@ import (
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 

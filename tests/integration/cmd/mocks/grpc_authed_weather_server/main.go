@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	weatherV1 "github.com/mcpany/core/proto/examples/weather/v1"
+	weatherV1 "github.com/mcpany/api/proto/examples/weather/v1"
 )
 
 const (

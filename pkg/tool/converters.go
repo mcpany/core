@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	pb "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"

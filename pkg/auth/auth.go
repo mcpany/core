@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 

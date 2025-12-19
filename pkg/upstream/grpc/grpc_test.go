@@ -14,15 +14,15 @@ import (
 	"sync"
 	"testing"
 
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	pb "github.com/mcpany/api/proto/examples/weather/v1"
+	routerv1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	"github.com/mcpany/core/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/examples/weather/v1"
-	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -785,7 +785,7 @@ func TestGRPCUpstream_Register_FromConfig(t *testing.T) {
 				ProtoFile: &configv1.ProtoFile{
 					FileName: proto.String("weather.proto"),
 					FileRef: &configv1.ProtoFile_FilePath{
-						FilePath: "../../../proto/examples/weather/v1/weather.proto",
+						FilePath: "../../../api/proto/examples/weather/v1/weather.proto",
 					},
 				},
 			},

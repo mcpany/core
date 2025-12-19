@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/mcpany/core/pkg/logging"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported

@@ -9,7 +9,7 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	healthChecker "github.com/mcpany/core/pkg/health"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the

@@ -19,7 +19,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"

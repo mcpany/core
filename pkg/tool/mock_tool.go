@@ -6,8 +6,8 @@ package tool
 import (
 	"context"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.

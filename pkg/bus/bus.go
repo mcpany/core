@@ -12,7 +12,7 @@ import (
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 

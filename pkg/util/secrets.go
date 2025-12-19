@@ -18,7 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
 	"github.com/mcpany/core/pkg/validation"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 const maxSecretRecursionDepth = 10

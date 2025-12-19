@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/bus/nats"
-	busprotos "github.com/mcpany/core/proto/bus"
+	busprotos "github.com/mcpany/api/proto/bus"
 	"github.com/stretchr/testify/assert"
 )
 

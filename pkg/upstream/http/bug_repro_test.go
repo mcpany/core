@@ -13,7 +13,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	httppkg "github.com/mcpany/core/pkg/upstream/http"
 	"github.com/mcpany/core/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 )

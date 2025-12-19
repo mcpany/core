@@ -12,7 +12,7 @@ import (
 	"github.com/armon/go-metrics"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)

@@ -21,8 +21,8 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/util/schemaconv"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	pb "github.com/mcpany/api/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )

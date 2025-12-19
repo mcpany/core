@@ -21,7 +21,7 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"

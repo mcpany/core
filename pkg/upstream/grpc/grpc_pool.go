@@ -15,7 +15,7 @@ import (
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"

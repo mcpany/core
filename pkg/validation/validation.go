@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 )
 
 // IsValidBindAddress checks if a given string is a valid bind address.

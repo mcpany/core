@@ -14,7 +14,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	weatherPb "github.com/mcpany/core/proto/examples/weather/v1"
+	weatherPb "github.com/mcpany/api/proto/examples/weather/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

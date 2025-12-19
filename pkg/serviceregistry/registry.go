@@ -16,7 +16,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
-	config "github.com/mcpany/core/proto/config/v1"
+	config "github.com/mcpany/api/proto/config/v1"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.

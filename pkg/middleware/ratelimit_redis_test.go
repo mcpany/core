@@ -11,8 +11,8 @@ import (
 
 	"github.com/go-redis/redismock/v9"
 	"github.com/mcpany/core/pkg/middleware"
-	busproto "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	busproto "github.com/mcpany/api/proto/bus"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

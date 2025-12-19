@@ -6,7 +6,7 @@ package bus
 import (
 	"testing"
 
-	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/api/proto/bus"
 	"github.com/stretchr/testify/assert"
 )
 

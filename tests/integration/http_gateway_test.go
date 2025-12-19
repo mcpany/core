@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	apiv1 "github.com/mcpany/core/proto/api/v1"
-	configv1 "github.com/mcpany/core/proto/config/v1"
+	apiv1 "github.com/mcpany/api/proto/api/v1"
+	configv1 "github.com/mcpany/api/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 )
