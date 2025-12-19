@@ -166,9 +166,13 @@ func GetDockerCommand() (string, []string) {
 }
 
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
-func ReplaceURLPath(urlPath string, params map[string]interface{}) string {
+func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	for k, v := range params {
-		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", url.PathEscape(fmt.Sprintf("%v", v)))
+		val := fmt.Sprintf("%v", v)
+		if noEscapeParams == nil || !noEscapeParams[k] {
+			val = url.PathEscape(val)
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", val)
 	}
 	return urlPath
 }

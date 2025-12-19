@@ -2393,7 +2393,9 @@ type HttpParameterMapping struct {
 	// The schema for the parameter.
 	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
 	// A secret value to use for the parameter.
-	Secret        *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
+	Secret *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
+	// Whether to disable automatic URL escaping for this parameter.
+	DisableEscape *bool `protobuf:"varint,3,opt,name=disable_escape" json:"disable_escape,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2437,12 +2439,23 @@ func (x *HttpParameterMapping) GetSecret() *SecretValue {
 	return nil
 }
 
+func (x *HttpParameterMapping) GetDisableEscape() bool {
+	if x != nil && x.DisableEscape != nil {
+		return *x.DisableEscape
+	}
+	return false
+}
+
 func (x *HttpParameterMapping) SetSchema(v *ParameterSchema) {
 	x.Schema = v
 }
 
 func (x *HttpParameterMapping) SetSecret(v *SecretValue) {
 	x.Secret = v
+}
+
+func (x *HttpParameterMapping) SetDisableEscape(v bool) {
+	x.DisableEscape = &v
 }
 
 func (x *HttpParameterMapping) HasSchema() bool {
@@ -2459,12 +2472,23 @@ func (x *HttpParameterMapping) HasSecret() bool {
 	return x.Secret != nil
 }
 
+func (x *HttpParameterMapping) HasDisableEscape() bool {
+	if x == nil {
+		return false
+	}
+	return x.DisableEscape != nil
+}
+
 func (x *HttpParameterMapping) ClearSchema() {
 	x.Schema = nil
 }
 
 func (x *HttpParameterMapping) ClearSecret() {
 	x.Secret = nil
+}
+
+func (x *HttpParameterMapping) ClearDisableEscape() {
+	x.DisableEscape = nil
 }
 
 type HttpParameterMapping_builder struct {
@@ -2474,6 +2498,8 @@ type HttpParameterMapping_builder struct {
 	Schema *ParameterSchema
 	// A secret value to use for the parameter.
 	Secret *SecretValue
+	// Whether to disable automatic URL escaping for this parameter.
+	DisableEscape *bool
 }
 
 func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
@@ -2482,6 +2508,7 @@ func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
 	_, _ = b, x
 	x.Schema = b.Schema
 	x.Secret = b.Secret
+	x.DisableEscape = b.DisableEscape
 	return m0
 }
 
@@ -3003,10 +3030,11 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12 \n" +
 	"\vis_required\x18\x04 \x01(\bR\vis_required\x12<\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\x88\x01\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\xb0\x01\n" +
 	"\x14HttpParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8d\x01\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\x12&\n" +
+	"\x0edisable_escape\x18\x03 \x01(\bR\x0edisable_escape\"\x8d\x01\n" +
 	"\x19WebsocketParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8a\x01\n" +

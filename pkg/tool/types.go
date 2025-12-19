@@ -355,11 +355,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
 	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
 
+	noEscapeParams := make(map[string]bool)
+	for _, param := range t.parameters {
+		if param.GetDisableEscape() {
+			if schema := param.GetSchema(); schema != nil {
+				noEscapeParams[schema.GetName()] = true
+			}
+		}
+	}
+
 	// Replace placeholders in the URL path
-	pathStr = util.ReplaceURLPath(pathStr, req.Arguments)
+	pathStr = util.ReplaceURLPath(pathStr, req.Arguments, noEscapeParams)
 
 	// Replace placeholders in the query string
-	queryStr = util.ReplaceURLPath(queryStr, req.Arguments)
+	queryStr = util.ReplaceURLPath(queryStr, req.Arguments, noEscapeParams)
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
