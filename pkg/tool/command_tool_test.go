@@ -201,6 +201,29 @@ func TestCommandTool_Execute(t *testing.T) {
 		require.True(t, ok)
 		assert.Equal(t, "bar", resultMap["foo"])
 	})
+
+	t.Run("argument substitution", func(t *testing.T) {
+		t.Parallel()
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"{{text}}"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{Schema: &configv1.ParameterSchema{Name: proto.String("text")}},
+			},
+		}
+		cmdTool := newCommandTool("echo", callDef)
+		inputData := map[string]interface{}{"text": "hello"}
+		inputs, err := json.Marshal(inputData)
+		require.NoError(t, err)
+		req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		resultMap, ok := result.(map[string]interface{})
+		require.True(t, ok)
+		assert.Equal(t, "echo", resultMap["command"])
+		assert.Equal(t, "hello\n", resultMap["stdout"])
+	})
 }
 
 func TestCommandTool_GetCacheConfig(t *testing.T) {
