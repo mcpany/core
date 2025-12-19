@@ -52,8 +52,10 @@ var IsSecurePath = func(path string) error {
 // path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
 var IsRelativePath = func(path string) error {
-	if filepath.IsAbs(path) {
-		return fmt.Errorf("path must be relative")
+	if os.Getenv("MCPANY_ENFORCE_RELATIVE_PATHS") == "true" {
+		if filepath.IsAbs(path) {
+			return fmt.Errorf("path must be relative")
+		}
 	}
 	return IsSecurePath(path)
 }
