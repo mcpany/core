@@ -589,7 +589,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
@@ -599,7 +599,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			renderedOutput, err := tpl.Render(parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
+			}
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -735,7 +739,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, responseBytes, t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
@@ -745,7 +749,11 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			renderedOutput, err := tpl.Render(parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
+			}
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -931,7 +939,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 		parser := transformer.NewTextParser()
 		outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules())
+		parsedResult, err := parser.Parse(outputFormat, respBody, t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
@@ -941,7 +949,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			renderedOutput, err := tpl.Render(parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
+			}
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
