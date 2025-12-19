@@ -139,8 +139,9 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		}.Build()
 
 		config := configv1.UpstreamServiceConfig_builder{
-			Name:        &serviceName,
-			GrpcService: grpcService,
+			Name:             &serviceName,
+			GrpcService:      grpcService,
+			AutoDiscoverTool: proto.Bool(true),
 		}.Build()
 
 		req := &v1.RegisterServiceRequest{}
@@ -162,7 +163,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		}
 		require.NotNil(t, getWeatherTool)
 
-		inputSchema := getWeatherTool.Tool().GetAnnotations().GetInputSchema()
+		inputSchema := getWeatherTool.Tool().GetInputSchema()
 		require.NotNil(t, inputSchema)
 		assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
 		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()

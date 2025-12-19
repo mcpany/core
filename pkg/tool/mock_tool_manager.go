@@ -106,6 +106,21 @@ func (mr *MockManagerInterfaceMockRecorder) ExecuteTool(ctx, req any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteTool", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteTool), ctx, req)
 }
 
+// ExecuteToolLocally mocks base method.
+func (m *MockManagerInterface) ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExecuteToolLocally", ctx, req)
+	ret0, _ := ret[0].(any)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExecuteToolLocally indicates an expected call of ExecuteToolLocally.
+func (mr *MockManagerInterfaceMockRecorder) ExecuteToolLocally(ctx, req any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteToolLocally", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteToolLocally), ctx, req)
+}
+
 // GetServiceInfo mocks base method.
 func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	m.ctrl.T.Helper()

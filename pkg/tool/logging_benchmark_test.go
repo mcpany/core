@@ -15,6 +15,7 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
@@ -37,8 +38,9 @@ func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
 	poolManager := pool.NewManager()
 	// We don't register anything, so it will return "no http pool found" error immediately after logging.
 
-	toolProto := &v1.Tool{}
-	toolProto.SetUnderlyingMethodFqn("GET http://example.com")
+	toolProto := v1.Tool_builder{
+		UnderlyingMethodFqn: proto.String("GET http://example.com"),
+	}.Build()
 
 	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 

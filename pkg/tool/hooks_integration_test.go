@@ -65,7 +65,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}
-		_, err = tm.ExecuteTool(context.Background(), req)
+		_, err = tm.ExecuteToolLocally(context.Background(), req)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "denied")
 	})
@@ -91,7 +91,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}
-		_, err = tm.ExecuteTool(context.Background(), req)
+		_, err = tm.ExecuteToolLocally(context.Background(), req)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "denied")
 	})
@@ -145,7 +145,7 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		require.NoError(t, err)
 
 		req := &ExecutionRequest{ToolName: toolID}
-		res, err := tmWithMw.ExecuteTool(context.Background(), req)
+		res, err := tmWithMw.ExecuteToolLocally(context.Background(), req)
 		require.NoError(t, err)
 		assert.Equal(t, "ok", res)
 		assert.True(t, middlewareCalled)

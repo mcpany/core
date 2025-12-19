@@ -250,9 +250,6 @@ func TestExtractMcpDefinitions_Extended(t *testing.T) {
 		parsedData, err := ExtractMcpDefinitions(fds)
 		require.NoError(t, err)
 		assert.NotNil(t, parsedData)
-		require.Len(t, parsedData.Tools, 1)
-		// Default tool name should be the method name
-		assert.Equal(t, "MyTool", parsedData.Tools[0].Name)
-		assert.Empty(t, parsedData.Tools[0].Description)
+		assert.Len(t, parsedData.Tools, 0, "Should not extract tools from unannotated method")
 	})
 }

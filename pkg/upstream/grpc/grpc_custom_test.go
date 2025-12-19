@@ -104,6 +104,7 @@ message TestResponse3 {
 				}.Build(),
 			},
 		}.Build(),
+		AutoDiscoverTool: proto.Bool(true),
 	}.Build()
 
 	tm := newMockToolManager()

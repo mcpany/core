@@ -30,9 +30,10 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 		Description: proto.String("A test tool"),
 		InputSchema: inputSchema,
 	}
-	service := &configv1.CommandLineUpstreamService{}
-	service.Command = proto.String("echo")
-	service.Local = proto.Bool(true)
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		Local:   proto.Bool(true),
+	}.Build()
 	callDef := &configv1.CommandLineCallDefinition{
 		Parameters: []*configv1.CommandLineParameterMapping{
 			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
@@ -63,9 +64,9 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 
 func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	tool := &v1.Tool{
-		Name:        proto.String("test-tool-env"),
+		Name: proto.String("test-tool-env"),
 	}
-	service := &configv1.CommandLineUpstreamService{
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
 		Env: map[string]*configv1.SecretValue{
@@ -75,7 +76,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 				},
 			},
 		},
-	}
+	}.Build()
 	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo -n $MY_ENV"},
 	}
@@ -83,7 +84,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
-		ToolName: "test-tool-env",
+		ToolName:  "test-tool-env",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
@@ -101,9 +102,10 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 		Name:        proto.String("test-tool-blocked"),
 		Description: proto.String("A test tool"),
 	}
-	service := &configv1.CommandLineUpstreamService{}
-	service.Command = proto.String("echo")
-	service.Local = proto.Bool(true)
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		Local:   proto.Bool(true),
+	}.Build()
 	callDef := &configv1.CommandLineCallDefinition{}
 
 	action := configv1.CallPolicy_DENY

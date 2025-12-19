@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/worker"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -69,6 +70,10 @@ func TestServer_CallTool_ResultHandling(t *testing.T) {
 	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
+
+	// Start the worker to handle tool execution
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker.Start(ctx)
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)

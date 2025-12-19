@@ -543,7 +543,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			for k, v := range httpReq.Header {
 				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
 			}
-			fmt.Printf("DEBUG: sending http request headers:\n%s\n", headerBuf.String())
+			logging.GetLogger().Debug("Sending http request", "headers", headerBuf.String())
 
 			// Log body
 			if bodyForAttempt != nil {
@@ -553,7 +553,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				if seeker, ok := bodyForAttempt.(io.Seeker); ok {
 					_, _ = seeker.Seek(0, io.SeekStart)
 				}
-				fmt.Printf("DEBUG: sending http request body:\n%s\n", prettyPrint(bodyBytes, contentType))
+				logging.GetLogger().Debug("Sending http request body", "body", prettyPrint(bodyBytes, contentType))
 			}
 		}
 
@@ -565,7 +565,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
 			bodyBytes, _ := io.ReadAll(attemptResp.Body)
 			_ = attemptResp.Body.Close()
-			fmt.Printf("DEBUG: Upstream HTTP 404 Body: %s\nHeaders: %v\nURL: %s\n", string(bodyBytes), attemptResp.Header, httpReq.URL.String())
+			logging.GetLogger().Debug("Upstream HTTP 404", "body", string(bodyBytes), "headers", attemptResp.Header, "url", httpReq.URL.String())
 			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d (DEBUG)", attemptResp.StatusCode)}
 		}
 
@@ -598,11 +598,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		for k, v := range resp.Header {
 			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
 		}
-		fmt.Printf("DEBUG: received http response headers:\n%s\n", headerBuf.String())
+		logging.GetLogger().Debug("Received http response headers", "headers", headerBuf.String())
 
 		// Log body
 		contentType := resp.Header.Get("Content-Type")
-		fmt.Printf("DEBUG: received http response body:\n%s\n", prettyPrint(respBody, contentType))
+		logging.GetLogger().Debug("Received http response body", "body", prettyPrint(respBody, contentType))
 
 		// Restore body for subsequent processing
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
@@ -1108,13 +1108,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			// Check if args is allowed in the schema
+			// Check if args is allowed in the call definition
 			argsAllowed := false
-			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
-				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-					if _, ok := props.Fields["args"]; ok {
-						argsAllowed = true
-					}
+			for _, param := range t.callDefinition.GetParameters() {
+				if param.GetSchema().GetName() == "args" {
+					argsAllowed = true
+					break
 				}
 			}
 
@@ -1291,13 +1290,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
-			// Check if args is allowed in the schema
+			// Check if args is allowed in the call definition
 			argsAllowed := false
-			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
-				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-					if _, ok := props.Fields["args"]; ok {
-						argsAllowed = true
-					}
+			for _, param := range t.callDefinition.GetParameters() {
+				if param.GetSchema().GetName() == "args" {
+					argsAllowed = true
+					break
 				}
 			}
 

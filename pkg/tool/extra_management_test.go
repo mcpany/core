@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 	"testing"
 	"time"
-
 	"unsafe"
 
 	"github.com/mcpany/core/pkg/bus"
@@ -63,7 +62,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	m := NewManager(b)
 
 	// Case 1: Tool Not Found
-	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
+	_, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "missing"})
 	assert.Error(t, err)
 	assert.Equal(t, ErrToolNotFound, err)
 
@@ -72,14 +71,14 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	_ = m.AddTool(mt)
 
 	// Case 2: Success
-	res, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	res, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	assert.NoError(t, err)
 	assert.Equal(t, "success", res)
 
 	// Case 3: Middleware execution
 	mw := &mockMiddleware{id: "m1"}
 	m.AddMiddleware(mw)
-	_, err = m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	_, err = m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	assert.NoError(t, err)
 	assert.True(t, mw.called)
 }
@@ -100,24 +99,24 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 	// Case: PreHook Error (via Policy)
 	// We can use PolicyHook with ActionDeny
 	callPolicy := configv1.CallPolicy_builder{
-		DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		DefaultAction: ptr(configv1.CallPolicy_DENY),
 		Rules: []*configv1.CallPolicyRule{
-			configv1.CallPolicyRule_builder{
+			{
 				NameRegex: proto.String(".*mock-tool$"),
-				Action:    configv1.CallPolicy_DENY.Enum(),
-			}.Build(),
+				Action:    ptr(configv1.CallPolicy_DENY),
+			},
 		},
 	}.Build()
 
 	// Setup ServiceInfo with Config
-	svcConfig := &configv1.UpstreamServiceConfig{
+	svcConfig := configv1.UpstreamServiceConfig_builder{
 		Name:         proto.String("s1"),
 		CallPolicies: []*configv1.CallPolicy{callPolicy},
-	}
+	}.Build()
 
 	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
-	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
+	_, err := m.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "denied by policy rule")
 	}
