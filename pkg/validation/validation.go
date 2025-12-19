@@ -48,6 +48,16 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
+// IsRelativePath checks if a given file path is relative and does not contain any
+// path traversal sequences ("../").
+// It is a variable to allow mocking in tests.
+var IsRelativePath = func(path string) error {
+	if filepath.IsAbs(path) {
+		return fmt.Errorf("path must be relative")
+	}
+	return IsSecurePath(path)
+}
+
 // IsValidURL checks if a given string is a valid URL. This function performs
 // several checks, including for length, whitespace, the presence of a scheme,
 // and host, considering special cases for schemes like "unix" or "mailto" that
