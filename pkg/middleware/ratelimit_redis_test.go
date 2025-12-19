@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -41,10 +42,13 @@ func TestRedisLimiter(t *testing.T) {
 	})
 
 	t.Run("Update", func(t *testing.T) {
+		redisBus := &busproto.RedisBus{}
+		_ = protojson.Unmarshal([]byte(`{"address": "addr"}`), redisBus)
+
 		config := &configv1.RateLimitConfig{
-			Redis: &busproto.RedisBus{Address: proto.String("addr")},
+			Redis:             redisBus,
 			RequestsPerSecond: proto.Float64(10),
-			Burst: proto.Int64(10),
+			Burst:             proto.Int64(10),
 		}
 		l, err := middleware.NewRedisLimiter("service", config)
 		assert.NoError(t, err)
@@ -59,10 +63,13 @@ func TestRedisLimiter(t *testing.T) {
 	})
 
 	t.Run("Allow error", func(t *testing.T) {
+		redisBus := &busproto.RedisBus{}
+		_ = protojson.Unmarshal([]byte(`{"address": "addr"}`), redisBus)
+
 		config := &configv1.RateLimitConfig{
-			Redis: &busproto.RedisBus{Address: proto.String("addr")},
+			Redis:             redisBus,
 			RequestsPerSecond: proto.Float64(10),
-			Burst: proto.Int64(10),
+			Burst:             proto.Int64(10),
 		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 
@@ -80,10 +87,13 @@ func TestRedisLimiter(t *testing.T) {
 	})
 
 	t.Run("Allow unexpected type", func(t *testing.T) {
+		redisBus := &busproto.RedisBus{}
+		_ = protojson.Unmarshal([]byte(`{"address": "addr"}`), redisBus)
+
 		config := &configv1.RateLimitConfig{
-			Redis: &busproto.RedisBus{Address: proto.String("addr")},
+			Redis:             redisBus,
 			RequestsPerSecond: proto.Float64(10),
-			Burst: proto.Int64(10),
+			Burst:             proto.Int64(10),
 		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 
@@ -102,8 +112,11 @@ func TestRedisLimiter(t *testing.T) {
     })
 
     t.Run("Close", func(t *testing.T) {
+		redisBus := &busproto.RedisBus{}
+		_ = protojson.Unmarshal([]byte(`{"address": "addr"}`), redisBus)
+
         config := &configv1.RateLimitConfig{
-			Redis: &busproto.RedisBus{Address: proto.String("addr")},
+			Redis: redisBus,
 		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 

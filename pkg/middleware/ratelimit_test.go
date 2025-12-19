@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -97,14 +98,15 @@ func TestRateLimitMiddleware(t *testing.T) {
 		defer middleware.SetTimeNowForTests(time.Now)
 
 		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
+		redisBus := &busproto.RedisBus{}
+		_ = protojson.Unmarshal([]byte(`{"address": "localhost:6379"}`), redisBus)
+
 		rlConfig := &configv1.RateLimitConfig{
 			IsEnabled:         proto.Bool(true),
 			RequestsPerSecond: proto.Float64(10),
 			Burst:             proto.Int64(10),
 			Storage:           &storageRedis,
-			Redis: &busproto.RedisBus{
-				Address: proto.String("localhost:6379"),
-			},
+			Redis:             redisBus,
 		}
 
 		mw, err := middleware.NewRateLimitMiddleware("service", rlConfig)

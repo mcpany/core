@@ -7,8 +7,6 @@
 // 	protoc        v6.33.1
 // source: proto/bus/bus.proto
 
-//go:build !protoopaque
-
 package bus
 
 import (
@@ -27,16 +25,10 @@ const (
 )
 
 type MessageBus struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Types that are valid to be assigned to BusType:
-	//
-	//	*MessageBus_InMemory
-	//	*MessageBus_Redis
-	//	*MessageBus_Nats
-	//	*MessageBus_Kafka
-	BusType       isMessageBus_BusType `protobuf_oneof:"bus_type"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_BusType isMessageBus_BusType   `protobuf_oneof:"bus_type"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MessageBus) Reset() {
@@ -64,16 +56,9 @@ func (x *MessageBus) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *MessageBus) GetBusType() isMessageBus_BusType {
-	if x != nil {
-		return x.BusType
-	}
-	return nil
-}
-
 func (x *MessageBus) GetInMemory() *InMemoryBus {
 	if x != nil {
-		if x, ok := x.BusType.(*MessageBus_InMemory); ok {
+		if x, ok := x.xxx_hidden_BusType.(*messageBus_InMemory); ok {
 			return x.InMemory
 		}
 	}
@@ -82,7 +67,7 @@ func (x *MessageBus) GetInMemory() *InMemoryBus {
 
 func (x *MessageBus) GetRedis() *RedisBus {
 	if x != nil {
-		if x, ok := x.BusType.(*MessageBus_Redis); ok {
+		if x, ok := x.xxx_hidden_BusType.(*messageBus_Redis); ok {
 			return x.Redis
 		}
 	}
@@ -91,7 +76,7 @@ func (x *MessageBus) GetRedis() *RedisBus {
 
 func (x *MessageBus) GetNats() *NatsBus {
 	if x != nil {
-		if x, ok := x.BusType.(*MessageBus_Nats); ok {
+		if x, ok := x.xxx_hidden_BusType.(*messageBus_Nats); ok {
 			return x.Nats
 		}
 	}
@@ -100,7 +85,7 @@ func (x *MessageBus) GetNats() *NatsBus {
 
 func (x *MessageBus) GetKafka() *KafkaBus {
 	if x != nil {
-		if x, ok := x.BusType.(*MessageBus_Kafka); ok {
+		if x, ok := x.xxx_hidden_BusType.(*messageBus_Kafka); ok {
 			return x.Kafka
 		}
 	}
@@ -109,48 +94,48 @@ func (x *MessageBus) GetKafka() *KafkaBus {
 
 func (x *MessageBus) SetInMemory(v *InMemoryBus) {
 	if v == nil {
-		x.BusType = nil
+		x.xxx_hidden_BusType = nil
 		return
 	}
-	x.BusType = &MessageBus_InMemory{v}
+	x.xxx_hidden_BusType = &messageBus_InMemory{v}
 }
 
 func (x *MessageBus) SetRedis(v *RedisBus) {
 	if v == nil {
-		x.BusType = nil
+		x.xxx_hidden_BusType = nil
 		return
 	}
-	x.BusType = &MessageBus_Redis{v}
+	x.xxx_hidden_BusType = &messageBus_Redis{v}
 }
 
 func (x *MessageBus) SetNats(v *NatsBus) {
 	if v == nil {
-		x.BusType = nil
+		x.xxx_hidden_BusType = nil
 		return
 	}
-	x.BusType = &MessageBus_Nats{v}
+	x.xxx_hidden_BusType = &messageBus_Nats{v}
 }
 
 func (x *MessageBus) SetKafka(v *KafkaBus) {
 	if v == nil {
-		x.BusType = nil
+		x.xxx_hidden_BusType = nil
 		return
 	}
-	x.BusType = &MessageBus_Kafka{v}
+	x.xxx_hidden_BusType = &messageBus_Kafka{v}
 }
 
 func (x *MessageBus) HasBusType() bool {
 	if x == nil {
 		return false
 	}
-	return x.BusType != nil
+	return x.xxx_hidden_BusType != nil
 }
 
 func (x *MessageBus) HasInMemory() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.BusType.(*MessageBus_InMemory)
+	_, ok := x.xxx_hidden_BusType.(*messageBus_InMemory)
 	return ok
 }
 
@@ -158,7 +143,7 @@ func (x *MessageBus) HasRedis() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.BusType.(*MessageBus_Redis)
+	_, ok := x.xxx_hidden_BusType.(*messageBus_Redis)
 	return ok
 }
 
@@ -166,7 +151,7 @@ func (x *MessageBus) HasNats() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.BusType.(*MessageBus_Nats)
+	_, ok := x.xxx_hidden_BusType.(*messageBus_Nats)
 	return ok
 }
 
@@ -174,35 +159,35 @@ func (x *MessageBus) HasKafka() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.BusType.(*MessageBus_Kafka)
+	_, ok := x.xxx_hidden_BusType.(*messageBus_Kafka)
 	return ok
 }
 
 func (x *MessageBus) ClearBusType() {
-	x.BusType = nil
+	x.xxx_hidden_BusType = nil
 }
 
 func (x *MessageBus) ClearInMemory() {
-	if _, ok := x.BusType.(*MessageBus_InMemory); ok {
-		x.BusType = nil
+	if _, ok := x.xxx_hidden_BusType.(*messageBus_InMemory); ok {
+		x.xxx_hidden_BusType = nil
 	}
 }
 
 func (x *MessageBus) ClearRedis() {
-	if _, ok := x.BusType.(*MessageBus_Redis); ok {
-		x.BusType = nil
+	if _, ok := x.xxx_hidden_BusType.(*messageBus_Redis); ok {
+		x.xxx_hidden_BusType = nil
 	}
 }
 
 func (x *MessageBus) ClearNats() {
-	if _, ok := x.BusType.(*MessageBus_Nats); ok {
-		x.BusType = nil
+	if _, ok := x.xxx_hidden_BusType.(*messageBus_Nats); ok {
+		x.xxx_hidden_BusType = nil
 	}
 }
 
 func (x *MessageBus) ClearKafka() {
-	if _, ok := x.BusType.(*MessageBus_Kafka); ok {
-		x.BusType = nil
+	if _, ok := x.xxx_hidden_BusType.(*messageBus_Kafka); ok {
+		x.xxx_hidden_BusType = nil
 	}
 }
 
@@ -216,14 +201,14 @@ func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 	if x == nil {
 		return MessageBus_BusType_not_set_case
 	}
-	switch x.BusType.(type) {
-	case *MessageBus_InMemory:
+	switch x.xxx_hidden_BusType.(type) {
+	case *messageBus_InMemory:
 		return MessageBus_InMemory_case
-	case *MessageBus_Redis:
+	case *messageBus_Redis:
 		return MessageBus_Redis_case
-	case *MessageBus_Nats:
+	case *messageBus_Nats:
 		return MessageBus_Nats_case
-	case *MessageBus_Kafka:
+	case *messageBus_Kafka:
 		return MessageBus_Kafka_case
 	default:
 		return MessageBus_BusType_not_set_case
@@ -233,12 +218,12 @@ func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 type MessageBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof BusType:
+	// Fields of oneof xxx_hidden_BusType:
 	InMemory *InMemoryBus
 	Redis    *RedisBus
 	Nats     *NatsBus
 	Kafka    *KafkaBus
-	// -- end of BusType
+	// -- end of xxx_hidden_BusType
 }
 
 func (b0 MessageBus_builder) Build() *MessageBus {
@@ -246,16 +231,16 @@ func (b0 MessageBus_builder) Build() *MessageBus {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.InMemory != nil {
-		x.BusType = &MessageBus_InMemory{b.InMemory}
+		x.xxx_hidden_BusType = &messageBus_InMemory{b.InMemory}
 	}
 	if b.Redis != nil {
-		x.BusType = &MessageBus_Redis{b.Redis}
+		x.xxx_hidden_BusType = &messageBus_Redis{b.Redis}
 	}
 	if b.Nats != nil {
-		x.BusType = &MessageBus_Nats{b.Nats}
+		x.xxx_hidden_BusType = &messageBus_Nats{b.Nats}
 	}
 	if b.Kafka != nil {
-		x.BusType = &MessageBus_Kafka{b.Kafka}
+		x.xxx_hidden_BusType = &messageBus_Kafka{b.Kafka}
 	}
 	return m0
 }
@@ -274,32 +259,32 @@ type isMessageBus_BusType interface {
 	isMessageBus_BusType()
 }
 
-type MessageBus_InMemory struct {
+type messageBus_InMemory struct {
 	InMemory *InMemoryBus `protobuf:"bytes,1,opt,name=in_memory,json=inMemory,oneof"`
 }
 
-type MessageBus_Redis struct {
+type messageBus_Redis struct {
 	Redis *RedisBus `protobuf:"bytes,2,opt,name=redis,oneof"`
 }
 
-type MessageBus_Nats struct {
+type messageBus_Nats struct {
 	Nats *NatsBus `protobuf:"bytes,3,opt,name=nats,oneof"`
 }
 
-type MessageBus_Kafka struct {
+type messageBus_Kafka struct {
 	Kafka *KafkaBus `protobuf:"bytes,4,opt,name=kafka,oneof"`
 }
 
-func (*MessageBus_InMemory) isMessageBus_BusType() {}
+func (*messageBus_InMemory) isMessageBus_BusType() {}
 
-func (*MessageBus_Redis) isMessageBus_BusType() {}
+func (*messageBus_Redis) isMessageBus_BusType() {}
 
-func (*MessageBus_Nats) isMessageBus_BusType() {}
+func (*messageBus_Nats) isMessageBus_BusType() {}
 
-func (*MessageBus_Kafka) isMessageBus_BusType() {}
+func (*messageBus_Kafka) isMessageBus_BusType() {}
 
 type InMemoryBus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -342,10 +327,12 @@ func (b0 InMemoryBus_builder) Build() *InMemoryBus {
 }
 
 type NatsBus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ServerUrl     *string                `protobuf:"bytes,1,opt,name=server_url,json=serverUrl" json:"server_url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServerUrl   *string                `protobuf:"bytes,1,opt,name=server_url,json=serverUrl"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *NatsBus) Reset() {
@@ -374,25 +361,30 @@ func (x *NatsBus) ProtoReflect() protoreflect.Message {
 }
 
 func (x *NatsBus) GetServerUrl() string {
-	if x != nil && x.ServerUrl != nil {
-		return *x.ServerUrl
+	if x != nil {
+		if x.xxx_hidden_ServerUrl != nil {
+			return *x.xxx_hidden_ServerUrl
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *NatsBus) SetServerUrl(v string) {
-	x.ServerUrl = &v
+	x.xxx_hidden_ServerUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *NatsBus) HasServerUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.ServerUrl != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *NatsBus) ClearServerUrl() {
-	x.ServerUrl = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServerUrl = nil
 }
 
 type NatsBus_builder struct {
@@ -405,17 +397,22 @@ func (b0 NatsBus_builder) Build() *NatsBus {
 	m0 := &NatsBus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServerUrl = b.ServerUrl
+	if b.ServerUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ServerUrl = b.ServerUrl
+	}
 	return m0
 }
 
 type RedisBus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Address       *string                `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
-	Db            *int32                 `protobuf:"varint,2,opt,name=db" json:"db,omitempty"`
-	Password      *string                `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_Db          int32                  `protobuf:"varint,2,opt,name=db"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,3,opt,name=password"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RedisBus) Reset() {
@@ -444,69 +441,81 @@ func (x *RedisBus) ProtoReflect() protoreflect.Message {
 }
 
 func (x *RedisBus) GetAddress() string {
-	if x != nil && x.Address != nil {
-		return *x.Address
+	if x != nil {
+		if x.xxx_hidden_Address != nil {
+			return *x.xxx_hidden_Address
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *RedisBus) GetDb() int32 {
-	if x != nil && x.Db != nil {
-		return *x.Db
+	if x != nil {
+		return x.xxx_hidden_Db
 	}
 	return 0
 }
 
 func (x *RedisBus) GetPassword() string {
-	if x != nil && x.Password != nil {
-		return *x.Password
+	if x != nil {
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *RedisBus) SetAddress(v string) {
-	x.Address = &v
+	x.xxx_hidden_Address = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *RedisBus) SetDb(v int32) {
-	x.Db = &v
+	x.xxx_hidden_Db = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *RedisBus) SetPassword(v string) {
-	x.Password = &v
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *RedisBus) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return x.Address != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *RedisBus) HasDb() bool {
 	if x == nil {
 		return false
 	}
-	return x.Db != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *RedisBus) HasPassword() bool {
 	if x == nil {
 		return false
 	}
-	return x.Password != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *RedisBus) ClearAddress() {
-	x.Address = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Address = nil
 }
 
 func (x *RedisBus) ClearDb() {
-	x.Db = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Db = 0
 }
 
 func (x *RedisBus) ClearPassword() {
-	x.Password = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Password = nil
 }
 
 type RedisBus_builder struct {
@@ -521,19 +530,30 @@ func (b0 RedisBus_builder) Build() *RedisBus {
 	m0 := &RedisBus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Address = b.Address
-	x.Db = b.Db
-	x.Password = b.Password
+	if b.Address != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Address = b.Address
+	}
+	if b.Db != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Db = *b.Db
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Password = b.Password
+	}
 	return m0
 }
 
 type KafkaBus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Brokers       []string               `protobuf:"bytes,1,rep,name=brokers" json:"brokers,omitempty"`
-	TopicPrefix   *string                `protobuf:"bytes,2,opt,name=topic_prefix,json=topicPrefix" json:"topic_prefix,omitempty"`
-	ConsumerGroup *string                `protobuf:"bytes,3,opt,name=consumer_group,json=consumerGroup" json:"consumer_group,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Brokers       []string               `protobuf:"bytes,1,rep,name=brokers"`
+	xxx_hidden_TopicPrefix   *string                `protobuf:"bytes,2,opt,name=topic_prefix,json=topicPrefix"`
+	xxx_hidden_ConsumerGroup *string                `protobuf:"bytes,3,opt,name=consumer_group,json=consumerGroup"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *KafkaBus) Reset() {
@@ -563,57 +583,67 @@ func (x *KafkaBus) ProtoReflect() protoreflect.Message {
 
 func (x *KafkaBus) GetBrokers() []string {
 	if x != nil {
-		return x.Brokers
+		return x.xxx_hidden_Brokers
 	}
 	return nil
 }
 
 func (x *KafkaBus) GetTopicPrefix() string {
-	if x != nil && x.TopicPrefix != nil {
-		return *x.TopicPrefix
+	if x != nil {
+		if x.xxx_hidden_TopicPrefix != nil {
+			return *x.xxx_hidden_TopicPrefix
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *KafkaBus) GetConsumerGroup() string {
-	if x != nil && x.ConsumerGroup != nil {
-		return *x.ConsumerGroup
+	if x != nil {
+		if x.xxx_hidden_ConsumerGroup != nil {
+			return *x.xxx_hidden_ConsumerGroup
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *KafkaBus) SetBrokers(v []string) {
-	x.Brokers = v
+	x.xxx_hidden_Brokers = v
 }
 
 func (x *KafkaBus) SetTopicPrefix(v string) {
-	x.TopicPrefix = &v
+	x.xxx_hidden_TopicPrefix = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *KafkaBus) SetConsumerGroup(v string) {
-	x.ConsumerGroup = &v
+	x.xxx_hidden_ConsumerGroup = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *KafkaBus) HasTopicPrefix() bool {
 	if x == nil {
 		return false
 	}
-	return x.TopicPrefix != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *KafkaBus) HasConsumerGroup() bool {
 	if x == nil {
 		return false
 	}
-	return x.ConsumerGroup != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *KafkaBus) ClearTopicPrefix() {
-	x.TopicPrefix = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_TopicPrefix = nil
 }
 
 func (x *KafkaBus) ClearConsumerGroup() {
-	x.ConsumerGroup = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ConsumerGroup = nil
 }
 
 type KafkaBus_builder struct {
@@ -628,9 +658,15 @@ func (b0 KafkaBus_builder) Build() *KafkaBus {
 	m0 := &KafkaBus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Brokers = b.Brokers
-	x.TopicPrefix = b.TopicPrefix
-	x.ConsumerGroup = b.ConsumerGroup
+	x.xxx_hidden_Brokers = b.Brokers
+	if b.TopicPrefix != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_TopicPrefix = b.TopicPrefix
+	}
+	if b.ConsumerGroup != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_ConsumerGroup = b.ConsumerGroup
+	}
 	return m0
 }
 
@@ -658,7 +694,7 @@ const file_proto_bus_bus_proto_rawDesc = "" +
 	"\bKafkaBus\x12\x18\n" +
 	"\abrokers\x18\x01 \x03(\tR\abrokers\x12!\n" +
 	"\ftopic_prefix\x18\x02 \x01(\tR\vtopicPrefix\x12%\n" +
-	"\x0econsumer_group\x18\x03 \x01(\tR\rconsumerGroupB4B\bBusProtoZ github.com/mcpany/core/proto/bus\x92\x03\x05\xd2>\x02\x10\x02b\beditionsp\xe8\a"
+	"\x0econsumer_group\x18\x03 \x01(\tR\rconsumerGroupB4B\bBusProtoZ github.com/mcpany/core/proto/bus\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_bus_bus_proto_goTypes = []any{
@@ -686,10 +722,10 @@ func file_proto_bus_bus_proto_init() {
 		return
 	}
 	file_proto_bus_bus_proto_msgTypes[0].OneofWrappers = []any{
-		(*MessageBus_InMemory)(nil),
-		(*MessageBus_Redis)(nil),
-		(*MessageBus_Nats)(nil),
-		(*MessageBus_Kafka)(nil),
+		(*messageBus_InMemory)(nil),
+		(*messageBus_Redis)(nil),
+		(*messageBus_Nats)(nil),
+		(*messageBus_Kafka)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
