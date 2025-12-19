@@ -494,6 +494,37 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	assert.Equal(t, rawBytesResponse, resultMap["raw"])
 }
 
+func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
+	t.Parallel()
+	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(jsonResponse))
+	})
+
+	format := configv1.OutputTransformer_JQ
+	callDef := configv1.HttpCallDefinition_builder{
+		OutputTransformer: configv1.OutputTransformer_builder{
+			Format:  &format,
+			JqQuery: lo.ToPtr(".users[].name"),
+		}.Build(),
+	}.Build()
+
+	httpTool, server := setupHTTPToolTest(t, handler, callDef)
+	defer server.Close()
+
+	req := &tool.ExecutionRequest{}
+	result, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	// Result should be a slice of interface{}
+	resultList, ok := result.([]any)
+	require.True(t, ok)
+	assert.Contains(t, resultList, "Alice")
+	assert.Contains(t, resultList, "Bob")
+}
+
 func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	t.Parallel()
 	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
