@@ -22,7 +22,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ClearCache_FullMethodName   = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName   = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName    = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName      = "/mcpany.admin.v1.AdminService/GetTool"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -33,6 +37,14 @@ const (
 type AdminServiceClient interface {
 	// ClearCache clears all cached data in the server.
 	ClearCache(ctx context.Context, in *ClearCacheRequest, opts ...grpc.CallOption) (*ClearCacheResponse, error)
+	// ListServices returns all registered services.
+	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
+	// GetService returns a specific service by ID.
+	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
+	// ListTools returns all registered tools.
+	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
+	// GetTool returns a specific tool by name.
+	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
 }
 
 type adminServiceClient struct {
@@ -53,6 +65,46 @@ func (c *adminServiceClient) ClearCache(ctx context.Context, in *ClearCacheReque
 	return out, nil
 }
 
+func (c *adminServiceClient) ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListServicesResponse)
+	err := c.cc.Invoke(ctx, AdminService_ListServices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListToolsResponse)
+	err := c.cc.Invoke(ctx, AdminService_ListTools_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetToolResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetTool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -61,6 +113,14 @@ func (c *adminServiceClient) ClearCache(ctx context.Context, in *ClearCacheReque
 type AdminServiceServer interface {
 	// ClearCache clears all cached data in the server.
 	ClearCache(context.Context, *ClearCacheRequest) (*ClearCacheResponse, error)
+	// ListServices returns all registered services.
+	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
+	// GetService returns a specific service by ID.
+	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
+	// ListTools returns all registered tools.
+	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
+	// GetTool returns a specific tool by name.
+	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -73,6 +133,18 @@ type UnimplementedAdminServiceServer struct{}
 
 func (UnimplementedAdminServiceServer) ClearCache(context.Context, *ClearCacheRequest) (*ClearCacheResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClearCache not implemented")
+}
+func (UnimplementedAdminServiceServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
+}
+func (UnimplementedAdminServiceServer) GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
+}
+func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTools not implemented")
+}
+func (UnimplementedAdminServiceServer) GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTool not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -113,6 +185,78 @@ func _AdminService_ClearCache_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_ListServices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).ListServices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_ListServices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).ListServices(ctx, req.(*ListServicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_GetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetService(ctx, req.(*GetServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_ListTools_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListToolsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).ListTools(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_ListTools_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).ListTools(ctx, req.(*ListToolsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_GetTool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetToolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetTool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetTool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetTool(ctx, req.(*GetToolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -123,6 +267,22 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClearCache",
 			Handler:    _AdminService_ClearCache_Handler,
+		},
+		{
+			MethodName: "ListServices",
+			Handler:    _AdminService_ListServices_Handler,
+		},
+		{
+			MethodName: "GetService",
+			Handler:    _AdminService_GetService_Handler,
+		},
+		{
+			MethodName: "ListTools",
+			Handler:    _AdminService_ListTools_Handler,
+		},
+		{
+			MethodName: "GetTool",
+			Handler:    _AdminService_GetTool_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
