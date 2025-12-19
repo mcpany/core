@@ -77,7 +77,8 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	} else if viper.GetBool("stdio") {
 		logOutput = io.Discard
 	}
-	logging.Init(logLevel, logOutput)
+	logFormat := viper.GetString("log-format")
+	logging.Init(logLevel, logOutput, logFormat)
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
@@ -98,9 +99,20 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
+	s.proto.SetLogFormat(s.LogFormat())
 	s.proto.SetApiKey(s.APIKey())
 
 	return nil
+}
+
+// LogFormat returns the current log format as a protobuf enum.
+func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
+	format := viper.GetString("log-format")
+	key := "LOG_FORMAT_" + strings.ToUpper(format)
+	if val, ok := configv1.GlobalSettings_LogFormat_value[key]; ok {
+		return configv1.GlobalSettings_LogFormat(val)
+	}
+	return configv1.GlobalSettings_LOG_FORMAT_TEXT
 }
 
 // GRPCPort returns the gRPC port.
