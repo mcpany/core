@@ -466,6 +466,48 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 }
 
+func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
+	t.Parallel()
+	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/cloudevents+json")
+		responseEvent := `{
+			"specversion": "1.0",
+			"type": "com.mcpany.tool.transform_input.response",
+			"source": "webhook-test",
+			"id": "123",
+			"data": {"transformed": "input"}
+		}`
+		w.Write([]byte(responseEvent))
+	}))
+	defer webhookServer.Close()
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		assert.JSONEq(t, `{"transformed": "input"}`, string(body))
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{}`))
+	})
+
+	method := configv1.HttpCallDefinition_HTTP_METHOD_POST
+	callDef := &configv1.HttpCallDefinition{
+		Method: &method,
+		InputTransformer: &configv1.InputTransformer{
+			Webhook: &configv1.WebhookConfig{
+				Url: webhookServer.URL,
+			},
+		},
+	}
+
+	httpTool, server := setupHTTPToolTest(t, handler, callDef)
+	defer server.Close()
+
+	inputs := json.RawMessage(`{}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+	_, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+}
+
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	t.Parallel()
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
