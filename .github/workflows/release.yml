@@ -139,9 +139,10 @@ jobs:
           name: Release ${{ needs.setup.outputs.version }}
           files: ./build/release/*.zip
           generate_release_notes: true
-          draft: false
+          draft: true
           prerelease: false
-          make_latest: true
+          make_latest: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   # ==============================================================================
   # JOB 3: DOCKER BUILD (MATRIX)
