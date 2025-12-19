@@ -45,6 +45,13 @@ message GlobalSettings {
     LOG_LEVEL_ERROR = 3;
     LOG_LEVEL_DEBUG = 4;
   }
+
+  enum LogFormat {
+    LOG_FORMAT_UNSPECIFIED = 0;
+    LOG_FORMAT_TEXT = 1;
+    LOG_FORMAT_JSON = 2;
+  }
+
   // The address the MCP server listens on.
   string mcp_listen_address = 1 [json_name = "mcp_listen_address"];
   reserved 2; // mcp_basepath
@@ -62,6 +69,8 @@ message GlobalSettings {
   AuditConfig audit = 8 [json_name = "audit"];
   // The definitions of profiles.
   repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
+  // The log format for the server.
+  LogFormat log_format = 10 [json_name = "log_format"];
 }
 
 message AuditConfig {

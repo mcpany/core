@@ -89,6 +89,7 @@ Contains server-wide operational parameters.
 | `mcp_listen_address` | `string`     | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
 | `mcp_basepath`       | `string`     | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
+| `log_format`         | `enum`       | The logging format. Can be `text` or `json`.                                  |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
 | `api_key`            | `string`     | The API key for securing the MCP server.                                      |
 | `audit`              | `AuditConfig`| Audit logging configuration.                                                  |

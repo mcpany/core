@@ -21,6 +21,7 @@ The following features are fully implemented and tested:
 - **Security**: Secrets Management, IP Allowlisting.
 - **Eventing**: NATS support, Webhooks (Pre/Post call).
 - **Documentation**: Automated Doc Gen.
+- **Logging**: Structured Logging (JSON) support.
 
 #### High Priority (Next 1-3 Months)
 
@@ -39,7 +40,6 @@ Based on the strategic feature extraction analysis, the following features are r
 | 1 | **Distributed Rate Limiting (Redis)** | **Scalability**: Current rate limiting is in-memory (per instance). Distributed limiting is essential for running multiple replicas in production. | Medium |
 | 2 | **Kafka Transport Support** | **Scalability**: Completes the message bus vision. Kafka is industry-standard for high-throughput event streaming. | Medium |
 | 3 | **Admin/Management API** | **UX/Automation**: Allow programmatic configuration updates (add/remove services) without restarting or editing files directly. Precursor to the Dynamic UI. | High |
-| 6 | **Structured Logging (JSON)** | **Observability**: Switch from text logs to JSON for better ingestion by log aggregators (Splunk, ELK). | Low |
 | 7 | **RBAC (Role-Based Access Control)** | **Security**: Restrict which users can access which profiles or tools. Essential for multi-tenant environments. | High |
 | 8 | **Dynamic UI** | **UX**: A web interface to visualize and manage the server. | High |
 | 9 | **WASM Plugins** | **Extensibility**: Allow users to write custom transformation/validation logic in any language (Rust, Go, TS) without recompiling the server. | High |
