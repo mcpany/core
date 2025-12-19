@@ -82,6 +82,10 @@ func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 
+func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }

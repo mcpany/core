@@ -61,6 +61,10 @@ func (m *rateLimitMockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return args.Get(0).(tool.Tool), args.Bool(1)
 }
 
+func (m *rateLimitMockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func TestRateLimitMiddleware(t *testing.T) {
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
