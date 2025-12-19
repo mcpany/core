@@ -11,18 +11,12 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/util"
-	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestResolveSecret(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
-
-	// Mock IsRelativePath to allow absolute paths for tests using temp files
-	originalIsRelativePath := validation.IsRelativePath
-	validation.IsRelativePath = validation.IsSecurePath
-	defer func() { validation.IsRelativePath = originalIsRelativePath }()
 
 	t.Run("nil secret", func(t *testing.T) {
 		resolved, err := util.ResolveSecret(nil)
