@@ -198,3 +198,15 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 	}
 	return urlPath
 }
+
+// ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
+func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
+	for k, v := range params {
+		val := fmt.Sprintf("%v", v)
+		if noEscapeParams == nil || !noEscapeParams[k] {
+			val = url.QueryEscape(val)
+		}
+		urlQuery = strings.ReplaceAll(urlQuery, "{{"+k+"}}", val)
+	}
+	return urlQuery
+}
