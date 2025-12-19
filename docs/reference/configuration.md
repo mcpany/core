@@ -87,7 +87,6 @@ Contains server-wide operational parameters.
 | Field                | Type         | Description                                                                   |
 | -------------------- | ------------ | ----------------------------------------------------------------------------- |
 | `mcp_listen_address` | `string`     | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
-| `mcp_basepath`       | `string`     | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `log_format`         | `enum`       | The logging format. Can be `text` or `json`.                                  |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
@@ -123,7 +122,6 @@ global_settings:
 ```yaml
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  mcp_basepath: "/mcp/v1"
   log_level: "DEBUG"
 ```
 
