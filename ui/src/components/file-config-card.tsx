@@ -1,0 +1,102 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UpstreamServiceConfig } from "@/lib/types";
+import { File } from "lucide-react";
+import yaml from 'js-yaml';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { ScrollArea } from "./ui/scroll-area";
+
+function objectToTextProto(obj: any, indent = 0): string {
+  const indentStr = '  '.repeat(indent);
+  let protoStr = '';
+
+  for (const key in obj) {
+    if (obj[key] === null || obj[key] === undefined || (Array.isArray(obj[key]) && obj[key].length === 0)) {
+      continue;
+    }
+
+    const value = obj[key];
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item === 'object' && item !== null) {
+          protoStr += `${indentStr}${key}: {\n`;
+          protoStr += objectToTextProto(item, indent + 1);
+          protoStr += `${indentStr}}\n`;
+        } else {
+          protoStr += `${indentStr}${key}: ${JSON.stringify(item)}\n`;
+        }
+      }
+    } else if (typeof value === 'object') {
+      protoStr += `${indentStr}${key}: {\n`;
+      protoStr += objectToTextProto(value, indent + 1);
+      protoStr += `${indentStr}}\n`;
+    } else {
+      protoStr += `${indentStr}${key}: ${typeof value === 'string' ? `"${value}"` : value}\n`;
+    }
+  }
+
+  return protoStr;
+}
+
+
+function CodeBlock({ language, code }: { language: string; code: string }) {
+    return (
+        <ScrollArea className="h-72 w-full rounded-md border bg-background/50">
+             <SyntaxHighlighter language={language} style={vscDarkPlus} showLineNumbers customStyle={{ background: 'transparent', margin: 0, padding: '1rem' }}>
+                {code}
+            </SyntaxHighlighter>
+        </ScrollArea>
+    )
+}
+
+export function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
+    const [jsonConfig, setJsonConfig] = useState("");
+    const [yamlConfig, setYamlConfig] = useState("");
+    const [textProtoConfig, setTextProtoConfig] = useState("");
+
+    useEffect(() => {
+        const tempService = JSON.parse(JSON.stringify(service));
+        delete tempService.id;
+
+        setJsonConfig(JSON.stringify(tempService, null, 2));
+        setYamlConfig(yaml.dump(tempService));
+        setTextProtoConfig(objectToTextProto(tempService));
+    }, [service]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2"><File /> File Config</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="yaml">
+                    <TabsList>
+                        <TabsTrigger value="yaml">YAML</TabsTrigger>
+                        <TabsTrigger value="json">JSON</TabsTrigger>
+                        <TabsTrigger value="textproto">Text Proto</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="yaml" className="mt-4">
+                        <CodeBlock language="yaml" code={yamlConfig} />
+                    </TabsContent>
+                    <TabsContent value="json" className="mt-4">
+                        <CodeBlock language="json" code={jsonConfig} />
+                    </TabsContent>
+                    <TabsContent value="textproto" className="mt-4">
+                        <CodeBlock language="protobuf" code={textProtoConfig} />
+                    </TabsContent>
+                </Tabs>
+            </CardContent>
+        </Card>
+    )
+}
