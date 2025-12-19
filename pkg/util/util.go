@@ -51,10 +51,30 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 
 		// Sanitize and create the prefix
 		var sanitizedPrefix string
-		if nonWordChars.MatchString(id) {
-			sanitizedPrefix = nonWordChars.ReplaceAllString(id, "")
-		} else {
+
+		// Optimization: Check for clean string manually to avoid regex overhead
+		isClean := true
+		for i := 0; i < len(id); i++ {
+			c := id[i]
+			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') {
+				isClean = false
+				break
+			}
+		}
+
+		if isClean {
 			sanitizedPrefix = id
+		} else {
+			// Optimization: Use strings.Builder for replacement
+			var sb strings.Builder
+			sb.Grow(len(id))
+			for i := 0; i < len(id); i++ {
+				c := id[i]
+				if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' {
+					sb.WriteByte(c)
+				}
+			}
+			sanitizedPrefix = sb.String()
 		}
 
 		// Check if we need to append the hash
@@ -78,7 +98,8 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 			if sanitizedPrefix == "" {
 				sanitizedPrefix = "id"
 			}
-			sanitizedIDs = append(sanitizedIDs, fmt.Sprintf("%s_%s", sanitizedPrefix, hash))
+			// Optimization: Concatenation vs Sprintf
+			sanitizedIDs = append(sanitizedIDs, sanitizedPrefix+"_"+hash)
 		} else {
 			sanitizedIDs = append(sanitizedIDs, sanitizedPrefix)
 		}
@@ -110,8 +131,6 @@ const (
 )
 
 var (
-	// nonWordChars is a regular expression that matches any character that is not a word character.
-	nonWordChars = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
