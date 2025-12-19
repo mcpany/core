@@ -102,6 +102,41 @@ func TestSanitizeID(t *testing.T) {
 	}
 }
 
+func TestReplaceURLPath_Security(t *testing.T) {
+	tests := []struct {
+		name     string
+		urlPath  string
+		params   map[string]interface{}
+		expected string
+	}{
+		{
+			name:     "prevent path traversal",
+			urlPath:  "/files/{{name}}",
+			params:   map[string]interface{}{"name": "../secret"},
+			expected: "/files/..%2Fsecret",
+		},
+		{
+			name:     "prevent path injection",
+			urlPath:  "/files/{{name}}",
+			params:   map[string]interface{}{"name": "dir/file"},
+			expected: "/files/dir%2Ffile",
+		},
+		{
+			name:     "prevent query injection",
+			urlPath:  "/files/{{name}}",
+			params:   map[string]interface{}{"name": "file?admin=true"},
+			expected: "/files/file%3Fadmin=true",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := ReplaceURLPath(tt.urlPath, tt.params)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
 func TestSanitizeServiceName(t *testing.T) {
 	testCases := []struct {
 		name        string

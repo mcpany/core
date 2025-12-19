@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -167,7 +168,7 @@ func GetDockerCommand() (string, []string) {
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
 func ReplaceURLPath(urlPath string, params map[string]interface{}) string {
 	for k, v := range params {
-		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", fmt.Sprintf("%v", v))
+		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", url.PathEscape(fmt.Sprintf("%v", v)))
 	}
 	return urlPath
 }
