@@ -491,3 +491,195 @@ func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
 	assert.Len(t, tools, 1)
 	assert.Equal(t, util.SanitizeOperationID("A test description"), tools[0].Tool().GetName())
 }
+
+func TestUpstream_Register_CornerCases(t *testing.T) {
+	t.Run("disabled tool", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		upstream := NewUpstream(poolManager)
+
+		toolDef := configv1.ToolDefinition_builder{
+			Name:    proto.String("disabled-tool"),
+			CallId:  proto.String("call-id"),
+			Disable: proto.Bool(true),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-disabled")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+		require.NoError(t, err)
+		assert.Empty(t, discoveredTools)
+	})
+
+	t.Run("empty name fallback", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		upstream := NewUpstream(poolManager)
+
+		toolDef := configv1.ToolDefinition_builder{
+			Name:        proto.String(""), // Empty name
+			Description: proto.String(""), // Empty description -> no summary
+			CallId:      proto.String("call-id"),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebrtcCallDefinition)
+		calls["call-id"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call-id")}.Build()
+		webrtcService.SetCalls(calls)
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-empty-name")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+		require.NoError(t, err)
+
+		tools := toolManager.ListTools()
+		require.Len(t, tools, 1)
+		assert.Equal(t, "op0", tools[0].Tool().GetName())
+	})
+
+	t.Run("disabled resource", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		resourceManager := NewMockResourceManager()
+		upstream := NewUpstream(poolManager)
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("disabled-resource")
+		resourceDef.SetDisable(true)
+		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-disabled-resource")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+		require.NoError(t, err)
+		assert.Empty(t, resourceManager.ListResources())
+	})
+
+	t.Run("dynamic resource missing call", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		resourceManager := NewMockResourceManager()
+		upstream := NewUpstream(poolManager)
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("resource-missing-call")
+		dynamicResource := &configv1.DynamicResource{}
+		// No WebrtcCall set
+		resourceDef.SetDynamic(dynamicResource)
+		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-missing-call")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+		require.NoError(t, err)
+		assert.Empty(t, resourceManager.ListResources())
+	})
+
+	t.Run("dynamic resource call id not found", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		resourceManager := NewMockResourceManager()
+		upstream := NewUpstream(poolManager)
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("resource-call-not-found")
+		dynamicResource := &configv1.DynamicResource{}
+		webrtcCall := &configv1.WebrtcCallDefinition{}
+		webrtcCall.SetId("unknown-call-id")
+		dynamicResource.SetWebrtcCall(webrtcCall)
+		resourceDef.SetDynamic(dynamicResource)
+		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-call-not-found")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+		require.NoError(t, err)
+		assert.Empty(t, resourceManager.ListResources())
+	})
+
+	t.Run("tool not found for dynamic resource", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		resourceManager := NewMockResourceManager()
+		upstream := NewUpstream(poolManager)
+
+		toolManager.lastErr = errors.New("fail add tool")
+
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("tool1"),
+			CallId: proto.String("call1"),
+		}.Build()
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebrtcCallDefinition)
+		calls["call1"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call1")}.Build()
+		webrtcService.SetCalls(calls)
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("resource1")
+		dynamicResource := &configv1.DynamicResource{}
+		webrtcCall := &configv1.WebrtcCallDefinition{}
+		webrtcCall.SetId("call1")
+		dynamicResource.SetWebrtcCall(webrtcCall)
+		resourceDef.SetDynamic(dynamicResource)
+		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-tool-not-found")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+		require.NoError(t, err)
+		assert.Empty(t, resourceManager.ListResources())
+	})
+
+	t.Run("disabled prompt", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		promptManager := NewMockPromptManager()
+		upstream := NewUpstream(poolManager)
+
+		webrtcService := &configv1.WebrtcUpstreamService{}
+		webrtcService.SetAddress("http://localhost:8080/signal")
+
+		promptDef := &configv1.PromptDefinition{}
+		promptDef.SetName("disabled-prompt")
+		promptDef.SetDisable(true)
+		webrtcService.SetPrompts([]*configv1.PromptDefinition{promptDef})
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-webrtc-disabled-prompt")
+		serviceConfig.SetWebrtcService(webrtcService)
+
+		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, nil, false)
+		require.NoError(t, err)
+		assert.Empty(t, promptManager.ListPrompts())
+	})
+}
