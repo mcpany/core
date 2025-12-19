@@ -81,7 +81,7 @@ func TestHTTPPool_GetPut(t *testing.T) {
 	assert.Same(t, client, client2)
 }
 
-func TestHTTPPool_UniqueClients(t *testing.T) {
+func TestHTTPPool_SharedClients(t *testing.T) {
 	p, err := NewHTTPPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
@@ -95,7 +95,8 @@ func TestHTTPPool_UniqueClients(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client2)
 
-	assert.NotSame(t, client1.Client, client2.Client)
+	// Clients in the pool should share the same underlying http.Client to enable connection pooling
+	assert.Same(t, client1.Client, client2.Client)
 }
 
 func TestHTTPPool_Close(t *testing.T) {
