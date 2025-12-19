@@ -97,6 +97,16 @@ func TestStdioUpstream_Register(t *testing.T) {
 		callDef := configv1.CommandLineCallDefinition_builder{
 			Id: proto.String("echo-call"),
 		}.Build()
+
+		argsParam := configv1.CommandLineParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name:        proto.String("args"),
+				Type:        configv1.ParameterType_ARRAY.Enum(),
+				Description: proto.String("Additional arguments"),
+			}.Build(),
+		}.Build()
+		callDef.SetParameters([]*configv1.CommandLineParameterMapping{argsParam})
+
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["echo-call"] = callDef
 		cmdService.SetCalls(calls)

@@ -675,6 +675,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
+
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -844,6 +845,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
+
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1066,6 +1068,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
+
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1089,6 +1092,20 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
+			// Check if args is allowed in the schema
+			argsAllowed := false
+			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+					if _, ok := props.Fields["args"]; ok {
+						argsAllowed = true
+					}
+				}
+			}
+
+			if !argsAllowed {
+				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
+			}
+
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
@@ -1234,6 +1251,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
+
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1245,6 +1263,20 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
+			// Check if args is allowed in the schema
+			argsAllowed := false
+			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+					if _, ok := props.Fields["args"]; ok {
+						argsAllowed = true
+					}
+				}
+			}
+
+			if !argsAllowed {
+				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
+			}
+
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {

@@ -80,6 +80,7 @@ func (u *Upstream) Register(
 		ctx,
 		serviceID,
 		commandLineService,
+		serviceConfig.GetCallPolicies(),
 		toolManager,
 		resourceManager,
 		isReload,
@@ -108,6 +109,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 	_ context.Context,
 	serviceID string,
 	commandLineService *configv1.CommandLineUpstreamService,
+	callPolicies []*configv1.CallPolicy,
 	toolManager tool.ManagerInterface,
 	resourceManager resource.ManagerInterface,
 	_ bool,
@@ -142,18 +144,6 @@ func (u *Upstream) createAndRegisterCommandTools(
 		if inputProperties.Fields == nil {
 			inputProperties.Fields = make(map[string]*structpb.Value)
 		}
-
-		inputProperties.Fields["args"] = structpb.NewStructValue(&structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue("array"),
-				"description": structpb.NewStringValue("Additional arguments for the command"),
-				"items": structpb.NewStructValue(&structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": structpb.NewStringValue("string"),
-					},
-				}),
-			},
-		})
 
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
@@ -196,9 +186,9 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		var newTool tool.Tool
 		if commandLineService.GetLocal() {
-			newTool = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef, serviceConfig.GetCallPolicies(), callID)
+			newTool = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef, callPolicies, callID)
 		} else {
-			newTool = tool.NewCommandTool(newToolProto, commandLineService, callDef, serviceConfig.GetCallPolicies(), callID)
+			newTool = tool.NewCommandTool(newToolProto, commandLineService, callDef, callPolicies, callID)
 		}
 		if err := toolManager.AddTool(newTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
