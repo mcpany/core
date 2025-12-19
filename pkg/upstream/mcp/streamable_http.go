@@ -535,7 +535,7 @@ func (u *Upstream) registerTools(
 			logging.GetLogger().Error("Failed to convert mcp tool to proto", "error", err)
 			continue
 		}
-		pbTool.SetServiceId(serviceID)
+		pbTool.ServiceId = proto.String(serviceID)
 
 		// Apply overrides from config
 		if hasConfig {

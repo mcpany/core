@@ -13,12 +13,12 @@ import (
 	"strings"
 	"testing"
 
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/api/proto/config/v1"
-	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -636,9 +636,9 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 		resilience := &configv1.ResilienceConfig{}
 		retryPolicy := &configv1.RetryConfig{}
-		retryPolicy.SetNumberOfRetries(2)
-		retryPolicy.SetBaseBackoff(durationpb.New(0))
-		resilience.SetRetryPolicy(retryPolicy)
+		retryPolicy.NumberOfRetries = proto.Int32(2)
+		retryPolicy.BaseBackoff = durationpb.New(0)
+		resilience.RetryPolicy = retryPolicy
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
@@ -667,9 +667,9 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 		resilience := &configv1.ResilienceConfig{}
 		retryPolicy := &configv1.RetryConfig{}
-		retryPolicy.SetNumberOfRetries(2)
-		retryPolicy.SetBaseBackoff(durationpb.New(0))
-		resilience.SetRetryPolicy(retryPolicy)
+		retryPolicy.NumberOfRetries = proto.Int32(2)
+		retryPolicy.BaseBackoff = durationpb.New(0)
+		resilience.RetryPolicy = retryPolicy
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
@@ -699,9 +699,9 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 		resilience := &configv1.ResilienceConfig{}
 		retryPolicy := &configv1.RetryConfig{}
-		retryPolicy.SetNumberOfRetries(2)
-		retryPolicy.SetBaseBackoff(durationpb.New(0))
-		resilience.SetRetryPolicy(retryPolicy)
+		retryPolicy.NumberOfRetries = proto.Int32(2)
+		retryPolicy.BaseBackoff = durationpb.New(0)
+		resilience.RetryPolicy = retryPolicy
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
@@ -740,9 +740,9 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 		resilience := &configv1.ResilienceConfig{}
 		retryPolicy := &configv1.RetryConfig{}
-		retryPolicy.SetNumberOfRetries(2)
-		retryPolicy.SetBaseBackoff(durationpb.New(0))
-		resilience.SetRetryPolicy(retryPolicy)
+		retryPolicy.NumberOfRetries = proto.Int32(2)
+		retryPolicy.BaseBackoff = durationpb.New(0)
+		resilience.RetryPolicy = retryPolicy
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{

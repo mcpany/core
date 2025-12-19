@@ -323,10 +323,10 @@ func TestUpstream_Register(t *testing.T) {
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("echo")
-		toolDef.SetCallId("echo-call")
+		toolDef.CallId = proto.String("echo-call")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("echo-call")
+		callDef.Id = proto.String("echo-call")
 		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
 			"echo-call": callDef,
 		})
@@ -351,7 +351,7 @@ func TestUpstream_Register(t *testing.T) {
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("echo")
-		toolDef.SetCallId("non-existent-call-id")
+		toolDef.CallId = proto.String("non-existent-call-id")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		serviceConfig.SetWebrtcService(webrtcService)
 
@@ -375,11 +375,11 @@ func TestUpstream_Register(t *testing.T) {
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("get-weather")
-		toolDef.SetCallId("get-weather-call")
+		toolDef.CallId = proto.String("get-weather-call")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("get-weather-call")
+		callDef.Id = proto.String("get-weather-call")
 		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
 			"get-weather-call": callDef,
 		})
@@ -397,7 +397,7 @@ func TestUpstream_Register(t *testing.T) {
 		resourceDef.SetName("weather-resource")
 		dynamicResource := &configv1.DynamicResource{}
 		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("get-weather-call")
+		webrtcCall.Id = proto.String("get-weather-call")
 		dynamicResource.SetWebrtcCall(webrtcCall)
 		resourceDef.SetDynamic(dynamicResource)
 		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
@@ -431,11 +431,11 @@ func TestUpstream_Register(t *testing.T) {
 		webrtcService.SetAddress("http://localhost:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("get-weather")
-		toolDef.SetCallId("get-weather-call")
+		toolDef.CallId = proto.String("get-weather-call")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("get-weather-call")
+		callDef.Id = proto.String("get-weather-call")
 		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
 			"get-weather-call": callDef,
 		})
@@ -444,7 +444,7 @@ func TestUpstream_Register(t *testing.T) {
 		resourceDef.SetName("weather-resource")
 		dynamicResource := &configv1.DynamicResource{}
 		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("get-weather-call")
+		webrtcCall.Id = proto.String("get-weather-call")
 		dynamicResource.SetWebrtcCall(webrtcCall)
 		resourceDef.SetDynamic(dynamicResource)
 		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
@@ -558,7 +558,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 
 		resourceDef := &configv1.ResourceDefinition{}
 		resourceDef.SetName("disabled-resource")
-		resourceDef.SetDisable(true)
+		resourceDef.Disable = proto.Bool(true)
 		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -608,7 +608,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		resourceDef.SetName("resource-call-not-found")
 		dynamicResource := &configv1.DynamicResource{}
 		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("unknown-call-id")
+		webrtcCall.Id = proto.String("unknown-call-id")
 		dynamicResource.SetWebrtcCall(webrtcCall)
 		resourceDef.SetDynamic(dynamicResource)
 		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
@@ -646,7 +646,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		resourceDef.SetName("resource1")
 		dynamicResource := &configv1.DynamicResource{}
 		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("call1")
+		webrtcCall.Id = proto.String("call1")
 		dynamicResource.SetWebrtcCall(webrtcCall)
 		resourceDef.SetDynamic(dynamicResource)
 		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
@@ -671,7 +671,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 
 		promptDef := &configv1.PromptDefinition{}
 		promptDef.SetName("disabled-prompt")
-		promptDef.SetDisable(true)
+		promptDef.Disable = proto.Bool(true)
 		webrtcService.SetPrompts([]*configv1.PromptDefinition{promptDef})
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}

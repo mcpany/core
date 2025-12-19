@@ -9,12 +9,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/api/proto/config/v1"
 	v1 "github.com/mcpany/api/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
@@ -51,7 +52,7 @@ func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName(originalName)   // "my.tool"
-	toolProto.SetServiceId(serviceID) // "myservice"
+	toolProto.ServiceId = proto.String(serviceID) // "myservice"
 	mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
 
 	inputs := json.RawMessage(`{}`)

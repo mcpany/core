@@ -206,7 +206,7 @@ func TestCommandTool_Execute(t *testing.T) {
 func TestCommandTool_GetCacheConfig(t *testing.T) {
 	cacheConfig := &configv1.CacheConfig{}
 	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	cmdTool := newCommandTool("echo", callDef)
 	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
 }

@@ -87,7 +87,7 @@ func (u *Upstream) Register(
 	// Calculate SHA256 for the ID
 	h := sha256.New()
 	h.Write([]byte(serviceConfig.GetName()))
-	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	serviceConfig.Id = proto.String(hex.EncodeToString(h.Sum(nil)))
 
 	// Sanitize the service name
 	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())

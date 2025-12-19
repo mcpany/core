@@ -13,12 +13,13 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/api/proto/config/v1"
 	v1 "github.com/mcpany/api/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/pool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -30,7 +31,7 @@ func TestNewWebsocketTool(t *testing.T) {
 	serviceID := testServiceID
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
-	toolProto.SetServiceId(serviceID)
+	toolProto.ServiceId = proto.String(serviceID)
 	callDef := &configv1.WebsocketCallDefinition{}
 
 	wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
@@ -111,7 +112,7 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("echo")
-		toolProto.SetServiceId(serviceID)
+		toolProto.ServiceId = proto.String(serviceID)
 		toolProto.SetUnderlyingMethodFqn("WS " + wsURL)
 
 		callDef := &configv1.WebsocketCallDefinition{}
@@ -162,18 +163,18 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("transform")
-		toolProto.SetServiceId(serviceID)
+		toolProto.ServiceId = proto.String(serviceID)
 
 		callDef := &configv1.WebsocketCallDefinition{}
 		inputTransformer := &configv1.InputTransformer{}
-		inputTransformer.SetTemplate(`{"transformed_message":"{{message}}"}`)
-		callDef.SetInputTransformer(inputTransformer)
+		inputTransformer.Template = proto.String(`{"transformed_message":"{{message}}"}`)
+		callDef.InputTransformer = inputTransformer
 		outputTransformer := &configv1.OutputTransformer{}
-		outputTransformer.SetFormat(configv1.OutputTransformer_JSON)
-		outputTransformer.SetExtractionRules(map[string]string{
+		outputTransformer.Format = configv1.OutputTransformer_JSON.Enum()
+		outputTransformer.ExtractionRules = map[string]string{
 			"final_output": "{.response_data}",
-		})
-		callDef.SetOutputTransformer(outputTransformer)
+		}
+		callDef.OutputTransformer = outputTransformer
 		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
 
 		inputs := json.RawMessage(`{"message": "hello"}`)
@@ -262,8 +263,8 @@ func TestWebsocketTool_Execute(t *testing.T) {
 
 		callDef := &configv1.WebsocketCallDefinition{}
 		it := &configv1.InputTransformer{}
-		it.SetTemplate(`{{.invalid`) // Invalid template
-		callDef.SetInputTransformer(it)
+		it.Template = proto.String(`{{.invalid`) // Invalid template
+		callDef.InputTransformer = it
 		wsTool := NewWebsocketTool(&v1.Tool{}, pm, serviceID, nil, callDef)
 
 		req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}

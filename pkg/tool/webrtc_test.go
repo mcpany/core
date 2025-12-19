@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/api/proto/config/v1"
 	v1 "github.com/mcpany/api/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/pool"
 	"github.com/pion/webrtc/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // MockAuthenticator is a mock implementation of the UpstreamAuthenticator interface.
@@ -229,13 +230,13 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
-	callDef.SetInputTransformer(&configv1.InputTransformer{})
-	callDef.GetInputTransformer().SetTemplate(`{"transformed_message":"input_{{message}}"}`)
-	callDef.SetOutputTransformer(&configv1.OutputTransformer{})
-	callDef.GetOutputTransformer().SetFormat(configv1.OutputTransformer_JSON)
-	callDef.GetOutputTransformer().SetExtractionRules(map[string]string{
+	callDef.InputTransformer = &configv1.InputTransformer{}
+	callDef.GetInputTransformer().Template = proto.String(`{"transformed_message":"input_{{message}}"}`)
+	callDef.OutputTransformer = &configv1.OutputTransformer{}
+	callDef.GetOutputTransformer().Format = configv1.OutputTransformer_JSON.Enum()
+	callDef.GetOutputTransformer().ExtractionRules = map[string]string{
 		"extracted_message": "{.data.final_message}",
-	})
+	}
 
 	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, callDef)
 	require.NoError(t, err)
@@ -373,7 +374,7 @@ func TestWebrtcTool_GetCacheConfig(t *testing.T) {
 	toolDef := &v1.Tool{}
 	cacheConfig := &configv1.CacheConfig{}
 	callDef := &configv1.WebrtcCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	wt, err := NewWebrtcTool(toolDef, nil, "service-key", nil, callDef)
 	require.NoError(t, err)
 	assert.Equal(t, cacheConfig, wt.GetCacheConfig())
@@ -385,8 +386,8 @@ func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
 	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
-	inputTransformer.SetTemplate("{{ .invalid }}")
-	callDef.SetInputTransformer(inputTransformer)
+	inputTransformer.Template = proto.String("{{ .invalid }}")
+	callDef.InputTransformer = inputTransformer
 	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
 	require.NoError(t, err)
 

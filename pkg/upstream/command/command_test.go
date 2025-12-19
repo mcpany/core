@@ -105,7 +105,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 				Description: proto.String("Additional arguments"),
 			}.Build(),
 		}.Build()
-		callDef.SetParameters([]*configv1.CommandLineParameterMapping{argsParam})
+		callDef.Parameters = []*configv1.CommandLineParameterMapping{argsParam}
 
 		calls := make(map[string]*configv1.CommandLineCallDefinition)
 		calls["echo-call"] = callDef
@@ -208,7 +208,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 		resourceDef.SetUri("test-dynamic-resource-service.files")
 		dynamicResource := &configv1.DynamicResource{}
 		commandLineCall := &configv1.CommandLineCallDefinition{}
-		commandLineCall.SetId("list-files-call")
+		commandLineCall.Id = proto.String("list-files-call")
 		dynamicResource.SetCommandLineCall(commandLineCall)
 		resourceDef.SetDynamic(dynamicResource)
 

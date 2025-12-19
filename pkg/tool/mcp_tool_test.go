@@ -9,13 +9,14 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/api/proto/config/v1"
 	v1 "github.com/mcpany/api/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // mockMCPClient for testing
@@ -49,7 +50,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("test-tool")
-		toolProto.SetServiceId("service")
+		toolProto.ServiceId = proto.String("service")
 		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
 
 		inputs := json.RawMessage(`{"input":"value"}`)
@@ -73,7 +74,7 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		toolProto := &v1.Tool{}
 		toolProto.SetName("test-tool")
-		toolProto.SetServiceId("service")
+		toolProto.ServiceId = proto.String("service")
 		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
 
 		inputs := json.RawMessage(`{}`)
@@ -97,11 +98,11 @@ func TestMCPTool_Execute(t *testing.T) {
 		}
 		toolProto := &v1.Tool{}
 		toolProto.SetName("test-tool")
-		toolProto.SetServiceId("service")
+		toolProto.ServiceId = proto.String("service")
 		callDef := &configv1.MCPCallDefinition{}
 		inputTransformer := &configv1.InputTransformer{}
-		inputTransformer.SetTemplate(`{"transformed":true}`)
-		callDef.SetInputTransformer(inputTransformer)
+		inputTransformer.Template = proto.String(`{"transformed":true}`)
+		callDef.InputTransformer = inputTransformer
 		mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef)
 
 		inputs := json.RawMessage(`{}`)

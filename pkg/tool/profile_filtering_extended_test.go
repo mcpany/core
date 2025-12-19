@@ -6,7 +6,7 @@ package tool
 import (
 	"testing"
 
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )

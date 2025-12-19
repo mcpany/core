@@ -13,10 +13,11 @@ import (
 	"testing"
 
 	"github.com/machinebox/graphql"
-	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/api/proto/config/v1"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGraphQLUpstream_Register(t *testing.T) {
@@ -196,7 +197,7 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	selectionSet := "{ id }"
 	calls := make(map[string]*configv1.GraphQLCallDefinition)
 	calls["user"] = &configv1.GraphQLCallDefinition{}
-	calls["user"].SetSelectionSet(selectionSet)
+	calls["user"].SelectionSet = proto.String(selectionSet)
 	serviceConfig.GetGraphqlService().SetCalls(calls)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)

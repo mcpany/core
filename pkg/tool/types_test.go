@@ -11,15 +11,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/api/proto/config/v1"
 	v1 "github.com/mcpany/api/proto/mcp_router/v1"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/pool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
 )
@@ -110,8 +111,8 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 	toolProto.SetUnderlyingMethodFqn("POST " + server.URL)
 	callDef := &configv1.HttpCallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
-	inputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetInputTransformer(inputTransformer)
+	inputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.InputTransformer = inputTransformer
 	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
@@ -134,8 +135,8 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	toolProto.SetUnderlyingMethodFqn("GET " + server.URL)
 	callDef := &configv1.HttpCallDefinition{}
 	outputTransformer := &configv1.OutputTransformer{}
-	outputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetOutputTransformer(outputTransformer)
+	outputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.OutputTransformer = outputTransformer
 	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
@@ -145,8 +146,8 @@ func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.MCPCallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
-	inputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetInputTransformer(inputTransformer)
+	inputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.InputTransformer = inputTransformer
 	mcpTool := NewMCPTool(toolProto, nil, callDef)
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
@@ -163,8 +164,8 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	toolProto.SetName("test-tool")
 	callDef := &configv1.MCPCallDefinition{}
 	outputTransformer := &configv1.OutputTransformer{}
-	outputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetOutputTransformer(outputTransformer)
+	outputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.OutputTransformer = outputTransformer
 	mcpTool := NewMCPTool(toolProto, mockClient, callDef)
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolName: "test.test-tool", ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
@@ -179,8 +180,8 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
-	inputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetInputTransformer(inputTransformer)
+	inputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.InputTransformer = inputTransformer
 	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "POST", server.URL, nil, callDef)
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
@@ -196,8 +197,8 @@ func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 	outputTransformer := &configv1.OutputTransformer{}
-	outputTransformer.SetTemplate("{{.invalid}}")
-	callDef.SetOutputTransformer(outputTransformer)
+	outputTransformer.Template = proto.String("{{.invalid}}")
+	callDef.OutputTransformer = outputTransformer
 	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
@@ -314,9 +315,9 @@ func TestHTTPTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("http-tool")
 	cacheConfig := &configv1.CacheConfig{}
-	cacheConfig.SetIsEnabled(true)
+	cacheConfig.IsEnabled = proto.Bool(true)
 	callDef := &configv1.HttpCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	httpTool := NewHTTPTool(toolProto, nil, "", nil, callDef, nil, nil, "")
 
 	assert.Equal(t, toolProto, httpTool.Tool(), "Tool() should return the correct tool proto")
@@ -327,9 +328,9 @@ func TestMCPTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("mcp-tool")
 	cacheConfig := &configv1.CacheConfig{}
-	cacheConfig.SetIsEnabled(true)
+	cacheConfig.IsEnabled = proto.Bool(true)
 	callDef := &configv1.MCPCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	mcpTool := NewMCPTool(toolProto, nil, callDef)
 
 	assert.Equal(t, toolProto, mcpTool.Tool(), "Tool() should return the correct tool proto")
@@ -340,9 +341,9 @@ func TestOpenAPITool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("openapi-tool")
 	cacheConfig := &configv1.CacheConfig{}
-	cacheConfig.SetIsEnabled(true)
+	cacheConfig.IsEnabled = proto.Bool(true)
 	callDef := &configv1.OpenAPICallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	openapiTool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef)
 
 	assert.Equal(t, toolProto, openapiTool.Tool(), "Tool() should return the correct tool proto")
@@ -353,9 +354,9 @@ func TestGRPCTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("grpc-tool")
 	cacheConfig := &configv1.CacheConfig{}
-	cacheConfig.SetIsEnabled(true)
+	cacheConfig.IsEnabled = proto.Bool(true)
 	callDef := &configv1.GrpcCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	mockMethodDesc := new(MockMethodDescriptor)
 	mockMethodDesc.On("Input").Return(new(MockMessageDescriptor))
 	grpcTool := NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef)
@@ -368,9 +369,9 @@ func TestWebsocketTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("websocket-tool")
 	cacheConfig := &configv1.CacheConfig{}
-	cacheConfig.SetIsEnabled(true)
+	cacheConfig.IsEnabled = proto.Bool(true)
 	callDef := &configv1.WebsocketCallDefinition{}
-	callDef.SetCache(cacheConfig)
+	callDef.Cache = cacheConfig
 	websocketTool := NewWebsocketTool(toolProto, nil, "", nil, callDef)
 
 	assert.Equal(t, toolProto, websocketTool.Tool(), "Tool() should return the correct tool proto")

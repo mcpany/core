@@ -600,7 +600,7 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	enabledPrompt.SetName("enabled-prompt")
 	disabledPrompt := &configv1.PromptDefinition{}
 	disabledPrompt.SetName("disabled-prompt")
-	disabledPrompt.SetDisable(true)
+	disabledPrompt.Disable = proto.Bool(true)
 
 	wsService := &configv1.WebsocketUpstreamService{}
 	wsService.SetAddress(wsURL)

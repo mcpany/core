@@ -82,7 +82,7 @@ func (u *OpenAPIUpstream) Register(
 	// Calculate SHA256 for the ID
 	h := sha256.New()
 	h.Write([]byte(serviceConfig.GetName()))
-	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	serviceConfig.Id = proto.String(hex.EncodeToString(h.Sum(nil)))
 
 	// Sanitize the service name
 	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
@@ -294,7 +294,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 
 		newToolProto := proto.Clone(pbTool).(*pb.Tool)
 		newToolProto.SetName(toolName)
-		newToolProto.SetServiceId(serviceID)
+		newToolProto.ServiceId = proto.String(serviceID)
 
 		if existingTool, exists := toolManager.GetTool(toolName); exists {
 			if isReload {

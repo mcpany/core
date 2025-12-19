@@ -11,13 +11,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configv1 "github.com/mcpany/api/proto/config/v1"
+	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/tool"
-	configv1 "github.com/mcpany/api/proto/config/v1"
-	v1 "github.com/mcpany/api/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // mockHTTPClient for testing
@@ -96,7 +97,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 
 		toolProto := &v1.Tool{}
 		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-		apiKeyAuth.SetHeaderName("X-API-Key")
+		apiKeyAuth.HeaderName = proto.String("X-API-Key")
 		secret := &configv1.SecretValue{}
 		secret.SetPlainText("my-secret-key")
 		apiKeyAuth.SetApiKey(secret)

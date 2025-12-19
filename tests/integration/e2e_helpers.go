@@ -1033,7 +1033,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		Method:       &method,
 		Parameters:   params,
 	}.Build()
-	toolDef.SetCallId(callID)
+	toolDef.CallId = proto.String(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -1144,7 +1144,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 	toolDef := configv1.ToolDefinition_builder{
 		Name: proto.String("hello"),
 	}.Build()
-	toolDef.SetCallId(callID)
+	toolDef.CallId = proto.String(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,
@@ -1303,7 +1303,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		EndpointPath: &endpointPath,
 		Method:       &method,
 	}.Build()
-	toolDef.SetCallId(callID)
+	toolDef.CallId = proto.String(callID)
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
 		Name: &serviceID,

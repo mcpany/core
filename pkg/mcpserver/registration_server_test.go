@@ -248,7 +248,7 @@ paths:
 			Parameters: []*configv1.WebsocketParameterMapping{param1},
 		}.Build()
 
-		callDef.SetId("test-call")
+		callDef.Id = proto.String("test-call")
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["test-call"] = callDef
 		websocketService := configv1.WebsocketUpstreamService_builder{

@@ -249,7 +249,7 @@ func TestWebsocketTool_Execute_TemplateError(t *testing.T) {
 	callDef := &configv1.WebsocketCallDefinition{
 		InputTransformer: &configv1.InputTransformer{},
 	}
-	callDef.InputTransformer.SetTemplate("{{.invalid") // Bad template syntax
+	callDef.InputTransformer.Template = proto.String("{{.invalid") // Bad template syntax
 
 	wt := NewWebsocketTool(&pb.Tool{Name: proto.String("t")}, pm, "s", nil, callDef)
 
