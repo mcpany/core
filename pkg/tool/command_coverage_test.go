@@ -31,6 +31,8 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 		&pb.Tool{Name: proto.String("echo-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	// Execute adds input args
@@ -60,6 +62,8 @@ func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 		&pb.Tool{Name: proto.String("json-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	// Input JSON will be echoed back.
@@ -87,6 +91,8 @@ func TestLocalCommandTool_Execute_Error(t *testing.T) {
 		&pb.Tool{Name: proto.String("fail-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{
@@ -111,6 +117,8 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 		&pb.Tool{Name: proto.String("bad-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
@@ -132,6 +140,8 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 		&pb.Tool{Name: proto.String("timeout-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
@@ -145,7 +155,7 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{})
+	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
@@ -172,6 +182,8 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 		&pb.Tool{Name: proto.String("echo-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{
@@ -199,6 +211,8 @@ func TestCommandTool_Execute_JSON(t *testing.T) {
 		&pb.Tool{Name: proto.String("json-command-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{
@@ -224,6 +238,8 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 		&pb.Tool{Name: proto.String("fail-command-tool")},
 		svc,
 		callDef,
+		nil,
+		"call-id",
 	)
 
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
@@ -237,7 +253,7 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 
 func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{})
+	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
