@@ -17,12 +17,12 @@ The following features are fully implemented and tested:
   - MCP-to-MCP Proxy
   - WebSocket
   - WebRTC
-- **Upstream Authentication**:
+- [x] [**Upstream Authentication**](./features/authentication/README.md):
   - API Key
   - Bearer Token
   - OAuth 2.0
-- **Dynamic Registration**: Services can be registered at runtime via the gRPC Registration API.
-- **Static Registration**: Services can be registered at startup via a YAML or JSON configuration file.
+- [x] [**Dynamic Registration**](./features/registration.md): Services can be registered at runtime via the gRPC Registration API.
+- [x] [**Static Registration**](./features/registration.md): Services can be registered at startup via a YAML or JSON configuration file.
 - **Advanced Service Policies**:
   - [x] [Caching](./features/caching/README.md) (`CacheConfig`)
   - [x] [Rate Limiting](./features/rate-limiting/README.md) (`RateLimitConfig`): Supports In-Memory and [Redis](./features/rate-limiting/README.md) backends.
@@ -38,11 +38,12 @@ The following features are fully implemented and tested:
 - [x] [**Secrets Management**](./features/security.md): Secure handling of sensitive data (API keys, passwords) using Vault, AWS Secrets Manager, or Env Vars.
 - [x] [**Distributed Tracing**](./features/tracing/README.md): Integrate OpenTelemetry for tracing requests across services.
 - [x] [**Transport Protocols (NATS)**](./features/nats.md): Support for NATS as a message bus.
+- [x] [**Transport Protocols (Kafka)**](./features/kafka.md): Support for Kafka as a message bus.
 - [x] [**Automated Documentation Generation**](./features/documentation_generation.md): Generate markdown documentation for registered tools directly from the configuration.
 - [x] [**IP Allowlisting**](./features/security.md): Restrict access to specific IP addresses/CIDRs.
 - [x] [**Webhooks**](./features/webhooks/README.md): Pre-call and Post-call hooks for validation and transformation.
-- [x] **Audit Logging**: Record who accessed what tool and when (configured via `global_settings.audit`).
-- [x] **Security Policies**: Fine-grained request validation policies (runtime argument validation) are implemented via Policy Hooks.
+- [x] [**Audit Logging**](./features/audit_logging.md): Record who accessed what tool and when (configured via `global_settings.audit`).
+- [x] [**Security Policies**](./features/profiles_and_policies/README.md): Fine-grained request validation policies (runtime argument validation) are implemented via Policy Hooks.
 - [x] [**Advanced Authentication**](./features/authentication/README.md):
   - Standardized `AuthenticationConfig` for Users and Profiles.
   - Priority-based authentication (Profile > User > Global).
@@ -53,7 +54,6 @@ For a complete list of all available configuration options, please see the [Conf
 
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
-- [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 ## Ongoing Goals
 
