@@ -75,10 +75,6 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
-func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
-	m.Called(enabled, defs)
-}
-
 func TestNewOpenAPIUpstream(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	assert.NotNil(t, u)

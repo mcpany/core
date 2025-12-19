@@ -10,7 +10,6 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
-	"html"
 	"io"
 	"net"
 	"net/http"
@@ -21,7 +20,6 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/mcpany/core/pkg/admin"
-	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
@@ -33,6 +31,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -63,9 +62,6 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Limit the request body size to 10MB to prevent DoS attacks
-	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "failed to get file from form", http.StatusBadRequest)
@@ -88,9 +84,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS
-	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), header.Size)
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -144,9 +138,9 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
-		configFiles:     make(map[string]string),
+		ResourceManager:  resource.NewManager(),
+		UpstreamFactory:  factory.NewUpstreamServiceFactory(pool.NewManager()),
+		configFiles:      make(map[string]string),
 	}
 }
 
@@ -224,13 +218,6 @@ func (a *Application) Run(
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
 		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
-
-	// Set profiles for tool filtering
-	a.ToolManager.SetProfiles(
-		cfg.GetGlobalSettings().GetProfiles(),
-		cfg.GetGlobalSettings().GetProfileDefinitions(),
-	)
-
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
 		a.ToolManager,
@@ -394,12 +381,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
 
-	// Update profiles on reload
-	a.ToolManager.SetProfiles(
-		cfg.GetGlobalSettings().GetProfiles(),
-		cfg.GetGlobalSettings().GetProfileDefinitions(),
-	)
-
 	// Clear existing services
 	for _, serviceConfig := range cfg.GetUpstreamServices() {
 		a.ToolManager.ClearToolsForService(serviceConfig.GetName())
@@ -549,18 +530,6 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-// runServerMode runs the server in the standard HTTP and gRPC server mode. It
-// starts the HTTP server for JSON-RPC and the gRPC server for service
-// registration, and handles graceful shutdown.
-//
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance.
-// bus is the message bus for inter-component communication.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC registration server.
-//
-// It returns an error if any of the servers fail to start or run.
-//
 //nolint:gocyclo
 func (a *Application) runServerMode(
 	ctx context.Context,
@@ -683,6 +652,7 @@ func (a *Application) runServerMode(
 				}
 			}
 		}
+
 
 		// Authentication Logic with Priority:
 		// 1. Profile Authentication

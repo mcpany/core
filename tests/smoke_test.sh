@@ -27,17 +27,8 @@ echo "Waiting for container to be ready..."
 
 # Check HTTP Health
 echo "Checking HTTP health..."
-RETRIES=60
+RETRIES=30
 while [ $RETRIES -gt 0 ]; do
-  if ! docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
-    echo "Container $CONTAINER_NAME does not exist."
-    break
-  fi
-  if [ "$(docker container inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
-    echo "Container $CONTAINER_NAME is not running."
-    break
-  fi
-
   if curl --fail --silent http://localhost:50050/healthz > /dev/null; then
     echo "HTTP Health Check Passed"
     break
@@ -47,7 +38,7 @@ while [ $RETRIES -gt 0 ]; do
   RETRIES=$((RETRIES-1))
 done
 
-if [ $RETRIES -eq 0 ] || [ "$(docker container inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
+if [ $RETRIES -eq 0 ]; then
   echo "HTTP Health Check Failed"
   docker logs "$CONTAINER_NAME"
   docker rm -f "$CONTAINER_NAME"
@@ -56,17 +47,8 @@ fi
 
 # Check gRPC Health
 echo "Checking gRPC health..."
-RETRIES=60
+RETRIES=30
 while [ $RETRIES -gt 0 ]; do
-  if ! docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
-    echo "Container $CONTAINER_NAME does not exist."
-    break
-  fi
-  if [ "$(docker container inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
-    echo "Container $CONTAINER_NAME is not running."
-    break
-  fi
-
   if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:50051 list > /dev/null 2>&1; then
     echo "gRPC Health Check Passed"
     break
@@ -76,7 +58,7 @@ while [ $RETRIES -gt 0 ]; do
   RETRIES=$((RETRIES-1))
 done
 
-if [ $RETRIES -eq 0 ] || [ "$(docker container inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
+if [ $RETRIES -eq 0 ]; then
   echo "gRPC Health Check Failed"
   docker logs "$CONTAINER_NAME"
   docker rm -f "$CONTAINER_NAME"

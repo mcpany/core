@@ -71,12 +71,10 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	}
 
 	pbTool := pb.Tool_builder{
-		Name:         proto.String(tool.Name),
-		Description:  proto.String(tool.Description),
-		DisplayName:  proto.String(displayName),
-		Annotations:  annotationsBuilder.Build(),
-		InputSchema:  annotationsBuilder.InputSchema,
-		OutputSchema: annotationsBuilder.OutputSchema,
+		Name:        proto.String(tool.Name),
+		Description: proto.String(tool.Description),
+		DisplayName: proto.String(displayName),
+		Annotations: annotationsBuilder.Build(),
 	}.Build()
 
 	return pbTool, nil
@@ -148,23 +146,12 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 		OutputSchema: outputSchema,
 	}
 
-	var profiles []string
-	for _, p := range toolDef.GetProfiles() {
-		if p.GetId() != "" {
-			profiles = append(profiles, p.GetId())
-		} else if p.GetName() != "" {
-			profiles = append(profiles, p.GetName())
-		}
-	}
-
 	pbTool := pb.Tool_builder{
 		Name:        proto.String(toolDef.GetName()),
 		Description: proto.String(toolDef.GetDescription()),
 		DisplayName: proto.String(toolDef.GetTitle()),
 		ServiceId:   proto.String(toolDef.GetServiceId()),
 		Annotations: annotationsBuilder.Build(),
-		Tags:        toolDef.GetTags(),
-		Profiles:    profiles,
 	}.Build()
 
 	return pbTool, nil

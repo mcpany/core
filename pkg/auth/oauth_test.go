@@ -125,7 +125,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 		ctx, err := authenticator.Authenticate(context.Background(), req)
 		require.NoError(t, err)
-		assert.Equal(t, testEmail, ctx.Value(UserContextKey))
+		assert.Equal(t, testEmail, ctx.Value(userContextKey))
 	})
 
 	t.Run("missing_authorization_header", func(t *testing.T) {

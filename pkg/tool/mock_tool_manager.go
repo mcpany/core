@@ -13,7 +13,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -172,16 +171,4 @@ func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
-}
-
-// SetProfiles mocks base method.
-func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetProfiles", enabled, defs)
-}
-
-// SetProfiles indicates an expected call of SetProfiles.
-func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
 }
