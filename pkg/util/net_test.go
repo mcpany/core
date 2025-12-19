@@ -48,6 +48,18 @@ func TestSafeDialContext(t *testing.T) {
 			errContains: "ssrf attempt blocked",
 		},
 		{
+			name:        "Block Unspecified IP (0.0.0.0)",
+			addr:        "0.0.0.0:8080",
+			wantErr:     true,
+			errContains: "ssrf attempt blocked",
+		},
+		{
+			name:        "Block Unspecified IP (IPv6)",
+			addr:        "[::]:8080",
+			wantErr:     true,
+			errContains: "ssrf attempt blocked",
+		},
+		{
 			name:        "Allow Public IP (Dial fails)",
 			addr:        "8.8.8.8:12345", // Cloudflare DNS, likely closed port
 			wantErr:     true,
