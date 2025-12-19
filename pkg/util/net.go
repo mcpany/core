@@ -36,7 +36,7 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 
 	// Check all resolved IPs. If any are forbidden, block the request.
 	for _, ip := range ips {
-		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
+		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() || ip.IsUnspecified() {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to a private ip %s", host, ip)
 		}
 	}
