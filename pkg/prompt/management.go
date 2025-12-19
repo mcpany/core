@@ -14,11 +14,17 @@ import (
 
 // ManagerInterface defines the interface for a prompt manager.
 type ManagerInterface interface {
+	// AddPrompt registers a new prompt.
 	AddPrompt(prompt Prompt)
+	// UpdatePrompt updates an existing prompt.
 	UpdatePrompt(prompt Prompt)
+	// GetPrompt retrieves a prompt by name.
 	GetPrompt(name string) (Prompt, bool)
+	// ListPrompts returns all registered prompts.
 	ListPrompts() []Prompt
+	// ClearPromptsForService removes all prompts associated with a service.
 	ClearPromptsForService(serviceID string)
+	// SetMCPServer sets the MCP server provider.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 

@@ -17,7 +17,9 @@ import (
 
 // Limiter interface defines the methods required for a rate limiter.
 type Limiter interface {
+	// Allow checks if the request is allowed.
 	Allow(ctx context.Context) (bool, error)
+	// Update updates the limiter configuration.
 	Update(rps float64, burst int)
 }
 

@@ -206,6 +206,12 @@ make lint
 
 We use `golangci-lint` and `pre-commit` hooks.
 
+### Code Standards
+
+- **Documentation**: All public functions, methods, and types must be documented. Use `go run tools/check_doc.go <directory>` to verify documentation coverage.
+- **Linting**: Ensure `make lint` passes before submitting code.
+- **Testing**: Ensure `make test` passes.
+
 ### Running Locally
 
 After building, you can run the server locally:

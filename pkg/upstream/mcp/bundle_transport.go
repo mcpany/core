@@ -31,6 +31,7 @@ type transportError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// Error returns the error message.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -151,6 +152,7 @@ type bundleDockerConn struct {
 	log     *slog.Logger
 }
 
+// Read reads a JSON-RPC message from the connection.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -266,6 +268,7 @@ func setUnexportedID(idPtr interface{}, val interface{}) {
 	f.Set(reflect.ValueOf(val))
 }
 
+// Write writes a JSON-RPC message to the connection.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -342,10 +345,12 @@ func fixID(id interface{}) interface{} {
 	return id
 }
 
+// Close closes the connection.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
+// SessionID returns the session ID of the connection.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -356,6 +361,7 @@ type bundleSlogWriter struct {
 	level slog.Level
 }
 
+// Write writes the log message to the logger.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)
