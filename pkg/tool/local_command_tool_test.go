@@ -24,7 +24,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	service.Local = proto.Bool(true)
 	callDef := &configv1.CommandLineCallDefinition{}
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool",
@@ -65,7 +65,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 		Args: []string{"-c", "echo -n $MY_ENV"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool-env",
@@ -79,4 +79,37 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	resultMap, ok := result.(map[string]interface{})
 	assert.True(t, ok)
 	assert.Equal(t, "secret_value", resultMap["stdout"])
+}
+
+func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
+	tool := &v1.Tool{
+		Name:        proto.String("test-tool-blocked"),
+		Description: proto.String("A test tool"),
+	}
+	service := &configv1.CommandLineUpstreamService{}
+	service.Command = proto.String("echo")
+	service.Local = proto.Bool(true)
+	callDef := &configv1.CommandLineCallDefinition{}
+
+	action := configv1.CallPolicy_DENY
+	policies := []*configv1.CallPolicy{
+		{
+			DefaultAction: &action,
+		},
+	}
+
+	localTool := NewLocalCommandTool(tool, service, callDef, policies, "blocked-call-id")
+
+	req := &ExecutionRequest{
+		ToolName: "test-tool-blocked",
+		Arguments: map[string]interface{}{
+			"args": []interface{}{"should", "not", "run"},
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := localTool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "tool execution blocked by policy")
+	assert.Nil(t, result)
 }

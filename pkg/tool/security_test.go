@@ -36,7 +36,7 @@ func TestLocalCommandTool_EnvironmentInjection(t *testing.T) {
 		},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef)
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	// Inject a malicious environment variable and a valid one
 	maliciousEnvVar := "MALICIOUS_VAR"
