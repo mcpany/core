@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/util"
-	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,11 +35,6 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 }
 
 func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
-	// Mock IsRelativePath to allow absolute paths for this test (since we use temp dir)
-	originalIsRelativePath := validation.IsRelativePath
-	validation.IsRelativePath = validation.IsSecurePath
-	defer func() { validation.IsRelativePath = originalIsRelativePath }()
-
     // This test ensures we didn't break valid filenames like "my..secret.txt"
     tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
     require.NoError(t, err)
