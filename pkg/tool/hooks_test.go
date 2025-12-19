@@ -52,7 +52,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 				DefaultAction: ptr(configv1.CallPolicy_DENY),
 				Rules: []*configv1.CallPolicyRule{
 					{
-						Action:        ptr(configv1.CallPolicy_ALLOW),
+						Action:    ptr(configv1.CallPolicy_ALLOW),
 						NameRegex: ptr("^allowed-.*"),
 					},
 				},
@@ -66,7 +66,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
 					{
-						Action:        ptr(configv1.CallPolicy_DENY),
+						Action:    ptr(configv1.CallPolicy_DENY),
 						NameRegex: ptr("^sensitive-.*"),
 					},
 				},
@@ -161,7 +161,6 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 	}
 }
 
-
 func TestWebhookHook(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req configv1.WebhookRequest
@@ -170,14 +169,16 @@ func TestWebhookHook(t *testing.T) {
 			return
 		}
 
-		resp := &configv1.WebhookResponse{Allowed: true}
+		resp := configv1.WebhookResponse_builder{Allowed: true}.Build()
 
 		switch req.Kind {
 		case configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL:
 			switch req.ToolName {
 			case "deny-me":
-				resp.Allowed = false
-				resp.Status = &configv1.WebhookStatus{Message: "denied by policy"}
+				resp = configv1.WebhookResponse_builder{
+					Allowed: false,
+					Status:  &configv1.WebhookStatus{Message: "denied by policy"},
+				}.Build()
 			case "modify-me":
 				// Modify inputs
 				newInputs := map[string]any{"modified": "yes"}

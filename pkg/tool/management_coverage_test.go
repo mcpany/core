@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mcpany/core/pkg/bus"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -87,14 +88,15 @@ func TestManager_AddTool_WithServer(t *testing.T) {
 
 // Additional tests for context/execution flow?
 func TestManager_ExecuteTool_NotFound(t *testing.T) {
-	tm := NewManager(nil)
-	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
+	bp, _ := bus.NewProvider(nil)
+	tm := NewManager(bp)
+	_, err := tm.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "missing"})
 	assert.Error(t, err)
 }
 
 func TestManager_ExecuteTool_Chain(t *testing.T) {
-	// Test middleware chain
-	tm := NewManager(nil)
+	bp, _ := bus.NewProvider(nil)
+	tm := NewManager(bp)
 
 	toolDef := &v1.Tool{Name: proto.String("t"), ServiceId: proto.String("s")}
 	mt := &MockTool{
@@ -114,7 +116,7 @@ func TestManager_ExecuteTool_Chain(t *testing.T) {
 	}
 	tm.AddMiddleware(mw)
 
-	res, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s.t"})
+	res, err := tm.ExecuteToolLocally(context.Background(), &ExecutionRequest{ToolName: "s.t"})
 	assert.NoError(t, err)
 	assert.Equal(t, "final-result", res)
 }

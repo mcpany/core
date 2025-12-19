@@ -181,6 +181,11 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create and register prompts from config for %s: %w", serviceID, err)
 	}
 
+	err = u.createAndRegisterGRPCResourcesFromConfig(ctx, serviceID, toolManager, resourceManager, isReload)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to create and register gRPC resources from config for %s: %w", serviceID, err)
+	}
+
 	log.Info("Registered gRPC service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -331,6 +336,23 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
 
+	return discoveredTools, nil
+}
+
+func (u *Upstream) createAndRegisterGRPCResourcesFromConfig(
+	_ context.Context,
+	serviceID string,
+	tm tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	_ bool,
+) error {
+	log := logging.GetLogger()
+	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	if !ok {
+		return fmt.Errorf("service info not found for service: %s", serviceID)
+	}
+	grpcService := serviceInfo.Config.GetGrpcService()
+
 	definitions := grpcService.GetTools()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
@@ -372,7 +394,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		}
 	}
 
-	return discoveredTools, nil
+	return nil
 }
 
 // Deprecated: Logic is redundant with createAndRegisterGRPCTools (which uses annotations) or createAndRegisterGRPCToolsFromConfig (which uses config).
@@ -449,6 +471,10 @@ func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
 					UnderlyingMethodFqn: proto.String(string(methodDesc.FullName())),
 					InputSchema:         inputSchema,
 					OutputSchema:        outputSchema,
+					Annotations: pb.ToolAnnotations_builder{
+						InputSchema:  inputSchema,
+						OutputSchema: outputSchema,
+					}.Build(),
 				}.Build()
 
 				grpcTool := tool.NewGRPCTool(newToolProto, u.poolManager, serviceID, methodDesc, nil)
@@ -476,6 +502,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromDescriptors(
 func findMethodDescriptor(files *protoregistry.Files, fullMethodName string) (protoreflect.MethodDescriptor, error) {
 	// Normalize the method name by removing any leading slash.
 	normalizedMethodName := strings.TrimPrefix(fullMethodName, "/")
+	normalizedMethodName = strings.TrimPrefix(normalizedMethodName, ".")
 	lastSeparator := strings.LastIndex(normalizedMethodName, "/")
 	if lastSeparator == -1 {
 		lastSeparator = strings.LastIndex(normalizedMethodName, ".")
@@ -551,7 +578,12 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 
-		fullMethodName := fmt.Sprintf("%s.%s", grpcDef.GetService(), grpcDef.GetMethod())
+		var fullMethodName string
+		if grpcDef.GetService() != "" {
+			fullMethodName = fmt.Sprintf("%s.%s", grpcDef.GetService(), grpcDef.GetMethod())
+		} else {
+			fullMethodName = grpcDef.GetMethod()
+		}
 		methodDescriptor, err := findMethodDescriptor(files, fullMethodName)
 		if err != nil {
 			log.Error("Failed to find method descriptor, skipping tool.", "tool_name", definition.GetName(), "method_fqn", fullMethodName, "error", err)
@@ -575,6 +607,8 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			Description:         proto.String(definition.GetDescription()),
 			ServiceId:           proto.String(serviceID),
 			UnderlyingMethodFqn: proto.String(fullMethodName),
+			InputSchema:         inputSchema,
+			OutputSchema:        outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
 				Title:           proto.String(definition.GetTitle()),
 				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
@@ -585,6 +619,17 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 				OutputSchema:    outputSchema,
 			}.Build(),
 		}.Build()
+
+		// Check if the tool is already registered
+		sanitizedName, err := util.SanitizeToolName(definition.GetName())
+		if err != nil {
+			log.Error("Failed to sanitize tool name for duplicate check", "name", definition.GetName(), "error", err)
+			continue
+		}
+		toolID := fmt.Sprintf("%s.%s", serviceID, sanitizedName)
+		if _, ok := tm.GetTool(toolID); ok {
+			continue
+		}
 
 		grpcTool := tool.NewGRPCTool(newToolProto, u.poolManager, serviceID, methodDescriptor, grpcDef)
 		if err := tm.AddTool(grpcTool); err != nil {
