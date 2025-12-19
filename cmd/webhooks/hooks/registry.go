@@ -10,6 +10,7 @@ import (
 
 // Handler handles a webhook request.
 type Handler interface {
+	// Handle processes the webhook request.
 	Handle(w http.ResponseWriter, r *http.Request)
 }
 

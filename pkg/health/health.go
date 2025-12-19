@@ -33,7 +33,9 @@ const (
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
+	// GetAddress returns the address of the service.
 	GetAddress() string
+	// GetHealthCheck returns the HTTP health check configuration for the service.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 

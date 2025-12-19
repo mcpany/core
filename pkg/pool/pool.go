@@ -326,6 +326,7 @@ func (p *poolImpl[T]) Len() int {
 // management of pools of different types in a single collection.
 type UntypedPool interface {
 	io.Closer
+	// Len returns the number of idle clients currently in the pool.
 	Len() int
 }
 

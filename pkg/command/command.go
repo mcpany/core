@@ -22,7 +22,9 @@ import (
 
 // Executor is an interface for executing commands.
 type Executor interface {
+	// Execute executes a command and returns the stdout and stderr as streams.
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
+	// ExecuteWithStdIO executes a command and returns the stdin, stdout, and stderr as streams.
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
@@ -41,6 +43,7 @@ func NewLocalExecutor() Executor {
 
 type localExecutor struct{}
 
+// Execute executes a command locally.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
@@ -80,6 +83,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	return outR, errR, exitCodeChan, nil
 }
 
+// ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
@@ -137,6 +141,7 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	}
 }
 
+// Execute executes a command inside a docker container.
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -226,6 +231,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	return stdoutReader, stderrReader, exitCodeChan, nil
 }
 
+// ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -326,10 +332,12 @@ type closeWriter struct {
 	conn net.Conn
 }
 
+// Write writes data to the connection.
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }
 
+// Close closes the write side of the connection.
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
 		return cw.CloseWrite()

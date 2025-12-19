@@ -26,8 +26,11 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// configuration. It returns the generated service key, a list of any tools
 	// discovered during registration, and an error if the registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
+	// UnregisterService removes a service from the registry.
 	UnregisterService(ctx context.Context, serviceName string) error
+	// GetAllServices returns a list of all registered services.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
+	// GetServiceInfo retrieves the metadata for a service by its ID.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 }
 
