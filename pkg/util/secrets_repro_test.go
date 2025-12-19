@@ -10,6 +10,8 @@ import (
 )
 
 func TestResolveSecret_AbsolutePathsBlocked(t *testing.T) {
+	t.Setenv("MCPANY_ENFORCE_RELATIVE_PATHS", "true")
+
 	// Use an absolute path
 	absPath, err := filepath.Abs("secret.txt")
 	if err != nil {
