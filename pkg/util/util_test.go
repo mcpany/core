@@ -393,3 +393,40 @@ func TestReplaceURLPath(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceURLQuery(t *testing.T) {
+	tests := []struct {
+		name           string
+		urlQuery       string
+		params         map[string]interface{}
+		noEscapeParams map[string]bool
+		expected       string
+	}{
+		{
+			name:     "replace single param",
+			urlQuery: "q={{query}}",
+			params:   map[string]interface{}{"query": "hello world"},
+			expected: "q=hello+world", // QueryEscape encodes space as +
+		},
+		{
+			name:     "replace with special chars",
+			urlQuery: "q={{query}}",
+			params:   map[string]interface{}{"query": "a&b"},
+			expected: "q=a%26b", // QueryEscape encodes &
+		},
+		{
+			name:     "no escape param",
+			urlQuery: "q={{query}}",
+			params:   map[string]interface{}{"query": "a&b"},
+			noEscapeParams: map[string]bool{"query": true},
+			expected: "q=a&b",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := ReplaceURLQuery(tt.urlQuery, tt.params, tt.noEscapeParams)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
