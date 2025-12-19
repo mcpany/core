@@ -40,6 +40,9 @@ var (
 )
 
 // GlobalSettings returns the singleton instance of the global settings.
+//
+// Returns:
+//   - *Settings: The global settings instance.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -50,6 +53,13 @@ func GlobalSettings() *Settings {
 }
 
 // Load initializes the global settings from the command line and config files.
+//
+// Parameters:
+//   - cmd: The cobra command to load flags from.
+//   - fs: The filesystem interface for file operations.
+//
+// Returns:
+//   - error: An error if loading settings fails.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs

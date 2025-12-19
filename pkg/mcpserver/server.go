@@ -377,45 +377,74 @@ func (s *Server) ReadResource(
 
 // AuthManager returns the server's authentication manager, which is responsible
 // for handling authentication for incoming requests.
+//
+// Returns:
+//   - *auth.Manager: The authentication manager instance.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
 // ToolManager returns the server's tool manager, which is responsible for
 // managing the lifecycle and access to tools.
+//
+// Returns:
+//   - tool.ManagerInterface: The tool manager interface.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
 // PromptManager returns the server's prompt manager, which is responsible for
 // managing the lifecycle and access to prompts.
+//
+// Returns:
+//   - prompt.ManagerInterface: The prompt manager interface.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
 // ResourceManager returns the server's resource manager, which is responsible
 // for managing the lifecycle and access to resources.
+//
+// Returns:
+//   - resource.ManagerInterface: The resource manager interface.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 
 // ServiceRegistry returns the server's service registry, which keeps track of
 // all registered upstream services.
+//
+// Returns:
+//   - *serviceregistry.ServiceRegistry: The service registry instance.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
 // AddServiceInfo adds information about a service to the tool manager.
+//
+// Parameters:
+//   - serviceID: The unique identifier of the service.
+//   - info: The service information to add.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
 
 // GetTool retrieves a tool by its name.
+//
+// Parameters:
+//   - toolName: The name of the tool to retrieve.
+//
+// Returns:
+//   - tool.Tool: The tool instance if found.
+//   - bool: True if the tool exists, false otherwise.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
 // ListTools returns a list of all available tools.
+//
+// Returns:
+//   - []tool.Tool: A slice of all registered tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
@@ -423,6 +452,14 @@ func (s *Server) ListTools() []tool.Tool {
 }
 
 // CallTool executes a tool with the provided request.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request containing tool name and arguments.
+//
+// Returns:
+//   - any: The result of the tool execution.
+//   - error: An error if execution fails.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", req.Arguments)
 	// Try to get service ID from tool
@@ -501,31 +538,56 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 }
 
 // SetMCPServer sets the MCP server provider for the tool manager.
+//
+// Parameters:
+//   - mcpServer: The MCP server provider to set.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
 
 // AddTool registers a new tool with the tool manager.
+//
+// Parameters:
+//   - t: The tool to register.
+//
+// Returns:
+//   - error: An error if registration fails.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
 
 // GetServiceInfo retrieves information about a service by its ID.
+//
+// Parameters:
+//   - serviceID: The unique identifier of the service.
+//
+// Returns:
+//   - *tool.ServiceInfo: The service information if found.
+//   - bool: True if the service exists, false otherwise.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
 
 // ClearToolsForService removes all tools associated with a specific service.
+//
+// Parameters:
+//   - serviceKey: The unique identifier of the service whose tools should be removed.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
 
 // SetReloadFunc sets the function to be called when a configuration reload is triggered.
+//
+// Parameters:
+//   - f: The function to execute for reloading the configuration.
 func (s *Server) SetReloadFunc(f func() error) {
 	s.reloadFunc = f
 }
 
-// Reload reloads the server's configuration and updates its state.
+// Reload reloads the server's configuration and updates its state using the registered reload function.
+//
+// Returns:
+//   - error: An error if the reload function fails, or nil if successful or no reload function is set.
 func (s *Server) Reload() error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc()

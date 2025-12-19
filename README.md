@@ -26,7 +26,7 @@ Traditional MCP adoption requires running a separate server binary for every too
 
 We believe you shouldn't have to write and maintain new code just to expose an existing API to your AI assistant.
 
-- **Metamcp / Onemcp vs. MCP Any**: While other tools might proxy existing MCP servers (aggregator pattern), **MCP Any** creates them from scratch using your existing upstream APIs.
+- **MetaMCP / OneMCP vs. MCP Any**: While other tools might proxy existing MCP servers (aggregator pattern), **MCP Any** creates them from scratch using your existing upstream APIs.
 - **No More "Sidecar hell"**: Instead of running 10 different containers for 10 different tools, run 1 `mcpany` container loaded with 10 config files.
 - **Ops Friendly**: Centralize authentication, rate limiting, and observability in one robust layer.
 
