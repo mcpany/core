@@ -28,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+      with:
+        submodules: recursive
 
     - name: Configure Docker Registry Mirrors
       run: |
@@ -130,6 +132,8 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        submodules: recursive
 
     - name: Configure Docker Registry Mirrors
       run: |
@@ -232,6 +236,8 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        submodules: recursive
 
     - name: Configure Docker Registry Mirrors
       run: |
@@ -334,6 +340,8 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
     - uses: actions/checkout@v5
+      with:
+        submodules: recursive
 
     - name: Configure Docker Registry Mirrors
       run: |
@@ -433,6 +441,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
 
       - name: Configure Docker Registry Mirrors
         run: |
