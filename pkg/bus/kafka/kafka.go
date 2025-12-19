@@ -87,7 +87,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 
 	groupID := b.consumerGroup
 	if groupID == "" {
-		// Broadcast behavior: unique group ID per instance
+		// Broadcast behavior: unique group ID per instance ensures every instance gets the message.
 		groupID = fmt.Sprintf("mcpany-%s", uuid.New().String())
 	}
 
