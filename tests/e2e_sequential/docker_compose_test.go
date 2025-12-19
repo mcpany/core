@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package e2e
+package e2e_sequential
 
 import (
 	"context"
@@ -25,8 +25,8 @@ func TestDockerComposeE2E(t *testing.T) {
 	}
 
 	rootDir, err := os.Getwd()
-	// Navigate up if we are running from inside tests/e2e
-	if strings.HasSuffix(rootDir, "tests/e2e") {
+	// Navigate up if we are running from inside tests/e2e or tests/e2e_sequential
+	if strings.HasSuffix(rootDir, "tests/e2e") || strings.HasSuffix(rootDir, "tests/e2e_sequential") {
 		rootDir = "../.."
 	}
 	require.NoError(t, err)
