@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -42,18 +43,11 @@ import (
 //
 //	A single string representing the sanitized and joined identifier.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
-	var sanitizedIDs []string
+	// Optimization: Pre-allocate slice to avoid reallocations
+	sanitizedIDs := make([]string, 0, len(ids))
 	for _, id := range ids {
 		if id == "" {
 			return "", fmt.Errorf("id cannot be empty")
-		}
-
-		// Create the hash
-		h := sha256.New()
-		h.Write([]byte(id))
-		hash := hex.EncodeToString(h.Sum(nil))
-		if hashLength > 0 && hashLength < len(hash) {
-			hash = hash[:hashLength]
 		}
 
 		// Sanitize and create the prefix
@@ -69,6 +63,14 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 
 		if appendHash {
+			// Optimization: Calculate hash only when needed (lazy evaluation)
+			h := sha256.New()
+			h.Write([]byte(id))
+			hash := hex.EncodeToString(h.Sum(nil))
+			if hashLength > 0 && hashLength < len(hash) {
+				hash = hash[:hashLength]
+			}
+
 			if sanitizedPrefix == "" {
 				sanitizedPrefix = "id"
 			}
@@ -165,9 +167,13 @@ func GetDockerCommand() (string, []string) {
 }
 
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
-func ReplaceURLPath(urlPath string, params map[string]interface{}) string {
+func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	for k, v := range params {
-		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", fmt.Sprintf("%v", v))
+		val := fmt.Sprintf("%v", v)
+		if noEscapeParams == nil || !noEscapeParams[k] {
+			val = url.PathEscape(val)
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", val)
 	}
 	return urlPath
 }

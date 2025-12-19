@@ -33,6 +33,7 @@ type MessageBus struct {
 	//	*MessageBus_InMemory
 	//	*MessageBus_Redis
 	//	*MessageBus_Nats
+	//	*MessageBus_Kafka
 	BusType       isMessageBus_BusType `protobuf_oneof:"bus_type"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -97,6 +98,15 @@ func (x *MessageBus) GetNats() *NatsBus {
 	return nil
 }
 
+func (x *MessageBus) GetKafka() *KafkaBus {
+	if x != nil {
+		if x, ok := x.BusType.(*MessageBus_Kafka); ok {
+			return x.Kafka
+		}
+	}
+	return nil
+}
+
 func (x *MessageBus) SetInMemory(v *InMemoryBus) {
 	if v == nil {
 		x.BusType = nil
@@ -119,6 +129,14 @@ func (x *MessageBus) SetNats(v *NatsBus) {
 		return
 	}
 	x.BusType = &MessageBus_Nats{v}
+}
+
+func (x *MessageBus) SetKafka(v *KafkaBus) {
+	if v == nil {
+		x.BusType = nil
+		return
+	}
+	x.BusType = &MessageBus_Kafka{v}
 }
 
 func (x *MessageBus) HasBusType() bool {
@@ -152,6 +170,14 @@ func (x *MessageBus) HasNats() bool {
 	return ok
 }
 
+func (x *MessageBus) HasKafka() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.BusType.(*MessageBus_Kafka)
+	return ok
+}
+
 func (x *MessageBus) ClearBusType() {
 	x.BusType = nil
 }
@@ -174,10 +200,17 @@ func (x *MessageBus) ClearNats() {
 	}
 }
 
+func (x *MessageBus) ClearKafka() {
+	if _, ok := x.BusType.(*MessageBus_Kafka); ok {
+		x.BusType = nil
+	}
+}
+
 const MessageBus_BusType_not_set_case case_MessageBus_BusType = 0
 const MessageBus_InMemory_case case_MessageBus_BusType = 1
 const MessageBus_Redis_case case_MessageBus_BusType = 2
 const MessageBus_Nats_case case_MessageBus_BusType = 3
+const MessageBus_Kafka_case case_MessageBus_BusType = 4
 
 func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 	if x == nil {
@@ -190,6 +223,8 @@ func (x *MessageBus) WhichBusType() case_MessageBus_BusType {
 		return MessageBus_Redis_case
 	case *MessageBus_Nats:
 		return MessageBus_Nats_case
+	case *MessageBus_Kafka:
+		return MessageBus_Kafka_case
 	default:
 		return MessageBus_BusType_not_set_case
 	}
@@ -202,6 +237,7 @@ type MessageBus_builder struct {
 	InMemory *InMemoryBus
 	Redis    *RedisBus
 	Nats     *NatsBus
+	Kafka    *KafkaBus
 	// -- end of BusType
 }
 
@@ -217,6 +253,9 @@ func (b0 MessageBus_builder) Build() *MessageBus {
 	}
 	if b.Nats != nil {
 		x.BusType = &MessageBus_Nats{b.Nats}
+	}
+	if b.Kafka != nil {
+		x.BusType = &MessageBus_Kafka{b.Kafka}
 	}
 	return m0
 }
@@ -247,11 +286,17 @@ type MessageBus_Nats struct {
 	Nats *NatsBus `protobuf:"bytes,3,opt,name=nats,oneof"`
 }
 
+type MessageBus_Kafka struct {
+	Kafka *KafkaBus `protobuf:"bytes,4,opt,name=kafka,oneof"`
+}
+
 func (*MessageBus_InMemory) isMessageBus_BusType() {}
 
 func (*MessageBus_Redis) isMessageBus_BusType() {}
 
 func (*MessageBus_Nats) isMessageBus_BusType() {}
+
+func (*MessageBus_Kafka) isMessageBus_BusType() {}
 
 type InMemoryBus struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -482,16 +527,124 @@ func (b0 RedisBus_builder) Build() *RedisBus {
 	return m0
 }
 
+type KafkaBus struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Brokers       []string               `protobuf:"bytes,1,rep,name=brokers" json:"brokers,omitempty"`
+	TopicPrefix   *string                `protobuf:"bytes,2,opt,name=topic_prefix,json=topicPrefix" json:"topic_prefix,omitempty"`
+	ConsumerGroup *string                `protobuf:"bytes,3,opt,name=consumer_group,json=consumerGroup" json:"consumer_group,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KafkaBus) Reset() {
+	*x = KafkaBus{}
+	mi := &file_proto_bus_bus_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KafkaBus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KafkaBus) ProtoMessage() {}
+
+func (x *KafkaBus) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bus_bus_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *KafkaBus) GetBrokers() []string {
+	if x != nil {
+		return x.Brokers
+	}
+	return nil
+}
+
+func (x *KafkaBus) GetTopicPrefix() string {
+	if x != nil && x.TopicPrefix != nil {
+		return *x.TopicPrefix
+	}
+	return ""
+}
+
+func (x *KafkaBus) GetConsumerGroup() string {
+	if x != nil && x.ConsumerGroup != nil {
+		return *x.ConsumerGroup
+	}
+	return ""
+}
+
+func (x *KafkaBus) SetBrokers(v []string) {
+	x.Brokers = v
+}
+
+func (x *KafkaBus) SetTopicPrefix(v string) {
+	x.TopicPrefix = &v
+}
+
+func (x *KafkaBus) SetConsumerGroup(v string) {
+	x.ConsumerGroup = &v
+}
+
+func (x *KafkaBus) HasTopicPrefix() bool {
+	if x == nil {
+		return false
+	}
+	return x.TopicPrefix != nil
+}
+
+func (x *KafkaBus) HasConsumerGroup() bool {
+	if x == nil {
+		return false
+	}
+	return x.ConsumerGroup != nil
+}
+
+func (x *KafkaBus) ClearTopicPrefix() {
+	x.TopicPrefix = nil
+}
+
+func (x *KafkaBus) ClearConsumerGroup() {
+	x.ConsumerGroup = nil
+}
+
+type KafkaBus_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Brokers       []string
+	TopicPrefix   *string
+	ConsumerGroup *string
+}
+
+func (b0 KafkaBus_builder) Build() *KafkaBus {
+	m0 := &KafkaBus{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Brokers = b.Brokers
+	x.TopicPrefix = b.TopicPrefix
+	x.ConsumerGroup = b.ConsumerGroup
+	return m0
+}
+
 var File_proto_bus_bus_proto protoreflect.FileDescriptor
 
 const file_proto_bus_bus_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/bus/bus.proto\x12\x03bus\x1a!google/protobuf/go_features.proto\"\x94\x01\n" +
+	"\x13proto/bus/bus.proto\x12\x03bus\x1a!google/protobuf/go_features.proto\"\xbb\x01\n" +
 	"\n" +
 	"MessageBus\x12/\n" +
 	"\tin_memory\x18\x01 \x01(\v2\x10.bus.InMemoryBusH\x00R\binMemory\x12%\n" +
 	"\x05redis\x18\x02 \x01(\v2\r.bus.RedisBusH\x00R\x05redis\x12\"\n" +
-	"\x04nats\x18\x03 \x01(\v2\f.bus.NatsBusH\x00R\x04natsB\n" +
+	"\x04nats\x18\x03 \x01(\v2\f.bus.NatsBusH\x00R\x04nats\x12%\n" +
+	"\x05kafka\x18\x04 \x01(\v2\r.bus.KafkaBusH\x00R\x05kafkaB\n" +
 	"\n" +
 	"\bbus_type\"\r\n" +
 	"\vInMemoryBus\"(\n" +
@@ -501,24 +654,30 @@ const file_proto_bus_bus_proto_rawDesc = "" +
 	"\bRedisBus\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x0e\n" +
 	"\x02db\x18\x02 \x01(\x05R\x02db\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpasswordB4B\bBusProtoZ github.com/mcpany/core/proto/bus\x92\x03\x05\xd2>\x02\x10\x02b\beditionsp\xe8\a"
+	"\bpassword\x18\x03 \x01(\tR\bpassword\"n\n" +
+	"\bKafkaBus\x12\x18\n" +
+	"\abrokers\x18\x01 \x03(\tR\abrokers\x12!\n" +
+	"\ftopic_prefix\x18\x02 \x01(\tR\vtopicPrefix\x12%\n" +
+	"\x0econsumer_group\x18\x03 \x01(\tR\rconsumerGroupB4B\bBusProtoZ github.com/mcpany/core/proto/bus\x92\x03\x05\xd2>\x02\x10\x02b\beditionsp\xe8\a"
 
-var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_bus_bus_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_bus_bus_proto_goTypes = []any{
 	(*MessageBus)(nil),  // 0: bus.MessageBus
 	(*InMemoryBus)(nil), // 1: bus.InMemoryBus
 	(*NatsBus)(nil),     // 2: bus.NatsBus
 	(*RedisBus)(nil),    // 3: bus.RedisBus
+	(*KafkaBus)(nil),    // 4: bus.KafkaBus
 }
 var file_proto_bus_bus_proto_depIdxs = []int32{
 	1, // 0: bus.MessageBus.in_memory:type_name -> bus.InMemoryBus
 	3, // 1: bus.MessageBus.redis:type_name -> bus.RedisBus
 	2, // 2: bus.MessageBus.nats:type_name -> bus.NatsBus
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4, // 3: bus.MessageBus.kafka:type_name -> bus.KafkaBus
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_bus_bus_proto_init() }
@@ -530,6 +689,7 @@ func file_proto_bus_bus_proto_init() {
 		(*MessageBus_InMemory)(nil),
 		(*MessageBus_Redis)(nil),
 		(*MessageBus_Nats)(nil),
+		(*MessageBus_Kafka)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -537,7 +697,7 @@ func file_proto_bus_bus_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_bus_bus_proto_rawDesc), len(file_proto_bus_bus_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

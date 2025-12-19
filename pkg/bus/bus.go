@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/mcpany/core/pkg/bus/kafka"
 	"github.com/mcpany/core/pkg/bus/memory"
 	"github.com/mcpany/core/pkg/bus/nats"
 	"github.com/mcpany/core/pkg/bus/redis"
@@ -92,6 +93,8 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 		// Redis client is now created within the RedisBus
 	case bus.MessageBus_Nats_case:
 		// NATS client is now created within the NatsBus
+	case bus.MessageBus_Kafka_case:
+		// Kafka writer is now created within the KafkaBus
 	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
@@ -128,6 +131,12 @@ func GetBus[T any](p *Provider, topic string) Bus[T] {
 	case bus.MessageBus_Nats_case:
 		var err error
 		newBus, err = nats.New[T](p.config.GetNats())
+		if err != nil {
+			panic(err)
+		}
+	case bus.MessageBus_Kafka_case:
+		var err error
+		newBus, err = kafka.New[T](p.config.GetKafka())
 		if err != nil {
 			panic(err)
 		}
