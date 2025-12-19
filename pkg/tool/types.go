@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -1131,6 +1132,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	startTime := time.Now()
+	limit := getMaxCommandOutputSize()
+
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
@@ -1141,10 +1144,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 		go func() {
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, stderr)
+			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
@@ -1168,12 +1171,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -1311,6 +1314,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	startTime := time.Now()
+	limit := getMaxCommandOutputSize()
+
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
@@ -1321,10 +1326,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 		go func() {
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, stderr)
+			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, stdout)
+		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
@@ -1348,12 +1353,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), stdout)
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
 	}()
 	go func() {
 		defer wg.Done()
 		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), stderr)
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
 	}()
 
 	wg.Wait()
@@ -1439,4 +1444,17 @@ func (t *CommandTool) getExecutor(env *configv1.ContainerEnvironment) command.Ex
 		return t.executorFactory(env)
 	}
 	return command.NewExecutor(env)
+}
+
+// getMaxCommandOutputSize returns the maximum size of the command output (stdout + stderr) in bytes.
+// It checks the MCPANY_MAX_COMMAND_OUTPUT_SIZE environment variable.
+func getMaxCommandOutputSize() int64 {
+	val := os.Getenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
+	if val != "" {
+		if size, err := strconv.ParseInt(val, 10, 64); err == nil {
+			return size
+		}
+		// Log error? For now just fallback.
+	}
+	return consts.DefaultMaxCommandOutputBytes
 }
