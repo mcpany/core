@@ -256,7 +256,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 		if t.outputTransformer != nil {
 			parser := transformer.NewTextParser()
 			outputFormat := configv1.OutputTransformer_OutputFormat_name[int32(t.outputTransformer.GetFormat())]
-			return parser.Parse(outputFormat, []byte(response), t.outputTransformer.GetExtractionRules())
+			return parser.Parse(outputFormat, []byte(response), t.outputTransformer.GetExtractionRules(), t.outputTransformer.GetJqQuery())
 		}
 		var result map[string]any
 		if err := json.Unmarshal([]byte(response), &result); err != nil {
