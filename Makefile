@@ -270,6 +270,9 @@ prepare:
 	else \
 		echo "npm not found, skipping Node.js dependency installation."; \
 	fi
+	@echo "Updating submodules..."
+	@git submodule update --init --recursive
+	@echo "Checking for protoc..."
 	@# Install Helm
 	@echo "Checking for Helm..."
 	@if test -f "$(HELM_BIN)"; then \
@@ -354,7 +357,7 @@ prepare:
 
 
 
-gen:
+gen: prepare
 	@echo "Delegating protobuf generation to api submodule..."
 	@$(MAKE) -C api gen
 
@@ -382,6 +385,7 @@ e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
 	@-pkill -f file-upload-server
+
 
 e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."

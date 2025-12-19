@@ -77,7 +77,7 @@ require (
 	sigs.k8s.io/yaml v1.6.0
 )
 
-replace github.com/mcpany/api => ./api
+
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
