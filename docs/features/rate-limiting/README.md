@@ -13,6 +13,8 @@ Rate limiting is configured within the `rate_limit` block of an upstream service
 | `is_enabled`          | `bool`   | Whether rate limiting is enabled.                            |
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
+| `storage`             | `enum`   | The storage backend to use: `STORAGE_MEMORY` (default) or `STORAGE_REDIS`. |
+| `redis`               | `object` | Redis connection details (required if storage is `STORAGE_REDIS`). |
 
 ### Configuration Snippet
 
@@ -23,6 +25,26 @@ upstream_services:
       is_enabled: true
       requests_per_second: 10.0
       burst: 20
+    http_service:
+      address: "https://api.example.com"
+```
+
+### Distributed Rate Limiting (Redis)
+
+By default, rate limiting is handled in-memory. To support distributed deployments (multiple replicas), you can configure a Redis backend.
+
+```yaml
+upstream_services:
+  - name: "limited-service-redis"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 100.0
+      burst: 50
+      storage: STORAGE_REDIS
+      redis:
+        address: "redis-host:6379"
+        password: "optional-password"
+        db: 0
     http_service:
       address: "https://api.example.com"
 ```
