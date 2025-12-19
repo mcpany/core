@@ -882,10 +882,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	// Chain middlewares: SecurityHeaders -> IPAllowlist -> Mux
-	handler := middleware.SecurityHeadersMiddleware(ipMiddleware.Handler(mux))
-
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(handler, "mcp-server"), shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(mux), "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
@@ -934,10 +931,8 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					if cachingMiddleware != nil {
-						adminServer := admin.NewServer(cachingMiddleware)
-						pb_admin.RegisterAdminServiceServer(s, adminServer)
-					}
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},

@@ -364,6 +364,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
+	// Check for path traversal in unescaped parameters used in the path
+	for k, v := range req.Arguments {
+		if noEscapeParams[k] && strings.Contains(pathStr, "{{"+k+"}}") {
+			val := fmt.Sprintf("%v", v)
+			if val == ".." || strings.HasPrefix(val, "../") || strings.HasSuffix(val, "/..") || strings.Contains(val, "/../") {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q", k)
+			}
+		}
+	}
+
 	// Replace placeholders in the URL path
 	pathStr = util.ReplaceURLPath(pathStr, req.Arguments, noEscapeParams)
 
@@ -406,7 +416,20 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := "{{" + schema.GetName() + "}}"
 			if val, ok := inputs[schema.GetName()]; ok {
-				urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(fmt.Sprintf("%v", val)))
+				valStr := fmt.Sprintf("%v", val)
+				if param.GetDisableEscape() {
+					// Check if we are in the path (before query string)
+					idx := strings.Index(urlString, "?")
+					placeholderIdx := strings.Index(urlString, placeholder)
+					if placeholderIdx != -1 && (idx == -1 || placeholderIdx < idx) {
+						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
+							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
+						}
+					}
+					urlString = strings.ReplaceAll(urlString, placeholder, valStr)
+				} else {
+					urlString = strings.ReplaceAll(urlString, placeholder, url.PathEscape(valStr))
+				}
 				delete(inputs, schema.GetName())
 			} else {
 				urlString = strings.ReplaceAll(urlString, "/"+placeholder, "")
@@ -599,13 +622,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			var templateData map[string]any
-			if m, ok := parsedResult.(map[string]any); ok {
-				templateData = m
-			} else {
-				return nil, fmt.Errorf("parsed result must be a map to use with output template, got %T", parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(templateData)
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -751,13 +772,11 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			var templateData map[string]any
-			if m, ok := parsedResult.(map[string]any); ok {
-				templateData = m
-			} else {
-				return nil, fmt.Errorf("parsed result must be a map to use with output template, got %T", parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(templateData)
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -953,13 +972,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to create output template: %w", err)
 			}
-			var templateData map[string]any
-			if m, ok := parsedResult.(map[string]any); ok {
-				templateData = m
-			} else {
-				return nil, fmt.Errorf("parsed result must be a map to use with output template, got %T", parsedResult)
+			resultMap, ok := parsedResult.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(templateData)
+			renderedOutput, err := tpl.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -1256,6 +1273,19 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
+
+	// Substitute placeholders in args with input values
+	if inputs != nil {
+		for i, arg := range args {
+			for k, v := range inputs {
+				placeholder := "{{" + k + "}}"
+				if strings.Contains(arg, placeholder) {
+					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+				}
+			}
+		}
+	}
+
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			// Check if args is allowed in the schema

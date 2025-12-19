@@ -718,6 +718,7 @@ type mockToolManagerCoverage struct {
 func (m *mockToolManagerCoverage) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *mockToolManagerCoverage) AddTool(_ tool.Tool) error                    { return nil }
 func (m *mockToolManagerCoverage) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
+func (m *mockToolManagerCoverage) ListServices() []*tool.ServiceInfo            { return nil }
 
 type mockPromptManagerCoverage struct {
 	prompt.ManagerInterface
