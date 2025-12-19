@@ -141,6 +141,7 @@ const (
 	OutputTransformer_XML       OutputTransformer_OutputFormat = 1 // The output is XML, which will be parsed using XPath expressions.
 	OutputTransformer_TEXT      OutputTransformer_OutputFormat = 2 // The output is plain text, which will be parsed using regex.
 	OutputTransformer_RAW_BYTES OutputTransformer_OutputFormat = 3 // The output is raw bytes, no parsing will be performed.
+	OutputTransformer_JQ        OutputTransformer_OutputFormat = 4 // The output is JSON, which will be transformed using a JQ query.
 )
 
 // Enum value maps for OutputTransformer_OutputFormat.
@@ -150,12 +151,14 @@ var (
 		1: "XML",
 		2: "TEXT",
 		3: "RAW_BYTES",
+		4: "JQ",
 	}
 	OutputTransformer_OutputFormat_value = map[string]int32{
 		"JSON":      0,
 		"XML":       1,
 		"TEXT":      2,
 		"RAW_BYTES": 3,
+		"JQ":        4,
 	}
 )
 
@@ -1214,7 +1217,10 @@ type OutputTransformer struct {
 	ExtractionRules map[string]string `protobuf:"bytes,2,rep,name=extraction_rules" json:"extraction_rules,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// An optional template to render the extracted data into a final string.
 	// If this is not provided, the raw extracted data will be returned.
-	Template      *string `protobuf:"bytes,3,opt,name=template" json:"template,omitempty"`
+	Template *string `protobuf:"bytes,3,opt,name=template" json:"template,omitempty"`
+	// The JQ query to transform the output.
+	// Only used when format is JQ.
+	JqQuery       *string `protobuf:"bytes,4,opt,name=jq_query" json:"jq_query,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1265,6 +1271,13 @@ func (x *OutputTransformer) GetTemplate() string {
 	return ""
 }
 
+func (x *OutputTransformer) GetJqQuery() string {
+	if x != nil && x.JqQuery != nil {
+		return *x.JqQuery
+	}
+	return ""
+}
+
 func (x *OutputTransformer) SetFormat(v OutputTransformer_OutputFormat) {
 	x.Format = &v
 }
@@ -1275,6 +1288,10 @@ func (x *OutputTransformer) SetExtractionRules(v map[string]string) {
 
 func (x *OutputTransformer) SetTemplate(v string) {
 	x.Template = &v
+}
+
+func (x *OutputTransformer) SetJqQuery(v string) {
+	x.JqQuery = &v
 }
 
 func (x *OutputTransformer) HasFormat() bool {
@@ -1291,12 +1308,23 @@ func (x *OutputTransformer) HasTemplate() bool {
 	return x.Template != nil
 }
 
+func (x *OutputTransformer) HasJqQuery() bool {
+	if x == nil {
+		return false
+	}
+	return x.JqQuery != nil
+}
+
 func (x *OutputTransformer) ClearFormat() {
 	x.Format = nil
 }
 
 func (x *OutputTransformer) ClearTemplate() {
 	x.Template = nil
+}
+
+func (x *OutputTransformer) ClearJqQuery() {
+	x.JqQuery = nil
 }
 
 type OutputTransformer_builder struct {
@@ -1313,6 +1341,9 @@ type OutputTransformer_builder struct {
 	// An optional template to render the extracted data into a final string.
 	// If this is not provided, the raw extracted data will be returned.
 	Template *string
+	// The JQ query to transform the output.
+	// Only used when format is JQ.
+	JqQuery *string
 }
 
 func (b0 OutputTransformer_builder) Build() *OutputTransformer {
@@ -1322,6 +1353,7 @@ func (b0 OutputTransformer_builder) Build() *OutputTransformer {
 	x.Format = b.Format
 	x.ExtractionRules = b.ExtractionRules
 	x.Template = b.Template
+	x.JqQuery = b.JqQuery
 	return m0
 }
 
@@ -2393,7 +2425,9 @@ type HttpParameterMapping struct {
 	// The schema for the parameter.
 	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
 	// A secret value to use for the parameter.
-	Secret        *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
+	Secret *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
+	// Whether to disable automatic URL escaping for this parameter.
+	DisableEscape *bool `protobuf:"varint,3,opt,name=disable_escape" json:"disable_escape,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2437,12 +2471,23 @@ func (x *HttpParameterMapping) GetSecret() *SecretValue {
 	return nil
 }
 
+func (x *HttpParameterMapping) GetDisableEscape() bool {
+	if x != nil && x.DisableEscape != nil {
+		return *x.DisableEscape
+	}
+	return false
+}
+
 func (x *HttpParameterMapping) SetSchema(v *ParameterSchema) {
 	x.Schema = v
 }
 
 func (x *HttpParameterMapping) SetSecret(v *SecretValue) {
 	x.Secret = v
+}
+
+func (x *HttpParameterMapping) SetDisableEscape(v bool) {
+	x.DisableEscape = &v
 }
 
 func (x *HttpParameterMapping) HasSchema() bool {
@@ -2459,12 +2504,23 @@ func (x *HttpParameterMapping) HasSecret() bool {
 	return x.Secret != nil
 }
 
+func (x *HttpParameterMapping) HasDisableEscape() bool {
+	if x == nil {
+		return false
+	}
+	return x.DisableEscape != nil
+}
+
 func (x *HttpParameterMapping) ClearSchema() {
 	x.Schema = nil
 }
 
 func (x *HttpParameterMapping) ClearSecret() {
 	x.Secret = nil
+}
+
+func (x *HttpParameterMapping) ClearDisableEscape() {
+	x.DisableEscape = nil
 }
 
 type HttpParameterMapping_builder struct {
@@ -2474,6 +2530,8 @@ type HttpParameterMapping_builder struct {
 	Schema *ParameterSchema
 	// A secret value to use for the parameter.
 	Secret *SecretValue
+	// Whether to disable automatic URL escaping for this parameter.
+	DisableEscape *bool
 }
 
 func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
@@ -2482,6 +2540,7 @@ func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
 	_, _ = b, x
 	x.Schema = b.Schema
 	x.Secret = b.Secret
+	x.DisableEscape = b.DisableEscape
 	return m0
 }
 
@@ -2955,19 +3014,21 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"m\n" +
 	"\x10InputTransformer\x12\x1e\n" +
 	"\btemplate\x18\x01 \x01(\tB\x02\x18\x01R\btemplate\x129\n" +
-	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigR\awebhook\"\xdf\x02\n" +
+	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigR\awebhook\"\x83\x03\n" +
 	"\x11OutputTransformer\x12H\n" +
 	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12d\n" +
 	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x10extraction_rules\x12\x1a\n" +
-	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
+	"\btemplate\x18\x03 \x01(\tR\btemplate\x12\x1a\n" +
+	"\bjq_query\x18\x04 \x01(\tR\bjq_query\x1aB\n" +
 	"\x14ExtractionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\":\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"B\n" +
 	"\fOutputFormat\x12\b\n" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
 	"\x04TEXT\x10\x02\x12\r\n" +
-	"\tRAW_BYTES\x10\x03\"\x87\x02\n" +
+	"\tRAW_BYTES\x10\x03\x12\x06\n" +
+	"\x02JQ\x10\x04\"\x87\x02\n" +
 	"\x12GrpcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x16\n" +
@@ -3003,10 +3064,11 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1f.mcpany.config.v1.ParameterTypeR\x04type\x12 \n" +
 	"\vis_required\x18\x04 \x01(\bR\vis_required\x12<\n" +
-	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\x88\x01\n" +
+	"\rdefault_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueR\rdefault_value\"\xb0\x01\n" +
 	"\x14HttpParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8d\x01\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\x12&\n" +
+	"\x0edisable_escape\x18\x03 \x01(\bR\x0edisable_escape\"\x8d\x01\n" +
 	"\x19WebsocketParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8a\x01\n" +
