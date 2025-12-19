@@ -13,7 +13,7 @@ The following features are fully implemented and tested:
 - **Service Types**: gRPC, HTTP, OpenAPI, GraphQL, Stdio, MCP-to-MCP Proxy, WebSocket, WebRTC.
 - **Upstream Authentication**: API Key, Bearer Token, OAuth 2.0.
 - **Registration**: Dynamic (gRPC) and Static (YAML/JSON).
-- **Policies**: Caching, Rate Limiting (In-Memory), Resilience (Circuit Breakers & Retries).
+- **Policies**: Caching, Rate Limiting (In-Memory & Redis), Resilience (Circuit Breakers & Retries).
 - **Deployment**: Helm Chart, Docker.
 - **Health Checks**: Implemented for all major protocols.
 - **Schema Validation**: Built-in JSON Schema validation for config.
@@ -21,13 +21,11 @@ The following features are fully implemented and tested:
 - **Security**: Secrets Management, IP Allowlisting.
 - **Eventing**: NATS support, Webhooks (Pre/Post call).
 - **Documentation**: Automated Doc Gen.
-- **Logging**: Structured Logging (JSON) support.
+- **Logging**: Structured Logging (JSON) support, Audit Logging.
+- **Validation**: Runtime Argument Validation (Regex).
 
 #### High Priority (Next 1-3 Months)
 
-- **Distributed Rate Limiting (Redis)**: Essential for scaling beyond a single instance.
-- **Runtime Argument Validation**: Critical security feature to prevent injection attacks.
-- **Audit Logging**: Required for enterprise compliance.
 - **Kafka Transport**: For high-throughput async messaging.
 - **RBAC**: For multi-tenant security.
 
@@ -37,8 +35,7 @@ Based on the strategic feature extraction analysis, the following features are r
 
 | Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **Distributed Rate Limiting (Redis)** | **Scalability**: Current rate limiting is in-memory (per instance). Distributed limiting is essential for running multiple replicas in production. | Medium |
-| 2 | **Kafka Transport Support** | **Scalability**: Completes the message bus vision. Kafka is industry-standard for high-throughput event streaming. | Medium |
+| 1 | **Kafka Transport Support** | **Scalability**: Completes the message bus vision. Kafka is industry-standard for high-throughput event streaming. | Medium |
 | 3 | **Admin/Management API** | **UX/Automation**: Allow programmatic configuration updates (add/remove services) without restarting or editing files directly. Precursor to the Dynamic UI. | High |
 | 7 | **RBAC (Role-Based Access Control)** | **Security**: Restrict which users can access which profiles or tools. Essential for multi-tenant environments. | High |
 | 8 | **Dynamic UI** | **UX**: A web interface to visualize and manage the server. | High |

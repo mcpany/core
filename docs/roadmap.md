@@ -25,7 +25,7 @@ The following features are fully implemented and tested:
 - **Static Registration**: Services can be registered at startup via a YAML or JSON configuration file.
 - **Advanced Service Policies**:
   - [x] [Caching](./features/caching/README.md) (`CacheConfig`)
-  - [x] [Rate Limiting](./features/rate-limiting/README.md) (`RateLimitConfig`)
+  - [x] [Rate Limiting](./features/rate-limiting/README.md) (`RateLimitConfig`) - Supports In-Memory and Redis.
   - [x] [Resilience](./features/resilience/README.md) (Circuit Breakers & Retries) (`ResilienceConfig`)
 - **Deployment**:
   - Official Helm Chart
@@ -55,7 +55,6 @@ For a complete list of all available configuration options, please see the [Conf
 
 ## High Priority (Next 1-3 Months)
 
-- [ ] **Distributed Rate Limiting (Redis)**: Current rate limiting is in-memory. Redis support is needed for distributed deployments.
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
 - [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
