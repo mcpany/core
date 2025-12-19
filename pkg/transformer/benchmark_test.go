@@ -83,7 +83,7 @@ func BenchmarkTextParser_ParseJSON(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := parser.Parse("json", jsonInput, config)
+		_, err := parser.Parse("json", jsonInput, config, "")
 		if err != nil {
 			b.Fatalf("failed to parse: %v", err)
 		}
@@ -100,7 +100,7 @@ func BenchmarkTextParser_ParseXML(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := parser.Parse("xml", xmlInput, config)
+		_, err := parser.Parse("xml", xmlInput, config, "")
 		if err != nil {
 			b.Fatalf("failed to parse: %v", err)
 		}
@@ -117,7 +117,21 @@ func BenchmarkTextParser_ParseText(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := parser.Parse("text", textInput, config)
+		_, err := parser.Parse("text", textInput, config, "")
+		if err != nil {
+			b.Fatalf("failed to parse: %v", err)
+		}
+	}
+}
+
+func BenchmarkTextParser_ParseJQ(b *testing.B) {
+	parser := NewTextParser()
+	jsonInput := []byte(`{"users": [{"name": "Alice"}, {"name": "Bob"}]}`)
+	query := `{names: [.users[].name]}`
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := parser.Parse("jq", jsonInput, nil, query)
 		if err != nil {
 			b.Fatalf("failed to parse: %v", err)
 		}

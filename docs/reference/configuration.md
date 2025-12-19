@@ -282,6 +282,27 @@ Defines how an MCP tool entry maps to a specific HTTP call.
 | `cache` | `CacheConfig` | Call-level cache configuration (overrides service default). |
 | `retry_policy` | `RetryConfig` | Call-level retry policy. |
 
+#### `OutputTransformer`
+
+Defines how to parse and transform the upstream service's output.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `format` | `enum` | The format of the output (`JSON`, `XML`, `TEXT`, `RAW_BYTES`, `JQ`). |
+| `extraction_rules` | `map<string, string>` | Extraction rules for JSON/XML/TEXT. |
+| `template` | `string` | Optional Go template to render the extracted/transformed data. |
+| `jq_query` | `string` | JQ query to transform the output (when format is `JQ`). |
+
+##### Use Case and Example: JQ Transformation
+
+Transform a complex JSON response using JQ.
+
+```yaml
+output_transformer:
+  format: "JQ"
+  jq_query: ".users[] | select(.active) | .name"
+```
+
 #### `OpenapiUpstreamService`
 
 | Field          | Type                                 | Description                                          |

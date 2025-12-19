@@ -35,10 +35,10 @@ func NewTransformer() *Transformer {
 // slice containing the transformed output.
 //
 // templateStr is the Go template to be executed.
-// data is the map containing the data to be used in the template.
+// data is the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
-func (t *Transformer) Transform(templateStr string, data map[string]any) ([]byte, error) {
+func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error
 
