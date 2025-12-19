@@ -931,10 +931,8 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					if cachingMiddleware != nil {
-						adminServer := admin.NewServer(cachingMiddleware)
-						pb_admin.RegisterAdminServiceServer(s, adminServer)
-					}
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},
