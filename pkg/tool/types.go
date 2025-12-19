@@ -882,7 +882,6 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-
 	if t.method == http.MethodGet {
 		q := httpReq.URL.Query()
 		for paramName, paramValue := range inputs {
@@ -955,6 +954,8 @@ type CommandTool struct {
 	service         *configv1.CommandLineUpstreamService
 	callDefinition  *configv1.CommandLineCallDefinition
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
+	policies        []*configv1.CallPolicy
+	callID          string
 }
 
 // NewCommandTool creates a new CommandTool.
@@ -965,11 +966,15 @@ func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
 	return &CommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       policies,
+		callID:         callID,
 	}
 }
 
@@ -980,6 +985,8 @@ type LocalCommandTool struct {
 	tool           *v1.Tool
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
+	policies       []*configv1.CallPolicy
+	callID         string
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool.
@@ -990,11 +997,15 @@ func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
+	policies []*configv1.CallPolicy,
+	callID string,
 ) Tool {
 	return &LocalCommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
+		policies:       policies,
+		callID:         callID,
 	}
 }
 
@@ -1017,6 +1028,12 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
@@ -1179,6 +1196,12 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+	}
+
+	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
