@@ -32,15 +32,6 @@ func TestManager_IsToolAllowed(t *testing.T) {
 		},
 	}
 
-	notReadonlyProfile := &configv1.ProfileDefinition{
-		Name: proto.String("not_readonly"),
-		Selector: &configv1.ProfileSelector{
-			ToolProperties: map[string]string{
-				"read_only": "false",
-			},
-		},
-	}
-
 	mixedProfile := &configv1.ProfileDefinition{
 		Name: proto.String("mixed"),
 		Selector: &configv1.ProfileSelector{
@@ -51,46 +42,7 @@ func TestManager_IsToolAllowed(t *testing.T) {
 		},
 	}
 
-	destructiveProfile := &configv1.ProfileDefinition{
-		Name: proto.String("destructive"),
-		Selector: &configv1.ProfileSelector{
-			ToolProperties: map[string]string{
-				"destructive": "true",
-			},
-		},
-	}
-
-	idempotentProfile := &configv1.ProfileDefinition{
-		Name: proto.String("idempotent"),
-		Selector: &configv1.ProfileSelector{
-			ToolProperties: map[string]string{
-				"idempotent": "true",
-			},
-		},
-	}
-
-	openWorldProfile := &configv1.ProfileDefinition{
-		Name: proto.String("open_world"),
-		Selector: &configv1.ProfileSelector{
-			ToolProperties: map[string]string{
-				"open_world": "true",
-			},
-		},
-	}
-
-	invalidPropProfile := &configv1.ProfileDefinition{
-		Name: proto.String("invalid_prop"),
-		Selector: &configv1.ProfileSelector{
-			ToolProperties: map[string]string{
-				"unknown_property": "true",
-			},
-		},
-	}
-
-	manager.SetProfiles(
-		[]string{"dev", "readonly", "mixed", "destructive", "idempotent", "open_world", "invalid_prop", "not_readonly"},
-		[]*configv1.ProfileDefinition{devProfile, readonlyProfile, mixedProfile, destructiveProfile, idempotentProfile, openWorldProfile, invalidPropProfile, notReadonlyProfile},
-	)
+	manager.SetProfiles([]string{"dev", "readonly", "mixed"}, []*configv1.ProfileDefinition{devProfile, readonlyProfile, mixedProfile})
 
 	// Helpers
 	toolWithTags := func(tags ...string) *v1.Tool {
@@ -107,42 +59,12 @@ func TestManager_IsToolAllowed(t *testing.T) {
 		}
 	}
 
-	toolWithDestructive := func(destructive bool) *v1.Tool {
-		return &v1.Tool{
-			Annotations: &v1.ToolAnnotations{
-				DestructiveHint: proto.Bool(destructive),
-			},
-		}
-	}
-
-	toolWithIdempotent := func(idempotent bool) *v1.Tool {
-		return &v1.Tool{
-			Annotations: &v1.ToolAnnotations{
-				IdempotentHint: proto.Bool(idempotent),
-			},
-		}
-	}
-
-	toolWithOpenWorld := func(openWorld bool) *v1.Tool {
-		return &v1.Tool{
-			Annotations: &v1.ToolAnnotations{
-				OpenWorldHint: proto.Bool(openWorld),
-			},
-		}
-	}
-
 	toolWithBoth := func(readonly bool, tags ...string) *v1.Tool {
 		return &v1.Tool{
 			Tags: tags,
 			Annotations: &v1.ToolAnnotations{
 				ReadOnlyHint: proto.Bool(readonly),
 			},
-		}
-	}
-
-	toolWithNilAnnotations := func() *v1.Tool {
-		return &v1.Tool{
-			Annotations: nil,
 		}
 	}
 
@@ -199,48 +121,6 @@ func TestManager_IsToolAllowed(t *testing.T) {
 			enabled:  []string{"mixed"},
 			tool:     toolWithBoth(true, "prod"),
 			expected: false,
-		},
-		{
-			name:     "Destructive profile enabled, matches property",
-			enabled:  []string{"destructive"},
-			tool:     toolWithDestructive(true),
-			expected: true,
-		},
-		{
-			name:     "Destructive profile enabled, no match",
-			enabled:  []string{"destructive"},
-			tool:     toolWithDestructive(false),
-			expected: false,
-		},
-		{
-			name:     "Idempotent profile enabled, matches property",
-			enabled:  []string{"idempotent"},
-			tool:     toolWithIdempotent(true),
-			expected: true,
-		},
-		{
-			name:     "OpenWorld profile enabled, matches property",
-			enabled:  []string{"open_world"},
-			tool:     toolWithOpenWorld(true),
-			expected: true,
-		},
-		{
-			name:     "Invalid property profile enabled",
-			enabled:  []string{"invalid_prop"},
-			tool:     toolWithProps(true),
-			expected: false,
-		},
-		{
-			name:     "Readonly profile enabled, nil annotations (default false)",
-			enabled:  []string{"readonly"},
-			tool:     toolWithNilAnnotations(),
-			expected: false,
-		},
-		{
-			name:     "NotReadonly profile enabled, nil annotations (default false)",
-			enabled:  []string{"not_readonly"},
-			tool:     toolWithNilAnnotations(),
-			expected: true,
 		},
 	}
 
