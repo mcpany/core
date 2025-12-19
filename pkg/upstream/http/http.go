@@ -212,6 +212,13 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 	callPolicies := serviceConfig.GetCallPolicies()
 
+	// Optimization: Parse baseURL once outside the loop to avoid redundant parsing for each call.
+	baseURL, err := url.Parse(address)
+	if err != nil {
+		log.Error("Failed to parse base URL", "address", address, "error", err)
+		return nil
+	}
+
 	for _, callID := range sortedCallIDs {
 		httpDef := calls[callID]
 
@@ -269,12 +276,6 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		method, err := httpMethodToString(httpDef.GetMethod())
 		if err != nil {
 			log.Error("Skipping tool creation due to unsupported HTTP method", "toolName", toolNamePart, "error", err)
-			continue
-		}
-
-		baseURL, err := url.Parse(address)
-		if err != nil {
-			log.Error("Failed to parse base URL", "address", address, "error", err)
 			continue
 		}
 
