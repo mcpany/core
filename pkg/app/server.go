@@ -135,12 +135,13 @@ type Runner interface {
 // the server, such as the stdio mode handler, and provides the main `Run`
 // method that starts the application.
 type Application struct {
-	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
-	PromptManager    prompt.ManagerInterface
-	ToolManager      tool.ManagerInterface
-	ResourceManager  resource.ManagerInterface
-	UpstreamFactory  factory.Factory
-	configFiles      map[string]string
+	runStdioModeFunc  func(ctx context.Context, mcpSrv *mcpserver.Server) error
+	PromptManager     prompt.ManagerInterface
+	ToolManager       tool.ManagerInterface
+	ResourceManager   resource.ManagerInterface
+	UpstreamFactory   factory.Factory
+	MiddlewareManager *middleware.Manager
+	configFiles       map[string]string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -151,13 +152,13 @@ type Application struct {
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
-		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewManager(),
-		ToolManager:      tool.NewManager(busProvider),
-
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
-		configFiles:     make(map[string]string),
+		runStdioModeFunc:  runStdioMode,
+		PromptManager:     prompt.NewManager(),
+		ToolManager:       tool.NewManager(busProvider),
+		MiddlewareManager: middleware.NewManager(),
+		ResourceManager:   resource.NewManager(),
+		UpstreamFactory:   factory.NewUpstreamServiceFactory(pool.NewManager()),
+		configFiles:       make(map[string]string),
 	}
 }
 
@@ -220,6 +221,12 @@ func (a *Application) Run(
 	} else {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
+
+	// Update middleware config
+	if err := a.MiddlewareManager.UpdateConfig(cfg); err != nil {
+		return fmt.Errorf("failed to update middleware config: %w", err)
+	}
+	defer func() { _ = a.MiddlewareManager.Close() }()
 
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
 	busProvider, err := bus.NewProvider(busConfig)
@@ -317,53 +324,43 @@ func (a *Application) Run(
 	}
 
 	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
-	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
-	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
-
-	auditConfig := cfg.GetGlobalSettings().GetAudit()
-	auditMiddleware, err := middleware.NewAuditMiddleware(auditConfig)
-	if err != nil {
-		return fmt.Errorf("failed to create audit middleware: %w", err)
-	}
-	defer func() { _ = auditMiddleware.Close() }()
 
 	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if r, ok := req.(*mcp.CallToolRequest); ok {
+				// Inject tool into context
+				t, found := a.ToolManager.GetTool(r.Params.Name)
+				if found {
+					ctx = tool.NewContextWithTool(ctx, t)
+				}
+
 				executionReq := &tool.ExecutionRequest{
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
-				result, err := auditMiddleware.Execute(
+
+				result, err := a.MiddlewareManager.Execute(
 					ctx,
 					executionReq,
-					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-						return callPolicyMiddleware.Execute(
-							ctx,
-							executionReq,
-							func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-								return cachingMiddleware.Execute(
-									ctx,
-									executionReq,
-									func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-										return rateLimitMiddleware.Execute(
-											ctx,
-											executionReq,
-											func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-												return next(ctx, method, r)
-											},
-										)
-									},
-								)
-							},
-						)
+					func(ctx context.Context, execReq *tool.ExecutionRequest) (any, error) {
+						r.Params.Arguments = execReq.ToolInputs
+						return next(ctx, method, r)
 					},
 				)
 				if err != nil {
 					return nil, err
 				}
-				return result.(*mcp.CallToolResult), nil
+
+				if res, ok := result.(*mcp.CallToolResult); ok {
+					return res, nil
+				}
+				if res, ok := result.(mcp.Result); ok {
+					if ctr, ok := res.(*mcp.CallToolResult); ok {
+						return ctr, nil
+					}
+				}
+
+				return nil, fmt.Errorf("unexpected result type from middleware: %T", result)
 			}
 			return next(ctx, method, req)
 		}
@@ -389,7 +386,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, a.MiddlewareManager)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -410,6 +407,12 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		cfg.GetGlobalSettings().GetProfiles(),
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
+
+	// Update middlewares
+	if err := a.MiddlewareManager.UpdateConfig(cfg); err != nil {
+		log.Error("Failed to update middleware config", "error", err)
+		// Continue? Or fail?
+	}
 
 	// Clear existing services
 	for _, serviceConfig := range cfg.GetUpstreamServices() {
@@ -560,17 +563,6 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-// runServerMode runs the server in the standard HTTP and gRPC server mode. It
-// starts the HTTP server for JSON-RPC and the gRPC server for service
-// registration, and handles graceful shutdown.
-//
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance.
-// bus is the message bus for inter-component communication.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC registration server.
-//
-// It returns an error if any of the servers fail to start or run.
 //
 //nolint:gocyclo
 func (a *Application) runServerMode(
@@ -581,7 +573,7 @@ func (a *Application) runServerMode(
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
 	allowedIPs []string,
-	cachingMiddleware *middleware.CachingMiddleware,
+	middlewareManager *middleware.Manager,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -629,12 +621,6 @@ func (a *Application) runServerMode(
 	mux.HandleFunc("/mcp/u/", func(w http.ResponseWriter, r *http.Request) {
 		// Expected path: /mcp/u/{uid}/profile/{profileId}/...
 		parts := strings.Split(r.URL.Path, "/")
-		// parts[0] = ""
-		// parts[1] = "mcp"
-		// parts[2] = "u"
-		// parts[3] = {uid}
-		// parts[4] = "profile"
-		// parts[5] = {profileId}
 		if len(parts) < 6 || parts[4] != "profile" {
 			http.NotFound(w, r)
 			return
@@ -652,40 +638,16 @@ func (a *Application) runServerMode(
 		// 1. Profile Authentication
 		// 2. User Authentication
 		// 3. Global Authentication
-		// If a higher priority mechanism is configured, it MUST be satisfied. Lower priority checks are skipped.
-
-		// Resolve the specific profile config from the user's allowed profiles
-		// We need to find the profile config to check if it has an API Key.
-		// The user object only has profile IDs.
-		// We need to look up the profile definition.
-		// Profile definitions are inside UpstreamServiceConfigs.
-		// BUT, we are in the multi-user handler which routes to *any* service.
-		// Wait, the profile is conceptual here?
-		// The routing is /mcp/u/{uid}/profile/{profileId}
-		// The `profileId` corresponds to a profile defined in ONE OR MORE upstream services.
-		// Does a "Profile" exist independently?
-		// In `config.proto`, `UpstreamServiceConfig` has `repeated Profile profiles`.
-		// `Profile` has `id` and `api_key`.
-		// Since a profile ID can be shared across services (e.g. "prod"), which `api_key` do we use?
-		// If multiple services define "prod", do they share the same API key?
-		// Assumption: If "prod" is defined in multiple places, they should logically share the key or we pick one.
-		// Better approach: We iterate over all services to find the profile definition.
 
 		var profileAuthConfig *config_v1.AuthenticationConfig
-		// We need access to the full config or tool manager to look up profiles.
-		// mcpSrv.ServiceRegistry() gives us registered services.
-
 		services, err := mcpSrv.ServiceRegistry().GetAllServices()
 		if err != nil {
 			logging.GetLogger().Error("Failed to list services for profile auth check", "error", err)
 		} else {
 			for _, svc := range services {
-				// svc is *config.UpstreamServiceConfig
 				for _, p := range svc.GetProfiles() {
 					if p.GetId() == profileID {
 						profileAuthConfig = p.GetAuthentication()
-						// We found the profile, break inner loop.
-						// Should we break outer loop? Yes, assuming profile IDs are unique or we take first match.
 						break
 					}
 				}
@@ -695,11 +657,6 @@ func (a *Application) runServerMode(
 			}
 		}
 
-		// Authentication Logic with Priority:
-		// 1. Profile Authentication
-		// 2. User Authentication
-		// 3. Global Authentication
-
 		isAuthenticated := false
 
 		// 1. Profile Auth
@@ -707,7 +664,6 @@ func (a *Application) runServerMode(
 			if err := auth.ValidateAuthentication(r.Context(), profileAuthConfig, r); err == nil {
 				isAuthenticated = true
 			} else {
-				// Profile auth configured but failed
 				http.Error(w, "Unauthorized (Profile)", http.StatusUnauthorized)
 				return
 			}
@@ -717,17 +673,12 @@ func (a *Application) runServerMode(
 				if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
 					isAuthenticated = true
 				} else {
-					// User auth configured but failed
 					http.Error(w, "Unauthorized (User)", http.StatusUnauthorized)
 					return
 				}
 			} else {
 				// 3. Global Auth
-				// Global Auth is still a simple API Key string in GlobalSettings for now (based on current code).
-				// We can continue to use it as is.
 				if apiKey != "" {
-					// Manual check for global key since it's a string, or wrap it.
-					// We'll just do manual check to match existing behavior logic.
 					requestKey := r.Header.Get("X-API-Key")
 					if requestKey == "" {
 						authHeader := r.Header.Get("Authorization")
@@ -739,19 +690,16 @@ func (a *Application) runServerMode(
 					if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 						isAuthenticated = true
 					} else {
-						// Global auth configured but failed
 						http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
 						return
 					}
 				} else {
-					// No auth configured at any level
 					isAuthenticated = true
 				}
 			}
 		}
 
 		if !isAuthenticated {
-			// Should be unreachable if logic covers all cases, but safety net
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -808,7 +756,6 @@ func (a *Application) runServerMode(
 						if len(info.Config.GetProfiles()) == 0 {
 							allowed = true
 						} else {
-							// Check if current profileID matches any allowed profile
 							for _, p := range info.Config.GetProfiles() {
 								if p.GetId() == profileID {
 									allowed = true
@@ -827,8 +774,6 @@ func (a *Application) runServerMode(
 						})
 					}
 
-					// Ensure we return an empty list if no tools are found/allowed, not nil?
-					// JSON encoding nil slice as null is usually fine, but empty list [] is better for clients.
 					if responseTools == nil {
 						responseTools = []map[string]any{}
 					}
@@ -845,7 +790,6 @@ func (a *Application) runServerMode(
 					return
 				}
 
-				// Add logging to see unsupported methods
 				logging.GetLogger().Info("Unsupported stateless method", "method", req.Method)
 				http.Error(w, "Method not supported", http.StatusMethodNotAllowed)
 				return
@@ -931,12 +875,10 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					if cachingMiddleware != nil {
-						adminServer := admin.NewServer(cachingMiddleware)
+					if middlewareManager != nil {
+						adminServer := admin.NewServer(middlewareManager)
 						pb_admin.RegisterAdminServiceServer(s, adminServer)
 					}
-
-					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},
 			)
 		}
@@ -947,15 +889,11 @@ func (a *Application) runServerMode(
 	case err := <-errChan:
 		startupErr = fmt.Errorf("failed to start a server: %w", err)
 		logging.GetLogger().Error("Server startup failed, initiating shutdown...", "error", startupErr)
-		// A server failed to start, so we need to trigger a shutdown of any other
-		// servers that may have started successfully.
 		cancel()
 	case <-localCtx.Done():
 		logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
 	}
 
-	// N.B. We wait for the servers to shut down regardless of whether there was a
-	// startup error or a shutdown signal.
 	logging.GetLogger().Info("Waiting for HTTP and gRPC servers to shut down...")
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")

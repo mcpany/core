@@ -45,40 +45,20 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return m.cacheConfig
 }
 
-// mockToolManager is a mock implementation of the tool.ManagerInterface.
-type mockToolManager struct{}
-
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
-	return &tool.ServiceInfo{
-		Config: &configv1.UpstreamServiceConfig{},
-	}, true
-}
-func (m *mockToolManager) AddTool(_ tool.Tool) error                { return nil }
-func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool)       { return nil, false }
-func (m *mockToolManager) ListTools() []tool.Tool                   { return nil }
-func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
-	return nil, nil
-}
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)        {}
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *mockToolManager) ClearToolsForService(_ string)                {}
-
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	config := &configv1.CacheConfig{
+		IsEnabled: proto.Bool(true),
+		Ttl:       durationpb.New(100 * time.Millisecond),
+	}
+	cacheMiddleware := middleware.NewCachingMiddleware(config)
 
 	testTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("test-tool"),
-			ServiceId: proto.String("test-service"),
-		}.Build(),
-		cacheConfig: configv1.CacheConfig_builder{
-			IsEnabled: proto.Bool(true),
-			Ttl:       durationpb.New(100 * time.Millisecond),
-		}.Build(),
+		tool: &v1.Tool{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		},
+		// No tool-level override
 	}
 
 	req := &tool.ExecutionRequest{
@@ -109,19 +89,18 @@ func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 
 func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 	ttl := 50 * time.Millisecond
+	config := &configv1.CacheConfig{
+		IsEnabled: proto.Bool(true),
+		Ttl:       durationpb.New(ttl),
+	}
+	cacheMiddleware := middleware.NewCachingMiddleware(config)
 
 	testTool := &mockTool{
-		tool: v1.Tool_builder{
+		tool: &v1.Tool{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		}.Build(),
-		cacheConfig: configv1.CacheConfig_builder{
-			IsEnabled: proto.Bool(true),
-			Ttl:       durationpb.New(ttl),
-		}.Build(),
+		},
 	}
 	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
@@ -147,17 +126,17 @@ func TestCachingMiddleware_CacheExpiration(t *testing.T) {
 
 func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	config := &configv1.CacheConfig{
+		IsEnabled: proto.Bool(false), // Cache is explicitly disabled
+		Ttl:       durationpb.New(1 * time.Hour),
+	}
+	cacheMiddleware := middleware.NewCachingMiddleware(config)
+
 	testTool := &mockTool{
-		tool: v1.Tool_builder{
+		tool: &v1.Tool{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		}.Build(),
-		cacheConfig: configv1.CacheConfig_builder{
-			IsEnabled: proto.Bool(false), // Cache is explicitly disabled
-			Ttl:       durationpb.New(1 * time.Hour),
-		}.Build(),
+		},
 	}
 	req := &tool.ExecutionRequest{ToolName: "test-service.test-tool"}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
@@ -177,17 +156,20 @@ func TestCachingMiddleware_CacheDisabled(t *testing.T) {
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when cache is disabled")
 }
 
-func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
-	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
-	testTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String(testToolName),
-			ServiceId: proto.String(testServiceName),
-		}.Build(),
-		cacheConfig: nil, // No cache config provided for the tool
+func TestCachingMiddleware_ToolOverride(t *testing.T) {
+    // Service-level cache disabled
+    config := &configv1.CacheConfig{IsEnabled: proto.Bool(false)}
+    cacheMiddleware := middleware.NewCachingMiddleware(config)
+
+    // Tool-level cache ENABLED
+    testTool := &mockTool{
+		tool: &v1.Tool{Name: proto.String(testToolName)},
+		cacheConfig: &configv1.CacheConfig{
+		    IsEnabled: proto.Bool(true),
+		    Ttl: durationpb.New(100*time.Millisecond),
+		},
 	}
+
 	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
 	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
@@ -200,53 +182,25 @@ func TestCachingMiddleware_NoCacheConfig(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 1, testTool.executeCount)
 
-	// 2. Second call
+	// 2. Second call (should be cached)
 	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
 	require.NoError(t, err)
-	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed every time when there is no cache config")
-}
-
-func TestCachingMiddleware_ServiceInfoNotFound(t *testing.T) {
-	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
-
-	// Tool belonging to a service that is NOT known to the tool manager
-	testTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String(testToolName),
-			ServiceId: proto.String("unknown-service"),
-		}.Build(),
-		cacheConfig: nil,
-	}
-	req := &tool.ExecutionRequest{ToolName: "unknown-service.test-tool"}
-	ctx := tool.NewContextWithTool(context.Background(), testTool)
-	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-		t, _ := tool.GetFromContext(ctx)
-		return t.Execute(ctx, req)
-	}
-
-	// Should proceed without caching because service info (and thus cache config) is missing
-	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
-	require.NoError(t, err)
-	assert.Equal(t, successResult, res)
 	assert.Equal(t, 1, testTool.executeCount)
 }
 
 func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// Setup
-	tm := &mockToolManager{}
-	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+	config := &configv1.CacheConfig{
+		IsEnabled: proto.Bool(true),
+		Ttl:       durationpb.New(1 * time.Hour),
+	}
+	cacheMiddleware := middleware.NewCachingMiddleware(config)
 
 	testTool := &mockTool{
-		tool: v1.Tool_builder{
+		tool: &v1.Tool{
 			Name:      proto.String(testToolName),
 			ServiceId: proto.String(testServiceName),
-		}.Build(),
-		cacheConfig: configv1.CacheConfig_builder{
-			IsEnabled: proto.Bool(true),
-			Ttl:       durationpb.New(1 * time.Hour),
-		}.Build(),
+		},
 	}
 	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
 	ctx := tool.NewContextWithTool(context.Background(), testTool)
@@ -269,39 +223,12 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// This should run the tool AND delete the cache
 	_, err = cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
 	require.NoError(t, err)
-	// It should execute because we usually don't want the cached result if we are deleting it?
-	// The implementation checks:
-	// if cached, OK := m.cache.Get(...)
-	// return cached
-	// Post-execution: if DeleteCache, delete.
+    // Execution count increases because DELETE_CACHE implies skipping cache lookup (per new logic I added)
+	assert.Equal(t, 2, testTool.executeCount)
 
-	// WAIT. If DeleteCache is set, we probably want to FORCE execution?
-	// Current middleware logical flow:
-	// 1. Check Cache.
-	// 2. If hit, return.
-	// 3. If miss, run next.
-	// 4. If DeleteCache, delete.
-
-	// If the user sets `DELETE_CACHE`, they probably intend "Run this tool and remove the old cache entry".
-	// They might expect it to run fresh.
-	// BUT per my implementation, if there is a cache entry, it returns it!
-	// And then returns result.
-	// `ActionDeleteCache` check is at step 4 (after execution).
-	// If step 2 returns, step 4 is NOT reached!
-	// This means `DELETE_CACHE` action is IGNORED if cache hit!
-	// THIS IS A LOGIC BUG.
-	// If `ActionDeleteCache` is present, we should probably SKIP cache lookup?
-	// Or proceed to delete AFTER returning cached value? (Doesn't make sense to delete if we just used it).
-	// "User converts parameter transformer to webhook based system... add SAVE_CACHE and DELETE_CACHE actions".
-	// Usually DELETE means INVALIDATE.
-	// If INVALIDATE, we should verify invalidation.
-	// If I want to invalidate, I might call the tool?
-	// If I want to invalidate WITHOUT execution, that's different. But this is a Call Policy on a Call.
-	// If `DELETE_CACHE` is returned, we should probably SKIP CACHE and then DELETE IT (to ensure freshness next time)?
-	// Or maybe "Execute, then delete"? meaning 1-time execution that clears cache?
-	// If I want to force refresh, I would use `DELETE_CACHE`?
-	// If so, I should SKIP cache check.
-
-	// I will update Validated Logic in CacheMiddleware:
-	// If Action == DeleteCache, SKIP cache check.
+	// 3. Third call - cache should be empty, so execute again
+	// Reset context to normal
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 3, testTool.executeCount)
 }

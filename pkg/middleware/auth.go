@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -61,4 +63,29 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			return next(ctx, method, req)
 		}
 	}
+}
+
+// AuthenticationMiddleware is a tool middleware that enforces authentication.
+type AuthenticationMiddleware struct {
+	config *configv1.AuthenticationConfig
+}
+
+// NewAuthenticationMiddleware creates a new AuthenticationMiddleware.
+func NewAuthenticationMiddleware(config *configv1.AuthenticationConfig) *AuthenticationMiddleware {
+	return &AuthenticationMiddleware{config: config}
+}
+
+// Execute enforces authentication before proceeding to the next handler.
+func (m *AuthenticationMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
+	httpReq, ok := ctx.Value("http.request").(*http.Request)
+	if !ok {
+		// If we are not in an HTTP context (e.g. stdio), authentication strategy might differ.
+		// For now, fail if auth is required but no request present.
+		return nil, fmt.Errorf("authentication middleware: http request not found in context")
+	}
+
+	if err := auth.ValidateAuthentication(ctx, m.config, httpReq); err != nil {
+		return nil, fmt.Errorf("unauthorized: %w", err)
+	}
+	return next(ctx, req)
 }

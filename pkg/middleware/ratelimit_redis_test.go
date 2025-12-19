@@ -34,18 +34,18 @@ func TestRedisLimiter(t *testing.T) {
 	defer middleware.SetTimeNowForTests(time.Now)
 
 	t.Run("NewRedisLimiter missing config", func(t *testing.T) {
-		config := configv1.RateLimitConfig_builder{}.Build()
+		config := &configv1.RateLimitConfig{}
 		_, err := middleware.NewRedisLimiter("service", config)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "redis config is missing")
 	})
 
 	t.Run("Update", func(t *testing.T) {
-		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+		config := &configv1.RateLimitConfig{
+			Redis: &busproto.RedisBus{Address: proto.String("addr")},
 			RequestsPerSecond: proto.Float64(10),
 			Burst: proto.Int64(10),
-		}.Build()
+		}
 		l, err := middleware.NewRedisLimiter("service", config)
 		assert.NoError(t, err)
 
@@ -59,11 +59,11 @@ func TestRedisLimiter(t *testing.T) {
 	})
 
 	t.Run("Allow error", func(t *testing.T) {
-		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+		config := &configv1.RateLimitConfig{
+			Redis: &busproto.RedisBus{Address: proto.String("addr")},
 			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
-		}.Build()
+			Burst: proto.Int64(10),
+		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 
 		mockRedis.ExpectEval(
@@ -80,11 +80,11 @@ func TestRedisLimiter(t *testing.T) {
 	})
 
 	t.Run("Allow unexpected type", func(t *testing.T) {
-		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+		config := &configv1.RateLimitConfig{
+			Redis: &busproto.RedisBus{Address: proto.String("addr")},
 			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
-		}.Build()
+			Burst: proto.Int64(10),
+		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 
 		mockRedis.ExpectEval(
@@ -102,9 +102,9 @@ func TestRedisLimiter(t *testing.T) {
     })
 
     t.Run("Close", func(t *testing.T) {
-        config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
-		}.Build()
+        config := &configv1.RateLimitConfig{
+			Redis: &busproto.RedisBus{Address: proto.String("addr")},
+		}
 		l, _ := middleware.NewRedisLimiter("service", config)
 
         err := l.Close()

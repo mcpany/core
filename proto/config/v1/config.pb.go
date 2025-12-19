@@ -371,7 +371,9 @@ type GlobalSettings struct {
 	// The definitions of profiles.
 	ProfileDefinitions []*ProfileDefinition `protobuf:"bytes,9,rep,name=profile_definitions" json:"profile_definitions,omitempty"`
 	// The log format for the server.
-	LogFormat     *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
+	LogFormat *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
+	// The list of middlewares to apply to the server.
+	Middleware    []*Middleware `protobuf:"bytes,11,rep,name=middleware" json:"middleware,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -464,6 +466,13 @@ func (x *GlobalSettings) GetLogFormat() GlobalSettings_LogFormat {
 	return GlobalSettings_LOG_FORMAT_UNSPECIFIED
 }
 
+func (x *GlobalSettings) GetMiddleware() []*Middleware {
+	if x != nil {
+		return x.Middleware
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -498,6 +507,10 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.LogFormat = &v
+}
+
+func (x *GlobalSettings) SetMiddleware(v []*Middleware) {
+	x.Middleware = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -587,6 +600,8 @@ type GlobalSettings_builder struct {
 	ProfileDefinitions []*ProfileDefinition
 	// The log format for the server.
 	LogFormat *GlobalSettings_LogFormat
+	// The list of middlewares to apply to the server.
+	Middleware []*Middleware
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -602,157 +617,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.Audit = b.Audit
 	x.ProfileDefinitions = b.ProfileDefinitions
 	x.LogFormat = b.LogFormat
-	return m0
-}
-
-type AuditConfig struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Whether audit logging is enabled.
-	Enabled *bool `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
-	// The file path to write audit logs to.
-	OutputPath *string `protobuf:"bytes,2,opt,name=output_path" json:"output_path,omitempty"`
-	// Whether to log input arguments (caution: might contain secrets).
-	LogArguments *bool `protobuf:"varint,3,opt,name=log_arguments" json:"log_arguments,omitempty"`
-	// Whether to log output results (caution: might contain sensitive data).
-	LogResults    *bool `protobuf:"varint,4,opt,name=log_results" json:"log_results,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *AuditConfig) Reset() {
-	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *AuditConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AuditConfig) ProtoMessage() {}
-
-func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *AuditConfig) GetEnabled() bool {
-	if x != nil && x.Enabled != nil {
-		return *x.Enabled
-	}
-	return false
-}
-
-func (x *AuditConfig) GetOutputPath() string {
-	if x != nil && x.OutputPath != nil {
-		return *x.OutputPath
-	}
-	return ""
-}
-
-func (x *AuditConfig) GetLogArguments() bool {
-	if x != nil && x.LogArguments != nil {
-		return *x.LogArguments
-	}
-	return false
-}
-
-func (x *AuditConfig) GetLogResults() bool {
-	if x != nil && x.LogResults != nil {
-		return *x.LogResults
-	}
-	return false
-}
-
-func (x *AuditConfig) SetEnabled(v bool) {
-	x.Enabled = &v
-}
-
-func (x *AuditConfig) SetOutputPath(v string) {
-	x.OutputPath = &v
-}
-
-func (x *AuditConfig) SetLogArguments(v bool) {
-	x.LogArguments = &v
-}
-
-func (x *AuditConfig) SetLogResults(v bool) {
-	x.LogResults = &v
-}
-
-func (x *AuditConfig) HasEnabled() bool {
-	if x == nil {
-		return false
-	}
-	return x.Enabled != nil
-}
-
-func (x *AuditConfig) HasOutputPath() bool {
-	if x == nil {
-		return false
-	}
-	return x.OutputPath != nil
-}
-
-func (x *AuditConfig) HasLogArguments() bool {
-	if x == nil {
-		return false
-	}
-	return x.LogArguments != nil
-}
-
-func (x *AuditConfig) HasLogResults() bool {
-	if x == nil {
-		return false
-	}
-	return x.LogResults != nil
-}
-
-func (x *AuditConfig) ClearEnabled() {
-	x.Enabled = nil
-}
-
-func (x *AuditConfig) ClearOutputPath() {
-	x.OutputPath = nil
-}
-
-func (x *AuditConfig) ClearLogArguments() {
-	x.LogArguments = nil
-}
-
-func (x *AuditConfig) ClearLogResults() {
-	x.LogResults = nil
-}
-
-type AuditConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Whether audit logging is enabled.
-	Enabled *bool
-	// The file path to write audit logs to.
-	OutputPath *string
-	// Whether to log input arguments (caution: might contain secrets).
-	LogArguments *bool
-	// Whether to log output results (caution: might contain sensitive data).
-	LogResults *bool
-}
-
-func (b0 AuditConfig_builder) Build() *AuditConfig {
-	m0 := &AuditConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Enabled = b.Enabled
-	x.OutputPath = b.OutputPath
-	x.LogArguments = b.LogArguments
-	x.LogResults = b.LogResults
+	x.Middleware = b.Middleware
 	return m0
 }
 
@@ -766,7 +631,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -778,7 +643,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -859,7 +724,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -871,7 +736,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -924,7 +789,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a proto/config/v1/middleware.proto\"\xd6\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
@@ -933,7 +798,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xbe\x05\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xfc\x05\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -946,7 +811,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"log_format\x18\n" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
-	"log_format\"w\n" +
+	"log_format\x12<\n" +
+	"\n" +
+	"middleware\x18\v \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\n" +
+	"middleware\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -956,12 +824,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\x91\x01\n" +
-	"\vAuditConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
-	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
-	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"f\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"f\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\"\xc9\x01\n" +
@@ -973,40 +836,42 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
 	(*McpAnyServerConfig)(nil),        // 2: mcpany.config.v1.McpAnyServerConfig
 	(*User)(nil),                      // 3: mcpany.config.v1.User
 	(*GlobalSettings)(nil),            // 4: mcpany.config.v1.GlobalSettings
-	(*AuditConfig)(nil),               // 5: mcpany.config.v1.AuditConfig
-	(*ProfileDefinition)(nil),         // 6: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 7: mcpany.config.v1.ProfileSelector
-	nil,                               // 8: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 9: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 10: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 11: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 12: bus.MessageBus
+	(*ProfileDefinition)(nil),         // 5: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),           // 6: mcpany.config.v1.ProfileSelector
+	nil,                               // 7: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 8: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 9: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 10: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 11: bus.MessageBus
+	(*AuditConfig)(nil),               // 12: mcpany.config.v1.AuditConfig
+	(*Middleware)(nil),                // 13: mcpany.config.v1.Middleware
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	9,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	10, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	8,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	9,  // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	3,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	11, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	10, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	12, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	5,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	6,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	11, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	12, // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	5,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	7,  // 10: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	8,  // 11: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	13, // 10: mcpany.config.v1.GlobalSettings.middleware:type_name -> mcpany.config.v1.Middleware
+	6,  // 11: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	7,  // 12: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1016,13 +881,14 @@ func file_proto_config_v1_config_proto_init() {
 	}
 	file_proto_config_v1_upstream_service_proto_init()
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_middleware_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

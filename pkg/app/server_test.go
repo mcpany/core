@@ -620,9 +620,8 @@ func TestRun_StdioMode(t *testing.T) {
 		return fmt.Errorf("stdio mode error")
 	}
 
-	app := &Application{
-		runStdioModeFunc: mockStdioFunc,
-	}
+	app := NewApplication()
+	app.runStdioModeFunc = mockStdioFunc
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
@@ -1357,9 +1356,8 @@ func TestRunStdioMode(t *testing.T) {
 		return nil
 	}
 
-	app := &Application{
-		runStdioModeFunc: mockStdioFunc,
-	}
+	app := NewApplication()
+	app.runStdioModeFunc = mockStdioFunc
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)

@@ -10,6 +10,7 @@ import "proto/bus/bus.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/health_check.proto";
+import "proto/config/v1/middleware.proto";
 import "proto/config/v1/profile.proto";
 import "proto/config/v1/prompt.proto";
 import "proto/config/v1/resource.proto";
@@ -99,32 +100,9 @@ message UpstreamServiceConfig {
 
   // If true, automatically convert all API calls to tools.
   bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
-}
 
-message CallPolicy {
-  enum Action {
-    ALLOW = 0;
-    DENY = 1;
-    SAVE_CACHE = 2;
-    DELETE_CACHE = 3;
-  }
-  // Default action if no rules match.
-  Action default_action = 1;
-  // List of rules to apply. First match wins.
-  repeated CallPolicyRule rules = 2;
-}
-
-message CallPolicyRule {
-  CallPolicy.Action action = 1;
-  // Regex to match the call name. Empty means match all.
-  string name_regex = 2 [json_name = "name_regex"];
-  // Regex to match request arguments (JSON stringified). Empty means match all.
-  // This is a simple regex match on the JSON representation of arguments.
-  string argument_regex = 3;
-  // Regex to match endpoint path or URL.
-  string url_regex = 4 [json_name = "url_regex"];
-  // Regex to match call ID. Empty means match all.
-  string call_id_regex = 5 [json_name = "call_id_regex"];
+  // The list of middlewares to apply to this service.
+  repeated Middleware middleware = 31;
 }
 
 message ExportPolicy {
@@ -142,14 +120,6 @@ message ExportRule {
   // Regex to match the name (tool, prompt, or resource).
   string name_regex = 1 [json_name = "name_regex"];
   ExportPolicy.Action action = 2;
-}
-
-message CallHook {
-  string name = 1;
-  oneof hook_config {
-    WebhookConfig webhook = 2;
-    CallPolicy call_policy = 4;
-  }
 }
 
 // --- Upstream Service Types ---
@@ -415,27 +385,6 @@ enum LoadBalancingStrategy {
   // Selects a server at random.
   RANDOM = 2;
 }
-
-// Configuration for rate limiting requests to the upstream service.
-message RateLimitConfig {
-  // Whether rate limiting is enabled.
-  bool is_enabled = 1 [json_name = "is_enabled"];
-  // The maximum number of requests allowed per second.
-  double requests_per_second = 2 [json_name = "requests_per_second"];
-  // The number of requests that can be allowed in a short burst.
-  int64 burst = 3;
-
-  enum Storage {
-    STORAGE_UNSPECIFIED = 0;
-    STORAGE_MEMORY = 1;
-    STORAGE_REDIS = 2;
-  }
-  Storage storage = 4;
-
-  // Redis configuration if storage is set to STORAGE_REDIS.
-  bus.RedisBus redis = 5;
-}
-
 
 // Configuration for service resilience features like circuit breakers and retries.
 message ResilienceConfig {

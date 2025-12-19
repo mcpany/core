@@ -9,7 +9,7 @@ import "google/protobuf/go_features.proto";
 
 option go_package = "github.com/mcpany/core/proto/bus";
 option java_outer_classname = "BusProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 message MessageBus {
   oneof bus_type {

@@ -13,17 +13,17 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache *middleware.CachingMiddleware
+	manager *middleware.Manager
 }
 
 // NewServer creates a new Admin Server.
-func NewServer(cache *middleware.CachingMiddleware) *Server {
-	return &Server{cache: cache}
+func NewServer(manager *middleware.Manager) *Server {
+	return &Server{manager: manager}
 }
 
 // ClearCache clears the cache.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
-	if err := s.cache.Clear(ctx); err != nil {
+	if err := s.manager.ClearCache(ctx, ""); err != nil {
 		return nil, err
 	}
 	return &pb.ClearCacheResponse{}, nil

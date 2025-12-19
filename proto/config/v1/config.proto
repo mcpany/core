@@ -8,6 +8,7 @@ package mcpany.config.v1;
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/middleware.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -71,17 +72,8 @@ message GlobalSettings {
   repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
   // The log format for the server.
   LogFormat log_format = 10 [json_name = "log_format"];
-}
-
-message AuditConfig {
-  // Whether audit logging is enabled.
-  bool enabled = 1 [json_name = "enabled"];
-  // The file path to write audit logs to.
-  string output_path = 2 [json_name = "output_path"];
-  // Whether to log input arguments (caution: might contain secrets).
-  bool log_arguments = 3 [json_name = "log_arguments"];
-  // Whether to log output results (caution: might contain sensitive data).
-  bool log_results = 4 [json_name = "log_results"];
+  // The list of middlewares to apply to the server.
+  repeated Middleware middleware = 11 [json_name = "middleware"];
 }
 
 message ProfileDefinition {
