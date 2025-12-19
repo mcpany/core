@@ -17,3 +17,11 @@ func (s *Server) RouterMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 func (s *Server) ToolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return s.toolListFilteringMiddleware(next)
 }
+
+func (s *Server) ResourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return s.resourceListFilteringMiddleware(next)
+}
+
+func (s *Server) PromptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return s.promptListFilteringMiddleware(next)
+}
