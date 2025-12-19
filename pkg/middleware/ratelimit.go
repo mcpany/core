@@ -15,11 +15,38 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// Limiter interface defines the methods required for a rate limiter.
+type Limiter interface {
+	Allow(ctx context.Context) (bool, error)
+	Update(rps float64, burst int)
+}
+
+// LocalLimiter is an in-memory implementation of Limiter.
+type LocalLimiter struct {
+	*rate.Limiter
+}
+
+// Allow checks if the request is allowed.
+func (l *LocalLimiter) Allow(ctx context.Context) (bool, error) {
+	return l.Limiter.Allow(), nil
+}
+
+// Update updates the limiter configuration.
+func (l *LocalLimiter) Update(rps float64, burst int) {
+	limit := rate.Limit(rps)
+	if l.Limiter.Limit() != limit {
+		l.Limiter.SetLimit(limit)
+	}
+	if l.Limiter.Burst() != burst {
+		l.Limiter.SetBurst(burst)
+	}
+}
+
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
-	limiters    sync.Map // map[string]*rate.Limiter
+	limiters    sync.Map // map[string]Limiter
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
@@ -49,8 +76,21 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 		return next(ctx, req)
 	}
 
-	limiter := m.getLimiter(serviceID, rateLimitConfig)
-	if !limiter.Allow() {
+	limiter, err := m.getLimiter(serviceID, rateLimitConfig)
+	if err != nil {
+		// Failed to get limiter (e.g. redis config error).
+		// Fail open.
+		return next(ctx, req)
+	}
+
+	allowed, err := limiter.Allow(ctx)
+	if err != nil {
+		// If check fails (e.g. redis connection error).
+		// Fail open.
+		return next(ctx, req)
+	}
+
+	if !allowed {
 		metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
 			{Name: "service_id", Value: serviceID},
 			{Name: "status", Value: "blocked"},
@@ -66,33 +106,48 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 	return next(ctx, req)
 }
 
-func (m *RateLimitMiddleware) getLimiter(serviceID string, config *configv1.RateLimitConfig) *rate.Limiter {
-	rps := rate.Limit(config.GetRequestsPerSecond())
+func (m *RateLimitMiddleware) getLimiter(serviceID string, config *configv1.RateLimitConfig) (Limiter, error) {
+	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
 	if burst <= 0 {
 		burst = 1 // Ensure at least 1 request can be made
 	}
 
 	limiterVal, ok := m.limiters.Load(serviceID)
-	if !ok {
-		newLimiter := rate.NewLimiter(rps, burst)
-		actual, loaded := m.limiters.LoadOrStore(serviceID, newLimiter)
-		limiterVal = actual
-		// If we loaded an existing one (race condition), we still fall through to check/update below.
-		// This handles the case where the race winner had an older config (unlikely but possible).
-		_ = loaded
+	var limiter Limiter
+	isRedis := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
+
+	if ok {
+		limiter = limiterVal.(Limiter)
+		// Check if type matches config
+		if isRedis {
+			if _, ok := limiter.(*RedisLimiter); !ok {
+				limiter = nil // Type mismatch, force recreate
+			}
+		} else {
+			if _, ok := limiter.(*LocalLimiter); !ok {
+				limiter = nil // Type mismatch, force recreate
+			}
+		}
 	}
 
-	limiter := limiterVal.(*rate.Limiter)
-
-	// Check and update if config has changed.
-	// Note: SetLimit and SetBurst are thread-safe.
-	if limiter.Limit() != rps {
-		limiter.SetLimit(rps)
+	if limiter == nil {
+		if isRedis {
+			redisLimiter, err := NewRedisLimiter(serviceID, config)
+			if err != nil {
+				return nil, err
+			}
+			limiter = redisLimiter
+		} else {
+			limiter = &LocalLimiter{
+				Limiter: rate.NewLimiter(rate.Limit(rps), burst),
+			}
+		}
+		m.limiters.Store(serviceID, limiter)
+	} else {
+		// Update existing
+		limiter.Update(rps, burst)
 	}
-	if limiter.Burst() != burst {
-		limiter.SetBurst(burst)
-	}
 
-	return limiter
+	return limiter, nil
 }
