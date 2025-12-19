@@ -171,6 +171,10 @@ func (m *mockToolManagerExtra) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
+func (m *mockToolManagerExtra) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *mockToolManagerExtra) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 func TestRegister_DynamicResource_Success(t *testing.T) {

@@ -67,6 +67,10 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
+func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}

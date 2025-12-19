@@ -91,6 +91,10 @@ func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
 	return nil, false
 }
 
+func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *mockToolManager) ListTools() []tool.Tool {
 	return nil
 }
