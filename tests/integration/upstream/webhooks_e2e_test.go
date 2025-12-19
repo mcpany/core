@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/mcp"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -190,7 +191,9 @@ func TestFullSystemWebhooks(t *testing.T) {
 		},
 	}.Build()
 
-	toolManager := tool.NewManager(nil)
+	busProvider, err := bus.NewProvider(nil)
+	require.NoError(t, err)
+	toolManager := tool.NewManager(busProvider)
 	ctx := context.Background()
 	upstreamService := mcp.NewUpstream()
 
@@ -214,7 +217,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 		ToolInputs: json.RawMessage(`{}`),
 	}
 
-	resultCallTool, err := toolManager.ExecuteTool(ctx, mcpReq)
+	resultCallTool, err := toolManager.ExecuteToolLocally(ctx, mcpReq)
 	require.NoError(t, err, "Failed to execute tool")
 
 	// Unwrap the result from CallToolResult
@@ -244,8 +247,6 @@ func TestFullSystemWebhooks(t *testing.T) {
 			resultStr = string(b)
 		}
 	}
-
-
 
 	assert.Contains(t, resultStr, "# Mock Title")
 	assert.Contains(t, resultStr, "Mock content")
