@@ -15,8 +15,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/mcp"
+	"github.com/mcpany/core/pkg/worker"
+	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -190,8 +193,17 @@ func TestFullSystemWebhooks(t *testing.T) {
 		},
 	}.Build()
 
-	toolManager := tool.NewManager(nil)
+	messageBus := busproto.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(busproto.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+	toolManager := tool.NewManager(busProvider)
 	ctx := context.Background()
+
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker.Start(ctx)
+
 	upstreamService := mcp.NewUpstream()
 
 	// Register service

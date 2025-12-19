@@ -92,6 +92,10 @@ func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, errors.New("not implemented")
 }
 
+func (m *MockToolManager) ExecuteToolLocally(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
+	return nil, errors.New("not implemented")
+}
+
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 

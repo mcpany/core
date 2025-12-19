@@ -207,6 +207,9 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
 func (tm *Manager) ExecuteToolLocally(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if tm.bus == nil {
+		return tm.ExecuteToolLocally(ctx, req)
+	}
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool locally")
 
@@ -296,6 +299,9 @@ func (tm *Manager) ExecuteToolLocally(ctx context.Context, req *ExecutionRequest
 
 // ExecuteTool executes the tool asynchronously via the event bus.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if tm.bus == nil {
+		return tm.ExecuteToolLocally(ctx, req)
+	}
 	logging.GetLogger().Info("Queueing tool execution", "toolName", req.ToolName)
 
 	correlationID := uuid.New().String()
