@@ -184,6 +184,7 @@ func TestDockerExecutor(t *testing.T) {
 		assert.Equal(t, 0, exitCode)
 	})
 
+
 	t.Run("WithVolumeMount", func(t *testing.T) {
 		// Create a dummy file to mount
 		tmpfile, err := os.CreateTemp(".", "test-volume-mount")
@@ -532,6 +533,57 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		stderrBytes, err := io.ReadAll(stderr)
 		require.NoError(t, err)
 		assert.Empty(t, string(stderrBytes))
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+
+	t.Run("ExecuteWithStdIO_Write", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerAttachFunc = func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+			server, client := net.Pipe()
+
+			go func() {
+				defer server.Close()
+				buf := make([]byte, 1024)
+				// Read from client (simulate container receiving input)
+				n, _ := server.Read(buf)
+				if n > 0 {
+					// Echo back to stdout
+					var outBuf bytes.Buffer
+					outBuf.Write([]byte{1, 0, 0, 0})
+					_ = binary.Write(&outBuf, binary.BigEndian, uint32(n))
+					outBuf.Write(buf[:n])
+					_, _ = server.Write(outBuf.Bytes())
+				}
+			}()
+
+			return types.HijackedResponse{
+				Conn:   client,
+				Reader: bufio.NewReader(client),
+			}, nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		stdin, stdout, _, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		require.NoError(t, err)
+
+		// Test Write
+		_, err = stdin.Write([]byte("hello"))
+		require.NoError(t, err)
+
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
+		assert.Equal(t, "hello", string(stdoutBytes))
+
+        stdin.Close()
 
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 0, exitCode)
