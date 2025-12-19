@@ -141,7 +141,6 @@ const (
 	OutputTransformer_XML       OutputTransformer_OutputFormat = 1 // The output is XML, which will be parsed using XPath expressions.
 	OutputTransformer_TEXT      OutputTransformer_OutputFormat = 2 // The output is plain text, which will be parsed using regex.
 	OutputTransformer_RAW_BYTES OutputTransformer_OutputFormat = 3 // The output is raw bytes, no parsing will be performed.
-	OutputTransformer_JQ        OutputTransformer_OutputFormat = 4 // The output is JSON, which will be transformed using a JQ query.
 )
 
 // Enum value maps for OutputTransformer_OutputFormat.
@@ -151,14 +150,12 @@ var (
 		1: "XML",
 		2: "TEXT",
 		3: "RAW_BYTES",
-		4: "JQ",
 	}
 	OutputTransformer_OutputFormat_value = map[string]int32{
 		"JSON":      0,
 		"XML":       1,
 		"TEXT":      2,
 		"RAW_BYTES": 3,
-		"JQ":        4,
 	}
 )
 
@@ -1245,7 +1242,6 @@ type OutputTransformer struct {
 	xxx_hidden_Format          OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpany.config.v1.OutputTransformer_OutputFormat"`
 	xxx_hidden_ExtractionRules map[string]string              `protobuf:"bytes,2,rep,name=extraction_rules" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Template        *string                        `protobuf:"bytes,3,opt,name=template"`
-	xxx_hidden_JqQuery         *string                        `protobuf:"bytes,4,opt,name=jq_query"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -1303,19 +1299,9 @@ func (x *OutputTransformer) GetTemplate() string {
 	return ""
 }
 
-func (x *OutputTransformer) GetJqQuery() string {
-	if x != nil {
-		if x.xxx_hidden_JqQuery != nil {
-			return *x.xxx_hidden_JqQuery
-		}
-		return ""
-	}
-	return ""
-}
-
 func (x *OutputTransformer) SetFormat(v OutputTransformer_OutputFormat) {
 	x.xxx_hidden_Format = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *OutputTransformer) SetExtractionRules(v map[string]string) {
@@ -1324,12 +1310,7 @@ func (x *OutputTransformer) SetExtractionRules(v map[string]string) {
 
 func (x *OutputTransformer) SetTemplate(v string) {
 	x.xxx_hidden_Template = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
-}
-
-func (x *OutputTransformer) SetJqQuery(v string) {
-	x.xxx_hidden_JqQuery = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *OutputTransformer) HasFormat() bool {
@@ -1346,13 +1327,6 @@ func (x *OutputTransformer) HasTemplate() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *OutputTransformer) HasJqQuery() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
 func (x *OutputTransformer) ClearFormat() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Format = OutputTransformer_JSON
@@ -1361,11 +1335,6 @@ func (x *OutputTransformer) ClearFormat() {
 func (x *OutputTransformer) ClearTemplate() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_Template = nil
-}
-
-func (x *OutputTransformer) ClearJqQuery() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_JqQuery = nil
 }
 
 type OutputTransformer_builder struct {
@@ -1382,9 +1351,6 @@ type OutputTransformer_builder struct {
 	// An optional template to render the extracted data into a final string.
 	// If this is not provided, the raw extracted data will be returned.
 	Template *string
-	// The JQ query to transform the output.
-	// Only used when format is JQ.
-	JqQuery *string
 }
 
 func (b0 OutputTransformer_builder) Build() *OutputTransformer {
@@ -1392,17 +1358,13 @@ func (b0 OutputTransformer_builder) Build() *OutputTransformer {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Format != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_Format = *b.Format
 	}
 	x.xxx_hidden_ExtractionRules = b.ExtractionRules
 	if b.Template != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
 		x.xxx_hidden_Template = b.Template
-	}
-	if b.JqQuery != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_JqQuery = b.JqQuery
 	}
 	return m0
 }
@@ -3154,21 +3116,19 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\routput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\routput_schema\"m\n" +
 	"\x10InputTransformer\x12\x1e\n" +
 	"\btemplate\x18\x01 \x01(\tB\x02\x18\x01R\btemplate\x129\n" +
-	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigR\awebhook\"\x83\x03\n" +
+	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigR\awebhook\"\xdf\x02\n" +
 	"\x11OutputTransformer\x12H\n" +
 	"\x06format\x18\x01 \x01(\x0e20.mcpany.config.v1.OutputTransformer.OutputFormatR\x06format\x12d\n" +
 	"\x10extraction_rules\x18\x02 \x03(\v28.mcpany.config.v1.OutputTransformer.ExtractionRulesEntryR\x10extraction_rules\x12\x1a\n" +
-	"\btemplate\x18\x03 \x01(\tR\btemplate\x12\x1a\n" +
-	"\bjq_query\x18\x04 \x01(\tR\bjq_query\x1aB\n" +
+	"\btemplate\x18\x03 \x01(\tR\btemplate\x1aB\n" +
 	"\x14ExtractionRulesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"B\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\":\n" +
 	"\fOutputFormat\x12\b\n" +
 	"\x04JSON\x10\x00\x12\a\n" +
 	"\x03XML\x10\x01\x12\b\n" +
 	"\x04TEXT\x10\x02\x12\r\n" +
-	"\tRAW_BYTES\x10\x03\x12\x06\n" +
-	"\x02JQ\x10\x04\"\x87\x02\n" +
+	"\tRAW_BYTES\x10\x03\"\x87\x02\n" +
 	"\x12GrpcCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x16\n" +
