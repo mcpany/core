@@ -514,6 +514,10 @@ func (m *mockToolManager) GetTool(_ string) (tool.Tool, bool) {
 	return &mockTool{}, true
 }
 
+func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
+}
+
 func (m *mockToolManager) ListTools() []tool.Tool {
 	m.listToolsCalled = true
 	return []tool.Tool{}
@@ -920,6 +924,10 @@ type smartToolManager struct {
 
 func (m *smartToolManager) ListTools() []tool.Tool {
 	return m.tools
+}
+
+func (m *smartToolManager) ListServices() []*tool.ServiceInfo {
+	return nil
 }
 
 func (m *smartToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
