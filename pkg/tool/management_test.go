@@ -11,6 +11,7 @@ import (
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -519,4 +520,164 @@ func TestToolManager_ListTools_Caching(t *testing.T) {
 	tm.ClearToolsForService("s1")
 	list4 := tm.ListTools()
 	assert.Len(t, list4, 0, "Cache should be invalidated and list cleared")
+}
+
+func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
+	tm := NewManager(nil)
+	serviceID := "test-service-config"
+
+	// Create a ServiceInfo with Config
+	config := &configv1.UpstreamServiceConfig{
+		CallPolicies: []*configv1.CallPolicy{
+			{DefaultAction: ptr(configv1.CallPolicy_ALLOW)},
+		},
+		PreCallHooks: []*configv1.CallHook{
+			{
+				HookConfig: &configv1.CallHook_Webhook{
+					Webhook: &configv1.WebhookConfig{Url: "http://pre.com"},
+				},
+			},
+		},
+		PostCallHooks: []*configv1.CallHook{
+			{
+				HookConfig: &configv1.CallHook_Webhook{
+					Webhook: &configv1.WebhookConfig{Url: "http://post.com"},
+				},
+			},
+		},
+	}
+
+	serviceInfo := &ServiceInfo{
+		Name:   "Test Service Config",
+		Config: config,
+	}
+
+	tm.AddServiceInfo(serviceID, serviceInfo)
+
+	retrievedInfo, ok := tm.GetServiceInfo(serviceID)
+	assert.True(t, ok)
+	assert.Equal(t, serviceInfo, retrievedInfo)
+
+	// Check if hooks were populated (PreHooks: 1 policy + 1 webhook = 2, PostHooks: 1 webhook = 1)
+	assert.Len(t, retrievedInfo.PreHooks, 2)
+	assert.Len(t, retrievedInfo.PostHooks, 1)
+}
+
+func TestToolManager_ProfileFiltering(t *testing.T) {
+	tm := NewManager(nil)
+
+	// Define a profile that selects tools with tag "secure"
+	profileDef := &configv1.ProfileDefinition{
+		Name: ptr("secure-profile"),
+		Selector: &configv1.ProfileSelector{
+			Tags: []string{"secure"},
+		},
+	}
+
+	tm.SetProfiles([]string{"secure-profile"}, []*configv1.ProfileDefinition{profileDef})
+
+	// Tool 1: Matches tag
+	tool1 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("t1"),
+				Tags:      []string{"secure", "other"},
+			}
+		},
+	}
+
+	// Tool 2: Does not match
+	tool2 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("t2"),
+				Tags:      []string{"public"},
+			}
+		},
+	}
+
+	// Tool 3: Explicitly assigned to profile
+	tool3 := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("t3"),
+				Profiles:  []string{"secure-profile"},
+			}
+		},
+	}
+
+	// Add tools
+	_ = tm.AddTool(tool1)
+	_ = tm.AddTool(tool2)
+	_ = tm.AddTool(tool3)
+
+	tools := tm.ListTools()
+	// Expect tool1 and tool3
+	assert.Len(t, tools, 2)
+
+	foundT1 := false
+	foundT3 := false
+	for _, tool := range tools {
+		if tool.Tool().GetName() == "t1" {
+			foundT1 = true
+		}
+		if tool.Tool().GetName() == "t3" {
+			foundT3 = true
+		}
+		if tool.Tool().GetName() == "t2" {
+			t.Error("t2 should have been filtered out")
+		}
+	}
+	assert.True(t, foundT1)
+	assert.True(t, foundT3)
+}
+
+func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
+	tm := NewManager(nil)
+
+	// Profile selecting read_only=true
+	profileDef := &configv1.ProfileDefinition{
+		Name: ptr("readonly-profile"),
+		Selector: &configv1.ProfileSelector{
+			ToolProperties: map[string]string{
+				"read_only": "true",
+			},
+		},
+	}
+
+	tm.SetProfiles([]string{"readonly-profile"}, []*configv1.ProfileDefinition{profileDef})
+
+	toolRO := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("ro"),
+				Annotations: &v1.ToolAnnotations{
+					ReadOnlyHint: proto.Bool(true),
+				},
+			}
+		},
+	}
+
+	toolRW := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("rw"),
+				Annotations: &v1.ToolAnnotations{
+					ReadOnlyHint: proto.Bool(false),
+				},
+			}
+		},
+	}
+
+	_ = tm.AddTool(toolRO)
+	_ = tm.AddTool(toolRW)
+
+	tools := tm.ListTools()
+	assert.Len(t, tools, 1)
+	assert.Equal(t, "ro", tools[0].Tool().GetName())
 }
