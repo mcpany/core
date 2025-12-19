@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.config.v1;
 
 import "google/protobuf/duration.proto";
+import "proto/bus/bus.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/health_check.proto";
@@ -423,6 +424,16 @@ message RateLimitConfig {
   double requests_per_second = 2 [json_name = "requests_per_second"];
   // The number of requests that can be allowed in a short burst.
   int64 burst = 3;
+
+  enum Storage {
+    STORAGE_UNSPECIFIED = 0;
+    STORAGE_MEMORY = 1;
+    STORAGE_REDIS = 2;
+  }
+  Storage storage = 4;
+
+  // Redis configuration if storage is set to STORAGE_REDIS.
+  bus.RedisBus redis = 5;
 }
 
 
