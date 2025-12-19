@@ -48,7 +48,7 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 		}
 		return value, nil
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsSecurePath(secret.GetFilePath()); err != nil {
+		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		content, err := os.ReadFile(secret.GetFilePath())
