@@ -1256,6 +1256,19 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
+
+	// Substitute placeholders in args with input values
+	if inputs != nil {
+		for i, arg := range args {
+			for k, v := range inputs {
+				placeholder := "{{" + k + "}}"
+				if strings.Contains(arg, placeholder) {
+					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+				}
+			}
+		}
+	}
+
 	if inputs != nil {
 		if argsVal, ok := inputs["args"]; ok {
 			// Check if args is allowed in the schema
