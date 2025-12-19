@@ -16,6 +16,7 @@ message MessageBus {
     InMemoryBus in_memory = 1;
     RedisBus redis = 2;
     NatsBus nats = 3;
+    KafkaBus kafka = 4;
   }
 }
 
@@ -29,4 +30,10 @@ message RedisBus {
   string address = 1;
   int32 db = 2;
   string password = 3;
+}
+
+message KafkaBus {
+  repeated string brokers = 1;
+  string topic_prefix = 2;
+  string consumer_group = 3;
 }
