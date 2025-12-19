@@ -25,7 +25,7 @@ The following features are fully implemented and tested:
 - **Static Registration**: Services can be registered at startup via a YAML or JSON configuration file.
 - **Advanced Service Policies**:
   - [x] [Caching](./features/caching/README.md) (`CacheConfig`)
-  - [x] [Rate Limiting](./features/rate-limiting/README.md) (`RateLimitConfig`)
+  - [x] [Rate Limiting](./features/rate-limiting/README.md) (`RateLimitConfig`): Supports In-Memory and [Redis](./features/rate-limiting/README.md) backends.
   - [x] [Resilience](./features/resilience/README.md) (Circuit Breakers & Retries) (`ResilienceConfig`)
 - **Deployment**:
   - Official Helm Chart
@@ -43,28 +43,20 @@ The following features are fully implemented and tested:
 - [x] [**Webhooks**](./features/webhooks/README.md): Pre-call and Post-call hooks for validation and transformation.
 - [x] **Audit Logging**: Record who accessed what tool and when (configured via `global_settings.audit`).
 - [x] **Security Policies**: Fine-grained request validation policies (runtime argument validation) are implemented via Policy Hooks.
-
-### Configured but Not Yet Implemented
-
-The following features are defined in the configuration schema (`proto/config/v1/config.proto`) but are **not yet implemented** in the server logic:
-
-- **Advanced Authentication**:
-  - [x] Incoming request authentication (Profile > User > Global Priority)
+- [x] [**Advanced Authentication**](./features/authentication/README.md):
+  - Standardized `AuthenticationConfig` for Users and Profiles.
+  - Priority-based authentication (Profile > User > Global).
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
 
 ## High Priority (Next 1-3 Months)
 
-- [ ] **Distributed Rate Limiting (Redis)**: Current rate limiting is in-memory. Redis support is needed for distributed deployments.
 - [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - [ ] **RBAC**: Role-Based Access Control for managing user permissions.
 - [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 ## Ongoing Goals
 
-- [x] **Implement Advanced Authentication**: Add support for OAuth 2.0 and incoming request authentication.
-  - [x] Standardized `AuthenticationConfig` for Users and Profiles.
-  - [x] Priority-based authentication (Profile > User > Global).
 - [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
 - [ ] **Improve Error Handling**: Enhance error messages and provide more context for debugging.
 
@@ -72,6 +64,5 @@ For a complete list of all available configuration options, please see the [Conf
 
 - [ ] **WASM Plugin Support**: Allow extending functionality using WebAssembly plugins for custom logic.
 - [ ] **Add Support for More Service Types**: Extend the server to support additional protocols.
-- [ ] **Implement a Web-Based UI**: Create a user interface for easier management and monitoring of the server.
 - [ ] **MCP Any Config Registry**: A public registry where users can publish, subscribe to, and auto-update MCP configurations.
 - [ ] **Client SDKs**: Develop official Client SDKs (Go, Python, TS).
