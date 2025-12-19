@@ -90,13 +90,17 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 
 // ConfigParameter an interface for config parameter schemas
 type ConfigParameter interface {
+	// GetSchema returns the parameter schema.
 	GetSchema() *configv1.ParameterSchema
 }
 
 // McpFieldParameter an interface for McpField parameter schemas
 type McpFieldParameter interface {
+	// GetName returns the name of the parameter.
 	GetName() string
+	// GetDescription returns the description of the parameter.
 	GetDescription() string
+	// GetType returns the type of the parameter.
 	GetType() string
 }
 

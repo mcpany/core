@@ -116,6 +116,17 @@ type Runner interface {
 		configPaths []string,
 		shutdownTimeout time.Duration,
 	) error
+
+	// ReloadConfig reloads the application configuration from the provided file system
+	// and paths. It updates the internal state of the application, such as
+	// service registries and managers, to reflect changes in the configuration files.
+	//
+	// Parameters:
+	//   - fs: The filesystem interface for reading configuration files.
+	//   - configPaths: A slice of paths to configuration files to reload.
+	//
+	// Returns:
+	//   - An error if the configuration reload fails.
 	ReloadConfig(fs afero.Fs, configPaths []string) error
 }
 

@@ -24,25 +24,37 @@ import (
 // instance of an *mcp.Server. This is used to decouple the Manager from the
 // concrete server implementation.
 type MCPServerProvider interface {
+	// Server returns the MCP server instance.
 	Server() *mcp.Server
 }
 
 // ManagerInterface defines the interface for a tool manager.
 type ManagerInterface interface {
+	// AddTool registers a new tool.
 	AddTool(tool Tool) error
+	// GetTool retrieves a tool by name.
 	GetTool(toolName string) (Tool, bool)
+	// ListTools returns all registered tools.
 	ListTools() []Tool
+	// ClearToolsForService removes all tools for a given service.
 	ClearToolsForService(serviceID string)
+	// ExecuteTool executes a tool with the given request.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+	// SetMCPServer sets the MCP server provider.
 	SetMCPServer(mcpServer MCPServerProvider)
+	// AddMiddleware adds a middleware to the tool execution chain.
 	AddMiddleware(middleware ExecutionMiddleware)
+	// AddServiceInfo adds metadata for a service.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
+	// GetServiceInfo retrieves metadata for a service.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+	// SetProfiles sets the enabled profiles and their definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
 type ExecutionMiddleware interface {
+	// Execute executes the middleware logic.
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 

@@ -26,6 +26,7 @@ type peerConnectionWrapper struct {
 	*webrtc.PeerConnection
 }
 
+// Close closes the peer connection.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -33,6 +34,7 @@ func (w *peerConnectionWrapper) Close() error {
 	return w.PeerConnection.Close()
 }
 
+// IsHealthy checks if the peer connection is in a connected state.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	return w.PeerConnection != nil && w.ICEConnectionState() == webrtc.ICEConnectionStateConnected
 }

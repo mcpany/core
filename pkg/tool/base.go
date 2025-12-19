@@ -28,10 +28,12 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
+// Tool returns the protobuf definition of the tool.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
+// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

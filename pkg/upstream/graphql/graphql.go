@@ -143,6 +143,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 	return respData, nil
 }
 
+// Register inspects the GraphQL upstream service and registers its capabilities.
 func (g *graphqlUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
