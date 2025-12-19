@@ -89,28 +89,32 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 	cmd.Dir = workingDir
 	cmd.Env = env
 
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stdin pipe: %w", err)
-	}
+	// Use io.Pipe to avoid race condition where cmd.Wait() closes pipes before we are done reading
+	stdinR, stdinW := io.Pipe()
+	stdoutR, stdoutW := io.Pipe()
+	stderrR, stderrW := io.Pipe()
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stdout pipe: %w", err)
-	}
-
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to get stderr pipe: %w", err)
-	}
+	cmd.Stdin = stdinR
+	cmd.Stdout = stdoutW
+	cmd.Stderr = stderrW
 
 	if err := cmd.Start(); err != nil {
+		_ = stdinR.Close()
+		_ = stdinW.Close()
+		_ = stdoutR.Close()
+		_ = stdoutW.Close()
+		_ = stderrR.Close()
+		_ = stderrW.Close()
 		return nil, nil, nil, nil, fmt.Errorf("failed to start command: %w", err)
 	}
 
 	exitCodeChan := make(chan int, 1)
 	go func() {
 		defer close(exitCodeChan)
+		defer func() { _ = stdoutW.Close() }()
+		defer func() { _ = stderrW.Close() }()
+		defer func() { _ = stdinR.Close() }()
+
 		err := cmd.Wait()
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
@@ -124,7 +128,7 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 		}
 	}()
 
-	return stdin, stdout, stderr, exitCodeChan, nil
+	return stdinW, stdoutR, stderrR, exitCodeChan, nil
 }
 
 type dockerExecutor struct {
