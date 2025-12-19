@@ -1,0 +1,138 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { ListServicesResponse, UpstreamServiceConfig, GetServiceResponse, GetServiceStatusResponse } from "./types";
+
+const mockServices: UpstreamServiceConfig[] = [
+  {
+    id: "auth-service-prod-123",
+    name: "auth-service",
+    version: "1.2.1",
+    disable: false,
+    grpc_service: {
+      address: "auth.prod.mcpany.io:443",
+      use_reflection: true,
+      tls_config: { server_name: "auth.prod.mcpany.io", insecure_skip_verify: false },
+      tools: [
+        { name: "Login", description: "Authenticate a user.", source: 'configured' },
+        { name: "Logout", description: "Log out a user.", source: 'configured' },
+        { name: "CheckStatus", description: "Check authentication status.", source: 'discovered' },
+      ],
+      resources: [
+        { name: "User", type: "UserProfile" },
+        { name: "Session", type: "UserSession" },
+      ]
+    }
+  },
+  {
+    id: "payment-gateway-prod-456",
+    name: "payment-gateway",
+    version: "2.0.0",
+    disable: false,
+    http_service: {
+      address: "https://payments.prod.mcpany.io",
+      tls_config: { server_name: "payments.prod.mcpany.io", insecure_skip_verify: false },
+      tools: [
+        { name: "CreatePayment", description: "Create a new payment.", source: 'configured' },
+        { name: "GetPaymentStatus", description: "Get the status of a payment.", source: 'configured' },
+      ],
+      prompts: [
+        { name: "GenerateInvoice", description: "Generate a PDF invoice for a payment." }
+      ]
+    }
+  },
+  {
+    id: "user-profiles-staging-789",
+    name: "user-profiles",
+    version: "0.5.0-beta",
+    disable: true,
+    grpc_service: {
+      address: "users.staging.mcpany.io:8080",
+      use_reflection: false,
+    }
+  },
+  {
+    id: "inventory-service-dev-101",
+    name: "inventory-service",
+    version: "0.1.0-dev",
+    disable: false,
+    command_line_service: {
+      command: "go run ./cmd/inventory",
+      tools: [
+        { name: "CheckStock", description: "Check stock levels for an item.", source: 'configured' }
+      ]
+    }
+  },
+];
+
+const mockMetrics: Record<string, Record<string, number>> = {
+    "auth-service-prod-123": {
+        "tool_usage:Login": 1024,
+        "tool_usage:Logout": 512,
+        "tool_usage:CheckStatus": 2048,
+        "resource_access:User": 300,
+        "resource_access:Session": 1200,
+    },
+    "payment-gateway-prod-456": {
+        "tool_usage:CreatePayment": 78,
+        "tool_usage:GetPaymentStatus": 230,
+        "prompt_usage:GenerateInvoice": 45,
+    },
+    "inventory-service-dev-101": {
+        "tool_usage:CheckStock": 1500,
+    }
+}
+
+
+const updateService = (id: string, update: Partial<UpstreamServiceConfig>): UpstreamServiceConfig | null => {
+    const serviceIndex = mockServices.findIndex(s => s.id === id);
+    if (serviceIndex !== -1) {
+        mockServices[serviceIndex] = { ...mockServices[serviceIndex], ...update };
+        return mockServices[serviceIndex];
+    }
+    return null;
+}
+
+
+export const apiClient = {
+  listServices: (): Promise<ListServicesResponse> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ services: [...mockServices] });
+      }, 500);
+    });
+  },
+  getService: (id: string): Promise<GetServiceResponse> => {
+      return new Promise((resolve, reject) => {
+          setTimeout(() => {
+              const service = mockServices.find(s => s.id === id);
+              if (service) {
+                  resolve({ service: {...service} });
+              } else {
+                  reject(new Error("Service not found"));
+              }
+          }, 300);
+      });
+  },
+  setServiceStatus: (id: string, disabled: boolean): Promise<GetServiceResponse> => {
+      return new Promise((resolve, reject) => {
+          setTimeout(() => {
+              const updatedService = updateService(id, { disable: disabled });
+              if (updatedService) {
+                resolve({ service: updatedService });
+              } else {
+                reject(new Error("Service not found to update status"));
+              }
+          }, 200)
+      })
+  },
+  getServiceStatus: (id: string): Promise<GetServiceStatusResponse> => {
+       return new Promise((resolve) => {
+          setTimeout(() => {
+              resolve({ metrics: mockMetrics[id] || {} });
+          }, 400);
+      });
+  }
+};
