@@ -33,37 +33,41 @@ var NewHTTPPool = func(
 	idleTimeout time.Duration,
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HTTPClientWrapper], error) {
+	tlsConfig := &tls.Config{
+		MinVersion:         tls.VersionTLS12,
+		InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
+	}
+
+	if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
+		cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
+		if err != nil {
+			return nil, err
+		}
+		tlsConfig.Certificates = []tls.Certificate{cert}
+
+		caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+		if err != nil {
+			return nil, err
+		}
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+		tlsConfig.RootCAs = caCertPool
+	}
+
+	sharedClient := &http.Client{
+		Transport: otelhttp.NewTransport(&http.Transport{
+			TLSClientConfig: tlsConfig,
+			DialContext: (&net.Dialer{
+				Timeout: 30 * time.Second,
+			}).DialContext,
+			MaxIdleConns:        maxSize,
+			MaxIdleConnsPerHost: maxSize,
+		}),
+	}
+
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
-		tlsConfig := &tls.Config{
-			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
-		}
-
-		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
-			cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
-			if err != nil {
-				return nil, err
-			}
-			tlsConfig.Certificates = []tls.Certificate{cert}
-
-			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
-			if err != nil {
-				return nil, err
-			}
-			caCertPool := x509.NewCertPool()
-			caCertPool.AppendCertsFromPEM(caCert)
-			tlsConfig.RootCAs = caCertPool
-		}
-
 		return client.NewHTTPClientWrapper(
-			&http.Client{
-				Transport: otelhttp.NewTransport(&http.Transport{
-					TLSClientConfig: tlsConfig,
-					DialContext: (&net.Dialer{
-						Timeout: 30 * time.Second,
-					}).DialContext,
-				}),
-			},
+			sharedClient,
 			config,
 		), nil
 	}
