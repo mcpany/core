@@ -10,8 +10,11 @@ import (
 
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/redis/go-redis/v9"
+	"github.com/go-redis/redismock/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
@@ -284,5 +287,295 @@ func TestRateLimitMiddleware(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
+	})
+
+	t.Run("redis rate limit allowed", func(t *testing.T) {
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		db, mockRedis := redismock.NewClientMock()
+		rlMiddleware.SetRedisClientFactoryForTest(func(opt *redis.Options) *redis.Client {
+			return db
+		})
+
+		// Mock the Lua script execution.
+		// SHA of the script in pkg/middleware/ratelimit_redis.go
+		sha := "dc2025df3aa0bc5be0c143a44c9a2c43bf484238"
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 10.0, 10).SetVal(int64(1))
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfo := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
+		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			return successResult, nil
+		}
+
+		result, err := rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+		assert.Equal(t, successResult, result)
+		assert.NoError(t, mockRedis.ExpectationsWereMet())
+	})
+
+	t.Run("redis rate limit blocked", func(t *testing.T) {
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		db, mockRedis := redismock.NewClientMock()
+		rlMiddleware.SetRedisClientFactoryForTest(func(opt *redis.Options) *redis.Client {
+			return db
+		})
+
+		// Mock the Lua script execution to return 0 (blocked)
+		sha := "dc2025df3aa0bc5be0c143a44c9a2c43bf484238"
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 10.0, 10).SetVal(int64(0))
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfo := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
+		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			return successResult, nil
+		}
+
+		_, err := rlMiddleware.Execute(ctx, req, next)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "rate limit exceeded")
+		assert.NoError(t, mockRedis.ExpectationsWereMet())
+	})
+
+	t.Run("redis rate limit error", func(t *testing.T) {
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		db, mockRedis := redismock.NewClientMock()
+		rlMiddleware.SetRedisClientFactoryForTest(func(opt *redis.Options) *redis.Client {
+			return db
+		})
+
+		// Mock error
+		sha := "dc2025df3aa0bc5be0c143a44c9a2c43bf484238"
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 10.0, 10).SetErr(proto.Error)
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfo := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
+		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			return nil, nil
+		}
+
+		_, err := rlMiddleware.Execute(ctx, req, next)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "rate limiting error")
+	})
+
+	t.Run("switch from redis to local", func(t *testing.T) {
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		db, mockRedis := redismock.NewClientMock()
+		rlMiddleware.SetRedisClientFactoryForTest(func(opt *redis.Options) *redis.Client {
+			return db
+		})
+
+		// 1. Redis config
+		rlConfigRedis := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfoRedis := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfigRedis,
+			}.Build(),
+		}
+
+		// 2. Local config
+		rlConfigLocal := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(5),
+			Burst:             proto.Int64(5),
+			Storage:           configv1.RateLimitConfig_STORAGE_LOCAL.Enum(),
+		}.Build()
+
+		serviceInfoLocal := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfigLocal,
+			}.Build(),
+		}
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfoRedis, true).Once()
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfoLocal, true).Once()
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return "ok", nil }
+
+		// Execute with Redis
+		sha := "dc2025df3aa0bc5be0c143a44c9a2c43bf484238"
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 10.0, 10).SetVal(int64(1))
+		_, err := rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+
+		// Execute with Local (should verify Redis Close is called? implicit)
+		// How to verify Redis client closed? mockRedis.ExpectClose()?
+		// redismock doesn't support ExpectClose() directly on ClientMock in v9?
+		// Checking source or docs... It seems it doesn't.
+		// But we can verify no more calls to Redis are made.
+
+		_, err = rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+	})
+
+	t.Run("redis config update", func(t *testing.T) {
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		db, mockRedis := redismock.NewClientMock()
+		rlMiddleware.SetRedisClientFactoryForTest(func(opt *redis.Options) *redis.Client {
+			return db
+		})
+
+		rlConfig1 := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{ Address: proto.String("addr") }.Build(),
+		}.Build()
+
+		rlConfig2 := configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(20),
+			Burst:             proto.Int64(20),
+			Storage:           configv1.RateLimitConfig_STORAGE_REDIS.Enum(),
+			Redis: bus.RedisBus_builder{ Address: proto.String("addr") }.Build(),
+		}.Build()
+
+		serviceInfo1 := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{ RateLimit: rlConfig1 }.Build(),
+		}
+		serviceInfo2 := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{ RateLimit: rlConfig2 }.Build(),
+		}
+
+		toolProto := v1.Tool_builder{ServiceId: proto.String("service")}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo1, true).Once()
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo2, true).Once()
+
+		req := &tool.ExecutionRequest{ToolName: "service.test-tool", ToolInputs: json.RawMessage(`{}`)}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return "ok", nil }
+
+		// 1. First call (10 RPS)
+		sha := "dc2025df3aa0bc5be0c143a44c9a2c43bf484238"
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 10.0, 10).SetVal(int64(1))
+		_, err := rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
+
+		// 2. Second call (20 RPS) - UpdateConfig should be called
+		mockRedis.ExpectEvalSha(sha, []string{"ratelimit:{service}:tokens", "ratelimit:{service}:ts"}, 20.0, 20).SetVal(int64(1))
+		_, err = rlMiddleware.Execute(ctx, req, next)
+		assert.NoError(t, err)
 	})
 }

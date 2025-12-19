@@ -14,6 +14,7 @@ import "proto/config/v1/prompt.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/tool.proto";
 import "proto/config/v1/webhook.proto";
+import "proto/bus/bus.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "UpstreamServiceProto";
@@ -423,6 +424,16 @@ message RateLimitConfig {
   double requests_per_second = 2 [json_name = "requests_per_second"];
   // The number of requests that can be allowed in a short burst.
   int64 burst = 3;
+
+  enum Storage {
+    STORAGE_UNSPECIFIED = 0;
+    STORAGE_LOCAL = 1;
+    STORAGE_REDIS = 2;
+  }
+  // The storage backend to use for rate limiting.
+  Storage storage = 4;
+  // The Redis configuration to use if storage is set to STORAGE_REDIS.
+  bus.RedisBus redis = 5;
 }
 
 

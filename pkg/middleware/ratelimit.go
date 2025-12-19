@@ -12,21 +12,54 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/time/rate"
 )
+
+// Limiter defines the interface for a rate limiter.
+type Limiter interface {
+	Allow(ctx context.Context) (bool, error)
+	UpdateConfig(rps float64, burst int)
+	Close() error
+}
+
+// LocalLimiter is a wrapper around rate.Limiter.
+type LocalLimiter struct {
+	limiter *rate.Limiter
+}
+
+func (l *LocalLimiter) Allow(ctx context.Context) (bool, error) {
+	return l.limiter.Allow(), nil
+}
+
+func (l *LocalLimiter) UpdateConfig(rps float64, burst int) {
+	l.limiter.SetLimit(rate.Limit(rps))
+	l.limiter.SetBurst(burst)
+}
+
+func (l *LocalLimiter) Close() error {
+	return nil
+}
 
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
 type RateLimitMiddleware struct {
-	toolManager tool.ManagerInterface
-	limiters    sync.Map // map[string]*rate.Limiter
+	toolManager        tool.ManagerInterface
+	limiters           sync.Map // map[string]Limiter
+	redisClientFactory func(*redis.Options) *redis.Client
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddleware {
 	return &RateLimitMiddleware{
-		toolManager: toolManager,
+		toolManager:        toolManager,
+		redisClientFactory: redis.NewClient,
 	}
+}
+
+// SetRedisClientFactoryForTest sets the redis client factory for testing purposes.
+func (m *RateLimitMiddleware) SetRedisClientFactoryForTest(factory func(*redis.Options) *redis.Client) {
+	m.redisClientFactory = factory
 }
 
 // Execute executes the rate limiting middleware.
@@ -49,8 +82,17 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 		return next(ctx, req)
 	}
 
-	limiter := m.getLimiter(serviceID, rateLimitConfig)
-	if !limiter.Allow() {
+	limiter, err := m.getLimiter(serviceID, rateLimitConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get rate limiter: %w", err)
+	}
+
+	allowed, err := limiter.Allow(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("rate limiting error: %w", err)
+	}
+
+	if !allowed {
 		metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
 			{Name: "service_id", Value: serviceID},
 			{Name: "status", Value: "blocked"},
@@ -66,33 +108,52 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 	return next(ctx, req)
 }
 
-func (m *RateLimitMiddleware) getLimiter(serviceID string, config *configv1.RateLimitConfig) *rate.Limiter {
-	rps := rate.Limit(config.GetRequestsPerSecond())
+func (m *RateLimitMiddleware) getLimiter(serviceID string, config *configv1.RateLimitConfig) (Limiter, error) {
+	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
 	if burst <= 0 {
 		burst = 1 // Ensure at least 1 request can be made
 	}
 
 	limiterVal, ok := m.limiters.Load(serviceID)
-	if !ok {
-		newLimiter := rate.NewLimiter(rps, burst)
-		actual, loaded := m.limiters.LoadOrStore(serviceID, newLimiter)
-		limiterVal = actual
-		// If we loaded an existing one (race condition), we still fall through to check/update below.
-		// This handles the case where the race winner had an older config (unlikely but possible).
-		_ = loaded
+
+	// Check if existing limiter is valid and correct type
+	if ok {
+		existingLimiter := limiterVal.(Limiter)
+		isRedisConfig := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
+		_, isRedisLimiter := existingLimiter.(*RedisLimiter)
+
+		if isRedisConfig == isRedisLimiter {
+			// Same type, update and return
+			existingLimiter.UpdateConfig(rps, burst)
+			return existingLimiter, nil
+		}
+
+		// Type mismatch, proceed to create new and swap
 	}
 
-	limiter := limiterVal.(*rate.Limiter)
-
-	// Check and update if config has changed.
-	// Note: SetLimit and SetBurst are thread-safe.
-	if limiter.Limit() != rps {
-		limiter.SetLimit(rps)
+	// Create new limiter
+	var newLimiter Limiter
+	if config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS {
+		redisConfig := config.GetRedis()
+		if redisConfig == nil {
+			return nil, fmt.Errorf("redis config missing for redis rate limiter")
+		}
+		client := m.redisClientFactory(&redis.Options{
+			Addr:     redisConfig.GetAddress(),
+			Password: redisConfig.GetPassword(),
+			DB:       int(redisConfig.GetDb()),
+		})
+		newLimiter = NewRedisLimiter(client, serviceID, rps, burst)
+	} else {
+		newLimiter = &LocalLimiter{
+			limiter: rate.NewLimiter(rate.Limit(rps), burst),
+		}
 	}
-	if limiter.Burst() != burst {
-		limiter.SetBurst(burst)
-	}
 
-	return limiter
+	previous, loaded := m.limiters.Swap(serviceID, newLimiter)
+	if loaded {
+		_ = previous.(Limiter).Close()
+	}
+	return newLimiter, nil
 }
