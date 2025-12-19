@@ -239,3 +239,24 @@ global_settings:
 	// protojson unmarshal errors on unknown fields by default
 	assert.Contains(t, err.Error(), "unknown field")
 }
+
+func TestReadURL_Localhost(t *testing.T) {
+	// Start a local HTTP server
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/yaml")
+		_, _ = w.Write([]byte("global_settings:\n  log_level: INFO\n"))
+	}))
+	defer ts.Close()
+
+	// Append a path with extension so NewEngine detects it as YAML
+	configURL := ts.URL + "/config.yaml"
+
+	fs := afero.NewMemMapFs()
+	store := NewFileStore(fs, []string{configURL})
+
+	cfg, err := store.Load()
+
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+}
