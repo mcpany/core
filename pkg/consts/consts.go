@@ -42,6 +42,9 @@ const (
 	NotificationResourcesListChanged = "notifications/resources/list_changed"
 	// DefaultBindPort is the default port for the server to bind to.
 	DefaultBindPort = 8070
+	// DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
+	// 10MB should be enough for most use cases while preventing OOM.
+	DefaultMaxCommandOutputBytes = 10 * 1024 * 1024
 )
 
 const (
