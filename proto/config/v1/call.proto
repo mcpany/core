@@ -116,6 +116,7 @@ message OutputTransformer {
     XML = 1;  // The output is XML, which will be parsed using XPath expressions.
     TEXT = 2; // The output is plain text, which will be parsed using regex.
     RAW_BYTES = 3; // The output is raw bytes, no parsing will be performed.
+    JQ = 4; // The output is JSON, which will be transformed using a JQ query.
   }
   // The format of the upstream service's output.
   OutputFormat format = 1;
@@ -128,6 +129,9 @@ message OutputTransformer {
   // An optional template to render the extracted data into a final string.
   // If this is not provided, the raw extracted data will be returned.
   string template = 3;
+  // The JQ query to transform the output.
+  // Only used when format is JQ.
+  string jq_query = 4 [json_name = "jq_query"];
 }
 
 // GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
