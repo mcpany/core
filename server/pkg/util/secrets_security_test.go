@@ -35,22 +35,22 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 }
 
 func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
-    // This test ensures we didn't break valid filenames like "my..secret.txt"
-    tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
-    require.NoError(t, err)
-    t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tempDir)
-    defer func() { _ = os.RemoveAll(tempDir) }()
+	// This test ensures we didn't break valid filenames like "my..secret.txt"
+	tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
+	require.NoError(t, err)
+	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tempDir)
+	defer func() { _ = os.RemoveAll(tempDir) }()
 
-    secretFile := filepath.Join(tempDir, "my..secret.txt")
-    err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
-    require.NoError(t, err)
+	secretFile := filepath.Join(tempDir, "my..secret.txt")
+	err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
+	require.NoError(t, err)
 
-    secret := &configv1.SecretValue{}
-    secret.SetFilePath(secretFile)
+	secret := &configv1.SecretValue{}
+	secret.SetFilePath(secretFile)
 
-    resolved, err := util.ResolveSecret(secret)
-    assert.NoError(t, err)
-    assert.Equal(t, "VALID_SECRET", resolved)
+	resolved, err := util.ResolveSecret(secret)
+	assert.NoError(t, err)
+	assert.Equal(t, "VALID_SECRET", resolved)
 }
 
 func TestResolveSecret_SSRF_Blocked(t *testing.T) {
