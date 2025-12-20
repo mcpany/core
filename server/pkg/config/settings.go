@@ -30,6 +30,7 @@ type Settings struct {
 	logFile         string
 	shutdownTimeout time.Duration
 	profiles        []string
+	dbPath          string
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -79,11 +80,10 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	}
 	logFormat := viper.GetString("log-format")
 	logging.Init(logLevel, logOutput, logFormat)
-	s.debug = viper.GetBool("debug")
-	s.logLevel = viper.GetString("log-level")
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = viper.GetStringSlice("profiles")
+	s.dbPath = viper.GetString("db-path")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -203,4 +203,9 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 		)
 	}
 	return configv1.GlobalSettings_LOG_LEVEL_INFO
+}
+
+// DBPath returns the path to the SQLite database.
+func (s *Settings) DBPath() string {
+	return s.dbPath
 }

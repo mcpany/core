@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -141,6 +142,8 @@ type Application struct {
 	ResourceManager  resource.ManagerInterface
 	UpstreamFactory  factory.Factory
 	configFiles      map[string]string
+	fs               afero.Fs
+	configPaths      []string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -194,6 +197,8 @@ func (a *Application) Run(
 	if err != nil {
 		return fmt.Errorf("failed to setup filesystem: %w", err)
 	}
+	a.fs = fs
+	a.configPaths = configPaths
 
 	shutdownTracer, err := telemetry.InitTracer(ctx, appconsts.Name, appconsts.Version, os.Stderr)
 	if err != nil {
@@ -208,16 +213,31 @@ func (a *Application) Run(
 
 	log.Info("Starting MCP Any Service...")
 
-	// Load initial services from config files
-	var cfg *config_v1.McpAnyServerConfig
+	// Load initial services from config files and SQLite
+	dbPath := config.GlobalSettings().DBPath()
+	if dbPath == "" {
+		dbPath = "mcpany.db"
+	}
+	sqliteDB, err := sqlite.NewDB(dbPath)
+	if err != nil {
+		return fmt.Errorf("failed to initialize sqlite db: %w", err)
+	}
+	defer sqliteDB.Close()
+	sqliteStore := sqlite.NewStore(sqliteDB)
+
+	var stores []config.Store
 	if len(configPaths) > 0 {
-		store := config.NewFileStore(fs, configPaths)
-		var err error
-		cfg, err = config.LoadServices(store, "server")
-		if err != nil {
-			return fmt.Errorf("failed to load services from config: %w", err)
-		}
-	} else {
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	}
+	stores = append(stores, sqliteStore)
+	multiStore := config.NewMultiStore(stores...)
+
+	var cfg *config_v1.McpAnyServerConfig
+	cfg, err = config.LoadServices(multiStore, "server")
+	if err != nil {
+		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
@@ -389,7 +409,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -582,6 +602,7 @@ func (a *Application) runServerMode(
 	users []*config_v1.User,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
+	store *sqlite.Store,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -620,6 +641,13 @@ func (a *Application) runServerMode(
 
 	mux := http.NewServeMux()
 	mux.Handle("/", authMiddleware(httpHandler))
+
+	// API Routes for Configuration Management
+	// TODO: Add auth middleware to these routes if needed, or rely on global auth
+	// For now, these are protected by the same authMiddleware if applied to specific paths,
+	// but we should explicitly guard them.
+	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
+	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler

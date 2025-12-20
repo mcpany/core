@@ -1,0 +1,118 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package sqlite
+
+import (
+	"database/sql"
+	"fmt"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/encoding/protojson"
+)
+
+type Store struct {
+	db *DB
+}
+
+func NewStore(db *DB) *Store {
+	return &Store{db: db}
+}
+
+// Load implements config.Store interface
+func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
+	rows, err := s.db.Query("SELECT config_json FROM upstream_services")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
+	}
+	defer rows.Close()
+
+	var services []*configv1.UpstreamServiceConfig
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var service configv1.UpstreamServiceConfig
+		// Allow unknown fields to be safe against schema evolution
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+		}
+		services = append(services, &service)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return &configv1.McpAnyServerConfig{
+		UpstreamServices: services,
+	}, nil
+}
+
+func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
+	if service.GetName() == "" {
+		return fmt.Errorf("service name is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(service)
+	if err != nil {
+		return fmt.Errorf("failed to marshal service config: %w", err)
+	}
+
+	query := `
+	INSERT INTO upstream_services (id, name, config_json, updated_at)
+	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(name) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	id := service.GetId()
+	if id == "" {
+		id = service.GetName() // fallback
+	}
+
+	_, err = s.db.Exec(query, id, service.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save service: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
+	query := "SELECT config_json FROM upstream_services WHERE name = ?"
+	row := s.db.QueryRow(query, name)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	}
+
+	var service configv1.UpstreamServiceConfig
+	if err := protojson.Unmarshal([]byte(configJSON), &service); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+	}
+	return &service, nil
+}
+
+func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
+	cfg, err := s.Load()
+	if err != nil {
+		return nil, err
+	}
+	return cfg.UpstreamServices, nil
+}
+
+func (s *Store) DeleteService(name string) error {
+	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = ?", name)
+	if err != nil {
+		return fmt.Errorf("failed to delete service: %w", err)
+	}
+	return nil
+}
