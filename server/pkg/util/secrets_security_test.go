@@ -35,6 +35,8 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 }
 
 func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
+    t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
+
     // This test ensures we didn't break valid filenames like "my..secret.txt"
     tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
     require.NoError(t, err)
@@ -110,4 +112,55 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 
 	// It should NOT be "blocked private IP"
 	assert.NotContains(t, err.Error(), "resolved to private ip")
+}
+
+func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
+	// Ensure env var is NOT set
+	os.Unsetenv("MCPANY_ALLOW_ABSOLUTE_PATHS")
+
+	// Create a temp file
+	tmpFile, err := os.CreateTemp("", "secret_test")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.WriteString("supersecret")
+	require.NoError(t, err)
+	tmpFile.Close()
+
+	absPath, err := filepath.Abs(tmpFile.Name())
+	require.NoError(t, err)
+
+	secret := &configv1.SecretValue{}
+	secret.SetFilePath(absPath)
+
+	// This should now FAIL
+	_, err = util.ResolveSecret(secret)
+	assert.Error(t, err, "ResolveSecret should block absolute paths by default")
+	if err != nil {
+		assert.Contains(t, err.Error(), "path must be relative")
+	}
+}
+
+func TestResolveSecret_AbsolutePathsAllowedWithEnv(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
+
+	// Create a temp file
+	tmpFile, err := os.CreateTemp("", "secret_test_allowed")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.WriteString("supersecret")
+	require.NoError(t, err)
+	tmpFile.Close()
+
+	absPath, err := filepath.Abs(tmpFile.Name())
+	require.NoError(t, err)
+
+	secret := &configv1.SecretValue{}
+	secret.SetFilePath(absPath)
+
+	// This should pass
+	val, err := util.ResolveSecret(secret)
+	assert.NoError(t, err)
+	assert.Equal(t, "supersecret", val)
 }
