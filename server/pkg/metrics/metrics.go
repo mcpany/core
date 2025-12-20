@@ -120,3 +120,13 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
+
+// MeasureSinceWithLabels measures the time since a given start time and records it with labels.
+//
+// Parameters:
+//   - name: The name of the metric (as a path).
+//   - start: The start time.
+//   - labels: The labels to apply.
+func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
+	metrics.MeasureSinceWithLabels(name, start, labels)
+}
