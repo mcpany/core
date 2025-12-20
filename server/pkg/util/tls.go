@@ -22,8 +22,23 @@ import (
 // It returns a configured *http.Client or an error if the TLS configuration
 // is invalid or files cannot be read.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
+	// Clone defaults from http.DefaultTransport to ensure we have timeouts and pool settings.
+	var baseTransport *http.Transport
+	if t, ok := http.DefaultTransport.(*http.Transport); ok {
+		baseTransport = t.Clone()
+	} else {
+		// Fallback if DefaultTransport is modified or not a *Transport (unlikely)
+		baseTransport = &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		}
+	}
+
+	baseTransport.DialContext = SafeDialContext
+
 	if tlsConfig == nil {
-		return http.DefaultClient, nil
+		return &http.Client{
+			Transport: baseTransport,
+		}, nil
 	}
 
 	config := &tls.Config{
@@ -51,11 +66,9 @@ func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 		config.Certificates = []tls.Certificate{clientCert}
 	}
 
-	transport := &http.Transport{
-		TLSClientConfig: config,
-	}
+	baseTransport.TLSClientConfig = config
 
 	return &http.Client{
-		Transport: transport,
+		Transport: baseTransport,
 	}, nil
 }

@@ -59,10 +59,13 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 }
 
 func TestNewHTTPClientWithTLS(t *testing.T) {
-	t.Run("nil config returns default client", func(t *testing.T) {
+	t.Run("nil config returns safe client", func(t *testing.T) {
 		client, err := NewHTTPClientWithTLS(nil)
 		require.NoError(t, err)
-		assert.Equal(t, http.DefaultClient, client)
+		assert.NotEqual(t, http.DefaultClient, client)
+		transport, ok := client.Transport.(*http.Transport)
+		require.True(t, ok)
+		assert.NotNil(t, transport.DialContext)
 	})
 
 	t.Run("empty config returns a valid client", func(t *testing.T) {
