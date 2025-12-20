@@ -61,6 +61,11 @@ service RegistrationService {
             get: "/v1/services"
         };
     }
+    rpc GetService(GetServiceRequest) returns (GetServiceResponse) {
+        option (google.api.http) = {
+            get: "/v1/services/{service_name}"
+        };
+    }
 }
 
 message ListServicesRequest {}
@@ -99,6 +104,13 @@ message RegisterToolsResponse {
     int32 tools_registered = 2;
 }
 
+message GetServiceRequest {
+    string service_name = 1;
+}
+
+message GetServiceResponse {
+    mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
 
 message GetServiceStatusRequest {
     string service_name = 1;

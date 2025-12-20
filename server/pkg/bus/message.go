@@ -93,3 +93,16 @@ type ServiceListResult struct {
 	Services []*configv1.UpstreamServiceConfig
 	Error    error
 }
+
+// ServiceGetRequest is a message sent to the bus to request a specific service.
+type ServiceGetRequest struct {
+	BaseMessage
+	ServiceName string
+}
+
+// ServiceGetResult is a message published in response to a ServiceGetRequest.
+type ServiceGetResult struct {
+	BaseMessage
+	Service *configv1.UpstreamServiceConfig
+	Error   error
+}
