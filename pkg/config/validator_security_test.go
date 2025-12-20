@@ -27,7 +27,7 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 					"container_environment": {
 						"image": "ubuntu",
 						"volumes": {
-							"/target": "../../../etc/passwd"
+							"../../../etc/passwd": "/target"
 						}
 					}
 				}
@@ -43,5 +43,5 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 	// We expect validation errors now because the vulnerability is fixed
 	require.NotEmpty(t, validationErrors, "Expected validation errors for insecure volume mount")
 	assert.Contains(t, validationErrors[0].Error(), "is not a secure path")
-	assert.Contains(t, validationErrors[0].Error(), "container environment volume source")
+	assert.Contains(t, validationErrors[0].Error(), "container environment volume host path")
 }
