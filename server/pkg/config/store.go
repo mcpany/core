@@ -409,3 +409,29 @@ func applyEnvVars(m map[string]interface{}) {
 		}
 	}
 }
+
+// MultiStore implements the Store interface for loading configurations from multiple stores.
+// It merges the configurations in the order the stores are provided.
+type MultiStore struct {
+	stores []Store
+}
+
+// NewMultiStore creates a new MultiStore with the given stores.
+func NewMultiStore(stores ...Store) *MultiStore {
+	return &MultiStore{stores: stores}
+}
+
+// Load loads configurations from all stores and merges them into a single config.
+func (ms *MultiStore) Load() (*configv1.McpAnyServerConfig, error) {
+	mergedConfig := &configv1.McpAnyServerConfig{}
+	for _, s := range ms.stores {
+		cfg, err := s.Load()
+		if err != nil {
+			return nil, err
+		}
+		if cfg != nil {
+			proto.Merge(mergedConfig, cfg)
+		}
+	}
+	return mergedConfig, nil
+}
