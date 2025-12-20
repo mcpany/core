@@ -179,7 +179,7 @@ func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "../build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -195,7 +195,7 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "../build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -219,7 +219,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "../build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
 	proc.Port = port
 	return proc
 }
@@ -235,7 +235,7 @@ func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "build/test/bin/webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "../build/test/bin/webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -288,7 +288,7 @@ func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "build/test/bin/openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "../build/test/bin/openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -317,7 +317,7 @@ func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "../build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }

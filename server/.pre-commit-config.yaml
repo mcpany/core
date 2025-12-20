@@ -9,9 +9,9 @@ repos:
     -   id: check-case-conflict
     -   id: check-json
     -   id: check-yaml
-        exclude: ^helm/
+        exclude: ^server/helm/
     -   id: detect-private-key
-        exclude: ^tests/tls/
+        exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: local
@@ -24,9 +24,9 @@ repos:
         exclude: ^vendor/
     -   id: helm-lint
         name: helm-lint
-        entry: ./build/env/bin/helm lint helm/mcpany
+        entry: helm lint server/helm/mcpany
         language: system
-        files: ^helm/
+        files: ^server/helm/
         pass_filenames: false
 -   repo: https://github.com/google/addlicense
     rev: v1.2.0

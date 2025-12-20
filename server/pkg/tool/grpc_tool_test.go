@@ -29,7 +29,7 @@ import (
 
 func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoreflect.MethodDescriptor {
 	t.Helper()
-	b, err := os.ReadFile("../../build/all.protoset")
+	b, err := os.ReadFile("../../../build/all.protoset")
 	require.NoError(t, err, "Failed to read protoset file. Ensure 'make gen' has been run.")
 
 	fds := &descriptorpb.FileDescriptorSet{}

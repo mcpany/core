@@ -51,7 +51,7 @@ paths:
 	// 2. Identify Mock MCP Server binary (Hermetic)
 	// We use the locally built mock_server instead of npx/npm/puppeteer which requires internet.
 	projectRoot := integration.ProjectRoot(t)
-	mockServerPath := filepath.Join(projectRoot, "build", "bin", "mock_server")
+	mockServerPath := filepath.Join(projectRoot, "..", "build", "bin", "mock_server")
 	if _, err := os.Stat(mockServerPath); os.IsNotExist(err) {
 		t.Logf("Mock server not found at %s. Attempting to build or strictly failing if expected.", mockServerPath)
 		// For robustness, we could build it here, but it should be built by previous steps.

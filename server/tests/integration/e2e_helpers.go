@@ -753,7 +753,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 		} else {
 			root, err := GetProjectRoot()
 			require.NoError(t, err)
-			natsServerBin = filepath.Join(root, "build/env/bin/nats-server")
+			natsServerBin = filepath.Join(root, "../build/env/bin/nats-server")
 			if info, err := os.Stat(natsServerBin); err == nil {
 				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
 			} else {
@@ -821,7 +821,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "build/bin/server")
+	mcpanyBinary := filepath.Join(root, "../build/bin/server")
 
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
