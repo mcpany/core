@@ -87,7 +87,6 @@ Contains server-wide operational parameters.
 | Field                | Type         | Description                                                                   |
 | -------------------- | ------------ | ----------------------------------------------------------------------------- |
 | `mcp_listen_address` | `string`     | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
-| `mcp_basepath`       | `string`     | The base path for all MCP API endpoints (e.g., "/mcp/v1").                    |
 | `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
 | `log_format`         | `enum`       | The logging format. Can be `text` or `json`.                                  |
 | `message_bus`        | `MessageBus` | The message bus configuration.                                                |
@@ -123,7 +122,6 @@ global_settings:
 ```yaml
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  mcp_basepath: "/mcp/v1"
   log_level: "DEBUG"
 ```
 
@@ -281,27 +279,6 @@ Defines how an MCP tool entry maps to a specific HTTP call.
 | `timeout` | `duration` | Timeout for this specific call. |
 | `cache` | `CacheConfig` | Call-level cache configuration (overrides service default). |
 | `retry_policy` | `RetryConfig` | Call-level retry policy. |
-
-#### `OutputTransformer`
-
-Defines how to parse and transform the upstream service's output.
-
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `format` | `enum` | The format of the output (`JSON`, `XML`, `TEXT`, `RAW_BYTES`, `JQ`). |
-| `extraction_rules` | `map<string, string>` | Extraction rules for JSON/XML/TEXT. |
-| `template` | `string` | Optional Go template to render the extracted/transformed data. |
-| `jq_query` | `string` | JQ query to transform the output (when format is `JQ`). |
-
-##### Use Case and Example: JQ Transformation
-
-Transform a complex JSON response using JQ.
-
-```yaml
-output_transformer:
-  format: "JQ"
-  jq_query: ".users[] | select(.active) | .name"
-```
 
 #### `OpenapiUpstreamService`
 

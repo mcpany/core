@@ -49,8 +49,6 @@ type ManagerInterface interface {
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	// GetServiceInfo retrieves metadata for a service.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
-	// ListServices returns all registered services.
-	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 }
@@ -409,17 +407,6 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 		return nil, false
 	}
 	return info, true
-}
-
-// ListServices returns a slice containing all the services currently registered with
-// the manager.
-func (tm *Manager) ListServices() []*ServiceInfo {
-	var services []*ServiceInfo
-	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
-		services = append(services, value)
-		return true
-	})
-	return services
 }
 
 // AddTool registers a new tool with the manager. It generates a unique tool ID

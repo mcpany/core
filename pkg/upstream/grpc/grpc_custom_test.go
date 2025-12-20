@@ -41,14 +41,6 @@ func (m *mockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
-	services := make([]*tool.ServiceInfo, 0, len(m.serviceInfo))
-	for _, info := range m.serviceInfo {
-		services = append(services, info)
-	}
-	return services
-}
-
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func newMockToolManager() *mockToolManager {

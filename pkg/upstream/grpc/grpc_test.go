@@ -104,16 +104,6 @@ func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	return info, ok
 }
 
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	services := make([]*tool.ServiceInfo, 0, len(m.serviceInfos))
-	for _, info := range m.serviceInfos {
-		services = append(services, info)
-	}
-	return services
-}
-
 func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }

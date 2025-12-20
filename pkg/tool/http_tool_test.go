@@ -155,6 +155,37 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 	assert.Equal(t, "admin", resultMap["role"])
 }
 
+func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
+	t.Parallel()
+	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(jsonResponse))
+	})
+
+	format := configv1.OutputTransformer_JQ
+	callDef := configv1.HttpCallDefinition_builder{
+		OutputTransformer: configv1.OutputTransformer_builder{
+			Format:  &format,
+			JqQuery: lo.ToPtr(".users[].name"),
+		}.Build(),
+	}.Build()
+
+	httpTool, server := setupHTTPToolTest(t, handler, callDef)
+	defer server.Close()
+
+	req := &tool.ExecutionRequest{}
+	result, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	// Result should be a list of names
+	resultList, ok := result.([]any)
+	require.True(t, ok)
+	assert.Contains(t, resultList, "Alice")
+	assert.Contains(t, resultList, "Bob")
+}
+
 func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	t.Parallel()
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -466,48 +497,6 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	})
 }
 
-func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
-	t.Parallel()
-	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/cloudevents+json")
-		responseEvent := `{
-			"specversion": "1.0",
-			"type": "com.mcpany.tool.transform_input.response",
-			"source": "webhook-test",
-			"id": "123",
-			"data": {"transformed": "input"}
-		}`
-		w.Write([]byte(responseEvent))
-	}))
-	defer webhookServer.Close()
-
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		body, err := io.ReadAll(r.Body)
-		require.NoError(t, err)
-		assert.JSONEq(t, `{"transformed": "input"}`, string(body))
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
-	})
-
-	method := configv1.HttpCallDefinition_HTTP_METHOD_POST
-	callDef := &configv1.HttpCallDefinition{
-		Method: &method,
-		InputTransformer: &configv1.InputTransformer{
-			Webhook: &configv1.WebhookConfig{
-				Url: webhookServer.URL,
-			},
-		},
-	}
-
-	httpTool, server := setupHTTPToolTest(t, handler, callDef)
-	defer server.Close()
-
-	inputs := json.RawMessage(`{}`)
-	req := &tool.ExecutionRequest{ToolInputs: inputs}
-	_, err := httpTool.Execute(context.Background(), req)
-	require.NoError(t, err)
-}
-
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	t.Parallel()
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
@@ -534,37 +523,6 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	resultMap, ok := result.(map[string]any)
 	require.True(t, ok)
 	assert.Equal(t, rawBytesResponse, resultMap["raw"])
-}
-
-func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
-	t.Parallel()
-	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
-	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(jsonResponse))
-	})
-
-	format := configv1.OutputTransformer_JQ
-	callDef := configv1.HttpCallDefinition_builder{
-		OutputTransformer: configv1.OutputTransformer_builder{
-			Format:  &format,
-			JqQuery: lo.ToPtr(".users[].name"),
-		}.Build(),
-	}.Build()
-
-	httpTool, server := setupHTTPToolTest(t, handler, callDef)
-	defer server.Close()
-
-	req := &tool.ExecutionRequest{}
-	result, err := httpTool.Execute(context.Background(), req)
-	require.NoError(t, err)
-
-	// Result should be a slice of interface{}
-	resultList, ok := result.([]any)
-	require.True(t, ok)
-	assert.Contains(t, resultList, "Alice")
-	assert.Contains(t, resultList, "Bob")
 }
 
 func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {

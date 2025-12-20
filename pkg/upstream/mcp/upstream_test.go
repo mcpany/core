@@ -34,10 +34,6 @@ func (m *mockToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
-	return nil
-}
-
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}

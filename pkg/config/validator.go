@@ -232,30 +232,6 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 	if commandLineService.GetCommand() == "" {
 		return fmt.Errorf("command_line_service has empty command")
 	}
-	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
-		return err
-	}
-	return nil
-}
-
-func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
-	if env == nil {
-		return nil
-	}
-	// We only validate volumes if an image is specified, as they are only used with Docker execution.
-	if env.GetImage() != "" {
-		for dest, src := range env.GetVolumes() {
-			if dest == "" {
-				return fmt.Errorf("container environment volume destination is empty")
-			}
-			if src == "" {
-				return fmt.Errorf("container environment volume source is empty")
-			}
-			if err := validation.IsSecurePath(src); err != nil {
-				return fmt.Errorf("container environment volume source %q is not a secure path: %w", src, err)
-			}
-		}
-	}
 	return nil
 }
 

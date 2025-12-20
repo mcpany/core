@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	v1 "github.com/mcpany/core/proto/config/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -77,6 +77,18 @@ func (m *MockManagerInterface) AddTool(tool Tool) error {
 func (mr *MockManagerInterfaceMockRecorder) AddTool(tool any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTool", reflect.TypeOf((*MockManagerInterface)(nil).AddTool), tool)
+}
+
+// Clear mocks base method.
+func (m *MockManagerInterface) Clear() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Clear")
+}
+
+// Clear indicates an expected call of Clear.
+func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockManagerInterface)(nil).Clear))
 }
 
 // ClearToolsForService mocks base method.
@@ -151,20 +163,6 @@ func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
-// ListServices mocks base method.
-func (m *MockManagerInterface) ListServices() []*ServiceInfo {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListServices")
-	ret0, _ := ret[0].([]*ServiceInfo)
-	return ret0
-}
-
-// ListServices indicates an expected call of ListServices.
-func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
-}
-
 // ListTools mocks base method.
 func (m *MockManagerInterface) ListTools() []Tool {
 	m.ctrl.T.Helper()
@@ -192,7 +190,7 @@ func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.
 }
 
 // SetProfiles mocks base method.
-func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileDefinition) {
+func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetProfiles", enabled, defs)
 }

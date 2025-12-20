@@ -52,7 +52,6 @@ func TestWebrtcTool_Close(t *testing.T) {
 }
 
 func TestWebrtcTool_PoolInteraction(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -113,7 +112,6 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_Success(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -183,7 +181,6 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -250,7 +247,6 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	authHeader := "Bearer my-secret-token"
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -309,7 +305,6 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}))
@@ -328,7 +323,6 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_Timeout(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
 		require.NoError(t, err)
@@ -380,7 +374,6 @@ func TestWebrtcTool_GetCacheConfig(t *testing.T) {
 }
 
 func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
-	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
 	toolDef := &v1.Tool{}
 	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}

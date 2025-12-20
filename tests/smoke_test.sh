@@ -17,18 +17,13 @@ docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 # Start container
 # We pass flags to override default listen addresses
 docker run -d --name "$CONTAINER_NAME" \
-  -P \
+  -p 50050:50050 -p 50051:50051 \
   "$IMAGE_NAME" \
   run \
   --mcp-listen-address :50050 \
   --grpc-port :50051
 
 echo "Waiting for container to be ready..."
-
-# Get assigned ports
-HTTP_PORT=$(docker port "$CONTAINER_NAME" 50050/tcp | head -n 1 | awk -F: '{print $2}')
-GRPC_PORT=$(docker port "$CONTAINER_NAME" 50051/tcp | head -n 1 | awk -F: '{print $2}')
-echo "Container mapped ports: HTTP=$HTTP_PORT, gRPC=$GRPC_PORT"
 
 # Check HTTP Health
 echo "Checking HTTP health..."
@@ -43,7 +38,7 @@ while [ $RETRIES -gt 0 ]; do
     break
   fi
 
-  if curl --fail --silent http://localhost:"$HTTP_PORT"/healthz > /dev/null; then
+  if curl --fail --silent http://localhost:50050/healthz > /dev/null; then
     echo "HTTP Health Check Passed"
     break
   fi
@@ -72,7 +67,7 @@ while [ $RETRIES -gt 0 ]; do
     break
   fi
 
-  if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:"$GRPC_PORT" list > /dev/null 2>&1; then
+  if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:50051 list > /dev/null 2>&1; then
     echo "gRPC Health Check Passed"
     break
   fi

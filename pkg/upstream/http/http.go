@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -286,31 +285,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		// Ensure baseURL has a trailing slash so ResolveReference appends to it
-		baseForJoin := *baseURL
-		if !strings.HasSuffix(baseForJoin.Path, "/") {
-			baseForJoin.Path += "/"
-			if baseForJoin.RawPath != "" {
-				baseForJoin.RawPath += "/"
-			}
-		}
-
-		// Make endpoint path relative
-		relPath := strings.TrimPrefix(endpointURL.Path, "/")
-		relRawPath := ""
-		if endpointURL.RawPath != "" {
-			relRawPath = strings.TrimPrefix(endpointURL.RawPath, "/")
-		}
-
-		// Construct a relative URL using RawPath to preserve encoding
-		relURL := &url.URL{
-			Path:    relPath,
-			RawPath: relRawPath,
-		}
-
-		resolvedURL := baseForJoin.ResolveReference(relURL)
-		// ResolveReference discards the base query, so we restore it
-		resolvedURL.RawQuery = baseURL.RawQuery
+		resolvedURL := baseURL.JoinPath(endpointURL.Path)
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		query := resolvedURL.Query()
 		endpointQuery := endpointURL.Query()

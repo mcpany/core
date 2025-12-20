@@ -339,19 +339,6 @@ func TestCallPolicyExecution(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	assert.Eventually(t, func() bool {
-		tools, err := client.ListTools(ctx)
-		if err != nil {
-			return false
-		}
-		for _, tool := range tools.Tools {
-			if tool.Name == "call-policy-test.allowed_tool" {
-				return true
-			}
-		}
-		return false
-	}, 10*time.Second, 100*time.Millisecond, "Tool call-policy-test.allowed_tool did not appear in list")
-
 	_, err := client.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "call-policy-test.allowed_tool",
 		Arguments: map[string]interface{}{},

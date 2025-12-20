@@ -1,0 +1,386 @@
+Cleaning generated protobuf files...
+Preparing development environment...
+protoc version v33.1 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+Python found. Installing/updating pre-commit and fastmcp locally...
+pre-commit installed at .git/hooks/pre-commit
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+
+up to date, audited 615 packages in 3s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Installing Playwright browsers (skipping system deps)...
+Playwright Host validation warning:
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Missing libraries:                                   ║
+║     libgtk-4.so.1                                    ║
+║     libgraphene-1.0.so.0                             ║
+║     libxslt.so.1                                     ║
+║     libwoff2dec.so.1.0.2                             ║
+║     libvpx.so.9                                      ║
+║     libevent-2.1.so.7                                ║
+║     libopus.so.0                                     ║
+║     libgstallocators-1.0.so.0                        ║
+║     libgstapp-1.0.so.0                               ║
+║     libgstpbutils-1.0.so.0                           ║
+║     libgstaudio-1.0.so.0                             ║
+║     libgsttag-1.0.so.0                               ║
+║     libgstvideo-1.0.so.0                             ║
+║     libgstgl-1.0.so.0                                ║
+║     libgstcodecparsers-1.0.so.0                      ║
+║     libgstfft-1.0.so.0                               ║
+║     libflite.so.1                                    ║
+║     libflite_usenglish.so.1                          ║
+║     libflite_cmu_grapheme_lang.so.1                  ║
+║     libflite_cmu_grapheme_lex.so.1                   ║
+║     libflite_cmu_indic_lang.so.1                     ║
+║     libflite_cmu_indic_lex.so.1                      ║
+║     libflite_cmulex.so.1                             ║
+║     libflite_cmu_time_awb.so.1                       ║
+║     libflite_cmu_us_awb.so.1                         ║
+║     libflite_cmu_us_kal16.so.1                       ║
+║     libflite_cmu_us_kal.so.1                         ║
+║     libflite_cmu_us_rms.so.1                         ║
+║     libflite_cmu_us_slt.so.1                         ║
+║     libwebpdemux.so.2                                ║
+║     libavif.so.16                                    ║
+║     libharfbuzz-icu.so.0                             ║
+║     libwebpmux.so.3                                  ║
+║     libenchant-2.so.2                                ║
+║     libsecret-1.so.0                                 ║
+║     libhyphen.so.0                                   ║
+║     libmanette-0.2.so.0                              ║
+║     libx264.so                                       ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/app/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Registry._validateHostRequirements (/app/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:961:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/app/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1083:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/app/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1072:7)
+    at async i.<anonymous> (/app/tests/integration/upstream/node_modules/playwright-core/lib/cli/program.js:217:7)
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Checking for golangci-lint...
+Installing golangci-lint v2.7.2 to /app/build/env/bin...
+golangci/golangci-lint info checking GitHub for tag 'v2.7.2'
+golangci/golangci-lint info found version: 2.7.2 for v2.7.2/linux/amd64
+golangci/golangci-lint info installed /app/build/env/bin/golangci-lint
+golangci-lint installed successfully.
+Downloading go modules...
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.1
+Protobuf generation complete.
+Building Go project locally...
+Building weather server example...
+make[1]: Entering directory '/app'
+make[1]: '/app/build/test/bin/http_echo_server' is up to date.
+make[1]: '/app/build/test/bin/http_authed_echo_server' is up to date.
+make[1]: '/app/build/test/bin/grpc_weather_server' is up to date.
+make[1]: '/app/build/test/bin/grpc_authed_weather_server' is up to date.
+make[1]: '/app/build/test/bin/openapi_weather_server' is up to date.
+make[1]: '/app/build/test/bin/webrtc_weather_server' is up to date.
+make[1]: '/app/build/test/bin/command-tester' is up to date.
+make[1]: '/app/build/test/bin/prompt-server' is up to date.
+make[1]: Leaving directory '/app'
+make[1]: Entering directory '/app'
+Building file upload server example...
+make[1]: Leaving directory '/app'
+Building E2E time server Docker image (mcpany-e2e-time-server)...
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.timeserver
+#1 transferring dockerfile: 864B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for mirror.gcr.io/library/python:3.11-slim
+#2 DONE 0.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM mirror.gcr.io/library/python:3.11-slim@sha256:158caf0e080e2cd74ef2879ed3c4e697792ee65251c8208b7afb56683c32ea6c
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 134B done
+#5 DONE 0.0s
+
+#6 [3/5] COPY timeserver_patch/requirements.txt .
+#6 CACHED
+
+#7 [4/5] RUN pip install -r requirements.txt
+#7 CACHED
+
+#8 [2/5] WORKDIR /app
+#8 CACHED
+
+#9 [5/5] COPY timeserver_patch/main.py /app/main.py
+#9 CACHED
+
+#10 exporting to image
+#10 exporting layers done
+#10 writing image sha256:6e21f71de7f7558ef8c79bc6bcfd7d253e9289fcdf2f34c0c362cb3548c9d4c7 done
+#10 naming to docker.io/library/mcpany-e2e-time-server done
+#10 DONE 0.0s
+Running parallel E2E Go tests locally with a 300s timeout...
+Server started on :8081
+	github.com/mcpany/core/cmd/mock_mcp_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/server	3.275s	coverage: 67.8% of statements
+	github.com/mcpany/core/cmd/webhooks		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/webhooks/hooks	1.075s	coverage: 84.7% of statements
+ok  	github.com/mcpany/core/cmd/worker	1.399s	coverage: 92.9% of statements
+ok  	github.com/mcpany/core/pkg/admin	1.121s	coverage: 75.0% of statements
+ok  	github.com/mcpany/core/pkg/app	28.840s	coverage: 87.3% of statements
+?   	github.com/mcpany/core/pkg/appconsts	[no test files]
+ok  	github.com/mcpany/core/pkg/auth	5.075s	coverage: 94.0% of statements
+ok  	github.com/mcpany/core/pkg/bus	11.893s	coverage: 80.6% of statements
+ok  	github.com/mcpany/core/pkg/bus/kafka	1.268s	coverage: 83.9% of statements
+ok  	github.com/mcpany/core/pkg/bus/memory	1.097s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/bus/nats	1.846s	coverage: 86.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/redis	3.910s	coverage: 75.8% of statements
+ok  	github.com/mcpany/core/pkg/cli	1.031s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/client	1.119s	coverage: 94.7% of statements
+ok  	github.com/mcpany/core/pkg/config	2.736s	coverage: 89.2% of statements
+?   	github.com/mcpany/core/pkg/consts	[no test files]
+ok  	github.com/mcpany/core/pkg/health	1.179s	coverage: 90.1% of statements
+ok  	github.com/mcpany/core/pkg/logging	1.054s	coverage: 90.5% of statements
+ok  	github.com/mcpany/core/pkg/mcpserver	1.571s	coverage: 93.7% of statements
+ok  	github.com/mcpany/core/pkg/metrics	1.209s	coverage: 89.3% of statements
+ok  	github.com/mcpany/core/pkg/middleware	1.247s	coverage: 87.3% of statements
+ok  	github.com/mcpany/core/pkg/pool	6.324s	coverage: 86.5% of statements
+ok  	github.com/mcpany/core/pkg/prompt	1.131s	coverage: 98.3% of statements
+ok  	github.com/mcpany/core/pkg/resilience	1.187s	coverage: 89.5% of statements
+ok  	github.com/mcpany/core/pkg/resource	1.133s	coverage: 98.2% of statements
+ok  	github.com/mcpany/core/pkg/service	1.263s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.702s	coverage: 93.1% of statements
+ok  	github.com/mcpany/core/pkg/telemetry	1.074s	coverage: 87.0% of statements
+	github.com/mcpany/core/pkg/testutil		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/pkg/tool	2.909s	coverage: 79.8% of statements
+ok  	github.com/mcpany/core/pkg/transformer	1.056s	coverage: 92.4% of statements
+ok  	github.com/mcpany/core/pkg/update	1.064s	coverage: 84.0% of statements
+?   	github.com/mcpany/core/pkg/upstream	[no test files]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.154s	coverage: 83.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.240s	coverage: 92.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/graphql	1.170s	coverage: 92.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.335s	coverage: 70.6% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.114s	coverage: 83.0% of statements
+ok  	github.com/mcpany/core/pkg/upstream/http	1.220s	coverage: 87.6% of statements
+ok  	github.com/mcpany/core/pkg/upstream/mcp	1.307s	coverage: 86.8% of statements
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.207s	coverage: 82.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.189s	coverage: 91.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.139s	coverage: 90.7% of statements
+ok  	github.com/mcpany/core/pkg/util	146.026s	coverage: 88.4% of statements
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.066s	coverage: 90.6% of statements
+ok  	github.com/mcpany/core/pkg/util/testutil	1.033s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/validation	1.061s	coverage: 98.0% of statements
+ok  	github.com/mcpany/core/pkg/worker	3.437s	coverage: 91.3% of statements
+	github.com/mcpany/core/proto/admin/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/api/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/bus		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/config/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/examples/userservice/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/examples/weather/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_options/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_router/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/framework	7.517s	coverage: 6.5% of statements
+redis: 2025/12/20 00:42:27 redis.go:478: auto mode fallback: maintnotifications disabled due to handshake error: ERR unknown subcommand 'maint_notifications'. Try CLIENT HELP.
+redis: 2025/12/20 00:42:32 redis.go:478: auto mode fallback: maintnotifications disabled due to handshake error: ERR unknown subcommand 'maint_notifications'. Try CLIENT HELP.
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+time=2025-12-20T00:42:36.085Z level=INFO source=/app/pkg/app/server.go:209 msg="Starting MCP Any Service..."
+time=2025-12-20T00:42:36.085Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T00:42:36.087Z level=INFO source=/app/pkg/worker/registration_worker.go:44 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:36.088Z level=INFO source=/app/pkg/app/server.go:316 msg="No services found in config, skipping service registration."
+time=2025-12-20T00:42:36.089Z level=INFO source=/app/pkg/app/server.go:624 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T00:42:36.090Z level=INFO source=/app/pkg/app/server.go:1036 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:38295
+time=2025-12-20T00:42:36.091Z level=INFO source=/app/pkg/app/server.go:1124 msg="gRPC server listening" server=Registration port=[::]:33895
+time=2025-12-20T00:42:36.348Z level=INFO source=/app/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/app/server.go:1105 msg="Attempting to gracefully shut down server..." server=Registration
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/worker/registration_worker.go:104 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/app/server.go:1030 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:38295
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/app/server.go:957 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/app/server.go:962 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-12-20T00:42:36.349Z level=INFO source=/app/pkg/app/server.go:1130 msg="Server shut down." server=Registration
+time=2025-12-20T00:42:36.350Z level=INFO source=/app/pkg/app/server.go:1043 msg="Server shut down." server="MCP Any HTTP" port=[::]:38295
+time=2025-12-20T00:42:36.351Z level=INFO source=/app/pkg/app/server.go:209 msg="Starting MCP Any Service..."
+time=2025-12-20T00:42:36.352Z level=INFO source=/app/pkg/app/server.go:964 msg="All servers have shut down."
+time=2025-12-20T00:42:36.353Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T00:42:36.353Z level=INFO source=/app/pkg/worker/registration_worker.go:44 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:36.356Z level=INFO source=/app/pkg/app/server.go:316 msg="No services found in config, skipping service registration."
+time=2025-12-20T00:42:36.356Z level=INFO source=/app/pkg/app/server.go:624 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T00:42:36.357Z level=INFO source=/app/pkg/app/server.go:1036 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:37919
+time=2025-12-20T00:42:36.357Z level=INFO source=/app/pkg/app/server.go:1124 msg="gRPC server listening" server=Registration port=[::]:44081
+time=2025-12-20T00:42:36.620Z level=INFO source=/app/pkg/worker/registration_worker.go:53 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=1bf31a0c-8f1c-4a3e-a077-a91214a63ff7
+time=2025-12-20T00:42:36.621Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=http-gateway-test-service.test-op toolName=http-gateway-test-service.test-op tool="&{Meta:map[] Annotations:0xc00048b740 Description: InputSchema:map[properties:map[] type:object] Name:http-gateway-test-service.test-op OutputSchema:<nil> Title:}"
+time=2025-12-20T00:42:36.622Z level=INFO source=/app/pkg/upstream/http/http.go:182 msg="Registered HTTP service" serviceID=http-gateway-test-service toolsAdded=1
+time=2025-12-20T00:42:36.622Z level=INFO source=/app/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=http-gateway-test-service service_key=http-gateway-test-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-20T00:42:36.622Z level=INFO source=/app/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"test-op\" description:\"\""
+time=2025-12-20T00:42:36.628Z level=INFO source=/app/pkg/worker/registration_worker.go:92 msg="Received service list request" component=ServiceRegistrationWorker correlationID=47c25b60-2e0b-4806-b27c-8fe8a9fe6ce4
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/app/server.go:1030 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:37919
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/app/server.go:1105 msg="Attempting to gracefully shut down server..." server=Registration
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/app/server.go:957 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/app/server.go:962 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/worker/registration_worker.go:104 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:36.634Z level=INFO source=/app/pkg/app/server.go:1043 msg="Server shut down." server="MCP Any HTTP" port=[::]:37919
+time=2025-12-20T00:42:36.635Z level=INFO source=/app/pkg/app/server.go:1130 msg="Server shut down." server=Registration
+time=2025-12-20T00:42:36.635Z level=INFO source=/app/pkg/app/server.go:964 msg="All servers have shut down."
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+2025/12/20 00:42:37 http: TLS handshake error from 127.0.0.1:37692: EOF
+2025/12/20 00:42:37 http: TLS handshake error from 127.0.0.1:37714: EOF
+time=2025-12-20T00:42:37.213Z level=INFO source=/app/pkg/app/server.go:209 msg="Starting MCP Any Service..."
+time=2025-12-20T00:42:37.213Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T00:42:37.214Z level=INFO source=/app/pkg/worker/registration_worker.go:44 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:37.214Z level=INFO source=/app/pkg/app/server.go:316 msg="No services found in config, skipping service registration."
+time=2025-12-20T00:42:37.214Z level=INFO source=/app/pkg/app/server.go:624 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T00:42:37.221Z level=INFO source=/app/pkg/app/server.go:1036 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:32881
+time=2025-12-20T00:42:37.222Z level=INFO source=/app/pkg/app/server.go:1124 msg="gRPC server listening" server=Registration port=[::]:44231
+time=2025-12-20T00:42:37.605Z level=INFO source=/app/pkg/app/server.go:1030 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:32881
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:957 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:1043 msg="Server shut down." server="MCP Any HTTP" port=[::]:32881
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:962 msg="Waiting for HTTP and gRPC servers to shut down..."
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/worker/registration_worker.go:104 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:1105 msg="Attempting to gracefully shut down server..." server=Registration
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:1130 msg="Server shut down." server=Registration
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/app/server.go:964 msg="All servers have shut down."
+time=2025-12-20T00:42:37.606Z level=INFO source=/app/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+--- FAIL: TestExportPolicyForPromptsAndResources (0.09s)
+    policy_test.go:400:
+		Error Trace:	/app/tests/integration/policy_test.go:400
+		Error:      	map[string]bool{} does not contain "export-policy-misc.public_prompt"
+		Test:       	TestExportPolicyForPromptsAndResources
+    policy_test.go:410:
+		Error Trace:	/app/tests/integration/policy_test.go:410
+		Error:      	map[string]bool{} does not contain "public_resource"
+		Test:       	TestExportPolicyForPromptsAndResources
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+FAIL
+coverage: 51.0% of statements
+FAIL	github.com/mcpany/core/tests/integration	36.882s
+ok  	github.com/mcpany/core/tests/integration/cmd	1.025s	coverage: [no statements]
+	github.com/mcpany/core/tests/integration/cmd/command-tester		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/integration/examples	1.676s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/resilience	1.204s	coverage: [no statements]
+time=2025-12-20T00:42:34.228Z level=WARN source=/app/pkg/upstream/mcp/bundle_transport.go:64 msg="Failed to pull docker image, will try to use local image if available" image=node:18-alpine error="permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post \"http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/create?fromImage=docker.io%2Flibrary%2Fnode&tag=18-alpine\": dial unix /var/run/docker.sock: connect: permission denied"
+--- FAIL: TestE2E_Bundle_Filesystem (0.02s)
+    mcp_bundle_test.go:256:
+		Error Trace:	/app/tests/integration/upstream/mcp_bundle_test.go:256
+		Error:      	Received unexpected error:
+				failed to connect to MCP bundle service: failed to create container: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+		Test:       	TestE2E_Bundle_Filesystem
+2025/12/20 00:42:44 Starting Webhook Server on :32921
+time=2025-12-20T00:42:44.199Z level=INFO source=/app/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=test-tool
+time=2025-12-20T00:42:44.214Z level=INFO source=/app/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=test-tool
+2025/12/20 00:42:45 Starting Webhook Server on :36373
+time=2025-12-20T00:42:45.501Z level=INFO source=/app/pkg/upstream/mcp/streamable_http.go:233 msg="Registered MCP service" serviceID=mock-service toolsAdded=1
+time=2025-12-20T00:42:45.510Z level=INFO source=/app/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=mock-service.get_html
+FAIL
+coverage: 90.9% of statements
+FAIL	github.com/mcpany/core/tests/integration/upstream	15.523s
+	github.com/mcpany/core/examples/upstream_service_demo/file-upload		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/graphql/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/examples/upstream_service_demo/http/server/weather_server	1.032s	coverage: 56.6% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/echo_server/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/docs/features/authentication	1.220s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/connection-pooling	1.261s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/monitoring	1.235s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/profiles_and_policies/examples/agent_profiles	1.370s	coverage: [no statements]
+time=2025-12-20T00:42:53.211Z level=INFO source=/app/pkg/config/manager.go:313 msg="Added new service" component=UpstreamServiceManager service_name=petstore-service priority=0
+time=2025-12-20T00:42:53.211Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T00:42:53.212Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T00:42:53.634Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.loginUser toolName=petstore-service.loginUser tool="&{Meta:map[] Annotations:0xc000b95080 Description:Log into the system. InputSchema:map[properties:map[password:map[description:The password for login in clear text type:string] username:map[description:The user name for login type:string]] type:object] Name:petstore-service.loginUser OutputSchema:map[properties:map[response_body:map[description: type:string]] type:object] Title:Logs user into the system.}"
+time=2025-12-20T00:42:53.634Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=loginUser is_reload=false
+time=2025-12-20T00:42:53.637Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.getInventory toolName=petstore-service.getInventory tool="&{Meta:map[] Annotations:0xc000b95d40 Description:Returns a map of status codes to quantities. InputSchema:map[properties:map[] type:object] Name:petstore-service.getInventory OutputSchema:map[properties:map[] type:object] Title:Returns pet inventories by status.}"
+time=2025-12-20T00:42:53.638Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=getInventory is_reload=false
+time=2025-12-20T00:42:53.641Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.createUser toolName=petstore-service.createUser tool="&{Meta:map[] Annotations:0xc000ba9110 Description:This can only be done by the logged in user. InputSchema:map[properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description: type:string]] type:object] Name:petstore-service.createUser OutputSchema:map[properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description: type:string]] type:object] Title:Create user.}"
+time=2025-12-20T00:42:53.642Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=createUser is_reload=false
+time=2025-12-20T00:42:53.646Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.getPetById toolName=petstore-service.getPetById tool="&{Meta:map[] Annotations:0xc00060b290 Description:Returns a single pet. InputSchema:map[properties:map[petId:map[description:ID of pet to return format:int64 type:integer]] type:object] Name:petstore-service.getPetById OutputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Title:Find pet by ID.}"
+time=2025-12-20T00:42:53.647Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=getPetById is_reload=false
+time=2025-12-20T00:42:53.650Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.updatePetWithForm toolName=petstore-service.updatePetWithForm tool="&{Meta:map[] Annotations:0xc00058d500 Description:Updates a pet resource based on the form data. InputSchema:map[properties:map[name:map[description:Name of pet that needs to be updated type:string] petId:map[description:ID of pet that needs to be updated format:int64 type:integer] status:map[description:Status of pet that needs to be updated type:string]] type:object] Name:petstore-service.updatePetWithForm OutputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Title:Updates a pet in the store with form data.}"
+time=2025-12-20T00:42:53.650Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=updatePetWithForm is_reload=false
+time=2025-12-20T00:42:53.651Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.deletePet toolName=petstore-service.deletePet tool="&{Meta:map[] Annotations:0xc000a03710 Description:Delete a pet. InputSchema:map[properties:map[api_key:map[description: type:string] petId:map[description:Pet id to delete format:int64 type:integer]] type:object] Name:petstore-service.deletePet OutputSchema:map[properties:map[] type:object] Title:Deletes a pet.}"
+time=2025-12-20T00:42:53.652Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=deletePet is_reload=false
+time=2025-12-20T00:42:53.656Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.placeOrder toolName=petstore-service.placeOrder tool="&{Meta:map[] Annotations:0xc0005fcd80 Description:Place a new order in the store. InputSchema:map[properties:map[complete:map[description: type:boolean] id:map[description: format:int64 type:integer] petId:map[description: format:int64 type:integer] quantity:map[description: format:int32 type:integer] shipDate:map[description: format:date-time type:string] status:map[description:Order Status enum:[placed approved delivered] type:string]] type:object] Name:petstore-service.placeOrder OutputSchema:map[properties:map[complete:map[description: type:boolean] id:map[description: format:int64 type:integer] petId:map[description: format:int64 type:integer] quantity:map[description: format:int32 type:integer] shipDate:map[description: format:date-time type:string] status:map[description:Order Status enum:[placed approved delivered] type:string]] type:object] Title:Place an order for a pet.}"
+time=2025-12-20T00:42:53.657Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=placeOrder is_reload=false
+time=2025-12-20T00:42:53.659Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.getOrderById toolName=petstore-service.getOrderById tool="&{Meta:map[] Annotations:0xc0005c7a10 Description:For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions. InputSchema:map[properties:map[orderId:map[description:ID of order that needs to be fetched format:int64 type:integer]] type:object] Name:petstore-service.getOrderById OutputSchema:map[properties:map[complete:map[description: type:boolean] id:map[description: format:int64 type:integer] petId:map[description: format:int64 type:integer] quantity:map[description: format:int32 type:integer] shipDate:map[description: format:date-time type:string] status:map[description:Order Status enum:[placed approved delivered] type:string]] type:object] Title:Find purchase order by ID.}"
+time=2025-12-20T00:42:53.659Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=getOrderById is_reload=false
+time=2025-12-20T00:42:53.660Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.deleteOrder toolName=petstore-service.deleteOrder tool="&{Meta:map[] Annotations:0xc0005d2ed0 Description:For valid response try integer IDs with value < 1000. Anything above 1000 or non-integers will generate API errors. InputSchema:map[properties:map[orderId:map[description:ID of the order that needs to be deleted format:int64 type:integer]] type:object] Name:petstore-service.deleteOrder OutputSchema:map[properties:map[] type:object] Title:Delete purchase order by identifier.}"
+time=2025-12-20T00:42:53.661Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=deleteOrder is_reload=false
+time=2025-12-20T00:42:53.663Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.createUsersWithListInput toolName=petstore-service.createUsersWithListInput tool="&{Meta:map[] Annotations:0xc0005dcf60 Description:Creates list of users with given input array. InputSchema:map[properties:map[request_body:map[description: items:map[description: properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description: type:string]] type:object] type:array]] type:object] Name:petstore-service.createUsersWithListInput OutputSchema:map[properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description: type:string]] type:object] Title:Creates list of users with given input array.}"
+time=2025-12-20T00:42:53.664Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=createUsersWithListInput is_reload=false
+time=2025-12-20T00:42:53.665Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.logoutUser toolName=petstore-service.logoutUser tool="&{Meta:map[] Annotations:0xc0008252f0 Description:Log user out of the system. InputSchema:map[properties:map[] type:object] Name:petstore-service.logoutUser OutputSchema:map[properties:map[] type:object] Title:Logs out current logged in user session.}"
+time=2025-12-20T00:42:53.665Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=logoutUser is_reload=false
+time=2025-12-20T00:42:53.666Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.deleteUser toolName=petstore-service.deleteUser tool="&{Meta:map[] Annotations:0xc000825ad0 Description:This can only be done by the logged in user. InputSchema:map[properties:map[username:map[description:The name that needs to be deleted type:string]] type:object] Name:petstore-service.deleteUser OutputSchema:map[properties:map[] type:object] Title:Delete user resource.}"
+time=2025-12-20T00:42:53.666Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=deleteUser is_reload=false
+time=2025-12-20T00:42:53.668Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.getUserByName toolName=petstore-service.getUserByName tool="&{Meta:map[] Annotations:0xc000605110 Description:Get user detail based on username. InputSchema:map[properties:map[username:map[description:The name that needs to be fetched. Use user1 for testing type:string]] type:object] Name:petstore-service.getUserByName OutputSchema:map[properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description: type:string]] type:object] Title:Get user by user name.}"
+time=2025-12-20T00:42:53.668Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=getUserByName is_reload=false
+time=2025-12-20T00:42:53.670Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.updateUser toolName=petstore-service.updateUser tool="&{Meta:map[] Annotations:0xc000611050 Description:This can only be done by the logged in user. InputSchema:map[properties:map[email:map[description: type:string] firstName:map[description: type:string] id:map[description: format:int64 type:integer] lastName:map[description: type:string] password:map[description: type:string] phone:map[description: type:string] userStatus:map[description:User Status format:int32 type:integer] username:map[description:name that need to be deleted type:string]] type:object] Name:petstore-service.updateUser OutputSchema:map[properties:map[] type:object] Title:Update user resource.}"
+time=2025-12-20T00:42:53.671Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=updateUser is_reload=false
+time=2025-12-20T00:42:53.675Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.addPet toolName=petstore-service.addPet tool="&{Meta:map[] Annotations:0xc000619f20 Description:Add a new pet to the store. InputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Name:petstore-service.addPet OutputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Title:Add a new pet to the store.}"
+time=2025-12-20T00:42:53.676Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=addPet is_reload=false
+time=2025-12-20T00:42:53.680Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.updatePet toolName=petstore-service.updatePet tool="&{Meta:map[] Annotations:0xc000580570 Description:Update an existing pet by Id. InputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Name:petstore-service.updatePet OutputSchema:map[properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] Title:Update an existing pet.}"
+time=2025-12-20T00:42:53.682Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=updatePet is_reload=false
+time=2025-12-20T00:42:53.685Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.findPetsByStatus toolName=petstore-service.findPetsByStatus tool="&{Meta:map[] Annotations:0xc000594fc0 Description:Multiple status values can be provided with comma separated strings. InputSchema:map[properties:map[status:map[default:available description:Status values that need to be considered for filter enum:[available pending sold] type:string]] type:object] Name:petstore-service.findPetsByStatus OutputSchema:map[properties:map[response_body:map[description: items:map[description: properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] type:array]] type:object] Title:Finds Pets by status.}"
+time=2025-12-20T00:42:53.686Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=findPetsByStatus is_reload=false
+time=2025-12-20T00:42:53.689Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.findPetsByTags toolName=petstore-service.findPetsByTags tool="&{Meta:map[] Annotations:0xc00059d0b0 Description:Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing. InputSchema:map[properties:map[tags:map[description:Tags to filter by items:map[description: type:string] type:array]] type:object] Name:petstore-service.findPetsByTags OutputSchema:map[properties:map[response_body:map[description: items:map[description: properties:map[category:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] id:map[description: format:int64 type:integer] name:map[description: type:string] photoUrls:map[description: items:map[description: type:string] type:array] status:map[description:pet status in the store enum:[available pending sold] type:string] tags:map[description: items:map[description: properties:map[id:map[description: format:int64 type:integer] name:map[description: type:string]] type:object] type:array]] type:object] type:array]] type:object] Title:Finds Pets by tags.}"
+time=2025-12-20T00:42:53.690Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=findPetsByTags is_reload=false
+time=2025-12-20T00:42:53.691Z level=INFO source=/app/pkg/tool/management.go:473 msg="Registering tool with MCP server" toolID=petstore-service.uploadFile toolName=petstore-service.uploadFile tool="&{Meta:map[] Annotations:0xc0005a6030 Description:Upload image of the pet. InputSchema:map[properties:map[additionalMetadata:map[description:Additional Metadata type:string] petId:map[description:ID of pet to update format:int64 type:integer] request_body:map[description: format:binary type:string]] type:object] Name:petstore-service.uploadFile OutputSchema:map[properties:map[code:map[description: format:int32 type:integer] message:map[description: type:string] type:map[description: type:string]] type:object] Title:Uploads an image.}"
+time=2025-12-20T00:42:53.692Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=uploadFile is_reload=false
+time=2025-12-20T00:42:53.692Z level=INFO source=/app/pkg/upstream/openapi/openapi.go:173 msg="Registered OpenAPI service" serviceID=petstore-service toolsAdded=19
+--- FAIL: TestRestrictedApiE2E (120.63s)
+    --- FAIL: TestRestrictedApiE2E/Allowed_Tool_Should_Succeed (60.00s)
+        e2e_test.go:122: Error: timed out waiting for tool execution result for tool petstore-service.findPetsByStatus
+        e2e_test.go:124:
+		Error Trace:	/app/docs/features/profiles_and_policies/examples/restricted_api/e2e_test.go:124
+		Error:      	Received unexpected error:
+				timed out waiting for tool execution result for tool petstore-service.findPetsByStatus
+		Test:       	TestRestrictedApiE2E/Allowed_Tool_Should_Succeed
+    --- FAIL: TestRestrictedApiE2E/Denied_Tool_Should_Fail (60.00s)
+        e2e_test.go:129:
+		Error Trace:	/app/docs/features/profiles_and_policies/examples/restricted_api/e2e_test.go:129
+		Error:      	"timed out waiting for tool execution result for tool petstore-service.addPet" does not contain "denied by default policy"
+		Test:       	TestRestrictedApiE2E/Denied_Tool_Should_Fail
+FAIL
+coverage: [no statements]
+FAIL	github.com/mcpany/core/docs/features/profiles_and_policies/examples/restricted_api	120.780s
+ok  	github.com/mcpany/core/docs/features/prompts	1.170s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/rate-limiting	1.160s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/resilience	1.213s	coverage: [no statements]
+FAIL
+make: *** [Makefile:405: e2e-parallel] Error 1

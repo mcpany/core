@@ -231,9 +231,6 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
-	}
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 

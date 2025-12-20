@@ -20,6 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/worker"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
@@ -61,6 +62,10 @@ upstream_services:
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+
+	// Start UpstreamWorker to handle tool execution requests
+	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
+	upstreamWorker.Start(ctx)
 
 	// Note: We don't strictly *need* mcpServer for CallPolicy test as we use toolManager directly,
 	// but we initialize it to ensure full setup.
