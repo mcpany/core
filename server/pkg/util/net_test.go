@@ -7,13 +7,16 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSafeDialContext(t *testing.T) {
-	ctx := context.Background()
+	// Use a timeout to prevent hanging on unreachable IPs (like the public IP test case)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 
 	tests := []struct {
 		name        string
