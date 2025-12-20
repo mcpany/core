@@ -324,7 +324,9 @@ func (h *WebhookHook) ExecutePost(
 
 // WebhookStatus represents the status returned by the webhook.
 type WebhookStatus struct {
+	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
+	// Message is a descriptive message returned by the webhook.
 	Message string `json:"message"`
 }
 

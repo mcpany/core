@@ -23,7 +23,9 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
-// UpstreamServiceManager manages the loading and merging of upstream services.
+// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
+// It handles loading, validating, and merging service configurations from various sources,
+// including local files and remote URLs (e.g., GitHub).
 type UpstreamServiceManager struct {
 	log               *slog.Logger
 	services          map[string]*configv1.UpstreamServiceConfig
@@ -33,7 +35,14 @@ type UpstreamServiceManager struct {
 	enabledProfiles   []string
 }
 
-// NewUpstreamServiceManager creates a new UpstreamServiceManager.
+// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
+// It initializes the manager with the specified enabled profiles and default settings.
+//
+// Parameters:
+//   enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+//
+// Returns:
+//   A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -52,8 +61,17 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 	}
 }
 
-// LoadAndMergeServices loads all upstream services from the given configuration,
-// including local and remote collections, and merges them.
+// LoadAndMergeServices loads all upstream services from the provided configuration.
+// It processes both locally defined services and remote service collections, merging them
+// based on their priority and name.
+//
+// Parameters:
+//   ctx: The context for the operation.
+//   config: The main server configuration containing service definitions and collection references.
+//
+// Returns:
+//   A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
+//   An error if any critical failure occurs during loading or merging.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
