@@ -472,7 +472,7 @@ jobs:
            ./server/tests/smoke_test.sh mcpany/server:test
       - name: E2E Docker Compose Test
         run: |
-           E2E_DOCKER=true go test -v server/tests/e2e_sequential/docker_compose_test.go
+           cd server && E2E_DOCKER=true go test -v tests/e2e_sequential/docker_compose_test.go
 
   ui-build:
     runs-on: ubuntu-latest
