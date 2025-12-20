@@ -5,6 +5,7 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
@@ -82,4 +83,16 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
 	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+}
+
+// GetHealth returns the health status of the server.
+func (s *Server) GetHealth(_ context.Context, _ *pb.GetHealthRequest) (*pb.GetHealthResponse, error) {
+	details := make(map[string]string)
+	services := s.toolManager.ListServices()
+	details["service_count"] = fmt.Sprintf("%d", len(services))
+
+	return &pb.GetHealthResponse{
+		Status:  pb.GetHealthResponse_STATUS_HEALTHY.Enum(),
+		Details: details,
+	}, nil
 }

@@ -27,6 +27,53 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GetHealthResponse_Status int32
+
+const (
+	GetHealthResponse_STATUS_UNSPECIFIED GetHealthResponse_Status = 0
+	GetHealthResponse_STATUS_HEALTHY     GetHealthResponse_Status = 1
+	GetHealthResponse_STATUS_UNHEALTHY   GetHealthResponse_Status = 2
+	GetHealthResponse_STATUS_DEGRADED    GetHealthResponse_Status = 3
+)
+
+// Enum value maps for GetHealthResponse_Status.
+var (
+	GetHealthResponse_Status_name = map[int32]string{
+		0: "STATUS_UNSPECIFIED",
+		1: "STATUS_HEALTHY",
+		2: "STATUS_UNHEALTHY",
+		3: "STATUS_DEGRADED",
+	}
+	GetHealthResponse_Status_value = map[string]int32{
+		"STATUS_UNSPECIFIED": 0,
+		"STATUS_HEALTHY":     1,
+		"STATUS_UNHEALTHY":   2,
+		"STATUS_DEGRADED":    3,
+	}
+)
+
+func (x GetHealthResponse_Status) Enum() *GetHealthResponse_Status {
+	p := new(GetHealthResponse_Status)
+	*p = x
+	return p
+}
+
+func (x GetHealthResponse_Status) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GetHealthResponse_Status) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_admin_v1_admin_proto_enumTypes[0].Descriptor()
+}
+
+func (GetHealthResponse_Status) Type() protoreflect.EnumType {
+	return &file_proto_admin_v1_admin_proto_enumTypes[0]
+}
+
+func (x GetHealthResponse_Status) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 type ClearCacheRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -609,6 +656,141 @@ func (b0 GetToolResponse_builder) Build() *GetToolResponse {
 	return m0
 }
 
+type GetHealthRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHealthRequest) Reset() {
+	*x = GetHealthRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHealthRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHealthRequest) ProtoMessage() {}
+
+func (x *GetHealthRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type GetHealthRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 GetHealthRequest_builder) Build() *GetHealthRequest {
+	m0 := &GetHealthRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type GetHealthResponse struct {
+	state                  protoimpl.MessageState   `protogen:"opaque.v1"`
+	xxx_hidden_Status      GetHealthResponse_Status `protobuf:"varint,1,opt,name=status,enum=mcpany.admin.v1.GetHealthResponse_Status"`
+	xxx_hidden_Details     map[string]string        `protobuf:"bytes,2,rep,name=details" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *GetHealthResponse) Reset() {
+	*x = GetHealthResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHealthResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHealthResponse) ProtoMessage() {}
+
+func (x *GetHealthResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetHealthResponse) GetStatus() GetHealthResponse_Status {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_Status
+		}
+	}
+	return GetHealthResponse_STATUS_UNSPECIFIED
+}
+
+func (x *GetHealthResponse) GetDetails() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Details
+	}
+	return nil
+}
+
+func (x *GetHealthResponse) SetStatus(v GetHealthResponse_Status) {
+	x.xxx_hidden_Status = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *GetHealthResponse) SetDetails(v map[string]string) {
+	x.xxx_hidden_Details = v
+}
+
+func (x *GetHealthResponse) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetHealthResponse) ClearStatus() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Status = GetHealthResponse_STATUS_UNSPECIFIED
+}
+
+type GetHealthResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Status *GetHealthResponse_Status
+	// Details about the health of individual components.
+	Details map[string]string
+}
+
+func (b0 GetHealthResponse_builder) Build() *GetHealthResponse {
+	m0 := &GetHealthResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Status = *b.Status
+	}
+	x.xxx_hidden_Details = b.Details
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
@@ -630,7 +812,19 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x0eGetToolRequest\x12\x1b\n" +
 	"\ttool_name\x18\x01 \x01(\tR\btoolName\"A\n" +
 	"\x0fGetToolResponse\x12.\n" +
-	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool2\xbb\x03\n" +
+	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool\"\x12\n" +
+	"\x10GetHealthRequest\"\xbe\x02\n" +
+	"\x11GetHealthResponse\x12A\n" +
+	"\x06status\x18\x01 \x01(\x0e2).mcpany.admin.v1.GetHealthResponse.StatusR\x06status\x12I\n" +
+	"\adetails\x18\x02 \x03(\v2/.mcpany.admin.v1.GetHealthResponse.DetailsEntryR\adetails\x1a:\n" +
+	"\fDetailsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"_\n" +
+	"\x06Status\x12\x16\n" +
+	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSTATUS_HEALTHY\x10\x01\x12\x14\n" +
+	"\x10STATUS_UNHEALTHY\x10\x02\x12\x13\n" +
+	"\x0fSTATUS_DEGRADED\x10\x032\x8f\x04\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -638,44 +832,54 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"GetService\x12\".mcpany.admin.v1.GetServiceRequest\x1a#.mcpany.admin.v1.GetServiceResponse\x12R\n" +
 	"\tListTools\x12!.mcpany.admin.v1.ListToolsRequest\x1a\".mcpany.admin.v1.ListToolsResponse\x12L\n" +
-	"\aGetTool\x12\x1f.mcpany.admin.v1.GetToolRequest\x1a .mcpany.admin.v1.GetToolResponseB3B\n" +
+	"\aGetTool\x12\x1f.mcpany.admin.v1.GetToolRequest\x1a .mcpany.admin.v1.GetToolResponse\x12R\n" +
+	"\tGetHealth\x12!.mcpany.admin.v1.GetHealthRequest\x1a\".mcpany.admin.v1.GetHealthResponseB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_admin_v1_admin_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),        // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),       // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),      // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),     // 3: mcpany.admin.v1.ListServicesResponse
-	(*GetServiceRequest)(nil),        // 4: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),       // 5: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),         // 6: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),        // 7: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),           // 8: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),          // 9: mcpany.admin.v1.GetToolResponse
-	(*v1.UpstreamServiceConfig)(nil), // 10: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                 // 11: mcpany.mcp_router.v1.Tool
+	(GetHealthResponse_Status)(0),    // 0: mcpany.admin.v1.GetHealthResponse.Status
+	(*ClearCacheRequest)(nil),        // 1: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),       // 2: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),      // 3: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),     // 4: mcpany.admin.v1.ListServicesResponse
+	(*GetServiceRequest)(nil),        // 5: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),       // 6: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),         // 7: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),        // 8: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),           // 9: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),          // 10: mcpany.admin.v1.GetToolResponse
+	(*GetHealthRequest)(nil),         // 11: mcpany.admin.v1.GetHealthRequest
+	(*GetHealthResponse)(nil),        // 12: mcpany.admin.v1.GetHealthResponse
+	nil,                              // 13: mcpany.admin.v1.GetHealthResponse.DetailsEntry
+	(*v1.UpstreamServiceConfig)(nil), // 14: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                 // 15: mcpany.mcp_router.v1.Tool
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	10, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	10, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	11, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	11, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	0,  // 4: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 5: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	4,  // 6: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	6,  // 7: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	8,  // 8: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	1,  // 9: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 10: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	5,  // 11: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	7,  // 12: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	9,  // 13: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	14, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	14, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	15, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	15, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	0,  // 4: mcpany.admin.v1.GetHealthResponse.status:type_name -> mcpany.admin.v1.GetHealthResponse.Status
+	13, // 5: mcpany.admin.v1.GetHealthResponse.details:type_name -> mcpany.admin.v1.GetHealthResponse.DetailsEntry
+	1,  // 6: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	3,  // 7: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 8: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 9: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 10: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 11: mcpany.admin.v1.AdminService.GetHealth:input_type -> mcpany.admin.v1.GetHealthRequest
+	2,  // 12: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	4,  // 13: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 14: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 15: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 16: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 17: mcpany.admin.v1.AdminService.GetHealth:output_type -> mcpany.admin.v1.GetHealthResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -688,13 +892,14 @@ func file_proto_admin_v1_admin_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   10,
+			NumEnums:      1,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_admin_v1_admin_proto_goTypes,
 		DependencyIndexes: file_proto_admin_v1_admin_proto_depIdxs,
+		EnumInfos:         file_proto_admin_v1_admin_proto_enumTypes,
 		MessageInfos:      file_proto_admin_v1_admin_proto_msgTypes,
 	}.Build()
 	File_proto_admin_v1_admin_proto = out.File
