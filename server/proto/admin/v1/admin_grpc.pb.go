@@ -22,11 +22,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName   = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName   = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName    = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName      = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_ClearCache_FullMethodName    = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName  = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName    = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_CreateService_FullMethodName = "/mcpany.admin.v1.AdminService/CreateService"
+	AdminService_UpdateService_FullMethodName = "/mcpany.admin.v1.AdminService/UpdateService"
+	AdminService_DeleteService_FullMethodName = "/mcpany.admin.v1.AdminService/DeleteService"
+	AdminService_ListTools_FullMethodName     = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName       = "/mcpany.admin.v1.AdminService/GetTool"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -41,6 +44,12 @@ type AdminServiceClient interface {
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 	// GetService returns a specific service by ID.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
+	// CreateService registers a new upstream service dynamically.
+	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error)
+	// UpdateService updates an existing upstream service.
+	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*UpdateServiceResponse, error)
+	// DeleteService unregisters an upstream service.
+	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*DeleteServiceResponse, error)
 	// ListTools returns all registered tools.
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
@@ -85,6 +94,36 @@ func (c *adminServiceClient) GetService(ctx context.Context, in *GetServiceReque
 	return out, nil
 }
 
+func (c *adminServiceClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_CreateService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*UpdateServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_UpdateService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*DeleteServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_DeleteService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *adminServiceClient) ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListToolsResponse)
@@ -117,6 +156,12 @@ type AdminServiceServer interface {
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	// GetService returns a specific service by ID.
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
+	// CreateService registers a new upstream service dynamically.
+	CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error)
+	// UpdateService updates an existing upstream service.
+	UpdateService(context.Context, *UpdateServiceRequest) (*UpdateServiceResponse, error)
+	// DeleteService unregisters an upstream service.
+	DeleteService(context.Context, *DeleteServiceRequest) (*DeleteServiceResponse, error)
 	// ListTools returns all registered tools.
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
@@ -139,6 +184,15 @@ func (UnimplementedAdminServiceServer) ListServices(context.Context, *ListServic
 }
 func (UnimplementedAdminServiceServer) GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
+}
+func (UnimplementedAdminServiceServer) CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateService not implemented")
+}
+func (UnimplementedAdminServiceServer) UpdateService(context.Context, *UpdateServiceRequest) (*UpdateServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateService not implemented")
+}
+func (UnimplementedAdminServiceServer) DeleteService(context.Context, *DeleteServiceRequest) (*DeleteServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteService not implemented")
 }
 func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTools not implemented")
@@ -221,6 +275,60 @@ func _AdminService_GetService_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_CreateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).CreateService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_CreateService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).CreateService(ctx, req.(*CreateServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_UpdateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).UpdateService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_UpdateService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).UpdateService(ctx, req.(*UpdateServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_DeleteService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).DeleteService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_DeleteService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).DeleteService(ctx, req.(*DeleteServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AdminService_ListTools_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListToolsRequest)
 	if err := dec(in); err != nil {
@@ -275,6 +383,18 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetService",
 			Handler:    _AdminService_GetService_Handler,
+		},
+		{
+			MethodName: "CreateService",
+			Handler:    _AdminService_CreateService_Handler,
+		},
+		{
+			MethodName: "UpdateService",
+			Handler:    _AdminService_UpdateService_Handler,
+		},
+		{
+			MethodName: "DeleteService",
+			Handler:    _AdminService_DeleteService_Handler,
 		},
 		{
 			MethodName: "ListTools",
