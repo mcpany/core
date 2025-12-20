@@ -921,12 +921,18 @@ func (a *Application) runServerMode(
 				shutdownTimeout,
 				grpcOpts,
 				func(s *gogrpc.Server) {
-					registrationServer, err := mcpserver.NewRegistrationServer(bus, cachingMiddleware, a.ToolManager)
+					registrationServer, err := mcpserver.NewRegistrationServer(bus)
 					if err != nil {
 						errChan <- fmt.Errorf("failed to create API server: %w", err)
 						return
 					}
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
+
+					cacheServer := mcpserver.NewCacheServer(cachingMiddleware)
+					v1.RegisterCacheServiceServer(s, cacheServer)
+
+					toolServer := mcpserver.NewToolServer(a.ToolManager)
+					v1.RegisterToolServiceServer(s, toolServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},

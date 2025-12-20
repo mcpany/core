@@ -9,7 +9,6 @@ import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/resource.proto";
 import "proto/config/v1/tool.proto";
-import "proto/mcp_router/v1/mcp_router.proto";
 
 option go_package = "github.com/mcpany/core/proto/api/v1";
 option java_outer_classname = "RegistrationProto";
@@ -32,24 +31,6 @@ message UpdateServiceRequest {
 
 message UpdateServiceResponse {
     mcpany.config.v1.UpstreamServiceConfig config = 1;
-}
-
-message ClearCacheRequest {}
-
-message ClearCacheResponse {}
-
-message ListToolsRequest {}
-
-message ListToolsResponse {
-  repeated mcpany.mcp_router.v1.Tool tools = 1;
-}
-
-message GetToolRequest {
-  string tool_name = 1;
-}
-
-message GetToolResponse {
-  mcpany.mcp_router.v1.Tool tool = 1;
 }
 
 service RegistrationService {
@@ -77,12 +58,6 @@ service RegistrationService {
             body: "*"
         };
     }
-    rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse) {
-        option (google.api.http) = {
-            post: "/v1/services/tools/register"
-            body: "*"
-        };
-    }
     rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse) {
         option (google.api.http) = {
             get: "/v1/services/{service_name}/status"
@@ -96,22 +71,6 @@ service RegistrationService {
     rpc GetService(GetServiceRequest) returns (GetServiceResponse) {
         option (google.api.http) = {
             get: "/v1/services/{service_name}"
-        };
-    }
-    rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse) {
-        option (google.api.http) = {
-            post: "/v1/cache/clear"
-            body: "*"
-        };
-    }
-    rpc ListTools(ListToolsRequest) returns (ListToolsResponse) {
-        option (google.api.http) = {
-            get: "/v1/tools"
-        };
-    }
-    rpc GetTool(GetToolRequest) returns (GetToolResponse) {
-        option (google.api.http) = {
-            get: "/v1/tools/{tool_name}"
         };
     }
 }
@@ -139,17 +98,6 @@ message UnregisterServiceRequest {
 
 message UnregisterServiceResponse {
   string message = 1;             // e.g., "Service unregistered successfully"
-}
-
-message RegisterToolsRequest {
-    string service_name = 1;
-    string namespace = 2;
-    repeated mcpany.config.v1.ToolDefinition tools = 3;
-}
-
-message RegisterToolsResponse {
-    string message = 1;
-    int32 tools_registered = 2;
 }
 
 message GetServiceRequest {
