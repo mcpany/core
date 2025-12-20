@@ -114,6 +114,33 @@ func TestGetService_NotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "not found")
 }
 
+func TestGetHealth(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	server := NewServer(nil, mockManager)
+
+	expectedServices := []*tool.ServiceInfo{
+		{
+			Config: &configv1.UpstreamServiceConfig{
+				Name: proto.String("service-1"),
+			},
+		},
+		{
+			Config: &configv1.UpstreamServiceConfig{
+				Name: proto.String("service-2"),
+			},
+		},
+	}
+	mockManager.EXPECT().ListServices().Return(expectedServices)
+
+	resp, err := server.GetHealth(context.Background(), &pb.GetHealthRequest{})
+	assert.NoError(t, err)
+	assert.Equal(t, pb.GetHealthResponse_STATUS_HEALTHY, resp.GetStatus())
+	assert.Equal(t, "2", resp.Details["service_count"])
+}
+
 func TestListTools(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
