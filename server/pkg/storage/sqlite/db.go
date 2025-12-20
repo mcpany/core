@@ -29,9 +29,9 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to open sqlite db: %w", err)
 	}
 
-	if err := initSchema(db); err != nil {
+	if err := Migrate(db); err != nil {
 		_ = db.Close()
-		return nil, fmt.Errorf("failed to init schema: %w", err)
+		return nil, fmt.Errorf("failed to migrate db: %w", err)
 	}
 
 	// Set pragmas
@@ -44,21 +44,4 @@ func NewDB(path string) (*DB, error) {
 
 
 	return &DB{db}, nil
-}
-
-func initSchema(db *sql.DB) error {
-	query := `
-	CREATE TABLE IF NOT EXISTS upstream_services (
-		id TEXT PRIMARY KEY,
-		name TEXT UNIQUE NOT NULL,
-		config_json TEXT NOT NULL,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-	`
-	_, err := db.Exec(query)
-	if err != nil {
-		return fmt.Errorf("failed to create tables: %w", err)
-	}
-	return nil
 }
