@@ -4,7 +4,6 @@
 package app
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -46,7 +45,7 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
-			w.Write(buf)
+			_, _ = w.Write(buf)
 
 		case http.MethodPost:
 			var svc configv1.UpstreamServiceConfig
@@ -100,7 +99,7 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			b, _ := opts.Marshal(svc)
 			w.Header().Set("Content-Type", "application/json")
-			w.Write(b)
+			_, _ = w.Write(b)
 		case http.MethodPut:
 			var svc configv1.UpstreamServiceConfig
 			body, _ := io.ReadAll(r.Body)
@@ -131,17 +130,10 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	})
 
 	return mux
-}
-
-// Helper to write JSON response
-func jsonResponse(w http.ResponseWriter, data any, status int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }

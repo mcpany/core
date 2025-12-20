@@ -222,7 +222,7 @@ func (a *Application) Run(
 	if err != nil {
 		return fmt.Errorf("failed to initialize sqlite db: %w", err)
 	}
-	defer sqliteDB.Close()
+	defer func() { _ = sqliteDB.Close() }()
 	sqliteStore := sqlite.NewStore(sqliteDB)
 
 	var stores []config.Store
