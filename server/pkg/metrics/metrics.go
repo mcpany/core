@@ -88,9 +88,13 @@ func StartServer(addr string) error {
 //   - val: The value to set.
 //   - labels: A list of labels to apply to the gauge.
 func SetGauge(name string, val float32, labels ...string) {
-	metrics.SetGaugeWithLabels([]string{name}, val, []metrics.Label{
-		{Name: "service_name", Value: labels[0]},
-	})
+	var metricLabels []metrics.Label
+	if len(labels) > 0 {
+		metricLabels = []metrics.Label{
+			{Name: "service_name", Value: labels[0]},
+		}
+	}
+	metrics.SetGaugeWithLabels([]string{name}, val, metricLabels)
 }
 
 // IncrCounter increments a counter.

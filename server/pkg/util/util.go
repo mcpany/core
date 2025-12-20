@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive
+package util
 
 import (
 	"crypto/sha256"
@@ -133,7 +133,6 @@ var (
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
 )
-
 
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
