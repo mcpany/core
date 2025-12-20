@@ -13,9 +13,14 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/tool"
 	v1 "github.com/mcpany/core/proto/api/v1"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 // RegistrationServer implements the gRPC server for service registration. It
@@ -25,7 +30,9 @@ import (
 // registration logic, allowing for a more modular and scalable architecture.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
-	bus *bus.Provider
+	bus         *bus.Provider
+	cache       *middleware.CachingMiddleware
+	toolManager tool.ManagerInterface
 }
 
 // NewRegistrationServerHook is a test hook for overriding the creation of a
@@ -40,11 +47,13 @@ var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
 //
 // Parameters:
 //   - bus: The event bus used for communication.
+//   - cache: The caching middleware used for cache management.
+//   - toolManager: The tool manager used for retrieving tool and service information.
 //
 // Returns:
 //   - A new instance of the RegistrationServer.
 //   - An error if the bus is nil.
-func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
+func NewRegistrationServer(bus *bus.Provider, cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
 		return NewRegistrationServerHook(bus)
@@ -52,7 +61,11 @@ func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}
-	return &RegistrationServer{bus: bus}, nil
+	return &RegistrationServer{
+		bus:         bus,
+		cache:       cache,
+		toolManager: toolManager,
+	}, nil
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
@@ -139,18 +152,72 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 }
 
-// UnregisterService is not yet implemented. It is intended to handle the
-// unregistration of a service.
+// UpdateService updates an existing upstream service.
+func (s *RegistrationServer) UpdateService(ctx context.Context, req *v1.UpdateServiceRequest) (*v1.UpdateServiceResponse, error) {
+	if req.GetConfig() == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "config is required")
+	}
+	if req.GetConfig().GetName() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "config.name is required")
+	}
+
+	// Re-use registration logic for update
+	registerReq := &v1.RegisterServiceRequest{Config: req.GetConfig()}
+	_, err := s.RegisterService(ctx, registerReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.UpdateServiceResponse{Config: req.GetConfig()}, nil
+}
+
+// UnregisterService handles the unregistration of a service.
 //
 // Parameters:
 //   - ctx: The context for the gRPC call.
-//   - req: The request containing the service ID to unregister.
+//   - req: The request containing the service name to unregister.
 //
 // Returns:
 //   - A response indicating success or failure.
-//   - An error (currently always Unimplemented).
-func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
+//   - An error.
+func (s *RegistrationServer) UnregisterService(ctx context.Context, req *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
+	if req.GetServiceName() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
+	}
+
+	correlationID := uuid.New().String()
+	resultChan := make(chan *bus.ServiceRegistrationResult, 1)
+
+	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
+	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceRegistrationResult) {
+		resultChan <- result
+	})
+	defer unsubscribe()
+
+	// Create a dummy config with the name and Disable=true to signal unregistration
+	config := &configv1.UpstreamServiceConfig{
+		Name:    proto.String(req.GetServiceName()),
+		Disable: proto.Bool(true),
+	}
+
+	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](s.bus, "service_registration_requests")
+	regReq := &bus.ServiceRegistrationRequest{
+		Config: config,
+	}
+	regReq.SetCorrelationID(correlationID)
+	_ = requestBus.Publish(ctx, "request", regReq)
+
+	select {
+	case result := <-resultChan:
+		if result.Error != nil {
+			return nil, status.Errorf(codes.Internal, "failed to unregister service: %v", result.Error)
+		}
+		return &v1.UnregisterServiceResponse{Message: "Service unregistered successfully"}, nil
+	case <-ctx.Done():
+		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service unregistration")
+	case <-time.After(30 * time.Second):
+		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service unregistration result")
+	}
 }
 
 // InitiateOAuth2Flow is not yet implemented. It is intended to handle the
@@ -282,4 +349,40 @@ func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListService
 	case <-time.After(30 * time.Second):
 		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service list result")
 	}
+}
+
+// ClearCache clears the cache.
+func (s *RegistrationServer) ClearCache(ctx context.Context, _ *v1.ClearCacheRequest) (*v1.ClearCacheResponse, error) {
+	if s.cache == nil {
+		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
+	}
+	if err := s.cache.Clear(ctx); err != nil {
+		return nil, err
+	}
+	return &v1.ClearCacheResponse{}, nil
+}
+
+// ListTools returns all registered tools.
+func (s *RegistrationServer) ListTools(_ context.Context, _ *v1.ListToolsRequest) (*v1.ListToolsResponse, error) {
+	if s.toolManager == nil {
+		return nil, status.Error(codes.FailedPrecondition, "tool manager not initialized")
+	}
+	tools := s.toolManager.ListTools()
+	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
+	for _, t := range tools {
+		responseTools = append(responseTools, t.Tool())
+	}
+	return &v1.ListToolsResponse{Tools: responseTools}, nil
+}
+
+// GetTool returns a specific tool by name.
+func (s *RegistrationServer) GetTool(_ context.Context, req *v1.GetToolRequest) (*v1.GetToolResponse, error) {
+	if s.toolManager == nil {
+		return nil, status.Error(codes.FailedPrecondition, "tool manager not initialized")
+	}
+	t, ok := s.toolManager.GetTool(req.GetToolName())
+	if !ok {
+		return nil, status.Error(codes.NotFound, "tool not found")
+	}
+	return &v1.GetToolResponse{Tool: t.Tool()}, nil
 }

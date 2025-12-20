@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/mcpany/core/pkg/admin"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -37,7 +36,6 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
-	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -923,16 +921,12 @@ func (a *Application) runServerMode(
 				shutdownTimeout,
 				grpcOpts,
 				func(s *gogrpc.Server) {
-					registrationServer, err := mcpserver.NewRegistrationServer(bus)
+					registrationServer, err := mcpserver.NewRegistrationServer(bus, cachingMiddleware, a.ToolManager)
 					if err != nil {
 						errChan <- fmt.Errorf("failed to create API server: %w", err)
 						return
 					}
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
-
-					// Register Admin Service
-					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, bus)
-					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},
