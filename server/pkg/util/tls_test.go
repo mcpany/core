@@ -4,6 +4,7 @@
 package util
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -59,10 +60,23 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 }
 
 func TestNewHTTPClientWithTLS(t *testing.T) {
-	t.Run("nil config returns default client", func(t *testing.T) {
+	t.Run("nil config returns client with safe dialer", func(t *testing.T) {
 		client, err := NewHTTPClientWithTLS(nil)
 		require.NoError(t, err)
-		assert.Equal(t, http.DefaultClient, client)
+		assert.NotNil(t, client)
+		assert.NotEqual(t, http.DefaultClient, client)
+
+		transport, ok := client.Transport.(*http.Transport)
+		require.True(t, ok)
+		assert.NotNil(t, transport.DialContext)
+
+		// Check if DialContext blocks LinkLocal (169.254.169.254)
+		// Use a short timeout to fail fast if connection hangs
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		_, err = transport.DialContext(ctx, "tcp", "169.254.169.254:80")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
 	})
 
 	t.Run("empty config returns a valid client", func(t *testing.T) {
@@ -74,6 +88,8 @@ func TestNewHTTPClientWithTLS(t *testing.T) {
 		require.True(t, ok)
 		assert.NotNil(t, transport.TLSClientConfig)
 		assert.False(t, transport.TLSClientConfig.InsecureSkipVerify)
+		// Check SafeDialer presence
+		assert.NotNil(t, transport.DialContext)
 	})
 
 	t.Run("insecure skip verify is set correctly", func(t *testing.T) {
