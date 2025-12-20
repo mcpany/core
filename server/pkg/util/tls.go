@@ -15,15 +15,21 @@ import (
 
 // NewHTTPClientWithTLS creates a new *http.Client configured with the specified
 // TLS settings. It supports setting a custom CA certificate, a client
-// certificate and key, the server name for SNI, and skipping verification. If
-// the provided tlsConfig is nil, it returns http.DefaultClient.
+// certificate and key, the server name for SNI, and skipping verification.
+//
+// It enforces SSRF protection by using SafeDialContext.
 //
 // tlsConfig contains the TLS settings to apply to the HTTP client's transport.
 // It returns a configured *http.Client or an error if the TLS configuration
 // is invalid or files cannot be read.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	if tlsConfig == nil {
-		return http.DefaultClient, nil
+		return &http.Client{
+			Transport: &http.Transport{
+				Proxy:       http.ProxyFromEnvironment,
+				DialContext: SafeDialContext,
+			},
+		}, nil
 	}
 
 	config := &tls.Config{
@@ -53,6 +59,8 @@ func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 
 	transport := &http.Transport{
 		TLSClientConfig: config,
+		Proxy:           http.ProxyFromEnvironment,
+		DialContext:     SafeDialContext,
 	}
 
 	return &http.Client{

@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 )
 
 // SafeDialContext creates a connection to the given address, but strictly prevents
@@ -35,9 +36,18 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	}
 
 	// Check all resolved IPs. If any are forbidden, block the request.
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK") == "true"
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORKS") == "true"
+
 	for _, ip := range ips {
-		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() || ip.IsUnspecified() {
-			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to a private ip %s", host, ip)
+		if !allowLoopback && (ip.IsLoopback() || ip.IsLinkLocalUnicast()) {
+			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback/link-local ip %s", host, ip)
+		}
+		if !allowPrivate && ip.IsPrivate() {
+			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private ip %s", host, ip)
+		}
+		if ip.IsUnspecified() {
+			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to unspecified ip %s", host, ip)
 		}
 	}
 
