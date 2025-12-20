@@ -48,6 +48,10 @@ func (m *mockMapResultTool) Tool() *v1.Tool {
 	}
 }
 
+func (m *mockMapResultTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.Tool())
+}
+
 func (m *mockMapResultTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return m.result, nil
 }

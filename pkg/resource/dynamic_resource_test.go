@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -29,6 +30,10 @@ func (m *MockTool) Tool() *v1.Tool {
 		return nil
 	}
 	return args.Get(0).(*v1.Tool)
+}
+
+func (m *MockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.Tool())
 }
 
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {

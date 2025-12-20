@@ -5,8 +5,11 @@
 package tool
 
 import (
+	"sync"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -14,6 +17,10 @@ type baseTool struct {
 	tool          *v1.Tool
 	serviceConfig *configv1.UpstreamServiceConfig
 	callable      Callable
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*baseTool, error) {
@@ -31,6 +38,14 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 // Tool returns the protobuf definition of the tool.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *baseTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.

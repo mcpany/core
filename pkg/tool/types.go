@@ -48,6 +48,8 @@ const contentTypeJSON = "application/json"
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	Tool() *v1.Tool
+	// MCPTool returns the MCP SDK representation of the tool.
+	MCPTool() (*mcp.Tool, error)
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
@@ -170,6 +172,10 @@ type GRPCTool struct {
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewGRPCTool creates a new GRPCTool.
@@ -197,6 +203,14 @@ func (t *GRPCTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *GRPCTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
@@ -267,6 +281,10 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*configv1.CallPolicy
 	callID            string
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -306,6 +324,14 @@ func (t *HTTPTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *HTTPTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
@@ -657,6 +683,10 @@ type MCPTool struct {
 	outputTransformer *configv1.OutputTransformer
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -687,6 +717,14 @@ func (t *MCPTool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the MCP tool.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *MCPTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // Execute handles the execution of the MCP tool. It forwards the tool call,
@@ -812,6 +850,10 @@ type OpenAPITool struct {
 	outputTransformer *configv1.OutputTransformer
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -850,6 +892,14 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *OpenAPITool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // Execute handles the execution of the OpenAPI tool. It constructs an HTTP
@@ -1007,6 +1057,10 @@ type CommandTool struct {
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
 	policies        []*configv1.CallPolicy
 	callID          string
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewCommandTool creates a new CommandTool.
@@ -1038,6 +1092,10 @@ type LocalCommandTool struct {
 	callDefinition *configv1.CommandLineCallDefinition
 	policies       []*configv1.CallPolicy
 	callID         string
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool.
@@ -1063,6 +1121,14 @@ func NewLocalCommandTool(
 // Tool returns the protobuf definition of the command-line tool.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *LocalCommandTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
@@ -1247,6 +1313,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Tool returns the protobuf definition of the command-line tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *CommandTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.

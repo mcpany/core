@@ -45,6 +45,10 @@ func (m *mockToolSimple) Tool() *routerv1.Tool {
 	return m.toolDef
 }
 
+func (m *mockToolSimple) MCPTool() (*mcp.Tool, error) {
+	return ConvertProtoToMCPTool(m.Tool())
+}
+
 func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
 
 type mockMiddleware struct {

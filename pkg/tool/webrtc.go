@@ -20,6 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pion/webrtc/v3"
 )
 
@@ -54,6 +55,10 @@ type WebrtcTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewWebrtcTool creates a new WebrtcTool.
@@ -120,6 +125,14 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 // Tool returns the protobuf definition of the WebRTC tool.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *WebrtcTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // GetCacheConfig returns the cache configuration for the WebRTC tool.

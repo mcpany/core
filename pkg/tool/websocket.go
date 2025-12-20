@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/mcpany/core/pkg/auth"
@@ -16,6 +17,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
@@ -30,6 +32,10 @@ type WebsocketTool struct {
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
 	cache             *configv1.CacheConfig
+
+	mcpTool     *mcp.Tool
+	mcpToolErr  error
+	mcpToolOnce sync.Once
 }
 
 // NewWebsocketTool creates a new WebsocketTool.
@@ -62,6 +68,14 @@ func NewWebsocketTool(
 // Tool returns the protobuf definition of the WebSocket tool.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP SDK representation of the tool.
+func (t *WebsocketTool) MCPTool() (*mcp.Tool, error) {
+	t.mcpToolOnce.Do(func() {
+		t.mcpTool, t.mcpToolErr = ConvertProtoToMCPTool(t.tool)
+	})
+	return t.mcpTool, t.mcpToolErr
 }
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.

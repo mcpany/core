@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/middleware"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -34,6 +35,10 @@ type mockTool struct {
 
 func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
+}
+
+func (m *mockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.tool)
 }
 
 func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

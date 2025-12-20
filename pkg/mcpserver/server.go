@@ -263,7 +263,7 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 					}
 				}
 
-				mcpTool, err := tool.ConvertProtoToMCPTool(toolInstance.Tool())
+				mcpTool, err := toolInstance.MCPTool()
 				if err != nil {
 					logging.GetLogger().
 						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName(), "error", err)

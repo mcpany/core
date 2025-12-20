@@ -23,6 +23,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -1064,6 +1065,10 @@ type simpleMockTool struct {
 
 func (s *simpleMockTool) Tool() *routerv1.Tool {
 	return s.t
+}
+
+func (s *simpleMockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(s.t)
 }
 
 func (s *simpleMockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

@@ -31,6 +31,10 @@ func (m *mockTool) Tool() *mcp_routerv1.Tool {
 	return m.tool
 }
 
+func (m *mockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.tool)
+}
+
 func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }

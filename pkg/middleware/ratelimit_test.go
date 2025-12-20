@@ -16,6 +16,7 @@ import (
 	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -34,6 +35,10 @@ func (m *rateLimitMockTool) Execute(ctx context.Context, req *tool.ExecutionRequ
 
 func (m *rateLimitMockTool) Tool() *v1.Tool {
 	return m.toolProto
+}
+
+func (m *rateLimitMockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.toolProto)
 }
 
 func (m *rateLimitMockTool) GetCacheConfig() *configv1.CacheConfig {

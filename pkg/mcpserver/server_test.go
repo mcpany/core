@@ -41,6 +41,10 @@ func (m *mockTool) Tool() *v1.Tool {
 	return m.tool
 }
 
+func (m *mockTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.tool)
+}
+
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
 	select {
@@ -198,6 +202,10 @@ type mockErrorTool struct {
 
 func (m *mockErrorTool) Tool() *v1.Tool {
 	return m.tool
+}
+
+func (m *mockErrorTool) MCPTool() (*mcp.Tool, error) {
+	return tool.ConvertProtoToMCPTool(m.tool)
 }
 
 func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
@@ -898,6 +906,12 @@ func (m *chameleonTool) Tool() *v1.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.tool
+}
+
+func (m *chameleonTool) MCPTool() (*mcp.Tool, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return tool.ConvertProtoToMCPTool(m.tool)
 }
 
 func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
