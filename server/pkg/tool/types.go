@@ -289,6 +289,13 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*configv1.CallPolicy
 	callID            string
+
+	// Cached fields for performance
+	initError    error
+	cachedMethod string
+	cachedURL    *url.URL
+	cachedPath   string // with %7B replaced
+	cachedQuery  string // with %7B replaced
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -304,7 +311,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &HTTPTool{
+	t := &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -318,6 +325,34 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		policies:          policies,
 		callID:            callID,
 	}
+
+	// Pre-calculate URL components
+	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
+	if len(methodAndURL) != 2 {
+		t.initError = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
+		return t
+	}
+	t.cachedMethod = methodAndURL[0]
+	rawURL := methodAndURL[1]
+
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		t.initError = fmt.Errorf("failed to parse url: %w", err)
+		return t
+	}
+	t.cachedURL = u
+
+	pathStr := u.EscapedPath()
+	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
+	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
+	t.cachedPath = pathStr
+
+	queryStr := u.RawQuery
+	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
+	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	t.cachedQuery = queryStr
+
+	return t
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
@@ -371,24 +406,14 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	methodAndURL := strings.Fields(t.tool.GetUnderlyingMethodFqn())
-	if len(methodAndURL) != 2 {
-		return "", fmt.Errorf("invalid http tool definition: expected method and URL, got %q", t.tool.GetUnderlyingMethodFqn())
-	}
-	method, rawURL := methodAndURL[0], methodAndURL[1]
-
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+	if t.initError != nil {
+		return nil, t.initError
 	}
 
-	pathStr := u.EscapedPath()
-	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
-	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
-
-	queryStr := u.RawQuery
-	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
-	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	method := t.cachedMethod
+	u := t.cachedURL
+	pathStr := t.cachedPath
+	queryStr := t.cachedQuery
 
 	noEscapeParams := make(map[string]bool)
 	for _, param := range t.parameters {
