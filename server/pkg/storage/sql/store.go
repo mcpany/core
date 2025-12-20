@@ -134,7 +134,7 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 		return nil, fmt.Errorf("failed to list services: %w", result.Error)
 	}
 
-	var services []*configv1.UpstreamServiceConfig
+	services := make([]*configv1.UpstreamServiceConfig, 0, len(models))
 	for _, m := range models {
 		var service configv1.UpstreamServiceConfig
 		if err := protojson.Unmarshal([]byte(m.Config), &service); err != nil {
