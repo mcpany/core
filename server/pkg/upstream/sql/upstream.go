@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"sync"
 
+	// Import drivers for SQL upstream
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"
 
@@ -32,7 +33,7 @@ func NewUpstream() *Upstream {
 }
 
 // Shutdown closes the database connection.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 	if u.db != nil {
@@ -50,9 +51,9 @@ func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	promptManager prompt.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ prompt.ManagerInterface,
+	_ resource.ManagerInterface,
+	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -77,7 +78,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	var toolDefs []*configv1.ToolDefinition
+	toolDefs := make([]*configv1.ToolDefinition, 0, len(sqlConfig.GetCalls()))
 
 	for id, callDef := range sqlConfig.GetCalls() {
 		toolName := id
@@ -95,7 +96,7 @@ func (u *Upstream) Register(
 			Tags:         []string{"upstream:sql"},
 		}
 
-		sqlTool := NewSQLTool(t, u.db, callDef)
+		sqlTool := NewTool(t, u.db, callDef)
 
 		if err := toolManager.AddTool(sqlTool); err != nil {
 			return "", nil, nil, fmt.Errorf("failed to add tool %s: %w", toolName, err)

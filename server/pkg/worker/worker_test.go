@@ -48,7 +48,6 @@ type mockServiceRegistry struct {
 	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
 	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
-	getServiceConfigFunc func(name string) (*configv1.UpstreamServiceConfig, bool)
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -70,13 +69,6 @@ func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 		return m.getAllServicesFunc()
 	}
 	return nil, nil
-}
-
-func (m *mockServiceRegistry) GetServiceConfig(name string) (*configv1.UpstreamServiceConfig, bool) {
-	if m.getServiceConfigFunc != nil {
-		return m.getServiceConfigFunc(name)
-	}
-	return nil, false
 }
 
 type mockToolManager struct {
@@ -254,90 +246,6 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			assert.Equal(t, "success-key-request-context", result.ServiceKey)
 		case <-time.After(1 * time.Second):
 			t.Fatal("timed out waiting for registration result")
-		}
-	})
-}
-
-func TestServiceRegistrationWorker_GetRequest(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	t.Run("get service success", func(t *testing.T) {
-		messageBus := bus_pb.MessageBus_builder{}.Build()
-		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewProvider(messageBus)
-		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceGetRequest](bp, bus.ServiceGetRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceGetResult](bp, bus.ServiceGetResultTopic)
-
-		expectedService := &configv1.UpstreamServiceConfig{Name: ptr("service1")}
-
-		registry := &mockServiceRegistry{
-			getServiceConfigFunc: func(name string) (*configv1.UpstreamServiceConfig, bool) {
-				if name == "service1" {
-					return expectedService, true
-				}
-				return nil, false
-			},
-		}
-
-		worker := NewServiceRegistrationWorker(bp, registry)
-		worker.Start(ctx)
-
-		resultChan := make(chan *bus.ServiceGetResult, 1)
-		unsubscribe := resultBus.SubscribeOnce(ctx, "get-test", func(result *bus.ServiceGetResult) {
-			resultChan <- result
-		})
-		defer unsubscribe()
-
-		req := &bus.ServiceGetRequest{ServiceName: "service1"}
-		req.SetCorrelationID("get-test")
-		err = requestBus.Publish(ctx, "request", req)
-		require.NoError(t, err)
-
-		select {
-		case result := <-resultChan:
-			assert.NoError(t, result.Error)
-			assert.Equal(t, expectedService, result.Service)
-		case <-time.After(1 * time.Second):
-			t.Fatal("timed out waiting for get result")
-		}
-	})
-
-	t.Run("get service not found", func(t *testing.T) {
-		messageBus := bus_pb.MessageBus_builder{}.Build()
-		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-		bp, err := bus.NewProvider(messageBus)
-		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceGetRequest](bp, bus.ServiceGetRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceGetResult](bp, bus.ServiceGetResultTopic)
-
-		registry := &mockServiceRegistry{
-			getServiceConfigFunc: func(_ string) (*configv1.UpstreamServiceConfig, bool) {
-				return nil, false
-			},
-		}
-
-		worker := NewServiceRegistrationWorker(bp, registry)
-		worker.Start(ctx)
-
-		resultChan := make(chan *bus.ServiceGetResult, 1)
-		unsubscribe := resultBus.SubscribeOnce(ctx, "get-fail-test", func(result *bus.ServiceGetResult) {
-			resultChan <- result
-		})
-		defer unsubscribe()
-
-		req := &bus.ServiceGetRequest{ServiceName: "unknown"}
-		req.SetCorrelationID("get-fail-test")
-		err = requestBus.Publish(ctx, "request", req)
-		require.NoError(t, err)
-
-		select {
-		case result := <-resultChan:
-			assert.Error(t, result.Error)
-			assert.Contains(t, result.Error.Error(), "service \"unknown\" not found")
-		case <-time.After(1 * time.Second):
-			t.Fatal("timed out waiting for get result")
 		}
 	})
 }

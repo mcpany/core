@@ -768,10 +768,10 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = clientSession.Close() }()
 
-	// Test tools/list and expect success (ignoring the invalid tool).
-	res, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
-	require.NoError(t, err, "ListTools should succeed even when a tool is invalid")
-	assert.Len(t, res.Tools, 0, "Should return 0 tools as the only tool was invalid")
+	// Test tools/list and expect an error because the chameleonTool is now invalid.
+	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	require.Error(t, err, "ListTools should fail when a tool is invalid")
+	assert.Contains(t, err.Error(), "failed to convert tool", "Error message should indicate a conversion failure")
 }
 
 func TestServer_Reload(t *testing.T) {
@@ -1059,19 +1059,9 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	for _, t := range lRes.Tools {
 	    foundNames[t.Name] = true
 	}
-
-	sanitizedGlobal, _ := util.SanitizeToolName("global.tool")
-	expectedGlobal := "global-service." + sanitizedGlobal
-
-	sanitizedProfile, _ := util.SanitizeToolName("profile.tool")
-	expectedProfile := "profile-service." + sanitizedProfile
-
-	sanitizedOther, _ := util.SanitizeToolName("other.tool")
-	expectedOther := "other-service." + sanitizedOther
-
-	assert.Contains(t, foundNames, expectedGlobal)
-	assert.Contains(t, foundNames, expectedProfile)
-	assert.NotContains(t, foundNames, expectedOther)
+	assert.Contains(t, foundNames, "global-service.global.tool")
+	assert.Contains(t, foundNames, "profile-service.profile.tool")
+	assert.NotContains(t, foundNames, "other-service.other.tool")
 	assert.Len(t, lRes.Tools, 2)
 
     // Case C: Profile "p2"

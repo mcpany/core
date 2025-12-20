@@ -1,0 +1,62 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.admin.v1;
+
+import "proto/config/v1/upstream_service.proto";
+import "proto/mcp_router/v1/mcp_router.proto";
+
+option go_package = "github.com/mcpany/core/proto/admin/v1";
+option java_outer_classname = "AdminProto";
+
+// AdminService provides administrative operations for the MCP Any server.
+service AdminService {
+  // ClearCache clears all cached data in the server.
+  rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
+
+  // ListServices returns all registered services.
+  rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+
+  // GetService returns a specific service by ID.
+  rpc GetService(GetServiceRequest) returns (GetServiceResponse);
+
+  // ListTools returns all registered tools.
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+
+  // GetTool returns a specific tool by name.
+  rpc GetTool(GetToolRequest) returns (GetToolResponse);
+}
+
+message ClearCacheRequest {}
+
+message ClearCacheResponse {}
+
+message ListServicesRequest {}
+
+message ListServicesResponse {
+  repeated mcpany.config.v1.UpstreamServiceConfig services = 1;
+}
+
+message GetServiceRequest {
+  string service_id = 1;
+}
+
+message GetServiceResponse {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message ListToolsRequest {}
+
+message ListToolsResponse {
+  repeated mcpany.mcp_router.v1.Tool tools = 1;
+}
+
+message GetToolRequest {
+  string tool_name = 1;
+}
+
+message GetToolResponse {
+  mcpany.mcp_router.v1.Tool tool = 1;
+}

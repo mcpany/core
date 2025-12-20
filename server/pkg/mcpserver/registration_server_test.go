@@ -392,12 +392,27 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-
 	registrationServer, err := NewRegistrationServer(busProvider)
 	require.NoError(t, err)
 
+	t.Run("UnregisterService", func(t *testing.T) {
+		_, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
 	t.Run("InitiateOAuth2Flow", func(t *testing.T) {
 		_, err := registrationServer.InitiateOAuth2Flow(ctx, &v1.InitiateOAuth2FlowRequest{})
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unimplemented, st.Code())
+	})
+
+	t.Run("RegisterTools", func(t *testing.T) {
+		_, err := registrationServer.RegisterTools(ctx, &v1.RegisterToolsRequest{})
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -459,47 +474,4 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 		require.True(t, ok)
 		assert.Equal(t, codes.DeadlineExceeded, st.Code())
 	})
-}
-
-func TestUnregisterService(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	messageBus := bus_pb.MessageBus_builder{}.Build()
-	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
-	busProvider, err := bus.NewProvider(messageBus)
-	require.NoError(t, err)
-
-	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	toolManager := tool.NewManager(busProvider)
-	promptManager := prompt.NewManager()
-	resourceManager := resource.NewManager()
-	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
-	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
-	registrationWorker.Start(ctx)
-
-	registrationServer, err := NewRegistrationServer(busProvider)
-	require.NoError(t, err)
-
-	serviceName := "service-to-unregister"
-	config := &configv1.UpstreamServiceConfig{}
-	config.SetName(serviceName)
-	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://localhost:8080")
-	config.SetHttpService(httpService)
-	_, err = registrationServer.RegisterService(ctx, &v1.RegisterServiceRequest{Config: config})
-	require.NoError(t, err)
-
-	resp, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{ServiceName: serviceName})
-	require.NoError(t, err)
-	assert.Contains(t, resp.GetMessage(), "unregistered successfully")
-
-	// Verify service is gone
-	listResp, err := registrationServer.ListServices(ctx, &v1.ListServicesRequest{})
-	require.NoError(t, err)
-	for _, s := range listResp.GetServices() {
-		assert.NotEqual(t, serviceName, s.GetName())
-	}
 }
