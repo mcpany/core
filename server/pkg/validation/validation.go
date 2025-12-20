@@ -64,9 +64,11 @@ var IsSecurePath = func(path string) error {
 // path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
 var IsRelativePath = func(path string) error {
-	if os.Getenv("MCPANY_ENFORCE_RELATIVE_PATHS") == "true" {
+	// By default, we enforce relative paths for security.
+	// Users can opt-out by setting MCPANY_ALLOW_ABSOLUTE_PATHS=true.
+	if os.Getenv("MCPANY_ALLOW_ABSOLUTE_PATHS") != "true" {
 		if filepath.IsAbs(path) {
-			return fmt.Errorf("path must be relative")
+			return fmt.Errorf("path must be relative (set MCPANY_ALLOW_ABSOLUTE_PATHS=true to allow absolute paths)")
 		}
 	}
 	return IsSecurePath(path)

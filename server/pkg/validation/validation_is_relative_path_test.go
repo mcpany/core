@@ -10,26 +10,26 @@ import (
 
 func TestIsRelativePath(t *testing.T) {
 	tests := []struct {
-		name     string
-		path     string
-		enforced bool
-		wantErr  bool
+		name          string
+		path          string
+		allowAbsolute bool
+		wantErr       bool
 	}{
-		// Enforced = true
-		{"Enforced_Relative", "config.yaml", true, false},
-		{"Enforced_Subdir", "subdir/config.yaml", true, false},
-		{"Enforced_Traversal", "../config.yaml", true, true},
-		{"Enforced_Absolute", "/etc/passwd", true, true},
-		{"Enforced_AbsoluteWin", "C:\\Windows", true, true},
-		{"Enforced_CleanRelative", "subdir/../config.yaml", true, false},
-
-		// Enforced = false (default)
+		// AllowAbsolute = false (default)
 		{"Default_Relative", "config.yaml", false, false},
 		{"Default_Subdir", "subdir/config.yaml", false, false},
-		{"Default_Traversal", "../config.yaml", false, true}, // Still checks IsSecurePath
-		{"Default_Absolute", "/etc/passwd", false, false},    // Allowed!
-		{"Default_AbsoluteWin", "C:\\Windows", false, false}, // Allowed!
+		{"Default_Traversal", "../config.yaml", false, true},
+		{"Default_Absolute", "/etc/passwd", false, true},    // Now Blocked!
+		{"Default_AbsoluteWin", "C:\\Windows", false, true}, // Now Blocked!
 		{"Default_CleanRelative", "subdir/../config.yaml", false, false},
+
+		// AllowAbsolute = true
+		{"Allowed_Relative", "config.yaml", true, false},
+		{"Allowed_Subdir", "subdir/config.yaml", true, false},
+		{"Allowed_Traversal", "../config.yaml", true, true}, // Still blocked by IsSecurePath
+		{"Allowed_Absolute", "/etc/passwd", true, false},    // Allowed!
+		{"Allowed_AbsoluteWin", "C:\\Windows", true, false}, // Allowed!
+		{"Allowed_CleanRelative", "subdir/../config.yaml", true, false},
 	}
 
 	for _, tt := range tests {
@@ -47,15 +47,15 @@ func TestIsRelativePath(t *testing.T) {
 				return
 			}
 
-			if tt.enforced {
-				t.Setenv("MCPANY_ENFORCE_RELATIVE_PATHS", "true")
+			if tt.allowAbsolute {
+				t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
 			} else {
-				t.Setenv("MCPANY_ENFORCE_RELATIVE_PATHS", "false")
+				t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "false")
 			}
 
 			err := IsRelativePath(tt.path)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("IsRelativePath(%q) enforced=%v error = %v, wantErr %v", tt.path, tt.enforced, err, tt.wantErr)
+				t.Errorf("IsRelativePath(%q) allowAbsolute=%v error = %v, wantErr %v", tt.path, tt.allowAbsolute, err, tt.wantErr)
 			}
 		})
 	}
