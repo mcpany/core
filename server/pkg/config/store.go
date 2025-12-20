@@ -140,6 +140,15 @@ type Store interface {
 	Load() (*configv1.McpAnyServerConfig, error)
 }
 
+// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
+type ServiceStore interface {
+	Store
+	SaveService(service *configv1.UpstreamServiceConfig) error
+	GetService(name string) (*configv1.UpstreamServiceConfig, error)
+	ListServices() ([]*configv1.UpstreamServiceConfig, error)
+	DeleteService(name string) error
+}
+
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 
 func expand(b []byte) []byte {
