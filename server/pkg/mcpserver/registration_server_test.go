@@ -12,6 +12,7 @@ import (
 
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
@@ -25,6 +26,7 @@ import (
 	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -78,8 +80,10 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 
+	cache := middleware.NewCachingMiddleware(toolManager)
+
 	// Setup server
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, cache, toolManager)
 	require.NoError(t, err)
 
 	t.Run("successful registration", func(t *testing.T) {
@@ -334,8 +338,10 @@ func TestListServices(t *testing.T) {
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 
+	cache := middleware.NewCachingMiddleware(toolManager)
+
 	// Setup server
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, cache, toolManager)
 	require.NoError(t, err)
 
 	// Register a service to be listed
@@ -371,8 +377,9 @@ func TestListServices(t *testing.T) {
 		// for the worker to publish results to.
 		errorBusProvider, err := bus.NewProvider(bus_pb.MessageBus_builder{}.Build())
 		require.NoError(t, err)
+		errorCache := middleware.NewCachingMiddleware(toolManager)
 
-		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider)
+		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider, errorCache, toolManager)
 		require.NoError(t, err)
 
 		shortCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
@@ -392,16 +399,14 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	registrationServer, err := NewRegistrationServer(busProvider)
-	require.NoError(t, err)
 
-	t.Run("UnregisterService", func(t *testing.T) {
-		_, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{})
-		require.Error(t, err)
-		st, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unimplemented, st.Code())
-	})
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	cache := middleware.NewCachingMiddleware(mockManager)
+
+	registrationServer, err := NewRegistrationServer(busProvider, cache, mockManager)
+	require.NoError(t, err)
 
 	t.Run("InitiateOAuth2Flow", func(t *testing.T) {
 		_, err := registrationServer.InitiateOAuth2Flow(ctx, &v1.InitiateOAuth2FlowRequest{})
@@ -434,7 +439,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 }
 
 func TestNewRegistrationServer_NilBus(t *testing.T) {
-	_, err := NewRegistrationServer(nil)
+	_, err := NewRegistrationServer(nil, nil, nil)
 	assert.Error(t, err)
 }
 
@@ -448,7 +453,12 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
-	registrationServer, err := NewRegistrationServer(busProvider)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	cache := middleware.NewCachingMiddleware(mockManager)
+
+	registrationServer, err := NewRegistrationServer(busProvider, cache, mockManager)
 	require.NoError(t, err)
 
 	t.Run("RegisterService timeout", func(t *testing.T) {
@@ -474,4 +484,67 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 		require.True(t, ok)
 		assert.Equal(t, codes.DeadlineExceeded, st.Code())
 	})
+}
+
+func TestUnregisterService(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	registrationWorker.Start(ctx)
+
+	cache := middleware.NewCachingMiddleware(toolManager)
+	registrationServer, err := NewRegistrationServer(busProvider, cache, toolManager)
+	require.NoError(t, err)
+
+	serviceName := "service-to-unregister"
+	config := &configv1.UpstreamServiceConfig{}
+	config.SetName(serviceName)
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost:8080")
+	config.SetHttpService(httpService)
+	_, err = registrationServer.RegisterService(ctx, &v1.RegisterServiceRequest{Config: config})
+	require.NoError(t, err)
+
+	resp, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{ServiceName: serviceName})
+	require.NoError(t, err)
+	assert.Contains(t, resp.GetMessage(), "unregistered successfully")
+
+	// Verify service is gone (or at least ListServices doesn't show it, or check internal registry?)
+	// Note: Unregistration via config disable typically removes it from registry.
+	listResp, err := registrationServer.ListServices(ctx, &v1.ListServicesRequest{})
+	require.NoError(t, err)
+	for _, s := range listResp.GetServices() {
+		assert.NotEqual(t, serviceName, s.GetName())
+	}
+}
+
+func TestClearCache(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	busProvider, _ := bus.NewProvider(nil)
+
+	cache := middleware.NewCachingMiddleware(mockManager)
+	server, err := NewRegistrationServer(busProvider, cache, mockManager)
+	require.NoError(t, err)
+
+	req := &v1.ClearCacheRequest{}
+	resp, err := server.ClearCache(context.Background(), req)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
 }
