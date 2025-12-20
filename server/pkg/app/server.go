@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -223,6 +224,11 @@ func (a *Application) Run(
 			dbPath = "data/mcpany.db"
 		}
 	}
+	// Ensure DB directory exists
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
+		return fmt.Errorf("failed to create db directory: %w", err)
+	}
+
 	// Use sqlite as default dialect for now
 	sqlStore, err := sql.NewStore("sqlite", dbPath)
 	if err != nil {

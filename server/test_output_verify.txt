@@ -1,0 +1,1264 @@
+=== RUN   TestDockerComposeE2E
+    docker_compose_test.go:72: Using ports: MCP=36447, GRPC=42575
+    docker_compose_test.go:78: Building mcpany/server image...
+    docker_compose_test.go:287: Running: docker build -t ghcr.io/mcpany/server:latest -f server/docker/Dockerfile.server server
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.server
+#1 transferring dockerfile: 1.81kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for mirror.gcr.io/library/golang:1.24
+#2 ...
+
+#3 [internal] load metadata for docker.io/library/debian:bookworm-slim
+#3 DONE 1.3s
+
+#2 [internal] load metadata for mirror.gcr.io/library/golang:1.24
+#2 DONE 3.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [builder 1/7] FROM mirror.gcr.io/library/golang:1.24@sha256:54528d189affe7ce60840cad093d53360705d47d71ea74d62eef72c476242fe9
+#5 DONE 0.0s
+
+#6 [stage-1 1/4] FROM docker.io/library/debian:bookworm-slim@sha256:e899040a73d36e2b36fa33216943539d9957cba8172b858097c2cabcdb20a3e2
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 24.17MB 2.5s done
+#7 DONE 2.5s
+
+#8 [builder 2/7] WORKDIR /app
+#8 CACHED
+
+#9 [builder 3/7] COPY go.mod go.sum ./
+#9 CACHED
+
+#10 [builder 4/7] RUN go mod download && go mod verify
+#10 CACHED
+
+#11 [builder 5/7] RUN apt-get update && apt-get install -y gcc curl
+#11 CACHED
+
+#12 [builder 6/7] COPY . .
+#12 DONE 20.3s
+
+#13 [builder 7/7] RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -v -o /server cmd/server/main.go
+#13 0.590 go: downloading google.golang.org/genproto v0.0.0-20231106174013-bbf56f31fb17
+#13 1.969 crypto/internal/fips140/alias
+#13 1.984 log/slog/internal
+#13 1.984 google.golang.org/grpc/serviceconfig
+#13 1.984 container/list
+#13 1.984 internal/nettrace
+#13 1.984 github.com/docker/docker/api/types/checkpoint
+#13 1.984 vendor/golang.org/x/crypto/cryptobyte/asn1
+#13 1.984 github.com/dgryski/go-rendezvous
+#13 1.984 golang.org/x/net/internal/iana
+#13 1.984 google.golang.org/protobuf/internal/flags
+#13 1.984 internal/goarch
+#13 1.984 internal/profilerecord
+#13 1.984 cmp
+#13 1.985 github.com/docker/docker/api/types/storage
+#13 1.985 github.com/coder/websocket/internal/util
+#13 1.985 internal/goos
+#13 1.985 internal/byteorder
+#13 1.985 github.com/aws/aws-sdk-go-v2/internal/sdkio
+#13 1.985 golang.org/x/text/encoding/internal/identifier
+#13 1.985 github.com/pierrec/lz4/v4/internal/lz4errors
+#13 1.985 github.com/redis/go-redis/v9/auth
+#13 1.985 internal/coverage/rtcov
+#13 1.985 github.com/docker/docker/api/types/common
+#13 1.985 golang.org/x/net/html/atom
+#13 1.985 vendor/golang.org/x/crypto/internal/alias
+#13 1.985 internal/itoa
+#13 1.985 github.com/segmentio/kafka-go/protocol/consumer
+#13 1.985 go.opentelemetry.io/otel/exporters/stdout/stdouttrace/internal
+#13 1.985 internal/msan
+#13 1.985 unicode/utf8
+#13 1.985 internal/unsafeheader
+#13 1.985 unicode
+#13 1.985 golang.org/x/text/internal/utf8internal
+#13 1.986 encoding
+#13 1.986 log/internal
+#13 1.986 github.com/pion/dtls/v2/internal/ciphersuite/types
+#13 1.986 github.com/docker/docker/api
+#13 1.986 github.com/klauspost/compress/internal/race
+#13 1.987 github.com/pion/interceptor/internal/sequencenumber
+#13 1.987 github.com/klauspost/compress/internal/le
+#13 1.987 go.opentelemetry.io/otel/metric/embedded
+#13 1.987 internal/asan
+#13 1.987 internal/goexperiment
+#13 1.987 github.com/mcpany/core/pkg/appconsts
+#13 1.987 github.com/spf13/viper/internal/features
+#13 1.987 github.com/pion/dtls/v2/pkg/crypto/clientcertificate
+#13 1.987 unicode/utf16
+#13 1.987 math/bits
+#13 1.987 golang.org/x/crypto/cryptobyte/asn1
+#13 1.987 github.com/nats-io/nats-server/v2/internal/fastrand
+#13 1.987 github.com/antithesishq/antithesis-sdk-go/assert
+#13 1.991 github.com/mcpany/core/pkg/consts
+#13 1.991 go.opentelemetry.io/otel/sdk
+#13 1.991 go.opentelemetry.io/otel/trace/embedded
+#13 1.992 internal/godebugs
+#13 1.995 github.com/pion/dtls/v2/pkg/crypto/signature
+#13 1.995 golang.org/x/crypto/internal/alias
+#13 1.995 image/color
+#13 1.996 github.com/pion/transport/v2/utils/xor
+#13 1.996 internal/runtime/syscall
+#13 1.996 internal/cpu
+#13 1.998 github.com/klauspost/compress/internal/cpuinfo
+#13 1.999 crypto/internal/boring/sig
+#13 2.004 sync/atomic
+#13 2.004 internal/runtime/atomic
+#13 2.004 crypto/internal/fips140/subtle
+#13 2.005 internal/runtime/math
+#13 2.006 github.com/samber/lo/internal/constraints
+#13 2.006 internal/runtime/sys
+#13 2.007 internal/abi
+#13 2.022 github.com/golang/groupcache/lru
+#13 2.023 crypto/internal/fips140deps/byteorder
+#13 2.023 internal/chacha8rand
+#13 2.029 github.com/pelletier/go-toml/v2/internal/characters
+#13 2.033 google.golang.org/protobuf/internal/set
+#13 2.033 golang.org/x/crypto/salsa20/salsa
+#13 2.051 crypto/internal/fips140deps/cpu
+#13 2.051 internal/bytealg
+#13 2.054 math
+#13 2.057 internal/runtime/exithook
+#13 2.060 github.com/pion/ice/v2/internal/atomic
+#13 2.060 go.opentelemetry.io/otel/exporters/stdout/stdouttrace/internal/counter
+#13 2.107 internal/stringslite
+#13 2.147 internal/race
+#13 2.164 internal/sync
+#13 2.164 internal/runtime/maps
+#13 2.190 hash/maphash
+#13 2.190 github.com/klauspost/compress
+#13 2.279 runtime
+#13 4.327 internal/reflectlite
+#13 4.327 iter
+#13 4.327 weak
+#13 4.327 crypto/subtle
+#13 4.328 runtime/metrics
+#13 4.328 sync
+#13 4.343 github.com/nats-io/nats-server/v2/server/elastic
+#13 4.347 maps
+#13 4.347 slices
+#13 4.383 golang.org/x/exp/slices
+#13 4.410 errors
+#13 4.411 sort
+#13 4.418 internal/bisect
+#13 4.418 google.golang.org/protobuf/internal/pragma
+#13 4.418 internal/singleflight
+#13 4.418 unique
+#13 4.418 internal/testlog
+#13 4.418 github.com/josharian/intern
+#13 4.418 log/slog/internal/buffer
+#13 4.418 go.uber.org/zap/internal/pool
+#13 4.418 github.com/spf13/viper/internal/encoding
+#13 4.434 runtime/cgo
+#13 4.442 internal/oserror
+#13 4.442 path
+#13 4.442 vendor/golang.org/x/net/dns/dnsmessage
+#13 4.442 google.golang.org/grpc/internal/buffer
+#13 4.442 github.com/hashicorp/hcl/hcl/strconv
+#13 4.442 io
+#13 4.442 github.com/pion/rtp/codecs/av1/obu
+#13 4.442 golang.org/x/crypto/cast5
+#13 4.442 math/rand/v2
+#13 4.442 golang.org/x/net/dns/dnsmessage
+#13 4.442 github.com/pion/rtp/codecs/vp9
+#13 4.442 github.com/alitto/pond/v2/internal/linkedbuffer
+#13 4.442 github.com/hashicorp/golang-lru/simplelru
+#13 4.443 strconv
+#13 4.459 internal/godebug
+#13 4.460 syscall
+#13 4.488 container/heap
+#13 4.488 golang.org/x/text/internal/tag
+#13 4.488 github.com/beorn7/perks/quantile
+#13 4.493 github.com/samber/lo/internal/rand
+#13 4.587 github.com/aws/smithy-go/transport/http/internal/io
+#13 4.587 hash
+#13 4.587 github.com/samber/lo/mutable
+#13 4.587 internal/saferio
+#13 4.587 crypto/internal/randutil
+#13 4.587 bytes
+#13 4.587 github.com/valyala/bytebufferpool
+#13 4.587 strings
+#13 4.588 reflect
+#13 4.616 encoding/base32
+#13 4.616 hash/fnv
+#13 4.616 net/netip
+#13 4.616 golang.org/x/crypto/openpgp/errors
+#13 4.616 crypto
+#13 4.616 math/rand
+#13 4.616 crypto/internal/fips140deps/godebug
+#13 4.616 hash/crc32
+#13 4.616 golang.org/x/crypto/blowfish
+#13 4.616 hash/adler32
+#13 4.640 golang.org/x/crypto/openpgp/s2k
+#13 4.668 vendor/golang.org/x/text/transform
+#13 4.668 golang.org/x/text/transform
+#13 4.668 github.com/aws/smithy-go/io
+#13 4.669 github.com/redis/go-redis/v9/internal/rand
+#13 4.688 bufio
+#13 4.688 crypto/internal/impl
+#13 4.688 net/http/internal/ascii
+#13 4.688 github.com/docker/docker/api/types/versions
+#13 4.688 html
+#13 4.688 github.com/aws/aws-sdk-go-v2/internal/strings
+#13 4.688 github.com/ryanuber/go-glob
+#13 4.688 github.com/redis/go-redis/v9/internal/hashtag
+#13 4.688 net/http/internal/testcert
+#13 4.688 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
+#13 4.688 crypto/internal/fips140
+#13 4.688 regexp/syntax
+#13 4.689 github.com/hashicorp/go-immutable-radix
+#13 4.705 github.com/nats-io/nats-server/v2/server/sysmem
+#13 4.705 internal/syscall/execenv
+#13 4.706 time
+#13 4.707 golang.org/x/text/encoding
+#13 4.707 golang.org/x/text/runes
+#13 4.707 internal/syscall/unix
+#13 4.718 crypto/tls/internal/fips140tls
+#13 4.718 crypto/internal/fips140/sha256
+#13 4.718 crypto/internal/fips140/sha3
+#13 4.718 crypto/internal/fips140/sha512
+#13 4.746 golang.org/x/text/encoding/internal
+#13 4.753 image
+#13 4.753 compress/bzip2
+#13 4.769 golang.org/x/text/encoding/unicode
+#13 4.769 golang.org/x/text/encoding/charmap
+#13 4.769 golang.org/x/text/encoding/korean
+#13 4.769 golang.org/x/text/encoding/traditionalchinese
+#13 4.769 golang.org/x/text/encoding/simplifiedchinese
+#13 4.769 golang.org/x/text/encoding/japanese
+#13 4.789 crypto/internal/fips140/hmac
+#13 4.789 crypto/sha3
+#13 4.817 crypto/internal/fips140/check
+#13 4.820 crypto/internal/fips140hash
+#13 4.842 crypto/internal/fips140/bigmod
+#13 4.842 crypto/fips140
+#13 4.842 crypto/internal/fips140/hkdf
+#13 4.842 crypto/internal/fips140/edwards25519/field
+#13 4.842 crypto/internal/fips140/tls12
+#13 4.842 crypto/internal/fips140/pbkdf2
+#13 4.842 crypto/internal/fips140/aes
+#13 4.843 crypto/internal/fips140/nistec/fiat
+#13 4.844 regexp
+#13 4.858 image/internal/imageutil
+#13 4.867 crypto/internal/fips140/tls13
+#13 4.882 image/jpeg
+#13 4.893 crypto/internal/fips140/edwards25519
+#13 4.936 context
+#13 4.936 google.golang.org/grpc/backoff
+#13 4.936 google.golang.org/grpc/keepalive
+#13 4.936 google.golang.org/grpc/balancer/pickfirst/internal
+#13 4.936 github.com/aws/aws-sdk-go-v2/internal/timeconv
+#13 4.936 github.com/pion/interceptor/internal/ntp
+#13 4.936 github.com/aws/smithy-go/ptr
+#13 4.936 github.com/nats-io/nats-server/v2/server/ats
+#13 4.936 gorm.io/gorm/internal/lru
+#13 4.936 io/fs
+#13 4.936 go.uber.org/zap/buffer
+#13 4.937 internal/poll
+#13 4.970 go.uber.org/zap/internal/bufferpool
+#13 4.972 al.essio.dev/pkg/shellescape
+#13 4.972 github.com/jinzhu/inflection
+#13 4.972 github.com/jinzhu/now
+#13 4.992 go.uber.org/zap/internal/stacktrace
+#13 4.997 google.golang.org/grpc/internal/backoff
+#13 4.997 github.com/aws/smithy-go/context
+#13 4.998 github.com/segmentio/kafka-go/sasl
+#13 4.998 google.golang.org/grpc/internal/grpcsync
+#13 4.998 github.com/containerd/errdefs
+#13 4.998 github.com/modelcontextprotocol/go-sdk/internal/xcontext
+#13 4.998 go.opentelemetry.io/otel/internal/baggage
+#13 4.998 golang.org/x/sync/semaphore
+#13 4.998 github.com/pion/dtls/v2/internal/closer
+#13 4.998 github.com/aws/aws-sdk-go-v2/internal/sdk
+#13 4.998 github.com/pion/transport/v2/deadline
+#13 4.998 github.com/cenkalti/backoff/v4
+#13 5.000 github.com/spf13/afero/internal/common
+#13 5.000 internal/filepathlite
+#13 5.000 embed
+#13 5.027 github.com/pion/transport/v2/packetio
+#13 5.035 google.golang.org/protobuf/internal/editiondefaults
+#13 5.055 os
+#13 5.080 crypto/internal/fips140/nistec
+#13 5.161 internal/fmtsort
+#13 5.161 go.opentelemetry.io/otel/attribute/internal
+#13 5.161 github.com/hashicorp/errwrap
+#13 5.161 github.com/mohae/deepcopy
+#13 5.161 encoding/binary
+#13 5.163 github.com/modern-go/reflect2
+#13 5.290 encoding/base64
+#13 5.290 github.com/pierrec/lz4/v4/internal/xxh32
+#13 5.291 vendor/golang.org/x/crypto/internal/poly1305
+#13 5.291 github.com/pierrec/lz4/v4/internal/lz4block
+#13 5.291 github.com/pion/dtls/v2/internal/util
+#13 5.291 github.com/nats-io/nats-server/v2/server/avl
+#13 5.291 github.com/cespare/xxhash/v2
+#13 5.291 github.com/nats-io/nats-server/v2/server/thw
+#13 5.291 github.com/klauspost/compress/zstd/internal/xxhash
+#13 5.291 golang.org/x/crypto/internal/poly1305
+#13 5.291 github.com/klauspost/compress/internal/snapref
+#13 5.295 golang.org/x/sys/unix
+#13 5.305 google.golang.org/protobuf/internal/detrand
+#13 5.305 crypto/internal/sysrand
+#13 5.305 github.com/docker/docker/api/types/mount
+#13 5.305 fmt
+#13 5.305 io/ioutil
+#13 5.305 go.uber.org/zap/internal/exit
+#13 5.305 internal/sysinfo
+#13 5.305 path/filepath
+#13 5.305 google.golang.org/grpc/internal/envconfig
+#13 5.305 go.opentelemetry.io/otel/exporters/stdout/stdouttrace/internal/x
+#13 5.305 os/signal
+#13 5.305 go.opentelemetry.io/otel/sdk/internal/x
+#13 5.306 github.com/prometheus/procfs/internal/util
+#13 5.306 golang.org/x/sys/cpu
+#13 5.306 vendor/golang.org/x/sys/cpu
+#13 5.333 encoding/pem
+#13 5.333 golang.org/x/crypto/openpgp/armor
+#13 5.340 crypto/internal/entropy
+#13 5.343 golang.org/x/crypto/nacl/secretbox
+#13 5.345 go.opentelemetry.io/otel/attribute/internal/xxhash
+#13 5.356 crypto/internal/fips140/drbg
+#13 5.358 github.com/minio/highwayhash
+#13 5.358 golang.org/x/crypto/blake2b
+#13 5.371 net
+#13 5.380 os/exec
+#13 5.381 github.com/spf13/afero/mem
+#13 5.390 crypto/internal/fips140only
+#13 5.390 crypto/internal/fips140/ed25519
+#13 5.390 crypto/internal/fips140/mlkem
+#13 5.390 crypto/internal/fips140/rsa
+#13 5.390 crypto/internal/fips140/aes/gcm
+#13 5.409 crypto/internal/fips140/ecdh
+#13 5.410 crypto/internal/fips140/ecdsa
+#13 5.415 crypto/rc4
+#13 5.415 crypto/pbkdf2
+#13 5.415 crypto/md5
+#13 5.458 crypto/cipher
+#13 5.480 flag
+#13 5.480 google.golang.org/protobuf/internal/errors
+#13 5.481 google.golang.org/protobuf/internal/version
+#13 5.481 net/url
+#13 5.481 log
+#13 5.481 net/http/internal
+#13 5.481 text/tabwriter
+#13 5.481 text/template/parse
+#13 5.483 github.com/aws/smithy-go/encoding
+#13 5.483 golang.org/x/net/http2/hpack
+#13 5.483 google.golang.org/grpc/attributes
+#13 5.483 vendor/golang.org/x/net/http2/hpack
+#13 5.484 compress/flate
+#13 5.484 github.com/containerd/errdefs/pkg/internal/cause
+#13 5.484 github.com/docker/docker/api/types/swarm/runtime
+#13 5.484 github.com/docker/docker/api/types/time
+#13 5.484 runtime/debug
+#13 5.484 mime/quotedprintable
+#13 5.484 github.com/go-jose/go-jose/v4/json
+#13 5.485 github.com/nats-io/nats-server/v2/server/pse
+#13 5.485 github.com/docker/docker/api/types/blkiodev
+#13 5.485 github.com/pkg/errors
+#13 5.485 github.com/hashicorp/hcl/hcl/token
+#13 5.485 github.com/modelcontextprotocol/go-sdk/internal/util
+#13 5.485 github.com/opencontainers/image-spec/specs-go
+#13 5.485 runtime/trace
+#13 5.487 google.golang.org/grpc/internal/idle
+#13 5.487 encoding/hex
+#13 5.487 go/token
+#13 5.487 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/internal
+#13 5.487 github.com/nats-io/nats-server/v2/server/tpm
+#13 5.487 github.com/docker/go-units
+#13 5.487 github.com/docker/docker/pkg/stdcopy
+#13 5.488 github.com/opencontainers/go-digest
+#13 5.493 database/sql/driver
+#13 5.493 github.com/pmezard/go-difflib/difflib
+#13 5.493 github.com/subosito/gotenv
+#13 5.493 github.com/pierrec/lz4/v4/internal/lz4stream
+#13 5.493 github.com/aws/aws-sdk-go-v2/feature/ec2/imds/internal/config
+#13 5.493 os/user
+#13 5.493 github.com/hashicorp/go-multierror
+#13 5.493 encoding/json
+#13 5.493 github.com/aws/aws-sdk-go-v2/internal/ini
+#13 5.493 github.com/itchyny/timefmt-go
+#13 5.494 github.com/golang/mock/gomock
+#13 5.494 github.com/aws/aws-sdk-go-v2/aws/ratelimit
+#13 5.494 github.com/coder/websocket/internal/errd
+#13 5.494 github.com/pion/webrtc/v3/pkg/rtcerr
+#13 5.494 go.uber.org/multierr
+#13 5.494 github.com/prometheus/procfs/internal/fs
+#13 5.494 github.com/redis/go-redis/v9/internal/util
+#13 5.494 golang.org/x/time/rate
+#13 5.494 github.com/valyala/fasttemplate
+#13 5.494 encoding/xml
+#13 5.494 github.com/pelletier/go-toml/v2/internal/danger
+#13 5.494 encoding/csv
+#13 5.494 k8s.io/client-go/third_party/forked/golang/template
+#13 5.494 github.com/antchfx/xpath
+#13 5.494 github.com/alitto/pond/v2/internal/future
+#13 5.494 golang.org/x/text/internal/language
+#13 5.494 vendor/golang.org/x/text/unicode/norm
+#13 5.494 gopkg.in/ini.v1
+#13 5.494 github.com/cenkalti/backoff/v5
+#13 5.494 github.com/klauspost/compress/fse
+#13 5.494 golang.org/x/net/bpf
+#13 5.495 go.uber.org/mock/gomock
+#13 5.495 encoding/gob
+#13 5.495 github.com/bufbuild/protocompile/ast
+#13 5.495 go.uber.org/zap/internal/color
+#13 5.495 github.com/puzpuzpuz/xsync/v4
+#13 5.495 github.com/pion/transport/v2/replaydetector
+#13 5.495 github.com/aws/smithy-go
+#13 5.495 mime
+#13 5.495 github.com/nats-io/nats.go/internal/parser
+#13 5.495 github.com/nats-io/nats-server/v2/server/stree
+#13 5.495 golang.org/x/text/unicode/norm
+#13 5.495 github.com/cloudevents/sdk-go/v2/event/datacodec/text
+#13 5.495 github.com/oasdiff/yaml3
+#13 5.495 gopkg.in/yaml.v3
+#13 5.496 golang.org/x/net/html
+#13 5.496 github.com/pion/rtcp
+#13 5.496 go.yaml.in/yaml/v2
+#13 5.496 math/big
+#13 5.528 github.com/pion/dtls/v2/pkg/crypto/ccm
+#13 5.528 crypto/internal/boring
+#13 5.528 vendor/golang.org/x/crypto/chacha20
+#13 5.528 crypto/des
+#13 5.528 golang.org/x/crypto/chacha20
+#13 5.535 google.golang.org/protobuf/encoding/protowire
+#13 5.537 github.com/pelletier/go-toml/v2/unstable
+#13 5.543 github.com/redis/go-redis/v9/internal/hscan
+#13 5.544 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/internal/retry
+#13 5.544 github.com/hashicorp/hcl/hcl/scanner
+#13 5.544 github.com/hashicorp/hcl/hcl/ast
+#13 5.544 github.com/hashicorp/hcl/json/token
+#13 5.552 github.com/aws/smithy-go/metrics
+#13 5.552 github.com/aws/smithy-go/tracing
+#13 5.552 github.com/aws/smithy-go/auth
+#13 5.553 github.com/pion/webrtc/v3/internal/fmtp
+#13 5.553 github.com/davecgh/go-spew/spew
+#13 5.556 github.com/distribution/reference
+#13 5.557 github.com/opencontainers/image-spec/specs-go/v1
+#13 5.562 golang.org/x/net/internal/timeseries
+#13 5.562 crypto/aes
+#13 5.562 github.com/aws/smithy-go/logging
+#13 5.562 github.com/pion/logging
+#13 5.562 crypto/ecdh
+#13 5.562 crypto/sha512
+#13 5.562 vendor/golang.org/x/text/unicode/bidi
+#13 5.562 golang.org/x/text/unicode/bidi
+#13 5.562 crypto/hmac
+#13 5.563 crypto/sha1
+#13 5.563 github.com/yosida95/uritemplate/v3
+#13 5.563 crypto/sha256
+#13 5.565 github.com/pierrec/lz4/v4
+#13 5.575 go/scanner
+#13 5.578 gorm.io/gorm/utils
+#13 5.578 database/sql
+#13 5.579 github.com/hashicorp/hcl/json/scanner
+#13 5.580 google.golang.org/protobuf/reflect/protoreflect
+#13 5.584 golang.org/x/crypto/chacha20poly1305
+#13 5.585 vendor/golang.org/x/crypto/chacha20poly1305
+#13 5.586 github.com/moby/docker-image-spec/specs-go/v1
+#13 5.600 github.com/aws/aws-sdk-go-v2/internal/sync/singleflight
+#13 5.600 golang.org/x/sync/singleflight
+#13 5.601 github.com/modern-go/concurrent
+#13 5.601 github.com/aws/smithy-go/internal/sync/singleflight
+#13 5.601 github.com/alitto/pond/v2
+#13 5.602 github.com/google/go-querystring/query
+#13 5.602 go.opentelemetry.io/otel/baggage
+#13 5.602 github.com/nats-io/nats-server/v2/server/gsl
+#13 5.603 github.com/aws/smithy-go/middleware
+#13 5.605 github.com/hashicorp/hcl/hcl/parser
+#13 5.613 github.com/grpc-ecosystem/grpc-gateway/v2/utilities
+#13 5.615 testing
+#13 5.615 github.com/klauspost/compress/huff0
+#13 5.627 github.com/hashicorp/hcl/json/parser
+#13 5.627 golang.org/x/crypto/curve25519
+#13 5.633 github.com/pelletier/go-toml/v2/internal/tracker
+#13 5.633 github.com/pion/stun/internal/hmac
+#13 5.634 github.com/pion/dtls/v2/pkg/crypto/hash
+#13 5.636 compress/gzip
+#13 5.636 compress/zlib
+#13 5.636 archive/zip
+#13 5.637 github.com/klauspost/compress/flate
+#13 5.638 github.com/jellydator/ttlcache/v3
+#13 5.652 github.com/segmentio/kafka-go/compress/lz4
+#13 5.652 go/ast
+#13 5.654 github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule
+#13 5.659 github.com/eko/gocache/lib/v4/store
+#13 5.665 github.com/hashicorp/hcl/hcl/printer
+#13 5.683 github.com/hashicorp/hcl
+#13 5.683 github.com/pelletier/go-toml/v2
+#13 5.685 internal/profile
+#13 5.685 runtime/pprof
+#13 5.692 text/template
+#13 5.713 golang.org/x/text/secure/bidirule
+#13 5.715 golang.org/x/text/internal/language/compact
+#13 5.718 vendor/golang.org/x/text/secure/bidirule
+#13 5.722 github.com/eko/gocache/store/go_cache/v4
+#13 5.722 github.com/eko/gocache/lib/v4/codec
+#13 5.751 github.com/aws/aws-sdk-go-v2/internal/context
+#13 5.775 github.com/aws/aws-sdk-go-v2/internal/middleware
+#13 5.775 golang.org/x/text/language
+#13 5.777 vendor/golang.org/x/net/idna
+#13 5.785 golang.org/x/net/idna
+#13 5.791 github.com/bufbuild/protocompile/reporter
+#13 5.793 github.com/jhump/protoreflect/desc/protoparse/ast
+#13 5.794 google.golang.org/protobuf/internal/descopts
+#13 5.794 google.golang.org/protobuf/internal/encoding/messageset
+#13 5.794 google.golang.org/protobuf/internal/strs
+#13 5.794 google.golang.org/protobuf/internal/descfmt
+#13 5.794 google.golang.org/protobuf/internal/order
+#13 5.794 google.golang.org/protobuf/runtime/protoiface
+#13 5.796 google.golang.org/protobuf/internal/genid
+#13 5.826 google.golang.org/protobuf/internal/protolazy
+#13 5.831 google.golang.org/protobuf/internal/encoding/text
+#13 5.831 google.golang.org/protobuf/reflect/protoregistry
+#13 5.831 google.golang.org/protobuf/internal/encoding/json
+#13 5.836 github.com/aws/aws-sdk-go-v2/aws/protocol/xml
+#13 5.836 github.com/cloudevents/sdk-go/v2/event/datacodec/xml
+#13 5.879 gorm.io/gorm/internal/stmt_store
+#13 5.882 github.com/docker/docker/api/types/strslice
+#13 5.882 google.golang.org/grpc/grpclog/internal
+#13 5.882 github.com/docker/docker/api/types/filters
+#13 5.882 go.opentelemetry.io/otel/codes
+#13 5.883 github.com/nats-io/nats-server/v2/conf
+#13 5.883 github.com/hashicorp/go-secure-stdlib/strutil
+#13 5.883 github.com/cloudevents/sdk-go/v2/event/datacodec/json
+#13 5.883 github.com/aws/aws-sdk-go-v2/aws/protocol/restjson
+#13 5.883 github.com/Masterminds/semver/v3
+#13 5.883 go.opentelemetry.io/otel/attribute
+#13 5.883 github.com/mcpany/core/pkg/cli
+#13 5.883 github.com/spf13/viper/internal/encoding/hcl
+#13 5.883 k8s.io/client-go/util/jsonpath
+#13 5.883 log/slog
+#13 5.883 github.com/spf13/viper/internal/encoding/json
+#13 5.883 go.opentelemetry.io/auto/sdk/internal/telemetry
+#13 5.883 github.com/cloudevents/sdk-go/v2/types
+#13 5.883 go.opentelemetry.io/otel/trace/internal/telemetry
+#13 5.883 github.com/mailru/easyjson/jlexer
+#13 5.885 go.uber.org/zap/zapcore
+#13 5.889 github.com/mattn/go-sqlite3
+#13 5.911 gorm.io/gorm/clause
+#13 5.920 github.com/cloudevents/sdk-go/v2/event/datacodec
+#13 5.923 golang.org/x/text/internal
+#13 5.924 github.com/spf13/viper/internal/encoding/toml
+#13 5.924 golang.org/x/text/encoding/htmlindex
+#13 5.925 google.golang.org/protobuf/proto
+#13 5.930 google.golang.org/grpc/grpclog
+#13 5.933 github.com/docker/docker/api/types/events
+#13 5.933 crypto/internal/boring/bbig
+#13 5.933 crypto/rand
+#13 5.933 github.com/aws/smithy-go/time
+#13 5.934 crypto/elliptic
+#13 5.934 crypto/dsa
+#13 5.934 encoding/asn1
+#13 5.934 github.com/aws/smithy-go/document
+#13 5.934 github.com/aws/smithy-go/encoding/json
+#13 5.934 html/template
+#13 5.935 github.com/aws/smithy-go/encoding/xml
+#13 5.936 github.com/itchyny/gojq
+#13 5.937 github.com/json-iterator/go
+#13 5.940 google.golang.org/protobuf/internal/encoding/defval
+#13 5.941 sigs.k8s.io/yaml
+#13 5.946 github.com/fsnotify/fsnotify/internal
+#13 5.953 golang.org/x/text/cases
+#13 5.961 golang.org/x/net/html/charset
+#13 5.964 github.com/klauspost/compress/gzip
+#13 5.969 github.com/perimeterx/marshmallow
+#13 5.970 github.com/stretchr/testify/assert/yaml
+#13 5.970 github.com/spf13/viper/internal/encoding/yaml
+#13 5.970 crypto/ed25519
+#13 5.970 crypto/internal/hpke
+#13 5.971 github.com/aws/aws-sdk-go-v2/internal/rand
+#13 5.971 crypto/rsa
+#13 5.973 golang.org/x/crypto/nacl/box
+#13 5.973 github.com/nats-io/nuid
+#13 5.973 github.com/aws/smithy-go/rand
+#13 5.973 golang.org/x/crypto/openpgp/elgamal
+#13 5.973 github.com/pion/randutil
+#13 5.973 golang.org/x/crypto/bcrypt
+#13 5.973 github.com/klauspost/compress/s2
+#13 5.975 github.com/klauspost/compress/zstd
+#13 5.982 github.com/aws/aws-sdk-go-v2/service/sso/types
+#13 5.982 github.com/aws/aws-sdk-go-v2/service/signin/types
+#13 5.982 github.com/aws/aws-sdk-go-v2/service/sts/types
+#13 5.982 github.com/aws/aws-sdk-go-v2/service/ssooidc/types
+#13 5.982 github.com/aws/aws-sdk-go-v2/service/secretsmanager/types
+#13 5.984 google.golang.org/grpc/connectivity
+#13 5.984 google.golang.org/grpc/internal/grpclog
+#13 5.991 github.com/nats-io/nats.go/encoders/builtin
+#13 5.992 github.com/patrickmn/go-cache
+#13 6.004 github.com/fsnotify/fsnotify
+#13 6.009 github.com/pion/webrtc/v3/internal/util
+#13 6.009 go.opentelemetry.io/otel/sdk/instrumentation
+#13 6.010 github.com/pion/rtp
+#13 6.010 github.com/pion/rtp/codecs
+#13 6.010 go.opentelemetry.io/otel/semconv/v1.26.0
+#13 6.010 github.com/pion/sdp/v3
+#13 6.010 go.opentelemetry.io/otel/semconv/v1.37.0
+#13 6.010 go.opentelemetry.io/otel/metric
+#13 6.011 github.com/nats-io/nkeys
+#13 6.014 github.com/oasdiff/yaml
+#13 6.023 github.com/segmentio/kafka-go/compress/gzip
+#13 6.028 github.com/pion/dtls/v2/pkg/crypto/elliptic
+#13 6.074 google.golang.org/protobuf/encoding/protodelim
+#13 6.074 google.golang.org/protobuf/encoding/prototext
+#13 6.074 google.golang.org/protobuf/internal/filedesc
+#13 6.087 github.com/go-logr/logr
+#13 6.087 gorm.io/gorm/logger
+#13 6.087 github.com/google/jsonschema-go/jsonschema
+#13 6.087 github.com/sagikazarmark/slog-shim
+#13 6.087 crypto/x509/pkix
+#13 6.088 vendor/golang.org/x/crypto/cryptobyte
+#13 6.088 golang.org/x/crypto/cryptobyte
+#13 6.100 github.com/pion/webrtc/v3/pkg/media
+#13 6.101 github.com/pion/interceptor
+#13 6.103 github.com/samber/lo
+#13 6.113 go.opentelemetry.io/otel/metric/noop
+#13 6.126 github.com/nats-io/nats-server/v2/internal/ldap
+#13 6.138 github.com/pion/interceptor/pkg/twcc
+#13 6.138 github.com/pion/interceptor/pkg/nack
+#13 6.139 github.com/pion/interceptor/pkg/report
+#13 6.144 github.com/go-logr/logr/funcr
+#13 6.146 go.uber.org/zap/internal
+#13 6.157 github.com/spf13/cast
+#13 6.172 gorm.io/gorm/schema
+#13 6.177 go.opentelemetry.io/otel/semconv/v1.37.0/httpconv
+#13 6.177 go.opentelemetry.io/otel/semconv/v1.37.0/otelconv
+#13 6.181 crypto/ecdsa
+#13 6.187 github.com/aws/aws-sdk-go-v2/internal/shareddefaults
+#13 6.188 archive/tar
+#13 6.230 github.com/go-logr/stdr
+#13 6.249 github.com/spf13/viper/internal/encoding/dotenv
+#13 6.249 github.com/spf13/viper/internal/encoding/ini
+#13 6.265 go.opentelemetry.io/otel/trace
+#13 6.359 github.com/go-jose/go-jose/v4/cipher
+#13 6.361 golang.org/x/crypto/openpgp/packet
+#13 6.366 github.com/klauspost/compress/snappy
+#13 6.372 google.golang.org/protobuf/internal/encoding/tag
+#13 6.372 google.golang.org/protobuf/encoding/protojson
+#13 6.395 github.com/segmentio/kafka-go/compress/snappy
+#13 6.419 google.golang.org/protobuf/internal/impl
+#13 6.427 go.opentelemetry.io/otel/trace/noop
+#13 6.455 go.opentelemetry.io/auto/sdk
+#13 6.485 gorm.io/gorm
+#13 6.487 github.com/segmentio/kafka-go/compress/zstd
+#13 6.496 github.com/cloudevents/sdk-go/v2/event
+#13 6.518 github.com/segmentio/kafka-go/compress
+#13 6.544 golang.org/x/crypto/openpgp
+#13 6.700 github.com/cloudevents/sdk-go/v2/binding/format
+#13 6.701 github.com/cloudevents/sdk-go/v2/binding/spec
+#13 6.754 github.com/cloudevents/sdk-go/v2/binding
+#13 6.806 github.com/cloudevents/sdk-go/v2/protocol
+#13 6.880 gorm.io/gorm/migrator
+#13 6.881 gorm.io/gorm/callbacks
+#13 6.946 vendor/golang.org/x/net/http/httpproxy
+#13 6.946 google.golang.org/grpc/internal/syscall
+#13 6.946 google.golang.org/grpc/internal/resolver/dns/internal
+#13 6.946 github.com/docker/go-connections/nat
+#13 6.946 github.com/redis/go-redis/v9/internal/proto
+#13 6.946 github.com/pion/transport/v2/connctx
+#13 6.946 golang.org/x/net/internal/socks
+#13 6.946 github.com/docker/docker/api/types/registry
+#13 6.946 github.com/pion/ice/v2/internal/fakenet
+#13 6.946 github.com/pion/turn/v2/internal/ipnet
+#13 6.946 github.com/pion/transport/v2
+#13 6.946 log/syslog
+#13 6.946 github.com/redis/go-redis/v9/internal/interfaces
+#13 6.946 github.com/mailru/easyjson/buffer
+#13 6.947 github.com/wlynxg/anet
+#13 6.947 github.com/mitchellh/mapstructure
+#13 6.947 google.golang.org/grpc/internal
+#13 6.947 github.com/docker/docker/api/types/network
+#13 6.947 crypto/x509
+#13 6.947 github.com/redis/go-redis/v9/internal
+#13 6.947 github.com/pion/dtls/v2/pkg/protocol
+#13 6.947 github.com/modelcontextprotocol/go-sdk/internal/jsonrpc2
+#13 6.947 net/textproto
+#13 6.948 golang.org/x/net/internal/socket
+#13 6.948 github.com/google/uuid
+#13 6.948 github.com/pion/srtp/v2
+#13 6.948 github.com/hashicorp/go-sockaddr
+#13 6.948 github.com/nats-io/jwt/v2
+#13 6.949 github.com/spf13/pflag
+#13 6.957 github.com/prometheus/procfs
+#13 6.957 github.com/pion/sctp
+#13 6.985 github.com/pion/dtls/v2/pkg/crypto/prf
+#13 6.985 github.com/pion/dtls/v2/pkg/protocol/alert
+#13 6.985 github.com/mailru/easyjson/jwriter
+#13 6.990 github.com/pion/transport/v2/stdnet
+#13 6.991 github.com/pion/transport/v2/vnet
+#13 6.996 github.com/nats-io/nats-server/v2/logger
+#13 6.998 github.com/redis/go-redis/v9/internal/maintnotifications/logs
+#13 7.001 google.golang.org/grpc/metadata
+#13 7.002 google.golang.org/grpc/codes
+#13 7.002 google.golang.org/grpc/mem
+#13 7.005 github.com/docker/docker/api/types/container
+#13 7.008 golang.org/x/net/proxy
+#13 7.022 golang.org/x/net/http/httpguts
+#13 7.022 net/mail
+#13 7.022 vendor/golang.org/x/net/http/httpguts
+#13 7.022 mime/multipart
+#13 7.025 github.com/redis/go-redis/v9/push
+#13 7.040 google.golang.org/grpc/internal/balancerload
+#13 7.040 google.golang.org/grpc/tap
+#13 7.040 google.golang.org/grpc/stats
+#13 7.040 google.golang.org/grpc/internal/grpcutil
+#13 7.058 github.com/redis/go-redis/v9/internal/pool
+#13 7.059 github.com/modelcontextprotocol/go-sdk/jsonrpc
+#13 7.066 golang.org/x/net/ipv4
+#13 7.066 golang.org/x/net/ipv6
+#13 7.068 github.com/docker/docker/api/types/build
+#13 7.068 github.com/docker/docker/api/types/image
+#13 7.069 github.com/docker/docker/api/types/swarm
+#13 7.073 google.golang.org/grpc/encoding
+#13 7.083 google.golang.org/grpc/experimental/stats
+#13 7.088 github.com/santhosh-tekuri/jsonschema/v5
+#13 7.101 google.golang.org/grpc/encoding/gzip
+#13 7.107 github.com/docker/docker/api/types/system
+#13 7.108 github.com/docker/docker/api/types/volume
+#13 7.112 google.golang.org/grpc/internal/stats
+#13 7.128 github.com/docker/docker/api/types
+#13 7.197 github.com/hashicorp/go-secure-stdlib/parseutil
+#13 7.234 github.com/pion/transport/v2/udp
+#13 7.234 github.com/pion/mdns
+#13 7.252 github.com/redis/go-redis/v9/internal/auth/streaming
+#13 7.252 github.com/redis/go-redis/v9/maintnotifications
+#13 7.277 github.com/spf13/cobra
+#13 7.294 github.com/pion/datachannel
+#13 7.302 golang.org/x/crypto/ocsp
+#13 7.302 github.com/pion/dtls/v2/pkg/crypto/fingerprint
+#13 7.303 github.com/go-jose/go-jose/v4
+#13 7.303 crypto/tls
+#13 7.424 google.golang.org/protobuf/internal/filetype
+#13 7.469 google.golang.org/protobuf/runtime/protoimpl
+#13 7.498 google.golang.org/protobuf/protoadapt
+#13 7.498 google.golang.org/protobuf/types/known/fieldmaskpb
+#13 7.498 google.golang.org/protobuf/types/known/durationpb
+#13 7.499 google.golang.org/protobuf/types/known/timestamppb
+#13 7.499 google.golang.org/protobuf/types/known/wrapperspb
+#13 7.499 google.golang.org/protobuf/types/known/anypb
+#13 7.499 google.golang.org/protobuf/types/known/structpb
+#13 7.499 google.golang.org/protobuf/types/dynamicpb
+#13 7.499 google.golang.org/protobuf/types/descriptorpb
+#13 7.499 google.golang.org/protobuf/types/known/sourcecontextpb
+#13 7.499 google.golang.org/protobuf/types/known/emptypb
+#13 7.499 google.golang.org/genproto/googleapis/api
+#13 7.499 go.opentelemetry.io/proto/otlp/common/v1
+#13 7.527 github.com/go-jose/go-jose/v4/jwt
+#13 7.529 google.golang.org/grpc/internal/pretty
+#13 7.529 google.golang.org/grpc/encoding/proto
+#13 7.540 google.golang.org/grpc/binarylog/grpc_binarylog_v1
+#13 7.540 github.com/prometheus/client_model/go
+#13 7.544 google.golang.org/genproto/googleapis/api/httpbody
+#13 7.544 google.golang.org/protobuf/types/known/typepb
+#13 7.544 google.golang.org/genproto/googleapis/rpc/status
+#13 7.551 go.opentelemetry.io/proto/otlp/resource/v1
+#13 7.580 google.golang.org/grpc/internal/status
+#13 7.587 go.opentelemetry.io/proto/otlp/trace/v1
+#13 7.600 google.golang.org/protobuf/types/known/apipb
+#13 7.607 github.com/prometheus/common/model
+#13 7.617 google.golang.org/grpc/status
+#13 7.648 google.golang.org/grpc/internal/binarylog
+#13 7.675 google.golang.org/protobuf/types/gofeaturespb
+#13 7.676 google.golang.org/protobuf/internal/editionssupport
+#13 7.676 google.golang.org/protobuf/types/pluginpb
+#13 7.676 github.com/mcpany/core/proto/mcp_options/v1
+#13 7.676 github.com/bufbuild/protocompile/internal
+#13 7.676 google.golang.org/genproto/googleapis/api/annotations
+#13 7.719 github.com/mcpany/core/proto/bus
+#13 7.719 google.golang.org/protobuf/reflect/protodesc
+#13 7.722 github.com/bufbuild/protocompile/walk
+#13 7.722 github.com/bufbuild/protocompile/sourceinfo
+#13 7.753 github.com/prometheus/client_golang/prometheus/internal
+#13 7.770 github.com/mcpany/core/proto/config/v1
+#13 7.774 github.com/bufbuild/protocompile/parser
+#13 7.883 github.com/bufbuild/protocompile/protoutil
+#13 7.884 github.com/golang/protobuf/proto
+#13 8.064 net/http/httptrace
+#13 8.064 github.com/docker/go-connections/tlsconfig
+#13 8.064 github.com/hashicorp/go-rootcerts
+#13 8.064 google.golang.org/grpc/internal/credentials
+#13 8.064 github.com/nats-io/nats.go/util
+#13 8.064 github.com/nats-io/nats-server/v2/server/certstore
+#13 8.064 github.com/pion/dtls/v2/pkg/crypto/signaturehash
+#13 8.064 github.com/bufbuild/protocompile/linker
+#13 8.065 github.com/segmentio/kafka-go/protocol
+#13 8.067 github.com/redis/go-redis/v9
+#13 8.095 github.com/pion/dtls/v2/pkg/protocol/extension
+#13 8.100 golang.org/x/net/internal/httpcommon
+#13 8.102 google.golang.org/grpc/credentials
+#13 8.102 net/http
+#13 8.114 github.com/jhump/protoreflect/desc/internal
+#13 8.114 github.com/jhump/protoreflect/internal
+#13 8.145 github.com/pion/dtls/v2/pkg/protocol/handshake
+#13 8.152 google.golang.org/grpc/resolver
+#13 8.152 google.golang.org/grpc/peer
+#13 8.152 google.golang.org/grpc/credentials/insecure
+#13 8.153 google.golang.org/grpc/internal/channelz
+#13 8.162 github.com/jhump/protoreflect/desc/sourceinfo
+#13 8.196 google.golang.org/grpc/internal/metadata
+#13 8.196 google.golang.org/grpc/internal/resolver/passthrough
+#13 8.196 google.golang.org/grpc/internal/transport/networktype
+#13 8.196 google.golang.org/grpc/internal/proxyattributes
+#13 8.196 google.golang.org/grpc/balancer/grpclb/state
+#13 8.209 github.com/pion/dtls/v2/pkg/protocol/recordlayer
+#13 8.216 google.golang.org/grpc/internal/resolver/dns
+#13 8.217 google.golang.org/grpc/internal/resolver/unix
+#13 8.234 github.com/pion/dtls/v2/pkg/crypto/ciphersuite
+#13 8.257 google.golang.org/grpc/resolver/dns
+#13 8.261 google.golang.org/grpc/channelz
+#13 8.273 github.com/pion/dtls/v2/internal/ciphersuite
+#13 8.276 google.golang.org/grpc/balancer
+#13 8.292 github.com/jhump/protoreflect/desc
+#13 8.309 google.golang.org/grpc/balancer/base
+#13 8.309 google.golang.org/grpc/balancer/pickfirst/pickfirstleaf
+#13 8.309 google.golang.org/grpc/internal/serviceconfig
+#13 8.333 github.com/pion/dtls/v2
+#13 8.342 google.golang.org/grpc/internal/resolver
+#13 8.356 github.com/segmentio/kafka-go/protocol/addoffsetstotxn
+#13 8.356 github.com/segmentio/kafka-go/protocol/addpartitionstotxn
+#13 8.356 github.com/segmentio/kafka-go/protocol/alterconfigs
+#13 8.356 github.com/segmentio/kafka-go/protocol/alterclientquotas
+#13 8.357 github.com/segmentio/kafka-go/protocol/alterpartitionreassignments
+#13 8.357 github.com/segmentio/kafka-go/protocol/apiversions
+#13 8.357 github.com/segmentio/kafka-go/protocol/alteruserscramcredentials
+#13 8.357 github.com/segmentio/kafka-go/protocol/createacls
+#13 8.357 github.com/segmentio/kafka-go/protocol/createpartitions
+#13 8.357 github.com/segmentio/kafka-go/protocol/deletegroups
+#13 8.357 github.com/segmentio/kafka-go/protocol/deletetopics
+#13 8.357 github.com/segmentio/kafka-go/protocol/describeacls
+#13 8.357 github.com/segmentio/kafka-go/protocol/describeconfigs
+#13 8.357 github.com/segmentio/kafka-go/protocol/deleteacls
+#13 8.357 github.com/segmentio/kafka-go/protocol/describeclientquotas
+#13 8.357 github.com/segmentio/kafka-go/protocol/describegroups
+#13 8.357 github.com/segmentio/kafka-go/protocol/fetch
+#13 8.357 github.com/segmentio/kafka-go/protocol/findcoordinator
+#13 8.357 github.com/segmentio/kafka-go/protocol/incrementalalterconfigs
+#13 8.357 github.com/segmentio/kafka-go/protocol/electleaders
+#13 8.357 github.com/segmentio/kafka-go/protocol/initproducerid
+#13 8.357 github.com/segmentio/kafka-go/protocol/leavegroup
+#13 8.357 github.com/segmentio/kafka-go/protocol/joingroup
+#13 8.357 github.com/segmentio/kafka-go/protocol/listgroups
+#13 8.357 github.com/segmentio/kafka-go/protocol/listoffsets
+#13 8.358 github.com/segmentio/kafka-go/protocol/listpartitionreassignments
+#13 8.358 github.com/segmentio/kafka-go/protocol/offsetdelete
+#13 8.358 github.com/segmentio/kafka-go/protocol/offsetfetch
+#13 8.358 github.com/segmentio/kafka-go/protocol/saslauthenticate
+#13 8.358 github.com/segmentio/kafka-go/protocol/createtopics
+#13 8.358 github.com/segmentio/kafka-go/protocol/offsetcommit
+#13 8.358 github.com/segmentio/kafka-go/protocol/syncgroup
+#13 8.358 github.com/segmentio/kafka-go/protocol/heartbeat
+#13 8.358 github.com/segmentio/kafka-go/protocol/txnoffsetcommit
+#13 8.358 github.com/segmentio/kafka-go/protocol/endtxn
+#13 8.358 github.com/segmentio/kafka-go/protocol/produce
+#13 8.358 github.com/segmentio/kafka-go/protocol/describeuserscramcredentials
+#13 8.358 github.com/segmentio/kafka-go/protocol/saslhandshake
+#13 8.358 github.com/segmentio/kafka-go/protocol/metadata
+#13 8.361 google.golang.org/grpc/balancer/endpointsharding
+#13 8.361 google.golang.org/grpc/internal/balancer/gracefulswitch
+#13 8.371 github.com/bufbuild/protocompile/options
+#13 8.377 github.com/mcpany/core/pkg/validation
+#13 8.377 github.com/mcpany/core/pkg/logging
+#13 8.378 github.com/mcpany/core/pkg/util/schemaconv
+#13 8.378 github.com/mcpany/core/pkg/resilience
+#13 8.396 google.golang.org/grpc/balancer/pickfirst
+#13 8.404 github.com/segmentio/kafka-go/protocol/rawproduce
+#13 8.415 github.com/mcpany/core/pkg/bus/memory
+#13 8.415 github.com/mcpany/core/pkg/pool
+#13 8.420 google.golang.org/grpc/balancer/roundrobin
+#13 8.441 github.com/segmentio/kafka-go
+#13 8.568 github.com/bufbuild/protocompile
+#13 8.596 github.com/pion/stun
+#13 8.642 github.com/jhump/protoreflect/desc/protoparse
+#13 8.747 github.com/pion/ice/v2/internal/stun
+#13 8.749 github.com/pion/turn/v2/internal/proto
+#13 8.806 github.com/pion/turn/v2/internal/allocation
+#13 8.807 github.com/pion/turn/v2/internal/client
+#13 8.856 github.com/pion/turn/v2/internal/server
+#13 8.918 github.com/pion/turn/v2
+#13 9.261 github.com/mcpany/core/pkg/bus/kafka
+#13 9.368 golang.org/x/net/trace
+#13 9.368 github.com/containerd/errdefs/pkg/errhttp
+#13 9.368 golang.org/x/oauth2/internal
+#13 9.368 net/http/httputil
+#13 9.368 github.com/felixge/httpsnoop
+#13 9.368 net/http/pprof
+#13 9.368 expvar
+#13 9.368 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request
+#13 9.368 github.com/nats-io/nats-server/v2/server/certidp
+#13 9.368 github.com/aws/smithy-go/encoding/httpbinding
+#13 9.368 github.com/modelcontextprotocol/go-sdk/auth
+#13 9.368 github.com/docker/go-connections/sockets
+#13 9.369 github.com/alexliesenfeld/health
+#13 9.369 github.com/standard-webhooks/standard-webhooks/libraries/go
+#13 9.369 github.com/machinebox/graphql
+#13 9.369 net/http/httptest
+#13 9.369 github.com/aws/smithy-go/endpoints
+#13 9.369 github.com/hashicorp/go-cleanhttp
+#13 9.369 github.com/prometheus/common/expfmt
+#13 9.369 github.com/armon/go-metrics
+#13 9.369 github.com/antchfx/xmlquery
+#13 9.369 go.opentelemetry.io/otel/propagation
+#13 9.369 github.com/magiconair/properties
+#13 9.369 github.com/gorilla/websocket
+#13 9.369 golang.org/x/net/http2
+#13 9.369 go.uber.org/zap
+#13 9.369 github.com/nats-io/nats.go
+#13 9.370 github.com/go-openapi/swag
+#13 9.370 github.com/coder/websocket
+#13 9.370 github.com/spf13/afero
+#13 9.386 github.com/google/go-github/v39/github
+#13 9.408 github.com/modelcontextprotocol/go-sdk/mcp
+#13 9.416 github.com/hashicorp/go-retryablehttp
+#13 9.419 golang.org/x/oauth2
+#13 9.421 go.opentelemetry.io/otel/internal/global
+#13 9.451 github.com/stretchr/testify/assert
+#13 9.467 github.com/mcpany/core/pkg/transformer
+#13 9.487 golang.org/x/oauth2/clientcredentials
+#13 9.487 github.com/coreos/go-oidc/v3/oidc
+#13 9.488 github.com/aws/smithy-go/transport/http
+#13 9.503 github.com/spf13/viper/internal/encoding/javaproperties
+#13 9.524 github.com/nats-io/nats-server/v2/server
+#13 9.531 github.com/prometheus/client_golang/prometheus
+#13 9.562 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/internal/envconfig
+#13 9.562 go.opentelemetry.io/otel/sdk/trace/internal/env
+#13 9.563 go.opentelemetry.io/otel
+#13 9.600 github.com/spf13/viper
+#13 9.605 go.opentelemetry.io/otel/exporters/stdout/stdouttrace/internal/observ
+#13 9.605 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv
+#13 9.605 go.opentelemetry.io/otel/sdk/trace/internal/observ
+#13 9.606 go.opentelemetry.io/otel/sdk/resource
+#13 9.640 github.com/aws/aws-sdk-go-v2/internal/auth
+#13 9.640 github.com/aws/smithy-go/auth/bearer
+#13 9.641 github.com/aws/smithy-go/endpoints/private/rulesfn
+#13 9.641 github.com/aws/smithy-go/private/requestcompression
+#13 9.641 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding
+#13 9.641 github.com/aws/aws-sdk-go-v2/internal/endpoints/awsrulesfn
+#13 9.641 github.com/aws/aws-sdk-go-v2/aws/protocol/query
+#13 9.644 github.com/go-openapi/jsonpointer
+#13 9.672 github.com/cloudevents/sdk-go/v2/context
+#13 9.683 github.com/aws/aws-sdk-go-v2/aws
+#13 9.696 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+#13 9.707 github.com/cloudevents/sdk-go/v2/protocol/http
+#13 9.717 github.com/getkin/kin-openapi/openapi3
+#13 9.745 go.opentelemetry.io/otel/sdk/trace
+#13 9.747 github.com/stretchr/testify/require
+#13 9.787 github.com/docker/docker/client
+#13 9.809 github.com/aws/aws-sdk-go-v2/credentials
+#13 9.809 github.com/aws/aws-sdk-go-v2/internal/endpoints
+#13 9.809 github.com/aws/aws-sdk-go-v2/aws/defaults
+#13 9.809 github.com/aws/aws-sdk-go-v2/internal/configsources
+#13 9.809 github.com/aws/aws-sdk-go-v2/credentials/processcreds
+#13 9.809 github.com/aws/aws-sdk-go-v2/internal/endpoints/v2
+#13 9.809 github.com/aws/aws-sdk-go-v2/aws/middleware
+#13 9.809 github.com/aws/aws-sdk-go-v2/aws/signer/internal/v4
+#13 9.851 github.com/aws/aws-sdk-go-v2/service/signin/internal/endpoints
+#13 9.851 github.com/aws/aws-sdk-go-v2/service/sso/internal/endpoints
+#13 9.851 github.com/aws/aws-sdk-go-v2/service/ssooidc/internal/endpoints
+#13 9.851 github.com/aws/aws-sdk-go-v2/service/sts/internal/endpoints
+#13 9.851 github.com/aws/aws-sdk-go-v2/service/secretsmanager/internal/endpoints
+#13 9.883 github.com/cloudevents/sdk-go/v2/client
+#13 9.889 github.com/aws/aws-sdk-go-v2/aws/transport/http
+#13 9.889 github.com/aws/aws-sdk-go-v2/aws/retry
+#13 9.893 github.com/aws/aws-sdk-go-v2/aws/signer/v4
+#13 9.927 github.com/pion/ice/v2
+#13 9.933 go.opentelemetry.io/otel/exporters/otlp/otlptrace/internal/tracetransform
+#13 9.933 go.opentelemetry.io/otel/sdk/trace/tracetest
+#13 9.937 github.com/prometheus/client_golang/prometheus/push
+#13 9.937 github.com/prometheus/client_golang/prometheus/promhttp
+#13 9.937 github.com/eko/gocache/lib/v4/metrics
+#13 9.974 github.com/aws/aws-sdk-go-v2/internal/auth/smithy
+#13 9.974 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url
+#13 9.975 google.golang.org/grpc/internal/transport
+#13 9.978 github.com/eko/gocache/lib/v4/cache
+#13 9.978 github.com/hashicorp/vault/api
+#13 9.980 go.opentelemetry.io/otel/exporters/stdout/stdouttrace
+#13 9.986 github.com/armon/go-metrics/prometheus
+#13 9.990 go.opentelemetry.io/otel/exporters/otlp/otlptrace
+#13 9.992 github.com/aws/aws-sdk-go-v2/credentials/endpointcreds/internal/client
+#13 9.993 github.com/aws/aws-sdk-go-v2/feature/ec2/imds
+#13 10.01 github.com/cloudevents/sdk-go/v2
+#13 10.01 github.com/aws/aws-sdk-go-v2/service/signin
+#13 10.02 github.com/aws/aws-sdk-go-v2/service/sso
+#13 10.02 github.com/aws/aws-sdk-go-v2/service/ssooidc
+#13 10.02 github.com/aws/aws-sdk-go-v2/service/sts
+#13 10.02 github.com/aws/aws-sdk-go-v2/service/secretsmanager
+#13 10.06 github.com/aws/aws-sdk-go-v2/credentials/endpointcreds
+#13 10.11 github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds
+#13 10.15 github.com/mcpany/core/pkg/metrics
+#13 10.23 github.com/aws/aws-sdk-go-v2/credentials/logincreds
+#13 10.23 github.com/mcpany/core/pkg/command
+#13 10.38 github.com/aws/aws-sdk-go-v2/credentials/ssocreds
+#13 10.39 google.golang.org/grpc/internal/resolver/delegatingresolver
+#13 10.41 github.com/pion/webrtc/v3/internal/mux
+#13 10.44 google.golang.org/grpc
+#13 10.45 github.com/pion/webrtc/v3
+#13 10.69 github.com/aws/aws-sdk-go-v2/credentials/stscreds
+#13 10.74 github.com/aws/aws-sdk-go-v2/config
+#13 10.90 github.com/mcpany/core/pkg/update
+#13 10.95 google.golang.org/grpc/health/grpc_health_v1
+#13 10.95 google.golang.org/grpc/reflection/grpc_reflection_v1
+#13 10.95 github.com/mcpany/core/proto/mcp_router/v1
+#13 10.95 google.golang.org/grpc/reflection/grpc_reflection_v1alpha
+#13 10.95 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/internal/otlpconfig
+#13 11.04 github.com/mcpany/core/pkg/util
+#13 11.04 github.com/mcpany/core/pkg/health
+#13 11.05 github.com/grpc-ecosystem/grpc-gateway/v2/runtime
+#13 11.05 github.com/mcpany/core/pkg/upstream/grpc/protobufparser
+#13 11.06 google.golang.org/grpc/reflection/internal
+#13 11.11 google.golang.org/grpc/reflection
+#13 11.16 github.com/mcpany/core/pkg/client
+#13 11.16 github.com/mcpany/core/pkg/auth
+#13 11.16 github.com/mcpany/core/pkg/prompt
+#13 11.31 go.opentelemetry.io/proto/otlp/collector/trace/v1
+#13 11.31 github.com/mcpany/core/proto/api/v1
+#13 11.40 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp
+#13 11.51 github.com/mcpany/core/pkg/telemetry
+#13 13.11 github.com/mcpany/core/pkg/bus/redis
+#13 16.24 github.com/mcpany/core/pkg/bus/nats
+#13 16.28 github.com/mcpany/core/pkg/bus
+#13 16.39 github.com/mcpany/core/pkg/tool
+#13 17.16 github.com/mcpany/core/pkg/resource
+#13 17.16 github.com/mcpany/core/pkg/middleware
+#13 17.23 github.com/mcpany/core/pkg/upstream
+#13 17.33 github.com/mcpany/core/pkg/upstream/command
+#13 17.33 github.com/mcpany/core/pkg/upstream/graphql
+#13 17.33 github.com/mcpany/core/pkg/upstream/http
+#13 17.33 github.com/mcpany/core/pkg/upstream/webrtc
+#13 17.33 github.com/mcpany/core/pkg/upstream/websocket
+#13 17.33 github.com/mcpany/core/pkg/upstream/openapi
+#13 17.33 github.com/mcpany/core/pkg/upstream/grpc
+#13 17.33 github.com/mcpany/core/pkg/upstream/mcp
+#13 17.61 github.com/mcpany/core/pkg/upstream/factory
+#13 17.71 github.com/mcpany/core/pkg/serviceregistry
+#13 17.71 github.com/mcpany/core/pkg/config
+#13 17.86 github.com/mcpany/core/pkg/worker
+#13 18.11 github.com/mcpany/core/pkg/mcpserver
+#13 43.76 gorm.io/driver/sqlite
+#13 43.92 github.com/mcpany/core/pkg/storage/sql
+#13 44.04 github.com/mcpany/core/pkg/app
+#13 44.68 command-line-arguments
+#13 DONE 50.9s
+
+#14 [stage-1 2/4] WORKDIR /app
+#14 CACHED
+
+#15 [stage-1 3/4] RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+#15 CACHED
+
+#16 [stage-1 4/4] COPY --from=builder /server /app/server
+#16 CACHED
+
+#17 exporting to image
+#17 exporting layers done
+#17 writing image sha256:827d526289f41b31076ea2893733975b6612dcf80b072dacb137a0d322e71654 done
+#17 naming to ghcr.io/mcpany/server:latest done
+#17 DONE 0.0s
+    docker_compose_test.go:87: Cleaning up...
+Error response from daemon: No such container: core-mcpany-server-1
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc000d0e6f0 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:48:19.744Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:25.105Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:48:25.106Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=157.61µs
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=31.53µs
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=52.68µs
+time=2025-12-20T23:48:25.110Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:48:25.110Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=12.74793ms
+Error response from daemon: No such container: mcpany-weather-test
+    docker_compose_test.go:106: Starting root docker-compose...
+    docker_compose_test.go:287: Running: docker compose up -d --wait
+ Network core_mcpany-net  Creating
+ Network core_mcpany-net  Created
+ Container core-prometheus-1  Creating
+ Container core-redis-1  Creating
+ Container core-prometheus-1  Created
+ Container core-redis-1  Created
+ Container core-mcpany-server-1  Creating
+ Container core-mcpany-server-1  Created
+ Container core-ui-1  Creating
+ Container core-ui-1  Created
+ Container core-prometheus-1  Starting
+ Container core-redis-1  Starting
+ Container core-redis-1  Started
+ Container core-mcpany-server-1  Starting
+ Container core-prometheus-1  Started
+ Container core-mcpany-server-1  Started
+ Container core-ui-1  Starting
+ Container core-ui-1  Started
+ Container core-redis-1  Waiting
+ Container core-prometheus-1  Waiting
+ Container core-ui-1  Waiting
+ Container core-mcpany-server-1  Waiting
+ Container core-prometheus-1  Healthy
+ Container core-ui-1  Healthy
+ Container core-redis-1  Healthy
+ Container core-mcpany-server-1  Healthy
+    docker_compose_test.go:111: Verifying mcpany-server health...
+    docker_compose_test.go:115: Verifying Prometheus metrics...
+    docker_compose_test.go:342: Found metric: map[__name__:up instance:mcpany-server:50050 job:mcpany] value: 1
+    docker_compose_test.go:129: Switching to example docker-compose...
+    docker_compose_test.go:287: Running: docker compose down
+ Container core-ui-1  Stopping
+ Container core-prometheus-1  Stopping
+ Container core-prometheus-1  Stopped
+ Container core-prometheus-1  Removing
+ Container core-prometheus-1  Removed
+ Container core-ui-1  Stopped
+ Container core-ui-1  Removing
+ Container core-ui-1  Removed
+ Container core-mcpany-server-1  Stopping
+ Container core-mcpany-server-1  Stopped
+ Container core-mcpany-server-1  Removing
+ Container core-mcpany-server-1  Removed
+ Container core-redis-1  Stopping
+ Container core-redis-1  Stopped
+ Container core-redis-1  Removing
+ Container core-redis-1  Removed
+ Network core_mcpany-net  Removing
+ Network core_mcpany-net  Removed
+    docker_compose_test.go:287: Running: docker compose -f server/examples/docker-compose-demo/docker-compose.yml up -d --wait
+ Container docker-compose-demo-http-echo-server-1  Running
+ Container docker-compose-demo-mcpany-server-1  Recreate
+ Container docker-compose-demo-mcpany-server-1  Recreated
+ Container docker-compose-demo-http-echo-server-1  Waiting
+ Container docker-compose-demo-http-echo-server-1  Healthy
+ Container docker-compose-demo-mcpany-server-1  Starting
+ Container docker-compose-demo-mcpany-server-1  Started
+ Container docker-compose-demo-http-echo-server-1  Waiting
+ Container docker-compose-demo-mcpany-server-1  Waiting
+ Container docker-compose-demo-http-echo-server-1  Healthy
+ Container docker-compose-demo-mcpany-server-1  Healthy
+    docker_compose_test.go:137: Verifying example mcpany-server health...
+    docker_compose_test.go:141: Simulating Gemini CLI interaction with echo tool...
+    docker_compose_test.go:372: Available tools: [0xc00022e480]
+    docker_compose_test.go:381: Using tool name: docker-http-echo.echo
+    docker_compose_test.go:384: Calling echo tool...
+    docker_compose_test.go:144: Verifying tool execution metrics...
+    docker_compose_test.go:148: Starting Weather Service functional test...
+    docker_compose_test.go:163: Starting mcpany-server for weather test on port 42621...
+c69d8b0723a5ddef7177938f02d1adb1d4e3c83687c4ea24313d1271bb027311
+    docker_compose_test.go:186: Simulating Gemini CLI interaction with get_weather tool...
+    docker_compose_test.go:219: Available tools: [0xc00022e1e0 0xc00022e240]
+    docker_compose_test.go:228: Using tool name: wttrin_b658db5c.get_weather
+    docker_compose_test.go:231: Calling get_weather tool...
+    docker_compose_test.go:243: Weather tool response: {"current_condition":[{"FeelsLikeC":"7","FeelsLikeF":"45","cloudcover":"100","humidity":"87","localObsDateTime":"2025-12-20 11:51 PM","observation_time":"11:51 PM","precipInches":"0.0","precipMM":"0.0","pressure":"1007","pressureInches":"30","temp_C":"9","temp_F":"48","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"139","windspeedKmph":"11","windspeedMiles":"7"}],"nearest_area":[{"areaName":[{"value":"London"}],"country":[{"value":"United Kingdom"}],"latitude":"51.517","longitude":"-0.106","region":[{"value":"City of London, Greater London"}]}],"request":[{"query":"London, United Kingdom","type":"City"}],"weather":[{"astronomy":[{"moon_illumination":"0","moon_phase":"New Moon","moonrise":"09:04 AM","moonset":"03:39 PM","sunrise":"08:03 AM","sunset":"03:53 PM"}],"avgtempC":"7","avgtempF":"45","date":"2025-12-20","hourly":[{"DewPointC":"5","DewPointF":"41","FeelsLikeC":"5","FeelsLikeF":"41","HeatIndexC":"6","HeatIndexF":"43","WindChillC":"5","WindChillF":"41","WindGustKmph":"12","WindGustMiles":"7","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"0","chanceofrain":"0","chanceofremdry":"84","chanceofsnow":"0","chanceofsunshine":"88","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"13","diffRad":"0.0","humidity":"91","precipInches":"0.0","precipMM":"0.0","pressure":"1018","pressureInches":"30","shortRad":"0.0","tempC":"6","tempF":"43","time":"0","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"113","weatherDesc":[{"value":"Clear "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"S","winddirDegree":"184","windspeedKmph":"6","windspeedMiles":"4"},{"DewPointC":"5","DewPointF":"41","FeelsLikeC":"5","FeelsLikeF":"41","HeatIndexC":"6","HeatIndexF":"43","WindChillC":"5","WindChillF":"41","WindGustKmph":"12","WindGustMiles":"8","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"0","chanceofrain":"0","chanceofremdry":"90","chanceofsnow":"0","chanceofsunshine":"93","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"15","diffRad":"0.0","humidity":"91","precipInches":"0.0","precipMM":"0.0","pressure":"1016","pressureInches":"30","shortRad":"0.0","tempC":"6","tempF":"43","time":"300","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"113","weatherDesc":[{"value":"Clear "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SSE","winddirDegree":"166","windspeedKmph":"6","windspeedMiles":"4"},{"DewPointC":"5","DewPointF":"42","FeelsLikeC":"5","FeelsLikeF":"41","HeatIndexC":"6","HeatIndexF":"44","WindChillC":"5","WindChillF":"41","WindGustKmph":"15","WindGustMiles":"9","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"0","chanceofrain":"0","chanceofremdry":"84","chanceofsnow":"0","chanceofsunshine":"91","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"20","diffRad":"0.0","humidity":"92","precipInches":"0.0","precipMM":"0.0","pressure":"1014","pressureInches":"30","shortRad":"0.0","tempC":"6","tempF":"44","time":"600","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"113","weatherDesc":[{"value":"Clear "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SSE","winddirDegree":"156","windspeedKmph":"8","windspeedMiles":"5"},{"DewPointC":"6","DewPointF":"42","FeelsLikeC":"5","FeelsLikeF":"40","HeatIndexC":"7","HeatIndexF":"44","WindChillC":"5","WindChillF":"40","WindGustKmph":"16","WindGustMiles":"10","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"46","chanceofrain":"0","chanceofremdry":"90","chanceofsnow":"0","chanceofsunshine":"85","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"39","diffRad":"2.8","humidity":"93","precipInches":"0.0","precipMM":"0.0","pressure":"1013","pressureInches":"30","shortRad":"6.0","tempC":"7","tempF":"44","time":"900","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"116","weatherDesc":[{"value":"Partly Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SSE","winddirDegree":"151","windspeedKmph":"9","windspeedMiles":"6"},{"DewPointC":"5","DewPointF":"41","FeelsLikeC":"6","FeelsLikeF":"44","HeatIndexC":"9","HeatIndexF":"47","WindChillC":"6","WindChillF":"44","WindGustKmph":"18","WindGustMiles":"11","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"93","chanceofrain":"0","chanceofremdry":"81","chanceofsnow":"0","chanceofsunshine":"8","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"27.6","humidity":"78","precipInches":"0.0","precipMM":"0.0","pressure":"1010","pressureInches":"30","shortRad":"54.2","tempC":"9","tempF":"47","time":"1200","uvIndex":"1","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"138","windspeedKmph":"13","windspeedMiles":"8"},{"DewPointC":"5","DewPointF":"41","FeelsLikeC":"6","FeelsLikeF":"43","HeatIndexC":"9","HeatIndexF":"47","WindChillC":"6","WindChillF":"43","WindGustKmph":"21","WindGustMiles":"13","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"84","chanceofrain":"0","chanceofremdry":"94","chanceofsnow":"0","chanceofsunshine":"14","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"73","diffRad":"47.2","humidity":"79","precipInches":"0.0","precipMM":"0.0","pressure":"1008","pressureInches":"30","shortRad":"90.6","tempC":"9","tempF":"47","time":"1500","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"119","weatherDesc":[{"value":"Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"137","windspeedKmph":"14","windspeedMiles":"9"},{"DewPointC":"6","DewPointF":"43","FeelsLikeC":"5","FeelsLikeF":"42","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"5","WindChillF":"42","WindGustKmph":"19","WindGustMiles":"12","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"90","chanceofrain":"0","chanceofremdry":"88","chanceofsnow":"0","chanceofsunshine":"12","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"24.6","humidity":"88","precipInches":"0.0","precipMM":"0.0","pressure":"1007","pressureInches":"30","shortRad":"47.4","tempC":"8","tempF":"46","time":"1800","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"ESE","winddirDegree":"118","windspeedKmph":"14","windspeedMiles":"9"},{"DewPointC":"6","DewPointF":"44","FeelsLikeC":"6","FeelsLikeF":"43","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"6","WindChillF":"43","WindGustKmph":"17","WindGustMiles":"10","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"89","chanceofrain":"0","chanceofremdry":"87","chanceofsnow":"0","chanceofsunshine":"10","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"90","precipInches":"0.0","precipMM":"0.0","pressure":"1006","pressureInches":"30","shortRad":"0.0","tempC":"8","tempF":"46","time":"2100","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"ESE","winddirDegree":"120","windspeedKmph":"12","windspeedMiles":"7"}],"maxtempC":"9","maxtempF":"48","mintempC":"6","mintempF":"43","sunHour":"5.5","totalSnow_cm":"0.0","uvIndex":"0"},{"astronomy":[{"moon_illumination":"1","moon_phase":"Waxing Crescent","moonrise":"09:45 AM","moonset":"04:45 PM","sunrise":"08:04 AM","sunset":"03:54 PM"}],"avgtempC":"9","avgtempF":"48","date":"2025-12-21","hourly":[{"DewPointC":"7","DewPointF":"45","FeelsLikeC":"7","FeelsLikeF":"44","HeatIndexC":"9","HeatIndexF":"47","WindChillC":"7","WindChillF":"44","WindGustKmph":"18","WindGustMiles":"11","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"91","chanceofrain":"70","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"93","precipInches":"0.0","precipMM":"0.0","pressure":"1005","pressureInches":"30","shortRad":"0.0","tempC":"9","tempF":"47","time":"0","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"176","weatherDesc":[{"value":"Patchy rain nearby"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SSE","winddirDegree":"149","windspeedKmph":"12","windspeedMiles":"7"},{"DewPointC":"7","DewPointF":"44","FeelsLikeC":"6","FeelsLikeF":"43","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"6","WindChillF":"43","WindGustKmph":"17","WindGustMiles":"11","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"46","chanceofrain":"0","chanceofremdry":"85","chanceofsnow":"0","chanceofsunshine":"88","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"55","diffRad":"0.0","humidity":"91","precipInches":"0.0","precipMM":"0.0","pressure":"1005","pressureInches":"30","shortRad":"0.0","tempC":"8","tempF":"46","time":"300","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"116","weatherDesc":[{"value":"Partly Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"127","windspeedKmph":"10","windspeedMiles":"6"},{"DewPointC":"6","DewPointF":"43","FeelsLikeC":"6","FeelsLikeF":"43","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"6","WindChillF":"43","WindGustKmph":"19","WindGustMiles":"12","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"86","chanceofrain":"78","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"87","diffRad":"0.0","humidity":"89","precipInches":"0.0","precipMM":"0.0","pressure":"1005","pressureInches":"30","shortRad":"0.0","tempC":"8","tempF":"46","time":"600","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"176","weatherDesc":[{"value":"Patchy rain nearby"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"125","windspeedKmph":"12","windspeedMiles":"7"},{"DewPointC":"6","DewPointF":"43","FeelsLikeC":"6","FeelsLikeF":"42","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"6","WindChillF":"42","WindGustKmph":"17","WindGustMiles":"10","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"45","chanceofrain":"0","chanceofremdry":"89","chanceofsnow":"0","chanceofsunshine":"72","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"61","diffRad":"2.4","humidity":"91","precipInches":"0.0","precipMM":"0.0","pressure":"1005","pressureInches":"30","shortRad":"5.0","tempC":"8","tempF":"46","time":"900","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"116","weatherDesc":[{"value":"Partly Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"ESE","winddirDegree":"104","windspeedKmph":"10","windspeedMiles":"6"},{"DewPointC":"8","DewPointF":"46","FeelsLikeC":"8","FeelsLikeF":"46","HeatIndexC":"10","HeatIndexF":"49","WindChillC":"8","WindChillF":"46","WindGustKmph":"20","WindGustMiles":"12","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"89","chanceofrain":"0","chanceofremdry":"91","chanceofsnow":"0","chanceofsunshine":"15","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"20.8","humidity":"88","precipInches":"0.0","precipMM":"0.0","pressure":"1003","pressureInches":"30","shortRad":"40.2","tempC":"10","tempF":"49","time":"1200","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"ESE","winddirDegree":"105","windspeedKmph":"14","windspeedMiles":"9"},{"DewPointC":"8","DewPointF":"46","FeelsLikeC":"8","FeelsLikeF":"46","HeatIndexC":"10","HeatIndexF":"49","WindChillC":"8","WindChillF":"46","WindGustKmph":"18","WindGustMiles":"11","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"85","chanceofrain":"100","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"36.0","humidity":"87","precipInches":"0.0","precipMM":"0.2","pressure":"1002","pressureInches":"30","shortRad":"67.2","tempC":"10","tempF":"49","time":"1500","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"353","weatherDesc":[{"value":"Light rain shower"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"ESE","winddirDegree":"111","windspeedKmph":"12","windspeedMiles":"7"},{"DewPointC":"8","DewPointF":"46","FeelsLikeC":"8","FeelsLikeF":"46","HeatIndexC":"9","HeatIndexF":"48","WindChillC":"8","WindChillF":"46","WindGustKmph":"12","WindGustMiles":"7","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"93","chanceofrain":"100","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"18.5","humidity":"93","precipInches":"0.0","precipMM":"0.3","pressure":"1001","pressureInches":"30","shortRad":"34.5","tempC":"9","tempF":"48","time":"1800","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"353","weatherDesc":[{"value":"Light rain shower"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"E","winddirDegree":"93","windspeedKmph":"8","windspeedMiles":"5"},{"DewPointC":"8","DewPointF":"46","FeelsLikeC":"8","FeelsLikeF":"47","HeatIndexC":"9","HeatIndexF":"48","WindChillC":"8","WindChillF":"47","WindGustKmph":"9","WindGustMiles":"6","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"92","chanceofrain":"100","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"94","precipInches":"0.0","precipMM":"0.5","pressure":"1001","pressureInches":"30","shortRad":"0.0","tempC":"9","tempF":"48","time":"2100","uvIndex":"0","visibility":"2","visibilityMiles":"1","weatherCode":"266","weatherDesc":[{"value":"Light drizzle"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"140","windspeedKmph":"6","windspeedMiles":"4"}],"maxtempC":"10","maxtempF":"50","mintempC":"8","mintempF":"46","sunHour":"5.3","totalSnow_cm":"0.0","uvIndex":"0"},{"astronomy":[{"moon_illumination":"4","moon_phase":"Waxing Crescent","moonrise":"10:14 AM","moonset":"06:00 PM","sunrise":"08:04 AM","sunset":"03:54 PM"}],"avgtempC":"8","avgtempF":"47","date":"2025-12-22","hourly":[{"DewPointC":"8","DewPointF":"46","FeelsLikeC":"9","FeelsLikeF":"47","HeatIndexC":"9","HeatIndexF":"47","WindChillC":"9","WindChillF":"47","WindGustKmph":"4","WindGustMiles":"3","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"92","chanceofrain":"100","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"94","precipInches":"0.0","precipMM":"0.3","pressure":"1002","pressureInches":"30","shortRad":"0.0","tempC":"9","tempF":"47","time":"0","uvIndex":"0","visibility":"2","visibilityMiles":"1","weatherCode":"266","weatherDesc":[{"value":"Light drizzle"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"S","winddirDegree":"180","windspeedKmph":"3","windspeedMiles":"2"},{"DewPointC":"7","DewPointF":"45","FeelsLikeC":"9","FeelsLikeF":"48","HeatIndexC":"9","HeatIndexF":"47","WindChillC":"9","WindChillF":"48","WindGustKmph":"6","WindGustMiles":"3","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"83","chanceofrain":"0","chanceofremdry":"93","chanceofsnow":"0","chanceofsunshine":"11","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"90","precipInches":"0.0","precipMM":"0.0","pressure":"1003","pressureInches":"30","shortRad":"0.0","tempC":"9","tempF":"47","time":"300","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"122","weatherDesc":[{"value":"Overcast "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"S","winddirDegree":"172","windspeedKmph":"4","windspeedMiles":"2"},{"DewPointC":"7","DewPointF":"44","FeelsLikeC":"8","FeelsLikeF":"46","HeatIndexC":"8","HeatIndexF":"47","WindChillC":"8","WindChillF":"46","WindGustKmph":"8","WindGustMiles":"5","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"86","chanceofrain":"82","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.0","humidity":"89","precipInches":"0.0","precipMM":"0.0","pressure":"1003","pressureInches":"30","shortRad":"0.0","tempC":"8","tempF":"47","time":"600","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"176","weatherDesc":[{"value":"Patchy rain nearby"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"143","windspeedKmph":"5","windspeedMiles":"3"},{"DewPointC":"7","DewPointF":"44","FeelsLikeC":"8","FeelsLikeF":"46","HeatIndexC":"8","HeatIndexF":"47","WindChillC":"8","WindChillF":"46","WindGustKmph":"8","WindGustMiles":"5","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"84","chanceofrain":"75","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"100","diffRad":"0.7","humidity":"89","precipInches":"0.0","precipMM":"0.0","pressure":"1004","pressureInches":"30","shortRad":"1.2","tempC":"8","tempF":"47","time":"900","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"176","weatherDesc":[{"value":"Patchy rain nearby"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"SE","winddirDegree":"132","windspeedKmph":"5","windspeedMiles":"3"},{"DewPointC":"7","DewPointF":"45","FeelsLikeC":"9","FeelsLikeF":"48","HeatIndexC":"9","HeatIndexF":"49","WindChillC":"9","WindChillF":"48","WindGustKmph":"8","WindGustMiles":"5","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"93","chanceofrain":"71","chanceofremdry":"0","chanceofsnow":"0","chanceofsunshine":"0","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"78","diffRad":"18.3","humidity":"85","precipInches":"0.0","precipMM":"0.0","pressure":"1005","pressureInches":"30","shortRad":"35.0","tempC":"9","tempF":"49","time":"1200","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"176","weatherDesc":[{"value":"Patchy rain nearby"}],"weatherIconUrl":[{"value":""}],"winddir16Point":"S","winddirDegree":"189","windspeedKmph":"6","windspeedMiles":"4"},{"DewPointC":"7","DewPointF":"44","FeelsLikeC":"10","FeelsLikeF":"49","HeatIndexC":"9","HeatIndexF":"49","WindChillC":"10","WindChillF":"49","WindGustKmph":"5","WindGustMiles":"3","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"37","chanceofrain":"0","chanceofremdry":"90","chanceofsnow":"0","chanceofsunshine":"79","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"41","diffRad":"43.7","humidity":"84","precipInches":"0.0","precipMM":"0.0","pressure":"1006","pressureInches":"30","shortRad":"84.8","tempC":"9","tempF":"49","time":"1500","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"116","weatherDesc":[{"value":"Partly Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"W","winddirDegree":"262","windspeedKmph":"3","windspeedMiles":"2"},{"DewPointC":"6","DewPointF":"42","FeelsLikeC":"7","FeelsLikeF":"44","HeatIndexC":"8","HeatIndexF":"46","WindChillC":"7","WindChillF":"44","WindGustKmph":"9","WindGustMiles":"6","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"83","chanceofrain":"0","chanceofremdry":"91","chanceofsnow":"0","chanceofsunshine":"8","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"69","diffRad":"23.0","humidity":"89","precipInches":"0.0","precipMM":"0.0","pressure":"1007","pressureInches":"30","shortRad":"45.0","tempC":"8","tempF":"46","time":"1800","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"119","weatherDesc":[{"value":"Cloudy "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"WSW","winddirDegree":"254","windspeedKmph":"6","windspeedMiles":"4"},{"DewPointC":"5","DewPointF":"41","FeelsLikeC":"6","FeelsLikeF":"43","HeatIndexC":"7","HeatIndexF":"44","WindChillC":"6","WindChillF":"43","WindGustKmph":"7","WindGustMiles":"5","chanceoffog":"0","chanceoffrost":"0","chanceofhightemp":"0","chanceofovercast":"0","chanceofrain":"0","chanceofremdry":"85","chanceofsnow":"0","chanceofsunshine":"85","chanceofthunder":"0","chanceofwindy":"0","cloudcover":"12","diffRad":"0.0","humidity":"87","precipInches":"0.0","precipMM":"0.0","pressure":"1008","pressureInches":"30","shortRad":"0.0","tempC":"7","tempF":"44","time":"2100","uvIndex":"0","visibility":"10","visibilityMiles":"6","weatherCode":"113","weatherDesc":[{"value":"Clear "}],"weatherIconUrl":[{"value":""}],"winddir16Point":"WSW","winddirDegree":"248","windspeedKmph":"4","windspeedMiles":"3"}],"maxtempC":"10","maxtempF":"49","mintempC":"6","mintempF":"43","sunHour":"5.8","totalSnow_cm":"0.0","uvIndex":"0"}]}
+    docker_compose_test.go:190: Verifying tool execution metrics for weather service...
+    docker_compose_test.go:199: Verifying metrics for tool: wttrin_b658db5c.get_weather, service: wttrin_b658db5c
+    docker_compose_test.go:151: E2E Test Passed!
+    docker_compose_test.go:87: Cleaning up...
+Error response from daemon: No such container: core-mcpany-server-1
+time=2025-12-20T23:50:51.263Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:50:51.264Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:50:51.264Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:50:51.264Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:50:51.264Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:50:51.264Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:50:51.281Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:50:51.282Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc0005e49f0 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:50:51.282Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:50:51.282Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:51.284Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:56.649Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:50:56.649Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=58.35µs
+time=2025-12-20T23:50:56.650Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:50:56.650Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=22.2µs
+time=2025-12-20T23:50:56.650Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:50:56.651Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=46.22µs
+time=2025-12-20T23:50:56.651Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:50:56.651Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:50:56.664Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:50:56.664Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:50:56.664Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=12.51719ms
+time=2025-12-20T23:50:57.159Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:50:57.159Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:50:57.159Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=wttr.in priority=0
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=wttr.in
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:50:57.201Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=wttrin_b658db5c.get_moon_phase toolName=wttrin_b658db5c.get_moon_phase tool="&{Meta:map[] Annotations:0xc000d16600 Description:Get the Moon phase information (returns text/ASCII art).\n InputSchema:map[properties:map[args:map[default: description:Optional arguments to append (e.g. '@2016-10-25' for date, or ',London' for location). type:string]] type:object] Name:wttrin_b658db5c.get_moon_phase OutputSchema:<nil> Title:}"
+time=2025-12-20T23:50:57.203Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:50:57.203Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=wttrin_b658db5c.get_weather toolName=wttrin_b658db5c.get_weather tool="&{Meta:map[] Annotations:0xc00128c000 Description:Get the weather forecast for a location in JSON format.\nBy default uses 'en' language.\n InputSchema:map[properties:map[lang:map[default:en description:Language code (e.g. 'en', 'fr', 'de'). Defaults to 'en'. type:string] location:map[description:The location to query. Can be:\n- City name (e.g. \"Paris\")\n- Airport code (e.g. \"muc\")\n- Area code (e.g. \"94107\")\n- GPS coordinates (e.g. \"-78.46,106.79\")\n- Special locations: \"~Eiffel+tower\"\n type:string]] required:[location] type:object] Name:wttrin_b658db5c.get_weather OutputSchema:<nil> Title:}"
+time=2025-12-20T23:50:57.204Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=wttrin_b658db5c toolsAdded=2
+time=2025-12-20T23:50:57.360Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.361Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.361Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.361Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.361Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.362Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.362Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.362Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.363Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:57.363Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=wttr.in status=up
+time=2025-12-20T23:50:58.067Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:50:58.067Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=52.92µs
+time=2025-12-20T23:50:58.070Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:50:58.070Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=29.39µs
+time=2025-12-20T23:50:58.070Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:50:58.070Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=74.37µs
+time=2025-12-20T23:50:58.071Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:50:58.071Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=wttrin_b658db5c.get_weather arguments=map[]
+time=2025-12-20T23:50:59.117Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[current_condition:[map[FeelsLikeC:7 FeelsLikeF:45 cloudcover:100 humidity:87 localObsDateTime:2025-12-20 11:51 PM observation_time:11:51 PM precipInches:0.0 precipMM:0.0 pressure:1007 pressureInches:30 temp_C:9 temp_F:48 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:139 windspeedKmph:11 windspeedMiles:7]] nearest_area:[map[areaName:[map[value:London]] country:[map[value:United Kingdom]] latitude:51.517 longitude:-0.106 region:[map[value:City of London, Greater London]]]] request:[map[query:London, United Kingdom type:City]] weather:[map[astronomy:[map[moon_illumination:0 moon_phase:New Moon moonrise:09:04 AM moonset:03:39 PM sunrise:08:03 AM sunset:03:53 PM]] avgtempC:7 avgtempF:45 date:2025-12-20 hourly:[map[DewPointC:5 DewPointF:41 FeelsLikeC:5 FeelsLikeF:41 HeatIndexC:6 HeatIndexF:43 WindChillC:5 WindChillF:41 WindGustKmph:12 WindGustMiles:7 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:0 chanceofrain:0 chanceofremdry:84 chanceofsnow:0 chanceofsunshine:88 chanceofthunder:0 chanceofwindy:0 cloudcover:13 diffRad:0.0 humidity:91 precipInches:0.0 precipMM:0.0 pressure:1018 pressureInches:30 shortRad:0.0 tempC:6 tempF:43 time:0 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:113 weatherDesc:[map[value:Clear ]] weatherIconUrl:[map[value:]] winddir16Point:S winddirDegree:184 windspeedKmph:6 windspeedMiles:4] map[DewPointC:5 DewPointF:41 FeelsLikeC:5 FeelsLikeF:41 HeatIndexC:6 HeatIndexF:43 WindChillC:5 WindChillF:41 WindGustKmph:12 WindGustMiles:8 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:0 chanceofrain:0 chanceofremdry:90 chanceofsnow:0 chanceofsunshine:93 chanceofthunder:0 chanceofwindy:0 cloudcover:15 diffRad:0.0 humidity:91 precipInches:0.0 precipMM:0.0 pressure:1016 pressureInches:30 shortRad:0.0 tempC:6 tempF:43 time:300 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:113 weatherDesc:[map[value:Clear ]] weatherIconUrl:[map[value:]] winddir16Point:SSE winddirDegree:166 windspeedKmph:6 windspeedMiles:4] map[DewPointC:5 DewPointF:42 FeelsLikeC:5 FeelsLikeF:41 HeatIndexC:6 HeatIndexF:44 WindChillC:5 WindChillF:41 WindGustKmph:15 WindGustMiles:9 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:0 chanceofrain:0 chanceofremdry:84 chanceofsnow:0 chanceofsunshine:91 chanceofthunder:0 chanceofwindy:0 cloudcover:20 diffRad:0.0 humidity:92 precipInches:0.0 precipMM:0.0 pressure:1014 pressureInches:30 shortRad:0.0 tempC:6 tempF:44 time:600 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:113 weatherDesc:[map[value:Clear ]] weatherIconUrl:[map[value:]] winddir16Point:SSE winddirDegree:156 windspeedKmph:8 windspeedMiles:5] map[DewPointC:6 DewPointF:42 FeelsLikeC:5 FeelsLikeF:40 HeatIndexC:7 HeatIndexF:44 WindChillC:5 WindChillF:40 WindGustKmph:16 WindGustMiles:10 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:46 chanceofrain:0 chanceofremdry:90 chanceofsnow:0 chanceofsunshine:85 chanceofthunder:0 chanceofwindy:0 cloudcover:39 diffRad:2.8 humidity:93 precipInches:0.0 precipMM:0.0 pressure:1013 pressureInches:30 shortRad:6.0 tempC:7 tempF:44 time:900 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:116 weatherDesc:[map[value:Partly Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:SSE winddirDegree:151 windspeedKmph:9 windspeedMiles:6] map[DewPointC:5 DewPointF:41 FeelsLikeC:6 FeelsLikeF:44 HeatIndexC:9 HeatIndexF:47 WindChillC:6 WindChillF:44 WindGustKmph:18 WindGustMiles:11 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:93 chanceofrain:0 chanceofremdry:81 chanceofsnow:0 chanceofsunshine:8 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:27.6 humidity:78 precipInches:0.0 precipMM:0.0 pressure:1010 pressureInches:30 shortRad:54.2 tempC:9 tempF:47 time:1200 uvIndex:1 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast ]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:138 windspeedKmph:13 windspeedMiles:8] map[DewPointC:5 DewPointF:41 FeelsLikeC:6 FeelsLikeF:43 HeatIndexC:9 HeatIndexF:47 WindChillC:6 WindChillF:43 WindGustKmph:21 WindGustMiles:13 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:84 chanceofrain:0 chanceofremdry:94 chanceofsnow:0 chanceofsunshine:14 chanceofthunder:0 chanceofwindy:0 cloudcover:73 diffRad:47.2 humidity:79 precipInches:0.0 precipMM:0.0 pressure:1008 pressureInches:30 shortRad:90.6 tempC:9 tempF:47 time:1500 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:119 weatherDesc:[map[value:Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:137 windspeedKmph:14 windspeedMiles:9] map[DewPointC:6 DewPointF:43 FeelsLikeC:5 FeelsLikeF:42 HeatIndexC:8 HeatIndexF:46 WindChillC:5 WindChillF:42 WindGustKmph:19 WindGustMiles:12 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:90 chanceofrain:0 chanceofremdry:88 chanceofsnow:0 chanceofsunshine:12 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:24.6 humidity:88 precipInches:0.0 precipMM:0.0 pressure:1007 pressureInches:30 shortRad:47.4 tempC:8 tempF:46 time:1800 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast ]] weatherIconUrl:[map[value:]] winddir16Point:ESE winddirDegree:118 windspeedKmph:14 windspeedMiles:9] map[DewPointC:6 DewPointF:44 FeelsLikeC:6 FeelsLikeF:43 HeatIndexC:8 HeatIndexF:46 WindChillC:6 WindChillF:43 WindGustKmph:17 WindGustMiles:10 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:89 chanceofrain:0 chanceofremdry:87 chanceofsnow:0 chanceofsunshine:10 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:90 precipInches:0.0 precipMM:0.0 pressure:1006 pressureInches:30 shortRad:0.0 tempC:8 tempF:46 time:2100 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast ]] weatherIconUrl:[map[value:]] winddir16Point:ESE winddirDegree:120 windspeedKmph:12 windspeedMiles:7]] maxtempC:9 maxtempF:48 mintempC:6 mintempF:43 sunHour:5.5 totalSnow_cm:0.0 uvIndex:0] map[astronomy:[map[moon_illumination:1 moon_phase:Waxing Crescent moonrise:09:45 AM moonset:04:45 PM sunrise:08:04 AM sunset:03:54 PM]] avgtempC:9 avgtempF:48 date:2025-12-21 hourly:[map[DewPointC:7 DewPointF:45 FeelsLikeC:7 FeelsLikeF:44 HeatIndexC:9 HeatIndexF:47 WindChillC:7 WindChillF:44 WindGustKmph:18 WindGustMiles:11 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:91 chanceofrain:70 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:93 precipInches:0.0 precipMM:0.0 pressure:1005 pressureInches:30 shortRad:0.0 tempC:9 tempF:47 time:0 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:176 weatherDesc:[map[value:Patchy rain nearby]] weatherIconUrl:[map[value:]] winddir16Point:SSE winddirDegree:149 windspeedKmph:12 windspeedMiles:7] map[DewPointC:7 DewPointF:44 FeelsLikeC:6 FeelsLikeF:43 HeatIndexC:8 HeatIndexF:46 WindChillC:6 WindChillF:43 WindGustKmph:17 WindGustMiles:11 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:46 chanceofrain:0 chanceofremdry:85 chanceofsnow:0 chanceofsunshine:88 chanceofthunder:0 chanceofwindy:0 cloudcover:55 diffRad:0.0 humidity:91 precipInches:0.0 precipMM:0.0 pressure:1005 pressureInches:30 shortRad:0.0 tempC:8 tempF:46 time:300 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:116 weatherDesc:[map[value:Partly Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:127 windspeedKmph:10 windspeedMiles:6] map[DewPointC:6 DewPointF:43 FeelsLikeC:6 FeelsLikeF:43 HeatIndexC:8 HeatIndexF:46 WindChillC:6 WindChillF:43 WindGustKmph:19 WindGustMiles:12 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:86 chanceofrain:78 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:87 diffRad:0.0 humidity:89 precipInches:0.0 precipMM:0.0 pressure:1005 pressureInches:30 shortRad:0.0 tempC:8 tempF:46 time:600 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:176 weatherDesc:[map[value:Patchy rain nearby]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:125 windspeedKmph:12 windspeedMiles:7] map[DewPointC:6 DewPointF:43 FeelsLikeC:6 FeelsLikeF:42 HeatIndexC:8 HeatIndexF:46 WindChillC:6 WindChillF:42 WindGustKmph:17 WindGustMiles:10 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:45 chanceofrain:0 chanceofremdry:89 chanceofsnow:0 chanceofsunshine:72 chanceofthunder:0 chanceofwindy:0 cloudcover:61 diffRad:2.4 humidity:91 precipInches:0.0 precipMM:0.0 pressure:1005 pressureInches:30 shortRad:5.0 tempC:8 tempF:46 time:900 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:116 weatherDesc:[map[value:Partly Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:ESE winddirDegree:104 windspeedKmph:10 windspeedMiles:6] map[DewPointC:8 DewPointF:46 FeelsLikeC:8 FeelsLikeF:46 HeatIndexC:10 HeatIndexF:49 WindChillC:8 WindChillF:46 WindGustKmph:20 WindGustMiles:12 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:89 chanceofrain:0 chanceofremdry:91 chanceofsnow:0 chanceofsunshine:15 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:20.8 humidity:88 precipInches:0.0 precipMM:0.0 pressure:1003 pressureInches:30 shortRad:40.2 tempC:10 tempF:49 time:1200 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast ]] weatherIconUrl:[map[value:]] winddir16Point:ESE winddirDegree:105 windspeedKmph:14 windspeedMiles:9] map[DewPointC:8 DewPointF:46 FeelsLikeC:8 FeelsLikeF:46 HeatIndexC:10 HeatIndexF:49 WindChillC:8 WindChillF:46 WindGustKmph:18 WindGustMiles:11 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:85 chanceofrain:100 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:36.0 humidity:87 precipInches:0.0 precipMM:0.2 pressure:1002 pressureInches:30 shortRad:67.2 tempC:10 tempF:49 time:1500 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:353 weatherDesc:[map[value:Light rain shower]] weatherIconUrl:[map[value:]] winddir16Point:ESE winddirDegree:111 windspeedKmph:12 windspeedMiles:7] map[DewPointC:8 DewPointF:46 FeelsLikeC:8 FeelsLikeF:46 HeatIndexC:9 HeatIndexF:48 WindChillC:8 WindChillF:46 WindGustKmph:12 WindGustMiles:7 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:93 chanceofrain:100 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:18.5 humidity:93 precipInches:0.0 precipMM:0.3 pressure:1001 pressureInches:30 shortRad:34.5 tempC:9 tempF:48 time:1800 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:353 weatherDesc:[map[value:Light rain shower]] weatherIconUrl:[map[value:]] winddir16Point:E winddirDegree:93 windspeedKmph:8 windspeedMiles:5] map[DewPointC:8 DewPointF:46 FeelsLikeC:8 FeelsLikeF:47 HeatIndexC:9 HeatIndexF:48 WindChillC:8 WindChillF:47 WindGustKmph:9 WindGustMiles:6 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:92 chanceofrain:100 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:94 precipInches:0.0 precipMM:0.5 pressure:1001 pressureInches:30 shortRad:0.0 tempC:9 tempF:48 time:2100 uvIndex:0 visibility:2 visibilityMiles:1 weatherCode:266 weatherDesc:[map[value:Light drizzle]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:140 windspeedKmph:6 windspeedMiles:4]] maxtempC:10 maxtempF:50 mintempC:8 mintempF:46 sunHour:5.3 totalSnow_cm:0.0 uvIndex:0] map[astronomy:[map[moon_illumination:4 moon_phase:Waxing Crescent moonrise:10:14 AM moonset:06:00 PM sunrise:08:04 AM sunset:03:54 PM]] avgtempC:8 avgtempF:47 date:2025-12-22 hourly:[map[DewPointC:8 DewPointF:46 FeelsLikeC:9 FeelsLikeF:47 HeatIndexC:9 HeatIndexF:47 WindChillC:9 WindChillF:47 WindGustKmph:4 WindGustMiles:3 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:92 chanceofrain:100 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:94 precipInches:0.0 precipMM:0.3 pressure:1002 pressureInches:30 shortRad:0.0 tempC:9 tempF:47 time:0 uvIndex:0 visibility:2 visibilityMiles:1 weatherCode:266 weatherDesc:[map[value:Light drizzle]] weatherIconUrl:[map[value:]] winddir16Point:S winddirDegree:180 windspeedKmph:3 windspeedMiles:2] map[DewPointC:7 DewPointF:45 FeelsLikeC:9 FeelsLikeF:48 HeatIndexC:9 HeatIndexF:47 WindChillC:9 WindChillF:48 WindGustKmph:6 WindGustMiles:3 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:83 chanceofrain:0 chanceofremdry:93 chanceofsnow:0 chanceofsunshine:11 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:90 precipInches:0.0 precipMM:0.0 pressure:1003 pressureInches:30 shortRad:0.0 tempC:9 tempF:47 time:300 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:122 weatherDesc:[map[value:Overcast ]] weatherIconUrl:[map[value:]] winddir16Point:S winddirDegree:172 windspeedKmph:4 windspeedMiles:2] map[DewPointC:7 DewPointF:44 FeelsLikeC:8 FeelsLikeF:46 HeatIndexC:8 HeatIndexF:47 WindChillC:8 WindChillF:46 WindGustKmph:8 WindGustMiles:5 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:86 chanceofrain:82 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.0 humidity:89 precipInches:0.0 precipMM:0.0 pressure:1003 pressureInches:30 shortRad:0.0 tempC:8 tempF:47 time:600 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:176 weatherDesc:[map[value:Patchy rain nearby]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:143 windspeedKmph:5 windspeedMiles:3] map[DewPointC:7 DewPointF:44 FeelsLikeC:8 FeelsLikeF:46 HeatIndexC:8 HeatIndexF:47 WindChillC:8 WindChillF:46 WindGustKmph:8 WindGustMiles:5 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:84 chanceofrain:75 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:100 diffRad:0.7 humidity:89 precipInches:0.0 precipMM:0.0 pressure:1004 pressureInches:30 shortRad:1.2 tempC:8 tempF:47 time:900 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:176 weatherDesc:[map[value:Patchy rain nearby]] weatherIconUrl:[map[value:]] winddir16Point:SE winddirDegree:132 windspeedKmph:5 windspeedMiles:3] map[DewPointC:7 DewPointF:45 FeelsLikeC:9 FeelsLikeF:48 HeatIndexC:9 HeatIndexF:49 WindChillC:9 WindChillF:48 WindGustKmph:8 WindGustMiles:5 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:93 chanceofrain:71 chanceofremdry:0 chanceofsnow:0 chanceofsunshine:0 chanceofthunder:0 chanceofwindy:0 cloudcover:78 diffRad:18.3 humidity:85 precipInches:0.0 precipMM:0.0 pressure:1005 pressureInches:30 shortRad:35.0 tempC:9 tempF:49 time:1200 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:176 weatherDesc:[map[value:Patchy rain nearby]] weatherIconUrl:[map[value:]] winddir16Point:S winddirDegree:189 windspeedKmph:6 windspeedMiles:4] map[DewPointC:7 DewPointF:44 FeelsLikeC:10 FeelsLikeF:49 HeatIndexC:9 HeatIndexF:49 WindChillC:10 WindChillF:49 WindGustKmph:5 WindGustMiles:3 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:37 chanceofrain:0 chanceofremdry:90 chanceofsnow:0 chanceofsunshine:79 chanceofthunder:0 chanceofwindy:0 cloudcover:41 diffRad:43.7 humidity:84 precipInches:0.0 precipMM:0.0 pressure:1006 pressureInches:30 shortRad:84.8 tempC:9 tempF:49 time:1500 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:116 weatherDesc:[map[value:Partly Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:W winddirDegree:262 windspeedKmph:3 windspeedMiles:2] map[DewPointC:6 DewPointF:42 FeelsLikeC:7 FeelsLikeF:44 HeatIndexC:8 HeatIndexF:46 WindChillC:7 WindChillF:44 WindGustKmph:9 WindGustMiles:6 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:83 chanceofrain:0 chanceofremdry:91 chanceofsnow:0 chanceofsunshine:8 chanceofthunder:0 chanceofwindy:0 cloudcover:69 diffRad:23.0 humidity:89 precipInches:0.0 precipMM:0.0 pressure:1007 pressureInches:30 shortRad:45.0 tempC:8 tempF:46 time:1800 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:119 weatherDesc:[map[value:Cloudy ]] weatherIconUrl:[map[value:]] winddir16Point:WSW winddirDegree:254 windspeedKmph:6 windspeedMiles:4] map[DewPointC:5 DewPointF:41 FeelsLikeC:6 FeelsLikeF:43 HeatIndexC:7 HeatIndexF:44 WindChillC:6 WindChillF:43 WindGustKmph:7 WindGustMiles:5 chanceoffog:0 chanceoffrost:0 chanceofhightemp:0 chanceofovercast:0 chanceofrain:0 chanceofremdry:85 chanceofsnow:0 chanceofsunshine:85 chanceofthunder:0 chanceofwindy:0 cloudcover:12 diffRad:0.0 humidity:87 precipInches:0.0 precipMM:0.0 pressure:1008 pressureInches:30 shortRad:0.0 tempC:7 tempF:44 time:2100 uvIndex:0 visibility:10 visibilityMiles:6 weatherCode:113 weatherDesc:[map[value:Clear ]] weatherIconUrl:[map[value:]] winddir16Point:WSW winddirDegree:248 windspeedKmph:4 windspeedMiles:3]] maxtempC:10 maxtempF:49 mintempC:6 mintempF:43 sunHour:5.8 totalSnow_cm:0.0 uvIndex:0]]]"
+time=2025-12-20T23:50:59.118Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=1.04693129s
+--- PASS: TestDockerComposeE2E (125.91s)
+PASS
+ok  	command-line-arguments	125.921s
