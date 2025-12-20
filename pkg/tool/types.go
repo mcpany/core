@@ -48,6 +48,8 @@ const contentTypeJSON = "application/json"
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	Tool() *v1.Tool
+	// MCPTool returns the MCP tool definition.
+	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
@@ -165,6 +167,8 @@ type PostCallHook interface {
 // invoking the gRPC method.
 type GRPCTool struct {
 	tool           *v1.Tool
+	mcpTool        *mcp.Tool
+	mcpToolOnce    sync.Once
 	poolManager    *pool.Manager
 	serviceID      string
 	method         protoreflect.MethodDescriptor
@@ -192,6 +196,18 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 // Tool returns the protobuf definition of the gRPC tool.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *GRPCTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the gRPC tool.
@@ -256,6 +272,8 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // input, handling parameter mapping, authentication, and transformations.
 type HTTPTool struct {
 	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
 	poolManager       *pool.Manager
 	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
@@ -301,6 +319,18 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 // Tool returns the protobuf definition of the HTTP tool.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *HTTPTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
@@ -652,6 +682,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // downstream MCP service.
 type MCPTool struct {
 	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
 	client            client.MCPClient
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
@@ -682,6 +714,18 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 // Tool returns the protobuf definition of the MCP tool.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *MCPTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the MCP tool.
@@ -803,6 +847,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // operation definition.
 type OpenAPITool struct {
 	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
 	client            client.HTTPClient
 	parameterDefs     map[string]string
 	method            string
@@ -845,6 +891,18 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 // Tool returns the protobuf definition of the OpenAPI tool.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *OpenAPITool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
@@ -1002,6 +1060,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 // environment variables.
 type CommandTool struct {
 	tool            *v1.Tool
+	mcpTool         *mcp.Tool
+	mcpToolOnce     sync.Once
 	service         *configv1.CommandLineUpstreamService
 	callDefinition  *configv1.CommandLineCallDefinition
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
@@ -1034,6 +1094,8 @@ func NewCommandTool(
 // environment variables.
 type LocalCommandTool struct {
 	tool           *v1.Tool
+	mcpTool        *mcp.Tool
+	mcpToolOnce    sync.Once
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
 	policies       []*configv1.CallPolicy
@@ -1063,6 +1125,18 @@ func NewLocalCommandTool(
 // Tool returns the protobuf definition of the command-line tool.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *LocalCommandTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
@@ -1247,6 +1321,18 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Tool returns the protobuf definition of the command-line tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *CommandTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.

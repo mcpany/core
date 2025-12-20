@@ -15,11 +15,13 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pion/webrtc/v3"
 )
 
@@ -47,6 +49,8 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 // server.
 type WebrtcTool struct {
 	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
 	webrtcPool        pool.Pool[*peerConnectionWrapper]
 	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
@@ -120,6 +124,18 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 // Tool returns the protobuf definition of the WebRTC tool.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *WebrtcTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
 }
 
 // GetCacheConfig returns the cache configuration for the WebRTC tool.

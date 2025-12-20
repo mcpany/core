@@ -8,11 +8,13 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
+	MCPToolFunc        func() *mcp.Tool
 	ExecuteFunc        func(ctx context.Context, req *ExecutionRequest) (any, error)
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
@@ -23,6 +25,14 @@ func (m *MockTool) Tool() *v1.Tool {
 		return m.ToolFunc()
 	}
 	return &v1.Tool{}
+}
+
+// MCPTool returns the MCP tool definition.
+func (m *MockTool) MCPTool() *mcp.Tool {
+	if m.MCPToolFunc != nil {
+		return m.MCPToolFunc()
+	}
+	return nil
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.

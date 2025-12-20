@@ -47,6 +47,11 @@ func (m *mockToolSimple) Tool() *routerv1.Tool {
 
 func (m *mockToolSimple) GetCacheConfig() *configv1.CacheConfig { return nil }
 
+func (m *mockToolSimple) MCPTool() *mcp.Tool {
+	t, _ := ConvertProtoToMCPTool(m.Tool())
+	return t
+}
+
 type mockMiddleware struct {
 	id     string
 	called bool
