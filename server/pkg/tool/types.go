@@ -40,7 +40,10 @@ import (
 	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-const contentTypeJSON = "application/json"
+const (
+	contentTypeJSON     = "application/json"
+	redactedPlaceholder = "[REDACTED]"
+)
 
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
@@ -603,7 +606,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			for k, v := range httpReq.Header {
 				val := strings.Join(v, ", ")
 				if isSensitiveHeader(k) {
-					val = "[REDACTED]"
+					val = redactedPlaceholder
 				}
 				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
 			}
@@ -662,7 +665,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		for k, v := range resp.Header {
 			val := strings.Join(v, ", ")
 			if isSensitiveHeader(k) {
-				val = "[REDACTED]"
+				val = redactedPlaceholder
 			}
 			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
 		}
@@ -1689,7 +1692,7 @@ func redactMap(m map[string]interface{}) map[string]interface{} {
 	newMap := make(map[string]interface{})
 	for k, v := range m {
 		if isSensitiveKey(k) {
-			newMap[k] = "[REDACTED]"
+			newMap[k] = redactedPlaceholder
 		} else {
 			if nestedMap, ok := v.(map[string]interface{}); ok {
 				newMap[k] = redactMap(nestedMap)
