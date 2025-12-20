@@ -70,7 +70,7 @@ func TestMCPListenAddress(t *testing.T) {
 		{
 			name:     "port only",
 			address:  "50050",
-			expected: "localhost:50050",
+			expected: "50050",
 		},
 		{
 			name:     "address with port",
@@ -85,12 +85,12 @@ func TestMCPListenAddress(t *testing.T) {
 		{
 			name:     "hostname without port",
 			address:  "mcpany.internal",
-			expected: "localhost:mcpany.internal",
+			expected: "mcpany.internal",
 		},
 		{
 			name:     "empty address",
 			address:  "",
-			expected: "localhost:",
+			expected: "",
 		},
 	}
 
@@ -124,7 +124,7 @@ func TestGlobalSettings(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, "", s.GRPCPort())
-	assert.Equal(t, "localhost:50050", s.MCPListenAddress())
+	assert.Equal(t, "50050", s.MCPListenAddress())
 	assert.False(t, s.IsDebug())
 	assert.False(t, s.Stdio())
 
