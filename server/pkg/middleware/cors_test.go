@@ -4,40 +4,46 @@
 package middleware_test
 
 import (
-	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/mcpany/core/pkg/middleware"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestCORSMiddleware(t *testing.T) {
-	t.Run("should call next handler", func(t *testing.T) {
-		mw := middleware.CORSMiddleware()
+	t.Run("should add CORS headers", func(t *testing.T) {
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
 
-		var nextCalled bool
-		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			nextCalled = true
-			return &mcp.CallToolResult{
-				Content: []mcp.Content{
-					&mcp.TextContent{Text: "test"},
-				},
-			}, nil
-		}
+		handler := middleware.CORSMiddleware(nextHandler)
 
-		handler := mw(nextHandler)
-		result, err := handler(context.Background(), "test.method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled, "next handler should be called")
+		req := httptest.NewRequest("GET", "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
 
-		callToolResult, ok := result.(*mcp.CallToolResult)
-		require.True(t, ok)
+		handler.ServeHTTP(w, req)
 
-		require.Len(t, callToolResult.Content, 1)
-		textContent, ok := callToolResult.Content[0].(*mcp.TextContent)
-		require.True(t, ok)
-		assert.Equal(t, "test", textContent.Text)
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, "*", w.Header().Get("Access-Control-Allow-Origin"))
+		assert.Contains(t, w.Header().Get("Access-Control-Allow-Methods"), "GET")
+	})
+
+	t.Run("should handle OPTIONS request", func(t *testing.T) {
+		// If next handler is reached, it returns 500, but CORS middleware should intercept OPTIONS
+		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		})
+
+		handler := middleware.CORSMiddleware(nextHandler)
+
+		req := httptest.NewRequest("OPTIONS", "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
+
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, "*", w.Header().Get("Access-Control-Allow-Origin"))
 	})
 }

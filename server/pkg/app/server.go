@@ -316,7 +316,6 @@ func (a *Application) Run(
 		log.Info("No services found in config, skipping service registration.")
 	}
 
-	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
 	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
 	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
@@ -882,7 +881,10 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(mux), "mcp-server"), shutdownTimeout)
+	// Apply CORS middleware to the entire mux (so it covers all endpoints including /mcp/u/)
+	// Apply IP allowlist before CORS (so unauthorized IPs are blocked before CORS headers are set)
+	corsHandler := middleware.CORSMiddleware(mux)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(corsHandler), "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
