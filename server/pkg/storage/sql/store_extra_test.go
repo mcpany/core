@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package sqlite
+package sql
 
 import (
 	"os"
@@ -30,8 +30,8 @@ func TestSaveServiceValidation(t *testing.T) {
 
 	// Test case: Empty name
 	svc := &configv1.UpstreamServiceConfig{
-		Name:    proto.String(""),
-		Id:      proto.String("test-id"),
+		Name: proto.String(""),
+		Id:   proto.String("test-id"),
 	}
 	err = store.SaveService(svc)
 	if err == nil {
