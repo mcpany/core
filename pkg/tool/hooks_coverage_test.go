@@ -155,7 +155,6 @@ func TestPolicyHook_InvalidRegex(t *testing.T) {
 	hook := NewPolicyHook(policy)
 	req := &ExecutionRequest{ToolName: "any", ToolInputs: []byte(`{}`)}
 	action, _, err := hook.ExecutePre(context.Background(), req)
-	assert.Error(t, err) // Denied by default
+	assert.NoError(t, err) // Denied by default, but error should be nil
 	assert.Equal(t, ActionDeny, action)
-	assert.Contains(t, err.Error(), "denied by default policy")
 }

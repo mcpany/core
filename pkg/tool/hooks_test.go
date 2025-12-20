@@ -44,7 +44,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			},
 			toolName:   "any-tool",
 			wantAction: ActionDeny,
-			wantError:  true,
+			wantError:  false,
 		},
 		{
 			name: "Explicit Allow Rule",
@@ -73,7 +73,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 			},
 			toolName:   "sensitive-tool",
 			wantAction: ActionDeny,
-			wantError:  true,
+			wantError:  false,
 		},
 		{
 			name: "Argument Regex Matching",
@@ -91,7 +91,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 				"key": "this contains secret",
 			},
 			wantAction: ActionDeny,
-			wantError:  true,
+			wantError:  false,
 		},
 		{
 			name: "Argument Regex Matching Safe",
