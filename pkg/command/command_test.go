@@ -21,6 +21,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -387,6 +388,151 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 0, exitCode)
+	})
+
+	t.Run("Execute_ContainerStartError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerStartFunc = func(ctx context.Context, containerID string, options container.StartOptions) error {
+			return errors.New("start error")
+		}
+		// Need mocked remove because Start failure attempts to remove
+		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+			return nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "start error")
+	})
+
+	t.Run("Execute_ContainerLogsError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+			return nil, errors.New("logs error")
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "logs error")
+	})
+
+	t.Run("Execute_ClientFactoryError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return nil, errors.New("client factory error")
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "client factory error")
+	})
+
+	t.Run("Execute_ContainerWaitError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader("")), nil
+		}
+		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+			errCh := make(chan error, 1)
+			errCh <- errors.New("wait error")
+			return nil, errCh
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		require.NoError(t, err)
+
+		exitCode := <-exitCodeChan
+		assert.Equal(t, -1, exitCode)
+	})
+
+	t.Run("Execute_ImagePullError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ImagePullFunc = func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+			return nil, errors.New("pull error")
+		}
+		// Logs should be mocked to succeed
+		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader("")), nil
+		}
+		// Wait should succeed
+		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+			statusCh := make(chan container.WaitResponse, 1)
+			statusCh <- container.WaitResponse{StatusCode: 0}
+			return statusCh, nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		require.NoError(t, err)
+		// Should succeed even if pull fails (logs warning)
+		exitCode := <-exitCodeChan
+		assert.Equal(t, 0, exitCode)
+	})
+
+	t.Run("ExecuteWithStdIO_ClientFactoryError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return nil, errors.New("client factory error")
+		}
+
+		_, _, _, _, err := executor.ExecuteWithStdIO(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "client factory error")
+	})
+
+	t.Run("ExecuteWithStdIO_ContainerCreateError", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			return container.CreateResponse{}, errors.New("create error")
+		}
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, _, err := executor.ExecuteWithStdIO(context.Background(), "echo", nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "create error")
 	})
 }
 

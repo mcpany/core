@@ -55,6 +55,56 @@ func TestBusProvider(t *testing.T) {
 		assert.NotNil(t, bus2)
 		assert.Same(t, bus1, bus3)
 	})
+
+	t.Run("Nats", func(t *testing.T) {
+		// NatsBus builder with empty URL triggers the embedded NATS server,
+		// so this test does not require an external NATS server.
+		messageBus := bus.MessageBus_builder{}.Build()
+		natsBus := bus.NatsBus_builder{}.Build()
+		messageBus.SetNats(natsBus)
+
+		provider, err := NewProvider(messageBus)
+		assert.NoError(t, err)
+
+		bus1 := GetBus[string](provider, "strings")
+		bus2 := GetBus[int](provider, "ints")
+
+		assert.NotNil(t, bus1)
+		assert.NotNil(t, bus2)
+
+		// Simple publish/subscribe verification
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		bus1.SubscribeOnce(context.Background(), "test-topic", func(msg string) {
+			assert.Equal(t, "hello", msg)
+			wg.Done()
+		})
+
+		// Give time for subscription to be active
+		time.Sleep(100 * time.Millisecond)
+
+		err = bus1.Publish(context.Background(), "test-topic", "hello")
+		assert.NoError(t, err)
+
+		wg.Wait()
+	})
+
+	t.Run("Kafka", func(t *testing.T) {
+		// This tests that the provider can instantiate a Kafka bus with valid config.
+		// It does not attempt to connect to the broker (lazy connection),
+		// so it does not require an external Kafka server.
+		messageBus := bus.MessageBus_builder{}.Build()
+		kafkaBus := bus.KafkaBus_builder{}.Build()
+		kafkaBus.SetBrokers([]string{"localhost:9092"})
+		messageBus.SetKafka(kafkaBus)
+
+		provider, err := NewProvider(messageBus)
+		assert.NoError(t, err)
+
+		bus1 := GetBus[string](provider, "strings")
+		assert.NotNil(t, bus1)
+	})
 }
 
 func TestIntegration(t *testing.T) {
