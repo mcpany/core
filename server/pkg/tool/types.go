@@ -287,7 +287,7 @@ type HTTPTool struct {
 	webhookClient     *WebhookClient
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
-	policies          []*configv1.CallPolicy
+	policies          []*CompiledCallPolicy
 	callID            string
 
 	// Cached fields for performance
@@ -322,9 +322,14 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
-		policies:          policies,
 		callID:            callID,
 	}
+
+	compiled, err := CompileCallPolicies(policies)
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+	t.policies = compiled
 
 	// Pre-calculate URL components
 	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
@@ -388,7 +393,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
 
-	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -1102,8 +1107,9 @@ type CommandTool struct {
 	service         *configv1.CommandLineUpstreamService
 	callDefinition  *configv1.CommandLineCallDefinition
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
-	policies        []*configv1.CallPolicy
+	policies        []*CompiledCallPolicy
 	callID          string
+	initError       error
 }
 
 // NewCommandTool creates a new CommandTool.
@@ -1117,13 +1123,18 @@ func NewCommandTool(
 	policies []*configv1.CallPolicy,
 	callID string,
 ) Tool {
-	return &CommandTool{
+	compiled, err := CompileCallPolicies(policies)
+	t := &CommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
-		policies:       policies,
+		policies:       compiled,
 		callID:         callID,
 	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+	return t
 }
 
 // LocalCommandTool implements the Tool interface for a tool that is executed as a
@@ -1135,8 +1146,9 @@ type LocalCommandTool struct {
 	mcpToolOnce    sync.Once
 	service        *configv1.CommandLineUpstreamService
 	callDefinition *configv1.CommandLineCallDefinition
-	policies       []*configv1.CallPolicy
+	policies       []*CompiledCallPolicy
 	callID         string
+	initError      error
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool.
@@ -1150,13 +1162,18 @@ func NewLocalCommandTool(
 	policies []*configv1.CallPolicy,
 	callID string,
 ) Tool {
-	return &LocalCommandTool{
+	compiled, err := CompileCallPolicies(policies)
+	t := &LocalCommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
-		policies:       policies,
+		policies:       compiled,
 		callID:         callID,
 	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
+	}
+	return t
 }
 
 // Tool returns the protobuf definition of the command-line tool.
@@ -1188,11 +1205,14 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	}
 
-	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -1395,11 +1415,14 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	}
 
-	if allowed, err := EvaluateCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
