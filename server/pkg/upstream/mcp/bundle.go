@@ -58,6 +58,10 @@ type ManifestMcpConfig struct {
 	Env     map[string]string `json:"env"`
 }
 
+// maxUnzipSize limits the size of a single file in a bundle to prevent decompression bombs.
+// It is a variable to allow overriding in tests.
+var maxUnzipSize = int64(1 * 1024 * 1024 * 1024) // 1GB
+
 // createAndRegisterMCPItemsFromBundle handles the registration of an MCP service
 // from a bundle.
 func (u *Upstream) createAndRegisterMCPItemsFromBundle(
@@ -268,12 +272,10 @@ func unzipBundle(src, dest string) error {
 			return err
 		}
 
-		// Mitigate G110: Decompression bomb. Limit max file size to 1GB.
-		const maxFileSize = 1 * 1024 * 1024 * 1024 // 1GB
-
-		// Use io.LimitReader to prevent reading more than maxFileSize.
-		// We read up to maxFileSize bytes.
-		n, err := io.Copy(outFile, io.LimitReader(rc, maxFileSize))
+		// Mitigate G110: Decompression bomb. Limit max file size.
+		// Use io.LimitReader to prevent reading more than maxUnzipSize.
+		// We read up to maxUnzipSize bytes.
+		n, err := io.Copy(outFile, io.LimitReader(rc, maxUnzipSize))
 		if err != nil {
 			_ = outFile.Close()
 			_ = rc.Close()
@@ -284,18 +286,18 @@ func unzipBundle(src, dest string) error {
 		// We try to read 1 byte.
 		buf := make([]byte, 1)
 		read, _ := rc.Read(buf)
-		if read > 0 || n == maxFileSize {
+		if read > 0 || n == maxUnzipSize {
 			// If n hit the limit, we should double check if we can read more.
-			// But if n < maxFileSize, we are sure we consumed it all (given io.Copy finishes on EOF).
-			// If n == maxFileSize, it might be EXACTLY maxFileSize or larger.
-			if n == maxFileSize {
+			// But if n < maxUnzipSize, we are sure we consumed it all (given io.Copy finishes on EOF).
+			// If n == maxUnzipSize, it might be EXACTLY maxUnzipSize or larger.
+			if n == maxUnzipSize {
 				// Try reading one more byte to confirm if it's larger
 				if read > 0 {
 					_ = outFile.Close()
 					_ = rc.Close()
-					return fmt.Errorf("file %s exceeds maximum allowed size of %d bytes", f.Name, maxFileSize)
+					return fmt.Errorf("file %s exceeds maximum allowed size of %d bytes", f.Name, maxUnzipSize)
 				}
-				// If read == 0, it means we hit EOF exactly at maxFileSize, which is fine.
+				// If read == 0, it means we hit EOF exactly at maxUnzipSize, which is fine.
 			}
 		}
 
