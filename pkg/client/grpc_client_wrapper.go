@@ -29,13 +29,16 @@ type Conn interface {
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
+	// checker is cached to avoid recreation overhead on every health check.
+	checker health.Checker
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
-		Conn:   conn,
-		config: config,
+		Conn:    conn,
+		config:  config,
+		checker: healthChecker.NewChecker(config),
 	}
 }
 
@@ -50,11 +53,10 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.config.GetGrpcService().GetAddress() == "bufnet" {
 		return true
 	}
-	checker := healthChecker.NewChecker(w.config)
-	if checker == nil {
+	if w.checker == nil {
 		return true // No health check configured, assume healthy.
 	}
-	return checker.Check(ctx).Status == health.StatusUp
+	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
 // Close terminates the underlying gRPC connection, releasing any associated
