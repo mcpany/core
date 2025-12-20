@@ -22,6 +22,15 @@ service AdminService {
   // GetService returns a specific service by ID.
   rpc GetService(GetServiceRequest) returns (GetServiceResponse);
 
+  // CreateService registers a new upstream service dynamically.
+  rpc CreateService(CreateServiceRequest) returns (CreateServiceResponse);
+
+  // UpdateService updates an existing upstream service.
+  rpc UpdateService(UpdateServiceRequest) returns (UpdateServiceResponse);
+
+  // DeleteService unregisters an upstream service.
+  rpc DeleteService(DeleteServiceRequest) returns (DeleteServiceResponse);
+
   // ListTools returns all registered tools.
   rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
 
@@ -46,6 +55,28 @@ message GetServiceRequest {
 message GetServiceResponse {
   mcpany.config.v1.UpstreamServiceConfig service = 1;
 }
+
+message CreateServiceRequest {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message CreateServiceResponse {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message UpdateServiceRequest {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message UpdateServiceResponse {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message DeleteServiceRequest {
+  string service_id = 1;
+}
+
+message DeleteServiceResponse {}
 
 message ListToolsRequest {}
 
