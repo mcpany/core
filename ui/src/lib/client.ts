@@ -17,14 +17,12 @@ export const apiClient = {
   },
 
   getService: async (id: string): Promise<GetServiceResponse> => {
-    // Since we don't have getServiceById on backend yet, we list all and filter.
-    // This is inefficient but functional for now.
-    const listRes = await apiClient.listServices();
-    const service = listRes.services.find((s) => s.id === id || s.name === id); // id or name?
-    if (!service) {
-      throw new Error("Service not found");
+    // Use backend GetService endpoint
+    const res = await fetch(`${API_base}/v1/services/${id}`);
+    if (!res.ok) {
+      throw new Error(`Service not found or error: ${res.statusText}`);
     }
-    return { service };
+    return res.json();
   },
 
   // emulate setServiceStatus by re-registering? Or just unregister if disabled?
