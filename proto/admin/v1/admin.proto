@@ -27,9 +27,6 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
-
-  // GetHealth returns the health status of the server.
-  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
 }
 
 message ClearCacheRequest {}
@@ -62,18 +59,4 @@ message GetToolRequest {
 
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
-}
-
-message GetHealthRequest {}
-
-message GetHealthResponse {
-  enum Status {
-    STATUS_UNSPECIFIED = 0;
-    STATUS_HEALTHY = 1;
-    STATUS_UNHEALTHY = 2;
-    STATUS_DEGRADED = 3;
-  }
-  Status status = 1;
-  // Details about the health of individual components.
-  map<string, string> details = 2;
 }

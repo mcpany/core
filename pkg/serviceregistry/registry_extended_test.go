@@ -39,6 +39,11 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (m *mockTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.tool)
+	return t
+}
+
 type threadSafeToolManager struct {
 	tool.ManagerInterface
 	mu    sync.RWMutex

@@ -27,7 +27,6 @@ const (
 	AdminService_GetService_FullMethodName   = "/mcpany.admin.v1.AdminService/GetService"
 	AdminService_ListTools_FullMethodName    = "/mcpany.admin.v1.AdminService/ListTools"
 	AdminService_GetTool_FullMethodName      = "/mcpany.admin.v1.AdminService/GetTool"
-	AdminService_GetHealth_FullMethodName    = "/mcpany.admin.v1.AdminService/GetHealth"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -46,8 +45,6 @@ type AdminServiceClient interface {
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
-	// GetHealth returns the health status of the server.
-	GetHealth(ctx context.Context, in *GetHealthRequest, opts ...grpc.CallOption) (*GetHealthResponse, error)
 }
 
 type adminServiceClient struct {
@@ -108,16 +105,6 @@ func (c *adminServiceClient) GetTool(ctx context.Context, in *GetToolRequest, op
 	return out, nil
 }
 
-func (c *adminServiceClient) GetHealth(ctx context.Context, in *GetHealthRequest, opts ...grpc.CallOption) (*GetHealthResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetHealthResponse)
-	err := c.cc.Invoke(ctx, AdminService_GetHealth_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -134,8 +121,6 @@ type AdminServiceServer interface {
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
-	// GetHealth returns the health status of the server.
-	GetHealth(context.Context, *GetHealthRequest) (*GetHealthResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -160,9 +145,6 @@ func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequ
 }
 func (UnimplementedAdminServiceServer) GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTool not implemented")
-}
-func (UnimplementedAdminServiceServer) GetHealth(context.Context, *GetHealthRequest) (*GetHealthResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -275,24 +257,6 @@ func _AdminService_GetTool_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdminService_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetHealthRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).GetHealth(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AdminService_GetHealth_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).GetHealth(ctx, req.(*GetHealthRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -319,10 +283,6 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTool",
 			Handler:    _AdminService_GetTool_Handler,
-		},
-		{
-			MethodName: "GetHealth",
-			Handler:    _AdminService_GetHealth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
