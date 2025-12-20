@@ -56,6 +56,11 @@ func (m *mockMapResultTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (m *mockMapResultTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.Tool())
+	return t
+}
+
 func TestServer_CallTool_ResultHandling(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
