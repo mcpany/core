@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/metrics"
@@ -232,6 +233,10 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
 	authManager := auth.NewManager()
+	healthManager := health.NewManager()
+	healthManager.Start(ctx)
+	defer healthManager.Stop()
+
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
 		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
@@ -248,6 +253,7 @@ func (a *Application) Run(
 		a.PromptManager,
 		a.ResourceManager,
 		authManager,
+		healthManager,
 	)
 
 	// New message bus and workers
@@ -389,7 +395,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, healthManager)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -582,6 +588,7 @@ func (a *Application) runServerMode(
 	users []*config_v1.User,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
+	healthManager *health.Manager,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -931,7 +938,7 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, healthManager)
 					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())

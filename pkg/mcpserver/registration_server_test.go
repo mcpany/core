@@ -74,7 +74,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager, nil)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 
@@ -330,7 +330,7 @@ func TestListServices(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager, nil)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 	registrationWorker.Start(ctx)
 

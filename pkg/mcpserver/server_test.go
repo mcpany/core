@@ -66,7 +66,7 @@ func TestToolListFiltering(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	// Start the worker to handle tool execution
@@ -137,7 +137,7 @@ func TestToolListFilteringServiceId(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -219,7 +219,7 @@ func TestServer_CallTool(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -345,7 +345,7 @@ func TestServer_Prompts(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -423,7 +423,7 @@ func TestServer_Resources(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -480,7 +480,7 @@ func TestServer_Getters(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -562,7 +562,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -604,7 +604,7 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	// Add a tool to the manager *before* the server is created.
@@ -667,7 +667,7 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -719,7 +719,7 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -775,7 +775,7 @@ func TestServer_Reload(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -816,7 +816,7 @@ func TestServer_MiddlewareHook(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -844,7 +844,7 @@ func TestServer_HandlerErrors(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -992,7 +992,7 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, smartM, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, smartM, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, smartM, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
@@ -1075,7 +1075,7 @@ func TestServer_RouterDispatch(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, mockToolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, mockToolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)

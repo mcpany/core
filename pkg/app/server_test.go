@@ -836,6 +836,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 		promptManager,
 		resourceManager,
 		authManager,
+		nil,
 	)
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
@@ -852,7 +853,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil, nil, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -1319,7 +1320,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager, nil)
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
 		toolManager,
@@ -1333,7 +1334,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	require.NoError(t, err)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil, nil, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1396,7 +1397,7 @@ func Test_runStdioMode_real(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(nil, toolManager, promptManager, resourceManager, authManager, nil)
 	mcpSrv, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
@@ -1407,7 +1408,7 @@ func Test_runStdioMode_real(t *testing.T) {
 
 	go func() {
 		defer func() { _ = inW.Close() }()
-		initRequest := `{"jsonrpc":"2.0","method":"initialize","id":0,"params":{"protocolVersion":"1.0"}}` + "\n"
+		initRequest := `{"jsonrpc":"2.0","method":"initialize","id":0,"params":{"protocolVersion":"2024-11-05"}}` + "\n"
 		_, err := inW.Write([]byte(initRequest))
 		require.NoError(t, err)
 		// Give the server a moment to process the request before the pipe is closed.
@@ -1982,7 +1983,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, nil, nil, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil)
 	}()
 
 	select {

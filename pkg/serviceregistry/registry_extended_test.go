@@ -98,7 +98,7 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 		},
 	}
 	tm := newThreadSafeToolManager()
-	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager(), nil)
 
 	// Register the first service with a tool
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
@@ -181,7 +181,7 @@ func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
 	tm := newThreadSafeToolManager()
 	pm := prompt.NewManager()
 	rm := resource.NewManager()
-	registry := New(f, tm, pm, rm, auth.NewManager())
+	registry := New(f, tm, pm, rm, auth.NewManager(), nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
@@ -227,7 +227,7 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 		},
 	}
 	tm := newThreadSafeToolManager()
-	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager(), nil)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")

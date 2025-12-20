@@ -27,6 +27,54 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ServiceStatus represents the health status of a service.
+type ServiceStatus int32
+
+const (
+	ServiceStatus_SERVICE_STATUS_UNKNOWN   ServiceStatus = 0
+	ServiceStatus_SERVICE_STATUS_HEALTHY   ServiceStatus = 1
+	ServiceStatus_SERVICE_STATUS_UNHEALTHY ServiceStatus = 2
+	ServiceStatus_SERVICE_STATUS_DEGRADED  ServiceStatus = 3
+)
+
+// Enum value maps for ServiceStatus.
+var (
+	ServiceStatus_name = map[int32]string{
+		0: "SERVICE_STATUS_UNKNOWN",
+		1: "SERVICE_STATUS_HEALTHY",
+		2: "SERVICE_STATUS_UNHEALTHY",
+		3: "SERVICE_STATUS_DEGRADED",
+	}
+	ServiceStatus_value = map[string]int32{
+		"SERVICE_STATUS_UNKNOWN":   0,
+		"SERVICE_STATUS_HEALTHY":   1,
+		"SERVICE_STATUS_UNHEALTHY": 2,
+		"SERVICE_STATUS_DEGRADED":  3,
+	}
+)
+
+func (x ServiceStatus) Enum() *ServiceStatus {
+	p := new(ServiceStatus)
+	*p = x
+	return p
+}
+
+func (x ServiceStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServiceStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_admin_v1_admin_proto_enumTypes[0].Descriptor()
+}
+
+func (ServiceStatus) Type() protoreflect.EnumType {
+	return &file_proto_admin_v1_admin_proto_enumTypes[0]
+}
+
+func (x ServiceStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 type ClearCacheRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -157,8 +205,10 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 }
 
 type ListServicesResponse struct {
-	state         protoimpl.MessageState      `protogen:"hybrid.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 	Services      []*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
+	ServiceStates []*ServiceState             `protobuf:"bytes,2,rep,name=service_states,json=serviceStates" json:"service_states,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -188,6 +238,7 @@ func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	if x != nil {
 		return x.Services
@@ -195,14 +246,28 @@ func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	return nil
 }
 
+func (x *ListServicesResponse) GetServiceStates() []*ServiceState {
+	if x != nil {
+		return x.ServiceStates
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
 	x.Services = v
+}
+
+func (x *ListServicesResponse) SetServiceStates(v []*ServiceState) {
+	x.ServiceStates = v
 }
 
 type ListServicesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Services []*v1.UpstreamServiceConfig
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
+	Services      []*v1.UpstreamServiceConfig
+	ServiceStates []*ServiceState
 }
 
 func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
@@ -210,6 +275,7 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.Services = b.Services
+	x.ServiceStates = b.ServiceStates
 	return m0
 }
 
@@ -282,8 +348,10 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 }
 
 type GetServiceResponse struct {
-	state         protoimpl.MessageState    `protogen:"hybrid.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 	Service       *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service" json:"service,omitempty"`
+	ServiceState  *ServiceState             `protobuf:"bytes,2,opt,name=service_state,json=serviceState" json:"service_state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -313,6 +381,7 @@ func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	if x != nil {
 		return x.Service
@@ -320,10 +389,23 @@ func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	return nil
 }
 
+func (x *GetServiceResponse) GetServiceState() *ServiceState {
+	if x != nil {
+		return x.ServiceState
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) SetService(v *v1.UpstreamServiceConfig) {
 	x.Service = v
 }
 
+func (x *GetServiceResponse) SetServiceState(v *ServiceState) {
+	x.ServiceState = v
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) HasService() bool {
 	if x == nil {
 		return false
@@ -331,14 +413,28 @@ func (x *GetServiceResponse) HasService() bool {
 	return x.Service != nil
 }
 
+func (x *GetServiceResponse) HasServiceState() bool {
+	if x == nil {
+		return false
+	}
+	return x.ServiceState != nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) ClearService() {
 	x.Service = nil
+}
+
+func (x *GetServiceResponse) ClearServiceState() {
+	x.ServiceState = nil
 }
 
 type GetServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Service *v1.UpstreamServiceConfig
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
+	Service      *v1.UpstreamServiceConfig
+	ServiceState *ServiceState
 }
 
 func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
@@ -346,6 +442,7 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.Service = b.Service
+	x.ServiceState = b.ServiceState
 	return m0
 }
 
@@ -585,6 +682,150 @@ func (b0 GetToolResponse_builder) Build() *GetToolResponse {
 	return m0
 }
 
+// ServiceState represents the runtime state of a service.
+type ServiceState struct {
+	state         protoimpl.MessageState    `protogen:"hybrid.v1"`
+	Config        *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config" json:"config,omitempty"`
+	Status        *ServiceStatus            `protobuf:"varint,2,opt,name=status,enum=mcpany.admin.v1.ServiceStatus" json:"status,omitempty"`
+	LastError     *string                   `protobuf:"bytes,3,opt,name=last_error,json=lastError" json:"last_error,omitempty"`
+	LastCheckTime *int64                    `protobuf:"varint,4,opt,name=last_check_time,json=lastCheckTime" json:"last_check_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceState) Reset() {
+	*x = ServiceState{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceState) ProtoMessage() {}
+
+func (x *ServiceState) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ServiceState) GetConfig() *v1.UpstreamServiceConfig {
+	if x != nil {
+		return x.Config
+	}
+	return nil
+}
+
+func (x *ServiceState) GetStatus() ServiceStatus {
+	if x != nil && x.Status != nil {
+		return *x.Status
+	}
+	return ServiceStatus_SERVICE_STATUS_UNKNOWN
+}
+
+func (x *ServiceState) GetLastError() string {
+	if x != nil && x.LastError != nil {
+		return *x.LastError
+	}
+	return ""
+}
+
+func (x *ServiceState) GetLastCheckTime() int64 {
+	if x != nil && x.LastCheckTime != nil {
+		return *x.LastCheckTime
+	}
+	return 0
+}
+
+func (x *ServiceState) SetConfig(v *v1.UpstreamServiceConfig) {
+	x.Config = v
+}
+
+func (x *ServiceState) SetStatus(v ServiceStatus) {
+	x.Status = &v
+}
+
+func (x *ServiceState) SetLastError(v string) {
+	x.LastError = &v
+}
+
+func (x *ServiceState) SetLastCheckTime(v int64) {
+	x.LastCheckTime = &v
+}
+
+func (x *ServiceState) HasConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.Config != nil
+}
+
+func (x *ServiceState) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return x.Status != nil
+}
+
+func (x *ServiceState) HasLastError() bool {
+	if x == nil {
+		return false
+	}
+	return x.LastError != nil
+}
+
+func (x *ServiceState) HasLastCheckTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.LastCheckTime != nil
+}
+
+func (x *ServiceState) ClearConfig() {
+	x.Config = nil
+}
+
+func (x *ServiceState) ClearStatus() {
+	x.Status = nil
+}
+
+func (x *ServiceState) ClearLastError() {
+	x.LastError = nil
+}
+
+func (x *ServiceState) ClearLastCheckTime() {
+	x.LastCheckTime = nil
+}
+
+type ServiceState_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Config        *v1.UpstreamServiceConfig
+	Status        *ServiceStatus
+	LastError     *string
+	LastCheckTime *int64
+}
+
+func (b0 ServiceState_builder) Build() *ServiceState {
+	m0 := &ServiceState{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Config = b.Config
+	x.Status = b.Status
+	x.LastError = b.LastError
+	x.LastCheckTime = b.LastCheckTime
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
@@ -592,21 +833,34 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a&proto/config/v1/upstream_service.proto\x1a$proto/mcp_router/v1/mcp_router.proto\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
-	"\x13ListServicesRequest\"[\n" +
-	"\x14ListServicesResponse\x12C\n" +
-	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\"2\n" +
+	"\x13ListServicesRequest\"\xa5\x01\n" +
+	"\x14ListServicesResponse\x12G\n" +
+	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigB\x02\x18\x01R\bservices\x12D\n" +
+	"\x0eservice_states\x18\x02 \x03(\v2\x1d.mcpany.admin.v1.ServiceStateR\rserviceStates\"2\n" +
 	"\x11GetServiceRequest\x12\x1d\n" +
 	"\n" +
-	"service_id\x18\x01 \x01(\tR\tserviceId\"W\n" +
-	"\x12GetServiceResponse\x12A\n" +
-	"\aservice\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\aservice\"\x12\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\"\x9f\x01\n" +
+	"\x12GetServiceResponse\x12E\n" +
+	"\aservice\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigB\x02\x18\x01R\aservice\x12B\n" +
+	"\rservice_state\x18\x02 \x01(\v2\x1d.mcpany.admin.v1.ServiceStateR\fserviceState\"\x12\n" +
 	"\x10ListToolsRequest\"E\n" +
 	"\x11ListToolsResponse\x120\n" +
 	"\x05tools\x18\x01 \x03(\v2\x1a.mcpany.mcp_router.v1.ToolR\x05tools\"-\n" +
 	"\x0eGetToolRequest\x12\x1b\n" +
 	"\ttool_name\x18\x01 \x01(\tR\btoolName\"A\n" +
 	"\x0fGetToolResponse\x12.\n" +
-	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool2\xbb\x03\n" +
+	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool\"\xce\x01\n" +
+	"\fServiceState\x12?\n" +
+	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\x126\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x1e.mcpany.admin.v1.ServiceStatusR\x06status\x12\x1d\n" +
+	"\n" +
+	"last_error\x18\x03 \x01(\tR\tlastError\x12&\n" +
+	"\x0flast_check_time\x18\x04 \x01(\x03R\rlastCheckTime*\x82\x01\n" +
+	"\rServiceStatus\x12\x1a\n" +
+	"\x16SERVICE_STATUS_UNKNOWN\x10\x00\x12\x1a\n" +
+	"\x16SERVICE_STATUS_HEALTHY\x10\x01\x12\x1c\n" +
+	"\x18SERVICE_STATUS_UNHEALTHY\x10\x02\x12\x1b\n" +
+	"\x17SERVICE_STATUS_DEGRADED\x10\x032\xbb\x03\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -617,41 +871,48 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\aGetTool\x12\x1f.mcpany.admin.v1.GetToolRequest\x1a .mcpany.admin.v1.GetToolResponseB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_admin_v1_admin_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),        // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),       // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),      // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),     // 3: mcpany.admin.v1.ListServicesResponse
-	(*GetServiceRequest)(nil),        // 4: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),       // 5: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),         // 6: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),        // 7: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),           // 8: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),          // 9: mcpany.admin.v1.GetToolResponse
-	(*v1.UpstreamServiceConfig)(nil), // 10: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                 // 11: mcpany.mcp_router.v1.Tool
+	(ServiceStatus)(0),               // 0: mcpany.admin.v1.ServiceStatus
+	(*ClearCacheRequest)(nil),        // 1: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),       // 2: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),      // 3: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),     // 4: mcpany.admin.v1.ListServicesResponse
+	(*GetServiceRequest)(nil),        // 5: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),       // 6: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),         // 7: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),        // 8: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),           // 9: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),          // 10: mcpany.admin.v1.GetToolResponse
+	(*ServiceState)(nil),             // 11: mcpany.admin.v1.ServiceState
+	(*v1.UpstreamServiceConfig)(nil), // 12: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                 // 13: mcpany.mcp_router.v1.Tool
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	10, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	10, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	11, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	11, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	0,  // 4: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 5: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	4,  // 6: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	6,  // 7: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	8,  // 8: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	1,  // 9: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 10: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	5,  // 11: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	7,  // 12: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	9,  // 13: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	12, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	11, // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
+	12, // 2: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	11, // 3: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
+	13, // 4: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	13, // 5: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	12, // 6: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	0,  // 7: mcpany.admin.v1.ServiceState.status:type_name -> mcpany.admin.v1.ServiceStatus
+	1,  // 8: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	3,  // 9: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 10: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 11: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 12: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	2,  // 13: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	4,  // 14: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 15: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 16: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 17: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	13, // [13:18] is the sub-list for method output_type
+	8,  // [8:13] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -664,13 +925,14 @@ func file_proto_admin_v1_admin_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   10,
+			NumEnums:      1,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_admin_v1_admin_proto_goTypes,
 		DependencyIndexes: file_proto_admin_v1_admin_proto_depIdxs,
+		EnumInfos:         file_proto_admin_v1_admin_proto_enumTypes,
 		MessageInfos:      file_proto_admin_v1_admin_proto_msgTypes,
 	}.Build()
 	File_proto_admin_v1_admin_proto = out.File

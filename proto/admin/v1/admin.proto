@@ -36,7 +36,8 @@ message ClearCacheResponse {}
 message ListServicesRequest {}
 
 message ListServicesResponse {
-  repeated mcpany.config.v1.UpstreamServiceConfig services = 1;
+  repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  repeated ServiceState service_states = 2;
 }
 
 message GetServiceRequest {
@@ -44,7 +45,8 @@ message GetServiceRequest {
 }
 
 message GetServiceResponse {
-  mcpany.config.v1.UpstreamServiceConfig service = 1;
+  mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  ServiceState service_state = 2;
 }
 
 message ListToolsRequest {}
@@ -59,4 +61,20 @@ message GetToolRequest {
 
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
+}
+
+// ServiceStatus represents the health status of a service.
+enum ServiceStatus {
+  SERVICE_STATUS_UNKNOWN = 0;
+  SERVICE_STATUS_HEALTHY = 1;
+  SERVICE_STATUS_UNHEALTHY = 2;
+  SERVICE_STATUS_DEGRADED = 3;
+}
+
+// ServiceState represents the runtime state of a service.
+message ServiceState {
+  mcpany.config.v1.UpstreamServiceConfig config = 1;
+  ServiceStatus status = 2;
+  string last_error = 3;
+  int64 last_check_time = 4;
 }

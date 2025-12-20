@@ -181,7 +181,7 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	}
 	pm := &mockPromptManager{}
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
+	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, busProvider, false)
@@ -265,7 +265,7 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 		},
 	}
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
+	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, busProvider, false)

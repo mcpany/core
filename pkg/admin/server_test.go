@@ -6,9 +6,12 @@ package admin
 import (
 	"context"
 	"testing"
+	"time"
 
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -23,7 +26,7 @@ func TestNewServer(t *testing.T) {
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 	assert.NotNil(t, server)
 }
 
@@ -36,7 +39,7 @@ func TestClearCache(t *testing.T) {
 	// We use a real CachingMiddleware here since it is a struct and cannot be mocked easily.
 	// The default implementation uses an in-memory cache which should succeed.
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	resp, err := server.ClearCache(context.Background(), req)
@@ -50,7 +53,7 @@ func TestClearCache_NilCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	_, err := server.ClearCache(context.Background(), req)
@@ -64,7 +67,7 @@ func TestListServices(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	expectedServices := []*tool.ServiceInfo{
 		{
@@ -86,7 +89,7 @@ func TestGetService(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	serviceInfo := &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{
@@ -105,7 +108,7 @@ func TestGetService_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetServiceInfo("unknown").Return(nil, false)
 
@@ -114,12 +117,63 @@ func TestGetService_NotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "not found")
 }
 
+func TestListServices_WithHealth(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	hm := health.NewManager()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	hm.Start(ctx)
+	defer hm.Stop()
+
+	server := NewServer(nil, mockManager, hm)
+
+	// Register a service in HM
+	config := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("http://localhost:0"),
+			},
+		},
+	}
+	sanitizedName, _ := util.SanitizeServiceName("test-service")
+	config.SetSanitizedName(sanitizedName)
+
+	hm.RegisterService(sanitizedName, config)
+
+	// Mock toolManager returning this service info
+	expectedServices := []*tool.ServiceInfo{
+		{
+			Config: config,
+		},
+	}
+	mockManager.EXPECT().ListServices().Return(expectedServices)
+
+	// Wait for health check to fail (UNHEALTHY)
+	assert.Eventually(t, func() bool {
+		status := hm.GetStatus(sanitizedName)
+		if status == nil {
+			return false
+		}
+		return status.Status == pb.ServiceStatus_SERVICE_STATUS_UNHEALTHY
+	}, 2*time.Second, 100*time.Millisecond)
+
+	resp, err := server.ListServices(ctx, &pb.ListServicesRequest{})
+	assert.NoError(t, err)
+	assert.Len(t, resp.ServiceStates, 1)
+	assert.Equal(t, pb.ServiceStatus_SERVICE_STATUS_UNHEALTHY, resp.ServiceStates[0].GetStatus())
+	assert.Contains(t, resp.ServiceStates[0].GetLastError(), "failed to connect")
+}
+
 func TestListTools(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -140,7 +194,7 @@ func TestGetTool(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -160,7 +214,7 @@ func TestGetTool_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetTool("unknown").Return(nil, false)
 

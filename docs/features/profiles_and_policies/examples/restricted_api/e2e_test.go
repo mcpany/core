@@ -60,7 +60,7 @@ upstream_services:
 	authManager := auth.NewManager()
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager, nil)
 
 	// Note: We don't strictly *need* mcpServer for CallPolicy test as we use toolManager directly,
 	// but we initialize it to ensure full setup.

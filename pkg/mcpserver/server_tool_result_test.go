@@ -67,7 +67,7 @@ func TestServer_CallTool_ResultHandling(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
+	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager, nil)
 	ctx := context.Background()
 
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
