@@ -23,7 +23,16 @@ import (
 
 const maxSecretRecursionDepth = 10
 
-// ResolveSecret resolves a SecretValue into a string.
+// ResolveSecret resolves a SecretValue configuration object into a concrete string value.
+// It handles various secret types including plain text, environment variables, file paths,
+// remote URLs, Vault, and AWS Secrets Manager.
+//
+// Parameters:
+//   secret: The SecretValue configuration object to resolve.
+//
+// Returns:
+//   The resolved secret string.
+//   An error if resolution fails (e.g., missing env var, file read error).
 func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(secret, 0)
 }
@@ -206,8 +215,16 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 	}
 }
 
-// ResolveSecretMap resolves a map of secrets and merges them with a plain map.
-// Secrets in the secretMap take precedence over values in the plainMap.
+// ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
+// If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
+//
+// Parameters:
+//   secretMap: A map of keys to SecretValue objects.
+//   plainMap: A map of keys to plain string values.
+//
+// Returns:
+//   A single map containing all keys with their resolved string values.
+//   An error if any secret resolution fails.
 func ResolveSecretMap(secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {

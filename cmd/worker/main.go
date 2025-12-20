@@ -57,6 +57,8 @@ func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 	return worker.New(busProvider, workerCfg), nil
 }
 
+// main is the entry point for the worker service.
+// It sets up the message bus and starts the worker to process tasks.
 func main() {
 	worker, err := setup()
 	if err != nil {
