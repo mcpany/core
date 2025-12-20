@@ -25,6 +25,8 @@ const (
 	HeaderWebhookSignature = webhook.HeaderWebhookSignature
 )
 
+// main is the entry point for the Webhook Server.
+// It initializes the webhook registry, sets up handlers, and starts the HTTP server.
 func main() {
 	secret := os.Getenv("WEBHOOK_SECRET")
 	var hook *webhook.Webhook

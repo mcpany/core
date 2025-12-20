@@ -206,6 +206,19 @@ make lint
 
 We use `golangci-lint` and `pre-commit` hooks.
 
+### Project Structure
+
+- **`cmd/`**: Entry points for the applications (server, worker, webhooks).
+- **`pkg/`**: Core library code.
+    - **`config/`**: Configuration loading and validation.
+    - **`mcpserver/`**: Core MCP server implementation.
+    - **`tool/`**: Tool management and execution logic.
+    - **`upstream/`**: Upstream service integrations (gRPC, HTTP, etc.).
+    - **`util/`**: Utility functions.
+- **`proto/`**: Protocol Buffer definitions.
+- **`examples/`**: Example configurations.
+- **`docs/`**: Detailed documentation.
+
 ### Code Standards
 
 - **Documentation**: All public functions, methods, and types must be documented. Use `go run tools/check_doc.go <directory>` to verify documentation coverage.
