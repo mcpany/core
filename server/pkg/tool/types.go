@@ -441,6 +441,13 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
 							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
 						}
+
+						// Also check decoded value for traversal attempts hidden by URL encoding
+						if decodedVal, err := url.PathUnescape(valStr); err == nil {
+							if decodedVal == ".." || strings.HasPrefix(decodedVal, "../") || strings.HasSuffix(decodedVal, "/..") || strings.Contains(decodedVal, "/../") {
+								return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
+							}
+						}
 					}
 					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 					queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
