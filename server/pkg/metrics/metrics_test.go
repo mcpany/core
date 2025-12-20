@@ -125,38 +125,3 @@ func TestStartServer_Error(t *testing.T) {
 	err := StartServer("invalid:address")
 	assert.Error(t, err)
 }
-
-func TestSetGauge_NoLabels(t *testing.T) {
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
-	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
-	require.NoError(t, err)
-
-	assert.NotPanics(t, func() {
-		SetGauge("test_gauge_no_labels", 42.0)
-	})
-
-	// Verify it reached sink
-	data := sink.Data()
-	if len(data) > 0 {
-		assert.Equal(t, float32(42.0), data[0].Gauges["mcpany.test_gauge_no_labels"].Value)
-	}
-}
-
-func TestIncrCounterWithLabels(t *testing.T) {
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
-	conf := metrics.DefaultConfig("mcpany")
-	conf.EnableHostname = false
-	_, err := metrics.NewGlobal(conf, sink)
-	require.NoError(t, err)
-
-	assert.NotPanics(t, func() {
-		IncrCounterWithLabels([]string{"test_counter_labels"}, 1, []metrics.Label{{Name: "key", Value: "val"}})
-	})
-
-	// Verify
-	data := sink.Data()
-	require.Len(t, data, 1)
-	assert.Equal(t, 1, data[0].Counters["mcpany.test_counter_labels;key=val"].Count)
-}

@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package sql provides a SQL upstream implementation.
 package sql
 
 import (
@@ -20,8 +21,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SQLTool implements the Tool interface for a tool that executes a SQL query.
-type SQLTool struct {
+// Tool implements the Tool interface for a tool that executes a SQL query.
+type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
 	mcpToolOnce sync.Once
@@ -29,9 +30,9 @@ type SQLTool struct {
 	callDef     *configv1.SqlCallDefinition
 }
 
-// NewSQLTool creates a new SQLTool.
-func NewSQLTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition) *SQLTool {
-	return &SQLTool{
+// NewTool creates a new SQL Tool.
+func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition) *Tool {
+	return &Tool{
 		tool:    t,
 		db:      db,
 		callDef: callDef,
@@ -39,12 +40,12 @@ func NewSQLTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition) *SQ
 }
 
 // Tool returns the protobuf definition of the tool.
-func (t *SQLTool) Tool() *v1.Tool {
+func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
-func (t *SQLTool) MCPTool() *mcp.Tool {
+func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
 		t.mcpTool, err = tool.ConvertProtoToMCPTool(t.tool)
@@ -56,7 +57,7 @@ func (t *SQLTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the tool.
-func (t *SQLTool) GetCacheConfig() *configv1.CacheConfig {
+func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
 	}
@@ -64,7 +65,7 @@ func (t *SQLTool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 // Execute runs the SQL query with the provided inputs.
-func (t *SQLTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
 	}
@@ -81,9 +82,7 @@ func (t *SQLTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any,
 	for _, paramName := range t.callDef.GetParameterOrder() {
 		val, ok := inputs[paramName]
 		if !ok {
-			// If missing, pass nil or error?
-			// Ideally the schema validation catches required fields.
-			// Pass nil for now.
+			// If missing, pass nil.
 			args = append(args, nil)
 		} else {
 			args = append(args, val)
@@ -95,7 +94,11 @@ func (t *SQLTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any,
 		metrics.IncrCounter([]string{"sql", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logging.GetLogger().Warn("Failed to close rows", "error", err)
+		}
+	}()
 
 	// Get column names
 	columns, err := rows.Columns()

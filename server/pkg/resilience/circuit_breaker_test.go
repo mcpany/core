@@ -155,20 +155,3 @@ func TestCircuitBreaker(t *testing.T) {
 		require.Equal(t, StateOpen, cb.state)
 	})
 }
-
-func TestErrors(t *testing.T) {
-	t.Run("CircuitBreakerOpenError", func(t *testing.T) {
-		err := &CircuitBreakerOpenError{}
-		require.Equal(t, "circuit breaker is open", err.Error())
-	})
-
-	t.Run("PermanentError", func(t *testing.T) {
-		baseErr := errors.New("base error")
-		permErr := &PermanentError{Err: baseErr}
-		require.Equal(t, "base error", permErr.Error())
-		require.Equal(t, baseErr, permErr.Unwrap())
-
-		permErrNil := &PermanentError{Err: nil}
-		require.Equal(t, "permanent error", permErrNil.Error())
-	})
-}

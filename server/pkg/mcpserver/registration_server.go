@@ -14,10 +14,8 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/api/v1"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 // RegistrationServer implements the gRPC server for service registration. It
@@ -54,9 +52,7 @@ func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}
-	return &RegistrationServer{
-		bus: bus,
-	}, nil
+	return &RegistrationServer{bus: bus}, nil
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
@@ -143,72 +139,18 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 }
 
-// UpdateService updates an existing upstream service.
-func (s *RegistrationServer) UpdateService(ctx context.Context, req *v1.UpdateServiceRequest) (*v1.UpdateServiceResponse, error) {
-	if req.GetConfig() == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "config is required")
-	}
-	if req.GetConfig().GetName() == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "config.name is required")
-	}
-
-	// Re-use registration logic for update
-	registerReq := &v1.RegisterServiceRequest{Config: req.GetConfig()}
-	_, err := s.RegisterService(ctx, registerReq)
-	if err != nil {
-		return nil, err
-	}
-
-	return &v1.UpdateServiceResponse{Config: req.GetConfig()}, nil
-}
-
-// UnregisterService handles the unregistration of a service.
+// UnregisterService is not yet implemented. It is intended to handle the
+// unregistration of a service.
 //
 // Parameters:
 //   - ctx: The context for the gRPC call.
-//   - req: The request containing the service name to unregister.
+//   - req: The request containing the service ID to unregister.
 //
 // Returns:
 //   - A response indicating success or failure.
-//   - An error.
-func (s *RegistrationServer) UnregisterService(ctx context.Context, req *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
-	if req.GetServiceName() == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
-	}
-
-	correlationID := uuid.New().String()
-	resultChan := make(chan *bus.ServiceRegistrationResult, 1)
-
-	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
-	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceRegistrationResult) {
-		resultChan <- result
-	})
-	defer unsubscribe()
-
-	// Create a dummy config with the name and Disable=true to signal unregistration
-	config := &configv1.UpstreamServiceConfig{
-		Name:    proto.String(req.GetServiceName()),
-		Disable: proto.Bool(true),
-	}
-
-	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](s.bus, "service_registration_requests")
-	regReq := &bus.ServiceRegistrationRequest{
-		Config: config,
-	}
-	regReq.SetCorrelationID(correlationID)
-	_ = requestBus.Publish(ctx, "request", regReq)
-
-	select {
-	case result := <-resultChan:
-		if result.Error != nil {
-			return nil, status.Errorf(codes.Internal, "failed to unregister service: %v", result.Error)
-		}
-		return &v1.UnregisterServiceResponse{Message: "Service unregistered successfully"}, nil
-	case <-ctx.Done():
-		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service unregistration")
-	case <-time.After(30 * time.Second):
-		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service unregistration result")
-	}
+//   - An error (currently always Unimplemented).
+func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
 // InitiateOAuth2Flow is not yet implemented. It is intended to handle the
@@ -223,6 +165,20 @@ func (s *RegistrationServer) UnregisterService(ctx context.Context, req *v1.Unre
 //   - An error (currently always Unimplemented).
 func (s *RegistrationServer) InitiateOAuth2Flow(_ context.Context, _ *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
+}
+
+// RegisterTools is not yet implemented. It is intended to handle the
+// registration of tools for a service.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the tools to register.
+//
+// Returns:
+//   - A response indicating success or failure.
+//   - An error (currently always Unimplemented).
+func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 
 // GetServiceStatus is not yet implemented. It is intended to handle requests

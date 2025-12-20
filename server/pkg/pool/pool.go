@@ -59,10 +59,7 @@ type poolImpl[T ClosableClient] struct {
 	clients            chan T
 	factory            func(context.Context) (T, error)
 	sem                *semaphore.Weighted
-	// mu protects the closed state of the pool.
-	// We use RWMutex to allow concurrent Get/Put operations (which only read the closed state)
-	// while ensuring exclusive access for Close.
-	mu                 sync.RWMutex
+	mu                 sync.Mutex
 	closed             bool
 	disableHealthCheck bool
 }
@@ -162,13 +159,12 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	default:
 	}
 
-	// Use RLock to check closed state, allowing concurrent access.
-	p.mu.RLock()
+	p.mu.Lock()
 	if p.closed {
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		return zero, ErrPoolClosed
 	}
-	p.mu.RUnlock()
+	p.mu.Unlock()
 
 	// Loop to ensure we return a healthy client
 	for {
@@ -210,9 +206,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			default:
 				// No client, so create a new one.
 				// We must check if the pool was closed *after* we acquired the permit.
-				p.mu.RLock()
+				p.mu.Lock()
 				closed := p.closed
-				p.mu.RUnlock()
+				p.mu.Unlock()
 				if closed {
 					p.sem.Release(1) // Don't leak the permit
 					return zero, ErrPoolClosed
@@ -224,14 +220,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				}
 
 				// Check again if the pool was closed while we were creating a client.
-				p.mu.RLock()
+				p.mu.Lock()
 				if p.closed {
-					p.mu.RUnlock()
+					p.mu.Unlock()
 					_ = lo.Try(client.Close)
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
-				p.mu.RUnlock()
+				p.mu.Unlock()
 
 				return client, nil
 			}
@@ -271,9 +267,9 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
-	p.mu.RLock()
+	p.mu.Lock()
 	if p.closed {
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
@@ -281,7 +277,7 @@ func (p *poolImpl[T]) Put(client T) {
 
 	// Use a background context for health checks in Put to avoid blocking.
 	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 		return
@@ -289,14 +285,14 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- client:
-		p.mu.RUnlock()
+		p.mu.Unlock()
 	default:
 		// Idle pool is full, discard client. The permit for this client is
 		// effectively leaked, but this is the only safe option. Releasing
 		// the permit would allow the pool to create more clients than
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 	}
 }
