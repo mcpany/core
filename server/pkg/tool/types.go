@@ -289,6 +289,14 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*configv1.CallPolicy
 	callID            string
+
+	// Cached fields
+	initError      error
+	method         string
+	urlTemplate    *url.URL
+	pathTemplate   string
+	queryTemplate  string
+	noEscapeParams map[string]bool
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -304,7 +312,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &HTTPTool{
+	t := &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -318,6 +326,38 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		policies:          policies,
 		callID:            callID,
 	}
+
+	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
+	if len(methodAndURL) != 2 {
+		t.initError = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
+		return t
+	}
+	t.method = methodAndURL[0]
+	rawURL := methodAndURL[1]
+
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		t.initError = fmt.Errorf("failed to parse url: %w", err)
+		return t
+	}
+	t.urlTemplate = u
+
+	pathStr := u.EscapedPath()
+	t.pathTemplate = strings.ReplaceAll(strings.ReplaceAll(pathStr, "%7B", "{"), "%7D", "}")
+
+	queryStr := u.RawQuery
+	t.queryTemplate = strings.ReplaceAll(strings.ReplaceAll(queryStr, "%7B", "{"), "%7D", "}")
+
+	t.noEscapeParams = make(map[string]bool)
+	for _, param := range t.parameters {
+		if param.GetDisableEscape() {
+			if schema := param.GetSchema(); schema != nil {
+				t.noEscapeParams[schema.GetName()] = true
+			}
+		}
+	}
+
+	return t
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
@@ -371,33 +411,15 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	methodAndURL := strings.Fields(t.tool.GetUnderlyingMethodFqn())
-	if len(methodAndURL) != 2 {
-		return "", fmt.Errorf("invalid http tool definition: expected method and URL, got %q", t.tool.GetUnderlyingMethodFqn())
-	}
-	method, rawURL := methodAndURL[0], methodAndURL[1]
-
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+	if t.initError != nil {
+		return nil, t.initError
 	}
 
-	pathStr := u.EscapedPath()
-	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
-	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
-
-	queryStr := u.RawQuery
-	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
-	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
-
-	noEscapeParams := make(map[string]bool)
-	for _, param := range t.parameters {
-		if param.GetDisableEscape() {
-			if schema := param.GetSchema(); schema != nil {
-				noEscapeParams[schema.GetName()] = true
-			}
-		}
-	}
+	method := t.method
+	u := *t.urlTemplate
+	pathStr := t.pathTemplate
+	queryStr := t.queryTemplate
+	noEscapeParams := t.noEscapeParams
 
 	// Check for path traversal in unescaped parameters used in the path
 	for k, v := range req.Arguments {
