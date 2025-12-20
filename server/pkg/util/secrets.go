@@ -293,6 +293,9 @@ var safeSecretClient = &http.Client{
 				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() {
 					return nil, fmt.Errorf("blocked loopback IP: %s", ip)
 				}
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsUnspecified() {
+					return nil, fmt.Errorf("blocked unspecified IP: %s", ip)
+				}
 				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") != "true" && ip.IsPrivate() {
 					return nil, fmt.Errorf("blocked private IP: %s", ip)
 				}

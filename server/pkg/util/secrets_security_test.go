@@ -111,3 +111,19 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 	// It should NOT be "blocked private IP"
 	assert.NotContains(t, err.Error(), "blocked private IP")
 }
+
+func TestResolveSecret_SSRF_UnspecifiedIP_Blocked(t *testing.T) {
+	// Attempt to access unspecified IP (0.0.0.0) which resolves to localhost
+	// This should be blocked by our SSRF protection by default
+
+	remoteContent := &configv1.RemoteContent{}
+	remoteContent.SetHttpUrl("http://0.0.0.0:12345/secret")
+	secret := &configv1.SecretValue{}
+	secret.SetRemoteContent(remoteContent)
+
+	_, err := util.ResolveSecret(secret)
+	assert.Error(t, err)
+	// Before fix, this will fail with connection error (refused/timeout)
+	// After fix, it MUST contain "blocked unspecified IP"
+	assert.Contains(t, err.Error(), "blocked unspecified IP")
+}
