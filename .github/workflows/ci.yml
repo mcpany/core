@@ -461,18 +461,18 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/Dockerfile.server
+          file: server/docker/Dockerfile.server
           push: false
           load: true
           tags: mcpany/server:test
 
       - name: Smoke Test
         run: |
-           chmod +x tests/smoke_test.sh
-           ./tests/smoke_test.sh mcpany/server:test
+           chmod +x server/tests/smoke_test.sh
+           ./server/tests/smoke_test.sh mcpany/server:test
       - name: E2E Docker Compose Test
         run: |
-           E2E_DOCKER=true go test -v tests/e2e/docker_compose_test.go
+           E2E_DOCKER=true go test -v server/tests/e2e_sequential/docker_compose_test.go
 
   ui-build:
     runs-on: ubuntu-latest

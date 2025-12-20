@@ -10,6 +10,7 @@ endif
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
 VERSION := $(shell git describe --tags --always --dirty)
 LDFLAGS := -ldflags="-X main.Version=$(VERSION)"
+BUILD_DIR := $(abspath ../build)
 
 # Dockerized Build Logic
 BUILD_MODE ?= local
@@ -57,7 +58,7 @@ PROTOC_ZIP := protoc.zip
 ifdef INSIDE_DOCKER_CONTAINER
 TOOL_INSTALL_DIR := /tools
 endif
-TOOL_INSTALL_DIR ?= $(CURDIR)/build/env/bin
+TOOL_INSTALL_DIR ?= $(BUILD_DIR)/env/bin
 PROTOC_VERSION := v33.1
 
 # Detect architecture for protoc
@@ -67,7 +68,7 @@ ifeq ($(UNAME_M), aarch64)
 	PROTOC_ARCH := aarch_64
 endif
 
-LOCAL_BIN_DIR := $(CURDIR)/build/bin
+LOCAL_BIN_DIR := $(BUILD_DIR)/bin
 PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
 PROTOC_GEN_GRPC_GATEWAY := $(TOOL_INSTALL_DIR)/protoc-gen-grpc-gateway
@@ -90,14 +91,14 @@ HELM_DOWNLOAD_URL_BASE ?= https://get.helm.sh
 # In a CI environment, we expect Python to be set up and available in the PATH.
 # Locally, we use a virtual environment.
 ifeq ($(CI),)
-	PYTHON_EXEC := $(CURDIR)/build/venv/bin/python
+	PYTHON_EXEC := $(BUILD_DIR)/venv/bin/python
 else
 	PYTHON_EXEC := python3
 endif
 # ==============================================================================
 # Release Targets
 # ==============================================================================
-RELEASE_DIR := $(CURDIR)/build/release
+RELEASE_DIR := $(BUILD_DIR)/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
 PLATFORMS ?= linux/amd64 linux/s390x linux/arm64 linux/arm linux/ppc64le
@@ -194,20 +195,20 @@ prepare:
 	fi
 	@echo "Go protobuf plugins installation check complete."
 	@# Download grpc-gateway source for protos
-	@if ! test -d "$(CURDIR)/build/grpc-gateway"; then \
+	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
 		curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
-		unzip -q grpc-gateway.zip -d $(CURDIR)/build; \
+		unzip -q grpc-gateway.zip -d $(BUILD_DIR); \
 		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//'); \
-		mv $(CURDIR)/build/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(CURDIR)/build/grpc-gateway; \
+		mv $(BUILD_DIR)/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(BUILD_DIR)/grpc-gateway; \
 		rm grpc-gateway.zip; \
 	fi
 	@# Download googleapis
-	@if ! test -d "$(CURDIR)/build/googleapis"; then \
+	@if ! test -d "$(BUILD_DIR)/googleapis"; then \
 		echo "Downloading googleapis..."; \
 		curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
-		unzip -q googleapis.zip -d $(CURDIR)/build; \
-		mv $(CURDIR)/build/googleapis-master $(CURDIR)/build/googleapis; \
+		unzip -q googleapis.zip -d $(BUILD_DIR); \
+		mv $(BUILD_DIR)/googleapis-master $(BUILD_DIR)/googleapis; \
 		rm googleapis.zip; \
 	fi
 	@# Install Python dependencies and pre-commit hooks
@@ -222,7 +223,7 @@ prepare:
 	if test -z "$(CI)"; then \
 		if test -n "$$PYTHON_CMD"; then \
 			echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
-			VENV_DIR=$(CURDIR)/build/venv; \
+			VENV_DIR=$(BUILD_DIR)/venv; \
 			if ! test -d "$$VENV_DIR"; then \
 				echo "Creating virtual environment..."; \
 				$$PYTHON_CMD -m venv $$VENV_DIR --without-pip; \
@@ -238,8 +239,8 @@ prepare:
 				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
 				touch "$$VENV_DIR/.installed"; \
 			fi; \
-			mkdir -p $(CURDIR)/build/.cache/pre-commit; \
-			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
+			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
+			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
 				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
@@ -363,13 +364,13 @@ else
 	@echo "Generating protobuf files..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		echo "Using protoc: $$(protoc --version)"; \
-		mkdir -p ./build; \
+		mkdir -p $(BUILD_DIR); \
 		find ../proto -name "*.proto" -exec protoc \
 			--proto_path=.. \
 			--proto_path=. \
-			--proto_path=$(CURDIR)/build/grpc-gateway \
-			--proto_path=$(CURDIR)/build/googleapis \
-			--descriptor_set_out=$(CURDIR)/build/all.protoset \
+			--proto_path=$(BUILD_DIR)/grpc-gateway \
+			--proto_path=$(BUILD_DIR)/googleapis \
+			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
 			--go_out=. \
 			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
@@ -383,11 +384,11 @@ endif
 
 build: gen
 	@echo "Building Go project locally..."
-	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/server ./cmd/server
+	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/server ./cmd/server
 
 build-mock-server: gen
 	@echo "Building mock server..."
-	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(CURDIR)/build/bin/mock_server ./cmd/mock_mcp_server
+	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/mock_server ./cmd/mock_mcp_server
 
 ifdef SHOULD_PROXY_TO_DOCKER
 test:
@@ -403,12 +404,12 @@ e2e-local: e2e-parallel e2e-sequential
 e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running parallel E2E Go tests locally with a 300s timeout..."
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(CURDIR)/build/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
 	@-pkill -f file-upload-server
 
 e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(CURDIR)/build/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
@@ -422,7 +423,7 @@ test-public-api: build build-mock-server
 # ==============================================================================
 # Example Binaries Build
 # ==============================================================================
-EXAMPLE_BIN_DIR := $(CURDIR)/build/examples/bin
+EXAMPLE_BIN_DIR := $(BUILD_DIR)/examples/bin
 
 # List of example binaries
 .PHONY: build-examples
@@ -463,10 +464,10 @@ ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
 	@echo "Running lint (using pre-commit)..."
-	@mkdir -p $(CURDIR)/build/.cache/pre-commit $(CURDIR)/build/.cache/golangci-lint
-	@export PATH=$(TOOL_INSTALL_DIR):$(CURDIR)/build/venv/bin:$$PATH && \
-	export PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit && \
-	export GOLANGCI_LINT_CACHE=$(CURDIR)/build/.cache/golangci-lint && \
+	@mkdir -p $(BUILD_DIR)/.cache/pre-commit $(BUILD_DIR)/.cache/golangci-lint
+	@export PATH=$(TOOL_INSTALL_DIR):$(BUILD_DIR)/venv/bin:$$PATH && \
+	export PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit && \
+	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	pre-commit run --all-files
@@ -477,7 +478,7 @@ ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) clean-pre-commit
 else
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH && \
-	export PRE_COMMIT_HOME=$(CURDIR)/build/.cache/pre-commit && \
+	export PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit && \
 	pre-commit clean
 endif
 
@@ -495,18 +496,18 @@ clean-protos:
 
 clean: clean-protos
 	@echo "Cleaning build artifacts..."
-	@-chmod -R +w $(CURDIR)/build 2>/dev/null || true
-	@rm -rf $(CURDIR)/build
+	@-chmod -R +w $(BUILD_DIR) 2>/dev/null || true
+	@rm -rf $(BUILD_DIR)
 
 run: build
 	@echo "Starting MCP Any server locally..."
-	@$(CURDIR)/build/bin/server
+	@$(BUILD_DIR)/bin/server
 
 # ==============================================================================
 # E2E Test Related Builds
 # ==============================================================================
 E2E_MOCK_DIR := $(CURDIR)/tests/integration/cmd/mocks
-E2E_BIN_DIR := $(CURDIR)/build/test/bin
+E2E_BIN_DIR := $(BUILD_DIR)/test/bin
 
 # List of mock service directories (which are also their binary names)
 E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server command-tester prompt-server
