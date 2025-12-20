@@ -251,10 +251,10 @@ var safeSecretClient = &http.Client{
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			dialer := NewSafeDialer()
-			if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == "true" {
+			if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == TrueStr {
 				dialer.AllowLoopback = true
 			}
-			if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") == "true" {
+			if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") == TrueStr {
 				dialer.AllowPrivate = true
 			}
 			// LinkLocal is default false (blocked).
