@@ -4,6 +4,9 @@
 package util_test
 
 import (
+	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
@@ -35,21 +38,21 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 }
 
 func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
-    // This test ensures we didn't break valid filenames like "my..secret.txt"
-    tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
-    require.NoError(t, err)
-    defer func() { _ = os.RemoveAll(tempDir) }()
+	// This test ensures we didn't break valid filenames like "my..secret.txt"
+	tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
+	require.NoError(t, err)
+	defer func() { _ = os.RemoveAll(tempDir) }()
 
-    secretFile := filepath.Join(tempDir, "my..secret.txt")
-    err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
-    require.NoError(t, err)
+	secretFile := filepath.Join(tempDir, "my..secret.txt")
+	err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
+	require.NoError(t, err)
 
-    secret := &configv1.SecretValue{}
-    secret.SetFilePath(secretFile)
+	secret := &configv1.SecretValue{}
+	secret.SetFilePath(secretFile)
 
-    resolved, err := util.ResolveSecret(secret)
-    assert.NoError(t, err)
-    assert.Equal(t, "VALID_SECRET", resolved)
+	resolved, err := util.ResolveSecret(secret)
+	assert.NoError(t, err)
+	assert.Equal(t, "VALID_SECRET", resolved)
 }
 
 func TestResolveSecret_SSRF_Blocked(t *testing.T) {
@@ -110,4 +113,42 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 
 	// It should NOT be "blocked private IP"
 	assert.NotContains(t, err.Error(), "blocked private IP")
+}
+
+func TestResolveSecret_SSRF_UnspecifiedIP_Bypass(t *testing.T) {
+	// Start a local server that serves a secret
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	defer listener.Close()
+
+	port := listener.Addr().(*net.TCPAddr).Port
+	secretValue := "SUPER_SECRET_DATA"
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(secretValue))
+	})
+	go func() {
+		_ = http.Serve(listener, handler)
+	}()
+
+	// Ensure Loopback is BLOCKED (default behavior)
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "false")
+
+	// Try to access via 0.0.0.0 (Unspecified IP) which resolves to localhost
+	// This should be BLOCKED if protection is correct.
+
+	targetURL := fmt.Sprintf("http://0.0.0.0:%d", port)
+
+	remoteContent := &configv1.RemoteContent{}
+	remoteContent.SetHttpUrl(targetURL)
+	secret := &configv1.SecretValue{}
+	secret.SetRemoteContent(remoteContent)
+
+	_, err = util.ResolveSecret(secret)
+
+	// It should be BLOCKED.
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "blocked loopback/unspecified IP")
+	}
 }
