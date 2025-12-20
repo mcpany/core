@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -19,6 +20,8 @@ import (
 	"github.com/hashicorp/vault/api"
 	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 const maxSecretRecursionDepth = 10
@@ -93,6 +96,31 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 					return "", fmt.Errorf("failed to resolve password for remote secret: %w", err)
 				}
 				req.SetBasicAuth(basic.GetUsername(), password)
+			} else if oauth2Auth := auth.GetOauth2(); oauth2Auth != nil {
+				clientID, err := resolveSecretRecursive(oauth2Auth.GetClientId(), depth+1)
+				if err != nil {
+					return "", fmt.Errorf("failed to resolve client id for remote secret: %w", err)
+				}
+				clientSecret, err := resolveSecretRecursive(oauth2Auth.GetClientSecret(), depth+1)
+				if err != nil {
+					return "", fmt.Errorf("failed to resolve client secret for remote secret: %w", err)
+				}
+
+				conf := &clientcredentials.Config{
+					ClientID:     clientID,
+					ClientSecret: clientSecret,
+					TokenURL:     oauth2Auth.GetTokenUrl(),
+					Scopes:       strings.Fields(oauth2Auth.GetScopes()),
+				}
+
+				// Use safeSecretClient for the token request to prevent SSRF
+				ctx := context.WithValue(context.Background(), oauth2.HTTPClient, safeSecretClient)
+				token, err := conf.Token(ctx)
+				if err != nil {
+					return "", fmt.Errorf("failed to get oauth2 token: %w", err)
+				}
+
+				req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 			}
 		}
 
