@@ -289,6 +289,13 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*configv1.CallPolicy
 	callID            string
+
+	// Cached fields for performance
+	method        string
+	initErr       error
+	parsedURL     *url.URL
+	pathTemplate  string
+	queryTemplate string
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -304,7 +311,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &HTTPTool{
+
+	t := &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -318,6 +326,32 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		policies:          policies,
 		callID:            callID,
 	}
+
+	// Pre-parse URL and method to avoid doing it on every execution
+	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
+	if len(methodAndURL) != 2 {
+		t.initErr = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
+		return t
+	}
+	t.method = methodAndURL[0]
+	rawURL := methodAndURL[1]
+
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		t.initErr = fmt.Errorf("failed to parse url: %w", err)
+		return t
+	}
+	t.parsedURL = u
+
+	pathStr := u.EscapedPath()
+	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
+	t.pathTemplate = strings.ReplaceAll(pathStr, "%7D", "}")
+
+	queryStr := u.RawQuery
+	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
+	t.queryTemplate = strings.ReplaceAll(queryStr, "%7D", "}")
+
+	return t
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
@@ -371,24 +405,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	methodAndURL := strings.Fields(t.tool.GetUnderlyingMethodFqn())
-	if len(methodAndURL) != 2 {
-		return "", fmt.Errorf("invalid http tool definition: expected method and URL, got %q", t.tool.GetUnderlyingMethodFqn())
-	}
-	method, rawURL := methodAndURL[0], methodAndURL[1]
-
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+	if t.initErr != nil {
+		return nil, t.initErr
 	}
 
-	pathStr := u.EscapedPath()
-	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
-	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
-
-	queryStr := u.RawQuery
-	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
-	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	pathStr := t.pathTemplate
+	queryStr := t.queryTemplate
 
 	noEscapeParams := make(map[string]bool)
 	for _, param := range t.parameters {
@@ -458,13 +480,13 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
-	buf.WriteString(u.Scheme)
+	buf.WriteString(t.parsedURL.Scheme)
 	buf.WriteString("://")
-	if u.User != nil {
-		buf.WriteString(u.User.String())
+	if t.parsedURL.User != nil {
+		buf.WriteString(t.parsedURL.User.String())
 		buf.WriteString("@")
 	}
-	buf.WriteString(u.Host)
+	buf.WriteString(t.parsedURL.Host)
 	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
 		buf.WriteString("/")
 	}
@@ -485,7 +507,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	var body io.Reader
 	var contentType string
 	if inputs != nil {
-		if method == http.MethodPost || method == http.MethodPut {
+		if t.method == http.MethodPost || t.method == http.MethodPut {
 			switch {
 			case t.webhookClient != nil:
 				// Use webhook for transformation
@@ -542,7 +564,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
+		httpReq, err := http.NewRequestWithContext(ctx, t.method, urlString, bodyForAttempt)
 		if err != nil {
 			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
 		}
@@ -562,7 +584,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			logging.GetLogger().Debug("No authenticator configured")
 		}
 
-		if method == http.MethodGet || method == http.MethodDelete {
+		if t.method == http.MethodGet || t.method == http.MethodDelete {
 			q := httpReq.URL.Query()
 			for key, value := range inputs {
 				q.Add(key, fmt.Sprintf("%v", value))
