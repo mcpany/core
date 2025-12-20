@@ -751,3 +751,55 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		require.NoError(t, err)
 	})
 }
+
+func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
+	t.Parallel()
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id": "` + id + `"}`))
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 0, true)
+	require.NoError(t, err)
+	poolManager.Register("test-service", p)
+
+	methodAndURL := "GET " + server.URL + "?id={{id}}"
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("id"),
+		}.Build(),
+	}.Build()
+	callDef := configv1.HttpCallDefinition_builder{
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+
+	// Call 1
+	inputs1 := json.RawMessage(`{"id": "1"}`)
+	req1 := &tool.ExecutionRequest{ToolInputs: inputs1}
+	result1, err := httpTool.Execute(context.Background(), req1)
+	require.NoError(t, err)
+	resultMap1, ok := result1.(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "1", resultMap1["id"])
+
+	// Call 2
+	inputs2 := json.RawMessage(`{"id": "2"}`)
+	req2 := &tool.ExecutionRequest{ToolInputs: inputs2}
+	result2, err := httpTool.Execute(context.Background(), req2)
+	require.NoError(t, err)
+	resultMap2, ok := result2.(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "2", resultMap2["id"])
+}
