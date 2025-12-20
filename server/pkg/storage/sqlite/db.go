@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package sqlite implements SQLite storage for MCP Any configuration.
 package sqlite
 
 import (
@@ -12,23 +13,25 @@ import (
 	_ "modernc.org/sqlite" // Register sqlite driver
 )
 
+// DB wraps the sql.DB connection.
 type DB struct {
 	*sql.DB
 }
 
+// NewDB opens or creates a SQLite database at the specified path.
 func NewDB(path string) (*DB, error) {
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)
 	}
 
-	// Enable WAL mode for better concurrency
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite db: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping sqlite db: %w", err)
+	if err := initSchema(db); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to init schema: %w", err)
 	}
 
 	// Set pragmas
@@ -39,10 +42,6 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
-	if err := initSchema(db); err != nil {
-		db.Close()
-		return nil, err
-	}
 
 	return &DB{db}, nil
 }
