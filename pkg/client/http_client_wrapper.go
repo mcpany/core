@@ -19,23 +19,25 @@ import (
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
+	// checker is cached to avoid recreation overhead on every health check.
+	checker health.Checker
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig) *HTTPClientWrapper {
 	return &HTTPClientWrapper{
-		Client: client,
-		config: config,
+		Client:  client,
+		config:  config,
+		checker: healthChecker.NewChecker(config),
 	}
 }
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
-	checker := healthChecker.NewChecker(w.config)
-	if checker == nil {
+	if w.checker == nil {
 		return true // No health check configured, assume healthy.
 	}
-	return checker.Check(ctx).Status == health.StatusUp
+	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
 // Close is a no-op for the `*http.Client` wrapper. The underlying transport
