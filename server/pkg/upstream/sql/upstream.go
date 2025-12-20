@@ -1,0 +1,114 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package sql
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"sync"
+
+	_ "github.com/lib/pq"
+	_ "modernc.org/sqlite"
+
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+)
+
+// Upstream implements the upstream.Upstream interface for SQL databases.
+type Upstream struct {
+	db *sql.DB
+	mu sync.Mutex
+}
+
+// NewUpstream creates a new SQL upstream.
+func NewUpstream() *Upstream {
+	return &Upstream{}
+}
+
+// Shutdown closes the database connection.
+func (u *Upstream) Shutdown(ctx context.Context) error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+	if u.db != nil {
+		return u.db.Close()
+	}
+	return nil
+}
+
+func ptr(s string) *string {
+	return &s
+}
+
+// Register discovers and registers tools from the SQL configuration.
+func (u *Upstream) Register(
+	ctx context.Context,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	toolManager tool.ManagerInterface,
+	promptManager prompt.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	isReload bool,
+) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	sqlConfig := serviceConfig.GetSqlService()
+	if sqlConfig == nil {
+		return "", nil, nil, fmt.Errorf("sql service config is nil")
+	}
+
+	if u.db != nil {
+		_ = u.db.Close()
+	}
+
+	var err error
+	u.db, err = sql.Open(sqlConfig.GetDriver(), sqlConfig.GetDsn())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to open database: %w", err)
+	}
+
+	if err := u.db.PingContext(ctx); err != nil {
+		_ = u.db.Close()
+		return "", nil, nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	var toolDefs []*configv1.ToolDefinition
+
+	for id, callDef := range sqlConfig.GetCalls() {
+		toolName := id
+		sanitizedToolName, err := util.SanitizeToolName(toolName)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("invalid tool name %s: %w", toolName, err)
+		}
+
+		t := &v1.Tool{
+			Name:         ptr(sanitizedToolName),
+			Description:  ptr(fmt.Sprintf("Execute SQL query: %s", id)),
+			InputSchema:  callDef.GetInputSchema(),
+			OutputSchema: callDef.GetOutputSchema(),
+			ServiceId:    ptr(serviceConfig.GetId()),
+			Tags:         []string{"upstream:sql"},
+		}
+
+		sqlTool := NewSQLTool(t, u.db, callDef)
+
+		if err := toolManager.AddTool(sqlTool); err != nil {
+			return "", nil, nil, fmt.Errorf("failed to add tool %s: %w", toolName, err)
+		}
+
+		toolDefs = append(toolDefs, &configv1.ToolDefinition{
+			Name:        ptr(sanitizedToolName),
+			Description: ptr(*t.Description),
+			ServiceId:   ptr(serviceConfig.GetId()),
+			InputSchema: callDef.GetInputSchema(),
+			CallId:      ptr(id),
+		})
+	}
+
+	return serviceConfig.GetId(), toolDefs, nil, nil
+}
