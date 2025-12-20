@@ -436,6 +436,35 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 0, exitCode)
 	})
+
+	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		containerEnv.SetVolumes(map[string]string{
+			"/host/path": "/container/path",
+		})
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		var capturedHostConfig *container.HostConfig
+		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			capturedHostConfig = hostConfig
+			return container.CreateResponse{ID: "test-id"}, nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		require.NoError(t, err)
+
+		require.NotNil(t, capturedHostConfig)
+		require.Len(t, capturedHostConfig.Mounts, 1)
+		// With the fix, Key is Source, Value is Target
+		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
+	})
 }
 
 func TestDockerExecutor_Mocked(t *testing.T) {
@@ -587,5 +616,33 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 
 		exitCode := <-exitCodeChan
 		assert.Equal(t, 0, exitCode)
+	})
+
+	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		containerEnv.SetVolumes(map[string]string{
+			"/host/path": "/container/path",
+		})
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		var capturedHostConfig *container.HostConfig
+		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			capturedHostConfig = hostConfig
+			return container.CreateResponse{ID: "test-id"}, nil
+		}
+
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		require.NoError(t, err)
+
+		require.NotNil(t, capturedHostConfig)
+		require.Len(t, capturedHostConfig.Mounts, 1)
+		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }

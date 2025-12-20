@@ -246,13 +246,15 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 	if env.GetImage() != "" {
 		for dest, src := range env.GetVolumes() {
 			if dest == "" {
-				return fmt.Errorf("container environment volume destination is empty")
+				return fmt.Errorf("container environment volume host path is empty")
 			}
 			if src == "" {
-				return fmt.Errorf("container environment volume source is empty")
+				return fmt.Errorf("container environment volume container path is empty")
 			}
-			if err := validation.IsSecurePath(src); err != nil {
-				return fmt.Errorf("container environment volume source %q is not a secure path: %w", src, err)
+			// dest is the key (Host Path), src is the value (Container Path).
+			// We must validate the Host Path (dest) to ensure it is secure.
+			if err := validation.IsSecurePath(dest); err != nil {
+				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}
 	}
