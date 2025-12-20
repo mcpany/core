@@ -538,7 +538,7 @@ func TestValidate(t *testing.T) {
 						UpstreamAuthentication: &configv1.UpstreamAuthentication{
 							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
 								Mtls: &configv1.UpstreamMTLSAuth{
-									ClientCertPath: proto.String("dummy-cert.pem"),
+									ClientCertPath: proto.String(clientCertFile.Name()),
 									ClientKeyPath:  proto.String("missing-key.pem"),
 									CaCertPath:     proto.String("ca.pem"),
 								},
@@ -718,6 +718,55 @@ func TestValidate(t *testing.T) {
 			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "apikey-invalid": api key 'header_name' is empty`,
+		},
+		{
+			name: "invalid volume mount - insecure host path",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("volume-insecure"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+							CommandLineService: &configv1.CommandLineUpstreamService{
+								Command: proto.String("echo"),
+								ContainerEnvironment: &configv1.ContainerEnvironment{
+									Image: proto.String("alpine"),
+									Volumes: map[string]string{
+										"../../etc/passwd": "/passwd",
+									},
+								},
+							},
+						},
+					},
+				}
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "volume-insecure": container environment volume host path "../../etc/passwd" is not a secure path: path contains '..', which is not allowed`,
+		},
+		{
+			name: "valid volume mount - secure host path",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("volume-secure"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+							CommandLineService: &configv1.CommandLineUpstreamService{
+								Command: proto.String("echo"),
+								ContainerEnvironment: &configv1.ContainerEnvironment{
+									Image: proto.String("alpine"),
+									Volumes: map[string]string{
+										"/host/path": "/container/path",
+									},
+								},
+							},
+						},
+					},
+				}
+				return cfg
+			}(),
+			expectedErrorCount: 0,
 		},
         /*
 		{
