@@ -98,18 +98,14 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 
 	// Check metrics
 	data := sink.Data()
+	require.Len(t, data, 1)
 
 	counterName := "mcpany.tools.call.total"
-	totalCount := 0
-
-	for _, interval := range data {
-		// Handle both prefixed and non-prefixed cases just in case
-		if c, ok := interval.Counters[counterName]; ok {
-			totalCount += c.Count
-		} else if c, ok := interval.Counters["tools.call.total"]; ok {
-			totalCount += c.Count
-		}
+	if _, ok := data[0].Counters[counterName]; !ok {
+		counterName = "tools.call.total"
 	}
 
-	assert.Equal(t, 1, totalCount, "tools.call.total should be incremented exactly once")
+	assert.Contains(t, data[0].Counters, counterName)
+	// This assertion is expected to FAIL if the bug is present (it will be 2)
+	assert.Equal(t, 1, data[0].Counters[counterName].Count, "tools.call.total should be incremented exactly once")
 }

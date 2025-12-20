@@ -36,13 +36,6 @@ Returns the definition of a specific tool by its name.
 - **Request**: `GetToolRequest` containing `tool_name`.
 - **Response**: `GetToolResponse` containing `Tool`.
 
-#### `GetHealth`
-
-Returns the health status of the server.
-
-- **Request**: `GetHealthRequest` (empty)
-- **Response**: `GetHealthResponse` containing `status` (enum) and `details` (map).
-
 #### `ClearCache`
 
 Clears the global cache (if caching is enabled).
@@ -64,7 +57,4 @@ grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListServices
 
 # List all tools
 grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListTools
-
-# Get health status
-grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/GetHealth
 ```

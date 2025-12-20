@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -43,6 +44,11 @@ func (m *mockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, er
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return m.cacheConfig
+}
+
+func (m *mockTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.tool)
+	return t
 }
 
 // mockToolManager is a mock implementation of the tool.ManagerInterface.
