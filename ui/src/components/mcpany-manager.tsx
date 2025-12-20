@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { UpstreamServiceConfig, ListServicesResponse } from "@/lib/types";
 import { apiClient } from "@/lib/client";
@@ -93,7 +93,6 @@ export function McpAnyManager() {
               {!isLoading && services.map((service) => (
                 <TableRow key={service.id} className={service.disable ? "opacity-50" : ""}>
                    <TableCell>
-                      <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
                             {service.disable ?
@@ -105,7 +104,6 @@ export function McpAnyManager() {
                             <p>{service.disable ? "Disabled" : "Enabled"}</p>
                           </TooltipContent>
                         </Tooltip>
-                      </TooltipProvider>
                   </TableCell>
                   <TableCell className="font-medium">
                     <Link href={`/service/${service.id}`} className="hover:underline text-primary/90">
@@ -131,7 +129,6 @@ export function McpAnyManager() {
                     <Badge variant="secondary">{service.version || 'N/A'}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
                            {service.grpc_service?.tls_config || service.http_service?.tls_config ? <CheckCircle className="size-5 text-primary" /> : <XCircle className="size-5 text-muted-foreground"/>}
@@ -140,7 +137,6 @@ export function McpAnyManager() {
                           <p>{service.grpc_service?.tls_config || service.http_service?.tls_config ? "Secure (TLS)" : "Insecure"}</p>
                         </TooltipContent>
                       </Tooltip>
-                    </TooltipProvider>
                   </TableCell>
                 </TableRow>
               ))}

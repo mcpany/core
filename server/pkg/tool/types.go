@@ -289,6 +289,13 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*configv1.CallPolicy
 	callID            string
+
+	// Cached fields for performance
+	initError    error
+	cachedMethod string
+	cachedURL    *url.URL
+	cachedPath   string // with %7B replaced
+	cachedQuery  string // with %7B replaced
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -304,7 +311,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &HTTPTool{
+	t := &HTTPTool{
 		tool:              tool,
 		poolManager:       poolManager,
 		serviceID:         serviceID,
@@ -318,6 +325,34 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		policies:          policies,
 		callID:            callID,
 	}
+
+	// Pre-calculate URL components
+	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
+	if len(methodAndURL) != 2 {
+		t.initError = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
+		return t
+	}
+	t.cachedMethod = methodAndURL[0]
+	rawURL := methodAndURL[1]
+
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		t.initError = fmt.Errorf("failed to parse url: %w", err)
+		return t
+	}
+	t.cachedURL = u
+
+	pathStr := u.EscapedPath()
+	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
+	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
+	t.cachedPath = pathStr
+
+	queryStr := u.RawQuery
+	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
+	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	t.cachedQuery = queryStr
+
+	return t
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
@@ -371,24 +406,14 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	methodAndURL := strings.Fields(t.tool.GetUnderlyingMethodFqn())
-	if len(methodAndURL) != 2 {
-		return "", fmt.Errorf("invalid http tool definition: expected method and URL, got %q", t.tool.GetUnderlyingMethodFqn())
-	}
-	method, rawURL := methodAndURL[0], methodAndURL[1]
-
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+	if t.initError != nil {
+		return nil, t.initError
 	}
 
-	pathStr := u.EscapedPath()
-	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
-	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
-
-	queryStr := u.RawQuery
-	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
-	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	method := t.cachedMethod
+	u := t.cachedURL
+	pathStr := t.cachedPath
+	queryStr := t.cachedQuery
 
 	noEscapeParams := make(map[string]bool)
 	for _, param := range t.parameters {
@@ -1188,7 +1213,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+					val := fmt.Sprintf("%v", v)
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
 		}
@@ -1212,6 +1241,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -1251,7 +1283,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			env = append(env, fmt.Sprintf("%s=%v", name, val))
+			valStr := fmt.Sprintf("%v", val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -1384,7 +1420,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+					val := fmt.Sprintf("%v", v)
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
 		}
@@ -1409,6 +1449,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -1458,7 +1501,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			env = append(env, fmt.Sprintf("%s=%v", name, val))
+			valStr := fmt.Sprintf("%v", val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -1611,4 +1658,20 @@ func getMaxCommandOutputSize() int64 {
 func isSensitiveHeader(key string) bool {
 	k := strings.ToLower(key)
 	return k == "authorization" || k == "proxy-authorization" || k == "cookie" || k == "set-cookie" || k == "x-api-key"
+}
+
+func checkForPathTraversal(val string) error {
+	if val == ".." {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.HasSuffix(val, "/..") || strings.HasSuffix(val, "\\..") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
 }

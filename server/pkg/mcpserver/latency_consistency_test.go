@@ -5,6 +5,7 @@ package mcpserver_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -29,9 +30,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Metrics_Repro(t *testing.T) {
+func TestMetricLatencyConsistency(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -50,7 +51,6 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
-	// Start the worker to handle tool execution
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
@@ -59,7 +59,7 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 
 	tm := server.ToolManager().(*tool.Manager)
 
-	// Add test tool
+	// Add success tool
 	successTool := &mockTool{
 		tool: v1.Tool_builder{
 			Name:      proto.String("success-tool"),
@@ -76,11 +76,8 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	}
 	_ = tm.AddTool(successTool)
 
-	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
-
-	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
@@ -88,30 +85,38 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = clientSession.Close() }()
 
-	// Call the tool
-	sanitizedToolName, _ := util.SanitizeToolName("success-tool")
-	toolID := "test-service" + "." + sanitizedToolName
-	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
-		Name: toolID,
-	})
+	// Call success tool
+	sanitizedSuccessName, _ := util.SanitizeToolName("success-tool")
+	successID := "test-service" + "." + sanitizedSuccessName
+	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{Name: successID})
 	require.NoError(t, err)
 
 	// Check metrics
 	data := sink.Data()
-	require.Len(t, data, 1)
 
-	// Ensure the unlabelled metric is NOT present
-	assert.NotContains(t, data[0].Counters, "mcpany.tools.call.total")
+    // Debug print
+    fmt.Println("Available samples:")
+    for k := range data[0].Samples {
+        fmt.Println(k)
+    }
 
-	// Ensure the labelled metric IS present
-	found := false
-	for k, v := range data[0].Counters {
-		// Key will be like "mcpany.tools.call.total;tool=...;service_id=..."
-		if len(k) >= 23 && k[:23] == "mcpany.tools.call.total" {
-			found = true
-			assert.Equal(t, 1, v.Count, "Labelled counter should be 1")
-			break
-		}
-	}
-	assert.True(t, found, "Labelled tools.call.total metric should exist")
+	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
+    // and properly labeled for tool specific metrics.
+
+    // Check global latency metric
+    assert.Contains(t, data[0].Samples, "mcpany.tools.call.latency")
+
+    // Check tool-specific latency metric
+    // Ideally it should be mcpany.tools.call.latency;tool=...
+    // But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
+
+    // We expect tool AND service_id labels
+    expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
+
+    // This assertion fails with current implementation
+    assert.Contains(t, data[0].Samples, expectedIdealKey, "Should have labeled latency metric")
+
+    // This assertion would pass with current implementation (proving the bug/inconsistency)
+    currentBadKey := "mcpany.tool." + successID + ".call.latency"
+    assert.NotContains(t, data[0].Samples, currentBadKey, "Should NOT have embedded tool name in metric key")
 }
