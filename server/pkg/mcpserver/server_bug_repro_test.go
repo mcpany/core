@@ -21,7 +21,6 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
 	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -29,33 +28,6 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
-
-type mockTool struct {
-	tool *v1.Tool
-}
-
-func (m *mockTool) Tool() *v1.Tool {
-	return m.tool
-}
-
-func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
-	select {
-	case <-time.After(50 * time.Millisecond):
-		return "success", nil
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
-}
-
-func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
-	return nil
-}
-
-func (m *mockTool) MCPTool() *mcp.Tool {
-	t, _ := tool.ConvertProtoToMCPTool(m.tool)
-	return t
-}
 
 func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink

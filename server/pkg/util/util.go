@@ -137,7 +137,6 @@ var (
 	placeholderRegex = regexp.MustCompile(`(?s)\{\{(.+?)\}\}`)
 )
 
-
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
 
