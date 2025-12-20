@@ -274,6 +274,11 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if len(stdioConn.GetCommand()) == 0 {
 			return fmt.Errorf("mcp service with stdio_connection has empty command")
 		}
+	case configv1.McpUpstreamService_BundleConnection_case:
+		bundleConn := mcpService.GetBundleConnection()
+		if bundleConn.GetBundlePath() == "" {
+			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
+		}
 	default:
 		return fmt.Errorf("mcp service has no connection_type")
 	}
