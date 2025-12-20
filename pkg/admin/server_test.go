@@ -23,7 +23,7 @@ func TestNewServer(t *testing.T) {
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 	assert.NotNil(t, server)
 }
 
@@ -36,7 +36,7 @@ func TestClearCache(t *testing.T) {
 	// We use a real CachingMiddleware here since it is a struct and cannot be mocked easily.
 	// The default implementation uses an in-memory cache which should succeed.
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	resp, err := server.ClearCache(context.Background(), req)
@@ -50,7 +50,7 @@ func TestClearCache_NilCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	_, err := server.ClearCache(context.Background(), req)
@@ -64,7 +64,7 @@ func TestListServices(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	expectedServices := []*tool.ServiceInfo{
 		{
@@ -77,8 +77,15 @@ func TestListServices(t *testing.T) {
 
 	resp, err := server.ListServices(context.Background(), &pb.ListServicesRequest{})
 	assert.NoError(t, err)
+
+	// Check deprecated field
 	assert.Len(t, resp.Services, 1)
 	assert.Equal(t, "test-service", resp.Services[0].GetName())
+
+	// Check new field
+	assert.Len(t, resp.ServiceStates, 1)
+	assert.Equal(t, "test-service", resp.ServiceStates[0].Config.GetName())
+	assert.Equal(t, pb.ServiceStatus_SERVICE_STATUS_UNKNOWN, resp.ServiceStates[0].GetStatus())
 }
 
 func TestGetService(t *testing.T) {
@@ -86,7 +93,7 @@ func TestGetService(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	serviceInfo := &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{
@@ -97,7 +104,13 @@ func TestGetService(t *testing.T) {
 
 	resp, err := server.GetService(context.Background(), &pb.GetServiceRequest{ServiceId: proto.String("test-service-id")})
 	assert.NoError(t, err)
+
+	// Check deprecated field
 	assert.Equal(t, "test-service", resp.Service.GetName())
+
+	// Check new field
+	assert.Equal(t, "test-service", resp.ServiceState.Config.GetName())
+	assert.Equal(t, pb.ServiceStatus_SERVICE_STATUS_UNKNOWN, resp.ServiceState.GetStatus())
 }
 
 func TestGetService_NotFound(t *testing.T) {
@@ -105,7 +118,7 @@ func TestGetService_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetServiceInfo("unknown").Return(nil, false)
 
@@ -119,7 +132,7 @@ func TestListTools(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -140,7 +153,7 @@ func TestGetTool(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -160,7 +173,7 @@ func TestGetTool_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetTool("unknown").Return(nil, false)
 

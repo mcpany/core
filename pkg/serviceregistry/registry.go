@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
@@ -49,6 +50,7 @@ type ServiceRegistry struct {
 	promptManager   prompt.ManagerInterface
 	resourceManager resource.ManagerInterface
 	authManager     *auth.Manager
+	healthManager   *health.Manager
 }
 
 // New creates a new ServiceRegistry instance, which is responsible for managing
@@ -60,9 +62,10 @@ type ServiceRegistry struct {
 //   - promptManager: The manager for registering discovered prompts.
 //   - resourceManager: The manager for registering discovered resources.
 //   - authManager: The manager for registering service-specific authenticators.
+//   - healthManager: The manager for registering health checks.
 //
 // Returns a new instance of `ServiceRegistry`.
-func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
+func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager, healthManager *health.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
@@ -72,6 +75,7 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		promptManager:   promptManager,
 		resourceManager: resourceManager,
 		authManager:     authManager,
+		healthManager:   healthManager,
 	}
 }
 
@@ -113,6 +117,10 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 	r.serviceConfigs[serviceID] = serviceConfig
 	r.upstreams[serviceID] = u
+
+	if r.healthManager != nil {
+		r.healthManager.RegisterService(serviceID, serviceConfig)
+	}
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
@@ -192,6 +200,9 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	r.promptManager.ClearPromptsForService(serviceName)
 	r.resourceManager.ClearResourcesForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
+	if r.healthManager != nil {
+		r.healthManager.UnregisterService(serviceName)
+	}
 	return nil
 }
 

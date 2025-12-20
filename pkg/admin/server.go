@@ -6,6 +6,7 @@ package admin
 import (
 	"context"
 
+	"github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
@@ -20,13 +21,15 @@ type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache       *middleware.CachingMiddleware
 	toolManager tool.ManagerInterface
+	health      *health.Manager
 }
 
 // NewServer creates a new Admin Server.
-func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
+func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface, health *health.Manager) *Server {
 	return &Server{
 		cache:       cache,
 		toolManager: toolManager,
+		health:      health,
 	}
 }
 
@@ -45,24 +48,69 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	serviceInfos := s.toolManager.ListServices()
 	var services []*configv1.UpstreamServiceConfig
+	var serviceStates []*pb.ServiceState
+
 	for _, info := range serviceInfos {
 		if info.Config != nil {
 			services = append(services, info.Config)
+
+			// Try to get status from health manager
+			id := info.Config.GetId()
+			if id == "" {
+				id = info.Name
+			}
+
+			if s.health != nil {
+				if state, ok := s.health.GetState(id); ok {
+					serviceStates = append(serviceStates, state)
+					continue
+				}
+			}
+
+			// Fallback
+			status := pb.ServiceStatus_SERVICE_STATUS_UNKNOWN
+			serviceStates = append(serviceStates, &pb.ServiceState{
+				Config: info.Config,
+				Status: &status,
+			})
 		}
 	}
-	return &pb.ListServicesResponse{Services: services}, nil
+	return &pb.ListServicesResponse{
+		Services:      services,
+		ServiceStates: serviceStates,
+	}, nil
 }
 
 // GetService returns a specific service by ID.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
-	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
+	id := req.GetServiceId()
+	info, ok := s.toolManager.GetServiceInfo(id)
 	if !ok {
 		return nil, status.Error(codes.NotFound, "service not found")
 	}
 	if info.Config == nil {
 		return nil, status.Error(codes.Internal, "service config not found")
 	}
-	return &pb.GetServiceResponse{Service: info.Config}, nil
+
+	var state *pb.ServiceState
+	if s.health != nil {
+		if s, ok := s.health.GetState(id); ok {
+			state = s
+		}
+	}
+
+	if state == nil {
+		status := pb.ServiceStatus_SERVICE_STATUS_UNKNOWN
+		state = &pb.ServiceState{
+			Config: info.Config,
+			Status: &status,
+		}
+	}
+
+	return &pb.GetServiceResponse{
+		Service:      info.Config,
+		ServiceState: state,
+	}, nil
 }
 
 // ListTools returns all registered tools.
