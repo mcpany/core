@@ -22,6 +22,27 @@ Returns the configuration for a specific service by its ID.
 - **Request**: `GetServiceRequest` containing `service_id`.
 - **Response**: `GetServiceResponse` containing `UpstreamServiceConfig`.
 
+#### `CreateService`
+
+Registers a new upstream service dynamically.
+
+- **Request**: `CreateServiceRequest` containing `UpstreamServiceConfig`.
+- **Response**: `CreateServiceResponse` containing the registered `UpstreamServiceConfig`.
+
+#### `UpdateService`
+
+Updates an existing upstream service configuration.
+
+- **Request**: `UpdateServiceRequest` containing `UpstreamServiceConfig`.
+- **Response**: `UpdateServiceResponse` containing the updated `UpstreamServiceConfig`.
+
+#### `DeleteService`
+
+Unregisters (removes) an upstream service.
+
+- **Request**: `DeleteServiceRequest` containing `service_id`.
+- **Response**: `DeleteServiceResponse` (empty).
+
 #### `ListTools`
 
 Returns a list of all registered tools across all services.
@@ -55,6 +76,12 @@ Assuming the gRPC server is running on `localhost:50051`:
 # List all services
 grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListServices
 
+# Get a service
+grpcurl -plaintext -d '{"service_id": "my-service"}' localhost:50051 mcpany.admin.v1.AdminService/GetService
+
 # List all tools
 grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListTools
+
+# Clear Cache
+grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ClearCache
 ```
