@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -117,4 +118,108 @@ func TestManager_ExecuteTool_Chain(t *testing.T) {
 	res, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s.t"})
 	assert.NoError(t, err)
 	assert.Equal(t, "final-result", res)
+}
+
+type MockPreHook struct {
+	Action Action
+	Req    *ExecutionRequest
+	Err    error
+}
+
+func (m *MockPreHook) ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error) {
+	return m.Action, m.Req, m.Err
+}
+
+type MockPostHook struct {
+	Result any
+	Err    error
+}
+
+func (m *MockPostHook) ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error) {
+	if m.Err != nil {
+		return nil, m.Err
+	}
+	if m.Result != nil {
+		return m.Result, nil
+	}
+	return result, nil
+}
+
+func TestExecuteTool_PreHook_Deny(t *testing.T) {
+	tm := NewManager(nil)
+	toolName := "svc.tool"
+	mt := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{Name: proto.String("tool"), ServiceId: proto.String("svc")} },
+	}
+	_ = tm.AddTool(mt)
+
+	// Inject hook via ServiceInfo
+	tm.AddServiceInfo("svc", &ServiceInfo{
+		PreHooks: []PreCallHook{
+			&MockPreHook{Action: ActionDeny},
+		},
+	})
+
+	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: toolName})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "execution denied")
+}
+
+func TestExecuteTool_PreHook_Error(t *testing.T) {
+	tm := NewManager(nil)
+	toolName := "svc.tool"
+	mt := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{Name: proto.String("tool"), ServiceId: proto.String("svc")} },
+	}
+	_ = tm.AddTool(mt)
+
+	tm.AddServiceInfo("svc", &ServiceInfo{
+		PreHooks: []PreCallHook{
+			&MockPreHook{Err: fmt.Errorf("hook error")},
+		},
+	})
+
+	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: toolName})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "hook error")
+}
+
+func TestExecuteTool_PostHook_Error(t *testing.T) {
+	tm := NewManager(nil)
+	toolName := "svc.tool"
+	mt := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{Name: proto.String("tool"), ServiceId: proto.String("svc")} },
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) { return "ok", nil },
+	}
+	_ = tm.AddTool(mt)
+
+	tm.AddServiceInfo("svc", &ServiceInfo{
+		PostHooks: []PostCallHook{
+			&MockPostHook{Err: fmt.Errorf("post error")},
+		},
+	})
+
+	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: toolName})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "post error")
+}
+
+func TestExecuteTool_PostHook_Modify(t *testing.T) {
+	tm := NewManager(nil)
+	toolName := "svc.tool"
+	mt := &MockTool{
+		ToolFunc: func() *v1.Tool { return &v1.Tool{Name: proto.String("tool"), ServiceId: proto.String("svc")} },
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) { return "ok", nil },
+	}
+	_ = tm.AddTool(mt)
+
+	tm.AddServiceInfo("svc", &ServiceInfo{
+		PostHooks: []PostCallHook{
+			&MockPostHook{Result: "modified"},
+		},
+	})
+
+	res, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: toolName})
+	assert.NoError(t, err)
+	assert.Equal(t, "modified", res)
 }

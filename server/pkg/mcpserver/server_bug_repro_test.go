@@ -31,7 +31,7 @@ import (
 
 func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)

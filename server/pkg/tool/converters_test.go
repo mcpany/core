@@ -270,3 +270,55 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 		assert.Equal(t, "Test Tool", mcpTool.Title)
 	})
 }
+
+func TestConvertToolDefinitionToProto_ProfilesAndTags(t *testing.T) {
+	toolDef := &configv1.ToolDefinition{
+		Name:      proto.String("tool"),
+		ServiceId: proto.String("svc"),
+		Profiles: []*configv1.Profile{
+			{Id: "p1"},
+			{Name: "p2"},
+		},
+		Tags: []string{"tag1", "tag2"},
+	}
+
+	pbTool, err := ConvertToolDefinitionToProto(toolDef, nil, nil)
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"p1", "p2"}, pbTool.GetProfiles())
+	assert.Equal(t, []string{"tag1", "tag2"}, pbTool.GetTags())
+}
+
+func TestConvertMCPToolToProto_ExtraAnnotations(t *testing.T) {
+	destructive := true
+	openWorld := true
+	mcpTool := &mcp.Tool{
+		Name: "tool",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "T",
+			ReadOnlyHint:    true,
+			IdempotentHint:  true,
+			DestructiveHint: &destructive,
+			OpenWorldHint:   &openWorld,
+		},
+	}
+
+	pbTool, err := ConvertMCPToolToProto(mcpTool)
+	assert.NoError(t, err)
+	ann := pbTool.GetAnnotations()
+	assert.Equal(t, "T", ann.GetTitle())
+	assert.True(t, ann.GetReadOnlyHint())
+	assert.True(t, ann.GetIdempotentHint())
+	assert.True(t, ann.GetDestructiveHint())
+	assert.True(t, ann.GetOpenWorldHint())
+}
+
+func TestConvertMcpFieldsToInputSchemaProperties_Error(t *testing.T) {
+	fields := []*protobufparser.McpField{
+		{
+			Name: "f1",
+			Type: "TYPE_UNKNOWN",
+		},
+	}
+	_, err := convertMcpFieldsToInputSchemaProperties(fields)
+	assert.Error(t, err)
+}

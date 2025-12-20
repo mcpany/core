@@ -312,3 +312,60 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// I will update Validated Logic in CacheMiddleware:
 	// If Action == DeleteCache, SKIP cache check.
 }
+
+func TestCachingMiddleware_Clear(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	ctx := context.Background()
+	// Just call Clear, it should not panic and return nil (or error from underlying cache)
+	err := cacheMiddleware.Clear(ctx)
+	require.NoError(t, err)
+}
+
+func TestCachingMiddleware_ActionDeleteCache_WithExistingCache(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName, ToolInputs: []byte("{\"arg\":\"val\"}")}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	require.Equal(t, 1, testTool.executeCount)
+
+	// 2. Request with DeleteCache
+	// We expect the tool to be executed AGAIN (count=2)
+	// And the cache to be cleared.
+	cacheControl := &tool.CacheControl{Action: tool.ActionDeleteCache}
+	ctxWithDelete := tool.NewContextWithCacheControl(ctx, cacheControl)
+
+	_, err = cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
+	require.NoError(t, err)
+
+	// This verifies the fix: tool execution count should increase (skipping cache hit)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed when ActionDeleteCache is set, ignoring cache hit")
+
+	// 3. Verify cache is gone by doing a normal request and expecting execution
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 3, testTool.executeCount, "Tool should be executed again because cache was deleted")
+}
