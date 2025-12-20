@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -20,6 +21,17 @@ import (
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
+		// If the error is due to missing port in address (which happens when no colon is present),
+		// we check if it is a valid port-only string by prepending ":".
+		if !strings.Contains(s, ":") {
+			// Ensure it is a numeric port to distinguish from missing-port hostnames like "localhost"
+			if _, err := strconv.Atoi(s); err == nil {
+				_, port, err = net.SplitHostPort(":" + s)
+				if err == nil && port != "" {
+					return nil
+				}
+			}
+		}
 		return err
 	}
 	if port == "" {
