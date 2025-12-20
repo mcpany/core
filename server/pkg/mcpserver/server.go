@@ -464,21 +464,25 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	// Handle map[string]any result (e.g. from HTTP tools)
-	if resultMap, ok := result.(map[string]any); ok {
-		// Convert map to CallToolResult via JSON
-		jsonData, err := json.Marshal(resultMap)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
-		}
+	var jsonBytes []byte
+	var marshalErr error
 
+	if resultMap, ok := result.(map[string]any); ok {
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
 		// try to parse it as such.
 		_, hasContent := resultMap["content"]
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
+			// Convert map to CallToolResult via JSON
+			var err error
+			jsonBytes, err = json.Marshal(resultMap)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
+			}
+
 			var callToolRes mcp.CallToolResult
-			if err := json.Unmarshal(jsonData, &callToolRes); err == nil {
+			if err := json.Unmarshal(jsonBytes, &callToolRes); err == nil {
 				return &callToolRes, nil
 			}
 			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
@@ -488,7 +492,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	// Default to JSON encoding for the result
-	jsonBytes, marshalErr := json.Marshal(result)
+	if jsonBytes == nil {
+		jsonBytes, marshalErr = json.Marshal(result)
+	}
 	text := string(jsonBytes)
 	if marshalErr != nil {
 		text = fmt.Sprintf("%v", result)
