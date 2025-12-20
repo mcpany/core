@@ -2,32 +2,50 @@
 
 ## 1. Updated Roadmap
 
-### Current Status
-
-#### Implemented Features
+### Implemented Features
 
 The following features are fully implemented and tested:
 
-- **Service Types**: gRPC, HTTP, OpenAPI, GraphQL, Stdio, MCP-to-MCP Proxy, WebSocket, WebRTC.
+- [x] [**Service Types**](./features/service-types.md): gRPC, HTTP, OpenAPI, GraphQL, Stdio, MCP-to-MCP Proxy, WebSocket, WebRTC.
 - **Upstream Authentication**: API Key, Bearer Token, OAuth 2.0.
 - **Registration**: Dynamic (gRPC) and Static (YAML/JSON).
-- **Policies**: Caching, Rate Limiting (Memory & Redis), Resilience (Circuit Breakers & Retries).
+- **Advanced Service Policies**:
+  - [x] [Caching](./features/caching/README.md)
+  - [x] [Rate Limiting](./features/rate-limiting/README.md) (Memory & Redis)
+  - [x] [Resilience](./features/resilience/README.md)
 - **Deployment**: Helm Chart, Docker.
-- **Observability**: Distributed Tracing (OpenTelemetry), Metrics, Structured Logging, Audit Logging.
-- **Security**: Secrets Management, IP Allowlisting, Webhooks, Fine-grained Policies.
-- **Message Bus**: NATS and Kafka support.
-- **Advanced Authentication**: Priority-based (Profile > User > Global).
+- [x] [**Health Checks**](./features/health-checks.md)
+- [x] [**Schema Validation**](./features/schema-validation.md)
+- [x] [**Service Profiles**](./features/profiles_and_policies/README.md)
+- **Configuration**: Hot Reloading.
+- [x] [**Secrets Management**](./features/security.md)
+- [x] [**Distributed Tracing**](./features/tracing/README.md)
+- [x] [**Transport Protocols (NATS)**](./features/nats.md)
+- [x] [**Transport Protocols (Kafka)**](./features/kafka.md)
+- [x] [**Automated Documentation Generation**](./features/documentation_generation.md)
+- [x] [**IP Allowlisting**](./features/security.md)
+- [x] [**Webhooks**](./features/webhooks/README.md)
+- [x] [**Audit Logging**](./features/audit_logging.md)
+- [x] [**Security Policies**](./features/profiles_and_policies/README.md)
+- [x] [**Advanced Authentication**](./features/authentication/README.md)
+- [x] [**Admin Management API**](./features/admin_api.md)
 
-#### High Priority (Next 1-3 Months)
+### High Priority (Next 1-3 Months)
 
 - **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
 - **RBAC**: Role-Based Access Control for managing user permissions.
 
-#### Long-Term Goals
+### Ongoing Goals
 
-- **WASM Plugin Support**: Extensibility via WebAssembly.
+- **Expand Test Coverage**: Increase unit and integration test coverage.
+- **Improve Error Handling**: Enhance error messages and context.
+
+### Long-Term Goals (6-12+ Months)
+
+- **WASM Plugin Support**: Custom logic via WebAssembly.
+- **Add Support for More Service Types**: Extend supported protocols.
 - **MCP Any Config Registry**: Public registry for configurations.
-- **Client SDKs**: Official libraries for Go, Python, TS.
+- **Client SDKs**: Official Go, Python, TS libraries.
 
 ---
 
@@ -37,15 +55,16 @@ We have identified the following features as critical for the next phase of prod
 
 | Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **RBAC (Role-Based Access Control)** | **Security**: Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles. | High |
-| 2 | **SQL Database Provider** | **Utility**: Allow users to directly expose SQL queries (Postgres, MySQL) as MCP tools without writing intermediate API code. | High |
-| 3 | **Admin Management API** | **Automation**: Expand the Admin API to support full CRUD operations on services/config at runtime, enabling the Dynamic UI. | Medium |
-| 4 | **Dynamic Web UI** | **UX**: A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML. | High |
-| 5 | **WASM Plugins** | **Extensibility**: Allow users to deploy safe, sandboxed custom logic for transformations or validations. | High |
-| 6 | **File System Provider** | **Utility**: safe, controlled access to the local file system (read/write/list) as an MCP tool source. | Medium |
-| 7 | **Cost & Quota Management** | **Governance**: Track token usage or call counts per user/profile and enforce strict quotas (beyond rate limiting). | Medium |
-| 8 | **Client SDKs (Python/TS)** | **DX**: Provide idiomatic wrappers for connecting to MCP Any, handling authentication, and parsing responses. | Medium |
-| 9 | **Structured Output Transformation** | **DX**: Native support for JQ or JSONPath to transform complex upstream API responses before sending them to the LLM. | Low |
+| 1 | **RBAC (Role-Based Access Control)** | **Security**: Essential for multi-tenant environments. Defines roles and granular permissions beyond simple profiles. | High |
+| 2 | **Dynamic Web UI** | **UX**: Completing the `ui/` scaffold to provide a visual dashboard for monitoring and configuration. | High |
+| 3 | **WASM Plugin System** | **Extensibility**: Allow users to write custom transformations and policies in any language that compiles to WASM. | High |
+| 4 | **Client SDKs (Python/TS)** | **DX**: Provide idiomatic libraries for consuming MCP Any from client applications. | Medium |
+| 5 | **Metrics Export** | **Observability**: Export metrics to Prometheus/OpenTelemetry (beyond current Tracing). | Medium |
+| 6 | **Audit Log Exporters** | **Compliance**: Push audit logs to external systems like S3, CloudWatch, or Splunk (currently file/stdout). | Low |
+| 7 | **Kubernetes Operator** | **Ops**: Native K8s integration to manage MCP Any configurations as CRDs. | Medium |
+| 8 | **Policy-as-Code (OPA)** | **Security**: Integrate Open Policy Agent for declarative policy enforcement. | Medium |
+| 9 | **Canary/Blue-Green Routing** | **Reliability**: Advanced traffic splitting for upstream services to support safe rollouts. | Medium |
+| 10 | **MCP Config Registry** | **Ecosystem**: A centralized place to share and discover configurations for popular APIs. | High |
 
 ---
 
@@ -53,14 +72,20 @@ We have identified the following features as critical for the next phase of prod
 
 This section highlights areas of the codebase that require refactoring or attention to ensure stability and maintainability.
 
-### 1. High Complexity in Tool Discovery
-The function `createAndRegisterHTTPTools` in `pkg/upstream/http/http.go` has identified high cyclomatic complexity. This function handles too many responsibilities (parsing, validation, registration) and should be refactored into smaller, testable sub-components.
+### 1. High Complexity in HTTP Tool Discovery
+The `createAndRegisterHTTPTools` function in `pkg/upstream/http/http.go` has high cyclomatic complexity. It handles parsing, validation, and registration logic in a single large block. **Recommendation**: Refactor into smaller, testable sub-functions.
 
-### 2. Skeletal Admin API
-The current `pkg/admin` package implements only `ClearCache`. To support the "Dynamic UI" roadmap item, this API needs to be significantly expanded to expose internal state, configuration management, and health status.
+### 2. UI Implementation Pending
+The `ui/` directory currently contains a starter template ("Firebase Studio"). **Recommendation**: This needs to be developed into the full "Dynamic UI" featureset, connecting to the Admin API.
 
-### 3. Redis Rate Limiter Time Synchronization
-The `RedisLimiter` (in `pkg/middleware/ratelimit_redis.go`) relies on client-side timestamps passed to a Lua script. While functional, this can lead to inaccuracies if server clocks drift. Future improvements should consider using Redis server time or robust drift mitigation.
+### 3. Cleanup of Deprecated/Backup Files
+Files like `pkg/resource/resource_test.go.bak` exist in the repository. **Recommendation**: Remove backup files to maintain repository hygiene.
 
-### 4. Dependency Management (Google APIs)
-The project appears to vendor Google API definitions in `build/googleapis`. This manual management can lead to version drift and maintenance overhead. Moving to a managed dependency or automated generation pipeline is recommended.
+### 4. Client Package Maturity
+The `pkg/client` package exists but appears internal. **Recommendation**: Formalize the public API for the Go SDK and separate it from internal usage if necessary.
+
+### 5. Regression Test Integration
+Several `bug_repro_test.go` files exist (e.g., in `pkg/mcpserver`, `pkg/upstream/http`). **Recommendation**: Ensure these are integrated into the main test suite and not just ad-hoc reproduction scripts.
+
+### 6. Dependency Management (Google APIs)
+The project appears to vendor Google API definitions in `build/googleapis`. **Recommendation**: Verify if this is necessary or if managed dependencies can be used to avoid drift.
