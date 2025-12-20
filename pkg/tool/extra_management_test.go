@@ -124,7 +124,7 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 
 	_, err := m.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "s1.mock-tool"})
 	if assert.Error(t, err) {
-		assert.Contains(t, err.Error(), "denied by policy rule")
+		assert.Contains(t, err.Error(), "denied by hook")
 	}
 }
 

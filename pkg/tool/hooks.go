@@ -111,13 +111,13 @@ func (h *PolicyHook) ExecutePre(
 		case configv1.CallPolicy_DELETE_CACHE:
 			return ActionDeleteCache, nil, nil
 		}
-		return ActionDeny, nil, fmt.Errorf("tool execution denied by policy rule: %s", req.ToolName)
+		return ActionDeny, nil, fmt.Errorf("tool execution denied by hook: policy rule: %s", req.ToolName)
 	}
 
 	if allowed {
 		return ActionAllow, nil, nil
 	}
-	return ActionDeny, nil, fmt.Errorf("tool execution denied by default policy: %s", req.ToolName)
+	return ActionDeny, nil, fmt.Errorf("tool execution denied by hook: default policy: %s", req.ToolName)
 }
 
 // (Deprecated hooks removed)

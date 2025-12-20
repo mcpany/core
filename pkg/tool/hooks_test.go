@@ -260,3 +260,14 @@ func TestWebhookHook(t *testing.T) {
 		assert.Equal(t, "modified result", res)
 	})
 }
+
+func TestPolicyHook_DenyMessage(t *testing.T) {
+	policy := &configv1.CallPolicy{
+		DefaultAction: ptr(configv1.CallPolicy_DENY),
+	}
+	hook := NewPolicyHook(policy)
+	req := &ExecutionRequest{ToolName: "any-tool"}
+	_, _, err := hook.ExecutePre(context.Background(), req)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "denied by hook")
+}

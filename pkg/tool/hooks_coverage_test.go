@@ -157,5 +157,5 @@ func TestPolicyHook_InvalidRegex(t *testing.T) {
 	action, _, err := hook.ExecutePre(context.Background(), req)
 	assert.Error(t, err) // Denied by default
 	assert.Equal(t, ActionDeny, action)
-	assert.Contains(t, err.Error(), "denied by default policy")
+	assert.Contains(t, err.Error(), "denied by hook")
 }
