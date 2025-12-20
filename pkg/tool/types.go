@@ -58,8 +58,11 @@ type Tool interface {
 // ServiceInfo holds metadata about a registered upstream service, including its
 // configuration and any associated protobuf file descriptors.
 type ServiceInfo struct {
+	// Name is the unique name of the service.
 	Name   string
+	// Config is the configuration of the upstream service.
 	Config *configv1.UpstreamServiceConfig
+	// Fds is the FileDescriptorSet associated with the service (for gRPC/protobuf).
 	Fds    *descriptorpb.FileDescriptorSet
 
 	// PreHooks are the cached pre-call hooks for the service.
@@ -71,6 +74,7 @@ type ServiceInfo struct {
 // ExecutionRequest represents a request to execute a specific tool, including
 // its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
+	// ToolName is the name of the tool to be executed.
 	ToolName string
 	// ToolInputs is the raw JSON message of the tool inputs. It is used by
 	// tools that need to unmarshal the inputs into a specific struct.

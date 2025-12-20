@@ -112,11 +112,17 @@ const httpServiceTemplate = `upstreamServices:
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
 // It is used as the data context for the httpServiceTemplate.
 type HTTPServiceData struct {
+	// Name is the name of the service.
 	Name         string
+	// Address is the base URL/address of the service.
 	Address      string
+	// OperationID is the unique identifier for the operation.
 	OperationID  string
+	// Description is a human-readable description of the service operation.
 	Description  string
+	// Method is the HTTP method to use (e.g., "GET", "POST").
 	Method       string
+	// EndpointPath is the path of the endpoint (e.g., "/api/v1/users").
 	EndpointPath string
 }
 
@@ -178,8 +184,11 @@ const grpcServiceTemplate = `upstreamServices:
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
 // It is used as the data context for the grpcServiceTemplate.
 type GRPCServiceData struct {
+	// Name is the name of the service.
 	Name              string
+	// Address is the address of the gRPC service (host:port).
 	Address           string
+	// ReflectionEnabled indicates whether gRPC reflection should be enabled.
 	ReflectionEnabled bool
 }
 
@@ -225,7 +234,9 @@ const openapiServiceTemplate = `upstreamServices:
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
 // It is used as the data context for the openapiServiceTemplate.
 type OpenAPIServiceData struct {
+	// Name is the name of the service.
 	Name     string
+	// SpecPath is the path or URL to the OpenAPI specification file.
 	SpecPath string
 }
 
@@ -268,9 +279,13 @@ const graphqlServiceTemplate = `upstreamServices:
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
 // It is used as the data context for the graphqlServiceTemplate.
 type GraphQLServiceData struct {
+	// Name is the name of the service.
 	Name         string
+	// Address is the URL of the GraphQL endpoint.
 	Address      string
+	// CallName is the name of the GraphQL query or mutation to expose.
 	CallName     string
+	// SelectionSet is the GraphQL selection set for the operation.
 	SelectionSet string
 }
 

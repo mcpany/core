@@ -13,6 +13,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// main is the entry point for the mock MCP server.
+// It starts a simple MCP server that exposes "read_file" and "list_directory" tools for testing purposes.
 func main() {
 	// Simple MCP server that exposes "read_file" and "list_directory" tools
 	server := mcp.NewServer(&mcp.Implementation{
