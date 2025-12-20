@@ -52,14 +52,54 @@ var IsSecurePath = func(path string) error {
 // path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
 var IsRelativePath = func(path string) error {
-	// By default, we enforce relative paths for security.
-	// Users can opt-out by setting MCPANY_ALLOW_ABSOLUTE_PATHS=true.
-	if os.Getenv("MCPANY_ALLOW_ABSOLUTE_PATHS") != "true" {
-		if filepath.IsAbs(path) {
-			return fmt.Errorf("path must be relative (set MCPANY_ALLOW_ABSOLUTE_PATHS=true to allow absolute paths)")
+	// 1. Basic security check (no .. in the path string itself)
+	if err := IsSecurePath(path); err != nil {
+		return err
+	}
+
+	// 2. Resolve to absolute path
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("failed to resolve absolute path: %w", err)
+	}
+
+	// Helper to check if child is inside parent
+	isInside := func(parent, child string) bool {
+		rel, err := filepath.Rel(parent, child)
+		if err != nil {
+			return false
+		}
+		return !strings.HasPrefix(rel, "..") && rel != ".."
+	}
+
+	// 3. Check if inside CWD
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current working directory: %w", err)
+	}
+
+	if isInside(cwd, absPath) {
+		return nil
+	}
+
+	// 4. Check Allow List
+	allowList := os.Getenv("MCPANY_FILE_PATH_ALLOW_LIST")
+	if allowList != "" {
+		for _, allowedDir := range strings.Split(allowList, ":") {
+			allowedDir = strings.TrimSpace(allowedDir)
+			if allowedDir == "" {
+				continue
+			}
+
+			// Resolve allowedDir to absolute too
+			allowedAbs, err := filepath.Abs(allowedDir)
+			if err == nil && isInside(allowedAbs, absPath) {
+				return nil
+			}
 		}
 	}
-	return IsSecurePath(path)
+
+	return fmt.Errorf("path %q is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)", path)
 }
 
 // IsValidURL checks if a given string is a valid URL. This function performs

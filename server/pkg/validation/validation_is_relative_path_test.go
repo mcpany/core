@@ -10,26 +10,30 @@ import (
 
 func TestIsRelativePath(t *testing.T) {
 	tests := []struct {
-		name          string
-		path          string
-		allowAbsolute bool
-		wantErr       bool
+		name      string
+		path      string
+		allowList string
+		wantErr   bool
 	}{
-		// AllowAbsolute = false (default)
-		{"Default_Relative", "config.yaml", false, false},
-		{"Default_Subdir", "subdir/config.yaml", false, false},
-		{"Default_Traversal", "../config.yaml", false, true},
-		{"Default_Absolute", "/etc/passwd", false, true},    // Now Blocked!
-		{"Default_AbsoluteWin", "C:\\Windows", false, true}, // Now Blocked!
-		{"Default_CleanRelative", "subdir/../config.yaml", false, false},
+		// Default behavior (No allow list)
+		// Relative paths inside CWD should pass
+		{"Default_Relative", "config.yaml", "", false},
+		{"Default_Subdir", "subdir/config.yaml", "", false},
+		// ".." is blocked by IsSecurePath
+		{"Default_Traversal", "../config.yaml", "", true},
+		// Absolute path NOT in CWD should fail
+		{"Default_Absolute", "/etc/passwd", "", true},
+		{"Default_AbsoluteWin", "C:\\Windows", "", true},
+		// Clean relative path inside CWD
+		{"Default_CleanRelative", "subdir/../config.yaml", "", false},
 
-		// AllowAbsolute = true
-		{"Allowed_Relative", "config.yaml", true, false},
-		{"Allowed_Subdir", "subdir/config.yaml", true, false},
-		{"Allowed_Traversal", "../config.yaml", true, true}, // Still blocked by IsSecurePath
-		{"Allowed_Absolute", "/etc/passwd", true, false},    // Allowed!
-		{"Allowed_AbsoluteWin", "C:\\Windows", true, false}, // Allowed!
-		{"Allowed_CleanRelative", "subdir/../config.yaml", true, false},
+		// With Allow List
+		// /etc is allowed
+		{"Allowed_Absolute_InList", "/etc/passwd", "/etc", false},
+		// /var is NOT allowed (list is /etc)
+		{"Allowed_Absolute_NotInList", "/var/log", "/etc", true},
+		// Multiple allowed paths
+		{"Allowed_Multiple", "/var/log", "/etc:/var", false},
 	}
 
 	for _, tt := range tests {
@@ -38,24 +42,20 @@ func TestIsRelativePath(t *testing.T) {
 			if tt.path == "C:\\Windows" && runtime.GOOS != "windows" {
 				return
 			}
-			// On Linux, C:\Windows is relative (filename), so Enforced_AbsoluteWin might fail expectation if we expect it to be treated as absolute.
-			// filepath.IsAbs("C:\\Windows") on Linux is false.
-			// So if we are on Linux, "C:\\Windows" is treated as relative.
-			// So Enforced_AbsoluteWin would NOT error on Linux.
-			// I should probably skip the Windows specific test if not on Windows to avoid confusion.
-			if tt.path == "C:\\Windows" && runtime.GOOS != "windows" {
+			// Skip /etc /var tests on Windows?
+			if (tt.path == "/etc/passwd" || tt.path == "/var/log") && runtime.GOOS == "windows" {
 				return
 			}
 
-			if tt.allowAbsolute {
-				t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
+			if tt.allowList != "" {
+				t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tt.allowList)
 			} else {
-				t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "false")
+				t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", "")
 			}
 
 			err := IsRelativePath(tt.path)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("IsRelativePath(%q) allowAbsolute=%v error = %v, wantErr %v", tt.path, tt.allowAbsolute, err, tt.wantErr)
+				t.Errorf("IsRelativePath(%q) allowList=%q error = %v, wantErr %v", tt.path, tt.allowList, err, tt.wantErr)
 			}
 		})
 	}

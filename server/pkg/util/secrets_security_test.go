@@ -35,11 +35,10 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 }
 
 func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
-    t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
-
     // This test ensures we didn't break valid filenames like "my..secret.txt"
     tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
     require.NoError(t, err)
+    t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tempDir)
     defer func() { _ = os.RemoveAll(tempDir) }()
 
     secretFile := filepath.Join(tempDir, "my..secret.txt")
@@ -116,9 +115,10 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 
 func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
 	// Ensure env var is NOT set
-	os.Unsetenv("MCPANY_ALLOW_ABSOLUTE_PATHS")
+	os.Unsetenv("MCPANY_FILE_PATH_ALLOW_LIST")
 
 	// Create a temp file
+	// os.CreateTemp uses default temp dir, which is usually outside CWD.
 	tmpFile, err := os.CreateTemp("", "secret_test")
 	require.NoError(t, err)
 	defer os.Remove(tmpFile.Name())
@@ -133,21 +133,23 @@ func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetFilePath(absPath)
 
-	// This should now FAIL
+	// This should FAIL because /tmp is not in CWD and not in allow list
 	_, err = util.ResolveSecret(secret)
-	assert.Error(t, err, "ResolveSecret should block absolute paths by default")
+	assert.Error(t, err, "ResolveSecret should block absolute paths outside CWD by default")
 	if err != nil {
-		assert.Contains(t, err.Error(), "path must be relative")
+		assert.Contains(t, err.Error(), "path")
+		assert.Contains(t, err.Error(), "is not allowed")
 	}
 }
 
-func TestResolveSecret_AbsolutePathsAllowedWithEnv(t *testing.T) {
-	t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
-
+func TestResolveSecret_AbsolutePathsAllowedWithList(t *testing.T) {
 	// Create a temp file
 	tmpFile, err := os.CreateTemp("", "secret_test_allowed")
 	require.NoError(t, err)
 	defer os.Remove(tmpFile.Name())
+
+	// Add the temp dir to the allow list
+	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", filepath.Dir(tmpFile.Name()))
 
 	_, err = tmpFile.WriteString("supersecret")
 	require.NoError(t, err)
