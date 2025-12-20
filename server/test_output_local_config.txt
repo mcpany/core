@@ -1,0 +1,220 @@
+=== RUN   TestDockerComposeE2E
+    docker_compose_test.go:72: Using ports: MCP=42995, GRPC=38483
+    docker_compose_test.go:82: Skipping docker build (SKIP_BUILD=true)
+    docker_compose_test.go:87: Cleaning up...
+Error response from daemon: No such container: core-mcpany-server-1
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:46:06.170Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:46:06.183Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:46:06.183Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:46:06.183Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc00062eae0 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:46:06.184Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:46:06.185Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:06.187Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:11.548Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:46:11.548Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=78.44µs
+time=2025-12-20T23:46:11.550Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:46:11.550Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=89.411µs
+time=2025-12-20T23:46:11.551Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:46:11.551Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=79.151µs
+time=2025-12-20T23:46:11.552Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:46:11.552Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:46:11.564Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:46:11.564Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:46:11.564Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=12.444271ms
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=:50050 registration-port="" stdio=false config-path=[https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml]
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml]
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:46:12.267Z level=ERROR source=/app/cmd/server/main.go:124 msg="Application failed" service=mcpany error="failed to load services from config: failed to load config from store: failed to read config from URL https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: failed to get config from url https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: status code 404"
+Error: failed to load services from config: failed to load config from store: failed to read config from URL https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: failed to get config from url https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: status code 404
+Usage:
+  mcpany run [flags]
+
+Flags:
+      --api-key string              API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY
+      --db-path string              Path to the SQLite database file. Env: MCPANY_DB_PATH (default "mcpany.db")
+      --grpc-port string            Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT
+  -h, --help                        help for run
+      --profiles strings            Comma-separated list of active profiles. Env: MCPANY_PROFILES (default [default])
+      --shutdown-timeout duration   Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT (default 5s)
+      --stdio                       Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO
+
+Global Flags:
+      --config-path strings             Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH
+      --debug                           Enable debug logging. Env: MCPANY_DEBUG
+      --log-format string               Set the log format (text, json). Env: MCPANY_LOG_FORMAT (default "text")
+      --log-level string                Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL (default "info")
+      --logfile string                  Path to a file to write logs to. If not set, logs are written to stdout.
+      --mcp-listen-address string       MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS (default "50050")
+      --metrics-listen-address string   Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS
+
+    docker_compose_test.go:106: Starting root docker-compose...
+    docker_compose_test.go:287: Running: docker compose up -d --wait
+ Network core_mcpany-net  Creating
+ Network core_mcpany-net  Created
+ Container core-prometheus-1  Creating
+ Container core-redis-1  Creating
+ Container core-prometheus-1  Created
+ Container core-redis-1  Created
+ Container core-mcpany-server-1  Creating
+ Container core-mcpany-server-1  Created
+ Container core-ui-1  Creating
+ Container core-ui-1  Created
+ Container core-redis-1  Starting
+ Container core-prometheus-1  Starting
+ Container core-redis-1  Started
+ Container core-mcpany-server-1  Starting
+ Container core-prometheus-1  Started
+ Container core-mcpany-server-1  Started
+ Container core-ui-1  Starting
+ Container core-ui-1  Started
+ Container core-prometheus-1  Waiting
+ Container core-ui-1  Waiting
+ Container core-mcpany-server-1  Waiting
+ Container core-redis-1  Waiting
+ Container core-prometheus-1  Healthy
+ Container core-ui-1  Healthy
+ Container core-redis-1  Healthy
+ Container core-mcpany-server-1  Healthy
+    docker_compose_test.go:111: Verifying mcpany-server health...
+    docker_compose_test.go:115: Verifying Prometheus metrics...
+    docker_compose_test.go:342: Found metric: map[__name__:up instance:mcpany-server:50050 job:mcpany] value: 1
+    docker_compose_test.go:129: Switching to example docker-compose...
+    docker_compose_test.go:287: Running: docker compose down
+ Container core-ui-1  Stopping
+ Container core-prometheus-1  Stopping
+ Container core-prometheus-1  Stopped
+ Container core-prometheus-1  Removing
+ Container core-prometheus-1  Removed
+ Container core-ui-1  Stopped
+ Container core-ui-1  Removing
+ Container core-ui-1  Removed
+ Container core-mcpany-server-1  Stopping
+ Container core-mcpany-server-1  Stopped
+ Container core-mcpany-server-1  Removing
+ Container core-mcpany-server-1  Removed
+ Container core-redis-1  Stopping
+ Container core-redis-1  Stopped
+ Container core-redis-1  Removing
+ Container core-redis-1  Removed
+ Network core_mcpany-net  Removing
+ Network core_mcpany-net  Removed
+    docker_compose_test.go:287: Running: docker compose -f server/examples/docker-compose-demo/docker-compose.yml up -d --wait
+ Container docker-compose-demo-http-echo-server-1  Running
+ Container docker-compose-demo-mcpany-server-1  Recreate
+ Container docker-compose-demo-mcpany-server-1  Recreated
+ Container docker-compose-demo-http-echo-server-1  Waiting
+ Container docker-compose-demo-http-echo-server-1  Healthy
+ Container docker-compose-demo-mcpany-server-1  Starting
+ Container docker-compose-demo-mcpany-server-1  Started
+ Container docker-compose-demo-http-echo-server-1  Waiting
+ Container docker-compose-demo-mcpany-server-1  Waiting
+ Container docker-compose-demo-http-echo-server-1  Healthy
+ Container docker-compose-demo-mcpany-server-1  Healthy
+    docker_compose_test.go:137: Verifying example mcpany-server health...
+    docker_compose_test.go:141: Simulating Gemini CLI interaction with echo tool...
+    docker_compose_test.go:372: Available tools: [0xc0002103c0]
+    docker_compose_test.go:381: Using tool name: docker-http-echo.echo
+    docker_compose_test.go:384: Calling echo tool...
+    docker_compose_test.go:144: Verifying tool execution metrics...
+    docker_compose_test.go:148: Starting Weather Service functional test...
+    docker_compose_test.go:163: Starting mcpany-server for weather test on port 35439...
+docker: Error response from daemon: Conflict. The container name "/mcpany-weather-test" is already in use by container "5ca72f979d65176106c9ebc353e4a7096053b55b9d40984e583b13379ed28ace". You have to remove (or rename) that container to be able to reuse that name.
+
+Run 'docker run --help' for more information
+    docker_compose_test.go:173:
+        	Error Trace:	/usr/local/google/home/kxw/core/server/tests/e2e_sequential/docker_compose_test.go:173
+        	            				/usr/local/google/home/kxw/core/server/tests/e2e_sequential/docker_compose_test.go:149
+        	Error:      	Received unexpected error:
+        	            	exit status 125
+        	Test:       	TestDockerComposeE2E
+        	Messages:   	Failed to start weather server container
+    docker_compose_test.go:87: Cleaning up...
+Error response from daemon: No such container: core-mcpany-server-1
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:48:19.728Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc000d0e6f0 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:48:19.742Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:48:19.744Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:19.747Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:25.105Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:48:25.106Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=157.61µs
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=31.53µs
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:48:25.108Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=52.68µs
+time=2025-12-20T23:48:25.110Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:48:25.110Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:48:25.122Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=12.74793ms
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=:50050 registration-port="" stdio=false config-path=[https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml]
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml]
+time=2025-12-20T23:46:12.075Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:46:12.267Z level=ERROR source=/app/cmd/server/main.go:124 msg="Application failed" service=mcpany error="failed to load services from config: failed to load config from store: failed to read config from URL https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: failed to get config from url https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: status code 404"
+Error: failed to load services from config: failed to load config from store: failed to read config from URL https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: failed to get config from url https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml: status code 404
+Usage:
+  mcpany run [flags]
+
+Flags:
+      --api-key string              API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY
+      --db-path string              Path to the SQLite database file. Env: MCPANY_DB_PATH (default "mcpany.db")
+      --grpc-port string            Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT
+  -h, --help                        help for run
+      --profiles strings            Comma-separated list of active profiles. Env: MCPANY_PROFILES (default [default])
+      --shutdown-timeout duration   Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT (default 5s)
+      --stdio                       Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO
+
+Global Flags:
+      --config-path strings             Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH
+      --debug                           Enable debug logging. Env: MCPANY_DEBUG
+      --log-format string               Set the log format (text, json). Env: MCPANY_LOG_FORMAT (default "text")
+      --log-level string                Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL (default "info")
+      --logfile string                  Path to a file to write logs to. If not set, logs are written to stdout.
+      --mcp-listen-address string       MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS (default "50050")
+      --metrics-listen-address string   Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS
+
+--- FAIL: TestDockerComposeE2E (41.25s)
+FAIL
+FAIL	command-line-arguments	41.259s
+FAIL

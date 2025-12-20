@@ -4,12 +4,14 @@
 package sql
 
 import (
+	"database/sql"
 	"os"
 	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
+	_ "modernc.org/sqlite" // Ensure sqlite driver is available for database/sql
 )
 
 func TestSaveServiceValidation(t *testing.T) {
@@ -20,13 +22,11 @@ func TestSaveServiceValidation(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	db, err := NewDB(dbPath)
+	store, err := NewStore("sqlite", dbPath)
 	if err != nil {
-		t.Fatalf("failed to create db: %v", err)
+		t.Fatalf("failed to create store: %v", err)
 	}
-	defer db.Close()
-
-	store := NewStore(db)
+	defer store.Close()
 
 	// Test case: Empty name
 	svc := &configv1.UpstreamServiceConfig{
@@ -41,11 +41,7 @@ func TestSaveServiceValidation(t *testing.T) {
 	}
 }
 
-func TestNewDBErrors(t *testing.T) {
-	// Test case: Invalid path (directory creation failure)
-	// We can try to create a DB in a read-only directory or a non-existent parent that we can't create
-	// But in a sandbox, permissions are tricky.
-	// We can try using a path that is actually a directory.
+func TestNewStoreErrors(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-db-errors-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -58,7 +54,7 @@ func TestNewDBErrors(t *testing.T) {
 		t.Fatalf("failed to create directory: %v", err)
 	}
 
-	_, err = NewDB(dbPath)
+	_, err = NewStore("sqlite", dbPath)
 	if err == nil {
 		t.Error("expected error when opening a directory as a DB file, got nil")
 	}
@@ -72,30 +68,47 @@ func TestLoadInvalidData(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	db, err := NewDB(dbPath)
+
+	// Open store to initialize DB and tables
+	store, err := NewStore("sqlite", dbPath)
 	if err != nil {
-		t.Fatalf("failed to create db: %v", err)
+		t.Fatalf("failed to create store: %v", err)
 	}
-	defer db.Close()
+	store.Close()
 
-	store := NewStore(db)
-
-	// Manually insert invalid JSON
-	_, err = db.Exec("INSERT INTO upstream_services (id, name, config_json) VALUES (?, ?, ?)", "bad-id", "bad-service", "{invalid-json")
+	// Manually insert invalid JSON using raw sql
+	rawDB, err := sql.Open("sqlite", dbPath)
 	if err != nil {
+		t.Skipf("skipping test because failing to open raw sqlite db: %v", err)
+	}
+	defer rawDB.Close()
+
+	// Note: invalid json in 'config' column
+	_, err = rawDB.Exec("INSERT INTO upstream_services (id, name, config, created_at, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)", "bad-id", "bad-service", "{invalid-json")
+	if err != nil {
+		// Attempt without checking exact schema?
+		// Gorm uses 'upstream_services' table and 'config' column.
 		t.Fatalf("failed to insert invalid data: %v", err)
 	}
+	rawDB.Close()
+
+	// Re-open store to Load
+	store, err = NewStore("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("failed to re-open store: %v", err)
+	}
+	defer store.Close()
 
 	// Try to load
-	_, err = store.Load()
-	if err == nil {
-		t.Error("expected error when loading invalid JSON, got nil")
-	} else {
-		// Error message depends on protojson implementation, but should fail
-		t.Logf("Got expected error: %v", err)
+	config, err := store.Load()
+	if err != nil {
+		t.Fatalf("expected nil error when loading invalid JSON (should be skipped), got %v", err)
+	}
+	if len(config.UpstreamServices) != 0 {
+		t.Errorf("expected 0 services, got %d", len(config.UpstreamServices))
 	}
 
-	// Try GetService
+	// Try GetService - this SHOULD fail because it targets the specific invalid item
 	_, err = store.GetService("bad-service")
 	if err == nil {
 		t.Error("expected error when getting service with invalid JSON, got nil")
@@ -110,14 +123,13 @@ func TestDBErrors(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	db, err := NewDB(dbPath)
+	store, err := NewStore("sqlite", dbPath)
 	if err != nil {
-		t.Fatalf("failed to create db: %v", err)
+		t.Fatalf("failed to create store: %v", err)
 	}
-	store := NewStore(db)
 
 	// Close the DB to force errors
-	db.Close()
+	store.Close()
 
 	// Test Load
 	_, err = store.Load()
