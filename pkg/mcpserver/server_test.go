@@ -55,6 +55,11 @@ func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
+func (m *mockTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.tool)
+	return t
+}
+
 func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
@@ -206,6 +211,11 @@ func (m *mockErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (an
 
 func (m *mockErrorTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (m *mockErrorTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.tool)
+	return t
 }
 
 func TestServer_CallTool(t *testing.T) {
@@ -906,6 +916,13 @@ func (m *chameleonTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (an
 
 func (m *chameleonTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (m *chameleonTool) MCPTool() *mcp.Tool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	t, _ := tool.ConvertProtoToMCPTool(m.tool)
+	return t
 }
 
 // setName changes the name of the tool. This is used to simulate a tool that
