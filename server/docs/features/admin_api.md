@@ -1,72 +1,31 @@
 # Admin Management API
 
-The Admin Management API provides a set of gRPC endpoints to inspect and manage the internal state of the MCP Any server, including dynamic service registration, caching, and tool inspection.
+The Admin Management API provides a set of gRPC endpoints to inspect and manage the internal state of the MCP Any server. This is useful for building dashboards, debugging, and monitoring the server's configuration and registered tools.
 
-These endpoints are distributed across multiple services defined in `proto/api/v1/`.
+## Service Definition
 
-## Registration Service
-
-Defined in `proto/api/v1/registration.proto`.
+The Admin API is exposed as a gRPC service defined in `proto/admin/v1/admin.proto`.
 
 ### Endpoints
-
-#### `RegisterService`
-
-Registers a new upstream service dynamically.
-
-- **RPC**: `RegisterService`
-- **HTTP**: `POST /v1/services/register`
-- **Request**: `RegisterServiceRequest` containing `UpstreamServiceConfig`.
-- **Response**: `RegisterServiceResponse` containing the service key and discovered tools.
-
-#### `UpdateService`
-
-Updates an existing upstream service configuration.
-
-- **RPC**: `UpdateService`
-- **HTTP**: `PUT /v1/services/update`
-- **Request**: `UpdateServiceRequest` containing `UpstreamServiceConfig`.
-- **Response**: `UpdateServiceResponse` containing the updated `UpstreamServiceConfig`.
-
-#### `UnregisterService`
-
-Unregisters (removes) an upstream service.
-
-- **RPC**: `UnregisterService`
-- **HTTP**: `POST /v1/services/unregister`
-- **Request**: `UnregisterServiceRequest` containing `service_name`.
-- **Response**: `UnregisterServiceResponse` (empty message).
 
 #### `ListServices`
 
 Returns a list of all currently registered upstream services.
 
-- **RPC**: `ListServices`
-- **HTTP**: `GET /v1/services`
 - **Request**: `ListServicesRequest` (empty)
 - **Response**: `ListServicesResponse` containing a list of `UpstreamServiceConfig`.
 
 #### `GetService`
 
-Returns the configuration for a specific service.
+Returns the configuration for a specific service by its ID.
 
-- **RPC**: `GetService`
-- **HTTP**: `GET /v1/services/{service_name}`
-- **Request**: `GetServiceRequest` containing `service_name`.
+- **Request**: `GetServiceRequest` containing `service_id`.
 - **Response**: `GetServiceResponse` containing `UpstreamServiceConfig`.
-
-## Tool Service
-
-Defined in `proto/api/v1/tool.proto`.
-
-### Endpoints
 
 #### `ListTools`
 
 Returns a list of all registered tools across all services.
 
-- **RPC**: `ListTools`
-- **HTTP**: `GET /v1/tools`
 - **Request**: `ListToolsRequest` (empty)
 - **Response**: `ListToolsResponse` containing a list of `Tool`.
 
@@ -74,29 +33,19 @@ Returns a list of all registered tools across all services.
 
 Returns the definition of a specific tool by its name.
 
-- **RPC**: `GetTool`
-- **HTTP**: `GET /v1/tools/{tool_name}`
 - **Request**: `GetToolRequest` containing `tool_name`.
 - **Response**: `GetToolResponse` containing `Tool`.
-
-## Cache Service
-
-Defined in `proto/api/v1/cache.proto`.
-
-### Endpoints
 
 #### `ClearCache`
 
 Clears the global cache (if caching is enabled).
 
-- **RPC**: `ClearCache`
-- **HTTP**: `POST /v1/cache/clear`
 - **Request**: `ClearCacheRequest` (empty)
 - **Response**: `ClearCacheResponse` (empty)
 
 ## Usage
 
-You can interact with the API using any gRPC client or HTTP client (if the gateway is enabled).
+You can interact with the Admin API using any gRPC client, such as `grpcurl` or by generating a client in your preferred language using the provided protobuf definition.
 
 ### Example with `grpcurl`
 
@@ -104,14 +53,8 @@ Assuming the gRPC server is running on `localhost:50051`:
 
 ```bash
 # List all services
-grpcurl -plaintext localhost:50051 mcpany.api.v1.RegistrationService/ListServices
-
-# Get a service
-grpcurl -plaintext -d '{"service_name": "my-service"}' localhost:50051 mcpany.api.v1.RegistrationService/GetService
+grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListServices
 
 # List all tools
-grpcurl -plaintext localhost:50051 mcpany.api.v1.ToolService/ListTools
-
-# Clear Cache
-grpcurl -plaintext localhost:50051 mcpany.api.v1.CacheService/ClearCache
+grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListTools
 ```

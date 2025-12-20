@@ -23,9 +23,9 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	RegistrationService_RegisterService_FullMethodName    = "/mcpany.api.v1.RegistrationService/RegisterService"
-	RegistrationService_UpdateService_FullMethodName      = "/mcpany.api.v1.RegistrationService/UpdateService"
 	RegistrationService_UnregisterService_FullMethodName  = "/mcpany.api.v1.RegistrationService/UnregisterService"
 	RegistrationService_InitiateOAuth2Flow_FullMethodName = "/mcpany.api.v1.RegistrationService/InitiateOAuth2Flow"
+	RegistrationService_RegisterTools_FullMethodName      = "/mcpany.api.v1.RegistrationService/RegisterTools"
 	RegistrationService_GetServiceStatus_FullMethodName   = "/mcpany.api.v1.RegistrationService/GetServiceStatus"
 	RegistrationService_ListServices_FullMethodName       = "/mcpany.api.v1.RegistrationService/ListServices"
 	RegistrationService_GetService_FullMethodName         = "/mcpany.api.v1.RegistrationService/GetService"
@@ -36,9 +36,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistrationServiceClient interface {
 	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
-	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*UpdateServiceResponse, error)
 	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error)
 	InitiateOAuth2Flow(ctx context.Context, in *InitiateOAuth2FlowRequest, opts ...grpc.CallOption) (*InitiateOAuth2FlowResponse, error)
+	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
 	GetServiceStatus(ctx context.Context, in *GetServiceStatusRequest, opts ...grpc.CallOption) (*GetServiceStatusResponse, error)
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
@@ -62,16 +62,6 @@ func (c *registrationServiceClient) RegisterService(ctx context.Context, in *Reg
 	return out, nil
 }
 
-func (c *registrationServiceClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*UpdateServiceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateServiceResponse)
-	err := c.cc.Invoke(ctx, RegistrationService_UpdateService_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *registrationServiceClient) UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UnregisterServiceResponse)
@@ -86,6 +76,16 @@ func (c *registrationServiceClient) InitiateOAuth2Flow(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(InitiateOAuth2FlowResponse)
 	err := c.cc.Invoke(ctx, RegistrationService_InitiateOAuth2Flow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registrationServiceClient) RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterToolsResponse)
+	err := c.cc.Invoke(ctx, RegistrationService_RegisterTools_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +127,9 @@ func (c *registrationServiceClient) GetService(ctx context.Context, in *GetServi
 // for forward compatibility.
 type RegistrationServiceServer interface {
 	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
-	UpdateService(context.Context, *UpdateServiceRequest) (*UpdateServiceResponse, error)
 	UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error)
 	InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error)
+	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
 	GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error)
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
@@ -146,14 +146,14 @@ type UnimplementedRegistrationServiceServer struct{}
 func (UnimplementedRegistrationServiceServer) RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterService not implemented")
 }
-func (UnimplementedRegistrationServiceServer) UpdateService(context.Context, *UpdateServiceRequest) (*UpdateServiceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateService not implemented")
-}
 func (UnimplementedRegistrationServiceServer) UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 func (UnimplementedRegistrationServiceServer) InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
+}
+func (UnimplementedRegistrationServiceServer) RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 func (UnimplementedRegistrationServiceServer) GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
@@ -203,24 +203,6 @@ func _RegistrationService_RegisterService_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RegistrationService_UpdateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateServiceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RegistrationServiceServer).UpdateService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RegistrationService_UpdateService_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).UpdateService(ctx, req.(*UpdateServiceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _RegistrationService_UnregisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UnregisterServiceRequest)
 	if err := dec(in); err != nil {
@@ -253,6 +235,24 @@ func _RegistrationService_InitiateOAuth2Flow_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RegistrationServiceServer).InitiateOAuth2Flow(ctx, req.(*InitiateOAuth2FlowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RegistrationService_RegisterTools_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterToolsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).RegisterTools(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_RegisterTools_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).RegisterTools(ctx, req.(*RegisterToolsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -323,16 +323,16 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RegistrationService_RegisterService_Handler,
 		},
 		{
-			MethodName: "UpdateService",
-			Handler:    _RegistrationService_UpdateService_Handler,
-		},
-		{
 			MethodName: "UnregisterService",
 			Handler:    _RegistrationService_UnregisterService_Handler,
 		},
 		{
 			MethodName: "InitiateOAuth2Flow",
 			Handler:    _RegistrationService_InitiateOAuth2Flow_Handler,
+		},
+		{
+			MethodName: "RegisterTools",
+			Handler:    _RegistrationService_RegisterTools_Handler,
 		},
 		{
 			MethodName: "GetServiceStatus",

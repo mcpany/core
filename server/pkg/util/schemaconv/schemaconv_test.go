@@ -125,14 +125,6 @@ func (m *mockFieldDescriptor) Name() protoreflect.Name {
 	return protoreflect.Name(m.name)
 }
 
-func (m *mockFieldDescriptor) IsList() bool {
-	return false
-}
-
-func (m *mockFieldDescriptor) IsMap() bool {
-	return false
-}
-
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
 type mockFieldDescriptors struct {
 	protoreflect.FieldDescriptors

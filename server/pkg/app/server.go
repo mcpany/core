@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/mcpany/core/pkg/admin"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
@@ -37,6 +38,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
+	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -956,11 +958,9 @@ func (a *Application) runServerMode(
 					}
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
-					cacheServer := mcpserver.NewCacheServer(cachingMiddleware)
-					v1.RegisterCacheServiceServer(s, cacheServer)
-
-					toolServer := mcpserver.NewToolServer(a.ToolManager)
-					v1.RegisterToolServiceServer(s, toolServer)
+					// Register Admin Service
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
 				},
