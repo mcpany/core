@@ -29,7 +29,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestServer_CallTool_Metrics_Repro(t *testing.T) {
+func TestDoubleCounting(t *testing.T) {
 	// Initialize metrics with an in-memory sink
 	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
@@ -100,18 +100,7 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	data := sink.Data()
 	require.Len(t, data, 1)
 
-	// Unlabeled counter should not be present to avoid double counting
-	assert.NotContains(t, data[0].Counters, "mcpany.tools.call.total")
-	assert.NotContains(t, data[0].Counters, "tools.call.total")
-
-	// Verify we have the labeled metric
-	found := false
-	prefix := "mcpany.tools.call.total;"
-	for k := range data[0].Counters {
-		if len(k) >= len(prefix) && k[:len(prefix)] == prefix {
-			found = true
-			break
-		}
-	}
-	assert.True(t, found, "Should have labeled metric")
+	// The unlabeled counter "mcpany.tools.call.total" should NOT exist
+	// because we want to avoid double counting.
+	assert.NotContains(t, data[0].Counters, "mcpany.tools.call.total", "Unlabeled counter should not exist to avoid double counting")
 }

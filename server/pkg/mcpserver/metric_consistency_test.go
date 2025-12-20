@@ -152,12 +152,9 @@ func TestMetricNamingConsistency(t *testing.T) {
 		fmt.Println(k)
 	}
 
-	// Verify Global Counters
-	assert.Contains(t, counters, "mcpany.tools.call.total")
-	assert.Equal(t, 2, counters["mcpany.tools.call.total"])
-
-	assert.Contains(t, counters, "mcpany.tools.call.errors")
-	assert.Equal(t, 1, counters["mcpany.tools.call.errors"])
+	// Verify Global Counters (should NOT exist as unlabeled to avoid double counting)
+	assert.NotContains(t, counters, "mcpany.tools.call.total")
+	assert.NotContains(t, counters, "mcpany.tools.call.errors")
 
 	// Verify Labeled Counters (Expect plural "tools")
 
