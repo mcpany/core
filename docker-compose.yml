@@ -16,9 +16,9 @@ services:
       dockerfile: docker/Dockerfile.server
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
-      - "50050:50050"
+      - "${MCP_PORT:-50050}:50050"
       # Exposes the gRPC registration port to the host.
-      - "50051:50051"
+      - "${MCP_GRPC_PORT:-50051}:50051"
     volumes:
       # Mounts the production config file.
       - ./server/docker/config.production.yaml:/etc/mcpany/config.yaml
