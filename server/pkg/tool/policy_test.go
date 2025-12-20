@@ -251,3 +251,92 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		})
 	}
 }
+
+func TestEvaluateCompiledCallPolicy(t *testing.T) {
+	tests := []struct {
+		name      string
+		policies  []*configv1.CallPolicy
+		toolName  string
+		callID    string
+		arguments []byte
+		want      bool
+	}{
+		{
+			name:     "No Policies",
+			policies: nil,
+			toolName: "any",
+			want:     true,
+		},
+		{
+			name: "Default Deny",
+			policies: []*configv1.CallPolicy{
+				{DefaultAction: callActionPtr(configv1.CallPolicy_DENY)},
+			},
+			toolName: "any",
+			want:     false,
+		},
+		{
+			name: "Default Allow",
+			policies: []*configv1.CallPolicy{
+				{DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW)},
+			},
+			toolName: "any",
+			want:     true,
+		},
+		{
+			name: "Name Regex Deny",
+			policies: []*configv1.CallPolicy{
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
+					Rules: []*configv1.CallPolicyRule{
+						{
+							NameRegex: strPtr("^dangerous_.*"),
+							Action:    callActionPtr(configv1.CallPolicy_DENY),
+						},
+					},
+				},
+			},
+			toolName: "dangerous_tool",
+			want:     false,
+		},
+		{
+			name: "Argument Regex Deny",
+			policies: []*configv1.CallPolicy{
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
+					Rules: []*configv1.CallPolicyRule{
+						{
+							ArgumentRegex: strPtr(".*secret.*"),
+							Action:        callActionPtr(configv1.CallPolicy_DENY),
+						},
+					},
+				},
+			},
+			toolName:  "any",
+			arguments: json.RawMessage("{\"key\": \"secret\"}"),
+			want:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			compiled, err := CompileCallPolicies(tt.policies)
+			assert.NoError(t, err)
+			got, err := EvaluateCompiledCallPolicy(compiled, tt.toolName, tt.callID, tt.arguments)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
+	policies := []*configv1.CallPolicy{
+		{
+			Rules: []*configv1.CallPolicyRule{
+				{NameRegex: strPtr("[")},
+			},
+		},
+	}
+	_, err := CompileCallPolicies(policies)
+	assert.Error(t, err)
+}
