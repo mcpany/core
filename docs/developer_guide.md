@@ -87,13 +87,15 @@ upstreamServices:
     httpService:
       address: "http://localhost:8080"
       calls:
-        - operationId: "echo"
-          endpointPath: "/echo"
+        echo:
+          id: "echo"
+          endpoint_path: "/echo"
           method: "HTTP_METHOD_POST"
-    authentication:
-      apiKey:
-        header: "X-Api-Key"
-        value: "your-secret-api-key"
+    upstream_authentication:
+      api_key:
+        header_name: "X-Api-Key"
+        api_key:
+          plain_text: "your-secret-api-key"
 ```
 
 #### OpenAPI Service
@@ -105,9 +107,9 @@ upstreamServices:
   - name: "openapi_petstore"
     openapiService:
       address: "https://petstore.swagger.io/v2"
-      spec:
+      spec_content: |
         # You can paste an OpenAPI spec here directly
-        # or provide a path to a file using `specPath`.
+        # or provide a path to a file using `spec_url`.
         openapi: "2.0"
         info:
           title: "Simple Pet Store API"
