@@ -1188,7 +1188,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+					val := fmt.Sprintf("%v", v)
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
 		}
@@ -1212,6 +1216,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -1251,7 +1258,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			env = append(env, fmt.Sprintf("%s=%v", name, val))
+			valStr := fmt.Sprintf("%v", val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -1384,7 +1395,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					args[i] = strings.ReplaceAll(arg, placeholder, fmt.Sprintf("%v", v))
+					val := fmt.Sprintf("%v", v)
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
 		}
@@ -1409,6 +1424,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -1458,7 +1476,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			env = append(env, fmt.Sprintf("%s=%v", name, val))
+			valStr := fmt.Sprintf("%v", val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
 	}
 
@@ -1611,4 +1633,20 @@ func getMaxCommandOutputSize() int64 {
 func isSensitiveHeader(key string) bool {
 	k := strings.ToLower(key)
 	return k == "authorization" || k == "proxy-authorization" || k == "cookie" || k == "set-cookie" || k == "x-api-key"
+}
+
+func checkForPathTraversal(val string) error {
+	if val == ".." {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.HasSuffix(val, "/..") || strings.HasSuffix(val, "\\..") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
+		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
 }
