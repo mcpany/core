@@ -102,6 +102,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
+		if cfg.GetGlobalSettings().GetDbPath() != "" {
+			s.dbPath = cfg.GetGlobalSettings().GetDbPath()
+		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
