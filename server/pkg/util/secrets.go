@@ -290,13 +290,13 @@ var safeSecretClient = &http.Client{
 				if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
 					return nil, fmt.Errorf("blocked link-local IP: %s", ip)
 				}
-				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() {
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != TrueStr && ip.IsLoopback() {
 					return nil, fmt.Errorf("blocked loopback IP: %s", ip)
 				}
-				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsUnspecified() {
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != TrueStr && ip.IsUnspecified() {
 					return nil, fmt.Errorf("blocked unspecified IP: %s", ip)
 				}
-				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") != "true" && ip.IsPrivate() {
+				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") != TrueStr && ip.IsPrivate() {
 					return nil, fmt.Errorf("blocked private IP: %s", ip)
 				}
 			}
