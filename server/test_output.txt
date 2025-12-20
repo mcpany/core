@@ -1,0 +1,112 @@
+=== RUN   TestDockerComposeE2E
+    docker_compose_test.go:58: Skipping docker build (SKIP_BUILD=true)
+    docker_compose_test.go:63: Cleaning up...
+Error response from daemon: No such container: core-mcpany-server-1
+time=2025-12-20T23:31:30.788Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc000d72690 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:36.171Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:31:36.171Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=70.7µs
+time=2025-12-20T23:31:36.174Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:31:36.174Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=34.58µs
+time=2025-12-20T23:31:36.175Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:31:36.175Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=49.32µs
+time=2025-12-20T23:31:36.177Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:31:36.177Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=16.33024ms
+Error response from daemon: No such container: mcpany-weather-test
+    docker_compose_test.go:82: Starting root docker-compose...
+    docker_compose_test.go:252: Running: docker compose up -d --wait
+ Network core_mcpany-net  Creating
+ Network core_mcpany-net  Created
+ Container core-redis-1  Creating
+ Container core-prometheus-1  Creating
+ Container core-prometheus-1  Created
+ Container core-redis-1  Created
+ Container core-mcpany-server-1  Creating
+ Container core-mcpany-server-1  Created
+ Container core-ui-1  Creating
+ Container core-ui-1  Created
+ Container core-redis-1  Starting
+ Container core-prometheus-1  Starting
+ Container core-redis-1  Started
+ Container core-mcpany-server-1  Starting
+ Container core-prometheus-1  Started
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint core-mcpany-server-1 (1f2249edd881ff8ef0b39c3c00bc8e76fb2bab764f9b965caebcbe3c3ec30c5c): Bind for 0.0.0.0:50050 failed: port is already allocated
+    docker_compose_test.go:254:
+        	Error Trace:	/usr/local/google/home/kxw/core/server/tests/e2e_sequential/docker_compose_test.go:254
+        	            				/usr/local/google/home/kxw/core/server/tests/e2e_sequential/docker_compose_test.go:83
+        	Error:      	Received unexpected error:
+        	            	exit status 1
+        	Test:       	TestDockerComposeE2E
+        	Messages:   	Command failed: docker compose up -d --wait
+    docker_compose_test.go:63: Cleaning up...
+time=2025-12-20T23:31:30.788Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=0.0.0.0:50050 registration-port="" stdio=false config-path=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/etc/mcpany/config.yaml]
+time=2025-12-20T23:31:30.789Z level=INFO source=/app/pkg/app/server.go:214 msg="Starting MCP Any Service..."
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=docker-http-echo priority=0
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-20T23:31:30.804Z level=INFO source=/app/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:335 msg="Queueing service for registration from config" service=docker-http-echo
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:663 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/worker/registration_worker.go:55 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=docker-http-echo.echo toolName=docker-http-echo.echo tool="&{Meta:map[] Annotations:0xc000d72690 Description:Echoes back the request body. InputSchema:map[properties:map[] type:object] Name:docker-http-echo.echo OutputSchema:<nil> Title:}"
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=docker-http-echo toolsAdded=1
+time=2025-12-20T23:31:30.805Z level=INFO source=/app/pkg/app/server.go:1072 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:50050
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:30.810Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:36.171Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+time=2025-12-20T23:31:36.171Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=70.7µs
+time=2025-12-20T23:31:36.174Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+time=2025-12-20T23:31:36.174Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=34.58µs
+time=2025-12-20T23:31:36.175Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+time=2025-12-20T23:31:36.175Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=49.32µs
+time=2025-12-20T23:31:36.177Z level=INFO source=/app/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+time=2025-12-20T23:31:36.177Z level=INFO source=/app/pkg/mcpserver/server.go:429 msg="Calling tool..." toolName=docker-http-echo.echo arguments=map[]
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/health/health.go:85 msg="health status changed" service=docker-http-echo status=down
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/mcpserver/server.go:456 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[message:Hello MCP]"
+time=2025-12-20T23:31:36.193Z level=INFO source=/app/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=16.33024ms
+Error response from daemon: No such container: mcpany-weather-test
+--- FAIL: TestDockerComposeE2E (12.74s)
+FAIL
+FAIL	command-line-arguments	12.758s
+FAIL
