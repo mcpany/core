@@ -153,11 +153,10 @@ func TestMetricNamingConsistency(t *testing.T) {
 	}
 
 	// Verify Global Counters
-	assert.Contains(t, counters, "mcpany.tools.call.total")
-	assert.Equal(t, 2, counters["mcpany.tools.call.total"])
-
-	assert.Contains(t, counters, "mcpany.tools.call.errors")
-	assert.Equal(t, 1, counters["mcpany.tools.call.errors"])
+	// Note: We removed the unlabelled counters to avoid double counting in Prometheus.
+	// We only verify labelled counters below.
+	assert.NotContains(t, counters, "mcpany.tools.call.total")
+	assert.NotContains(t, counters, "mcpany.tools.call.errors")
 
 	// Verify Labeled Counters (Expect plural "tools")
 

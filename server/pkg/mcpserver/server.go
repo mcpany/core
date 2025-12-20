@@ -436,7 +436,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounter([]string{"tools", "call", "total"}, 1)
 	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
@@ -447,7 +446,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounter([]string{"tools", "call", "errors"}, 1)
 		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
