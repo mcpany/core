@@ -1,0 +1,46 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-case-conflict
+    -   id: check-json
+    -   id: check-yaml
+        exclude: ^helm/
+    -   id: detect-private-key
+        exclude: ^tests/tls/
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: local
+    hooks:
+    -   id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+        exclude: ^vendor/
+    -   id: helm-lint
+        name: helm-lint
+        entry: ./build/env/bin/helm lint helm/mcpany
+        language: system
+        files: ^helm/
+        pass_filenames: false
+-   repo: https://github.com/google/addlicense
+    rev: v1.2.0
+    hooks:
+    -   id: addlicense
+        args:
+            - -c
+            - "Author(s) of MCP Any"
+            - -l
+            - apache
+            - -ignore
+            - "build/**"
+            - -ignore
+            - "vendor/**"
+            - -ignore
+            - "**/*.pb.go"
+            - -s=only
