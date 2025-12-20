@@ -124,11 +124,7 @@ func (s *Settings) GRPCPort() string {
 
 // MCPListenAddress returns the MCP listen address.
 func (s *Settings) MCPListenAddress() string {
-	addr := s.proto.GetMcpListenAddress()
-	if !strings.Contains(addr, ":") {
-		addr = "localhost:" + addr
-	}
-	return addr
+	return s.proto.GetMcpListenAddress()
 }
 
 // MetricsListenAddress returns the metrics listen address.
