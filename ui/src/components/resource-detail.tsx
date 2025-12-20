@@ -31,7 +31,17 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
         const { service: serviceDetails } = await apiClient.getService(serviceId);
         setService(serviceDetails);
 
-        const serviceData = serviceDetails.grpc_service || serviceDetails.http_service || serviceDetails.command_line_service;
+        const serviceData =
+            serviceDetails.grpc_service ||
+            serviceDetails.http_service ||
+            serviceDetails.command_line_service ||
+            serviceDetails.openapi_service ||
+            serviceDetails.websocket_service ||
+            serviceDetails.webrtc_service ||
+            serviceDetails.graphql_service ||
+            serviceDetails.mcp_service;
+
+        // @ts-ignore
         const foundResource = serviceData?.resources?.find(r => r.name === resourceName);
 
         if (foundResource) {
@@ -104,7 +114,7 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
       <CardContent className="grid gap-6">
         <ServicePropertyCard title="Resource Definition" data={{
             "Name": resource.name,
-            "Type": resource.type,
+            "Type": resource.type || "N/A",
         }} />
         <Card>
             <CardHeader>

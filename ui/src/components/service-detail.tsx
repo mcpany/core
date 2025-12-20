@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,8 @@ import { Badge } from "./ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RegisterServiceDialog } from "./register-service-dialog";
+import { Button } from "@/components/ui/button";
 
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
   if (!data || data.length === 0) {
@@ -55,7 +57,7 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
             {data.map((item) => (
               <TableRow key={item.name}>
                 <TableCell className="font-medium">
-                   <Link href={`/service/${serviceId}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
+                   <Link href={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
                     {item.name}
                   </Link>
                 </TableCell>
@@ -125,8 +127,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchService = async () => {
+  const fetchService = async () => {
       setIsLoading(true);
       setError(null);
       try {
@@ -144,10 +145,11 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
       }
     };
 
+  useEffect(() => {
     if (serviceId) {
       fetchService();
     }
-  }, [serviceId, toast]);
+  }, [serviceId]);
 
   const handleStatusChange = async (enabled: boolean) => {
     if (!service) return;
@@ -156,7 +158,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
     setService({ ...service, disable: !enabled });
 
     try {
-      await apiClient.setServiceStatus(service.id, !enabled);
+      await apiClient.setServiceStatus(service.name, !enabled);
       toast({
         title: "Service status updated",
         description: `${service.name} has been ${enabled ? 'enabled' : 'disabled'}.`,
@@ -203,13 +205,33 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
     return null;
   }
 
-  const serviceType = service.grpc_service ? 'gRPC' : service.http_service ? 'HTTP' : service.command_line_service ? 'CLI' : 'Unknown';
+  const serviceType =
+        service.grpc_service ? 'gRPC' :
+        service.http_service ? 'HTTP' :
+        service.command_line_service ? 'CLI' :
+        service.openapi_service ? 'OpenAPI' :
+        service.websocket_service ? 'WebSocket' :
+        service.webrtc_service ? 'WebRTC' :
+        service.graphql_service ? 'GraphQL' :
+        service.mcp_service ? 'MCP' :
+        'Unknown';
+
   const isEnabled = !service.disable;
 
-  const serviceData = service.grpc_service || service.http_service || service.command_line_service;
-  const tools = serviceData?.tools;
-  const prompts = serviceData?.prompts;
-  const resources = serviceData?.resources;
+  const serviceData =
+        service.grpc_service ||
+        service.http_service ||
+        service.command_line_service ||
+        service.openapi_service ||
+        service.websocket_service ||
+        service.webrtc_service ||
+        service.graphql_service ||
+        service.mcp_service;
+
+  // Type guard or loose access
+  const tools = (serviceData as any)?.tools;
+  const prompts = (serviceData as any)?.prompts;
+  const resources = (serviceData as any)?.resources;
 
 
   return (
@@ -221,23 +243,29 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
               <Server className="text-primary size-8" /> {service.name}
             </CardTitle>
             <CardDescription className="mt-1">
-              Service ID: <code className="bg-muted px-1 py-0.5 rounded-sm">{service.id}</code>
+              Service ID: <code className="bg-muted px-1 py-0.5 rounded-sm">{service.id || "N/A"}</code>
             </CardDescription>
              <Badge variant={isEnabled ? "default" : "secondary"} className="mt-2">
               {isEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
-           <div className="flex items-center space-x-2">
-            <Switch
-              id="service-status"
-              checked={isEnabled}
-              onCheckedChange={handleStatusChange}
-              aria-label="Service Status"
-            />
-            <Label htmlFor="service-status" className="flex flex-col">
-              <span>{ isEnabled ? 'Enabled' : 'Disabled' }</span>
-              <span className="text-xs text-muted-foreground">Toggle service on/off</span>
-            </Label>
+           <div className="flex items-center space-x-4">
+             <RegisterServiceDialog
+                serviceToEdit={service}
+                onSuccess={fetchService}
+                trigger={<Button variant="outline" size="sm"><Wrench className="mr-2 h-4 w-4"/> Edit Config</Button>}
+             />
+            <div className="flex items-center space-x-2">
+                <Switch
+                id="service-status"
+                checked={isEnabled}
+                onCheckedChange={handleStatusChange}
+                aria-label="Service Status"
+                />
+                <Label htmlFor="service-status" className="flex flex-col">
+                <span>{ isEnabled ? 'Enabled' : 'Disabled' }</span>
+                </Label>
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -274,13 +302,34 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                         "Command": service.command_line_service.command,
                     }} />
                 )}
-
-                {(service.grpc_service?.tls_config || service.http_service?.tls_config) && (
-                     <ServicePropertyCard title="TLS Config" data={{
-                        "Server Name": service.grpc_service?.tls_config?.server_name || service.http_service?.tls_config?.server_name,
-                        "Skip Verify": (service.grpc_service?.tls_config?.insecure_skip_verify || service.http_service?.tls_config?.insecure_skip_verify) ? "Yes" : "No",
-                     }} />
+                {service.openapi_service && (
+                    <ServicePropertyCard title="OpenAPI Config" data={{
+                        "Address": service.openapi_service.address,
+                        "Spec URL": service.openapi_service.spec_url || "N/A",
+                    }} />
                 )}
+                {service.websocket_service && (
+                    <ServicePropertyCard title="WebSocket Config" data={{
+                        "Address": service.websocket_service.address,
+                    }} />
+                )}
+                {service.webrtc_service && (
+                    <ServicePropertyCard title="WebRTC Config" data={{
+                        "Address": service.webrtc_service.address,
+                    }} />
+                )}
+                {service.graphql_service && (
+                    <ServicePropertyCard title="GraphQL Config" data={{
+                        "Address": service.graphql_service.address,
+                    }} />
+                )}
+                {service.mcp_service && (
+                    <ServicePropertyCard title="MCP Upstream Config" data={{
+                        "Type": service.mcp_service.http_connection ? "HTTP" : service.mcp_service.stdio_connection ? "Stdio" : "Bundle",
+                        "Address/Command": service.mcp_service.http_connection?.http_address || service.mcp_service.stdio_connection?.command || service.mcp_service.bundle_connection?.bundle_path || "N/A",
+                    }} />
+                )}
+
                 <FileConfigCard service={service} />
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">

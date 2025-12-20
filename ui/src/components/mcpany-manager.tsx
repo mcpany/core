@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Server, CheckCircle, XCircle, PowerOff, Power } from "lucide-react";
+import { Server, CheckCircle, XCircle, PowerOff, Power, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { UpstreamServiceConfig, ListServicesResponse } from "@/lib/types";
+import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
+import { RegisterServiceDialog } from "./register-service-dialog";
 
 
 export function McpAnyManager() {
@@ -48,6 +49,22 @@ export function McpAnyManager() {
     fetchServices();
   }, []);
 
+  const handleDelete = async (serviceName: string) => {
+    if (confirm(`Are you sure you want to delete service "${serviceName}"?`)) {
+      try {
+        await apiClient.unregisterService(serviceName);
+        toast({ title: "Service Deleted", description: `${serviceName} unregistered.` });
+        fetchServices();
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Deletion Failed",
+          description: error.message,
+        });
+      }
+    }
+  };
+
 
   return (
     <Card className="w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl shadow-primary/5">
@@ -61,9 +78,12 @@ export function McpAnyManager() {
               A list of all services registered with the MCPAny control plane.
             </CardDescription>
           </div>
-           <Button onClick={fetchServices} disabled={isLoading}>
-            {isLoading ? "Refreshing..." : "Refresh Services"}
-          </Button>
+           <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchServices} disabled={isLoading}>
+                {isLoading ? "Refreshing..." : "Refresh"}
+            </Button>
+            <RegisterServiceDialog onSuccess={fetchServices} />
+           </div>
         </div>
       </CardHeader>
 
@@ -77,21 +97,22 @@ export function McpAnyManager() {
                 <TableHead>Type</TableHead>
                 <TableHead>Address / Command</TableHead>
                 <TableHead>Version</TableHead>
-                <TableHead className="text-right">TLS</TableHead>
+                <TableHead className="text-center">TLS</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading && (
                  [...Array(4)].map((_, i) => (
                     <TableRow key={i}>
-                        <TableCell colSpan={6} className="p-4">
+                        <TableCell colSpan={7} className="p-4">
                           <div className="w-full h-8 bg-muted animate-pulse rounded-md" />
                         </TableCell>
                     </TableRow>
                  ))
               )}
               {!isLoading && services.map((service) => (
-                <TableRow key={service.id} className={service.disable ? "opacity-50" : ""}>
+                <TableRow key={service.id || service.name} className={service.disable ? "opacity-50" : ""}>
                    <TableCell>
                         <Tooltip>
                           <TooltipTrigger>
@@ -106,7 +127,7 @@ export function McpAnyManager() {
                         </Tooltip>
                   </TableCell>
                   <TableCell className="font-medium">
-                    <Link href={`/service/${service.id}`} className="hover:underline text-primary/90">
+                    <Link href={`/service/${encodeURIComponent(service.name)}`} className="hover:underline text-primary/90">
                       {service.name}
                     </Link>
                   </TableCell>
@@ -115,34 +136,57 @@ export function McpAnyManager() {
                       { service.grpc_service ? 'gRPC' :
                         service.http_service ? 'HTTP' :
                         service.command_line_service ? 'CLI' :
-                        'N/A'
+                        service.openapi_service ? 'OpenAPI' :
+                        service.websocket_service ? 'WebSocket' :
+                        service.webrtc_service ? 'WebRTC' :
+                        service.graphql_service ? 'GraphQL' :
+                        service.mcp_service ? 'MCP' :
+                        'Unknown'
                       }
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-code">
+                  <TableCell className="font-code text-xs truncate max-w-[200px]">
                     { service.grpc_service?.address ||
                       service.http_service?.address ||
-                      service.command_line_service?.command
+                      service.command_line_service?.command ||
+                      service.openapi_service?.address ||
+                      service.websocket_service?.address ||
+                      service.webrtc_service?.address ||
+                      service.graphql_service?.address ||
+                      service.mcp_service?.http_connection?.http_address ||
+                      service.mcp_service?.stdio_connection?.command
                     }
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{service.version || 'N/A'}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-center">
                       <Tooltip>
                         <TooltipTrigger>
-                           {service.grpc_service?.tls_config || service.http_service?.tls_config ? <CheckCircle className="size-5 text-primary" /> : <XCircle className="size-5 text-muted-foreground"/>}
+                           {(
+                               service.grpc_service?.tls_config ||
+                               service.http_service?.tls_config ||
+                               service.openapi_service?.tls_config ||
+                               service.websocket_service?.tls_config ||
+                               service.webrtc_service?.tls_config ||
+                               service.mcp_service?.http_connection?.tls_config
+                           ) ? <CheckCircle className="size-5 text-primary mx-auto" /> : <XCircle className="size-5 text-muted-foreground mx-auto"/>}
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{service.grpc_service?.tls_config || service.http_service?.tls_config ? "Secure (TLS)" : "Insecure"}</p>
+                          <p>Secure (TLS)</p>
                         </TooltipContent>
                       </Tooltip>
+                  </TableCell>
+                  <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(service.name)} title="Delete Service">
+                          <Trash2 className="size-4 text-destructive" />
+                      </Button>
                   </TableCell>
                 </TableRow>
               ))}
                {!isLoading && services.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     No services registered.
                   </TableCell>
                 </TableRow>
