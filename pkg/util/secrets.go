@@ -229,9 +229,9 @@ var safeSecretClient = &http.Client{
 	Timeout: 10 * time.Second,
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, port, err := net.SplitHostPort(addr)
-			if err != nil {
-				return nil, err
+			dialer := &SafeDialer{
+				AllowLoopback: os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == "true",
+				AllowPrivate:  os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") == "true",
 			}
 			ips, err := net.LookupIP(host)
 			if err != nil {
@@ -252,8 +252,7 @@ var safeSecretClient = &http.Client{
 				return nil, fmt.Errorf("no IPs resolved for %s", host)
 			}
 			// Use the first resolved IP to avoid DNS rebinding race conditions
-			var d net.Dialer
-			return d.DialContext(ctx, network, net.JoinHostPort(ips[0].String(), port))
+			return dialer.DialContext(ctx, network, net.JoinHostPort(ips[0].String(), port))
 		},
 	},
 }
