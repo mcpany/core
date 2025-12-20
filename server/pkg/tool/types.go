@@ -291,11 +291,12 @@ type HTTPTool struct {
 	callID            string
 
 	// Cached fields for performance
-	initError    error
-	cachedMethod string
-	cachedURL    *url.URL
-	cachedPath   string // with %7B replaced
-	cachedQuery  string // with %7B replaced
+	initError          error
+	cachedMethod       string
+	cachedURL          *url.URL
+	cachedPath         string // with %7B replaced
+	cachedQuery        string // with %7B replaced
+	cachedPlaceholders map[string]string
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -356,6 +357,14 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
 	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
 	t.cachedQuery = queryStr
+
+	t.cachedPlaceholders = make(map[string]string)
+	for _, param := range callDefinition.GetParameters() {
+		if schema := param.GetSchema(); schema != nil {
+			name := schema.GetName()
+			t.cachedPlaceholders[name] = "{{" + name + "}}"
+		}
+	}
 
 	return t
 }
@@ -420,31 +429,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	pathStr := t.cachedPath
 	queryStr := t.cachedQuery
 
-	noEscapeParams := make(map[string]bool)
-	for _, param := range t.parameters {
-		if param.GetDisableEscape() {
-			if schema := param.GetSchema(); schema != nil {
-				noEscapeParams[schema.GetName()] = true
-			}
-		}
-	}
-
-	// Check for path traversal in unescaped parameters used in the path
-	for k, v := range req.Arguments {
-		if noEscapeParams[k] && strings.Contains(pathStr, "{{"+k+"}}") {
-			val := fmt.Sprintf("%v", v)
-			if val == ".." || strings.HasPrefix(val, "../") || strings.HasSuffix(val, "/..") || strings.Contains(val, "/../") {
-				return nil, fmt.Errorf("path traversal attempt detected in parameter %q", k)
-			}
-		}
-	}
-
-	// Replace placeholders in the URL path
-	pathStr = util.ReplaceURLPath(pathStr, req.Arguments, noEscapeParams)
-
-	// Replace placeholders in the query string
-	queryStr = util.ReplaceURLQuery(queryStr, req.Arguments, noEscapeParams)
-
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
@@ -458,11 +442,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
-			placeholder := "{{" + param.GetSchema().GetName() + "}}"
+			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
 			pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
 			queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
 		} else if schema := param.GetSchema(); schema != nil {
-			placeholder := "{{" + schema.GetName() + "}}"
+			placeholder := t.cachedPlaceholders[schema.GetName()]
 			if val, ok := inputs[schema.GetName()]; ok {
 				valStr := fmt.Sprintf("%v", val)
 				if param.GetDisableEscape() {
