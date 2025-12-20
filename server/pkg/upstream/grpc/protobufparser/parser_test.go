@@ -169,7 +169,7 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 	t.Helper()
 	// This path is relative to the package directory where the test is run.
-	b, err := os.ReadFile("../../../../build/all.protoset")
+	b, err := os.ReadFile("../../../../../build/all.protoset")
 	require.NoError(t, err, "Failed to read protoset file. Ensure 'make gen' has been run.")
 
 	fds := &descriptorpb.FileDescriptorSet{}

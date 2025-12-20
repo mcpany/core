@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -28,7 +29,7 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	t.Helper()
 
 	root := ProjectRoot(t)
-	serverBin := root + "/build/bin/server"
+	serverBin := filepath.Join(root, "../build/bin/server")
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile) //nolint:gosec // Test helper

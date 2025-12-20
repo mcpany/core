@@ -28,11 +28,13 @@ const maxSecretRecursionDepth = 10
 // remote URLs, Vault, and AWS Secrets Manager.
 //
 // Parameters:
-//   secret: The SecretValue configuration object to resolve.
+//
+//	secret: The SecretValue configuration object to resolve.
 //
 // Returns:
-//   The resolved secret string.
-//   An error if resolution fails (e.g., missing env var, file read error).
+//
+//	The resolved secret string.
+//	An error if resolution fails (e.g., missing env var, file read error).
 func ResolveSecret(secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(secret, 0)
 }
@@ -219,12 +221,14 @@ func resolveSecretRecursive(secret *configv1.SecretValue, depth int) (string, er
 // If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
 //
 // Parameters:
-//   secretMap: A map of keys to SecretValue objects.
-//   plainMap: A map of keys to plain string values.
+//
+//	secretMap: A map of keys to SecretValue objects.
+//	plainMap: A map of keys to plain string values.
 //
 // Returns:
-//   A single map containing all keys with their resolved string values.
-//   An error if any secret resolution fails.
+//
+//	A single map containing all keys with their resolved string values.
+//	An error if any secret resolution fails.
 func ResolveSecretMap(secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {
@@ -258,7 +262,7 @@ var safeSecretClient = &http.Client{
 				if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
 					return nil, fmt.Errorf("blocked link-local IP: %s", ip)
 				}
-				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() { //nolint:goconst
+				if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") != "true" && ip.IsLoopback() {
 					return nil, fmt.Errorf("blocked loopback IP: %s", ip)
 				}
 				if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") != "true" && ip.IsPrivate() {

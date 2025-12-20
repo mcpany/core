@@ -126,7 +126,7 @@ time=2025-12-19T16:47:49.745-08:00 level=ERROR source=/usr/local/google/home/kxw
 time=2025-12-19T16:47:49.745-08:00 level=INFO source=/usr/local/google/home/kxw/core/server/pkg/upstream/grpc/grpc.go:184 msg="Registered gRPC service" serviceID=weather-service-dynamic-fail toolsAdded=2
 --- PASS: TestGRPCUpstream_Register_DynamicResource_ToolNotFound (0.00s)
 === RUN   TestGRPCUpstream_Register_FromConfig
-    grpc_test.go:822: 
+    grpc_test.go:822:
         	Error Trace:	/usr/local/google/home/kxw/core/server/pkg/upstream/grpc/grpc_test.go:822
         	Error:      	Received unexpected error:
         	            	failed to parse proto definitions for weather-service-config: failed to write proto file: failed to read proto file from path ../../../proto/examples/weather/v1/weather.proto: open ../../../proto/examples/weather/v1/weather.proto: no such file or directory
