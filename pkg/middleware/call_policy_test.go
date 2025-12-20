@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
@@ -36,6 +37,11 @@ func (m *callPolicyMockTool) Tool() *v1.Tool {
 
 func (m *callPolicyMockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (m *callPolicyMockTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(m.toolProto)
+	return t
 }
 
 type callPolicyMockToolManager struct {
