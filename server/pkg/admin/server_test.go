@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
@@ -23,7 +24,8 @@ func TestNewServer(t *testing.T) {
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(cache, mockManager, busProvider)
 	assert.NotNil(t, server)
 }
 
@@ -32,11 +34,12 @@ func TestClearCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
+	busProvider, _ := bus.NewProvider(nil)
 
 	// We use a real CachingMiddleware here since it is a struct and cannot be mocked easily.
 	// The default implementation uses an in-memory cache which should succeed.
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, busProvider)
 
 	req := &pb.ClearCacheRequest{}
 	resp, err := server.ClearCache(context.Background(), req)
@@ -50,7 +53,8 @@ func TestClearCache_NilCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	req := &pb.ClearCacheRequest{}
 	_, err := server.ClearCache(context.Background(), req)
@@ -64,7 +68,8 @@ func TestListServices(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	expectedServices := []*tool.ServiceInfo{
 		{
@@ -86,7 +91,8 @@ func TestGetService(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	serviceInfo := &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{
@@ -105,7 +111,8 @@ func TestGetService_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	mockManager.EXPECT().GetServiceInfo("unknown").Return(nil, false)
 
@@ -119,7 +126,8 @@ func TestListTools(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -140,7 +148,8 @@ func TestGetTool(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -160,11 +169,52 @@ func TestGetTool_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
 
 	mockManager.EXPECT().GetTool("unknown").Return(nil, false)
 
 	_, err := server.GetTool(context.Background(), &pb.GetToolRequest{ToolName: proto.String("unknown")})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "not found")
+}
+
+func TestCreateService(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	busProvider, _ := bus.NewProvider(nil)
+	server := NewServer(nil, mockManager, busProvider)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	req := &pb.CreateServiceRequest{
+		Service: &configv1.UpstreamServiceConfig{
+			Name: proto.String("new-service"),
+		},
+	}
+
+	// Mock the bus interaction
+	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](busProvider, bus.ServiceRegistrationRequestTopic)
+	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](busProvider, bus.ServiceRegistrationResultTopic)
+
+	// Subscribe BEFORE calling CreateService
+	sub := requestBus.Subscribe(ctx, "request", func(r *bus.ServiceRegistrationRequest) {
+		go func() {
+			res := &bus.ServiceRegistrationResult{
+				ServiceKey: "new-service",
+			}
+			res.SetCorrelationID(r.CorrelationID())
+			resultBus.Publish(ctx, r.CorrelationID(), res)
+		}()
+	})
+	defer sub()
+
+	resp, err := server.CreateService(ctx, req)
+	assert.NoError(t, err)
+	if resp != nil {
+		assert.Equal(t, "new-service", resp.Service.GetName())
+	}
 }
