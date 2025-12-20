@@ -23,6 +23,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -1072,4 +1073,9 @@ func (s *simpleMockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (a
 
 func (s *simpleMockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
+}
+
+func (s *simpleMockTool) MCPTool() *mcp.Tool {
+	t, _ := tool.ConvertProtoToMCPTool(s.t)
+	return t
 }
