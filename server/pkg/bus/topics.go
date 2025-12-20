@@ -12,6 +12,10 @@ const (
 	ServiceListRequestTopic = "service_list_requests"
 	// ServiceListResultTopic is the topic for service list results.
 	ServiceListResultTopic = "service_list_results"
+	// ServiceGetRequestTopic is the topic for service get requests.
+	ServiceGetRequestTopic = "service_get_requests"
+	// ServiceGetResultTopic is the topic for service get results.
+	ServiceGetResultTopic = "service_get_results"
 	// ToolExecutionRequestTopic is the topic for tool execution requests.
 	ToolExecutionRequestTopic = "tool_execution_requests"
 	// ToolExecutionResultTopic is the topic for tool execution results.

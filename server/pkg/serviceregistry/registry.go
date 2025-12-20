@@ -32,6 +32,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 	// GetServiceInfo retrieves the metadata for a service by its ID.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
+	// GetServiceConfig returns the configuration for a given service key.
+	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
