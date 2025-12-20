@@ -2,9 +2,11 @@
 
 The Admin Management API provides a set of gRPC endpoints to inspect and manage the internal state of the MCP Any server, including dynamic service registration, caching, and tool inspection.
 
-These endpoints are part of the `RegistrationService` defined in `proto/api/v1/registration.proto`.
+These endpoints are distributed across multiple services defined in `proto/api/v1/`.
 
-## Service Definition
+## Registration Service
+
+Defined in `proto/api/v1/registration.proto`.
 
 ### Endpoints
 
@@ -53,6 +55,12 @@ Returns the configuration for a specific service.
 - **Request**: `GetServiceRequest` containing `service_name`.
 - **Response**: `GetServiceResponse` containing `UpstreamServiceConfig`.
 
+## Tool Service
+
+Defined in `proto/api/v1/tool.proto`.
+
+### Endpoints
+
 #### `ListTools`
 
 Returns a list of all registered tools across all services.
@@ -70,6 +78,12 @@ Returns the definition of a specific tool by its name.
 - **HTTP**: `GET /v1/tools/{tool_name}`
 - **Request**: `GetToolRequest` containing `tool_name`.
 - **Response**: `GetToolResponse` containing `Tool`.
+
+## Cache Service
+
+Defined in `proto/api/v1/cache.proto`.
+
+### Endpoints
 
 #### `ClearCache`
 
@@ -96,8 +110,8 @@ grpcurl -plaintext localhost:50051 mcpany.api.v1.RegistrationService/ListService
 grpcurl -plaintext -d '{"service_name": "my-service"}' localhost:50051 mcpany.api.v1.RegistrationService/GetService
 
 # List all tools
-grpcurl -plaintext localhost:50051 mcpany.api.v1.RegistrationService/ListTools
+grpcurl -plaintext localhost:50051 mcpany.api.v1.ToolService/ListTools
 
 # Clear Cache
-grpcurl -plaintext localhost:50051 mcpany.api.v1.RegistrationService/ClearCache
+grpcurl -plaintext localhost:50051 mcpany.api.v1.CacheService/ClearCache
 ```
