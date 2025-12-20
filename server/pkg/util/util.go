@@ -132,6 +132,9 @@ var (
 	// disallowedIDChars is a regular expression that matches any character that is
 	// not a valid character in an operation ID.
 	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
+
+	// placeholderRegex matches {{key}} patterns.
+	placeholderRegex = regexp.MustCompile(`(?s)\{\{(.+?)\}\}`)
 )
 
 // TrueStr is a string constant for "true".
@@ -213,14 +216,19 @@ func GetDockerCommand() (string, []string) {
 //
 //	The URL path with placeholders replaced.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
-	for k, v := range params {
+	return placeholderRegex.ReplaceAllStringFunc(urlPath, func(match string) string {
+		// match includes {{ and }}, we want to extract the key
+		key := match[2 : len(match)-2]
+		v, ok := params[key]
+		if !ok {
+			return match
+		}
 		val := fmt.Sprintf("%v", v)
-		if noEscapeParams == nil || !noEscapeParams[k] {
+		if noEscapeParams == nil || !noEscapeParams[key] {
 			val = url.PathEscape(val)
 		}
-		urlPath = strings.ReplaceAll(urlPath, "{{"+k+"}}", val)
-	}
-	return urlPath
+		return val
+	})
 }
 
 // ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
@@ -236,12 +244,17 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //
 //	The URL query string with placeholders replaced.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
-	for k, v := range params {
+	return placeholderRegex.ReplaceAllStringFunc(urlQuery, func(match string) string {
+		// match includes {{ and }}, we want to extract the key
+		key := match[2 : len(match)-2]
+		v, ok := params[key]
+		if !ok {
+			return match
+		}
 		val := fmt.Sprintf("%v", v)
-		if noEscapeParams == nil || !noEscapeParams[k] {
+		if noEscapeParams == nil || !noEscapeParams[key] {
 			val = url.QueryEscape(val)
 		}
-		urlQuery = strings.ReplaceAll(urlQuery, "{{"+k+"}}", val)
-	}
-	return urlQuery
+		return val
+	})
 }
