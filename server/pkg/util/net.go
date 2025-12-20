@@ -36,8 +36,8 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	}
 
 	// Check all resolved IPs. If any are forbidden, block the request.
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK") == "true"
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORKS") == "true"
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK") == TrueStr
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORKS") == TrueStr
 
 	for _, ip := range ips {
 		if !allowLoopback && (ip.IsLoopback() || ip.IsLinkLocalUnicast()) {
