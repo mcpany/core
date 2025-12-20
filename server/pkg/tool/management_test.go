@@ -455,6 +455,27 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 	assert.False(t, ok, "Service info for a non-existent service should not be found")
 }
 
+func TestToolManager_ListServices(t *testing.T) {
+	tm := NewManager(nil)
+	serviceID1 := "service-1"
+	serviceInfo1 := &ServiceInfo{Name: "Service 1"}
+	serviceID2 := "service-2"
+	serviceInfo2 := &ServiceInfo{Name: "Service 2"}
+
+	tm.AddServiceInfo(serviceID1, serviceInfo1)
+	tm.AddServiceInfo(serviceID2, serviceInfo2)
+
+	services := tm.ListServices()
+	assert.Len(t, services, 2)
+	// Map iteration order is random, so just check for existence
+	names := make(map[string]bool)
+	for _, s := range services {
+		names[s.Name] = true
+	}
+	assert.True(t, names["Service 1"])
+	assert.True(t, names["Service 2"])
+}
+
 func TestToolManager_SetMCPServer(t *testing.T) {
 	tm := NewManager(nil)
 	provider := &TestMCPServerProvider{server: nil}

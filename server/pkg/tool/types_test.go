@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
 )
@@ -43,6 +44,19 @@ func TestContextWithTool(t *testing.T) {
 	assert.Equal(t, mockTool, retrievedTool)
 
 	_, ok = GetFromContext(context.Background())
+	assert.False(t, ok)
+}
+
+func TestGetCacheControl(t *testing.T) {
+	ctx := context.Background()
+	cc := &CacheControl{Action: ActionSaveCache}
+	ctx = NewContextWithCacheControl(ctx, cc)
+
+	retrievedCC, ok := GetCacheControl(ctx)
+	assert.True(t, ok)
+	assert.Equal(t, cc, retrievedCC)
+
+	_, ok = GetCacheControl(context.Background())
 	assert.False(t, ok)
 }
 
@@ -313,6 +327,7 @@ func (m *MockConn) GetState() connectivity.State {
 func TestHTTPTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("http-tool")
+	toolProto.ServiceId = proto.String("test-service")
 	cacheConfig := &configv1.CacheConfig{}
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.HttpCallDefinition{}
@@ -321,11 +336,16 @@ func TestHTTPTool_Getters(t *testing.T) {
 
 	assert.Equal(t, toolProto, httpTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, httpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+
+	mcpTool := httpTool.MCPTool()
+	assert.NotNil(t, mcpTool)
+	assert.Equal(t, "test-service.http-tool", mcpTool.Name)
 }
 
 func TestMCPTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("mcp-tool")
+	toolProto.ServiceId = proto.String("test-service")
 	cacheConfig := &configv1.CacheConfig{}
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.MCPCallDefinition{}
@@ -334,11 +354,16 @@ func TestMCPTool_Getters(t *testing.T) {
 
 	assert.Equal(t, toolProto, mcpTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, mcpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+
+	mTool := mcpTool.MCPTool()
+	assert.NotNil(t, mTool)
+	assert.Equal(t, "test-service.mcp-tool", mTool.Name)
 }
 
 func TestOpenAPITool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("openapi-tool")
+	toolProto.ServiceId = proto.String("test-service")
 	cacheConfig := &configv1.CacheConfig{}
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.OpenAPICallDefinition{}
@@ -347,11 +372,16 @@ func TestOpenAPITool_Getters(t *testing.T) {
 
 	assert.Equal(t, toolProto, openapiTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, openapiTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+
+	mcpTool := openapiTool.MCPTool()
+	assert.NotNil(t, mcpTool)
+	assert.Equal(t, "test-service.openapi-tool", mcpTool.Name)
 }
 
 func TestGRPCTool_Getters(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("grpc-tool")
+	toolProto.ServiceId = proto.String("test-service")
 	cacheConfig := &configv1.CacheConfig{}
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.GrpcCallDefinition{}
@@ -362,6 +392,10 @@ func TestGRPCTool_Getters(t *testing.T) {
 
 	assert.Equal(t, toolProto, grpcTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, grpcTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
+
+	mcpTool := grpcTool.MCPTool()
+	assert.NotNil(t, mcpTool)
+	assert.Equal(t, "test-service.grpc-tool", mcpTool.Name)
 }
 
 func TestWebsocketTool_Getters(t *testing.T) {

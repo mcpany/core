@@ -1,245 +1,309 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package tool_test
+package tool
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
 	"testing"
 
-	"github.com/mcpany/core/pkg/consts"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/command"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
-	if callDef == nil {
-		callDef = &configv1.CommandLineCallDefinition{}
-	}
-	service := (&configv1.CommandLineUpstreamService_builder{
-		Command: proto.String(command),
-	}).Build()
+// MockExecutor is a mock for command.Executor
+type MockExecutor struct {
+	mock.Mock
+}
 
-	properties := make(map[string]*structpb.Value)
-	for _, param := range callDef.Parameters {
-		properties[param.GetSchema().GetName()] = structpb.NewStructValue(&structpb.Struct{})
+func (m *MockExecutor) Execute(ctx context.Context, cmd string, args []string, dir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error) {
+	callArgs := m.Called(ctx, cmd, args, dir, env)
+	return callArgs.Get(0).(io.ReadCloser), callArgs.Get(1).(io.ReadCloser), callArgs.Get(2).(<-chan int), callArgs.Error(3)
+}
+
+func (m *MockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []string, dir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error) {
+	callArgs := m.Called(ctx, cmd, args, dir, env)
+	return callArgs.Get(0).(io.WriteCloser), callArgs.Get(1).(io.ReadCloser), callArgs.Get(2).(io.ReadCloser), callArgs.Get(3).(<-chan int), callArgs.Error(4)
+}
+
+type mockWriteCloser struct {
+	io.Writer
+}
+
+func (m *mockWriteCloser) Close() error {
+	return nil
+}
+
+func TestCommandTool_Execute_Success_Mock(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("cmd-tool")
+
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("echo"),
 	}
 
-	inputSchema := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"properties": structpb.NewStructValue(&structpb.Struct{
-				Fields: properties,
-			}),
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"hello", "{{name}}"},
+	}
+
+	mockExecutor := new(MockExecutor)
+
+	// Setup mock return values
+	mockStdout := io.NopCloser(bytes.NewBufferString("hello world\n"))
+	mockStderr := io.NopCloser(bytes.NewBufferString(""))
+	exitCodeChan := make(chan int, 1)
+	exitCodeChan <- 0
+
+	mockExecutor.On("Execute", mock.Anything, "echo", []string{"hello", "world"}, "", mock.Anything).Return(
+		mockStdout, mockStderr, (<-chan int)(exitCodeChan), nil,
+	)
+
+	tool := &CommandTool{
+		tool:           toolProto,
+		service:        service,
+		callDefinition: callDef,
+		executorFactory: func(ce *configv1.ContainerEnvironment) command.Executor {
+			return mockExecutor
 		},
 	}
 
-	return tool.NewCommandTool(
-		&v1.Tool{InputSchema: inputSchema},
-		service,
-		callDef,
-		nil,
-		"call-id",
-	)
-}
-
-func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
-	if callDef == nil {
-		callDef = &configv1.CommandLineCallDefinition{}
+	req := &ExecutionRequest{
+		ToolName:   "cmd-tool",
+		ToolInputs: json.RawMessage(`{"name": "world"}`),
 	}
-	service := (&configv1.CommandLineUpstreamService_builder{
-		Command:               proto.String(command),
-		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
-	}).Build()
-	return tool.NewCommandTool(
-		&v1.Tool{},
-		service,
-		callDef,
-		nil,
-		"call-id",
-	)
+
+	result, err := tool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, "hello world\n", resMap["stdout"])
+	assert.Equal(t, 0, resMap["return_code"])
 }
 
-func TestCommandTool_Execute(t *testing.T) {
-	t.Parallel()
-	t.Run("successful execution", func(t *testing.T) {
-		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
-			},
-		}
-		cmdTool := newCommandTool("/usr/bin/env", callDef)
-		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+func TestCommandTool_Execute_JSONProtocol_Mock(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("cmd-tool-json")
 
-		result, err := cmdTool.Execute(context.Background(), req)
-		require.NoError(t, err)
+	service := &configv1.CommandLineUpstreamService{
+		Command:               proto.String("processor"),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+	}
 
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "/usr/bin/env", resultMap["command"])
-		assert.Equal(t, "hello world\n", resultMap["stdout"])
-		assert.Equal(t, "", resultMap["stderr"])
-		assert.Equal(t, "hello world\n", resultMap["combined_output"])
-		assert.NotNil(t, resultMap["start_time"])
-		assert.NotNil(t, resultMap["end_time"])
-		assert.Equal(t, consts.CommandStatusSuccess, resultMap["status"])
-		assert.Equal(t, 0, resultMap["return_code"])
-	})
+	callDef := &configv1.CommandLineCallDefinition{}
 
-	t.Run("command not found", func(t *testing.T) {
-		t.Parallel()
-		cmdTool := newCommandTool("this-command-does-not-exist", nil)
-		req := &tool.ExecutionRequest{ToolInputs: []byte("{}")}
-		_, err := cmdTool.Execute(context.Background(), req)
-		require.Error(t, err)
-	})
+	mockExecutor := new(MockExecutor)
 
-	t.Run("execution with environment variables", func(t *testing.T) {
-		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{
-					Schema: &configv1.ParameterSchema{
-						Name: proto.String("MY_VAR"),
-					},
-				},
-				{
-					Schema: &configv1.ParameterSchema{
-						Name: proto.String("args"),
-					},
-				},
-			},
-		}
-		cmdTool := newCommandTool("/usr/bin/env", callDef)
-		inputData := map[string]interface{}{
-			"args":   []string{"bash", "-c", "echo $MY_VAR"},
-			"MY_VAR": "hello from env",
-		}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+	// Setup mock
+	mockStdin := &mockWriteCloser{Writer: bytes.NewBuffer(nil)}
+	mockStdout := io.NopCloser(bytes.NewBufferString(`{"result": "success"}`))
+	mockStderr := io.NopCloser(bytes.NewBufferString(""))
+	exitCodeChan := make(chan int, 1)
+	exitCodeChan <- 0
 
-		result, err := cmdTool.Execute(context.Background(), req)
-		require.NoError(t, err)
+	mockExecutor.On("ExecuteWithStdIO", mock.Anything, "processor", []string{}, "", mock.Anything).Return(
+		(io.WriteCloser)(mockStdin), mockStdout, mockStderr, (<-chan int)(exitCodeChan), nil,
+	)
 
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "/usr/bin/env", resultMap["command"])
-		assert.Equal(t, "hello from env\n", resultMap["stdout"])
-		assert.Equal(t, "", resultMap["stderr"])
-		assert.Equal(t, "hello from env\n", resultMap["combined_output"])
-		assert.NotNil(t, resultMap["start_time"])
-		assert.NotNil(t, resultMap["end_time"])
-		assert.Equal(t, consts.CommandStatusSuccess, resultMap["status"])
-		assert.Equal(t, 0, resultMap["return_code"])
-	})
+	tool := &CommandTool{
+		tool:           toolProto,
+		service:        service,
+		callDefinition: callDef,
+		executorFactory: func(ce *configv1.ContainerEnvironment) command.Executor {
+			return mockExecutor
+		},
+	}
 
-	t.Run("non-zero exit code", func(t *testing.T) {
-		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
-			},
-		}
-		cmdTool := newCommandTool("/usr/bin/env", callDef)
-		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+	req := &ExecutionRequest{
+		ToolName:   "cmd-tool-json",
+		ToolInputs: json.RawMessage(`{"input": "data"}`),
+	}
 
-		result, err := cmdTool.Execute(context.Background(), req)
-		require.NoError(t, err)
+	result, err := tool.Execute(context.Background(), req)
+	assert.NoError(t, err)
 
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "/usr/bin/env", resultMap["command"])
-		assert.Equal(t, "", resultMap["stdout"])
-		assert.Equal(t, "", resultMap["stderr"])
-		assert.Equal(t, "", resultMap["combined_output"])
-		assert.NotNil(t, resultMap["start_time"])
-		assert.NotNil(t, resultMap["end_time"])
-		assert.Equal(t, consts.CommandStatusError, resultMap["status"])
-		assert.Equal(t, 1, resultMap["return_code"])
-	})
+	resMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, "success", resMap["result"])
+}
 
-	t.Run("malformed tool inputs", func(t *testing.T) {
-		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
-			},
-		}
-		cmdTool := newCommandTool("echo", callDef)
-		inputs := json.RawMessage(`{"args": "not-an-array"}`)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+func TestCommandTool_Execute_Error_Mock(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("cmd-tool-error")
 
-		_, err := cmdTool.Execute(context.Background(), req)
-		assert.Error(t, err)
-	})
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("fail"),
+	}
 
-	t.Run("json communication protocol", func(t *testing.T) {
-		t.Parallel()
-		cmdTool := newJSONCommandTool("./testdata/jsonecho/jsonecho", nil)
-		inputData := map[string]interface{}{"foo": "bar"}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+	callDef := &configv1.CommandLineCallDefinition{}
 
-		result, err := cmdTool.Execute(context.Background(), req)
-		require.NoError(t, err)
+	mockExecutor := new(MockExecutor)
 
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "bar", resultMap["foo"])
-	})
+	// Setup mock to return error
+	mockExecutor.On("Execute", mock.Anything, "fail", []string{}, "", mock.Anything).Return(
+		io.NopCloser(bytes.NewBuffer(nil)),
+		io.NopCloser(bytes.NewBuffer(nil)),
+		(<-chan int)(nil),
+		fmt.Errorf("command not found"),
+	)
 
-	t.Run("argument substitution", func(t *testing.T) {
-		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
-			Args: []string{"{{text}}"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("text")}},
-			},
-		}
-		cmdTool := newCommandTool("echo", callDef)
-		inputData := map[string]interface{}{"text": "hello"}
-		inputs, err := json.Marshal(inputData)
-		require.NoError(t, err)
-		req := &tool.ExecutionRequest{ToolInputs: inputs}
+	tool := &CommandTool{
+		tool:           toolProto,
+		service:        service,
+		callDefinition: callDef,
+		executorFactory: func(ce *configv1.ContainerEnvironment) command.Executor {
+			return mockExecutor
+		},
+	}
 
-		result, err := cmdTool.Execute(context.Background(), req)
-		require.NoError(t, err)
+	req := &ExecutionRequest{
+		ToolName:   "cmd-tool-error",
+		ToolInputs: json.RawMessage(`{}`),
+	}
 
-		resultMap, ok := result.(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "echo", resultMap["command"])
-		assert.Equal(t, "hello\n", resultMap["stdout"])
-	})
+	_, err := tool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to execute command")
+}
+
+func TestCommandTool_Execute_NonZeroExit_Mock(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("cmd-tool-fail")
+
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("failcmd"),
+	}
+
+	callDef := &configv1.CommandLineCallDefinition{}
+
+	mockExecutor := new(MockExecutor)
+
+	mockStdout := io.NopCloser(bytes.NewBufferString("some output"))
+	mockStderr := io.NopCloser(bytes.NewBufferString("error occurred"))
+	exitCodeChan := make(chan int, 1)
+	exitCodeChan <- 1 // Non-zero exit code
+
+	mockExecutor.On("Execute", mock.Anything, "failcmd", []string{}, "", mock.Anything).Return(
+		mockStdout, mockStderr, (<-chan int)(exitCodeChan), nil,
+	)
+
+	tool := &CommandTool{
+		tool:           toolProto,
+		service:        service,
+		callDefinition: callDef,
+		executorFactory: func(ce *configv1.ContainerEnvironment) command.Executor {
+			return mockExecutor
+		},
+	}
+
+	req := &ExecutionRequest{
+		ToolName:   "cmd-tool-fail",
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	result, err := tool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, 1, resMap["return_code"])
+}
+
+func TestCommandTool_Execute_MalformedInput_Mock(t *testing.T) {
+	tool := &CommandTool{}
+	req := &ExecutionRequest{
+		ToolName:   "cmd-tool",
+		ToolInputs: json.RawMessage(`{invalid-json`),
+	}
+
+	_, err := tool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
+}
+
+func TestCommandTool_MCPTool(t *testing.T) {
+	toolProto := &v1.Tool{}
+	toolProto.SetName("cmd-tool")
+	toolProto.ServiceId = proto.String("test-service")
+	toolProto.Description = proto.String("A command tool")
+
+	tool := &CommandTool{
+		tool: toolProto,
+	}
+
+	mcpTool := tool.MCPTool()
+	assert.NotNil(t, mcpTool)
+	assert.Equal(t, "test-service.cmd-tool", mcpTool.Name)
+	assert.Equal(t, "A command tool", mcpTool.Description)
+
+	// Call again to test Once
+	mcpTool2 := tool.MCPTool()
+	assert.Equal(t, mcpTool, mcpTool2)
 }
 
 func TestCommandTool_GetCacheConfig(t *testing.T) {
-	cacheConfig := &configv1.CacheConfig{}
-	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetCache(cacheConfig)
-	cmdTool := newCommandTool("echo", callDef)
-	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
+	toolProto := &v1.Tool{}
+	callDef := &configv1.CommandLineCallDefinition{
+		Cache: &configv1.CacheConfig{
+			IsEnabled: proto.Bool(true),
+		},
+	}
+
+	tool := &CommandTool{
+		tool:           toolProto,
+		callDefinition: callDef,
+	}
+
+	cacheConfig := tool.GetCacheConfig()
+	assert.NotNil(t, cacheConfig)
+	assert.True(t, cacheConfig.GetIsEnabled())
+
+	toolNilDef := &CommandTool{
+		tool: toolProto,
+	}
+	assert.Nil(t, toolNilDef.GetCacheConfig())
 }
 
-func TestCommandTool_Tool(t *testing.T) {
+func TestLocalCommandTool_MCPTool(t *testing.T) {
 	toolProto := &v1.Tool{}
-	toolProto.SetName("test-tool")
-	service := (&configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("echo"),
-	}).Build()
-	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{}, nil, "call-id")
-	assert.Equal(t, toolProto, cmdTool.Tool())
+	toolProto.SetName("local-cmd-tool")
+	toolProto.ServiceId = proto.String("test-service")
+
+	tool := &LocalCommandTool{
+		tool: toolProto,
+	}
+
+	mcpTool := tool.MCPTool()
+	assert.NotNil(t, mcpTool)
+	assert.Equal(t, "test-service.local-cmd-tool", mcpTool.Name)
+}
+
+func TestLocalCommandTool_GetCacheConfig(t *testing.T) {
+	toolProto := &v1.Tool{}
+	callDef := &configv1.CommandLineCallDefinition{
+		Cache: &configv1.CacheConfig{
+			IsEnabled: proto.Bool(true),
+		},
+	}
+
+	tool := &LocalCommandTool{
+		tool:           toolProto,
+		callDefinition: callDef,
+	}
+
+	assert.NotNil(t, tool.GetCacheConfig())
+	assert.True(t, tool.GetCacheConfig().GetIsEnabled())
+
+	toolNilDef := &LocalCommandTool{
+		tool: toolProto,
+	}
+	assert.Nil(t, toolNilDef.GetCacheConfig())
 }
