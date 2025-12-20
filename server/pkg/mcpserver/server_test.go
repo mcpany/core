@@ -768,10 +768,10 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = clientSession.Close() }()
 
-	// Test tools/list and expect an error because the chameleonTool is now invalid.
-	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
-	require.Error(t, err, "ListTools should fail when a tool is invalid")
-	assert.Contains(t, err.Error(), "failed to convert tool", "Error message should indicate a conversion failure")
+	// Test tools/list and expect success (ignoring the invalid tool).
+	res, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err, "ListTools should succeed even when a tool is invalid")
+	assert.Len(t, res.Tools, 0, "Should return 0 tools as the only tool was invalid")
 }
 
 func TestServer_Reload(t *testing.T) {
