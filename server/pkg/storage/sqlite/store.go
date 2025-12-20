@@ -11,10 +11,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// Store implements config.Store using SQLite.
 type Store struct {
 	db *DB
 }
 
+// NewStore creates a new SQLite store.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
@@ -25,7 +27,7 @@ func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var services []*configv1.UpstreamServiceConfig
 	for rows.Next() {
@@ -52,6 +54,7 @@ func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
 	}, nil
 }
 
+// SaveService saves an upstream service configuration.
 func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
@@ -82,6 +85,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 	return nil
 }
 
+// GetService retrieves an upstream service configuration by name.
 func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRow(query, name)
@@ -101,6 +105,7 @@ func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error)
 	return &service, nil
 }
 
+// ListServices lists all upstream service configurations.
 func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 	cfg, err := s.Load()
 	if err != nil {
@@ -109,6 +114,7 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 	return cfg.UpstreamServices, nil
 }
 
+// DeleteService deletes an upstream service configuration by name.
 func (s *Store) DeleteService(name string) error {
 	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = ?", name)
 	if err != nil {
