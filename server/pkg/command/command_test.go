@@ -24,9 +24,9 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	dockererrdefs "github.com/docker/docker/errdefs"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -173,8 +173,15 @@ func TestDockerExecutor(t *testing.T) {
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
+		var stdoutBytes []byte
+		for i := 0; i < 5; i++ {
+			stdoutBytes, err = io.ReadAll(stdout)
+			require.NoError(t, err)
+			if string(stdoutBytes) == "hello\n" {
+				break
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
@@ -202,7 +209,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/mnt/test": absPath,
+			absPath: "/mnt/test",
 		})
 		executor := NewExecutor(containerEnv)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -210,8 +217,15 @@ func TestDockerExecutor(t *testing.T) {
 		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil)
 		require.NoError(t, err)
 
-		stdoutBytes, err := io.ReadAll(stdout)
-		require.NoError(t, err)
+		var stdoutBytes []byte
+		for i := 0; i < 5; i++ {
+			stdoutBytes, err = io.ReadAll(stdout)
+			require.NoError(t, err)
+			if string(stdoutBytes) == "hello from the host" {
+				break
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
 		assert.Equal(t, "hello from the host", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
