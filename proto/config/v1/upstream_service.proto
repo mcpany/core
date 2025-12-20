@@ -68,6 +68,7 @@ message UpstreamServiceConfig {
     WebsocketUpstreamService websocket_service = 16 [json_name = "websocket_service"];
     WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
+    SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -325,6 +326,16 @@ message GraphQLUpstreamService {
   string address = 1;
   // A map of call definitions, keyed by their unique ID.
   map<string, GraphQLCallDefinition> calls = 2;
+}
+
+// SqlUpstreamService defines an upstream service that speaks SQL.
+message SqlUpstreamService {
+  // The driver name (e.g., "postgres", "mysql", "sqlite").
+  string driver = 1;
+  // The data source name (DSN) for connecting to the database.
+  string dsn = 2;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, SqlCallDefinition> calls = 3;
 }
 
 

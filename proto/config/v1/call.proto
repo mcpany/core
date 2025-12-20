@@ -205,6 +205,24 @@ google.protobuf.Struct input_schema = 7 [json_name = "input_schema"];
 google.protobuf.Struct output_schema = 8 [json_name = "output_schema"];
 }
 
+// SqlCallDefinition describes how to map an MCP call to a SQL query.
+message SqlCallDefinition {
+  // The unique identifier for the call.
+  string id = 1;
+  // The SQL query to execute. Use placeholders like $1, $2 or ? based on the driver.
+  string query = 2;
+  // The order of input properties to map to query parameters.
+  // For example, if the query uses $1 and $2, and this list is ["userId", "active"],
+  // then input.userId will be passed as $1 and input.active as $2.
+  repeated string parameter_order = 3 [json_name = "parameter_order"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 4;
+  // The schema for the input parameters required by the call.
+  google.protobuf.Struct input_schema = 5 [json_name = "input_schema"];
+  // The schema for the output of the call.
+  google.protobuf.Struct output_schema = 6 [json_name = "output_schema"];
+}
+
 // ParameterType defines the data type of a parameter.
 enum ParameterType {
   STRING = 0;
