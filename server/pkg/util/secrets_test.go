@@ -17,7 +17,7 @@ import (
 
 func TestResolveSecret(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
-	t.Setenv("MCPANY_ALLOW_ABSOLUTE_PATHS", "true")
+	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
 
 	t.Run("nil secret", func(t *testing.T) {
 		resolved, err := util.ResolveSecret(nil)
