@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -25,17 +26,37 @@ func TestDockerComposeE2E(t *testing.T) {
 	}
 
 	rootDir, err := os.Getwd()
-	// Navigate up if we are running from inside tests/e2e or tests/e2e_sequential
-	if strings.HasSuffix(rootDir, "tests/e2e") || strings.HasSuffix(rootDir, "tests/e2e_sequential") {
-		rootDir = "../.."
-	}
 	require.NoError(t, err)
+
+	// Find the project root by looking for "docker-compose.yml"
+	// We might be running from:
+	// - core/server (go test ./...)
+	// - core/server/tests/e2e_sequential (go test .)
+	// - core (IDE)
+	for {
+		if _, err := os.Stat(fmt.Sprintf("%s/docker-compose.yml", rootDir)); err == nil {
+			break
+		}
+		newRoot := fmt.Sprintf("%s/..", rootDir)
+		// Check if we are at root
+		if absNew, _ := filepath.Abs(newRoot); absNew == rootDir {
+			t.Fatal("Could not find docker-compose.yml in any parent directory")
+		}
+		rootDir = newRoot
+		// Update absolute path for robustness
+		rootDir, _ = filepath.Abs(rootDir)
+	}
 
 	imageName := "ghcr.io/mcpany/server:latest"
 
 	// 1. Build Docker Image
-	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "docker/Dockerfile.server", ".")
+	if os.Getenv("SKIP_BUILD") != "true" {
+		t.Log("Building mcpany/server image...")
+		// Build from core root, utilizing server directory as context
+		runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", "server")
+	} else {
+		t.Log("Skipping docker build (SKIP_BUILD=true)")
+	}
 
 	// Cleanup function
 	cleanup := func() {
@@ -51,7 +72,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		dumpLogs("mcpany-weather-test")
 
 		_ = exec.Command("docker", "compose", "down", "-v").Run()
-		_ = exec.Command("docker", "compose", "-f", "examples/docker-compose-demo/docker-compose.yml", "down", "-v").Run()
+		_ = exec.Command("docker", "compose", "-f", "server/examples/docker-compose-demo/docker-compose.yml", "down", "-v").Run()
 		time.Sleep(5 * time.Second)
 	}
 	defer cleanup()
@@ -76,7 +97,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	// Stop root to avoid conflicts
 	runCommand(t, rootDir, "docker", "compose", "down")
 
-	exampleDir := "examples/docker-compose-demo"
+	exampleDir := "server/examples/docker-compose-demo"
 	runCommand(t, rootDir, "docker", "compose", "-f", fmt.Sprintf("%s/docker-compose.yml", exampleDir), "up", "-d", "--wait")
 
 	// 6. Verify Example Health
