@@ -475,10 +475,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 		if hasContent || hasIsError {
 			// Convert map to CallToolResult via JSON
-			var err error
-			jsonBytes, err = json.Marshal(resultMap)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal tool result map: %w", err)
+			jsonBytes, marshalErr = json.Marshal(resultMap)
+			if marshalErr != nil {
+				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
 			}
 
 			var callToolRes mcp.CallToolResult

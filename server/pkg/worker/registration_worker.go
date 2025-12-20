@@ -6,12 +6,14 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/util"
 )
 
 // ServiceRegistrationWorker is a background worker responsible for handling
@@ -99,10 +101,43 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
+	getRequestBus := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
+	getResultBus := bus.GetBus[*bus.ServiceGetResult](w.bus, bus.ServiceGetResultTopic)
+
+	getUnsubscribe := getRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceGetRequest) {
+		log.Info("Received service get request", "correlationID", req.CorrelationID(), "serviceName", req.ServiceName)
+		// We use GetServiceConfig because GetServiceInfo returns Tool/Prompt info, but we want the config.
+		// However, GetServiceConfig expects the serviceID (sanitized name).
+		// The request might contain the display name or the ID.
+		// We try as provided first.
+		service, ok := w.serviceRegistry.GetServiceConfig(req.ServiceName)
+		if !ok {
+			// Try sanitizing the name
+			sanitized, err := util.SanitizeServiceName(req.ServiceName)
+			if err == nil {
+				service, ok = w.serviceRegistry.GetServiceConfig(sanitized)
+			}
+		}
+
+		var err error
+		if !ok {
+			err = fmt.Errorf("service %q not found", req.ServiceName)
+		}
+
+		res := &bus.ServiceGetResult{
+			Service: service,
+			Error:   err,
+		}
+
+		res.SetCorrelationID(req.CorrelationID())
+		_ = getResultBus.Publish(ctx, req.CorrelationID(), res)
+	})
+
 	go func() {
 		<-ctx.Done()
 		log.Info("Service registration worker stopping")
 		unsubscribe()
 		listUnsubscribe()
+		getUnsubscribe()
 	}()
 }

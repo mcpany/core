@@ -195,6 +195,54 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }
 
+// GetService retrieves a service by its name.
+//
+// Parameters:
+//   - ctx: The context for the gRPC call.
+//   - req: The request containing the service name.
+//
+// Returns:
+//   - A response containing the service configuration.
+//   - An error if the service is not found or other error.
+func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceRequest) (*v1.GetServiceResponse, error) {
+	if req.GetServiceName() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
+	}
+
+	correlationID := uuid.New().String()
+	resultChan := make(chan *bus.ServiceGetResult, 1)
+
+	resultBus := bus.GetBus[*bus.ServiceGetResult](s.bus, "service_get_results")
+	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceGetResult) {
+		resultChan <- result
+	})
+	defer unsubscribe()
+
+	requestBus := bus.GetBus[*bus.ServiceGetRequest](s.bus, "service_get_requests")
+	getReq := &bus.ServiceGetRequest{
+		ServiceName: req.GetServiceName(),
+	}
+	getReq.SetCorrelationID(correlationID)
+	_ = requestBus.Publish(ctx, "request", getReq)
+
+	select {
+	case result := <-resultChan:
+		if result.Error != nil {
+			return nil, status.Errorf(codes.NotFound, "failed to get service: %v", result.Error)
+		}
+		if result.Service == nil {
+			return nil, status.Errorf(codes.NotFound, "service not found")
+		}
+		resp := &v1.GetServiceResponse{}
+		resp.SetService(result.Service)
+		return resp, nil
+	case <-ctx.Done():
+		return nil, status.Errorf(codes.DeadlineExceeded, "context deadline exceeded while waiting for service")
+	case <-time.After(30 * time.Second):
+		return nil, status.Errorf(codes.DeadlineExceeded, "timed out waiting for service get result")
+	}
+}
+
 func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {} //nolint:unused
 
 // ListServices lists all registered services by querying the service registry via the event bus.
