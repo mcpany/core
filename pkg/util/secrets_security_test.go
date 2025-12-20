@@ -70,7 +70,8 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 	// After fix, it MUST contain "blocked link-local IP".
 
 	// We can assert that the error contains the specific message.
-	assert.Contains(t, err.Error(), "blocked link-local IP")
+	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	assert.Contains(t, err.Error(), "link-local IP")
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
@@ -90,7 +91,8 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 
 	// Before fix, this might fail with "connection refused" or "i/o timeout" or similar.
 	// After fix, it MUST contain "blocked private IP".
-	assert.Contains(t, err.Error(), "blocked private IP")
+	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	assert.Contains(t, err.Error(), "private IP")
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
@@ -109,5 +111,5 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 	assert.Error(t, err)
 
 	// It should NOT be "blocked private IP"
-	assert.NotContains(t, err.Error(), "blocked private IP")
+	assert.NotContains(t, err.Error(), "ssrf attempt blocked")
 }
