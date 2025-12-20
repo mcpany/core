@@ -576,9 +576,13 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
 			headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
 			for k, v := range httpReq.Header {
-				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
+				val := strings.Join(v, ", ")
+				if isSensitiveHeader(k) {
+					val = "[REDACTED]"
+				}
+				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
 			}
-			fmt.Printf("DEBUG: sending http request headers:\n%s\n", headerBuf.String())
+			logging.GetLogger().DebugContext(ctx, "sending http request headers", "headers", headerBuf.String())
 
 			// Log body
 			if bodyForAttempt != nil {
@@ -588,7 +592,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				if seeker, ok := bodyForAttempt.(io.Seeker); ok {
 					_, _ = seeker.Seek(0, io.SeekStart)
 				}
-				fmt.Printf("DEBUG: sending http request body:\n%s\n", prettyPrint(bodyBytes, contentType))
+				logging.GetLogger().DebugContext(ctx, "sending http request body", "body", prettyPrint(bodyBytes, contentType))
 			}
 		}
 
@@ -600,8 +604,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
 			bodyBytes, _ := io.ReadAll(attemptResp.Body)
 			_ = attemptResp.Body.Close()
-			fmt.Printf("DEBUG: Upstream HTTP 404 Body: %s\nHeaders: %v\nURL: %s\n", string(bodyBytes), attemptResp.Header, httpReq.URL.String())
-			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d (DEBUG)", attemptResp.StatusCode)}
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP 4xx", "status", attemptResp.StatusCode, "body", string(bodyBytes), "url", httpReq.URL.String())
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
 		}
 
 		if attemptResp.StatusCode >= 500 {
@@ -631,13 +635,17 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		var headerBuf bytes.Buffer
 		headerBuf.WriteString(fmt.Sprintf("%s %s\n", resp.Proto, resp.Status))
 		for k, v := range resp.Header {
-			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, strings.Join(v, ", ")))
+			val := strings.Join(v, ", ")
+			if isSensitiveHeader(k) {
+				val = "[REDACTED]"
+			}
+			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
 		}
-		fmt.Printf("DEBUG: received http response headers:\n%s\n", headerBuf.String())
+		logging.GetLogger().DebugContext(ctx, "received http response headers", "headers", headerBuf.String())
 
 		// Log body
 		contentType := resp.Header.Get("Content-Type")
-		fmt.Printf("DEBUG: received http response body:\n%s\n", prettyPrint(respBody, contentType))
+		logging.GetLogger().DebugContext(ctx, "received http response body", "body", prettyPrint(respBody, contentType))
 
 		// Restore body for subsequent processing
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
@@ -1598,4 +1606,9 @@ func getMaxCommandOutputSize() int64 {
 		// Log error? For now just fallback.
 	}
 	return consts.DefaultMaxCommandOutputBytes
+}
+
+func isSensitiveHeader(key string) bool {
+	k := strings.ToLower(key)
+	return k == "authorization" || k == "proxy-authorization" || k == "cookie" || k == "set-cookie" || k == "x-api-key"
 }
