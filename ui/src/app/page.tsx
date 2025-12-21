@@ -1,14 +1,20 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
-import { McpAnyManager } from "@/components/mcpany-manager";
+import { MetricsOverview } from "@/components/dashboard/metrics-overview";
+import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 
-export default function Home() {
+export default function DashboardPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-8">
-      <McpAnyManager />
-    </main>
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+      </div>
+      <div className="space-y-4">
+        <MetricsOverview />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <ServiceHealthWidget />
+          {/* Future: Request Volume Chart, Error Rate Chart */}
+        </div>
+      </div>
+    </div>
   );
 }
