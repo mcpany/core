@@ -24,6 +24,15 @@ type Server struct {
 }
 
 // NewServer creates a new Admin Server.
+//
+// Parameters:
+//
+//	cache: The caching middleware to manage.
+//	toolManager: The tool manager for retrieving service and tool information.
+//
+// Returns:
+//
+//	A new instance of the Admin Server.
 func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
 	return &Server{
 		cache:       cache,
@@ -32,6 +41,16 @@ func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInte
 }
 
 // ClearCache clears the cache.
+//
+// Parameters:
+//
+//	ctx: The context for the request.
+//	_ : The request proto (unused).
+//
+// Returns:
+//
+//	The response proto.
+//	An error if clearing the cache fails.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -43,6 +62,16 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 }
 
 // ListServices returns all registered services.
+//
+// Parameters:
+//
+//	_ : The context for the request (unused).
+//	_ : The request proto (unused).
+//
+// Returns:
+//
+//	The list of registered services.
+//	An error if listing services fails (currently always nil).
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	serviceInfos := s.toolManager.ListServices()
 	var services []*configv1.UpstreamServiceConfig
@@ -55,6 +84,16 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 }
 
 // GetService returns a specific service by ID.
+//
+// Parameters:
+//
+//	_ : The context for the request (unused).
+//	req: The request proto containing the service ID.
+//
+// Returns:
+//
+//	The service configuration.
+//	An error if the service is not found or has no config.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
 	if !ok {
@@ -67,6 +106,16 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 }
 
 // ListTools returns all registered tools.
+//
+// Parameters:
+//
+//	_ : The context for the request (unused).
+//	_ : The request proto (unused).
+//
+// Returns:
+//
+//	The list of registered tools.
+//	An error if listing tools fails (currently always nil).
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -77,6 +126,16 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 }
 
 // GetTool returns a specific tool by name.
+//
+// Parameters:
+//
+//	_ : The context for the request (unused).
+//	req: The request proto containing the tool name.
+//
+// Returns:
+//
+//	The tool details.
+//	An error if the tool is not found.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
