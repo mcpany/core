@@ -27,15 +27,6 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
-
-  // CreateService registers a new service.
-  rpc CreateService(CreateServiceRequest) returns (CreateServiceResponse);
-
-  // UpdateService updates an existing service.
-  rpc UpdateService(UpdateServiceRequest) returns (UpdateServiceResponse);
-
-  // DeleteService removes a service.
-  rpc DeleteService(DeleteServiceRequest) returns (DeleteServiceResponse);
 }
 
 message ClearCacheRequest {}
@@ -69,25 +60,3 @@ message GetToolRequest {
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
 }
-
-message CreateServiceRequest {
-  mcpany.config.v1.UpstreamServiceConfig service = 1;
-}
-
-message CreateServiceResponse {
-  string service_id = 1;
-}
-
-message UpdateServiceRequest {
-  mcpany.config.v1.UpstreamServiceConfig service = 1;
-}
-
-message UpdateServiceResponse {
-  string service_id = 1;
-}
-
-message DeleteServiceRequest {
-  string service_name = 1;
-}
-
-message DeleteServiceResponse {}
