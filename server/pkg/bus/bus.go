@@ -24,30 +24,45 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-	// ctx is the context for the publish operation.
-	// topic is the topic to publish the message to.
-	// msg is the message to be sent.
+	// Parameters:
+	//
+	//	ctx: The context for the publish operation.
+	//	topic: The topic to publish the message to.
+	//	msg: The message to be sent.
+	//
+	// Returns:
+	//
+	//	An error if the publish operation fails.
 	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler.
+	// Parameters:
+	//
+	//	ctx: The context for the subscribe operation.
+	//	topic: The topic to subscribe to.
+	//	handler: The function to be called with the message.
+	//
+	// Returns:
+	//
+	//	A function that can be called to unsubscribe the handler.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler
-	// before it has been invoked.
+	// Parameters:
+	//
+	//	ctx: The context for the subscribe operation.
+	//	topic: The topic to subscribe to.
+	//	handler: The function to be called with the message.
+	//
+	// Returns:
+	//
+	//	A function that can be called to unsubscribe the handler before it has been invoked.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
@@ -69,6 +84,15 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
+//
+// Parameters:
+//
+//	messageBus: The configuration for the message bus.
+//
+// Returns:
+//
+//	A new instance of the Provider.
+//	An error if the provider cannot be created (e.g., unknown bus type).
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -111,6 +135,15 @@ var GetBusHook func(p *Provider, topic string) any
 //
 // The type parameter T specifies the message type for the bus, ensuring
 // type safety for each topic.
+//
+// Parameters:
+//
+//	p: The provider instance.
+//	topic: The topic for which to retrieve the bus.
+//
+// Returns:
+//
+//	The bus instance for the given topic.
 func GetBus[T any](p *Provider, topic string) Bus[T] {
 	if GetBusHook != nil {
 		if bus := GetBusHook(p, topic); bus != nil {
