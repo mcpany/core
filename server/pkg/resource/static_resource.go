@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -16,8 +17,9 @@ import (
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
 type StaticResource struct {
-	resource  *mcp.Resource
-	serviceID string
+	resource   *mcp.Resource
+	serviceID  string
+	httpClient *http.Client
 }
 
 // NewStaticResource creates a new instance of StaticResource.
@@ -30,7 +32,8 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 			MIMEType:    def.GetMimeType(),
 			Size:        def.GetSize(),
 		},
-		serviceID: serviceID,
+		serviceID:  serviceID,
+		httpClient: util.NewSafeHTTPClient(),
 	}
 }
 
@@ -53,7 +56,7 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch resource: %w", err)
 	}
