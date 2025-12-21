@@ -1233,6 +1233,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1441,6 +1444,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				if strings.Contains(arg, placeholder) {
 					val := fmt.Sprintf("%v", v)
 					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
@@ -1700,6 +1706,17 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
+}
+
+func checkForArgumentInjection(val string) error {
+	if strings.HasPrefix(val, "-") {
+		// Allow negative numbers
+		if _, err := strconv.ParseFloat(val, 64); err == nil {
+			return nil
+		}
+		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
 	return nil
 }
