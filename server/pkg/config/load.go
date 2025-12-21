@@ -100,7 +100,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
 
-	if validationErrors := Validate(fileConfig, bt); len(validationErrors) > 0 {
+	if validationErrors := Validate(context.Background(), fileConfig, bt); len(validationErrors) > 0 {
 		var errorMessages []string
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)

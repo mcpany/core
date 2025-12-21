@@ -21,9 +21,9 @@ func TestBusProvider_GetBus_InMemory(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus1 := GetBus[string](provider, "test_topic")
-	bus2 := GetBus[string](provider, "test_topic")
-	bus3 := GetBus[int](provider, "another_topic")
+	bus1, _ := GetBus[string](provider, "test_topic")
+	bus2, _ := GetBus[string](provider, "test_topic")
+	bus3, _ := GetBus[int](provider, "another_topic")
 
 	assert.NotNil(t, bus1)
 	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
@@ -46,8 +46,8 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus1 := GetBus[string](provider, "test_topic")
-	bus2 := GetBus[string](provider, "test_topic")
+	bus1, _ := GetBus[string](provider, "test_topic")
+	bus2, _ := GetBus[string](provider, "test_topic")
 
 	assert.NotNil(t, bus1)
 	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
@@ -70,8 +70,8 @@ func TestBusProvider_GetBus_Nats(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus1 := GetBus[string](provider, "test_topic")
-	bus2 := GetBus[string](provider, "test_topic")
+	bus1, _ := GetBus[string](provider, "test_topic")
+	bus2, _ := GetBus[string](provider, "test_topic")
 
 	assert.NotNil(t, bus1)
 	assert.Same(t, bus1, bus2, "Expected the same bus instance for the same topic")
@@ -92,7 +92,7 @@ func TestBusProvider_GetBus_Concurrent(t *testing.T) {
 	for i := 0; i < numGoroutines; i++ {
 		go func() {
 			defer wg.Done()
-			bus := GetBus[string](provider, "concurrent_topic")
+			bus, _ := GetBus[string](provider, "concurrent_topic")
 			buses <- bus
 		}()
 	}

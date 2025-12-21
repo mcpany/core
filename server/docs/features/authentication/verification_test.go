@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -44,9 +45,9 @@ func TestAuthenticationConfig(t *testing.T) {
 	require.Equal(t, "admin", outgoingSvc.GetUpstreamAuthentication().GetBasicAuth().GetUsername())
 	require.Equal(t, "password123", outgoingSvc.GetUpstreamAuthentication().GetBasicAuth().GetPassword().GetPlainText())
 
-	err = config.ValidateOrError(incomingSvc)
+	err = config.ValidateOrError(context.Background(), incomingSvc)
 	require.NoError(t, err)
 
-	err = config.ValidateOrError(outgoingSvc)
+	err = config.ValidateOrError(context.Background(), outgoingSvc)
 	require.NoError(t, err)
 }

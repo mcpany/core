@@ -439,7 +439,10 @@ func (tm *Manager) AddTool(tool Tool) error {
 			correlationID := uuid.New().String()
 			resultChan := make(chan *bus.ToolExecutionResult, 1)
 
-			resultBus := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+			resultBus, err := bus.GetBus[*bus.ToolExecutionResult](tm.bus, "tool_execution_results")
+			if err != nil {
+				return nil, fmt.Errorf("failed to get result bus: %w", err)
+			}
 			unsubscribe := resultBus.SubscribeOnce(
 				ctx,
 				correlationID,
@@ -449,7 +452,10 @@ func (tm *Manager) AddTool(tool Tool) error {
 			)
 			defer unsubscribe()
 
-			requestBus := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+			requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](tm.bus, "tool_execution_requests")
+			if err != nil {
+				return nil, fmt.Errorf("failed to get request bus: %w", err)
+			}
 			execReq := &bus.ToolExecutionRequest{
 				Context:    ctx,
 				ToolName:   req.Params.Name,

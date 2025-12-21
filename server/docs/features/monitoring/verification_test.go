@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -34,6 +35,6 @@ func TestMonitoringConfig(t *testing.T) {
 	require.Len(t, service.ServiceConfig.(*pb.UpstreamServiceConfig_HttpService).HttpService.Tools, 1)
 	require.Equal(t, "monitored-tool", service.ServiceConfig.(*pb.UpstreamServiceConfig_HttpService).HttpService.Tools[0].GetName())
 
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }

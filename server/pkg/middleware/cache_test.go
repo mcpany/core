@@ -274,13 +274,11 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	ctxWithDelete := tool.NewContextWithCacheControl(ctx, cacheControl)
 
 	// This should run the tool AND delete the cache
-	_, err = cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
+	// We expect ActionDeleteCache to SKIP cache lookup and force execution.
+	res, err := cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
 	require.NoError(t, err)
-	// It should execute because we usually don't want the cached result if we are deleting it?
-	// The implementation checks:
-	// if cached, OK := m.cache.Get(...)
-	// return cached
-	// Post-execution: if DeleteCache, delete.
+	assert.Equal(t, successResult, res)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again when ActionDeleteCache is used")
 
 	// WAIT. If DeleteCache is set, we probably want to FORCE execution?
 	// Current middleware logical flow:

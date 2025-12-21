@@ -4,7 +4,6 @@
 package auth
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -120,7 +119,7 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.HeaderValue == nil {
 		return errors.New("api key secret is not configured")
 	}
-	value, err := util.ResolveSecret(a.HeaderValue)
+	value, err := util.ResolveSecret(req.Context(), a.HeaderValue)
 	if err != nil {
 		return err
 	}
@@ -145,7 +144,7 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
 	}
-	token, err := util.ResolveSecret(b.Token)
+	token, err := util.ResolveSecret(req.Context(), b.Token)
 	if err != nil {
 		return err
 	}
@@ -171,7 +170,7 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
 	}
-	password, err := util.ResolveSecret(b.Password)
+	password, err := util.ResolveSecret(req.Context(), b.Password)
 	if err != nil {
 		return err
 	}
@@ -201,11 +200,11 @@ func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	if o.ClientSecret == nil {
 		return errors.New("oauth2 client secret is not configured")
 	}
-	clientID, err := util.ResolveSecret(o.ClientID)
+	clientID, err := util.ResolveSecret(req.Context(), o.ClientID)
 	if err != nil {
 		return err
 	}
-	clientSecret, err := util.ResolveSecret(o.ClientSecret)
+	clientSecret, err := util.ResolveSecret(req.Context(), o.ClientSecret)
 	if err != nil {
 		return err
 	}
@@ -215,7 +214,7 @@ func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 		TokenURL:     o.TokenURL,
 		Scopes:       o.Scopes,
 	}
-	token, err := cfg.TokenSource(context.Background()).Token()
+	token, err := cfg.TokenSource(req.Context()).Token()
 	if err != nil {
 		return err
 	}

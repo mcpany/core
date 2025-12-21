@@ -38,7 +38,7 @@ func setupWithConfig(busConfig *buspb.MessageBus) (*worker.Worker, error) {
 	cfgToValidate := &configv1.McpAnyServerConfig{}
 	cfgToValidate.SetGlobalSettings(globalSettings)
 
-	if validationErrors := config.Validate(cfgToValidate, config.Worker); len(validationErrors) > 0 {
+	if validationErrors := config.Validate(context.Background(), cfgToValidate, config.Worker); len(validationErrors) > 0 {
 		for _, e := range validationErrors {
 			fmt.Printf("Config validation error: %v\n", e)
 		}

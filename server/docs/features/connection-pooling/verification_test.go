@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -34,6 +35,6 @@ func TestConnectionPoolConfig(t *testing.T) {
 	require.Equal(t, int32(5), service.ConnectionPool.GetMaxIdleConnections())
 	require.Equal(t, int64(60), service.ConnectionPool.GetIdleTimeout().GetSeconds())
 
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }
