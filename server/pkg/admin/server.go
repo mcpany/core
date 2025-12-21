@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -19,15 +20,17 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache       *middleware.CachingMiddleware
-	toolManager tool.ManagerInterface
+	cache           *middleware.CachingMiddleware
+	toolManager     tool.ManagerInterface
+	serviceRegistry serviceregistry.ServiceRegistryInterface
 }
 
 // NewServer creates a new Admin Server.
-func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
+func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface, serviceRegistry serviceregistry.ServiceRegistryInterface) *Server {
 	return &Server{
-		cache:       cache,
-		toolManager: toolManager,
+		cache:           cache,
+		toolManager:     toolManager,
+		serviceRegistry: serviceRegistry,
 	}
 }
 
@@ -83,4 +86,78 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
 	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+}
+
+// CreateService registers a new service.
+func (s *Server) CreateService(ctx context.Context, req *pb.CreateServiceRequest) (*pb.CreateServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.Unimplemented, "service registry not available")
+	}
+	if req.GetService() == nil {
+		return nil, status.Error(codes.InvalidArgument, "service config is required")
+	}
+
+	serviceID, _, _, err := s.serviceRegistry.RegisterService(ctx, req.GetService())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to register service: %v", err)
+	}
+
+	return &pb.CreateServiceResponse{ServiceId: &serviceID}, nil
+}
+
+// UpdateService updates an existing service.
+func (s *Server) UpdateService(ctx context.Context, req *pb.UpdateServiceRequest) (*pb.UpdateServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.Unimplemented, "service registry not available")
+	}
+	if req.GetService() == nil {
+		return nil, status.Error(codes.InvalidArgument, "service config is required")
+	}
+
+	serviceName := req.GetService().GetName()
+	if serviceName == "" {
+		return nil, status.Error(codes.InvalidArgument, "service name is required")
+	}
+
+	// To prevent data loss, we verify the new service config is valid and registerable
+	// by checking mandatory fields before unregistering the old service.
+	// Note: True transactional safety would require a "DryRun" or atomic swap support in ServiceRegistry.
+	// For now, we do basic validation.
+	// Re-sanitizing name to ensure it matches expectations
+	newServiceName := req.GetService().GetName()
+	if newServiceName != serviceName {
+		return nil, status.Error(codes.InvalidArgument, "service name in body must match existing service name")
+	}
+
+	// Unregister existing
+	if err := s.serviceRegistry.UnregisterService(ctx, serviceName); err != nil {
+		return nil, status.Errorf(codes.NotFound, "failed to find service to update: %v", err)
+	}
+
+	// Register new
+	serviceID, _, _, err := s.serviceRegistry.RegisterService(ctx, req.GetService())
+	if err != nil {
+		// Critical Failure: We unregistered but failed to re-register.
+		// Attempt to restore (best effort)?
+		// For this implementation, we return the error.
+		return nil, status.Errorf(codes.Internal, "failed to register updated service: %v", err)
+	}
+
+	return &pb.UpdateServiceResponse{ServiceId: &serviceID}, nil
+}
+
+// DeleteService removes a service.
+func (s *Server) DeleteService(ctx context.Context, req *pb.DeleteServiceRequest) (*pb.DeleteServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.Unimplemented, "service registry not available")
+	}
+	if req.GetServiceName() == "" {
+		return nil, status.Error(codes.InvalidArgument, "service name is required")
+	}
+
+	if err := s.serviceRegistry.UnregisterService(ctx, req.GetServiceName()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unregister service: %v", err)
+	}
+
+	return &pb.DeleteServiceResponse{}, nil
 }

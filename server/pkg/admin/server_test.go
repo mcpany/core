@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -23,7 +24,7 @@ func TestNewServer(t *testing.T) {
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 	assert.NotNil(t, server)
 }
 
@@ -36,7 +37,7 @@ func TestClearCache(t *testing.T) {
 	// We use a real CachingMiddleware here since it is a struct and cannot be mocked easily.
 	// The default implementation uses an in-memory cache which should succeed.
 	cache := middleware.NewCachingMiddleware(mockManager)
-	server := NewServer(cache, mockManager)
+	server := NewServer(cache, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	resp, err := server.ClearCache(context.Background(), req)
@@ -50,7 +51,7 @@ func TestClearCache_NilCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	req := &pb.ClearCacheRequest{}
 	_, err := server.ClearCache(context.Background(), req)
@@ -64,7 +65,7 @@ func TestListServices(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	expectedServices := []*tool.ServiceInfo{
 		{
@@ -86,7 +87,7 @@ func TestGetService(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	serviceInfo := &tool.ServiceInfo{
 		Config: &configv1.UpstreamServiceConfig{
@@ -105,7 +106,7 @@ func TestGetService_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetServiceInfo("unknown").Return(nil, false)
 
@@ -114,12 +115,62 @@ func TestGetService_NotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "not found")
 }
 
+func TestCreateService(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := serviceregistry.NewMockServiceRegistryInterface(ctrl)
+	server := NewServer(nil, nil, mockRegistry)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{
+		Name: proto.String("new-service"),
+	}
+
+	mockRegistry.EXPECT().RegisterService(gomock.Any(), serviceConfig).Return("new-service-id", nil, nil, nil)
+
+	resp, err := server.CreateService(context.Background(), &pb.CreateServiceRequest{Service: serviceConfig})
+	assert.NoError(t, err)
+	assert.Equal(t, "new-service-id", resp.GetServiceId())
+}
+
+func TestUpdateService(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := serviceregistry.NewMockServiceRegistryInterface(ctrl)
+	server := NewServer(nil, nil, mockRegistry)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{
+		Name: proto.String("existing-service"),
+	}
+
+	mockRegistry.EXPECT().UnregisterService(gomock.Any(), "existing-service").Return(nil)
+	mockRegistry.EXPECT().RegisterService(gomock.Any(), serviceConfig).Return("existing-service-id", nil, nil, nil)
+
+	resp, err := server.UpdateService(context.Background(), &pb.UpdateServiceRequest{Service: serviceConfig})
+	assert.NoError(t, err)
+	assert.Equal(t, "existing-service-id", resp.GetServiceId())
+}
+
+func TestDeleteService(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := serviceregistry.NewMockServiceRegistryInterface(ctrl)
+	server := NewServer(nil, nil, mockRegistry)
+
+	mockRegistry.EXPECT().UnregisterService(gomock.Any(), "service-to-delete").Return(nil)
+
+	_, err := server.DeleteService(context.Background(), &pb.DeleteServiceRequest{ServiceName: proto.String("service-to-delete")})
+	assert.NoError(t, err)
+}
+
 func TestListTools(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -140,7 +191,7 @@ func TestGetTool(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
@@ -160,7 +211,7 @@ func TestGetTool_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockManager := tool.NewMockManagerInterface(ctrl)
-	server := NewServer(nil, mockManager)
+	server := NewServer(nil, mockManager, nil)
 
 	mockManager.EXPECT().GetTool("unknown").Return(nil, false)
 
