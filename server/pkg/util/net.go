@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"time"
 )
 
 // SafeDialer provides control over outbound connections to prevent SSRF.
@@ -18,6 +19,8 @@ type SafeDialer struct {
 	// AllowLinkLocal allows connections to link-local addresses (169.254.x.x, fe80::/10).
 	// This includes cloud metadata services.
 	AllowLinkLocal bool
+	// Timeout is the maximum amount of time a dial will wait for a connect to complete.
+	Timeout time.Duration
 }
 
 // NewSafeDialer creates a new SafeDialer with strict defaults (blocking all non-public IPs).
@@ -63,7 +66,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	// All IPs are safe. Dial the first one.
 	dialAddr := net.JoinHostPort(ips[0].String(), port)
-	return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+	return (&net.Dialer{Timeout: d.Timeout}).DialContext(ctx, network, dialAddr)
 }
 
 // SafeDialContext creates a connection to the given address, but strictly prevents
