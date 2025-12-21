@@ -8,6 +8,7 @@ ifdef INSIDE_DOCKER_CONTAINER
 GO_CMD := /usr/local/go/bin/go
 endif
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
+SERVER_IMAGE_TAG := $(firstword $(SERVER_IMAGE_TAGS))
 VERSION := $(shell git describe --tags --always --dirty)
 LDFLAGS := -ldflags="-X main.Version=$(VERSION)"
 BUILD_DIR := $(abspath ../build)
@@ -561,38 +562,44 @@ endif
 build-docker: docker/Dockerfile.server
 ifdef HAS_DOCKER
 	@{ \
-		PLATFORMS="$(PLATFORMS)"; \
-		if [ -z "$$PLATFORMS" ]; then \
-			HOST_ARCH=$$(uname -m); \
-			case "$$HOST_ARCH" in \
-				x86_64) PLATFORMS=linux/amd64 ;; \
-				aarch64) PLATFORMS=linux/arm64 ;; \
-				*) PLATFORMS=linux/amd64 ;; \
-			esac; \
-		else \
-			PLATFORMS=$$(echo "$$PLATFORMS" | tr ' ' ','); \
-		fi; \
-		echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
-		CACHE_ARGS=""; \
-		if [ -n "$(CACHE_TO)" ]; then \
-			CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
-		fi; \
-		if [ -n "$(CACHE_FROM)" ]; then \
-			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
-		fi; \
-		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
-		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
-		if [ "$(PUSH)" = "true" ]; then \
-			echo "Building and pushing image..."; \
-			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
-		else \
-			if echo "$${PLATFORMS}" | grep -q ','; then \
-				echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
+		if $(DOCKER_BUILDX_CMD) version >/dev/null 2>&1; then \
+			PLATFORMS="$(PLATFORMS)"; \
+			if [ -z "$$PLATFORMS" ]; then \
+				HOST_ARCH=$$(uname -m); \
+				case "$$HOST_ARCH" in \
+					x86_64) PLATFORMS=linux/amd64 ;; \
+					aarch64) PLATFORMS=linux/arm64 ;; \
+					*) PLATFORMS=linux/amd64 ;; \
+				esac; \
 			else \
-				echo "Building single-platform image locally and loading to docker images..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load .; \
+				PLATFORMS=$$(echo "$$PLATFORMS" | tr ' ' ','); \
 			fi; \
+			echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
+			CACHE_ARGS=""; \
+			if [ -n "$(CACHE_TO)" ]; then \
+				CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
+			fi; \
+			if [ -n "$(CACHE_FROM)" ]; then \
+				CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
+			fi; \
+			TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
+			CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
+			if [ "$(PUSH)" = "true" ]; then \
+				echo "Building and pushing image..."; \
+				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
+			else \
+				if echo "$${PLATFORMS}" | grep -q ','; then \
+					echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
+					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
+				else \
+					echo "Building single-platform image locally and loading to docker images..."; \
+					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load .; \
+				fi; \
+			fi; \
+		else \
+			echo "buildx not found, falling back to legacy docker build..."; \
+			TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
+			$(DOCKER_CMD) build $${TAG_ARGS} -f docker/Dockerfile.server .; \
 		fi; \
 	}
 	@echo "Server Docker image build complete."
@@ -610,6 +617,21 @@ ifdef HAS_DOCKER
 	@$(DOCKER_CMD) run --rm -p 50050:50050 -p 50051:50051 $(SERVER_IMAGE_TAG)
 else
 	@echo "Docker not found. Cannot run server container."
+	@exit 1
+endif
+
+# Target to run the backend Docker smoke test
+docker-smoke-test:
+ifdef HAS_DOCKER
+	@echo "Running backend smoke test..."
+	@if [ -z "$(shell docker images -q $(SERVER_IMAGE_TAG) 2> /dev/null)" ]; then \
+		echo "Image $(SERVER_IMAGE_TAG) not found. Building..."; \
+		$(MAKE) build-docker; \
+	fi
+	@chmod +x tests/smoke_test.sh
+	@./tests/smoke_test.sh $(SERVER_IMAGE_TAG)
+else
+	@echo "Docker not found. Cannot run smoke test."
 	@exit 1
 endif
 
